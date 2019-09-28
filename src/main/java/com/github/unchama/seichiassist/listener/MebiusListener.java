@@ -4,7 +4,6 @@ import com.github.unchama.seichiassist.MebiusTalk;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
 import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.Bukkit;
@@ -97,10 +96,10 @@ public class MebiusListener implements Listener {
 			int no = new Random().nextInt(tips.size() + 1);
 			if (no == tips.size()) {
 				// Talkを喋る
-				getPlayerData(player).getMebius().speak(getTalk(getIl(player.getInventory().getHelmet())));
+				getPlayerData(player).mebius().speak(getTalk(getIl(player.getInventory().getHelmet())));
 			} else {
 				// tipsの中身を設定
-				getPlayerData(player).getMebius().speak(tips.get(no));
+				getPlayerData(player).mebius().speak(tips.get(no));
 			}
 		}
 	}
@@ -139,7 +138,7 @@ public class MebiusListener implements Listener {
 				short max = mebius.getType().getMaxDurability();
 				short dur = mebius.getDurability();
 				if (dur >= max - 10) {
-					getPlayerData(player).getMebius().speak(getMessage(breakmsgs, Objects.requireNonNull(getNickname(player)), ""));
+					getPlayerData(player).mebius().speak(getMessage(breakmsgs, Objects.requireNonNull(getNickname(player)), ""));
 				}
 			}
 
@@ -147,7 +146,7 @@ public class MebiusListener implements Listener {
 			if (event.getDamager() instanceof Monster) {
 				Monster monster = (Monster) event.getDamager();
 				// 対モンスターメッセージ
-				getPlayerData(player).getMebius().speak(getMessage(warnmsgs, Objects.requireNonNull(getNickname(player)), monster.getName()));
+				getPlayerData(player).mebius().speak(getMessage(warnmsgs, Objects.requireNonNull(getNickname(player)), monster.getName()));
 			}
 		}
 	}
@@ -166,7 +165,7 @@ public class MebiusListener implements Listener {
 		// 壊れたアイテムがMEBIUSなら
 		if (isMebius(item)) {
 			Player player = event.getPlayer();
-			getPlayerData(event.getPlayer()).getMebius().speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
+			getPlayerData(event.getPlayer()).mebius().speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
 			player.sendMessage(getName(item) + ChatColor.RESET + "が旅立ちました。");
 			// エンドラが叫ぶ
 			player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f);
@@ -205,7 +204,7 @@ public class MebiusListener implements Listener {
 
 		String playerNick = getNickname(player);
 		Objects.requireNonNull(playerNick);
-		getPlayerData(player).getMebius().speak(
+		getPlayerData(player).mebius().speak(
 				getMessage(msgs, playerNick, monsterName)
 		);
 	}
@@ -222,7 +221,7 @@ public class MebiusListener implements Listener {
 		Player player = event.getPlayer();
 		if (isEquip(player)) {
 			PlayerData pd = getPlayerData(player);
-			pd.getMebius().speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
+			pd.mebius().speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
 			// Lvup
 			if (isLevelUp(player)) {
 				levelUp(player);
@@ -305,7 +304,7 @@ public class MebiusListener implements Listener {
 			player.sendMessage(getName(mebius) + ChatColor.RESET + "に命名しました。");
 			mebius.setItemMeta(meta);
 			player.getInventory().setHelmet(mebius);
-			getPlayerData(player).getMebius().speakForce("わーい、ありがとう！今日から僕は" + NAMEHEAD + name + ChatColor.RESET + "だ！");
+			getPlayerData(player).mebius().speakForce("わーい、ありがとう！今日から僕は" + NAMEHEAD + name + ChatColor.RESET + "だ！");
 			return true;
 		}
 		return false;
@@ -330,7 +329,7 @@ public class MebiusListener implements Listener {
 			NBTItem nbtItem = new NBTItem(mebius);
 			nbtItem.setString("nickname", name);
 			player.getInventory().setHelmet(nbtItem.getItem());
-			getPlayerData(player).getMebius().speakForce("わーい、ありがとう！今日から君のこと" + ChatColor.GREEN + name + ChatColor.RESET + "って呼ぶね！");
+			getPlayerData(player).mebius().speakForce("わーい、ありがとう！今日から君のこと" + ChatColor.GREEN + name + ChatColor.RESET + "って呼ぶね！");
 			return true;
 		}
 	}
@@ -357,10 +356,10 @@ public class MebiusListener implements Listener {
 	// 初期Name
 	private static final String DEFNAME = "MEBIUS";
 	// Mebius識別用の先頭Lore
-	private static final List<String> LOREFIRST = ImmutableListFactory.of(
+	private static final List<String> LOREFIRST = Arrays.asList(
 			ChatColor.RESET + "" + ChatColor.GRAY + "経験値瓶 効果2倍" + ChatColor.RED + "(整地レベル" + EXPBONUS + "未満限定)", "",
 			ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
-	private static final List<String> LOREFIRST2 = ImmutableListFactory.of(
+	private static final List<String> LOREFIRST2 = Arrays.asList(
 			ChatColor.RESET + "", ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", ChatColor.RESET + "" + ChatColor.AQUA + "整地により成長する。", "");
 	private static final int LV = 4, TALK = 5, DEST = 6, OWNER = 8;
 	private static final String NAMEHEAD = ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.BOLD + "";
@@ -371,7 +370,7 @@ public class MebiusListener implements Listener {
 
 	// PlayerData取得
 	private static PlayerData getPlayerData(Player player) {
-		return SeichiAssist.playermap().get(player.getUniqueId());
+		return SeichiAssist.playermap().apply(player.getUniqueId());
 	}
 
 	// ItemStackがMebiusか
@@ -398,13 +397,13 @@ public class MebiusListener implements Listener {
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "おめでとうございます。採掘中にMEBIUSを発見しました。");
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "MEBIUSはプレイヤーと共に成長するヘルメットです。");
 		player.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなただけのMEBIUSを育てましょう！");
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.instance(), () -> getPlayerData(player).getMebius().speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.instance(), () -> getPlayerData(player).mebius().speakForce("こんにちは、" + player.getName() + ChatColor.RESET + "。僕は" + getName(mebius) + ChatColor.RESET + "！これからよろしくね！"), 10);
 		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1f, 1f);
-		if (!Util.INSTANCE.isPlayerInventoryFull(player)) {
-			Util.INSTANCE.addItem(player, mebius);
+		if (!Util.isPlayerInventoryFull(player)) {
+			Util.addItem(player, mebius);
 		} else {
 			player.sendMessage(ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "所持しきれないためMEBIUSをドロップしました。");
-			Util.INSTANCE.dropItem(player, mebius);
+			Util.dropItem(player, mebius);
 		}
 	}
 
@@ -419,7 +418,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// Mebiusレベルアップ確率テーブル
-	private static final List<Integer> lvPer = ImmutableListFactory.of(
+	private static final List<Integer> lvPer = Arrays.asList(
 			500, 500, 500, 500, 800, 800, 800, 800, 800, 1700,
 			1700, 1700, 1700, 1700, 1800, 1800, 1800, 1800, 1800, 2200,
 			2200, 2200, 2200, 2200, 2600, 2600, 2600, 2600, 3000, 3000);
@@ -482,7 +481,7 @@ public class MebiusListener implements Listener {
 		mebius.setDurability((short) 0);
 		player.getInventory().setHelmet(mebius);
 		// Talkを喋る
-		getPlayerData(player).getMebius().speakForce(getTalk(level));
+		getPlayerData(player).mebius().speakForce(getTalk(level));
 	}
 
 	// 見た目更新Lv
@@ -522,7 +521,7 @@ public class MebiusListener implements Listener {
 		meta.setDisplayName(name);
 		// Lore生成
 		List<String> lore = new ArrayList<>(LOREFIRST2);
-		lore.addAll(ImmutableListFactory.of(ILHEAD + level, "", "", "", OWNERHEAD + player.getName().toLowerCase()));
+		lore.addAll(Arrays.asList(ILHEAD + level, "", "", "", OWNERHEAD + player.getName().toLowerCase()));
 		updateTalkDest(lore, level);
 		meta.setLore(lore);
 		// エンチャントを付与する
@@ -544,7 +543,7 @@ public class MebiusListener implements Listener {
 
 	// レベル別Talk
 	// TODO: ここをList<MebiusSerif>にする
-	private static final List<MebiusTalk> TALKDEST = ImmutableListFactory.of(
+	private static final List<MebiusTalk> TALKDEST = Arrays.asList(
 			new MebiusTalk("こんにちは！これからよろしくねー！", "いつの間にか被っていた。"), new MebiusTalk("僕のこと外さないでね？", "段々成長していくらしい。"), new MebiusTalk("モンスターって怖いねえ…", "どこから喋っているのだろう。"),
 			new MebiusTalk("どこでもルールって大切だね。", "ちゃんと守らなきゃね。"), new MebiusTalk("整地神様って知ってる？偉いんだよ！", "どうやら神様を知ってるみたい。"), new MebiusTalk("知らないこと、いっぱい学びたいなぁ。", "どこに記憶しているんだろう。"),
 			new MebiusTalk("ゾンビっておいしいのかな？", "それだけはやめておけ。"), new MebiusTalk("どこかに僕の兄弟が埋まってるんだー。", "採掘で手に入るのかな。"), new MebiusTalk("…はっ！寝てないからね！？", "たまに静かだよね。"),
@@ -587,12 +586,12 @@ public class MebiusListener implements Listener {
 			this.ench = ench;
 			this.open = open;
 			this.max = max;
-			this.name = name;
+			this.getName = name;
 		}
 	}
 
 	// エンチャント別レベル制限リスト
-	private static final List<Enchant> ENCHANT = ImmutableListFactory.of(
+	private static final List<Enchant> ENCHANT = Arrays.asList(
 			new Enchant(Enchantment.PROTECTION_ENVIRONMENTAL, 2, 10, "ダメージ軽減"),
 			new Enchant(Enchantment.PROTECTION_FIRE, 6, 10, "火炎耐性"),
 			new Enchant(Enchantment.PROTECTION_PROJECTILE, 6, 10, "飛び道具耐性"),
@@ -601,7 +600,7 @@ public class MebiusListener implements Listener {
 			new Enchant(Enchantment.WATER_WORKER, 15, 1, "水中採掘"),
 			new Enchant(Enchantment.DURABILITY, 2, 10, "耐久力"));
 	private static final String UNBREAK = ChatColor.RESET + "" + ChatColor.AQUA + "耐久無限";
-	private static final List<String> ROMAN = ImmutableListFactory.of("", "", " II", " III", " IV", " V", " VI", " VII", " VIII", " IX", " X", " XI", " XII", " XIII", " XIV", " XV", " XVI", " XVII", " XVIII", " XIX", " XX");
+	private static final List<String> ROMAN = Arrays.asList("", "", " II", " III", " IV", " V", " VI", " VII", " VIII", " IX", " X", " XI", " XII", " XIII", " XIV", " XV", " XVI", " XVII", " XVIII", " XIX", " XX");
 
 	// エンチャント更新
 	private static void setEnchant(ItemMeta meta, int level, Player player) {
@@ -633,9 +632,9 @@ public class MebiusListener implements Listener {
 					ench.put(ec.ench, ecLv + 1);
 					// メッセージを生成
 					if (ecLv == 0) {
-						player.sendMessage(ChatColor.GRAY + ec.name + ChatColor.RESET + "が付与されました。");
+						player.sendMessage(ChatColor.GRAY + ec.getName + ChatColor.RESET + "が付与されました。");
 					} else {
-						player.sendMessage(ChatColor.GRAY + ec.name + ROMAN.get(ecLv) + ChatColor.RESET + "が" + ChatColor.GRAY + ec.name + ROMAN.get(ecLv + 1) + ChatColor.RESET + "に強化されました。");
+						player.sendMessage(ChatColor.GRAY + ec.getName + ROMAN.get(ecLv) + ChatColor.RESET + "が" + ChatColor.GRAY + ec.getName + ROMAN.get(ecLv + 1) + ChatColor.RESET + "に強化されました。");
 					}
 					// 古いエンチャントを消去し新しいエンチャントを付与する
 					for (Map.Entry<Enchantment, Integer> e : ench.entrySet()) {
@@ -650,7 +649,7 @@ public class MebiusListener implements Listener {
 	}
 
 	// Mebius Tips
-	private static final List<String> MTIPS = ImmutableListFactory.of(
+	private static final List<String> MTIPS = Arrays.asList(
 			"僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
 			"僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！",
 			"僕たち兄弟のステータスはみんなバラバラなんだよー！",

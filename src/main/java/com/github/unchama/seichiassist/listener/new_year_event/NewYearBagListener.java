@@ -19,8 +19,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import scala.collection.mutable.HashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * 正月イベント・お年玉袋関連処理実装クラス。
@@ -29,7 +33,7 @@ import java.util.*;
  */
 public class NewYearBagListener implements Listener {
 	private static Config config = SeichiAssist.seichiAssistConfig();
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap();
+	private static HashMap<UUID, PlayerData> playerMap = SeichiAssist.playermap();
 	/**
 	 * プレイヤーがブロックを破壊した際に呼ばれるメソッド。
 	 * お年玉袋のドロップ処理に利用。
@@ -43,29 +47,29 @@ public class NewYearBagListener implements Listener {
 
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
-		PlayerData playerData = playerMap.get(player.getUniqueId());
+		PlayerData playerData = playerMap.apply(player.getUniqueId());
 
 		//整地ワールドのみドロップ許可
-		if (!Util.INSTANCE.isSeichiWorld(player)) {
+		if (!Util.isSeichiWorld(player)) {
 			return;
 		}
 
 		//自分の保護範囲外ではドロップさせない
-		if (!ExternalPlugins.worldGuard().canBuild(player, block)) {
+		if (!ExternalPlugins.getWorldGuard().canBuild(player, block)) {
 			return;
 		}
 
 		if (isDrop()) {
-			if (Util.INSTANCE.isPlayerInventoryFull(player)) {
-				Util.INSTANCE.dropItem(player, getNewYearBag());
+			if (Util.isPlayerInventoryFull(player)) {
+				Util.dropItem(player, getNewYearBag());
 				player.sendMessage(ChatColor.RED + "インベントリがいっぱいのため「お年玉袋」がドロップしました");
 				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f);
 			} else {
-				Util.INSTANCE.addItem(player, getNewYearBag());
+				Util.addItem(player, getNewYearBag());
 				player.sendMessage(ChatColor.AQUA + "「お年玉袋」を見つけたよ！");
 				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f);
 			}
-			playerData.setNewYearBagAmount(playerData.getNewYearBagAmount() + 1);
+			playerData.newYearBagAmount_$eq(playerData.newYearBagAmount() + 1);
 		}
 	}
 

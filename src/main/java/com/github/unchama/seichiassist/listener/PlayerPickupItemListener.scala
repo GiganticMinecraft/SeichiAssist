@@ -34,7 +34,7 @@ class PlayerPickupItemListener  extends  Listener {
 
     if (BreakUtil.addItemToMineStack(player, itemstack)) {
       event.setCancelled(true)
-      player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
+      player.playSound(player.getLocation, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
       item.remove()
     }
   }

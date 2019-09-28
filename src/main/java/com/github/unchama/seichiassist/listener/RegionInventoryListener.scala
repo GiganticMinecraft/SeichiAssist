@@ -62,30 +62,30 @@ class RegionInventoryListener  extends  Listener {
       val playerData = playermap(uuid)
 
       //チャンク延長
-      if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 14) {
+      if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt == 14) {
         gridChangeFunction(player, DirectionType.AHEAD, event)
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 10) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt == 10) {
         gridChangeFunction(player, DirectionType.LEFT, event)
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 5) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt == 5) {
         gridChangeFunction(player, DirectionType.RIGHT, event)
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 13) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt == 13) {
         gridChangeFunction(player, DirectionType.BEHIND, event)
-      } else if (itemstackcurrent.getType == Material.WOOL && itemstackcurrent.durability.toInt() == 11) {
+      } else if (itemstackcurrent.getType == Material.WOOL && itemstackcurrent.durability.toInt == 11) {
         player.chat("//expand vert")
         createRegion(player)
         playerData.regionCount = playerData.regionCount + 1
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         player.closeInventory()
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 4) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt == 4) {
         gridResetFunction(player)
-        player.playSound(player.location, Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
+        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
         player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt() == 0) {
+      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.durability.toInt == 0) {
         playerData.toggleUnitPerGrid()
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       } else if (itemstackcurrent.getType == Material.CHEST) {
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         player.openInventory(RegionMenuData.gridTemplateInventory(player))
       }
     }
@@ -95,16 +95,16 @@ class RegionInventoryListener  extends  Listener {
     val playerData = SeichiAssist.playermap(player.uniqueId)
     val selection = We.selection(player)
 
-    val region = ProtectedCuboidRegion(player.name + "_" + playerData.regionCount,
+    val region = ProtectedCuboidRegion(player.getName + "_" + playerData.regionCount,
         selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector())
     val manager = Wg.regionManager(player.world)
 
     val task = RegionAdder(Wg, manager, region)
     task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY)
-    task.setOwnersInput(arrayOf(player.name))
+    task.setOwnersInput(arrayOf(player.getName))
     val future = Wg.executorService().submit(task)
 
-    AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.name + "_" + playerData.regionCount)
+    AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.getName + "_" + playerData.regionCount)
         .registerWithSupervisor("保護申請中").thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
   }
 
@@ -147,12 +147,12 @@ class RegionInventoryListener  extends  Listener {
 
       //戻るボタン
       if (itemstackcurrent.getType == Material.BARRIER) {
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(RegionMenuData.gridWorldGuardMenu(player))
       } else {
         val slot = event.getSlot
 
-        val template = playerData.templateMap[slot]
+        val template = playerData.templateMap(slot)
 
         if (template == null) {
           //何も登録されてないとき
@@ -166,7 +166,7 @@ class RegionInventoryListener  extends  Listener {
 
         if (event.isLeftClick) {
           player.sendMessage(GREEN.toString() + "グリッド式保護設定データ読み込み完了")
-          player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
+          player.playSound(player.getLocation, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
           playerData.setUnitAmount(DirectionType.AHEAD, template.aheadAmount)
           playerData.setUnitAmount(DirectionType.BEHIND, template.behindAmount)
           playerData.setUnitAmount(DirectionType.RIGHT, template.rightAmount)
@@ -187,7 +187,7 @@ class RegionInventoryListener  extends  Listener {
 }
 
 object RegionInventoryListener {
-  internal var Wg = ExternalPlugins.worldGuard()
+  internal var Wg = ExternalPlugins.getWorldGuard()
   internal var We = ExternalPlugins.worldEdit()
   internal var config = SeichiAssist.seichiAssistConfig
 
@@ -210,8 +210,8 @@ object RegionInventoryListener {
   private def gridChangeFunction(player: Player, directionType: DirectionType, event: InventoryClickEvent) {
     val playerData = SeichiAssist.playermap(player.uniqueId)
     if (event.isLeftClick) {
-      if (playerData.canGridExtend(directionType, player.world.name)) {
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+      if (playerData.canGridExtend(directionType, player.world.getName)) {
+        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerData.addUnitAmount(directionType, playerData.unitPerClick)
         setWGSelection(player)
         canCreateRegion(player)
@@ -219,7 +219,7 @@ object RegionInventoryListener {
       }
     } else if (event.isRightClick) {
       if (playerData.canGridReduce(directionType)) {
-        player.playSound(player.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerData.addUnitAmount(directionType, playerData.unitPerClick * -1)
         setWGSelection(player)
         canCreateRegion(player)
@@ -274,8 +274,8 @@ object RegionInventoryListener {
 
   private def wgSelect(loc1: Location, loc2: Location, player: Player) {
     player.chat("//;")
-    player.chat("//pos1 " + loc1.x.toInt() + "," + loc1.y.toInt() + "," + loc1.z.toInt())
-    player.chat("//pos2 " + loc2.x.toInt() + "," + loc2.y.toInt() + "," + loc2.z.toInt())
+    player.chat("//pos1 " + loc1.x.toInt + "," + loc1.y.toInt + "," + loc1.z.toInt)
+    player.chat("//pos2 " + loc2.x.toInt + "," + loc2.y.toInt + "," + loc2.z.toInt)
   }
 
   private def canCreateRegion(player: Player) {
@@ -288,7 +288,7 @@ object RegionInventoryListener {
       playerData.canCreateRegion = false
     }
 
-    val region = ProtectedCuboidRegion(player.name + "_" + playerData.regionCount,
+    val region = ProtectedCuboidRegion(player.getName + "_" + playerData.regionCount,
       selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector())
     val regions = manager.getApplicableRegions(region)
 
@@ -311,10 +311,10 @@ object RegionInventoryListener {
     val unitMap = playerData.unitMap
 
     player.sendMessage(GREEN.toString() + "グリッド式保護の現在の設定を保存しました。")
-    player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
+    player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
     val template = GridTemplate(unitMap[DirectionType.AHEAD], unitMap[DirectionType.BEHIND],
       unitMap[DirectionType.RIGHT], unitMap[DirectionType.LEFT])
-    playerData.templateMap[i] = template
+    playerData.templateMap(i) = template
   }
 
   /**
@@ -325,8 +325,8 @@ object RegionInventoryListener {
   def getNearlyUnitStart(player: Player): Map[String, Double] = {
     val result = HashMap[String, Double]()
 
-    val player_x = player.location.blockX.toDouble()
-    val player_z = player.location.blockZ.toDouble()
+    val player_x = player.getLocation.blockX.toDouble
+    val player_z = player.getLocation.blockZ.toDouble
 
     if (player_x % 15 == 0.0) {
       result["x"] = player_x

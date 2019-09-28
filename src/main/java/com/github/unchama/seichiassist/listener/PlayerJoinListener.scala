@@ -58,7 +58,7 @@ class PlayerJoinListener  extends  Listener {
      */
     if (!playerMap.containsKey(player.uniqueId)) {
       try {
-        loadPlayerData(player.uniqueId, player.name)
+        loadPlayerData(player.uniqueId, player.getName)
       } catch (e: Exception) {
         println("Caught exception while loading PlayerData.")
         e.printStackTrace()
@@ -70,7 +70,7 @@ class PlayerJoinListener  extends  Listener {
 
     run {
       val limitedLoginEvent = LimitedLoginEvent()
-      val playerData = playerMap[player.uniqueId]
+      val playerData = playerMap(player.uniqueId)
 
       //期間限定ログインイベント判別処理
       limitedLoginEvent.getLastcheck(playerData.lastcheckdate)
@@ -79,7 +79,7 @@ class PlayerJoinListener  extends  Listener {
       // 1周年記念
       if (playerData.anniversary) {
         player.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/wiki/anniversary")
-        player.playSound(player.location, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
+        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       }
 
       //join時とonenable時、プレイヤーデータを最新の状態に更新
@@ -89,7 +89,7 @@ class PlayerJoinListener  extends  Listener {
     // 初見さんへの処理
     if (!player.hasPlayedBefore()) {
       //初見さんであることを全体告知
-      Util.sendEveryMessage(LIGHT_PURPLE.toString() + "" + BOLD + player.name + "さんはこのサーバーに初めてログインしました！")
+      Util.sendEveryMessage(LIGHT_PURPLE.toString() + "" + BOLD + player.getName + "さんはこのサーバーに初めてログインしました！")
       Util.sendEveryMessage(WHITE.toString() + "webサイトはもう読みましたか？→" + YELLOW + "" + UNDERLINE + "https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
@@ -121,14 +121,14 @@ class PlayerJoinListener  extends  Listener {
     // 整地ワールドから他のワールドに移動したとき
     if (ManagedWorld.fromBukkitWorld(event.getFrom)?.isSeichi == true) {
       val p = event.getPlayer
-      val pd = playerMap[p.uniqueId]
+      val pd = playerMap(p.uniqueId)
 
       // coreprotectを切る
       // inspectマップにtrueで登録されている場合
-      if (Config.inspecting[p.name] != null && (Config.inspecting[p.name] == true)) {
+      if (Config.inspecting(p.getName] != null && (Config.inspecting[p.getName) == true)) {
         // falseに変更する
         p.sendMessage("§3CoreProtect §f- Inspector now disabled.")
-        Config.inspecting[p.name] = false
+        Config.inspecting(p.getName) = false
       }
 
       // アサルトスキルを切る
@@ -141,7 +141,7 @@ class PlayerJoinListener  extends  Listener {
           // 内部状態をアサルトOFFに変更
           pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0)
           // トグル音を鳴らす
-          p.playSound(p.location, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
+          p.playSound(p.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         }
       }
     }

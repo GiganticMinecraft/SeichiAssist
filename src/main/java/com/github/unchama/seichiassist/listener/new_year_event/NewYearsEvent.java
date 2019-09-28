@@ -12,12 +12,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitScheduler;
+import scala.collection.mutable.HashMap;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 /**
  * 正月イベント関連クラス
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class NewYearsEvent implements Listener {
 	private static SeichiAssist plugin = SeichiAssist.instance();
 	private static Config config = SeichiAssist.seichiAssistConfig();
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap();
+	private static HashMap<UUID, PlayerData> playerMap = SeichiAssist.playermap();
 
 	/**
 	 * 正月イベント準備メソッド(コンストラクタ)
@@ -78,12 +78,12 @@ public class NewYearsEvent implements Listener {
 	}
 
 	private void giveNewYearSobaToPlayer(Player player, String year) {
-		PlayerData playerData = playerMap.get(player.getUniqueId());
-		if (playerData.getHasNewYearSobaGive()) {
+		PlayerData playerData = playerMap.apply(player.getUniqueId());
+		if (playerData.hasNewYearSobaGive()) {
 			return;
 		}
 
-		if (Util.INSTANCE.isPlayerInventoryFull(player)) {
+		if (Util.isPlayerInventoryFull(player)) {
 			player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリが一杯のため,アイテムが入手できませんでした。");
 			player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリに空きを作ってから再度サーバーに参加してください。");
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
@@ -92,7 +92,7 @@ public class NewYearsEvent implements Listener {
 					"Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ==\"}]}}}";
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 			player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
-			playerData.setHasNewYearSobaGive(true);
+			playerData.hasNewYearSobaGive_$eq(true);
 		}
 	}
 

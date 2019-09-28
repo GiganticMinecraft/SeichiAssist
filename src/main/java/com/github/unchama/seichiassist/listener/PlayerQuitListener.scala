@@ -15,7 +15,7 @@ class PlayerQuitListener  extends  Listener {
     val uuid = player.uniqueId
     SeichiAssist.instance.expBarSynchronization.desynchronizeFor(player)
 
-    val playerData = playerMap[uuid].ifNull { return }
+    val playerData = playerMap(uuid).ifNull { return }
 
     playerData.updateOnQuit()
 

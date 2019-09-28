@@ -16,10 +16,10 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import scala.collection.mutable.HashMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -28,7 +28,7 @@ import java.util.UUID;
  * @since 2017/12/10
  */
 public class NewYearItemListener implements Listener {
-	private static Map<UUID, PlayerData> playerMap = SeichiAssist.playermap();
+	private static HashMap<UUID, PlayerData> playerMap = SeichiAssist.playermap();
 	private static Config config = SeichiAssist.seichiAssistConfig();
 
 	@EventHandler
@@ -74,11 +74,11 @@ public class NewYearItemListener implements Listener {
 
 	private void useApple(Player player) {
 		UUID uuid = player.getUniqueId();
-		PlayerData playerData = playerMap.get(uuid);
-		Mana mana = playerData.getActiveskilldata().mana;
+		PlayerData playerData = playerMap.apply(uuid);
+		Mana mana = playerData.activeskilldata().mana;
 
-		double max = mana.calcMaxManaOnly(player, playerData.getLevel());
-		mana.increase(max * 0.1, player, playerData.getLevel());
+		double max = mana.calcMaxManaOnly(player, playerData.level());
+		mana.increase(max * 0.1, player, playerData.level());
 		player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f);
 	}
 }

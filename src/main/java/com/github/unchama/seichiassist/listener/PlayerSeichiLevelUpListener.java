@@ -17,13 +17,13 @@ public class PlayerSeichiLevelUpListener {
 		Player p = event.getPlayer();
 
 		switch (event.getLevelAfterLevelUp()) {
-			case 10: Util.INSTANCE.addItemToPlayerSafely(p, ItemData.superPickaxe(5));
+			case 10: Util.addItemToPlayerSafely(p, ItemData.superPickaxe(5));
 			case 20: {
 				GachaCommand.Gachagive(p, 3, p.getName());
 				GachaCommand.Gachagive(p, 10, p.getName());
 			}
-			case 30: Util.INSTANCE.addItemToPlayerSafely(p, ItemData.forLevelUpskull(p.getName(), 256));
-			case 40: Util.INSTANCE.addItemToPlayerSafely(p, ItemData.gachaApple(256));
+			case 30: Util.addItemToPlayerSafely(p, ItemData.forLevelUpskull(p.getName(), 256));
+			case 40: Util.addItemToPlayerSafely(p, ItemData.gachaApple(256));
 			case 50: GachaCommand.Gachagive(p, 27, p.getName());
 			case 60: GachaCommand.Gachagive(p, 26, p.getName());
 			case 70: GachaCommand.Gachagive(p, 25, p.getName());
@@ -31,7 +31,7 @@ public class PlayerSeichiLevelUpListener {
 			case 90: GachaCommand.Gachagive(p, 20, p.getName());
 			case 100: {
 				GachaCommand.Gachagive(p, 21, p.getName());
-				Util.INSTANCE.addItemToPlayerSafely(p, ItemData.elsa(1));
+				Util.addItemToPlayerSafely(p, ItemData.elsa(1));
 			}
 		}
 	}

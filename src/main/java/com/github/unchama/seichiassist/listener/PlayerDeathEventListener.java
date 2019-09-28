@@ -26,7 +26,7 @@ public class PlayerDeathEventListener implements Listener {
 			//UUIDを取得
 			UUID uuid = p.getUniqueId();
 			//プレイヤーデータを取得
-			PlayerData playerdata = playermap.get(uuid);
+			PlayerData playerdata = playermap.apply(uuid);
 			//念のためエラー分岐
 			if(playerdata == null){
 				plugin.getLogger().warning(p.getName() + " -> PlayerData not found.");
@@ -34,7 +34,7 @@ public class PlayerDeathEventListener implements Listener {
 				continue;
 			}
 			//キルログ表示フラグがONのプレイヤーにのみ死亡メッセージを送信
-			if(playerdata.getSettings().getShouldDisplayDeathMessages()){
+			if(playerdata.settings().getShouldDisplayDeathMessages()){
 				p.sendMessage(msg);
 			}
 		}
@@ -45,8 +45,8 @@ public class PlayerDeathEventListener implements Listener {
 
 	// 1周年記念
 	private void anniversary(Player p) {
-		PlayerData playerdata = playermap.get(p.getUniqueId());
-		if (playerdata.getAnniversary()) {
+		PlayerData playerdata = playermap.apply(p.getUniqueId());
+		if (playerdata.anniversary()) {
 			if (p.getInventory().firstEmpty() == -1) {
 				p.sendMessage("インベントリが一杯の為、アイテムを入手出来ませんでした。");
 				p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
