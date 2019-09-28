@@ -5,15 +5,16 @@ import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import scala.Option;
+import scala.collection.mutable.HashMap;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 public class CoolDownTask extends BukkitRunnable{
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
+	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	private Player player;
 	UUID uuid;
-	PlayerData playerdata;
+	Option<PlayerData> playerdata;
 	boolean voteflag = false;
 	public static final String VOTE = "VOTE";
 	boolean soundflag = false;
@@ -89,7 +90,7 @@ public class CoolDownTask extends BukkitRunnable{
 			}
 		}
 		//デバッグ用
-		if(SeichiAssist.getDEBUG()){
+		if(SeichiAssist.DEBUG()){
 			player.sendMessage("クールダウンタイム終了");
 		}
 	}

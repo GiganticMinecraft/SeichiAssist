@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import scala.Option;
 
 /**
  * マナ自動回復用タスク
@@ -20,7 +21,7 @@ public class ManaRegeneTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		PlayerData pd = SeichiAssist.playermap().get(p.getUniqueId());
+		Option<PlayerData> pd = SeichiAssist.playermap().get(p.getUniqueId());
 		Mana mana = pd.getActiveskilldata().mana;
 		int lv = pd.getLevel();
 		// 最大マナを取得する

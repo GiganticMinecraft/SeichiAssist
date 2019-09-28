@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class AreaControlTask extends BukkitRunnable{
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
+	HashMap<UUID,PlayerData> playermap = (HashMap<UUID, PlayerData>) SeichiAssist.playermap();
 	Player player;
 	PlayerData playerdata;
 	//プレイヤーがターゲットしているブロックを取得
@@ -54,11 +54,11 @@ public class AreaControlTask extends BukkitRunnable{
 		}
 		tick++;
 
-		targetblock = player.getTargetBlock(MaterialSets.INSTANCE.getTransparentMaterials(), 40);
+		targetblock = player.getTargetBlock(MaterialSets.getTransparentMaterials(), 40);
 		playerlocy = player.getLocation().getBlockY() - 1 ;
 
 		//もし前回とプレイヤーの向いている方向が違ったらBreakAreaを取り直す
-		dir = BreakUtil.INSTANCE.getCardinalDirection(player);
+		dir = BreakUtil.getCardinalDirection(player);
 		if(!area.getDir().equals(dir)){
 			area.setDir(dir);
 			area.makeArea();

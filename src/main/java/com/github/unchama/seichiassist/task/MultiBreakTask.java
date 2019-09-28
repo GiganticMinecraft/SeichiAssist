@@ -12,6 +12,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import scala.Option;
+import scala.collection.immutable.IndexedSeq;
+import scala.collection.mutable.HashMap;
 
 import java.util.*;
 
@@ -25,7 +28,7 @@ public class MultiBreakTask extends BukkitRunnable{
 	private List<Coordinate> startlist;
 	private List<Coordinate> endlist;
 	private int breaknum;
-	private PlayerData playerdata;
+	private Option<PlayerData> playerdata;
 	private int count;
 
 	public MultiBreakTask(Player player, Block centerblock, ItemStack tool,
@@ -48,7 +51,7 @@ public class MultiBreakTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		if(count < breaknum){
-			if(SeichiAssist.getDEBUG()){
+			if(SeichiAssist.DEBUG()){
 				player.sendMessage("" + count);
 			}
 			//溶岩の破壊する処理
@@ -63,20 +66,20 @@ public class MultiBreakTask extends BukkitRunnable{
 			if(playerdata.getActiveskilldata().effectnum == 0){
 				//ブロックを破壊する処理
 				for(Block b:multibreaklist.get(count)){
-					BreakUtil.INSTANCE.breakBlock(player, b, droploc, tool,false);
+					BreakUtil.breakBlock(player, b, droploc, tool,false);
 					SeichiAssist.allblocklist().remove(b);
 				}
 			}
 
 			//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 			else if(playerdata.getActiveskilldata().effectnum <= 100){
-				ActiveSkillEffect[] skilleffect = ActiveSkillEffect.values();
+				IndexedSeq<ActiveSkillEffect> skilleffect = ActiveSkillEffect.values();
 				skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player, playerdata.getActiveskilldata(), tool, converted, startPoint, endPoint, droploc);
 			}
 
 			//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
 			else if(playerdata.getActiveskilldata().effectnum > 100){
-				ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.values();
+				IndexedSeq<ActiveSkillPremiumEffect> premiumeffect = ActiveSkillPremiumEffect.values();
 				premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, converted, startPoint, endPoint, droploc);
 			}
 			count++;
