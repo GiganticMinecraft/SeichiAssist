@@ -13,7 +13,7 @@ public class AsyncEntityRemover extends BukkitRunnable{
 
 	@Override
 	public void run() {
-		SeichiAssist.entitylist().remove(e);
+		SeichiAssist.entitylist().$minus$eq(e);
 		e.remove();
 	}
 

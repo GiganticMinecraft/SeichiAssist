@@ -88,7 +88,7 @@ public class AssaultTask extends BukkitRunnable{
 		}
 
 		//整地ワールドではない時スキルを発動しない。
-		if(!Util.INSTANCE.isSkillEnable(player)){
+		if(!Util.isSkillEnable(player)){
 			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
 			errorflag = true;
 			return;
@@ -102,9 +102,9 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に使用するツールを格納する
 		tool = null;
 		//メインハンドにツールがあるか
-		boolean mainhandtoolflag = MaterialSets.INSTANCE.getBreakMaterials().contains(mainhanditem.getType());
+		boolean mainhandtoolflag = MaterialSets.getBreakMaterials().contains(mainhanditem.getType());
 		//オフハンドにツールがあるか
-		boolean offhandtoolflag = MaterialSets.INSTANCE.getBreakMaterials().contains(offhanditem.getType());
+		boolean offhandtoolflag = MaterialSets.getBreakMaterials().contains(offhanditem.getType());
 
 		//場合分け
 		if(offhandtoolflag){
@@ -165,7 +165,7 @@ public class AssaultTask extends BukkitRunnable{
 		}
 
 		//整地ワールドではない時スキルを発動しない。
-		if(!Util.INSTANCE.isSkillEnable(player)){
+		if(!Util.isSkillEnable(player)){
 			player.sendMessage(ChatColor.GREEN + "スキルは整地ワールドでのみ使用可能です。");
 			setCancel();
 			return;
@@ -180,7 +180,7 @@ public class AssaultTask extends BukkitRunnable{
 				&&((lastloc.getBlockZ()-10) < player.getLocation().getBlockZ())
 				&&((lastloc.getBlockZ()+10) > player.getLocation().getBlockZ())
 				){
-			if(SeichiAssist.getDEBUG()){
+			if(SeichiAssist.DEBUG()){
 				player.sendMessage(ChatColor.RED + "放置を検出");
 			}
 			idletime ++;
@@ -206,7 +206,7 @@ public class AssaultTask extends BukkitRunnable{
 		ItemStack offhanditem = inventory.getItemInOffHand();
 		//最初に登録したツールと今のツールが違う場合
 		if(!tool.equals(offhanditem)){
-			if(SeichiAssist.getDEBUG()){
+			if(SeichiAssist.DEBUG()){
 				player.sendMessage(ChatColor.RED + "ツールの変更を検知しました");
 			}
 			setCancel();
@@ -219,7 +219,7 @@ public class AssaultTask extends BukkitRunnable{
 		Block breakblock;
 		//壊されるエリアの設定
 		//現在のプレイヤーの向いている方向
-		String dir = BreakUtil.INSTANCE.getCardinalDirection(player);
+		String dir = BreakUtil.getCardinalDirection(player);
 		//もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
 		if(!dir.equals(assaultarea.getDir())){
 			assaultarea.setDir(dir);
@@ -236,11 +236,11 @@ public class AssaultTask extends BukkitRunnable{
 												|| breakblock.getType() == Material.LAVA;
 					boolean water_materialflag = breakblock.getType() == Material.STATIONARY_WATER
 												|| breakblock.getType() == Material.WATER;
-					if(MaterialSets.INSTANCE.getMaterials().contains(breakblock.getType())
+					if(MaterialSets.getMaterials().contains(breakblock.getType())
 							|| lava_materialflag || water_materialflag
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block) || !breakflag){
-							if(BreakUtil.INSTANCE.canBreak(player, breakblock)){
+							if(BreakUtil.canBreak(player, breakblock)){
 								if(lava_materialflag){
 									lavas.add(breakblock);
 								}else if(water_materialflag){
@@ -256,7 +256,7 @@ public class AssaultTask extends BukkitRunnable{
 			}
 		}
 		//重力値計算
-		int gravity = BreakUtil.INSTANCE.getGravity(player,block,true);
+		int gravity = BreakUtil.getGravity(player,block,true);
 
 		// 実際に破壊するブロック数の計算分岐
 		int breaksum = 0;
@@ -280,7 +280,7 @@ public class AssaultTask extends BukkitRunnable{
 
 
 		//減る耐久値の計算
-		short durability = (short) (tool.getDurability() + BreakUtil.INSTANCE.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaksum));
+		short durability = (short) (tool.getDurability() + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY),breaksum));
 
 
 		//重力値の判定
@@ -294,7 +294,7 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に経験値を減らせるか判定
 		if(!mana.has(useMana)){
 			//デバッグ用
-			if(SeichiAssist.getDEBUG()){
+			if(SeichiAssist.DEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
 			SeichiAssist.allblocklist().removeAll(blocks);
@@ -306,7 +306,7 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に耐久値を減らせるか判定
 		if(tool.getType().getMaxDurability() <= durability && !tool.getItemMeta().spigot().isUnbreakable()){
 			//デバッグ用
-			if(SeichiAssist.getDEBUG()){
+			if(SeichiAssist.DEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
 			SeichiAssist.allblocklist().removeAll(blocks);
@@ -329,21 +329,21 @@ public class AssaultTask extends BukkitRunnable{
 		if(waterflag){
 			for (Block value : waters) {
 				value.setType(Material.PACKED_ICE);
-				BreakUtil.INSTANCE.logRemove(player, value);
+				BreakUtil.logRemove(player, value);
 			}
 		}else if(lavaflag){
 			for (Block value : lavas) {
 				value.setType(Material.MAGMA);
-				BreakUtil.INSTANCE.logRemove(player, value);
+				BreakUtil.logRemove(player, value);
 			}
 		}else if(fluidflag) {
 			for (Block item : waters) {
 				item.setType(Material.PACKED_ICE);
-				BreakUtil.INSTANCE.logRemove(player, item);
+				BreakUtil.logRemove(player, item);
 			}
 			for (Block value : lavas) {
 				value.setType(Material.MAGMA);
-				BreakUtil.INSTANCE.logRemove(player, value);
+				BreakUtil.logRemove(player, value);
 			}
 		}else if(breakflag){
 			for (Block item : waters) {
@@ -353,7 +353,7 @@ public class AssaultTask extends BukkitRunnable{
 				value.setType(Material.AIR);
 			}
 			for(Block b:blocks){
-				BreakUtil.INSTANCE.breakBlock(player, b, player.getLocation(), tool,false);
+				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
 				SeichiAssist.allblocklist().remove(b);
 			}
 		}

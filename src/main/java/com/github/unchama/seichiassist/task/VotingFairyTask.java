@@ -8,8 +8,8 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import scala.collection.mutable.HashMap;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 
@@ -17,7 +17,7 @@ public class VotingFairyTask {
 
 	//MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
 	public static void run(Player p) {
-		HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
+		HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 		UUID uuid = p.getUniqueId();
 		PlayerData playerdata = playermap.get(uuid);
 
@@ -25,7 +25,7 @@ public class VotingFairyTask {
 		VotingFairyListener.regeneMana(p);
 
 		//効果時間中か
-		if(!Util.INSTANCE.isVotingFairyPeriod(playerdata.getVotingFairyStartTime(), playerdata.getVotingFairyEndTime())) {
+		if(!Util.isVotingFairyPeriod(playerdata.getVotingFairyStartTime(), playerdata.getVotingFairyEndTime())) {
 			speak(p, ("あっ、もうこんな時間だ！"), false);
 			speak(p, ("じゃーねー！" + p.getName()), true);
 			p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった");

@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.task
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
+import kotlinx.coroutines.GlobalScope
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 object PlayerDataBackupTask extends RepeatedTaskLauncher() {

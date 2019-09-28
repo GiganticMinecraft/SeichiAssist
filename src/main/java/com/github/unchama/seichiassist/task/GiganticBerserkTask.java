@@ -8,15 +8,16 @@ import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import scala.Option;
+import scala.collection.mutable.HashMap;
 
-import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
 public class GiganticBerserkTask {
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
+	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	Player player;
-	PlayerData playerdata;
+	Option<PlayerData> playerdata;
 
 	public void PlayerKillEnemy(Player p){
 		player = p;
@@ -26,7 +27,7 @@ public class GiganticBerserkTask {
 
 		playerdata.setGBcd(playerdata.getGiganticBerserk().getCd() + 1);
 		if (playerdata.getGiganticBerserk().getCd() >= SeichiAssist.seichiAssistConfig().getGiganticBerserkLimit()){
-			if(SeichiAssist.getDEBUG()){
+			if(SeichiAssist.DEBUG()){
 				player.sendMessage("上限到達");
 			}
 			return;
@@ -62,7 +63,7 @@ public class GiganticBerserkTask {
 
 		playerdata.setGBexp(playerdata.getGiganticBerserk().getExp() + 1);
 		//レベルアップするかどうか判定
-		if(LevelThresholds.INSTANCE.getGiganticBerserkLevelList().get(n) <= playerdata.getGiganticBerserk().getExp()){
+		if(LevelThresholds.getGiganticBerserkLevelList().get(n) <= playerdata.getGiganticBerserk().getExp()){
 			if(level <= 8){
 				playerdata.giganticBerserkLevelUp();
 				//プレイヤーにメッセージ
@@ -70,8 +71,8 @@ public class GiganticBerserkTask {
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f) ;
 				//最大レベルになった時の処理
 				if(playerdata.getGiganticBerserk().reachedLimit()){
-					Util.INSTANCE.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f);
-					Util.INSTANCE.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getLowercaseName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
+					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f);
+					Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getLowercaseName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
 				}
 			}
 			//レベルが10かつ段階がダイヤ未満の場合は進化待機状態へ

@@ -25,7 +25,7 @@ public class ArrowControlTask extends BukkitRunnable{
 		tick++;
 		if(tick > 15){
 			proj.remove();
-			SeichiAssist.entitylist().remove(proj);
+			SeichiAssist.entitylist().$minus$eq(proj);
 			this.cancel();
 		}
 		projloc = proj.getLocation();
