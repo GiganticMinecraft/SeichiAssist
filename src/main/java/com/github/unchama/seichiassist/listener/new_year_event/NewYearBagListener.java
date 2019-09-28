@@ -78,6 +78,7 @@ public class NewYearBagListener implements Listener {
 		return check == 0;
 	}
 
+	// FIXME: ここはListenerクラスですぞ
 	public static ItemStack getNewYearBag() {
 		ItemStack newYearBag = new ItemStack(Material.PAPER);
 		ItemMeta newYearBagMeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);

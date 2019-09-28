@@ -1,45 +1,66 @@
 package com.github.unchama.seichiassist.commands
 
-import com.github.unchama.contextualexecutor.ContextualExecutor
+import cats.effect.IO
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.MessageEffects._
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffects.TargetedEffectCombine
 import org.bukkit.ChatColor._
+import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 
 object EffectCommand {
-  private val printUsageExecutor: ContextualExecutor = playerCommandBuilder
-      .execution {
-        List(
-          s"${YELLOW}${BOLD}[コマンドリファレンス]",
-          s"${RED}/ef",
-            "採掘速度上昇効果の制限を変更することができます。",
-          s"${RED}/ef smart",
-            "採掘速度上昇効果の内訳を表示するかしないかを変更することができます。"
-        ).asMessageEffect()
+  private val printUsageExecutor = playerCommandBuilder
+    .execution { _ =>
+      val message = List(
+        s"${YELLOW}${BOLD}[コマンドリファレンス]",
+        s"${RED}/ef",
+        "採掘速度上昇効果の制限を変更することができます。",
+        s"${RED}/ef smart",
+        "採掘速度上昇効果の内訳を表示するかしないかを変更することができます。"
+      )
+
+      IO {
+        message.asMessageEffect()
       }
-      .build()
+    }
+    .build()
 
   private val toggleExecutor = playerCommandBuilder
-      .execution { context =>
-        val playerData = SeichiAssist.playermap(context.sender.uniqueId) ?: return@execution EmptyEffect
-        val toggleResponse = playerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect
-        val guidance = "再度 /ef コマンドを実行することでトグルします。".asMessageEffect()
+    .execution { context =>
+      val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
+      val guidance = "再度 /ef コマンドを実行することでトグルします。".asMessageEffect()
 
+      def execution(): TargetedEffect[Player] = {
+        if (playerData == null) return EmptyEffect
+
+        val toggleResponse = playerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect
         toggleResponse + guidance
       }
-      .build()
+
+      IO.pure(execution())
+    }
+    .build()
 
   private val messageFlagToggleExecutor = playerCommandBuilder
-      .execution { context =>
-        val playerData = SeichiAssist.playermap(context.sender.uniqueId) ?: return@execution EmptyEffect
+    .execution { context =>
+      val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
 
+      def execution(): TargetedEffect[Player] = {
+        if (playerData == null) return EmptyEffect
         playerData.toggleMessageFlag()
       }
-      .build()
 
-  val executor = BranchedExecutor(
-      mapOf("smart" to messageFlagToggleExecutor),
-      whenArgInsufficient = toggleExecutor, whenBranchNotFound = printUsageExecutor
+      IO.pure(execution())
+    }
+    .build()
+
+  val executor: TabExecutor = BranchedExecutor(
+    Map("smart" -> messageFlagToggleExecutor),
+    whenArgInsufficient = Some(toggleExecutor), whenBranchNotFound = Some(printUsageExecutor)
   ).asNonBlockingTabExecutor()
 
 }
