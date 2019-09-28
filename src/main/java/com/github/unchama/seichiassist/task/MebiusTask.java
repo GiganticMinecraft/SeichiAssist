@@ -27,7 +27,7 @@ public class MebiusTask extends BukkitRunnable {
 	public MebiusTask(UUID uuid) {
 		p = Bukkit.getPlayer(uuid);
 		if (MebiusListener.isEquip(p)) {
-			speak("おかえり" +Objects.requireNonNull(MebiusListener.nickname(p))  + "！待ってたよ！");
+			speak("おかえり" +Objects.requireNonNull(MebiusListener.getNickname(p))  + "！待ってたよ！");
 		}
 		runTaskTimerAsynchronously(SeichiAssist.instance(), 2400, 2400);
 	}
@@ -47,7 +47,7 @@ public class MebiusTask extends BukkitRunnable {
 		boolean isSpeak = new Random().nextBoolean();
 		if (!silence && isSpeak) {
 			// 引数のメッセージを表示
-			String name = MebiusListener.name(p.getInventory().getHelmet());
+			String name = MebiusListener.getName(p.getInventory().getHelmet());
 			playSe();
 			p.sendMessage(ChatColor.RESET + "<" + name + ChatColor.RESET + "> " + message);
 			// 次タスクまでお喋り禁止
@@ -58,7 +58,7 @@ public class MebiusTask extends BukkitRunnable {
 	// 無条件で喋らせる
 	public void speakForce(String message) {
 		// 引数のメッセージを表示
-		String name = MebiusListener.name(p.getInventory().getHelmet());
+		String name = MebiusListener.getName(p.getInventory().getHelmet());
 		playSeForce();
 		p.sendMessage(ChatColor.RESET + "<" + name + ChatColor.RESET + "> " + message);
 	}
@@ -85,7 +85,7 @@ public class MebiusTask extends BukkitRunnable {
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
 		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f);
-		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.instance, () -> {
+		Bukkit.getServer().getScheduler().runTaskLater(SeichiAssist.instance(), () -> {
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f);

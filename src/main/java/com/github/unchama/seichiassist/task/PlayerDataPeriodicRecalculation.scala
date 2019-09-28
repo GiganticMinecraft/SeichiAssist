@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.task
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.potion.PotionEffectType
+import org.bukkit.{Bukkit, Sound}
 object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
   override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 10 else 20 * 60
 

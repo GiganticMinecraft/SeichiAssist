@@ -1,4 +1,5 @@
 package com.github.unchama.seichiassist
+
 object LevelThresholds {
   /**
    * lvの閾値.
@@ -67,7 +68,7 @@ object LevelThresholds {
       82165000, 83315000, 84465000, 85615000, 87115000  //200
   )
 
-  val giganticBerserkLevelList = List(
+  val giganticBerserkLevelList: List[Int] = List(
       20, 30, 40, 40, 50, 50, 60, 70, 80, 100,
       100, 110, 120, 130, 140, 150, 160, 170, 180, 200,
       250, 270, 300, 320, 350, 370, 400, 420, 450, 500,

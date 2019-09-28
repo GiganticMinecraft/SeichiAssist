@@ -1,36 +1,46 @@
 package com.github.unchama.seichiassist.task
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import kotlinx.coroutines.GlobalScope
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
+
+import scala.concurrent.ExecutionContext
 object PlayerDataBackupTask extends RepeatedTaskLauncher() {
-  override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 10
+  override val getRepeatIntervalTicks: IO[Long] = IO {
+    if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 10
+  }
 
-  override @SuspendingMethod def runRoutine() {
-    val playerMap = SeichiAssist.playermap
-    val databaseGateway = SeichiAssist.databaseGateway
+  override val runRoutine: IO[Unit] = {
+    val save = IO {
+      import scala.jdk.CollectionConverters._
 
-    if (playerMap.isEmpty()) return
+      if (SeichiAssist.playermap.nonEmpty) {
+        Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ中…")
+        Bukkit.getLogger().info(s"${AQUA}プレイヤーデータセーブ中…")
 
-    Util.sendEveryMessage(AQUA.toString() + "プレイヤーデータセーブ中…")
-    Bukkit.getLogger().info(AQUA.toString() + "プレイヤーデータセーブ中…")
+        //現在オンラインのプレイヤーのプレイヤーデータを永続化する
+        Bukkit.getOnlinePlayers.asScala.toList
+          .map(player => SeichiAssist.playermap(player.getUniqueId))
+          .foreach(PlayerDataSaving.savePlayerData)
 
-    GlobalScope.launch {
-      //現在オンラインのプレイヤーのプレイヤーデータを永続化する
-      Bukkit.getOnlinePlayers()
-          .map { playerMap[it.uniqueId] }
-          .forEach { savePlayerData(it) }
+        Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ完了")
+        Bukkit.getLogger().info(s"${AQUA}プレイヤーデータセーブ完了")
+      }
     }
 
-    Util.sendEveryMessage(AQUA.toString() + "プレイヤーデータセーブ完了")
-    Bukkit.getLogger().info(AQUA.toString() + "プレイヤーデータセーブ完了")
-
-    //ランキングリストを最新情報に更新する
-    if (!databaseGateway.playerDataManipulator.successRankingUpdate()) {
-      SeichiAssist.instance.logger.info("ランキングデータの作成に失敗しました")
+    val updateRankingData = IO {
+      //ランキングリストを最新情報に更新する
+      if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
+        SeichiAssist.instance.getLogger.info("ランキングデータの作成に失敗しました")
+      }
     }
+
+    for {
+      _ <- IO.shift(ExecutionContext.global)
+      _ <- save
+      _ <- updateRankingData
+    } yield ()
   }
 }

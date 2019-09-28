@@ -12,11 +12,13 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import scala.Option;
 import scala.collection.immutable.IndexedSeq;
+import scala.collection.immutable.Set;
 import scala.collection.mutable.HashMap;
+import scala.jdk.CollectionConverters;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 public class MultiBreakTask extends BukkitRunnable{
 	private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
@@ -28,7 +30,7 @@ public class MultiBreakTask extends BukkitRunnable{
 	private List<Coordinate> startlist;
 	private List<Coordinate> endlist;
 	private int breaknum;
-	private Option<PlayerData> playerdata;
+	private PlayerData playerdata;
 	private int count;
 
 	public MultiBreakTask(Player player, Block centerblock, ItemStack tool,
@@ -45,7 +47,7 @@ public class MultiBreakTask extends BukkitRunnable{
 		this.count = 0;
 		//this.key = key;
 		//playerdataを取得
-		playerdata = playermap.get(player.getUniqueId());
+		playerdata = playermap.apply(player.getUniqueId());
 	}
 
 	@Override
@@ -59,28 +61,29 @@ public class MultiBreakTask extends BukkitRunnable{
 				multilavalist.get(count).get(lavanum).setType(Material.AIR);
 			}
 
-			final Set<Block> converted = new HashSet<>(multibreaklist.get(count));
+			final Set<Block> converted = CollectionConverters.ListHasAsScala(multibreaklist.get(count)).asScala().toSet();
+
 			final Coordinate startPoint = startlist.get(count);
 			final Coordinate endPoint = endlist.get(count);
 			//エフェクトが選択されていない時の通常処理
-			if(playerdata.getActiveskilldata().effectnum == 0){
+			if(playerdata.activeskilldata().effectnum == 0){
 				//ブロックを破壊する処理
 				for(Block b:multibreaklist.get(count)){
 					BreakUtil.breakBlock(player, b, droploc, tool,false);
-					SeichiAssist.allblocklist().remove(b);
+					SeichiAssist.allblocklist().$minus$eq(b);
 				}
 			}
 
 			//通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-			else if(playerdata.getActiveskilldata().effectnum <= 100){
+			else if(playerdata.activeskilldata().effectnum <= 100){
 				IndexedSeq<ActiveSkillEffect> skilleffect = ActiveSkillEffect.values();
-				skilleffect[playerdata.getActiveskilldata().effectnum - 1].runBreakEffect(player, playerdata.getActiveskilldata(), tool, converted, startPoint, endPoint, droploc);
+				skilleffect.apply(playerdata.activeskilldata().effectnum - 1).runBreakEffect(player, playerdata.activeskilldata(), tool, converted, startPoint, endPoint, droploc);
 			}
 
 			//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-			else if(playerdata.getActiveskilldata().effectnum > 100){
+			else if(playerdata.activeskilldata().effectnum > 100){
 				IndexedSeq<ActiveSkillPremiumEffect> premiumeffect = ActiveSkillPremiumEffect.values();
-				premiumeffect[playerdata.getActiveskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, converted, startPoint, endPoint, droploc);
+				premiumeffect.apply(playerdata.activeskilldata().effectnum - 1 - 100).runBreakEffect(player, tool, converted, startPoint, endPoint, droploc);
 			}
 			count++;
 		}else{

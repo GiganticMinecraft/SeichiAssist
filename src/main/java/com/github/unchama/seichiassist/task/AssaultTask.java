@@ -19,15 +19,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import scala.Some;
+import scala.collection.mutable.HashMap;
+import scala.collection.mutable.HashSet;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 public class AssaultTask extends BukkitRunnable{
 	SeichiAssist plugin = SeichiAssist.instance();
-	HashMap<UUID,PlayerData> playermap = SeichiAssist.playermap();
+	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	Player player;
 	UUID uuid;
 	PlayerData playerdata;
@@ -61,7 +61,7 @@ public class AssaultTask extends BukkitRunnable{
 	public AssaultTask(Player player) {
 		this.player = player;
 		this.uuid = player.getUniqueId();
-		this.playerdata = playermap.get(uuid);
+		this.playerdata = playermap.apply(uuid);
 		lastloc = player.getLocation();
 		idletime = 0;
 
@@ -75,10 +75,10 @@ public class AssaultTask extends BukkitRunnable{
 			return;
 		}
 
-		this.level = playerdata.getActiveskilldata().assaultnum;
-		this.type = playerdata.getActiveskilldata().assaulttype;
-		this.assaultarea = playerdata.getActiveskilldata().assaultarea;
-		this.mana = playerdata.getActiveskilldata().mana;
+		this.level = playerdata.activeskilldata().assaultnum;
+		this.type = playerdata.activeskilldata().assaulttype;
+		this.assaultarea = playerdata.activeskilldata().assaultarea;
+		this.mana = playerdata.activeskilldata().mana;
 
 		//もしサバイバルでなければ処理を終了
 		if(player.getGameMode() != GameMode.SURVIVAL){// || player.isFlying()){
@@ -102,9 +102,9 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に使用するツールを格納する
 		tool = null;
 		//メインハンドにツールがあるか
-		boolean mainhandtoolflag = MaterialSets.getBreakMaterials().contains(mainhanditem.getType());
+		boolean mainhandtoolflag = MaterialSets.breakMaterials().contains(mainhanditem.getType());
 		//オフハンドにツールがあるか
-		boolean offhandtoolflag = MaterialSets.getBreakMaterials().contains(offhanditem.getType());
+		boolean offhandtoolflag = MaterialSets.breakMaterials().contains(offhanditem.getType());
 
 		//場合分け
 		if(offhandtoolflag){
@@ -129,13 +129,13 @@ public class AssaultTask extends BukkitRunnable{
 		}
 		this.breaklength = assaultarea.getBreakLength();
 		//壊すフラグを指定
-		if(playerdata.getActiveskilldata().assaulttype == ActiveSkill.WATERCONDENSE.gettypenum()){
+		if(playerdata.activeskilldata().assaulttype == ActiveSkill.WATERCONDENSE.gettypenum()){
 			waterflag = true;
-		}else if(playerdata.getActiveskilldata().assaulttype == ActiveSkill.LAVACONDENSE.gettypenum()){
+		}else if(playerdata.activeskilldata().assaulttype == ActiveSkill.LAVACONDENSE.gettypenum()){
 			lavaflag = true;
-		}else if(playerdata.getActiveskilldata().assaulttype == ActiveSkill.FLUIDCONDENSE.gettypenum()){
+		}else if(playerdata.activeskilldata().assaulttype == ActiveSkill.FLUIDCONDENSE.gettypenum()){
 			fluidflag = true;
-		}else if(playerdata.getActiveskilldata().assaulttype == ActiveSkill.ARMOR.gettypenum()){
+		}else if(playerdata.activeskilldata().assaulttype == ActiveSkill.ARMOR.gettypenum()){
 			breakflag = true;
 		}
 		ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
@@ -144,8 +144,8 @@ public class AssaultTask extends BukkitRunnable{
 
 	}
 	private void setCancel() {
-		playerdata.getActiveskilldata().assaultflag = false;
-		playerdata.getActiveskilldata().mineflagnum = 0;
+		playerdata.activeskilldata().assaultflag = false;
+		playerdata.activeskilldata().mineflagnum = 0;
 		this.cancel();
 	}
 
@@ -195,9 +195,9 @@ public class AssaultTask extends BukkitRunnable{
 			idletime = 0;
 		}
 
-		Set<Block> blocks = new HashSet<>();
-		Set<Block> lavas = new HashSet<>();
-		Set<Block> waters = new HashSet<>();
+		HashSet<Block> blocks = new HashSet<>();
+		HashSet<Block> lavas = new HashSet<>();
+		HashSet<Block> waters = new HashSet<>();
 
 		//プレイヤーの足のy座標を取得
 		int playerlocy = player.getLocation().getBlockY() - 1 ;
@@ -236,18 +236,18 @@ public class AssaultTask extends BukkitRunnable{
 												|| breakblock.getType() == Material.LAVA;
 					boolean water_materialflag = breakblock.getType() == Material.STATIONARY_WATER
 												|| breakblock.getType() == Material.WATER;
-					if(MaterialSets.getMaterials().contains(breakblock.getType())
+					if(MaterialSets.materials().contains(breakblock.getType())
 							|| lava_materialflag || water_materialflag
 							){
 						if(playerlocy < breakblock.getLocation().getBlockY() || player.isSneaking() || breakblock.equals(block) || !breakflag){
-							if(BreakUtil.canBreak(player, breakblock)){
+							if(BreakUtil.canBreak(player, Some.apply(breakblock))){
 								if(lava_materialflag){
 									lavas.add(breakblock);
 								}else if(water_materialflag){
 									waters.add(breakblock);
 								}else{
 									blocks.add(breakblock);
-									SeichiAssist.allblocklist().add(breakblock);
+									SeichiAssist.allblocklist().$plus$eq(breakblock);
 								}
 							}
 						}
@@ -274,7 +274,7 @@ public class AssaultTask extends BukkitRunnable{
 		//実際に破壊するブロック数 * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
 		double useMana = (double)breaksum * (gravity + 1)
-				* ActiveSkill.activeSkillUseExp(playerdata.getActiveskilldata().assaulttype, playerdata.getActiveskilldata().assaultnum)
+				* ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata().assaulttype, playerdata.activeskilldata().assaultnum)
 				/(ifallbreaknum) ;
 
 
@@ -286,7 +286,7 @@ public class AssaultTask extends BukkitRunnable{
 		//重力値の判定
 		if(gravity > 15){
 			player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-			SeichiAssist.allblocklist().removeAll(blocks);
+			SeichiAssist.allblocklist().$minus$minus$eq(blocks);
 			setCancel();
 			return;
 		}
@@ -297,7 +297,7 @@ public class AssaultTask extends BukkitRunnable{
 			if(SeichiAssist.DEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
 			}
-			SeichiAssist.allblocklist().removeAll(blocks);
+			SeichiAssist.allblocklist().$minus$minus$eq(blocks);
 			setCancel();
 			return;
 		}
@@ -309,14 +309,14 @@ public class AssaultTask extends BukkitRunnable{
 			if(SeichiAssist.DEBUG()){
 				player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
 			}
-			SeichiAssist.allblocklist().removeAll(blocks);
+			SeichiAssist.allblocklist().$minus$minus$eq(blocks);
 			setCancel();
 			return;
 		}
 
 
 		//経験値を減らす
-		mana.decrease(useMana,player, playerdata.getLevel());
+		mana.decrease(useMana,player, playerdata.level());
 
 		//耐久値を減らす
 		if(!tool.getItemMeta().spigot().isUnbreakable()){
@@ -327,40 +327,47 @@ public class AssaultTask extends BukkitRunnable{
 
 		//破壊する処理分岐
 		if(waterflag){
-			for (Block value : waters) {
+			waters.foreach(value -> {
 				value.setType(Material.PACKED_ICE);
 				BreakUtil.logRemove(player, value);
-			}
+				return 0;
+			});
 		}else if(lavaflag){
-			for (Block value : lavas) {
+			lavas.foreach(value -> {
 				value.setType(Material.MAGMA);
 				BreakUtil.logRemove(player, value);
-			}
+				return 0;
+			});
 		}else if(fluidflag) {
-			for (Block item : waters) {
+			waters.foreach(item -> {
 				item.setType(Material.PACKED_ICE);
 				BreakUtil.logRemove(player, item);
-			}
-			for (Block value : lavas) {
+				return 0;
+			});
+			lavas.foreach(value -> {
 				value.setType(Material.MAGMA);
 				BreakUtil.logRemove(player, value);
-			}
+				return 0;
+			});
 		}else if(breakflag){
-			for (Block item : waters) {
+			waters.foreach(item -> {
 				item.setType(Material.AIR);
-			}
-			for (Block value : lavas) {
+				return 0;
+			});
+			lavas.foreach(value -> {
 				value.setType(Material.AIR);
-			}
-			for(Block b:blocks){
+				return 0;
+			});
+			blocks.foreach(b -> {
 				BreakUtil.breakBlock(player, b, player.getLocation(), tool,false);
-				SeichiAssist.allblocklist().remove(b);
-			}
+				SeichiAssist.allblocklist().$minus$eq(b);
+				return 0;
+			});
 		}
-		SeichiAssist.allblocklist().removeAll(blocks);
+		SeichiAssist.allblocklist().$minus$minus$eq(blocks);
 	}
 
 	private boolean isCanceled() {
-		return playerdata.getActiveskilldata().mineflagnum == 0 || errorflag || playerdata.getActiveskilldata().assaulttype == 0;
+		return playerdata.activeskilldata().mineflagnum == 0 || errorflag || playerdata.activeskilldata().assaulttype == 0;
 	}
 }

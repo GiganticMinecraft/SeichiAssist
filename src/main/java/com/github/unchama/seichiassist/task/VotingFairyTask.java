@@ -19,17 +19,17 @@ public class VotingFairyTask {
 	public static void run(Player p) {
 		HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 		UUID uuid = p.getUniqueId();
-		PlayerData playerdata = playermap.get(uuid);
+		PlayerData playerdata = playermap.apply(uuid);
 
 		//マナ回復
 		VotingFairyListener.regeneMana(p);
 
 		//効果時間中か
-		if(!Util.isVotingFairyPeriod(playerdata.getVotingFairyStartTime(), playerdata.getVotingFairyEndTime())) {
+		if(!Util.isVotingFairyPeriod(playerdata.votingFairyStartTime(), playerdata.votingFairyEndTime())) {
 			speak(p, ("あっ、もうこんな時間だ！"), false);
 			speak(p, ("じゃーねー！" + p.getName()), true);
 			p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった");
-			playerdata.setUsingVotingFairy(false);
+			playerdata.usingVotingFairy_$eq(false);
 		}
 	}
 

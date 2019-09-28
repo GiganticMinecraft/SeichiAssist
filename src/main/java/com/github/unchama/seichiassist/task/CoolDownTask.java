@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist.data.player.PlayerData;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import scala.Option;
 import scala.collection.mutable.HashMap;
 
 import java.util.UUID;
@@ -14,7 +13,7 @@ public class CoolDownTask extends BukkitRunnable{
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	private Player player;
 	UUID uuid;
-	Option<PlayerData> playerdata;
+	PlayerData playerdata;
 	boolean voteflag = false;
 	public static final String VOTE = "VOTE";
 	boolean soundflag = false;
@@ -33,13 +32,13 @@ public class CoolDownTask extends BukkitRunnable{
 		//UUIDを取得
 		uuid = player.getUniqueId();
 		//playerdataを取得
-		playerdata = playermap.get(uuid);
+		playerdata = playermap.apply(uuid);
 		if(voteflag){
-			playerdata.setVotecooldownflag(false);
+			playerdata.votecooldownflag_$eq(false);
 		}else if(gachaflag){
-			playerdata.setGachacooldownflag(false);
+			playerdata.gachacooldownflag_$eq(false);
 		}else{
-			playerdata.getActiveskilldata().skillcanbreakflag = false;
+			playerdata.activeskilldata().skillcanbreakflag = false;
 		}
 	}
 
@@ -49,28 +48,28 @@ public class CoolDownTask extends BukkitRunnable{
 		//UUIDを取得
 		uuid = player.getUniqueId();
 		//playerdataを取得
-		playerdata = playermap.get(uuid);
+		playerdata = playermap.apply(uuid);
 		switch (tag) {
 		case VOTE:
 			voteflag = true;
-			playerdata.setVotecooldownflag(false);
+			playerdata.votecooldownflag_$eq(false);
 			break;
 		case SOUND:
 			soundflag = true;
-			playerdata.getActiveskilldata().skillcanbreakflag = false;
+			playerdata.activeskilldata().skillcanbreakflag = false;
 			break;
 		case GACHA:
 			gachaflag = true;
-			playerdata.setGachacooldownflag(false);
+			playerdata.gachacooldownflag_$eq(false);
 			break;
 		case SHAREINV:
 			shareinvflag = true;
-			playerdata.setShareinvcooldownflag(false);
+			playerdata.samepageflag_$eq(false);
 			break;
 		default:
 			// ベースに合わせて念のためdefaultはsoundに合わせておく
 			soundflag = true;
-			playerdata.getActiveskilldata().skillcanbreakflag = false;
+			playerdata.activeskilldata().skillcanbreakflag = false;
 			break;
 		}
 	}
@@ -78,13 +77,13 @@ public class CoolDownTask extends BukkitRunnable{
 	@Override
 	public void run() {
 		if(voteflag){
-			playerdata.setVotecooldownflag(true);
+			playerdata.votecooldownflag_$eq(true);
 		}else if(gachaflag){
-			playerdata.setGachacooldownflag(true);
+			playerdata.gachacooldownflag_$eq(true);
 		}else if(shareinvflag){
-			playerdata.setShareinvcooldownflag(true);
+			playerdata.shareinvcooldownflag_$eq(true);
 		}else{
-			playerdata.getActiveskilldata().skillcanbreakflag = true;
+			playerdata.activeskilldata().skillcanbreakflag = true;
 			if(soundflag){
 				player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f);
 			}

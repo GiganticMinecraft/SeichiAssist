@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import scala.Option;
 import scala.collection.mutable.HashMap;
 
 import java.util.Random;
@@ -17,69 +16,69 @@ import java.util.UUID;
 public class GiganticBerserkTask {
 	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	Player player;
-	Option<PlayerData> playerdata;
+	PlayerData playerdata;
 
 	public void PlayerKillEnemy(Player p){
 		player = p;
 		UUID uuid = p.getUniqueId();
-		playerdata = playermap.get(uuid);
-		Mana mana = playerdata.getActiveskilldata().mana;
+		playerdata = playermap.apply(uuid);
+		Mana mana = playerdata.activeskilldata().mana;
 
-		playerdata.setGBcd(playerdata.getGiganticBerserk().getCd() + 1);
-		if (playerdata.getGiganticBerserk().getCd() >= SeichiAssist.seichiAssistConfig().getGiganticBerserkLimit()){
+		playerdata.GBcd_$eq(playerdata.giganticBerserk().cd() + 1);
+		if (playerdata.giganticBerserk().cd() >= SeichiAssist.seichiAssistConfig().getGiganticBerserkLimit()){
 			if(SeichiAssist.DEBUG()){
 				player.sendMessage("上限到達");
 			}
 			return;
 		}
-		if(playerdata.getIdleMinute() >= 3){
+		if(playerdata.idleMinute() >= 3){
 			return;
 		}
 
 		//確率でマナを回復させる
 		double d = Math.random();
-		if(d < playerdata.getGiganticBerserk().manaRegenerationProbability()){
+		if(d < playerdata.giganticBerserk().manaRegenerationProbability()){
 
 			double i = getRecoveryValue(playerdata);
 
-			mana.increase(i,p, playerdata.getLevel());
+			mana.increase(i,p, playerdata.level());
 			player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "の効果でマナが" + i +"回復しました");
 			player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1, 0.5f) ;
 		}
 
 		//最大レベルの場合終了
-		if(playerdata.getGiganticBerserk().reachedLimit()){
+		if(playerdata.giganticBerserk().reachedLimit()){
 			return;
 		}
 
 		//進化待機状態の場合終了
-		if(playerdata.getGiganticBerserk().getCanEvolve()){
+		if(playerdata.giganticBerserk().canEvolve()){
 			return;
 		}
 
 		// stage * level
-		int level = playerdata.getGiganticBerserk().getLevel();
-		int n = (playerdata.getGiganticBerserk().getStage() * 10) + level;
+		int level = playerdata.giganticBerserk().level();
+		int n = (playerdata.giganticBerserk().stage() * 10) + level;
 
-		playerdata.setGBexp(playerdata.getGiganticBerserk().getExp() + 1);
+		playerdata.GBexp_$eq(playerdata.giganticBerserk().exp() + 1);
 		//レベルアップするかどうか判定
-		if(LevelThresholds.getGiganticBerserkLevelList().get(n) <= playerdata.getGiganticBerserk().getExp()){
+		if((Integer) LevelThresholds.giganticBerserkLevelList().apply(n) <= playerdata.giganticBerserk().exp()){
 			if(level <= 8){
 				playerdata.giganticBerserkLevelUp();
 				//プレイヤーにメッセージ
 				player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "のレベルがアップし、確率が上昇しました");
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f) ;
 				//最大レベルになった時の処理
-				if(playerdata.getGiganticBerserk().reachedLimit()){
+				if(playerdata.giganticBerserk().reachedLimit()){
 					Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f);
-					Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.getLowercaseName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
+					Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.lowercaseName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
 				}
 			}
 			//レベルが10かつ段階がダイヤ未満の場合は進化待機状態へ
-			else if(playerdata.getGiganticBerserk().getStage() <= 3){
+			else if(playerdata.giganticBerserk().stage() <= 3){
 				player.sendMessage(ChatColor.GREEN + "パッシブスキルメニューより" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GREEN + "スキルが進化可能です。");
 				player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f) ;
-				playerdata.setGBStageUp(true);
+				playerdata.isGBStageUp_$eq(true);
 			}
 		}
 	}
@@ -90,8 +89,8 @@ public class GiganticBerserkTask {
 		final double l;
 		Random rnd = new Random();
 
-		final int level = playerdata.getGiganticBerserk().getLevel();
-		switch (playerdata.getGiganticBerserk().getStage()) {
+		final int level = playerdata.giganticBerserk().level();
+		switch (playerdata.giganticBerserk().stage()) {
 		case 0:
 			i = 300;
 			switch (level) {

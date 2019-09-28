@@ -1,20 +1,23 @@
 package com.github.unchama.seichiassist.task
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 object HalfHourRankingRoutine extends RepeatedTaskLauncher() {
-  override def getRepeatIntervalTicks(): Long = if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 30
 
-  override @SuspendingMethod def runRoutine() {
+  override val getRepeatIntervalTicks: IO[Long] = IO {
+    if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 30
+  }
+
+  override val runRoutine: IO[Unit] = IO {
     Util.sendEveryMessage("--------------30分間整地ランキング--------------")
 
     var totalBreakCount = 0
 
     // playermapに入っているすべてのプレイヤーデータについて処理
-    for (playerData in SeichiAssist.playermap.values) {
+    SeichiAssist.playermap.values.foreach { playerData =>
       val player = Bukkit.getPlayer(playerData.uuid)
       val halfHourBlock = playerData.halfhourblock
 
@@ -37,32 +40,30 @@ object HalfHourRankingRoutine extends RepeatedTaskLauncher() {
       }
 
       //allに30分間の採掘量を加算
-      totalBreakCount += halfHourBlock.increase.toInt()
+      totalBreakCount += halfHourBlock.increase.toInt
     }
 
     // ここで、0 => 第一位、 1 => 第二位、・・・n => 第(n+1)位にする (つまり降順)
-    val sortedPlayerData = SeichiAssist.playermap.values.toList()
-        .filter { it.halfhourblock.increase != 0L }
-        .sortedBy { it.halfhourblock.increase }
-        .asReversed()
+    val sortedPlayerData = SeichiAssist.playermap.values.toList
+        .filter { _.halfhourblock.increase != 0L }
+        .sortBy { _.halfhourblock.increase }
+        .reverse
 
     Util.sendEveryMessage("全体の整地量は " + AQUA + totalBreakCount + WHITE + " でした")
 
-    val topPlayerData = sortedPlayerData.firstOrNull()
-
-    // 第一位の整地量が非ゼロならば
-    if (topPlayerData != null) {
+    sortedPlayerData.headOption.foreach { _ =>
       val rankingPositionColor = List(DARK_PURPLE, BLUE, DARK_AQUA)
 
       sortedPlayerData
-          .take(3) // 1から3位まで
-          .zip(rankingPositionColor)
-          .forEachIndexed { index, (playerData, positionColor) =>
-            val playerNameText = s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${WHITE}"
-            val increaseAmountText = s"${AQUA}${playerData.halfhourblock.increase}${WHITE}"
+        .take(3) // 1から3位まで
+        .zip(rankingPositionColor)
+        .zipWithIndex
+        .foreach { case ((playerData, positionColor), index) =>
+          val playerNameText = s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${WHITE}"
+          val increaseAmountText = s"${AQUA}${playerData.halfhourblock.increase}${WHITE}"
 
-            Util.sendEveryMessage(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
-          }
+          Util.sendEveryMessage(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
+        }
     }
 
     Util.sendEveryMessage("--------------------------------------------------")

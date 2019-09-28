@@ -8,12 +8,13 @@ import com.github.unchama.seichiassist.util.BreakUtil;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import scala.collection.mutable.HashMap;
+import scala.jdk.CollectionConverters;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 public class AreaControlTask extends BukkitRunnable{
-	HashMap<UUID,PlayerData> playermap = (HashMap<UUID, PlayerData>) SeichiAssist.playermap();
+	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 	Player player;
 	PlayerData playerdata;
 	//プレイヤーがターゲットしているブロックを取得
@@ -38,8 +39,8 @@ public class AreaControlTask extends BukkitRunnable{
 	public AreaControlTask(Player player, BreakArea area, boolean assaultflag) {
 		this.player = player;
 		UUID uuid = player.getUniqueId();
-		this.playerdata = playermap.get(uuid);
-		this.skillflagnum = playerdata.getActiveskilldata().mineflagnum;
+		this.playerdata = playermap.apply(uuid);
+		this.skillflagnum = playerdata.activeskilldata().mineflagnum;
 		this.area = area;
 		this.assaultflag = assaultflag;
 		this.tick = 0;
@@ -54,7 +55,7 @@ public class AreaControlTask extends BukkitRunnable{
 		}
 		tick++;
 
-		targetblock = player.getTargetBlock(MaterialSets.getTransparentMaterials(), 40);
+		targetblock = player.getTargetBlock(CollectionConverters.SetHasAsJava(MaterialSets.transparentMaterials()).asJava(), 40);
 		playerlocy = player.getLocation().getBlockY() - 1 ;
 
 		//もし前回とプレイヤーの向いている方向が違ったらBreakAreaを取り直す

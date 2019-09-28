@@ -3,12 +3,13 @@ package com.github.unchama.seichiassist.task
 import java.sql.{SQLException, Statement}
 
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.util.BukkitSerialization
+import com.github.unchama.seichiassist.{ActiveSkillEffect, ActiveSkillPremiumEffect, MineStackObjectList, SeichiAssist}
+import com.github.unchama.util.ActionStatus
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import kotlin.ExperimentalUnsignedTypes
-import kotlin.jvm.Throws
 import org.bukkit.ChatColor._
-import org.junit.internal.runners.statements.Fail
+
+import scala.util.Using
 
 object PlayerDataSaving {
   /**
@@ -19,12 +20,11 @@ object PlayerDataSaving {
    */
   @SuspendingMethod def savePlayerData(playerdata: PlayerData) {
     val databaseGateway = SeichiAssist.databaseGateway
-    val serverId = SeichiAssist.seichiAssistConfig.serverNum
+    val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
-    @Throws(SQLException::class)
     def updatePlayerMineStack(stmt: Statement) {
       val playerUuid = playerdata.uuid.toString()
-      for (mineStackObj in MineStackObjectList.minestacklist) {
+      MineStackObjectList.minestacklist.foreach { mineStackObj =>
         val iThObjectName = mineStackObj.mineStackObjName
         val iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj)
 
@@ -37,11 +37,10 @@ object PlayerDataSaving {
       }
     }
 
-    @Throws(SQLException::class)
     def updateSubHome() {
       val playerUuid = playerdata.uuid.toString()
-      for ((subHomeId, subHome) in playerdata.subHomeEntries) {
-        val subHomeLocation = subHome.location
+      playerdata.subHomeEntries.foreach { case (subHomeId, subHome) =>
+        val subHomeLocation = subHome.getLocation
 
         val template = ("insert into seichiassist.sub_home"
           + "(player_uuid,server_id,id,name,location_x,location_y,location_z,world_name) values "
@@ -53,22 +52,21 @@ object PlayerDataSaving {
           + "location_z = values(location_z), "
           + "world_name = values(world_name)")
 
-        databaseGateway.con.prepareStatement(template).use { statement =>
+        Using(databaseGateway.con.prepareStatement(template)) { statement =>
           statement.setString(1, playerUuid)
           statement.setInt(2, serverId)
           statement.setInt(3, subHomeId)
           statement.setString(4, subHome.name)
-          statement.setInt(5, subHomeLocation.x.toInt())
-          statement.setInt(6, subHomeLocation.y.toInt())
-          statement.setInt(7, subHomeLocation.z.toInt())
-          statement.setString(8, subHomeLocation.world.name)
+          statement.setInt(5, subHomeLocation.getX.toInt)
+          statement.setInt(6, subHomeLocation.getY.toInt)
+          statement.setInt(7, subHomeLocation.getZ.toInt)
+          statement.setString(8, subHomeLocation.getWorld.getName)
 
           statement.executeUpdate()
         }
       }
     }
 
-    @Throws(SQLException::class)
     def updateGridTemplate(stmt: Statement) {
       val playerUuid = playerdata.uuid.toString()
 
@@ -76,24 +74,22 @@ object PlayerDataSaving {
       stmt.executeUpdate(s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'")
 
       // 各グリッドテンプレートについてデータを保存する
-      for ((gridTemplateId, gridTemplate) in playerdata.templateMap) {
-
+      playerdata.templateMap.toList.map { case (gridTemplateId, gridTemplate) =>
         val updateCommand = "insert into seichiassist.grid_template set " +
           "id = " + gridTemplateId + ", " +
           "designer_uuid = '" + playerUuid + "', " +
-          "ahead_length = " + gridTemplate.aheadAmount + ", " +
-          "behind_length = " + gridTemplate.behindAmount + ", " +
-          "right_length = " + gridTemplate.rightAmount + ", " +
-          "left_length = " + gridTemplate.leftAmount
+          "ahead_length = " + gridTemplate.getAheadAmount + ", " +
+          "behind_length = " + gridTemplate.getBehindAmount + ", " +
+          "right_length = " + gridTemplate.getRightAmount + ", " +
+          "left_length = " + gridTemplate.getLeftAmount
 
         stmt.executeUpdate(updateCommand)
       }
     }
 
-    @Throws(SQLException::class)
     def updateActiveSkillEffectUnlockState(stmt: Statement) {
       val playerUuid = playerdata.uuid.toString()
-      val activeSkillEffects = ActiveSkillEffect.values()
+      val activeSkillEffects = ActiveSkillEffect.values
       val obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects
 
       val removeCommand = ("delete from "
@@ -101,7 +97,7 @@ object PlayerDataSaving {
         + "where player_uuid like '" + playerUuid + "'")
       stmt.executeUpdate(removeCommand)
 
-      for (activeSkillEffect in activeSkillEffects) {
+      activeSkillEffects.foreach { activeSkillEffect =>
         val effectName = activeSkillEffect.nameOnDatabase
         val isEffectUnlocked = obtainedEffects.contains(activeSkillEffect)
 
@@ -115,10 +111,9 @@ object PlayerDataSaving {
       }
     }
 
-    @Throws(SQLException::class)
     def updateActiveSkillPremiumEffectUnlockState(stmt: Statement) {
       val playerUuid = playerdata.uuid.toString()
-      val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values()
+      val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values
       val obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects
 
       val removeCommand = ("delete from "
@@ -126,7 +121,7 @@ object PlayerDataSaving {
         + "player_uuid like '" + playerUuid + "'")
       stmt.executeUpdate(removeCommand)
 
-      for (activeSkillPremiumEffect in activeSkillPremiumEffects) {
+      activeSkillPremiumEffects.foreach { activeSkillPremiumEffect =>
         val effectName = activeSkillPremiumEffect.getsqlName()
         val isEffectUnlocked = obtainedEffects.contains(activeSkillPremiumEffect)
 
@@ -140,22 +135,20 @@ object PlayerDataSaving {
       }
     }
 
-    @ExperimentalUnsignedTypes
-    @Throws(SQLException::class)
     def updatePlayerDataColumns(stmt: Statement) {
-      val playerUuid = playerdata.uuid.toString()
+      val playerUuid = playerdata.uuid.toString
 
       //実績のフラグ(BitSet)保存用変換処理
-      val titleArray = playerdata.TitleFlags.toLongArray()
-      val flagString = titleArray.joinToString(",") { it.toULong().toString(16) }
+      val titleArray = playerdata.TitleFlags.toArray
+      val flagString = titleArray.map(_.toLong.toHexString).mkString(",")
 
-      val command = runBlocking {
+      val command = {
         ("update seichiassist.playerdata set"
           //名前更新処理
           + " name = '" + playerdata.lowercaseName + "'"
 
           //各種数値更新処理
-          + ",effectflag = " + runBlocking { playerdata.settings.fastDiggingEffectSuppression.serialized() }
+          + ",effectflag = " + playerdata.settings.fastDiggingEffectSuppression.serialized().unsafeRunSync()
           + ",minestackflag = " + playerdata.settings.autoMineStack
           + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
           + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
@@ -186,12 +179,12 @@ object PlayerDataSaving {
 
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.activeskilldata.effectpoint
-          + ",mana = " + playerdata.activeskilldata.mana.mana
+          + ",mana = " + playerdata.activeskilldata.mana.getMana
           + ",expvisible = " + playerdata.settings.isExpBarVisible
           + ",totalexp = " + playerdata.totalexp
           + ",expmarge = " + playerdata.expmarge
-          + ",everysound = " + playerdata.settings.getBroadcastMutingSettings().shouldMuteSounds()
-          + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings().shouldMuteMessages()
+          + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
+          + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteMessages
 
           + ",displayTypeLv = " + playerdata.settings.nickName.style.displayLevel
           + ",displayTitle1No = " + playerdata.settings.nickName.id1
@@ -249,29 +242,30 @@ object PlayerDataSaving {
 
     def executeUpdate(): ActionStatus = {
       try {
-      //sqlコネクションチェック
-      databaseGateway.ensureConnection()
+        //sqlコネクションチェック
+        databaseGateway.ensureConnection()
 
-      //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
-      val localStatement = databaseGateway.con.createStatement()
-      updatePlayerDataColumns(localStatement)
-      updatePlayerMineStack(localStatement)
-      updateGridTemplate(localStatement)
-      updateSubHome()
-      updateActiveSkillEffectUnlockState(localStatement)
-      updateActiveSkillPremiumEffectUnlockState(localStatement)
-      return Ok
-    } catch (exception: SQLException) {
-      println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-      exception.printStackTrace()
-      return Fail
+        //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+        val localStatement = databaseGateway.con.createStatement()
+        updatePlayerDataColumns(localStatement)
+        updatePlayerMineStack(localStatement)
+        updateGridTemplate(localStatement)
+        updateSubHome()
+        updateActiveSkillEffectUnlockState(localStatement)
+        updateActiveSkillPremiumEffectUnlockState(localStatement)
+        ActionStatus.Ok
+      } catch {
+        case exception: SQLException =>
+          println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+          exception.printStackTrace()
+          ActionStatus.Fail
+        case _ => ActionStatus.Fail
+      }
     }
 
-    }
-
-    for (i in 0 until 3) {
+    (0 until 3).foreach { _ =>
       val result = executeUpdate()
-      if (result == Ok) {
+      if (result == ActionStatus.Ok) {
         println(s"${GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
         return
       }
