@@ -12,8 +12,6 @@ import org.bukkit.entity.Player
 object EventCommand {
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
-      val player = context.sender
-
       def execution(): TargetedEffect[Player] = {
         if (context.args.yetToBeParsed.head != "get") return EmptyEffect
 
