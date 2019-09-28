@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.effect.breaking
 
 import org.bukkit.scheduler.BukkitRunnable
-abstract class RoundedTask  extends  BukkitRunnable() {
+abstract class RoundedTask extends BukkitRunnable() {
   private var round = 0
 
   abstract def firstAction()
@@ -13,11 +13,11 @@ abstract class RoundedTask  extends  BukkitRunnable() {
   }
 
   override def run() {
-    round++
-    when (round) {
-      1 => firstAction()
-      2 => secondAction()
-      else => otherwiseAction()
+    round += 1
+    round match {
+      case 1 => firstAction()
+      case 2 => secondAction()
+      case _ => otherwiseAction()
     }
   }
 }

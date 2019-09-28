@@ -42,7 +42,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             playerDataColumnNames.add(columnNamesResult.getString("Field"));
         }
 
-        final List<Migration> migrations = ImmutableListFactory.of(
+        final List<Migration> migrations = Arrays.asList(
                 new MineStackMigration(),
                 new GridTemplateMigration(),
                 new SubHomeMigration(),
@@ -384,7 +384,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
         }
 
         private static void deleteSubHomeColumns(final Statement statement, final String serverId) throws SQLException {
-            for (String baseTableName : ImmutableListFactory.of("homepoint", "subhome_name")) {
+            for (String baseTableName : Arrays.asList("homepoint", "subhome_name")) {
                 statement.executeUpdate("alter table playerdata drop column " + baseTableName + "_" + serverId);
             }
         }

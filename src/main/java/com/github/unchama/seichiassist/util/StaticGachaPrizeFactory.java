@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.util;
 
-import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 public final class StaticGachaPrizeFactory {
@@ -39,8 +39,8 @@ public final class StaticGachaPrizeFactory {
 
     //がちゃりんごの説明を取得
     public static List<String> getGachaRingoLore(){
-        List<String> lore = ImmutableListFactory.of(ChatColor.RESET + "" +  ChatColor.GRAY + "序盤に重宝します。"
-                , ChatColor.RESET + "" +  ChatColor.AQUA + "マナ回復（小）");
+        List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "序盤に重宝します。"
+                , ChatColor.RESET + "" + ChatColor.AQUA + "マナ回復（小）");
         return lore;
     }
 
@@ -63,7 +63,7 @@ public final class StaticGachaPrizeFactory {
 
     //椎名林檎の説明を取得
     public static List<String> getMaxRingoLore(String name) {
-        return ImmutableListFactory.of(
+        return Arrays.asList(
                 ChatColor.RESET + "" +  ChatColor.GRAY + "使用するとマナが全回復します",
                 ChatColor.RESET + "" +  ChatColor.AQUA + "マナ完全回復",
                 ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name,
@@ -93,7 +93,7 @@ public final class StaticGachaPrizeFactory {
     }
 
     private static List<String> getMineHeadItemLore() {
-        return ImmutableListFactory.of(
+        return Arrays.asList(
                 ChatColor.RED + "頭を狩り取る形をしている...",
                 "",
                 ChatColor.GRAY + "設置してある頭が",

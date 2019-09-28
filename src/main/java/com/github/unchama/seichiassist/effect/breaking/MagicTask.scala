@@ -2,63 +2,61 @@ package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
-import org.bukkit.entity.Player
+import org.bukkit.entity.{Chicken, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Wool
-import org.bukkit.{DyeColor, Location, Material}
+import org.bukkit._
 
-class MagicTask(// プレイヤー情報
-    private val player: Player, // 使用するツール
-    private val tool: ItemStack, // 破壊するブロックリスト
-    private val blocks: Set[Block],
-    start: XYZTuple,
-    end: XYZTuple, skillCenter: Location) extends RoundedTask() {
-  // 破壊するブロックの中心位置
-  private val centerBreak: Location
+import scala.util.Random
+
+class MagicTask(private val player: Player,
+                private val tool: ItemStack, // 使用するツール
+                private val blocks: Set[Block], // 破壊するブロックリスト
+                start: XYZTuple, end: XYZTuple, _skillCenter: Location) extends RoundedTask() {
   // スキルが発動される中心位置
-  private val skillCenter: Location = skillCenter.clone()
+  private val skillCenter: Location = _skillCenter.clone()
 
-  init {
-    centerBreak = this.skillCenter.add(relativeAverage(start.x, end.x), relativeAverage(start.y, end.y), relativeAverage(start.z, end.z))
-  }
+  // 破壊するブロックの中心位置
+  private val centerBreak: Location =
+    this.skillCenter.add(relativeAverage(start.x, end.x), relativeAverage(start.y, end.y), relativeAverage(start.z, end.z))
 
   override def firstAction() {
     //1回目のrun
-    val colors = arrayOf(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
-    val rd = Random().nextInt(colors.size)
+    val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
+    val rd = new Random().nextInt(colors.length)
 
-    for (b in blocks) {
+    blocks.foreach { b =>
       BreakUtil.breakBlock(player, b, skillCenter, tool, false)
-      b.type = Material.WOOL
-      val state = b.state
-      val woolBlock = state.data.asInstanceOf[Wool]
-      woolBlock.color = colors[rd]
+
+      b.setType(Material.WOOL)
+      val state = b.getState
+      val woolBlock = state.getData.asInstanceOf[Wool]
+      woolBlock.setColor(colors(rd))
       state.update()
     }
   }
 
   override def secondAction() {
     //2回目のrun
-    if (SeichiAssist.entitylist.isEmpty()) {
-      val e = player.world.spawnEntity(centerBreak, EntityType.CHICKEN).asInstanceOf[Chicken]
+    if (SeichiAssist.entitylist.isEmpty) {
+      val e = player.getWorld.spawnEntity(centerBreak, EntityType.CHICKEN).asInstanceOf[Chicken]
       SeichiAssist.entitylist += e
       e.playEffect(EntityEffect.WITCH_MAGIC)
-      e.isInvulnerable = true
-      AsyncEntityRemover(e).runTaskLater(SeichiAssist.instance, 100)
-      player.world.playSound(player.location, Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f)
+      e.setInvulnerable(true)
+      new AsyncEntityRemover(e).runTaskLater(SeichiAssist.instance, 100)
+      player.getWorld.playSound(player.getLocation, Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f)
     }
 
-    for (b in blocks) {
-      b.type = Material.AIR
-      b.world.spawnParticle(Particle.NOTE, b.location.add(0.5, 0.5, 0.5), 1)
+    blocks.foreach { b =>
+      b.setType(Material.AIR)
+      b.getWorld.spawnParticle(Particle.NOTE, b.getLocation.add(0.5, 0.5, 0.5), 1)
       SeichiAssist.allblocklist -= b
     }
     cancel()
   }
 
-  private def relativeAverage(i1: Int, i2: Int): Double = {
-    return (i1 + (i2 - i1) / 2).toDouble()
-  }
+  private def relativeAverage(i1: Int, i2: Int): Double = (i1 + (i2 - i1) / 2).toDouble
 }

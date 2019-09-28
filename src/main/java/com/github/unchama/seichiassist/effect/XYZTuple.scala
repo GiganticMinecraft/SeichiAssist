@@ -11,15 +11,15 @@ object XYZTuple {
     def toXYZTuple() = XYZTuple(x, y, z)
   }
 
-  case class AxisAlignedCuboid(val begin: XYZTuple, val end: XYZTuple)
+  case class AxisAlignedCuboid(begin: XYZTuple, end: XYZTuple)
 
   implicit case class AACOps(cuboid: AxisAlignedCuboid) extends AnyVal {
     import cuboid._
 
-    def forEachGridPoint(gridWidth: Int = 1, action: (XYZTuple) => Unit) {
-      (begin.x .. end.x).step(gridWidth).forEach { x =>
-        (begin.y .. end.y).step(gridWidth).forEach { y =>
-          (begin.z .. end.z).step(gridWidth).forEach { z =>
+    def forEachGridPoint(gridWidth: Int = 1)(action: XYZTuple => Unit) {
+      Range.inclusive(begin.x, end.x, gridWidth).foreach { x =>
+        Range.inclusive(begin.y, end.y, gridWidth).foreach { y =>
+          Range.inclusive(begin.z, end.z, gridWidth).foreach { z =>
             action(XYZTuple(x, y, z))
           }
         }

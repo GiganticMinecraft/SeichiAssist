@@ -1,2 +1,9 @@
 package com.github.unchama.seichiassist.menus.stickmenu
-object StickMenu
+
+import com.github.unchama.menuinventory.Menu
+
+object StickMenu {
+  val firstPage: Menu = FirstPage
+
+  val secondPage: Menu = SecondPage
+}

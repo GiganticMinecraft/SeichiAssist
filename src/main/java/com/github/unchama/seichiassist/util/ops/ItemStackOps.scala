@@ -4,10 +4,10 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-import scala.collection.JavaConversions._
-
 class ItemStackOps {
   implicit class ItemStackOps(val itemStack: ItemStack) {
+    import scala.jdk.CollectionConverters._
+
     /**
      * [ItemStack] の説明文を表すプロパティ.
      *
@@ -16,15 +16,15 @@ class ItemStackOps {
      */
     def lore: List[String] = {
       itemStack.getItemMeta.getLore
-    }
+    }.asScala.toList
     def lore_=(value: List[String]): Unit = {
-      itemStack.getItemMeta.setLore(value)
+      itemStack.getItemMeta.setLore(value.asJava)
     }
 
     def appendOwnerInformation(owner: Player) {
       lore =
-        (if (itemStack.getItemMeta.hasLore) this.lore else Nil) +:
-          s"$RESET${DARK_GREEN}所有者：${owner.getName}"
+        (if (itemStack.getItemMeta.hasLore) this.lore else Nil) ++
+          List(s"$RESET${DARK_GREEN}所有者：${owner.getName}")
     }
 
   }

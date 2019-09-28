@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.text
 
+import com.github.unchama.seichiassist.ManagedWorld
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
@@ -12,8 +13,8 @@ class WarningsGenerator(player: Player) {
    * 整地ワールド以外では建築量・ガチャ券が増加しないという警告.
    */
   val noRewardsOutsideSeichiWorld: List[String] =
-    if (player.world.asManagedWorld()?.isSeichi == true)
-      emptyList()
+    if (ManagedWorld.fromBukkitWorld(player.getWorld).exists(_.isSeichi))
+      Nil
     else
       List(
           s"${RED}整地ワールド以外では",

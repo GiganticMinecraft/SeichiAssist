@@ -17,6 +17,7 @@ import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.seichiassist.util.{ClosedRange, Util}
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.player.ForcedPotionEffect
 import com.github.unchama.targetedeffect.{TargetedEffects, UnfocusedEffect}
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import kotlin.Suppress
@@ -839,15 +840,15 @@ class PlayerData(
   /**
    * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
    */
-  def computeFastDiggingEffect(): TargetedEffect[Player] = deferredEffect(IO {
-    val activeEffects = effectdatalist.toList
-
-    val amplifierSum = activeEffects.map(_.amplifier).sum
-    val maxDuration = activeEffects.map(_.duration).maxOption.getOrElse(0)
-    val computedAmplifier = Math.floor(amplifierSum - 1).toInt
-
-    val maxSpeed: Int = settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
-
+  val computeFastDiggingEffect: IO[ForcedPotionEffect] = for {
+    activeEffects <- IO { effectdatalist.toList }
+    computedAmplifier <- IO {
+      val amplifierSum = activeEffects.map(_.amplifier).sum
+      Math.floor(amplifierSum - 1).toInt
+    }
+    maxSpeed <- settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
+    maxDuration <- IO { activeEffects.map(_.duration).maxOption.getOrElse(0) }
+  } yield {
     // 実際に適用されるeffect量
     val amplifier = Math.min(computedAmplifier, maxSpeed)
 
@@ -858,7 +859,7 @@ class PlayerData(
         new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
 
     effect.asTargetedEffect()
-  })
+  }
 
   /**
    * 保護申請の番号を更新させる[UnfocusedEffect]

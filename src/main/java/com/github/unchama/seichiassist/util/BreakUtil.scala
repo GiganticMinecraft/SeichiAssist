@@ -1,41 +1,45 @@
 package com.github.unchama.seichiassist.util
 
+import java.util.Random
 import java.util.stream.IntStream
 
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.{ActiveSkill, MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.util.external.ExternalPlugins
+import com.github.unchama.seichiassist._
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.{Entity, Player}
+import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
-import org.bukkit.{DyeColor, Material}
+import org.bukkit.material.Dye
+import org.bukkit._
 
 
 object BreakUtil {
+  import ManagedWorld._
 
   //他のプラグインの影響があってもブロックを破壊できるのか
-  def canBreak(player: Player, breakblock: Block?): Boolean = {
-    if (!player.isOnline || breakblock == null) {
-      return false
-    }
+  def canBreak(player: Player, breakblockOption: Option[Block]): Boolean = {
+    val breakblock = breakblockOption.getOrElse(return false)
+    if (!player.isOnline) return false
+
     val playermap = SeichiAssist.playermap
-    val uuid = player.uniqueId
+    val uuid = player.getUniqueId
     val playerdata = playermap(uuid)
 
     //壊されるブロックのMaterialを取得
-    val material = breakblock.type
+    val material = breakblock.getType
 
     //壊されるブロックがワールドガード範囲だった場合処理を終了
-    if (!ExternalPlugins.worldGuard().canBuild(player, breakblock.location)) {
+    if (!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation)) {
       if (playerdata.settings.shouldDisplayWorldGuardLogs) {
         player.sendMessage(RED.toString() + "ワールドガードで保護されています。")
       }
       return false
     }
 
-    if (!equalsIgnoreNameCaseWorld(player.world.name)) {
-      val wrapper = ExternalPlugins.coreProtectWrapper()
+    if (!equalsIgnoreNameCaseWorld(player.getWorld.getName)) {
+      val wrapper = ExternalPlugins.getCoreProtectWrapper()
       if (wrapper == null) {
         Bukkit.getLogger().warning("CoreProtectにアクセスできませんでした。")
       } else {
@@ -58,8 +62,8 @@ object BreakUtil {
       }
     }
 
-    if (breakblock.world.asManagedWorld()?.isSeichi == true) {
-      val isBlockY5Step = material == Material.STEP && breakblock.y == 5 && breakblock.data == 0.toByte()
+    if (breakblock.getWorld.asManagedWorld().exists(_.isSeichi)) {
+      val isBlockY5Step = material == Material.STEP && breakblock.getY == 5 && breakblock.getData == 0.toByte
 
       if (isBlockY5Step && !playerdata.canBreakHalfBlock()) return false
     }
@@ -68,79 +72,77 @@ object BreakUtil {
   }
 
   private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
-    val world = ManagedWorld.fromName(name)
+    val world = ManagedWorld.fromName(name).getOrElse(return false)
 
-    return world != null && world.shouldMuteCoreProtect
+    world.shouldMuteCoreProtect
   }
 
   //ブロックを破壊する処理、ドロップも含む、統計増加も含む
   def breakBlock(player: Player, breakblock: Block, centerofblock: Location, tool: ItemStack, stepflag: Boolean) {
-
-    var material = breakblock.type
+    var material = breakblock.getType
     if (!MaterialSets.materials.contains(material)) {
       return
     }
 
-    var itemstack = dropItemOnTool(breakblock, tool)
+    var itemStackOption = dropItemOnTool(breakblock, tool)
 
     //農地か草の道の場合土をドロップ
     if (material == Material.GRASS_PATH || material == Material.SOIL) {
       // DIRT, amount = 1
-      itemstack = ItemStack(Material.DIRT)
+      itemStackOption = Some(new ItemStack(Material.DIRT))
     }
 
     if (material == Material.MOB_SPAWNER) {
-      itemstack = null
+      itemStackOption = None
     }
 
     if (material == Material.GLOWING_REDSTONE_ORE) {
       material = Material.REDSTONE_ORE
     }
 
-    if (material == Material.AIR) {
-      return
-    }
+    if (material == Material.AIR) return
 
-    if (itemstack != null) {
+    itemStackOption.map { itemStack =>
       //アイテムをドロップさせる
-      if (!addItemToMineStack(player, itemstack)) {
-        breakblock.world.dropItemNaturally(centerofblock, itemstack)
+      if (!addItemToMineStack(player, itemStack)) {
+        breakblock.getWorld.dropItemNaturally(centerofblock, itemStack)
       }
     }
 
     //ブロックを空気に変える
-    breakblock.type = Material.AIR
+    breakblock.setType(Material.AIR)
 
     if (stepflag) {
       //あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
-      breakblock.world.playEffect(breakblock.location, Effect.STEP_SOUND, material)
+      breakblock.getWorld.playEffect(breakblock.getLocation, Effect.STEP_SOUND, material)
     }
 
     //プレイヤーの統計を１増やす
-    if (material != Material.GRASS_PATH && material != Material.SOIL && material != Material.MOB_SPAWNER) {
-      player.incrementStatistic(Statistic.MINE_BLOCK, material)
+    material match {
+      case Material.GRASS_PATH | Material.SOIL | Material.MOB_SPAWNER =>
+      case _ =>
+        player.incrementStatistic(Statistic.MINE_BLOCK, material)
     }
-
   }
 
   def addItemToMineStack(player: Player, itemstack: ItemStack): Boolean = {
     //もしサバイバルでなければ処理を終了
-    if (player.gameMode != GameMode.SURVIVAL) return false
+    if (player.getGameMode != GameMode.SURVIVAL) return false
 
     if (SeichiAssist.DEBUG) {
       player.sendMessage(s"${RED}minestackAdd:$itemstack")
-      player.sendMessage(s"${RED}mineDurability:${itemstack.durability}")
+      player.sendMessage(s"${RED}mineDurability:${itemstack.getDurability}")
     }
 
     val config = SeichiAssist.seichiAssistConfig
 
-    val playerData = SeichiAssist.playermap(player.uniqueId)
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     //minestackflagがfalseの時は処理を終了
     if (!playerData.settings.autoMineStack) return false
 
-    val amount = itemstack.amount
-    val material = itemstack.type
+    val amount = itemstack.getAmount
+    val material = itemstack.getType
 
     //線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
     //拾った時のサブIDに合わせる
@@ -148,35 +150,35 @@ object BreakUtil {
         || itemstack.getType == Material.HUGE_MUSHROOM_1
         || itemstack.getType == Material.HUGE_MUSHROOM_2) {
 
-      itemstack.durability = 0.toShort()
+      itemstack.setDurability(0.toShort)
     }
 
-    MineStackObjectList.minestacklist.forEach { mineStackObj =>
+    MineStackObjectList.minestacklist.foreach { mineStackObj =>
       def addToMineStackAfterLevelCheck(): Boolean =
           if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
             false
           } else {
-            playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong())
+            playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
             true
           }
 
       //IDとサブIDが一致している
-      if (material == mineStackObj.material && itemstack.durability.toInt() == mineStackObj.durability) {
+      if (material == mineStackObj.material && itemstack.getDurability.toInt == mineStackObj.durability) {
         //名前と説明文が無いアイテム
-        if (!mineStackObj.hasNameLore && !itemstack.itemMeta.hasLore() && !itemstack.itemMeta.hasDisplayName()) {
+        if (!mineStackObj.hasNameLore && !itemstack.getItemMeta.hasLore && !itemstack.getItemMeta.hasDisplayName) {
           return addToMineStackAfterLevelCheck()
-        } else if (mineStackObj.hasNameLore && itemstack.itemMeta.hasDisplayName() && itemstack.itemMeta.hasLore()) {
+        } else if (mineStackObj.hasNameLore && itemstack.getItemMeta.hasDisplayName && itemstack.getItemMeta.hasLore) {
           //ガチャ以外のアイテム(がちゃりんご)
           if (mineStackObj.gachaType == -1) {
-            if (!itemstack.isSimilar(StaticGachaPrizeFactory.gachaRingo())) return false
+            if (!itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) return false
 
             return addToMineStackAfterLevelCheck()
           } else {
             //ガチャ品
-            val g = SeichiAssist.msgachadatalist[mineStackObj.gachaType]
+            val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
 
             //名前が記入されているはずのアイテムで名前がなければ
-            if (g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemstack, player.name)) return false
+            if (g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemstack, player.getName)) return false
 
             if (g.itemStackEquals(itemstack)) {
               return addToMineStackAfterLevelCheck()
@@ -189,155 +191,102 @@ object BreakUtil {
     return false
   }
 
-  def dropItemOnTool(breakblock: Block, tool: ItemStack): ItemStack? = {
-    var dropitem: ItemStack? = null
-    val dropmaterial: Material
-    val breakmaterial = breakblock.type
+  def dropItemOnTool(breakblock: Block, tool: ItemStack): Option[ItemStack] = {
+    val breakmaterial = breakblock.getType
     val fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
     val rand = Math.random()
-    var bonus = (rand * (fortunelevel + 2) - 1).toInt()
-    if (bonus [= 1) {
-      bonus = 1
-    }
-    var b = breakblock.data
+    val bonus = Math.max(1, rand * (fortunelevel + 2) - 1).toInt
+    var b = breakblock.getData
     var b_tree = b
-    b_tree = b_tree and 0x03.toByte()
-    b = b and 0x0F.toByte()
+    b_tree = (b_tree & 0x03).toByte
+    b = (b & 0x0F).toByte
 
     val silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
-    if (silktouch ] 0) {
-      //シルクタッチの処理
-      when (breakmaterial) {
-        Material.GLOWING_REDSTONE_ORE => {
-          dropmaterial = Material.REDSTONE_ORE
-          dropitem = ItemStack(dropmaterial)
-        }
-        Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2 => dropitem = ItemStack(breakmaterial, 1, b_tree.toShort())
-        Material.MONSTER_EGGS => {
-          dropmaterial = Material.STONE
-          dropitem = ItemStack(dropmaterial)
-        }
-        else => dropitem = ItemStack(breakmaterial, 1, b.toShort())
-      }
 
+    if (silktouch > 0) {
+      //シルクタッチの処理
+      breakmaterial match {
+        case Material.GLOWING_REDSTONE_ORE =>
+          Some(new ItemStack(Material.REDSTONE_ORE))
+        case Material.LOG | Material.LOG_2 | Material.LEAVES | Material.LEAVES_2 =>
+          Some(new ItemStack(breakmaterial, 1, b_tree.toShort))
+        case Material.MONSTER_EGGS =>
+          Some(new ItemStack(Material.STONE))
+        case _ =>
+          Some(new ItemStack(breakmaterial, 1, b.toShort))
+      }
     } else if (fortunelevel > 0 && MaterialSets.luckMaterials.contains(breakmaterial)) {
       //幸運の処理
-      when (breakmaterial) {
-        Material.COAL_ORE => {
-          dropmaterial = Material.COAL
-          dropitem = ItemStack(dropmaterial, bonus)
-        }
-        Material.DIAMOND_ORE => {
-          dropmaterial = Material.DIAMOND
-          dropitem = ItemStack(dropmaterial, bonus)
-        }
-        Material.LAPIS_ORE => {
-          val dye = Dye()
-          dye.color = DyeColor.BLUE
+      breakmaterial match {
+        case Material.COAL_ORE =>
+          Some(new ItemStack(Material.COAL, bonus))
+        case Material.DIAMOND_ORE =>
+          Some(new ItemStack(Material.DIAMOND, bonus))
+        case Material.LAPIS_ORE =>
+          val dye = new Dye()
+          dye.setColor(DyeColor.BLUE)
 
-          bonus *= (rand * 4 + 4).toInt()
-          dropitem = dye.toItemStack(bonus)
-        }
-        Material.EMERALD_ORE => {
-          dropmaterial = Material.EMERALD
-          dropitem = ItemStack(dropmaterial, bonus)
-        }
-        Material.REDSTONE_ORE => {
-          dropmaterial = Material.REDSTONE
-          bonus *= (rand + 4).toInt()
-          dropitem = ItemStack(dropmaterial, bonus)
-        }
-        Material.GLOWING_REDSTONE_ORE => {
-          dropmaterial = Material.REDSTONE
-          bonus *= (rand + 4).toInt()
-          dropitem = ItemStack(dropmaterial, bonus)
-        }
-        Material.QUARTZ_ORE => {
-          dropmaterial = Material.QUARTZ
-          dropitem = ItemStack(dropmaterial, bonus)
-        }
-        else => {
-        }
+          val withBonus = bonus * (rand * 4 + 4).toInt
+          Some(dye.toItemStack(withBonus))
+        case Material.EMERALD_ORE =>
+          Some(new ItemStack(Material.EMERALD, bonus))
+        case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
+          val withBonus = bonus * (rand + 4).toInt
+          Some(new ItemStack(Material.REDSTONE, withBonus))
+        case Material.QUARTZ_ORE =>
+          Some(new ItemStack(Material.QUARTZ, bonus))
+        case _ =>
+          // TODO this section is unreachable
+          Some(new ItemStack(breakmaterial, bonus))
       }
     } else {
       //シルク幸運なしの処理
-      when (breakmaterial) {
-        Material.COAL_ORE => {
-          dropmaterial = Material.COAL
-          dropitem = ItemStack(dropmaterial)
-        }
-        Material.DIAMOND_ORE => {
-          dropmaterial = Material.DIAMOND
-          dropitem = ItemStack(dropmaterial)
-        }
-        Material.LAPIS_ORE => {
-          val dye = Dye()
-          dye.color = DyeColor.BLUE
-          dropitem = dye.toItemStack((rand * 4 + 4).toInt())
-        }
-        Material.EMERALD_ORE => {
-          dropmaterial = Material.EMERALD
-          dropitem = ItemStack(dropmaterial)
-        }
-        Material.REDSTONE_ORE => {
-          dropmaterial = Material.REDSTONE
-          dropitem = ItemStack(dropmaterial, (rand + 4).toInt())
-        }
-        Material.GLOWING_REDSTONE_ORE => {
-          dropmaterial = Material.REDSTONE
-          dropitem = ItemStack(dropmaterial, (rand + 4).toInt())
-        }
-        Material.QUARTZ_ORE => {
-          dropmaterial = Material.QUARTZ
-          dropitem = ItemStack(dropmaterial)
-        }
-        Material.STONE =>
+      breakmaterial match {
+        case Material.COAL_ORE =>
+          Some(new ItemStack(Material.COAL))
+        case Material.DIAMOND_ORE =>
+          Some(new ItemStack(Material.DIAMOND))
+        case Material.LAPIS_ORE =>
+          val dye = new Dye()
+          dye.setColor(DyeColor.BLUE)
+          Some(dye.toItemStack((rand * 4 + 4).toInt))
+        case Material.EMERALD_ORE =>
+          Some(new ItemStack(Material.EMERALD))
+        case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
+          Some(new ItemStack(Material.REDSTONE, (rand + 4).toInt))
+        case Material.QUARTZ_ORE => Some(new ItemStack(Material.QUARTZ))
+        case Material.STONE =>
           //Material.STONEの処理
-          if (breakblock.data.toInt() == 0x00) {
+          if (breakblock.getData.toInt == 0x00) {
             //焼き石の処理
-            dropmaterial = Material.COBBLESTONE
-            dropitem = ItemStack(dropmaterial)
+            Some(new ItemStack(Material.COBBLESTONE))
           } else {
             //他の石の処理
-            dropitem = ItemStack(breakmaterial, 1, b.toShort())
+            Some(new ItemStack(breakmaterial, 1, b.toShort))
           }
-        Material.GRASS => {
-          //芝生の処理
-          dropmaterial = Material.DIRT
-          dropitem = ItemStack(dropmaterial)
-        }
-        Material.GRAVEL => {
-          val p: Double
-          when (fortunelevel) {
-            1 => p = 0.14
-            2 => p = 0.25
-            3 => p = 1.00
-            else => p = 0.1
+        case Material.GRASS => Some(new ItemStack(Material.DIRT))
+        case Material.GRAVEL => {
+          val p = fortunelevel match {
+            case 1 => 0.14
+            case 2 => 0.25
+            case 3 => 1.00
+            case _ => 0.1
           }
-          if (p > rand) {
-            dropmaterial = Material.FLINT
-          } else {
-            dropmaterial = Material.GRAVEL
-          }
-          dropitem = ItemStack(dropmaterial, bonus)
+          val dropMaterial = if (p > rand) Material.FLINT else Material.GRAVEL
+
+          Some(new ItemStack(dropMaterial, bonus))
         }
-        Material.LEAVES, Material.LEAVES_2 => dropitem = null
-        Material.CLAY => {
-          dropmaterial = Material.CLAY_BALL
-          dropitem = ItemStack(dropmaterial, 4)
-        }
-        Material.MONSTER_EGGS => {
-          val loc = breakblock.location
-          breakblock.world.spawnEntity(loc, EntityType.SILVERFISH)
-          dropitem = null
-        }
-        Material.LOG, Material.LOG_2 => dropitem = ItemStack(breakmaterial, 1, b_tree.toShort())
-        else =>
+        case Material.LEAVES | Material.LEAVES_2 => None
+        case Material.CLAY => Some(new ItemStack(Material.CLAY_BALL, 4))
+        case Material.MONSTER_EGGS =>
+          breakblock.getWorld.spawnEntity(breakblock.getLocation, EntityType.SILVERFISH)
+          None
+        case Material.LOG | Material.LOG_2 => Some(new ItemStack(breakmaterial, 1, b_tree.toShort))
+        case _ =>
           //breakblcokのままのアイテムスタックを保存
-          dropitem = ItemStack(breakmaterial, 1, b.toShort())
+          Some(new ItemStack(breakmaterial, 1, b.toShort))
       }
     }
-    return dropitem
   }
 
   def calcManaDrop(playerdata: PlayerData): Double = {
@@ -376,25 +325,25 @@ object BreakUtil {
 
   //num回だけ耐久を減らす処理
   def calcDurability(enchantmentLevel: Int, num: Int): Short = {
-    val rand = Random()
+    val rand = new Random()
     val probability = 1.0 / (enchantmentLevel + 1.0)
 
     return IntStream.range(0, num)
-        .filter { i => probability > rand.nextDouble() }
-        .count().toShort()
+        .filter { _ => probability > rand.nextDouble() }
+        .count().toShort
   }
 
   def getCardinalDirection(entity: Entity): String = {
-    var rotation = ((entity.location.yaw + 180) % 360).toDouble()
-    val loc = entity.location
-    val pitch = loc.pitch
+    var rotation = ((entity.getLocation.getYaw + 180) % 360).toDouble
+    val loc = entity.getLocation
+    val pitch = loc.getPitch
     if (rotation < 0) {
       rotation += 360.0
     }
 
-    return if (pitch [= -30) {
+    return if (pitch <= -30) {
       "U"
-    } else if (pitch ]= 25) {
+    } else if (pitch >= 25) {
       "D"
     } else if (0 <= rotation && rotation < 45.0) {
       "N"
@@ -412,7 +361,7 @@ object BreakUtil {
   }
 
   def BlockEqualsMaterialList(block: Block): Boolean = {
-    return MaterialSets.materials.contains(block.type)
+    return MaterialSets.materials.contains(block.getType)
   }
 
   /**
@@ -434,48 +383,50 @@ object BreakUtil {
 
     // 2. 破壊要因判定
     /** 該当プレイヤーのPlayerData  */
-    val playerdata = SeichiAssist.playermap(player.uniqueId)
+    val playerdata = SeichiAssist.playermap(player.getUniqueId)
     /** ActiveSkillのリスト  */
     val skilllist = ActiveSkill.values()
+
     /** 重力値の計算を始めるY座標  */
-    val startY: Int
-    // Activeスキルの場合
-    if (!isAssault) {
+    val startY: Int = if (!isAssault) {
+      // Activeスキルの場合
+
       /** 破壊要因スキルタイプ  */
       val breakSkillType = playerdata.activeskilldata.skilltype
       /** 破壊要因スキルレベル  */
       val breakSkillLevel = playerdata.activeskilldata.skillnum
       /** 破壊スキル使用判定  */
       val isBreakSkill = breakSkillType > 0 && playerdata.activeskilldata.mineflagnum > 0
+
       // 重力値を計算開始するBlockのために、startY(blockのY方向offset値)を計算
       // 破壊スキルが選択されていなければ初期座標は破壊ブロックと同値
-      if (!isBreakSkill) {
-        startY = 0
-      } else if (breakSkillType == ActiveSkill.ARROW.gettypenum()) {
+      if (!isBreakSkill) 0
+      else if (breakSkillType == ActiveSkill.ARROW.gettypenum()) {
         /** 選択中のスキルの破壊範囲  */
-        val skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel)
+        val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
+
         // 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
-        startY = skillBreakArea.y - 2
+        skillBreakArea.y - 2
       } else {
         /** 該当プレイヤーが向いている方向  */
-        val dir = BreakUtil.cardinalDirection(player)
+        val dir = BreakUtil.getCardinalDirection(player)
         // 下向きによる発動
         if (dir == "D") {
           // block＝破壊範囲の最上層ブロックにつき、startは0
-          startY = 0
+          0
         } else if (dir == "U") {
           /** 選択中のスキルの破壊範囲  */
-          val skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel)
+          val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
           // block＝破壊範囲の最下層ブロックにつき、startは破壊範囲の高さ
-          startY = skillBreakArea.y
+          skillBreakArea.y
         } else if ((breakSkillLevel == 1 || breakSkillLevel == 2) && playerdata.activeskilldata.mineflagnum == 1) {
           // 破壊ブロックの1マス上が破壊されるので、startは2段目から
-          startY = 1
+          1
         } else {
           /** 選択中のスキルの破壊範囲  */
-          val skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel)
+          val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
           // 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
-          startY = skillBreakArea.y - 2
+          skillBreakArea.y - 2
         }// その他横向き発動時
         // 横向きによる発動のうち、デュアルorトリアルのmineflagnumが1(上破壊)
         // 上向きによる発動
@@ -487,14 +438,14 @@ object BreakUtil {
       /** 破壊要因スキルレベル  */
       val breakSkillLevel = playerdata.activeskilldata.assaultnum
       /** 選択中のスキルの破壊範囲  */
-      val skillBreakArea = skilllist[breakSkillType - 1].getBreakLength(breakSkillLevel)
+      val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
       // アサルトアーマーの場合
       if (breakSkillType == ActiveSkill.ARMOR.gettypenum()) {
         // スキル高さ - 足位置で1 - blockが1段目なので1
-        startY = skillBreakArea.y - 2
+        skillBreakArea.y - 2
       } else {
         // 高さはスキル/2の切り上げ…blockが1段目なので-1してプラマイゼロ
-        startY = (skillBreakArea.y - 1) / 2
+        (skillBreakArea.y - 1) / 2
       }// その他のアサルトスキルの場合
     }// Assaultスキルの場合
 
@@ -505,15 +456,15 @@ object BreakUtil {
     var gravity = 0
     /** 最大ループ数  */
     val YMAX = 255
-    for (checkPointer in 1 until YMAX) {
+    for (checkPointer <- 1 until YMAX) {
       /** 確認対象ブロック  */
       val target = block.getRelative(0, startY + checkPointer, 0)
       // 対象ブロックが地上判定ブロックの場合
-      if (MaterialSets.transparentMaterials.contains(target.type)) {
+      if (MaterialSets.transparentMaterials.contains(target.getType)) {
         // カウンタを加算
-        openCount++
+        openCount += 1
         if (openCount >= OPENHEIGHT) {
-          break
+          return gravity
         }
       } else {
         // カウンタをクリア
@@ -522,7 +473,7 @@ object BreakUtil {
         if (target.getType == Material.WATER) {
           gravity += 2
         } else {
-          gravity++
+          gravity += 1
         }
       }
     }
@@ -531,7 +482,7 @@ object BreakUtil {
   }
 
   def logRemove(player: Player, removedBlock: Block): Boolean = {
-    val wrapper = ExternalPlugins.coreProtectWrapper()
+    val wrapper = ExternalPlugins.getCoreProtectWrapper()
     if (wrapper == null) {
       player.sendMessage(RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")
       return false
