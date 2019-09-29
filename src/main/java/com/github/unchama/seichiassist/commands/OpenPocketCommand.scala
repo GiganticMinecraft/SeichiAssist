@@ -1,46 +1,59 @@
 package com.github.unchama.seichiassist.commands
 
+import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers
+import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.MessageEffects._
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import kotlin.Suppress
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
+import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 
 object OpenPocketCommand {
-  private val descriptionPrintExecutor = EchoExecutor(List(
+  private val descriptionPrintExecutor = new EchoExecutor(List(
     s"${RED}/openpocket [プレイヤー名]",
       "対象プレイヤーの四次元ポケットを開きます。",
       "編集結果はオンラインのプレイヤーにのみ反映されます。"
   ).asMessageEffect())
 
-  val executor = playerCommandBuilder
-      .argumentsParsers(List(Parsers.identity), onMissingArguments = descriptionPrintExecutor)
-      .execution { context =>
-        val playerName = context.args.parsed[0].asInstanceOf[String]
-        val player = Bukkit.getPlayer(playerName)
+  val executor: TabExecutor = playerCommandBuilder
+    .argumentsParsers(List(Parsers.identity), onMissingArguments = descriptionPrintExecutor)
+    .execution { context =>
+      val playerName = context.args.parsed[0].asInstanceOf[String]
+      val player = Bukkit.getPlayer(playerName)
 
+      def execute(): TargetedEffect[Player] = {
         if (player != null) {
-          val playerData = SeichiAssist.playermap(player.uniqueId)
+          val playerData = SeichiAssist.playermap(player.getUniqueId)
           val targetInventory = playerData.pocketInventory
 
           context.sender.openInventory(targetInventory)
+
           EmptyEffect
         } else {
-          @Suppress("DEPRECATION") val targetPlayerUuid = Bukkit.getOfflinePlayer(playerName)?.uniqueId
-          ?: return@execution s"${RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()
+          @Suppress("DEPRECATION") val targetPlayerUuid = Bukkit.getOfflinePlayer(playerName).getUniqueId
+          if (targetPlayerUuid == null) {
+            s"${RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()
+          }
 
           SeichiAssist.databaseGateway.playerDataManipulator
-              .selectPocketInventoryOf(targetPlayerUuid)
-              .map { inventory =>
-                context.sender.openInventory(inventory)
+            .selectPocketInventoryOf(targetPlayerUuid)
+            .map { result =>
+              context.sender.openInventory(
+                result.getOrElse(return s"${RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()))
+            }
 
-                s"${RED}対象プレイヤーはオフラインです。編集結果は反映されません。".asMessageEffect()
-              }
-              .merge()
+          EmptyEffect
         }
       }
-      .build()
-      .asNonBlockingTabExecutor()
+
+      IO(execute())
+    }
+    .build()
+    .asNonBlockingTabExecutor()
 }
