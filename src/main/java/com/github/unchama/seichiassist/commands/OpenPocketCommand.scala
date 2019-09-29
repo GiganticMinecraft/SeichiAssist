@@ -47,6 +47,7 @@ object OpenPocketCommand {
               context.sender.openInventory(
                 result.getOrElse(return s"${RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()))
             }
+
           EmptyEffect
         }
       }
