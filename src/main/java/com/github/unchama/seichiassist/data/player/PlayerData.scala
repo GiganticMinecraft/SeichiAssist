@@ -141,6 +141,7 @@ class PlayerData(
 
     _pocketInventory
   }
+  def pocketInventory_=(inventory: Inventory) { _pocketInventory = inventory }
 
   //ワールドガード保護自動設定用
   var regionCount = 0
