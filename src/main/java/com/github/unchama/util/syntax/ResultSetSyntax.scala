@@ -10,7 +10,7 @@ trait ResultSetSyntax {
 }
 
 object ResultSetSyntax {
-  implicit case class ResultSetOps(resultSet: ResultSet) {
+  implicit class ResultSetOps(resultSet: ResultSet) {
     def recordIteration[T](operation: ResultSet => T): Option[T] = {
       try {
         var result: Option[T] = None

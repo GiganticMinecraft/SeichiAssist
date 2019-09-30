@@ -13,7 +13,7 @@ object XYZTuple {
 
   case class AxisAlignedCuboid(begin: XYZTuple, end: XYZTuple)
 
-  implicit case class AACOps(cuboid: AxisAlignedCuboid) extends AnyVal {
+  implicit class AACOps(cuboid: AxisAlignedCuboid) extends AnyVal {
     import cuboid._
 
     def forEachGridPoint(gridWidth: Int = 1)(action: XYZTuple => Unit) {

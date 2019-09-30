@@ -19,7 +19,7 @@ import org.bukkit.{Material, Sound}
 object BlockPlacementSkillMenu extends Menu {
   import com.github.unchama.targetedeffect.TargetedEffects._
 
-  private implicit case class PlayerDataOps(playerData: PlayerData) extends AnyVal {
+  private implicit class PlayerDataOps(val playerData: PlayerData) extends AnyVal {
     def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
   }
 
@@ -270,7 +270,7 @@ object BlockPlacementSkillMenu extends Menu {
             deferredEffect {
               IO {
                 if (playerData.level < BuildAssist.config.getZoneskillMinestacklevel)
-                  s"$RED\"建築LVが足りません\"".asMessageEffect()
+                  s"${RED}建築LVが足りません".asMessageEffect()
                 else
                   sequentialEffect(
                     targetedeffect.UnfocusedEffect {

@@ -186,7 +186,7 @@ class BlockLineUp extends Listener {
 
     // メインハンドのアイテム数を調整する
     if (mainHandItem.getAmount - consumptionFromMainHand > 0) {
-      mainHandItem.getAmount -= consumptionFromMainHand
+      mainHandItem.setAmount(mainHandItem.getAmount - consumptionFromMainHand)
     } else {
       //アイテム数が0になっても消えないので自前で消す
       inventory.setItemInMainHand(new ItemStack(Material.AIR, -1))

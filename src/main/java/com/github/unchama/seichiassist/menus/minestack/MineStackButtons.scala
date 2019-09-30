@@ -25,11 +25,11 @@ private[minestack] case class MineStackButtons(player: Player) {
   import scala.jdk.CollectionConverters._
 
   private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect[Player] = {
-    implicit case class ItemStackOps(itemStack: ItemStack) extends AnyVal {
+    implicit class ItemStackOps(itemStack: ItemStack) extends AnyVal {
       def withAmount(amount: Int): ItemStack = itemStack.clone().modify(_.setAmount(amount))
     }
 
-    implicit case class MineStackObjectOps(mineStackObj: MineStackObj) extends AnyVal {
+    implicit class MineStackObjectOps(mineStackObj: MineStackObj) extends AnyVal {
       def parameterizedWithPlayerName: ItemStack = {
         // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
         if (mineStackObj.stackType == MineStackObjectCategory.GACHA_PRIZES && mineStackObj.gachaType >= 0) {

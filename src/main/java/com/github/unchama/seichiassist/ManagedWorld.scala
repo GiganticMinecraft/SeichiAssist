@@ -17,7 +17,7 @@ case object ManagedWorld extends Enum[ManagedWorld] {
 
   val values: IndexedSeq[ManagedWorld] = findValues
 
-  implicit case class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
+  implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
     def isSeichi: Boolean = managedWorld match {
       case WORLD_SW
            | WORLD_SW_2

@@ -436,7 +436,7 @@ object MenuInventoryData {
     //雪玉を雪（ブロック）に変換10～1万
     var num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("snow_ball"))
     var num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("snow_block"))
-    var num_3: Long = null
+    var num_3: Long = 0
     for (x <- 1 to 4) {
       val p10 = power10(x)
       itemstack = new ItemStack(Material.SNOW_BLOCK, x)
