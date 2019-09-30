@@ -3,10 +3,9 @@ package com.github.unchama.seichiassist.bungee
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, DataInputStream, DataOutputStream}
 import java.util.UUID
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.task.PlayerDataSaving
-import com.github.unchama.util.kotlin2scala.Coroutines
-import kotlin.jvm.Synchronized
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.messaging.PluginMessageListener
@@ -15,8 +14,7 @@ import scala.jdk.CollectionConverters._
 
 class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageListener {
 
-  @Synchronized
-  override def onPluginMessageReceived(channel: String, player: Player, message: Array[Byte]) {
+  override def onPluginMessageReceived(channel: String, player: Player, message: Array[Byte]) = synchronized {
     // ストリームの準備
     val stream = new ByteArrayInputStream(message)
     val in = new DataInputStream(stream)
@@ -58,14 +56,16 @@ class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageLi
 
       playerData.updateOnQuit()
 
-      Coroutines.launchInGlobalScope(block = (_, _) => {
+      IO {
         PlayerDataSaving.savePlayerData(playerData)
         SeichiAssist.playermap.remove(uuid)
 
         val message = writtenMessage("PlayerDataUnloaded", playerName)
         player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
         println(s"successfully unloaded data for $playerName by upstream request.")
-      })
+      }.unsafeRunAsync {
+        case Left(error) => error.printStackTrace()
+      }
     } catch {
       case e: Exception =>
         e.printStackTrace()
