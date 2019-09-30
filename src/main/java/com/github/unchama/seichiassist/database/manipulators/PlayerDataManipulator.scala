@@ -332,7 +332,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }.value
 
   // TODO remove `playerData` from argument
-  def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): IO[ResponseEffectOrResult[CommandSender, Unit]] = {
+  def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): IO[ResponseEffectOrResult[Player, Unit]] = {
     val assertSharedInventoryBeEmpty: EitherT[IO, TargetedEffect[CommandSender], Unit] =
       for {
         sharedInventorySerialized <- EitherT(loadShareInv(player, playerData))

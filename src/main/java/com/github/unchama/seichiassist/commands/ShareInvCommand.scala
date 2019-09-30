@@ -1,79 +1,91 @@
 package com.github.unchama.seichiassist.commands
 
+import cats.Applicative
+import cats.data.EitherT
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.{ItemListSerialization, Util}
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import kotlin.Suppress
+import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.ChatColor._
+import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
 
 object ShareInvCommand {
-  @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def dropIfNotEmpty(itemStack: ItemStack?, to: Player) {
-    if (itemStack != null && itemStack.getType !== Material.AIR) {
-      Util.dropItem(to, itemStack)
-    }
+  import com.github.unchama.targetedeffect.MessageEffects._
+
+  import scala.jdk.CollectionConverters._
+
+  def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): IO[Unit] = {
+    itemStackOption.filter(_.getType != Material.AIR)
+      .fold(IO.pure()) { itemStack => IO { Util.dropItem(to, itemStack) } }
   }
 
-  private @SuspendingMethod def withdrawFromSharedInventory(player: Player): TargetedEffect[Player] = {
-    val playerData = SeichiAssist.playermap(player.uniqueId)
+  private def withdrawFromSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
     val databaseGateway = SeichiAssist.databaseGateway
 
-    val serial = when (val either = databaseGateway.playerDataManipulator.loadShareInv(player, playerData)) {
-      is Either.Left => return either.a
-      is Either.Right => either.b
-    }
+    {
+      for {
+        serial <- EitherT(databaseGateway.playerDataManipulator.loadShareInv(player, playerData))
+        _ <- EitherT.cond[IO](serial != "", (), "${RESET}${RED}${BOLD}収納アイテムが存在しません。".asMessageEffect())
+        _ <- EitherT(databaseGateway.playerDataManipulator.clearShareInv(player, playerData))
+        playerInventory = player.getInventory
+        _ <- EitherT.right {
+          IO {
+            // アイテムを取り出す. 手持ちはドロップさせる
+            playerInventory.getContents.map(stack => dropIfNotEmpty(Some(stack), player))
+            playerInventory.setContents(ItemListSerialization.deserializeFromBase64(serial).asScala.toArray)
 
-    if (serial == s"") return "${RESET}${RED}${BOLD}収納アイテムが存在しません。".asMessageEffect()
-
-    val playerInventory = player.inventory
-
-    // 永続データをクリア
-    when (val clearResult = databaseGateway.playerDataManipulator.clearShareInv(player, playerData)) {
-      is Either.Left => return clearResult.a
-    }
-
-    // アイテムを取り出す. 手持ちはドロップさせる
-    playerInventory.contents.forEach { dropIfNotEmpty(it, player) }
-    playerInventory.contents = ItemListSerialization.deserializeFromBase64(serial).toTypedArray()
-
-    playerData.contentsPresentInSharedInventory = false
-
-    Bukkit.getLogger().info(s"${player.name}がアイテム取り出しを実施(DB書き換え成功)")
-    return s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect()
+            playerData.contentsPresentInSharedInventory = false
+            Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB書き換え成功)")
+          }
+        }
+        successful <- EitherT.rightT[IO, TargetedEffect[Player]](s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect())
+      } yield successful
+    }.merge
   }
 
-  private @SuspendingMethod def depositToSharedInventory(player: Player): TargetedEffect[Player] = {
-    val playerData = SeichiAssist.playermap(player.uniqueId)
+  private def depositToSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
     val databaseGateway = SeichiAssist.databaseGateway
 
-    val playerInventory = player.inventory
+    val playerInventory = player.getInventory
 
-    // アイテム一覧をシリアル化する
-    val serializedInventory = ItemListSerialization
-      .serializeToBase64(playerInventory.contents.toList())
-      ?: return s"${RESET}${RED}${BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
+    def takeIfNotNull[App[_]: Applicative, E, A](a: A, fail: E): EitherT[App, E, A] =
+      EitherT.cond[App](a != null, a, fail)
 
-    return databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory).map {
-      // 現所持アイテムを全て削除
-      playerInventory.clear()
-      playerData.contentsPresentInSharedInventory = true
+    {
+      for {
+        inventory <- EitherT.rightT[IO, TargetedEffect[Player]](playerInventory.getContents.toList.asJava)
+        serializedInventory <-
+          takeIfNotNull[IO, TargetedEffect[Player], String](
+            ItemListSerialization.serializeToBase64(inventory),
+            s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
+          )
+        _ <- EitherT(databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory))
+        successEffect <- EitherT.right {
+          IO {
+            // 現所持アイテムを全て削除
+            playerInventory.clear()
+            playerData.contentsPresentInSharedInventory = true
 
-      // 木の棒を取得させる
-      player.performCommand("stick")
+            // 木の棒を取得させる
+            player.performCommand("stick")
 
-      Bukkit.getLogger().info(s"${player.name}がアイテム収納を実施(SQL送信成功)")
-      s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。".asMessageEffect()
-    }.merge()
+            Bukkit.getLogger.info(s"${player.getName}がアイテム収納を実施(SQL送信成功)")
+            s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。".asMessageEffect()
+          }
+        }
+      } yield successEffect
+    }.merge
   }
 
-  val executor = playerCommandBuilder
+  val executor: TabExecutor = playerCommandBuilder
       .execution { context =>
-        val senderData = SeichiAssist.playermap(context.sender.uniqueId)
+        val senderData = SeichiAssist.playermap(context.sender.getUniqueId)
 
         if (senderData.contentsPresentInSharedInventory) {
           withdrawFromSharedInventory(context.sender)
