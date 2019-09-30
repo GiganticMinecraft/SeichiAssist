@@ -15,7 +15,7 @@ object ResultSetSyntax {
       try {
         var result: Option[T] = None
         while (resultSet.next()) {
-          result = Some(operation())
+          result = Some(operation(resultSet))
         }
         result
       } catch {

@@ -22,7 +22,7 @@ class BuildAssist(plugin: Plugin) {
     BuildAssist.plugin = plugin
   }
 
-  def onEnable() {
+  def onEnable(): Unit = {
     //コンフィグ系の設定は全てConfig.javaに移動
     BuildAssist.config = new BuildAssistConfig(plugin)
     BuildAssist.config.loadConfig()
@@ -58,7 +58,7 @@ class BuildAssist(plugin: Plugin) {
     commandlist.get(cmd.getName).exists(_.onCommand(sender, cmd, label, args))
   }
 
-  def onDisable() {
+  def onDisable(): Unit = {
     for (task <- this.tasklist.asScala) {
       task.cancel()
     }

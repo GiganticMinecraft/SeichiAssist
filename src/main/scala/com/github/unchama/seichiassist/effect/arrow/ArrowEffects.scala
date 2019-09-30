@@ -27,7 +27,7 @@ object ArrowEffects {
   def arrowEffect[P <: Projectile: ClassTag](
     spawnConfiguration: ProjectileSpawnConfiguration,
     sound: Option[Sound] = None,
-    projectileModifier: P => Unit = _ => ()
+    projectileModifier: P => Unit = (_: P) => ()
   ): TargetedEffect[Player] = {
     val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
     val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(EmptyEffect)

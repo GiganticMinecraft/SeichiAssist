@@ -4,9 +4,9 @@ import org.bukkit.scheduler.BukkitRunnable
 abstract class RoundedTask extends BukkitRunnable() {
   private var round = 0
 
-  abstract def firstAction()
+  def firstAction()
 
-  abstract def secondAction()
+  def secondAction()
 
   def otherwiseAction() {
     cancel()

@@ -15,7 +15,7 @@ class BlockLineUp extends Listener {
   import collection.JavaConverters._
 
   @EventHandler
-  def onPlayerClick(event: PlayerInteractEvent) {
+  def onPlayerClick(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val action = event.getAction
     val playerWorld = player.getWorld

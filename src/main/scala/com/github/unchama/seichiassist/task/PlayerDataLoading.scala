@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task
 
-import java.sql.{ResultSet, SQLException, Statement}
+import java.sql.{ResultSet, Statement}
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.{Calendar, UUID}
 
@@ -16,6 +16,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.{Bukkit, Location}
 
 import scala.collection.mutable
+import scala.util.Using
 
 object PlayerDataLoading {
 
@@ -24,9 +25,10 @@ object PlayerDataLoading {
   /**
    * プレイヤーデータロードを実施する処理(非同期で実行すること)
    *
+   * @deprecated Should be inlined.
    * @author unchama
    */
-  @Deprecated("Should be inlined.")
+  @Deprecated()
   def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData = {
     val config = SeichiAssist.seichiAssistConfig
     val databaseGateway = SeichiAssist.databaseGateway
@@ -251,7 +253,7 @@ object PlayerDataLoading {
         val cal = Calendar.getInstance()
         val sdf = new SimpleDateFormat("yyyy/MM/dd")
         val lastIn = rs.getString("lastcheckdate")
-        playerData.lastcheckdate = if (lastIn == null ||lastIn == "") {
+        playerData.lastcheckdate = if (lastIn == null || lastIn == "") {
           Some(sdf.format(cal.getTime))
         } else {
           None
@@ -345,13 +347,12 @@ object PlayerDataLoading {
         //バレンタインイベント用
         playerData.hasChocoGave = rs.getBoolean("hasChocoGave")
       }
+    }
+    //sqlコネクションチェック
+    databaseGateway.ensureConnection()
 
-      //sqlコネクションチェック
-      databaseGateway.ensureConnection()
-
-      //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
-      val newStmt: Statement = databaseGateway.con.createStatement()
-
+    //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+    Using(databaseGateway.con.createStatement()) { newStmt =>
       loadPlayerData(newStmt)
       updateLoginInfo(newStmt)
       loadGridTemplate(newStmt)
@@ -359,23 +360,16 @@ object PlayerDataLoading {
       loadSkillEffectUnlockState(newStmt)
       loadSkillPremiumEffectUnlockState(newStmt)
       loadSubHomeData(newStmt)
-
-      //念のためstatement閉じておく
-      try newStmt.close()
-      catch {
-        case e: SQLException =>
-          e.printStackTrace()
-      }
-
-      //貢献度pt増加によるマナ増加があるかどうか
-      if (playerData.added_mana < playerData.contribute_point) {
-        val addMana: Int = playerData.contribute_point - playerData.added_mana
-        playerData.setContributionPoint(addMana)
-      }
-
-      timer.sendLapTimeMessage(s"$GREEN${playerName}のプレイヤーデータ読込完了")
-
-      return playerData
     }
+
+    //貢献度pt増加によるマナ増加があるかどうか
+    if (playerData.added_mana < playerData.contribute_point) {
+      val addMana: Int = playerData.contribute_point - playerData.added_mana
+      playerData.setContributionPoint(addMana)
+    }
+
+    timer.sendLapTimeMessage(s"$GREEN${playerName}のプレイヤーデータ読込完了")
+
+    playerData
   }
 }

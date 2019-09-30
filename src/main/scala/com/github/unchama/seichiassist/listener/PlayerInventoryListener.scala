@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
+import com.github.unchama.util.ActionStatus
 import com.google.common.io.ByteStreams
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -17,7 +18,6 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.meta.{PotionMeta, SkullMeta}
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
-import org.junit.internal.runners.statements.Fail
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -555,7 +555,7 @@ class PlayerInventoryListener  extends  Listener {
             } else {
               playerdata.activeskilldata.obtainedSkillPremiumEffects.add(activeSkillPremiumEffect)
               player.sendMessage(LIGHT_PURPLE.toString() + "" + BOLD + "プレミアムエフェクト：" + activeSkillPremiumEffect.desc + RESET + "" + LIGHT_PURPLE + "" + BOLD + "" + " を解除しました")
-              if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == Fail) {
+              if (databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerdata, activeSkillPremiumEffect) == ActionStatus.Fail) {
                 player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。")
               }
               player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2f)

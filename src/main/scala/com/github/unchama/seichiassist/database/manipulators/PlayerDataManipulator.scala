@@ -600,7 +600,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     count match {
-      case 0 =>
+      case Some(0) =>
         //uuidが存在しない時
         SeichiAssist.instance.getLogger.info(s"$YELLOW${playerName}は完全初見です。プレイヤーデータを作成します")
 

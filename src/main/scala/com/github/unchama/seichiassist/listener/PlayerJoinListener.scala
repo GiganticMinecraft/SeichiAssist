@@ -136,7 +136,7 @@ class PlayerJoinListener  extends  Listener {
       if (Config.inspecting.getOrDefault(p.getName, false)) {
         // falseに変更する
         p.sendMessage("§3CoreProtect §f- Inspector now disabled.")
-        Config.inspecting(p.getName) = false
+        Config.inspecting.put(p.getName, false)
       }
 
       // アサルトスキルを切る

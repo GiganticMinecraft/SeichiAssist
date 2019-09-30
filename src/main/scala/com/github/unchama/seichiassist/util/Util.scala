@@ -49,9 +49,9 @@ object Util {
 
   /**
    * プレイヤーが整地ワールドにいるかどうかの判定処理(整地ワールド=true、それ以外=false)
-   *
+   * @deprecated use ManagedWorld
    */
-  @Deprecated("use ManagedWorld")
+  @Deprecated()
   def isSeichiWorld(player: Player): Boolean = {
     //デバッグモード時は全ワールドtrue(DEBUGWORLDNAME = worldの場合)
     var worldname = SeichiAssist.SEICHIWORLDNAME
@@ -532,7 +532,7 @@ object Util {
    * 指定した名前のマインスタックオブジェクトを返す
    */
   // TODO これはここにあるべきではない
-  @Deprecated("")
+  @Deprecated()
   def findMineStackObjectByName(name: String): Option[MineStackObj] = {
     MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
   }

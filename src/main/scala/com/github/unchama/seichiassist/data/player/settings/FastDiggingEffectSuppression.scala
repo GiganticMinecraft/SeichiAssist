@@ -30,13 +30,15 @@ class FastDiggingEffectSuppression {
       })
 
   def currentStatus(): IO[String] = IO {
-    s"$RESET" + internalValue match {
-      case 0 => s"${GREEN}現在有効です(無制限)"
-      case 1 => s"${GREEN}現在有効です$YELLOW(127制限)"
-      case 2 => s"${GREEN}現在有効です$YELLOW(200制限)"
-      case 3 => s"${GREEN}現在有効です$YELLOW(400制限)"
-      case 4 => s"${GREEN}現在有効です$YELLOW(600制限)"
-      case _ => s"${RED}現在OFFです"
+    s"$RESET" + {
+      internalValue match {
+        case 0 => s"${GREEN}現在有効です(無制限)"
+        case 1 => s"${GREEN}現在有効です$YELLOW(127制限)"
+        case 2 => s"${GREEN}現在有効です$YELLOW(200制限)"
+        case 3 => s"${GREEN}現在有効です$YELLOW(400制限)"
+        case 4 => s"${GREEN}現在有効です$YELLOW(600制限)"
+        case _ => s"${RED}現在OFFです"
+      }
     }
   }
 

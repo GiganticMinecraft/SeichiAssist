@@ -25,7 +25,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
         + "'" + playerdata.lowercaseName + "',"
         + "'" + playerdata.uuid.toString() + "',"
         + effect.num + ","
-        + "'" + effect.getsqlName() + "',"
+        + "'" + effect.getsqlName + "',"
         + effect.usePoint + ","
         + "cast( now() as datetime )"
         + ")")

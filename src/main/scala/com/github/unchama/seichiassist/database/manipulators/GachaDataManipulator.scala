@@ -32,7 +32,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
         prizes.append(prize)
       }
     } catch {
-      case e: SQLException | IOException =>
+      case e @ (_ : SQLException | _ : IOException) =>
         println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
         e.printStackTrace()
         return false
