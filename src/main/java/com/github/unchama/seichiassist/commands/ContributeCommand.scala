@@ -7,7 +7,6 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.ContributeCommand.ContributeOperation._
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
@@ -21,19 +20,20 @@ object ContributeCommand {
     case object REMOVE extends ContributeOperation
   }
 
-  @SuspendingMethod private def addContributionPoint(targetPlayerName: String, point: Int): TargetedEffect[CommandSender] = {
+  private def addContributionPoint(targetPlayerName: String, point: Int): IO[TargetedEffect[CommandSender]] = {
     SeichiAssist.databaseGateway.playerDataManipulator
       .addContributionPoint(targetPlayerName, point)
-      .map(_ => {
-        val operationResponse =
-          if (point >= 0) {
-            s"${GREEN}${targetPlayerName}に貢献度ポイントを${point}追加しました"
-          } else {
-            s"${GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
-          }
-        operationResponse.asMessageEffect()
+      .map(responseOrResult => {
+        responseOrResult.map { _ =>
+          val operationResponse =
+            if (point >= 0) {
+              s"${GREEN}${targetPlayerName}に貢献度ポイントを${point}追加しました"
+            } else {
+              s"${GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
+            }
+          operationResponse.asMessageEffect()
+        }.merge
       })
-      .merge
   }
 
   private val printHelpMessageExecutor = new EchoExecutor(
@@ -66,12 +66,8 @@ object ContributeCommand {
       val point = context.args.parsed[2].asInstanceOf[Int]
 
       operation match {
-        case ADD => IO {
-          addContributionPoint(targetPlayerName, point)
-        }
-        case REMOVE => IO {
-          addContributionPoint(targetPlayerName, -point)
-        }
+        case ADD => addContributionPoint(targetPlayerName, point)
+        case REMOVE => addContributionPoint(targetPlayerName, -point)
       }
     }
     .build()

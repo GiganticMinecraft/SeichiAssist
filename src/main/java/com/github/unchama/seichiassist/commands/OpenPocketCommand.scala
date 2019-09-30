@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.targetedeffect.EmptyEffect
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import kotlin.Suppress
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
@@ -36,7 +35,7 @@ object OpenPocketCommand {
 
           EmptyEffect
         } else {
-          @Suppress("DEPRECATION") val targetPlayerUuid = Bukkit.getOfflinePlayer(playerName).getUniqueId
+          val targetPlayerUuid = Bukkit.getOfflinePlayer(playerName).getUniqueId
           if (targetPlayerUuid == null) {
             s"${RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()
           }

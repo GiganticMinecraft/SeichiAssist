@@ -5,7 +5,6 @@ import com.github.unchama.contextualexecutor.builder.{ArgumentParserScope, Parse
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.Bukkit
@@ -13,22 +12,19 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 object RegionOwnerTransferCommand {
-  @SuspendingMethod
-  private def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): TargetedEffect[Player] = {
+  private def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): IO[TargetedEffect[Player]] = IO {
     val owners = region.getOwners
 
     if (!owners.contains(donner.getUniqueId)) {
-      return "オーナーではないため権限を譲渡できません。".asMessageEffect()
+      "オーナーではないため権限を譲渡できません。".asMessageEffect()
+    } else if (owners.size() != 1) {
+      "オーナーが複数人いるため権限を譲渡できません。".asMessageEffect()
+    } else {
+      owners.clear()
+      owners.addPlayer(recipient.getUniqueId)
+
+      s"${recipient.getName}に${region.getId}のオーナー権限を譲渡しました。".asMessageEffect()
     }
-
-    if (owners.size() != 1) {
-      return "オーナーが複数人いるため権限を譲渡できません。".asMessageEffect()
-    }
-
-    owners.clear()
-    owners.addPlayer(recipient.getUniqueId)
-
-    s"${recipient.getName}に${region.getId}のオーナー権限を譲渡しました。".asMessageEffect()
   }
 
   import ArgumentParserScope._
@@ -53,7 +49,7 @@ object RegionOwnerTransferCommand {
         IO(s"${regionName}という名前の保護は存在しません。".asMessageEffect())
       }
 
-      IO(attemptRegionTransfer(sender, newOwner, region))
+      attemptRegionTransfer(sender, newOwner, region)
     }
     .build()
     .asNonBlockingTabExecutor()
