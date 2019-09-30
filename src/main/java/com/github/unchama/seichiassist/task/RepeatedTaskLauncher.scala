@@ -9,9 +9,9 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
 abstract class RepeatedTaskLauncher {
-  protected abstract val getRepeatIntervalTicks: IO[Long]
+  protected val getRepeatIntervalTicks: IO[Long]
 
-  protected abstract val runRoutine: IO[Any]
+  protected val runRoutine: IO[Any]
 
   val launch: IO[Nothing] = {
     val sleep = for {

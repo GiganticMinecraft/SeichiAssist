@@ -19,8 +19,6 @@ import com.github.unchama.seichiassist.util.{ClosedRange, Util}
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.ForcedPotionEffect
 import com.github.unchama.targetedeffect.{TargetedEffects, UnfocusedEffect}
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
-import kotlin.Suppress
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.command.CommandSender
@@ -790,8 +788,7 @@ class PlayerData(
     mana.calcAndSetMax(player, this.level)
   }
 
-  @Suppress("RedundantSuspendModifier")
-  @SuspendingMethod def toggleMessageFlag(): TargetedEffect[Player] = deferredEffect(IO {
+  def toggleMessageFlag(): TargetedEffect[Player] = deferredEffect(IO {
     settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
 
     val responseMessage = if (settings.receiveFastDiggingEffectStats) {

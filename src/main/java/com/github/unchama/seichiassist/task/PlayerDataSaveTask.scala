@@ -122,7 +122,7 @@ object PlayerDataSaving {
       stmt.executeUpdate(removeCommand)
 
       activeSkillPremiumEffects.foreach { activeSkillPremiumEffect =>
-        val effectName = activeSkillPremiumEffect.getsqlName()
+        val effectName = activeSkillPremiumEffect.getsqlName
         val isEffectUnlocked = obtainedEffects.contains(activeSkillPremiumEffect)
 
         if (isEffectUnlocked) {

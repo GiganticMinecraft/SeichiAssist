@@ -8,7 +8,7 @@ import enumeratum._
  * @param serializedValue この列挙体を永続化する際の識別子となる整数.
  * @param uiLabel UI上で表示する際のカテゴリの名前
  */
-case class MineStackObjectCategory(serializedValue: Int, uiLabel: String) extends EnumEntry
+sealed abstract class MineStackObjectCategory(val serializedValue: Int, val uiLabel: String) extends EnumEntry
 
 case object MineStackObjectCategory extends Enum[MineStackObjectCategory] {
   case object ORES extends MineStackObjectCategory(0, "鉱石系アイテム")
