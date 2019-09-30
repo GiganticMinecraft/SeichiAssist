@@ -57,7 +57,7 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
 object IndexedSlotLayout {
   val emptyLayout = IndexedSlotLayout()
 
-  def apply() = IndexedSlotLayout(Map[Int, Slot]())
+  def apply(): IndexedSlotLayout = IndexedSlotLayout(Map[Int, Slot]())
 
   def apply(mappings: (Int, Slot)*): IndexedSlotLayout = IndexedSlotLayout(Map(mappings: _*))
 

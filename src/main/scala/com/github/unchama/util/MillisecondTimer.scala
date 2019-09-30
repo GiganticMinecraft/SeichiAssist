@@ -1,4 +1,5 @@
 package com.github.unchama.util
+
 class MillisecondTimer private() {
   private var startTime: Long = 0
 

@@ -2,6 +2,7 @@ package com.github.unchama.util;
 
 import com.github.unchama.util.failable.FailableAction;
 import com.github.unchama.util.failable.Try;
+import com.github.unchama.util.unit.Unit;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

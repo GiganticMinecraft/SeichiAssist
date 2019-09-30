@@ -94,8 +94,8 @@ class BlockLineUp extends Listener {
         else None
 
     val maxBlockUsage = {
-      val availableOnHand = mainHandItem.getAmount
-      val availableInMineStack = mineStackObjectToBeUsed.map { playerMineStack.getStackedAmountOf }.getOrElse { 0 }
+      val availableOnHand = mainHandItem.getAmount.toLong
+      val availableInMineStack = mineStackObjectToBeUsed.map { playerMineStack.getStackedAmountOf }.getOrElse { 0L }
 
       val available = availableOnHand + availableInMineStack
 

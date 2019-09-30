@@ -39,8 +39,8 @@ object RegionOwnerTransferCommand {
       }
     ))
     .execution { context =>
-      val regionName = context.args.parsed[0].asInstanceOf[String]
-      val newOwner = context.args.parsed[1].asInstanceOf[Player]
+      val regionName = context.args.parsed(0).asInstanceOf[String]
+      val newOwner = context.args.parsed(1).asInstanceOf[Player]
 
       val sender = context.sender
 

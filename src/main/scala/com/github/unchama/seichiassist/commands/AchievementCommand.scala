@@ -77,11 +77,11 @@ object AchievementCommand {
       .execution { context =>
         val sender = context.sender
 
-        val operation = context.args.parsed[0].asInstanceOf[AchievementOperation]
-        val achievementNumber = context.args.parsed[1].asInstanceOf[Int]
+        val operation = context.args.parsed(0).asInstanceOf[AchievementOperation]
+        val achievementNumber = context.args.parsed(1).asInstanceOf[Int]
 
         def execution(): TargetedEffect[CommandSender] = {
-          val targetPlayerNames: List[String] = context.args.parsed[2].asInstanceOf[ScopeSpecification] match {
+          val targetPlayerNames: List[String] = context.args.parsed(2).asInstanceOf[ScopeSpecification] match {
             case ScopeSpecification.USER =>
               val targetPlayerName =
                 context.args.yetToBeParsed.headOption

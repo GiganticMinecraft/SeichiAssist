@@ -15,7 +15,38 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
+private object MineStackButtons {
+  import com.github.unchama.util.syntax._
+
+  import scala.jdk.CollectionConverters._
+
+  implicit class ItemStackOps(val itemStack: ItemStack) extends AnyVal {
+    def withAmount(amount: Int): ItemStack = itemStack.clone().modify(_.setAmount(amount))
+  }
+
+  implicit class MineStackObjectOps(val mineStackObj: MineStackObj) extends AnyVal {
+    def parameterizedWith(player: Player): ItemStack = {
+      // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
+      if (mineStackObj.stackType == MineStackObjectCategory.GACHA_PRIZES && mineStackObj.gachaType >= 0) {
+        val gachaData = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
+        if (gachaData.probability < 0.1) {
+          return mineStackObj.itemStack.clone().modify { cloned =>
+            val meta = cloned.getItemMeta.modify { itemMeta =>
+              val itemLore = if (itemMeta.hasLore) itemMeta.getLore.asScala.toList else List()
+              itemMeta.setLore((itemLore :+ s"$RESET${DARK_GREEN}所有者：${player.getName}").asJava)
+            }
+            cloned.setItemMeta(meta)
+          }
+        }
+      }
+
+      mineStackObj.itemStack.clone()
+    }
+  }
+}
+
 private[minestack] case class MineStackButtons(player: Player) {
+  import MineStackButtons._
   import MineStackObjectCategory._
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.TargetedEffects._
@@ -25,37 +56,13 @@ private[minestack] case class MineStackButtons(player: Player) {
   import scala.jdk.CollectionConverters._
 
   private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect[Player] = {
-    implicit class ItemStackOps(val itemStack: ItemStack) extends AnyVal {
-      def withAmount(amount: Int): ItemStack = itemStack.clone().modify(_.setAmount(amount))
-    }
-
-    implicit class MineStackObjectOps(val mineStackObj: MineStackObj) extends AnyVal {
-      def parameterizedWithPlayerName: ItemStack = {
-        // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
-        if (mineStackObj.stackType == MineStackObjectCategory.GACHA_PRIZES && mineStackObj.gachaType >= 0) {
-          val gachaData = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
-          if (gachaData.probability < 0.1) {
-            return mineStackObj.itemStack.clone().modify { cloned =>
-              val meta = cloned.getItemMeta.modify { itemMeta =>
-                val itemLore = if (itemMeta.hasLore) itemMeta.getLore.asScala.toList else List()
-                itemMeta.setLore((itemLore :+ s"$RESET${DARK_GREEN}所有者：$getName").asJava)
-              }
-              cloned.setItemMeta(meta)
-            }
-          }
-        }
-
-        mineStackObj.itemStack.clone()
-      }
-    }
-
     computedEffect { player =>
       val playerData = SeichiAssist.playermap(player.getUniqueId)
       val currentAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
       val grantAmount = Math.min(mineStackObj.itemStack.getMaxStackSize.toLong, currentAmount).toInt
 
       val soundEffectPitch = if (currentAmount >= grantAmount) 1.0f else 0.5f
-      val grantItemStack = mineStackObj.parameterizedWithPlayerName.withAmount(grantAmount)
+      val grantItemStack = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
       sequentialEffect(
         targetedeffect.UnfocusedEffect {

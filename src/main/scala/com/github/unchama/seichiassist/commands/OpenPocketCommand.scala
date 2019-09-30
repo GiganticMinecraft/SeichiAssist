@@ -23,7 +23,7 @@ object OpenPocketCommand {
   val executor: TabExecutor = playerCommandBuilder
     .argumentsParsers(List(Parsers.identity), onMissingArguments = descriptionPrintExecutor)
     .execution { context =>
-      val playerName = context.args.parsed[0].asInstanceOf[String]
+      val playerName = context.args.parsed(0).asInstanceOf[String]
       val player = Bukkit.getPlayer(playerName)
 
       def execute(): TargetedEffect[Player] = {

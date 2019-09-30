@@ -36,7 +36,7 @@ object SubHomeCommand {
 
   private val warpExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed[0].asInstanceOf[Int]
+      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
       val player = context.sender
 
       val subHomeLocation = SeichiAssist.playermap.get(player.getUniqueId) match {
@@ -54,7 +54,7 @@ object SubHomeCommand {
 
   private val setExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed[0].asInstanceOf[Int]
+      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
       val player = context.sender
       val playerData = SeichiAssist.playermap(player.getUniqueId)
 
@@ -66,7 +66,7 @@ object SubHomeCommand {
 
   private val nameExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed[0].asInstanceOf[Int]
+      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
       val player = context.sender
       val playerData = SeichiAssist.playermap(player.getUniqueId)
 

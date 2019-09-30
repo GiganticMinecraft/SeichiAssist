@@ -8,13 +8,13 @@ import org.bukkit.command.CommandSender
 object TypeAliases {
   type Result[Error, Success] = Either[Error, Success]
 
-  type ResponseEffectOrResult[CS, T] = Result[TargetedEffect[CS], T]
+  type ResponseEffectOrResult[-CS, +T] = Result[TargetedEffect[CS], T]
 
   type SingleArgumentParser = String => ResponseEffectOrResult[CommandSender, Any]
 
-  type SenderTypeValidation[CS] = CommandSender => IO[Option[CS]]
+  type SenderTypeValidation[+CS] = CommandSender => IO[Option[CS]]
 
-  type CommandArgumentsParser[CS] = (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs]]
+  type CommandArgumentsParser[-CS] = (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs]]
 
-  type ScopedContextualExecution[CS] = ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
+  type ScopedContextualExecution[-CS] = ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
 }

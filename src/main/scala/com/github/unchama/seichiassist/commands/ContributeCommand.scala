@@ -7,7 +7,6 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.ContributeCommand.ContributeOperation._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import enumeratum._
-import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 
 object ContributeCommand {
@@ -60,9 +59,9 @@ object ContributeCommand {
       onMissingArguments = printHelpMessageExecutor
     )
     .execution { context =>
-      val operation = context.args.parsed[0].asInstanceOf[ContributeOperation]
-      val targetPlayerName = context.args.parsed[1].asInstanceOf[String]
-      val point = context.args.parsed[2].asInstanceOf[Int]
+      val operation = context.args.parsed(0).asInstanceOf[ContributeOperation]
+      val targetPlayerName = context.args.parsed(1).asInstanceOf[String]
+      val point = context.args.parsed(2).asInstanceOf[Int]
 
       operation match {
         case ADD => addContributionPoint(targetPlayerName, point)

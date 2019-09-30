@@ -63,8 +63,8 @@ object RmpCommand {
 
   private val removeExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val world = context.args.parsed[0].asInstanceOf[World]
-      val days = context.args.parsed[1].asInstanceOf[Int]
+      val world = context.args.parsed(0).asInstanceOf[World]
+      val days = context.args.parsed(1).asInstanceOf[Int]
 
       val isSeichiWorldWithWGRegionsOption = ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
 
@@ -96,8 +96,8 @@ object RmpCommand {
 
   private val listExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val world = context.args.parsed[0].asInstanceOf[World]
-      val days = context.args.parsed[1].asInstanceOf[Int]
+      val world = context.args.parsed(0).asInstanceOf[World]
+      val days = context.args.parsed(1).asInstanceOf[Int]
 
       IO {
         getOldRegionsIn(world, days).map { removalTargets =>

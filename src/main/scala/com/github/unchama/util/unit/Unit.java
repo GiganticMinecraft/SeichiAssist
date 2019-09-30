@@ -1,4 +1,4 @@
-package com.github.unchama.util;
+package com.github.unchama.util.unit;
 
 /**
  * 単一の情報量を持たない値が存在するようなシングルトンクラス

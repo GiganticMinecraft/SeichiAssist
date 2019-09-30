@@ -78,13 +78,13 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
    * 失敗したら[errorMessageOnFail]が返るような[senderTypeValidation]が入った
    * 新しい[ContextualExecutorBuilder]
    */
-  def refineSender[CS1 <: CS : ClassTag](effectOnFail: TargetedEffect[CS]): ContextualExecutorBuilder[CS1] = {
+  def refineSender[CS1 <: CS : ClassTag](effectOnFail: TargetedEffect[CommandSender]): ContextualExecutorBuilder[CS1] = {
     val newSenderTypeValidation: SenderTypeValidation[CS1] = { sender =>
       val verificationProgram = for {
-        refined1 <- OptionT(senderTypeValidation(sender))
-        refined2 <- refined1 match {
+        refined1: CS <- OptionT(senderTypeValidation(sender))
+        refined2: CS1 <- refined1 match {
           case refined1: CS1 => OptionT.pure[IO](refined1)
-          case _ => OptionT(effectOnFail(sender).map(_ => None))
+          case _ => OptionT[IO, Nothing](effectOnFail(sender).map(_ => None))
         }
       } yield refined2
 

@@ -1,7 +1,7 @@
 package com.github.unchama.util.failable;
 
 import com.github.unchama.util.ActionStatus;
-import com.github.unchama.util.Unit;
+import com.github.unchama.util.unit.Unit;
 
 import java.util.Arrays;
 import java.util.List;
