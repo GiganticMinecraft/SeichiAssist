@@ -8,12 +8,15 @@ import org.bukkit.entity.Player
 import scala.collection.mutable
 
 class ExpBarSynchronization {
+
+  import com.github.unchama.util.syntax._
+
   private case class ExpBarProperties(val title: String, val progress: Double)
 
-  private val managedExpBars: MutableMap[Player, BossBar] = mutable.HashMap()
+  private val managedExpBars: mutable.HashMap[Player, BossBar] = mutable.HashMap()
 
   private def computePropertiesFor(player: Player): ExpBarProperties = {
-    val playerData = SeichiAssist.playermap(player.uniqueId)
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
     val playerLevel = playerData.level
 
     return if (playerLevel >= LevelThresholds.levelExpThresholds.size) {
@@ -24,18 +27,18 @@ class ExpBarSynchronization {
       ExpBarProperties(text, progress)
     } else {
       // 現在のLvにおける割合をBarに配置
-      val nextLevelThreshold = LevelThresholds.levelExpThresholds[playerLevel]
-      val previousLevelThreshold = LevelThresholds.levelExpThresholds[playerLevel - 1]
+      val nextLevelThreshold = LevelThresholds.levelExpThresholds(playerLevel)
+      val previousLevelThreshold = LevelThresholds.levelExpThresholds(playerLevel - 1)
       val currentExp = playerData.totalbreaknum
       val text = s"$GOLD${BOLD}Lv $playerLevel(${String.format("%,d", currentExp)}/${String.format("%,d", nextLevelThreshold)})"
 
       val expAfterPreviousThreshold = currentExp - previousLevelThreshold
       val expBetweenLevels = nextLevelThreshold - previousLevelThreshold
-      val progress = when {
+      val progress = {
         // レベルアップ前にログアウトした場合、次回ログイン時のレベルアップ処理までに100%を超えている場合がある
-        expAfterPreviousThreshold >= expBetweenLevels => 1.0
-        expAfterPreviousThreshold <= 0 => 0.0
-        else => expAfterPreviousThreshold.toDouble() / expBetweenLevels
+        case _ if expAfterPreviousThreshold >= expBetweenLevels => 1.0
+        case _ if expAfterPreviousThreshold <= 0 => 0.0
+        case _ => expAfterPreviousThreshold.toDouble / expBetweenLevels
       }
 
       ExpBarProperties(text, progress)
@@ -45,20 +48,22 @@ class ExpBarSynchronization {
   def synchronizeFor(player: Player) {
     desynchronizeFor(player)
 
-    val playerData = SeichiAssist.playermap(player.uniqueId)
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     if (playerData.settings.isExpBarVisible) {
-      val (title, progress) = computePropertiesFor(player)
+      val ExpBarProperties(title, progress) = computePropertiesFor(player)
 
-      managedExpBars[player] = Bukkit.getServer().createBossBar(title, BarColor.YELLOW, BarStyle.SOLID).apply {
-        this.progress = progress
-        addPlayer(player)
-      }
+      managedExpBars(player) =
+        Bukkit.getServer.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID)
+        .modify { b => import b._
+          setProgress(progress)
+          addPlayer(player)
+        }
     }
   }
 
   def desynchronizeFor(player: Player) {
-    managedExpBars[player]?.removeAll()
+    managedExpBars.get(player).foreach(_.removeAll())
     managedExpBars.remove(player)
   }
 }

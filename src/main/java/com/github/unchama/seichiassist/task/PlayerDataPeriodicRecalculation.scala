@@ -8,10 +8,11 @@ import com.github.unchama.seichiassist.util.Util
 import org.bukkit.ChatColor._
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
+
 object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
   override val getRepeatIntervalTicks: IO[Long] = IO { if (SeichiAssist.DEBUG) 20 * 10 else 20 * 60 }
 
-  override val runRoutine: IO[Unit] = {
+  override val runRoutine: IO[Unit] = IO {
     import scala.jdk.CollectionConverters._
 
     val config = SeichiAssist.seichiAssistConfig

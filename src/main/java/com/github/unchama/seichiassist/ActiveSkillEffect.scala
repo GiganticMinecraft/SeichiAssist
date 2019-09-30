@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
+import com.github.unchama.seichiassist.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
 import enumeratum._
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -15,6 +16,7 @@ sealed abstract case class ActiveSkillEffect(num: Int,
                                              explanation: String,
                                              usePoint: Int,
                                              material: Material) extends EnumEntry {
+  import com.github.unchama.seichiassist.effect.XYZTuple._
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
@@ -22,40 +24,41 @@ sealed abstract case class ActiveSkillEffect(num: Int,
                      start: Coordinate,
                      end: Coordinate,
                      standard: Location) = {
-    case Explosion => ExplosionTask(player, skillId <= 2, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
-    case Blizzard => {
-      val effect = BlizzardTask(player, skillData, tool, breaklist, start, end, standard)
+    val plugin = SeichiAssist.instance
+    val skillId = skillData.skillnum
 
-      if (skillId < 3) {
-        effect.runTaskLater(plugin, 1)
-      } else {
-        val period = if (SeichiAssist.DEBUG) 100L else 10L
-        effect.runTaskTimer(plugin, 0, period)
+    this match {
+      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
+      case Blizzard => {
+        val effect = new BlizzardTask(player, skillData, tool, breakList, start, end, standard)
+
+        if (skillId < 3) {
+          effect.runTaskLater(plugin, 1)
+        } else {
+          val period = if (SeichiAssist.DEBUG) 100L else 10L
+          effect.runTaskTimer(plugin, 0, period)
+        }
       }
-    }
-    case Meteo => {
-      val delay = if (skillId < 3) 1L else 10L
+      case Meteo => {
+        val delay = if (skillId < 3) 1L else 10L
 
-      MeteoTask(player, skillData, tool, breaklist, start, end, standard)
-        .runTaskLater(plugin, delay)
+        new MeteoTask(player, skillData, tool, breakList, start, end, standard).runTaskLater(plugin, delay)
+      }
     }
   }
 
   //エフェクトの実行処理分岐
   def runArrowEffect(player: Player) {
-    val effect = when(this
-    @ActiveSkillEffect
-    )
-    {
-      EXPLOSION =>
-        ArrowEffects.singleArrowExplosionEffect
-        BLIZZARD =>
-          ArrowEffects.singleArrowBlizzardEffect
-          METEO => ArrowEffects.singleArrowMeteoEffect
+    val effect = this match {
+      case Explosion => ArrowEffects.singleArrowExplosionEffect
+      case Blizzard => ArrowEffects.singleArrowBlizzardEffect
+      case Meteo => ArrowEffects.singleArrowMeteoEffect
     }
 
-    GlobalScope.launch(Schedulers.async) {
-      effect.runFor(player)
+    effect(player).unsafeRunAsync {
+      case Left(error) =>
+        println("Caught exception while running arrow-effect asynchronously")
+        error.printStackTrace()
     }
   }
 }
@@ -75,7 +78,7 @@ object ActiveSkillEffect extends Enum[ActiveSkillEffect] {
     .map[ActiveSkillEffect](_.asInstanceOf)
     .find(activeSkillEffect => activeSkillEffect.num == effectNum)
     .map(_.nameOnUI)
-    .orElseGet("未設定")
+    .getOrElse("未設定")
 
-  def fromSqlName(sqlName: String): Option[ActiveSkillEffect] = ActiveSkillEffect.values
+  def fromSqlName(sqlName: String): Option[ActiveSkillEffect] = ActiveSkillEffect.values.find(_.nameOnDatabase == sqlName)
 }

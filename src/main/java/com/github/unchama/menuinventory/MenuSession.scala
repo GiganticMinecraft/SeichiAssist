@@ -1,9 +1,11 @@
 package com.github.unchama.menuinventory
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
+
+import scala.concurrent.ExecutionContext
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
@@ -25,15 +27,11 @@ class MenuSession private[menuinventory](private var _view: MenuInventoryView) e
    *
    * @param context インベントリを開く前に実行をシフトさせるためのContextShift
    */
-  // TODO make context implicit
-  // TODO should this revert back the shifted context?
-  def openEffectThrough(context: ContextShift[IO]): TargetedEffect[Player] = { player: Player =>
-    for {
-      _ <- IO.shift(context)
-      _ <- IO {
-        player.openInventory(sessionInventory)
+  def openEffectThrough(context: ExecutionContext): TargetedEffect[Player] = { player: Player =>
+    IO.contextShift(ExecutionContext.global)
+      .evalOn(context) {
+        IO { player.openInventory(sessionInventory) }
       }
-    } yield Unit
   }
 
 }

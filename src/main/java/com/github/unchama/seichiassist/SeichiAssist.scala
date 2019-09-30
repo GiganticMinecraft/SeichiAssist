@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
+import cats.effect.{ContextShift, Fiber, IO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -11,23 +12,23 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener._
+import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
-import com.github.unchama.seichiassist.task.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
-import kotlinx.coroutines.Job
+import com.github.unchama.seichiassist.task.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation, PlayerDataSaving}
+import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
 import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
-import org.junit.internal.runners.statements.Fail
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
 
-  private var repeatedJobCoroutine: Option[Job] = None
+  private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
   val expBarSynchronization = new ExpBarSynchronization()
 
@@ -182,7 +183,7 @@ class SeichiAssist extends JavaPlugin() {
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
-    getServer.getOnlinePlayers.asScala.foreach { p => {
+    getServer.getOnlinePlayers.asScala.foreach { p =>
       //UUIDを取得
       val uuid = p.getUniqueId
       //プレイヤーデータ取得
@@ -197,12 +198,9 @@ class SeichiAssist extends JavaPlugin() {
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
       playerdata.updateOnQuit()
 
-      runBlocking {
-        savePlayerData(playerdata)
-      }
-    }
+      PlayerDataSaving.savePlayerData(playerdata)
 
-      if (SeichiAssist.databaseGateway.disconnect() == Fail) {
+      if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
         logger.info("データベース切断に失敗しました")
       }
 
@@ -216,16 +214,26 @@ class SeichiAssist extends JavaPlugin() {
       = SeichiAssist.buildAssist.onCommand(sender, command, label, args)
 
   private def startRepeatedJobs() {
-    repeatedJobCoroutine = Some(CoroutineScope(Schedulers.sync).launch {
-      launch { HalfHourRankingRoutine.launch() }
-      launch { PlayerDataPeriodicRecalculation.launch() }
-      launch { PlayerDataBackupTask.launch() }
-    })
+    val startTask = {
+      import cats.implicits._
+
+      implicit val shift: ContextShift[IO] = IO.contextShift(Schedulers.sync)
+
+      val programs = List(
+        HalfHourRankingRoutine.launch,
+        PlayerDataPeriodicRecalculation.launch,
+        PlayerDataBackupTask.launch
+      )
+
+      programs.parSequence.start
+    }
+
+    repeatedTaskFiber = Some(startTask.unsafeRunSync())
   }
 
   private def cancelRepeatedJobs() {
-    repeatedJobCoroutine match {
-      case Some(x) => x.cancel(null)
+    repeatedTaskFiber match {
+      case Some(x) => x.cancel.unsafeRunSync()
     }
   }
 
@@ -236,7 +244,7 @@ class SeichiAssist extends JavaPlugin() {
 }
 
 object SeichiAssist {
-  var instance: SeichiAssist
+  var instance: SeichiAssist = _
 
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
   var DEBUG = false
@@ -248,10 +256,10 @@ object SeichiAssist {
   val DEBUGWORLDNAME = "world"
 
   // TODO staticであるべきではない
-  var databaseGateway: DatabaseGateway
-  var seichiAssistConfig: Config
+  var databaseGateway: DatabaseGateway = _
+  var seichiAssistConfig: Config = _
 
-  var buildAssist: BuildAssist
+  var buildAssist: BuildAssist = _
 
   //Gachadataに依存するデータリスト
   val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
