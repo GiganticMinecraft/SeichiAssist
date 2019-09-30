@@ -22,13 +22,13 @@ sealed case class ActiveSkillPremiumEffect(num: Int,
   def getsqlName: String = this.sql_name
 
   @Deprecated
-  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: Coordinate, end: Coordinate, standard: Location) {
+  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: Coordinate, end: Coordinate, standard: Location): Unit = {
     import XYZTuple.CoordinateOps
 
     runBreakEffect(player, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard)
   }
 
-  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: XYZTuple, end: XYZTuple, standard: Location) {
+  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: XYZTuple, end: XYZTuple, standard: Location): Unit = {
     this match {
       case ActiveSkillPremiumEffect.MAGIC => if (SeichiAssist.DEBUG) {
         new MagicTask(player, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100)
@@ -39,7 +39,7 @@ sealed case class ActiveSkillPremiumEffect(num: Int,
   }
 
   //エフェクトの実行処理分岐
-  def runArrowEffect(player: Player) {
+  def runArrowEffect(player: Player): Unit = {
     val effect = this match {
       case ActiveSkillPremiumEffect.MAGIC => ArrowEffects.singleArrowMagicEffect
     }

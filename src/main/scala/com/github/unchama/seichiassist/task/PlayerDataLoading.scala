@@ -40,7 +40,7 @@ object PlayerDataLoading {
 
     val playerData = new PlayerData(playerUUID, playerName)
 
-    def updateLoginInfo(stmt: Statement) {
+    def updateLoginInfo(stmt: Statement): Unit = {
       val loginInfoUpdateCommand = ("update "
         + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME + " "
         + "set loginflag = true, "
@@ -50,7 +50,7 @@ object PlayerDataLoading {
       stmt.executeUpdate(loginInfoUpdateCommand)
     }
 
-    def loadSubHomeData(stmt: Statement) {
+    def loadSubHomeData(stmt: Statement): Unit = {
       val subHomeDataQuery = ("select * from "
         + db + "." + DatabaseConstants.SUB_HOME_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "' and "
@@ -77,7 +77,7 @@ object PlayerDataLoading {
       }
     }
 
-    def loadMineStack(stmt: Statement) {
+    def loadMineStack(stmt: Statement): Unit = {
       val mineStackDataQuery = ("select * from "
         + db + "." + DatabaseConstants.MINESTACK_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
@@ -110,7 +110,7 @@ object PlayerDataLoading {
       playerData.minestack = new MineStack(objectAmounts)
     }
 
-    def loadGridTemplate(stmt: Statement) {
+    def loadGridTemplate(stmt: Statement): Unit = {
       val gridTemplateDataQuery = ("select * from "
         + db + "." + DatabaseConstants.GRID_TEMPLATE_TABLENAME + " where "
         + "designer_uuid like '" + stringUuid + "'")
@@ -135,7 +135,7 @@ object PlayerDataLoading {
       }
     }
 
-    def loadSkillEffectUnlockState(stmt: Statement) {
+    def loadSkillEffectUnlockState(stmt: Statement): Unit = {
       val unlockedSkillEffectQuery = ("select * from "
         + db + "." + DatabaseConstants.SKILL_EFFECT_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
@@ -148,7 +148,7 @@ object PlayerDataLoading {
       }
     }
 
-    def loadSkillPremiumEffectUnlockState(stmt: Statement) {
+    def loadSkillPremiumEffectUnlockState(stmt: Statement): Unit = {
       val unlockedSkillEffectQuery = ("select * from "
         + db + "." + DatabaseConstants.SKILL_PREMIUM_EFFECT_TABLENAME + " where "
         + "player_uuid like '" + stringUuid + "'")
@@ -161,7 +161,7 @@ object PlayerDataLoading {
       }
     }
 
-    def loadPlayerData(stmt: Statement) {
+    def loadPlayerData(stmt: Statement): Unit = {
       //playerdataをsqlデータから得られた値で更新
       val command = ("select * from " + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME
         + " where uuid like '" + stringUuid + "'")

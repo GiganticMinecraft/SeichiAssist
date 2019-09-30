@@ -139,7 +139,9 @@ class PlayerData(
 
     _pocketInventory
   }
-  def pocketInventory_=(inventory: Inventory) { _pocketInventory = inventory }
+  def pocketInventory_=(inventory: Inventory): Unit = {
+    _pocketInventory = inventory
+  }
 
   //ワールドガード保護自動設定用
   var regionCount = 0
@@ -288,7 +290,7 @@ class PlayerData(
   }
 
   //join時とonenable時、プレイヤーデータを最新の状態に更新
-  def updateOnJoin() {
+  def updateOnJoin(): Unit = {
     //破壊量データ(before)を設定
     halfhourblock.before = totalbreaknum
     updateLevel()
@@ -313,12 +315,12 @@ class PlayerData(
   def updateNickname(id1: Int = settings.nickName.id1,
                      id2: Int = settings.nickName.id2,
                      id3: Int = settings.nickName.id3,
-                     style: Style = settings.nickName.style) {
+                     style: Style = settings.nickName.style): Unit = {
     settings.nickName = settings.nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
   }
 
   //quit時とondisable時、プレイヤーデータを最新の状態に更新
-  def updateOnQuit() {
+  def updateOnQuit(): Unit = {
     //総整地量を更新
     updateAndCalcMinedBlockAmount()
     //総プレイ時間更新
@@ -334,12 +336,12 @@ class PlayerData(
     activeskilldata.RemoveAllTask()
   }
 
-  def giganticBerserkLevelUp() {
+  def giganticBerserkLevelUp(): Unit = {
     val currentLevel = giganticBerserk.level
     giganticBerserk = if (currentLevel >= 10) giganticBerserk else giganticBerserk.copy(level = currentLevel + 1, exp = 0)
   }
 
-  def recalculateAchievePoint() {
+  def recalculateAchievePoint(): Unit = {
     val max = TitleFlags.toList
       .filter(index => (1000 to 9799) contains index)
       .count(_ => true) * 10 /* Safe Conversation: BitSet indexes => Int */
@@ -347,17 +349,17 @@ class PlayerData(
     achievePoint = achievePoint.copy(fromUnlockedAchievements = max)
   }
 
-  def consumeAchievePoint(amount: Int) {
+  def consumeAchievePoint(amount: Int): Unit = {
     achievePoint = achievePoint.copy(used = achievePoint.used + amount)
   }
 
-  def convertEffectPointToAchievePoint() {
+  def convertEffectPointToAchievePoint(): Unit = {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
     activeskilldata.effectpoint -= 10
   }
 
   //エフェクトデータのdurationを60秒引く
-  def calcEffectData() {
+  def calcEffectData(): Unit = {
     val tmplist = mutable.Buffer[FastDiggingEffect]()
 
     //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
@@ -375,7 +377,7 @@ class PlayerData(
   }
 
   //レベルを更新
-  def updateLevel() {
+  def updateLevel(): Unit = {
     updatePlayerLevel()
     updateStarLevel()
     setDisplayName()
@@ -384,7 +386,7 @@ class PlayerData(
   }
 
   //表示される名前に整地レベルor二つ名を追加
-  def setDisplayName() {
+  def setDisplayName(): Unit = {
     var displayName = player.getName
 
     //放置時に色を変える
@@ -417,7 +419,7 @@ class PlayerData(
 
 
   //プレイヤーレベルを計算し、更新する。
-  private def updatePlayerLevel() {
+  private def updatePlayerLevel(): Unit = {
     //現在のランクを取得
     var i: Int = level
 
@@ -467,7 +469,7 @@ class PlayerData(
    * スターレベルの計算、更新を行う。
    * このメソッドはスター数が増えたときにメッセージを送信する副作用を持つ。
    */
-  def updateStarLevel() {
+  def updateStarLevel(): Unit = {
     //処理前の各レベルを取得
     val oldStars = starLevels.total()
     val oldBreakStars = starLevels.fromBreakAmount
@@ -498,7 +500,7 @@ class PlayerData(
   }
 
   //総プレイ時間を更新する
-  def updatePlayTick() {
+  def updatePlayTick(): Unit = {
     // WARN: 1分毎にupdatePlayTickが呼び出されるというコンテクストに依存している.
     val nowTotalPlayTick = player.getStatistic(Statistic.PLAY_ONE_TICK)
     val diff = nowTotalPlayTick - totalPlayTick.getOrElse(nowTotalPlayTick)
@@ -610,7 +612,7 @@ class PlayerData(
   }
 
   //サブホームの位置をセットする
-  def setSubHomeLocation(location: Location, subHomeIndex: Int) {
+  def setSubHomeLocation(location: Location, subHomeIndex: Int): Unit = {
     if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
       val currentSubHome = this.subHomeMap.get(subHomeIndex)
       val currentSubHomeName = currentSubHome.map(_.name).orNull
@@ -619,7 +621,7 @@ class PlayerData(
     }
   }
 
-  def setSubHomeName(name: String, subHomeIndex: Int) {
+  def setSubHomeName(name: String, subHomeIndex: Int): Unit = {
     if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
       val currentSubHome = this.subHomeMap.getOrElse(subHomeIndex, return)
 
@@ -639,11 +641,11 @@ class PlayerData(
     subHomeName.getOrElse(s"サブホームポイント${subHomeIndex + 1}")
   }
 
-  private def saveTotalExp() {
+  private def saveTotalExp(): Unit = {
     totalexp = expmanager.getCurrentExp
   }
 
-  private def loadTotalExp() {
+  private def loadTotalExp(): Unit = {
     val internalServerId = SeichiAssist.seichiAssistConfig.getServerNum
     //経験値が統合されてない場合は統合する
     if (expmarge.toInt != 0x07 && (1 to 3).contains(internalServerId)) {
@@ -695,7 +697,7 @@ class PlayerData(
     sizeAfterShrink >= 0
   }
 
-  def setUnitAmount(directionType: DirectionType, amount: Int) {
+  def setUnitAmount(directionType: DirectionType, amount: Int): Unit = {
     this.claimUnit = directionType match {
       case DirectionType.AHEAD => this.claimUnit.copy(ahead = amount)
       case DirectionType.BEHIND => this.claimUnit.copy(behind = amount)
@@ -704,7 +706,7 @@ class PlayerData(
     }
   }
 
-  def addUnitAmount(directionType: DirectionType, amount: Int) {
+  def addUnitAmount(directionType: DirectionType, amount: Int): Unit = {
     directionType match {
       case DirectionType.AHEAD => this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
       case DirectionType.BEHIND => this.claimUnit = this.claimUnit.copy(behind = this.claimUnit.behind + amount)
@@ -713,7 +715,7 @@ class PlayerData(
     }
   }
 
-  def toggleUnitPerGrid() {
+  def toggleUnitPerGrid(): Unit = {
     this.unitPerClick = {
       case this.unitPerClick == 1 => 10
       case this.unitPerClick == 10 => 100
@@ -736,7 +738,7 @@ class PlayerData(
     }
   }
 
-  def setVotingFairyTime(@AntiTypesafe str: String) {
+  def setVotingFairyTime(@AntiTypesafe str: String): Unit = {
     val s = str.split(",")
     if (s.size < 5) return
     if (!s.slice(0, 5).contains("")) {
@@ -762,7 +764,7 @@ class PlayerData(
     }
   }
 
-  private def isVotingFairy() {
+  private def isVotingFairy(): Unit = {
     //効果は継続しているか
     if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
       this.usingVotingFairy = false
@@ -772,7 +774,7 @@ class PlayerData(
     }
   }
 
-  def setContributionPoint(addAmount: Int) {
+  def setContributionPoint(addAmount: Int): Unit = {
     val mana = new Mana()
 
     //負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時

@@ -12,7 +12,7 @@ import org.bukkit.{Material, Sound}
 
 object OnActiveSkillUnselect extends Listener {
 
-  def onPlayerClickActiveSkillReleaseEvent(event: InventoryClickEvent) {
+  def onPlayerClickActiveSkillReleaseEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) return
 

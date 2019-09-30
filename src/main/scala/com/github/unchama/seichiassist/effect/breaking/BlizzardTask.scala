@@ -20,7 +20,7 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
   private var soundRadius: Int = 0
   private var setRadius: Boolean = false
 
-  override def firstAction() {
+  override def firstAction(): Unit = {
     //1回目のrun
     if (skillData.skillnum > 2) {
       blocks.foreach { block =>
@@ -39,7 +39,7 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
     setRadius = skillData.skilltype == ActiveSkill.BREAK.gettypenum()
   }
 
-  override def secondAction() {
+  override def secondAction(): Unit = {
     //2回目のrun
     AxisAlignedCuboid(XYZTuple(start.x, start.y, start.z), XYZTuple(end.x, end.y, end.z))
       .forEachGridPoint() { xyzTuple: XYZTuple =>

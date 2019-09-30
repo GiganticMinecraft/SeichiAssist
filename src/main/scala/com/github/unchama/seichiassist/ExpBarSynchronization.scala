@@ -45,7 +45,7 @@ class ExpBarSynchronization {
     }
   }
 
-  def synchronizeFor(player: Player) {
+  def synchronizeFor(player: Player): Unit = {
     desynchronizeFor(player)
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -62,7 +62,7 @@ class ExpBarSynchronization {
     }
   }
 
-  def desynchronizeFor(player: Player) {
+  def desynchronizeFor(player: Player): Unit = {
     managedExpBars.get(player).foreach(_.removeAll())
     managedExpBars.remove(player)
   }

@@ -6,7 +6,7 @@ class MineBlock() {
   var before: Long = 0
   var increase: Long = 0
 
-  def setIncrease() {
+  def setIncrease(): Unit = {
     increase = after - before
   }
 }

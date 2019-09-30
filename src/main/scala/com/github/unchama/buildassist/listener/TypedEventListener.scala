@@ -7,5 +7,5 @@ import org.bukkit.event.{Event, Listener}
  * [org.bukkit.event.EventHandler]は手動で付ける必要があります
  */
 trait TypedEventListener[E <: Event] extends Listener {
-  def onEvent(event: E)
+  def onEvent(event: E): Unit
 }

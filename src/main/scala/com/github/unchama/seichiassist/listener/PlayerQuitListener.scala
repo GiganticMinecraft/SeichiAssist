@@ -12,7 +12,7 @@ class PlayerQuitListener  extends  Listener {
 
   //プレイヤーがquitした時に実行
   @EventHandler(priority = EventPriority.LOWEST)
-  def onplayerQuitEvent(event: PlayerQuitEvent) {
+  def onplayerQuitEvent(event: PlayerQuitEvent): Unit = {
     val player = event.getPlayer
     val uuid = player.getUniqueId
     SeichiAssist.instance.expBarSynchronization.desynchronizeFor(player)

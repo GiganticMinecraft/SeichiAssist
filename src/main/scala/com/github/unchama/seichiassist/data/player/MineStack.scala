@@ -10,7 +10,7 @@ class MineStack(_objectCountMap: collection.Map[MineStackObj, Long] = collection
 
   def getStackedAmountOf(mineStackObj: MineStackObj): Long = objectCountMap.getOrElse(mineStackObj, 0)
 
-  private def setStackedAmountOf(mineStackObj: MineStackObj, to: Long) {
+  private def setStackedAmountOf(mineStackObj: MineStackObj, to: Long): Unit = {
     objectCountMap.put(mineStackObj, to)
   }
 

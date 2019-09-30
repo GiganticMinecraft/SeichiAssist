@@ -18,7 +18,7 @@ class PlayerRightClickListener extends Listener {
   import com.github.unchama.targetedeffect.TargetedEffects._
 
   @EventHandler
-  def onPlayerMenuUIEvent(event: PlayerInteractEvent) {
+  def onPlayerMenuUIEvent(event: PlayerInteractEvent): Unit = {
     //プレイヤーを取得
     val player = event.getPlayer
     //UUID取得

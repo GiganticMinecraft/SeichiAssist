@@ -21,7 +21,7 @@ object ItemStackOps {
       itemStack.getItemMeta.setLore(value.asJava)
     }
 
-    def appendOwnerInformation(owner: Player) {
+    def appendOwnerInformation(owner: Player): Unit = {
       lore =
         (if (itemStack.getItemMeta.hasLore) this.lore else Nil) ++
           List(s"$RESET${DARK_GREEN}所有者：${owner.getName}")

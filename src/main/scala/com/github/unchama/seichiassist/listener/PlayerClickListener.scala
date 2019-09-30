@@ -30,7 +30,7 @@ class PlayerClickListener  extends  Listener {
 
   //アクティブスキル処理
   @EventHandler
-  def onPlayerActiveSkillEvent(event: PlayerInteractEvent) {
+  def onPlayerActiveSkillEvent(event: PlayerInteractEvent): Unit = {
     //プレイヤー型を取得
     val player = event.getPlayer
     //プレイヤーが起こしたアクションを取得
@@ -143,7 +143,7 @@ class PlayerClickListener  extends  Listener {
     }
   }
 
-  private def runArrowSkill[T <: org.bukkit.entity.Projectile](player: Player, clazz: Class[T]) {
+  private def runArrowSkill[T <: org.bukkit.entity.Projectile](player: Player, clazz: Class[T]): Unit = {
     //プレイヤーの位置を取得
     val ploc = player.getLocation
 
@@ -174,7 +174,7 @@ class PlayerClickListener  extends  Listener {
 
   //プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
   @EventHandler
-  def onPlayerRightClickGachaEvent(event: PlayerInteractEvent) {
+  def onPlayerRightClickGachaEvent(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val uuid = player.getUniqueId
     val playerData = playerMap.getOrElse(uuid, return)
@@ -308,7 +308,7 @@ class PlayerClickListener  extends  Listener {
 
   //スキル切り替えのイベント
   @EventHandler
-  def onPlayerActiveSkillToggleEvent(event: PlayerInteractEvent) {
+  def onPlayerActiveSkillToggleEvent(event: PlayerInteractEvent): Unit = {
     //プレイヤーを取得
     val player = event.getPlayer
     //プレイヤーの起こしたアクションの取得
@@ -425,7 +425,7 @@ class PlayerClickListener  extends  Listener {
 
   //棒メニューを開くイベント
   @EventHandler
-  def onPlayerMenuEvent(event: PlayerInteractEvent) {
+  def onPlayerMenuEvent(event: PlayerInteractEvent): Unit = {
     //プレイヤーを取得
     val player = event.getPlayer
     //プレイヤーが起こしたアクションを取得
@@ -453,7 +453,7 @@ class PlayerClickListener  extends  Listener {
 
   //プレイヤーの拡張インベントリを開くイベント
   @EventHandler
-  def onPlayerOpenInventorySkillEvent(event: PlayerInteractEvent) {
+  def onPlayerOpenInventorySkillEvent(event: PlayerInteractEvent): Unit = {
     //プレイヤーを取得
     val player = event.getPlayer
     //プレイヤーが起こしたアクションを取得
@@ -495,7 +495,7 @@ class PlayerClickListener  extends  Listener {
 
   //　経験値瓶を持った状態でのShift右クリック…一括使用
   @EventHandler
-  def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent) {
+  def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent): Unit = {
     // 経験値瓶を持った状態でShift右クリックをした場合
     if (event.getPlayer.isSneaking && event.getPlayer.getInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
         && (event.getAction == Action.RIGHT_CLICK_AIR || event.getAction == Action.RIGHT_CLICK_BLOCK)) {
@@ -511,7 +511,7 @@ class PlayerClickListener  extends  Listener {
 
   //頭の即時回収
   @EventHandler
-  def onPlayerRightClickMineHeadEvent(e: PlayerInteractEvent) {
+  def onPlayerRightClickMineHeadEvent(e: PlayerInteractEvent): Unit = {
 
     val p = e.getPlayer
     val useItem = p.getInventory.getItemInMainHand

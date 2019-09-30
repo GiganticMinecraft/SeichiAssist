@@ -78,7 +78,7 @@ object BreakUtil {
   }
 
   //ブロックを破壊する処理、ドロップも含む、統計増加も含む
-  def breakBlock(player: Player, breakblock: Block, centerofblock: Location, tool: ItemStack, stepflag: Boolean) {
+  def breakBlock(player: Player, breakblock: Block, centerofblock: Location, tool: ItemStack, stepflag: Boolean): Unit = {
     var material = breakblock.getType
     if (!MaterialSets.materials.contains(material)) {
       return

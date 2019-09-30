@@ -18,7 +18,7 @@ class ExplosionTask(private val player: Player,
                     private val end: XYZTuple,
                     private val droploc: Location) extends BukkitRunnable() {
 
-  override def run() {
+  override def run(): Unit = {
     AxisAlignedCuboid(start, end).forEachGridPoint(2) { case XYZTuple(x, y, z) =>
       val explosionLocation = droploc.clone()
       explosionLocation.add(x.toDouble, y.toDouble, z.toDouble)

@@ -32,7 +32,7 @@ class SeichiAssist extends JavaPlugin() {
 
   val expBarSynchronization = new ExpBarSynchronization()
 
-  override def onEnable() {
+  override def onEnable(): Unit = {
     val logger = getLogger
 
     //チャンネルを追加
@@ -213,7 +213,7 @@ class SeichiAssist extends JavaPlugin() {
   override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Unit
       = SeichiAssist.buildAssist.onCommand(sender, command, label, args)
 
-  private def startRepeatedJobs() {
+  private def startRepeatedJobs(): Unit = {
     val startTask = {
       import cats.implicits._
 
@@ -231,13 +231,13 @@ class SeichiAssist extends JavaPlugin() {
     repeatedTaskFiber = Some(startTask.unsafeRunSync())
   }
 
-  private def cancelRepeatedJobs() {
+  private def cancelRepeatedJobs(): Unit = {
     repeatedTaskFiber match {
       case Some(x) => x.cancel.unsafeRunSync()
     }
   }
 
-  def restartRepeatedJobs() {
+  def restartRepeatedJobs(): Unit = {
     cancelRepeatedJobs()
     startRepeatedJobs()
   }

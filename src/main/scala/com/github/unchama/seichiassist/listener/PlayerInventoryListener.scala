@@ -32,7 +32,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //サーバー選択メニュー
   @EventHandler
-  def onPlayerClickServerSwitchMenuEvent(event: InventoryClickEvent) {
+  def onPlayerClickServerSwitchMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -87,7 +87,7 @@ class PlayerInventoryListener  extends  Listener {
   //追加!!!
   //スキルメニューの処理
   @EventHandler
-  def onPlayerClickPassiveSkillSellectEvent(event: InventoryClickEvent) {
+  def onPlayerClickPassiveSkillSellectEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -197,7 +197,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //スキルメニューの処理
   @EventHandler
-  def onPlayerClickActiveSkillSellectEvent(event: InventoryClickEvent) {
+  def onPlayerClickActiveSkillSellectEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -435,7 +435,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //スキルエフェクトメニューの処理 + エフェクト開放の処理
   @EventHandler
-  def onPlayerClickActiveSkillEffectSellectEvent(event: InventoryClickEvent) {
+  def onPlayerClickActiveSkillEffectSellectEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -570,13 +570,13 @@ class PlayerInventoryListener  extends  Listener {
 
   //スキル解放の処理
   @EventHandler
-  def onPlayerClickActiveSkillReleaseEvent(event: InventoryClickEvent) {
+  def onPlayerClickActiveSkillReleaseEvent(event: InventoryClickEvent): Unit = {
     OnActiveSkillUnselect.onPlayerClickActiveSkillReleaseEvent(event)
   }
 
   //ランキングメニュー
   @EventHandler
-  def onPlayerClickSeichiRankingMenuEvent(event: InventoryClickEvent) {
+  def onPlayerClickSeichiRankingMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -656,7 +656,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //ランキングメニュー
   @EventHandler
-  def onPlayerClickSeichiRankingMenuEvent1(event: InventoryClickEvent) {
+  def onPlayerClickSeichiRankingMenuEvent1(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -724,7 +724,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //ランキングメニュー
   @EventHandler
-  def onPlayerClickSeichiRankingMenuEvent2(event: InventoryClickEvent) {
+  def onPlayerClickSeichiRankingMenuEvent2(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -801,7 +801,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //ランキングメニュー
   @EventHandler
-  def onOpenDonationRanking(event: InventoryClickEvent) {
+  def onOpenDonationRanking(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -877,7 +877,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //購入履歴メニュー
   @EventHandler
-  def onPlayerClickPremiumLogMenuEvent(event: InventoryClickEvent) {
+  def onPlayerClickPremiumLogMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -924,7 +924,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //ガチャ交換システム
   @EventHandler
-  def onGachaTradeEvent(event: InventoryCloseEvent) {
+  def onGachaTradeEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.getUniqueId
     val playerdata = playerMap(uuid).ifNull { return }
@@ -1035,13 +1035,13 @@ class PlayerInventoryListener  extends  Listener {
 
   //実績メニューの処理
   @EventHandler
-  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent) {
+  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
     OnClickTitleMenu.onPlayerClickTitleMenuEvent(event)
   }
 
   //鉱石・交換券変換システム
   @EventHandler
-  def onOreTradeEvent(event: InventoryCloseEvent) {
+  def onOreTradeEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
 
     //エラー分岐
@@ -1136,7 +1136,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //ギガンティック→椎名林檎交換システム
   @EventHandler
-  def onGachaRingoEvent(event: InventoryCloseEvent) {
+  def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.getUniqueId
     val playerdata = playerMap(uuid).ifNull { return }
@@ -1235,7 +1235,7 @@ class PlayerInventoryListener  extends  Listener {
   }
 
   @EventHandler
-  def onTitanRepairEvent(event: InventoryCloseEvent) {
+  def onTitanRepairEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.getUniqueId
     val playerdata = playerMap(uuid).ifNull { return }
@@ -1279,7 +1279,7 @@ class PlayerInventoryListener  extends  Listener {
 
   //投票ptメニュー
   @EventHandler
-  def onVotingMenuEvent(event: InventoryClickEvent) {
+  def onVotingMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -1438,7 +1438,7 @@ class PlayerInventoryListener  extends  Listener {
   }
 
   @EventHandler
-  def onHomeMenuEvent(event: InventoryClickEvent) {
+  def onHomeMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -1519,7 +1519,7 @@ class PlayerInventoryListener  extends  Listener {
   }
 
   @EventHandler
-  def onGiganticBerserkMenuEvent(event: InventoryClickEvent) {
+  def onGiganticBerserkMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return

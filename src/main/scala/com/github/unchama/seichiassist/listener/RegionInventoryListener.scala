@@ -30,7 +30,7 @@ class RegionInventoryListener extends Listener {
    * @param event InventoryClickEvent
    */
   @EventHandler
-  def onPlayerClickGridMenu(event: InventoryClickEvent) {
+  def onPlayerClickGridMenu(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -100,7 +100,7 @@ class RegionInventoryListener extends Listener {
     }
   }
 
-  private def createRegion(player: Player) {
+  private def createRegion(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val selection = We.getSelection(player)
 
@@ -118,7 +118,7 @@ class RegionInventoryListener extends Listener {
   }
 
   @EventHandler
-  def onPlayerClickRegionTemplateMenu(event: InventoryClickEvent) {
+  def onPlayerClickRegionTemplateMenu(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -200,7 +200,7 @@ object RegionInventoryListener {
   var We = ExternalPlugins.getWorldEdit()
   var config = SeichiAssist.seichiAssistConfig
 
-  private def gridResetFunction(player: Player) {
+  private def gridResetFunction(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
       playerData.setUnitAmount(DirectionType.AHEAD, 0)
     playerData.setUnitAmount(DirectionType.BEHIND, 0)
@@ -220,7 +220,7 @@ object RegionInventoryListener {
     canCreateRegion(player)
   }
 
-  private def gridChangeFunction(player: Player, directionType: DirectionType, event: InventoryClickEvent) {
+  private def gridChangeFunction(player: Player, directionType: DirectionType, event: InventoryClickEvent): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     if (event.isLeftClick) {
       if (playerData.canGridExtend(directionType, player.getWorld.getName)) {
@@ -241,7 +241,7 @@ object RegionInventoryListener {
     }
   }
 
-  private def setWGSelection(player: Player) {
+  private def setWGSelection(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val unitMap = playerData.unitMap
     val direction = Util.getPlayerDirection(player)
@@ -287,13 +287,13 @@ object RegionInventoryListener {
     wgSelect(start_loc, end_loc, player)
   }
 
-  private def wgSelect(loc1: Location, loc2: Location, player: Player) {
+  private def wgSelect(loc1: Location, loc2: Location, player: Player): Unit = {
     player.chat("//;")
     player.chat("//pos1 " + loc1.getX.toInt + "," + loc1.getY.toInt + "," + loc1.getZ.toInt)
     player.chat("//pos2 " + loc2.getX.toInt + "," + loc2.getY.toInt + "," + loc2.getZ.toInt)
   }
 
-  private def canCreateRegion(player: Player) {
+  private def canCreateRegion(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val selection = We.getSelection(player)
     val manager = Wg.getRegionManager(player.getWorld)
@@ -321,7 +321,7 @@ object RegionInventoryListener {
     playerData.canCreateRegion = true
   }
 
-  private def playerGridTemplateSave(player: Player, i: Int) {
+  private def playerGridTemplateSave(player: Player, i: Int): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val unitMap = playerData.unitMap
 

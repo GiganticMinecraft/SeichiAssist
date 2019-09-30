@@ -26,7 +26,7 @@ class MeteoTask(
   private val centerbreakloc: Location =
     this.droploc.add(relativeAverage(start.x, end.x), relativeAverage(start.y, end.y), relativeAverage(start.z, end.z))
 
-  override def run() {
+  override def run(): Unit = {
     AxisAlignedCuboid(XYZTuple(start.x, start.y, start.z), XYZTuple(end.x, end.y, end.z)).forEachGridPoint(2) { xyzTuple =>
       //逐一更新が必要な位置
       val effectloc = droploc.clone().add(xyzTuple.x.toDouble, xyzTuple.y.toDouble, xyzTuple.z.toDouble)

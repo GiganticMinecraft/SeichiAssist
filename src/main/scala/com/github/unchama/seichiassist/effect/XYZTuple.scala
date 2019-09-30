@@ -16,7 +16,7 @@ object XYZTuple {
   implicit class AACOps(val cuboid: AxisAlignedCuboid) extends AnyVal {
     import cuboid._
 
-    def forEachGridPoint(gridWidth: Int = 1)(action: XYZTuple => Unit) {
+    def forEachGridPoint(gridWidth: Int = 1)(action: XYZTuple => Unit): Unit = {
       Range.inclusive(begin.x, end.x, gridWidth).foreach { x =>
         Range.inclusive(begin.y, end.y, gridWidth).foreach { y =>
           Range.inclusive(begin.z, end.z, gridWidth).foreach { z =>

@@ -62,5 +62,5 @@ abstract class AbstractItemStackBuilder[M <: ItemMeta] protected
   /**
    * 生成されるアイテムスタックに入る[ItemMeta]を, ビルダー内の情報に基づいて変更する.
    */
-  protected abstract def transformItemMetaOnBuild(meta: M)
+  protected def transformItemMetaOnBuild(meta: M): Unit
 }

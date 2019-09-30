@@ -18,11 +18,11 @@ object PlayerDataSaving {
    * @param playerdata 保存するプレーヤーデータ
    * @author unchama
    */
-  @SuspendingMethod def savePlayerData(playerdata: PlayerData) {
+  @SuspendingMethod def savePlayerData(playerdata: PlayerData): Unit = {
     val databaseGateway = SeichiAssist.databaseGateway
     val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
-    def updatePlayerMineStack(stmt: Statement) {
+    def updatePlayerMineStack(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString()
       MineStackObjectList.minestacklist.foreach { mineStackObj =>
         val iThObjectName = mineStackObj.mineStackObjName
@@ -37,7 +37,7 @@ object PlayerDataSaving {
       }
     }
 
-    def updateSubHome() {
+    def updateSubHome(): Unit = {
       val playerUuid = playerdata.uuid.toString()
       playerdata.subHomeEntries.foreach { case (subHomeId, subHome) =>
         val subHomeLocation = subHome.getLocation
@@ -67,7 +67,7 @@ object PlayerDataSaving {
       }
     }
 
-    def updateGridTemplate(stmt: Statement) {
+    def updateGridTemplate(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString()
 
       // 既存データをすべてクリアする
@@ -87,7 +87,7 @@ object PlayerDataSaving {
       }
     }
 
-    def updateActiveSkillEffectUnlockState(stmt: Statement) {
+    def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString()
       val activeSkillEffects = ActiveSkillEffect.values
       val obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects
@@ -111,7 +111,7 @@ object PlayerDataSaving {
       }
     }
 
-    def updateActiveSkillPremiumEffectUnlockState(stmt: Statement) {
+    def updateActiveSkillPremiumEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString()
       val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values
       val obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects
@@ -135,7 +135,7 @@ object PlayerDataSaving {
       }
     }
 
-    def updatePlayerDataColumns(stmt: Statement) {
+    def updatePlayerDataColumns(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
 
       //実績のフラグ(BitSet)保存用変換処理

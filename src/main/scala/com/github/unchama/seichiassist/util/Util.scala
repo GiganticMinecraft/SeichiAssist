@@ -24,7 +24,7 @@ object Util {
 
   private val types = List(FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST, FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR)
 
-  def sendPlayerDataNullMessage(player: Player) {
+  def sendPlayerDataNullMessage(player: Player): Unit = {
     player.sendMessage(RED.toString() + "初回ログイン時の読み込み中か、読み込みに失敗しています")
     player.sendMessage(RED.toString() + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい")
   }
@@ -85,12 +85,12 @@ object Util {
   def isPlayerInventoryFull(player: Player): Boolean = player.getInventory.firstEmpty() == -1
 
   //指定されたアイテムを指定されたプレイヤーにドロップする
-  def dropItem(player: Player, itemstack: ItemStack) {
+  def dropItem(player: Player, itemstack: ItemStack): Unit = {
     player.getWorld.dropItemNaturally(player.getLocation, itemstack)
   }
 
   //指定されたアイテムを指定されたプレイヤーインベントリに追加する
-  def addItem(player: Player, itemstack: ItemStack) {
+  def addItem(player: Player, itemstack: ItemStack): Unit = {
     player.getInventory.addItem(itemstack)
   }
 
@@ -100,7 +100,7 @@ object Util {
    * @param player 付与する対象プレイヤー
    * @param itemStack 付与するアイテム
    */
-  def addItemToPlayerSafely(player: Player, itemStack: ItemStack) {
+  def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
     if (isPlayerInventoryFull(player)) {
       dropItem(player, itemStack)
     } else {
@@ -108,7 +108,7 @@ object Util {
     }
   }
 
-  def sendAdminMessage(str: String) {
+  def sendAdminMessage(str: String): Unit = {
     Bukkit.getOnlinePlayers.forEach { player =>
       if (player.hasPermission("SeichiAssist.admin")) {
         player.sendMessage(str)
@@ -116,11 +116,11 @@ object Util {
     }
   }
 
-  def sendEveryMessage(str: String) {
+  def sendEveryMessage(str: String): Unit = {
     Bukkit.getOnlinePlayers.forEach(_.sendMessage(str))
   }
 
-  def sendEveryMessageWithoutIgnore(str: String) {
+  def sendEveryMessageWithoutIgnore(str: String): Unit = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.map { player =>
@@ -131,7 +131,7 @@ object Util {
     }.toList.sequence.unsafeRunSync()
   }
 
-  def sendEveryMessageWithoutIgnore(base: BaseComponent) {
+  def sendEveryMessageWithoutIgnore(base: BaseComponent): Unit = {
     Bukkit.getOnlinePlayers.asScala.foreach { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
@@ -143,7 +143,7 @@ object Util {
   /**
    * json形式のチャットを送信する際に使用
    */
-  def sendEveryMessage(base: BaseComponent) {
+  def sendEveryMessage(base: BaseComponent): Unit = {
     Bukkit.getOnlinePlayers.asScala.foreach(_.spigot().sendMessage(base))
   }
 
@@ -206,13 +206,13 @@ object Util {
 
   def getDescFormat(list: List[String]): String = s" ${list.mkString("", "\n", "\n")}"
 
-  def sendEverySound(kind: Sound, volume: Float, pitch: Float) {
+  def sendEverySound(kind: Sound, volume: Float, pitch: Float): Unit = {
     Bukkit.getOnlinePlayers.forEach(player =>
       player.playSound(player.getLocation, kind, volume, pitch)
     )
   }
 
-  def sendEverySoundWithoutIgnore(kind: Sound, volume: Float, pitch: Float) {
+  def sendEverySoundWithoutIgnore(kind: Sound, volume: Float, pitch: Float): Unit = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.toList.map { player =>
@@ -229,7 +229,7 @@ object Util {
   }
 
   //指定された場所に花火を打ち上げる関数
-  def launchFireWorks(loc: Location) {
+  def launchFireWorks(loc: Location): Unit = {
     // 花火を作る
     val firework = loc.getWorld.spawn(loc, classOf[Firework])
 
@@ -517,7 +517,7 @@ object Util {
     return cur.after(start) && cur.before(end)
   }
 
-  def setDifficulty(worldNameList: List[String], difficulty: Difficulty) {
+  def setDifficulty(worldNameList: List[String], difficulty: Difficulty): Unit = {
     worldNameList.foreach { name =>
       val world = Bukkit.getWorld(name)
 

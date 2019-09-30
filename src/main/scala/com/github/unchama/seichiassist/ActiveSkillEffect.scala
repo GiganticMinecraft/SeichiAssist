@@ -48,7 +48,7 @@ sealed abstract case class ActiveSkillEffect(num: Int,
   }
 
   //エフェクトの実行処理分岐
-  def runArrowEffect(player: Player) {
+  def runArrowEffect(player: Player): Unit = {
     val effect = this match {
       case Explosion => ArrowEffects.singleArrowExplosionEffect
       case Blizzard => ArrowEffects.singleArrowBlizzardEffect

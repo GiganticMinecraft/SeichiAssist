@@ -23,7 +23,7 @@ class MagicTask(private val player: Player,
   private val centerBreak: Location =
     this.skillCenter.add(relativeAverage(start.x, end.x), relativeAverage(start.y, end.y), relativeAverage(start.z, end.z))
 
-  override def firstAction() {
+  override def firstAction(): Unit = {
     //1回目のrun
     val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
     val rd = new Random().nextInt(colors.length)
@@ -39,7 +39,7 @@ class MagicTask(private val player: Player,
     }
   }
 
-  override def secondAction() {
+  override def secondAction(): Unit = {
     //2回目のrun
     if (SeichiAssist.entitylist.isEmpty) {
       val e = player.getWorld.spawnEntity(centerBreak, EntityType.CHICKEN).asInstanceOf[Chicken]

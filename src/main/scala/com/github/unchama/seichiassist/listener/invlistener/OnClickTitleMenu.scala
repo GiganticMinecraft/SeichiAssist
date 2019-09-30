@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
 object OnClickTitleMenu extends Listener {
-  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent) {
+  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -47,7 +47,7 @@ object OnClickTitleMenu extends Listener {
           |${getTitle(1, first)}
           |${if (second != 0) getTitle(2, second) else ""}
           |${if (third != 0) getTitle(3, third) else ""}
-          |」が設定されました。""".trim.filter(_ != '\n')) {
+          |」が設定されました。""".trim.filter(_ != '\n')): Unit = {
       playerdata.updateNickname(first, second, third)
       player.sendMessage(message)
     }

@@ -12,7 +12,7 @@ import org.bukkit.event.{EventHandler, Listener}
  */
 object MenuHandler extends Listener {
   @EventHandler
-  def onInventoryClick(event: InventoryClickEvent) {
+  def onInventoryClick(event: InventoryClickEvent): Unit = {
     val whoClicked = event.getWhoClicked match {
       case player: Player => player
       case _ => return

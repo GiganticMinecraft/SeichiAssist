@@ -45,7 +45,7 @@ class MineStackGachaData(val objName: String,
   }
 
   @Deprecated("ここをなんのデータクラスだと思っているんだ")
-  def appendOwnerLore(name: String) {
+  def appendOwnerLore(name: String): Unit = {
     val meta = itemStack.getItemMeta
     val lore = if (meta.hasLore) meta.getLore.asScala else Nil
     itemStack.getItemMeta.setLore(lore.:+(s"${RESET}${DARK_GREEN}所有者：$name").asJava)

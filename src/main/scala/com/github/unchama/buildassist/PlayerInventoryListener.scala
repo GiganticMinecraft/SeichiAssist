@@ -18,7 +18,7 @@ class PlayerInventoryListener extends Listener {
 
   //ブロックを並べるスキル（仮）設定画面
   @EventHandler
-  def onPlayerClickBlockLineUpEvent(event: InventoryClickEvent) {
+  def onPlayerClickBlockLineUpEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -111,7 +111,7 @@ class PlayerInventoryListener extends Listener {
 
   //MineStackブロック一括クラフト画面1
   @EventHandler
-  def onPlayerClickBlockCraft(event: InventoryClickEvent) {
+  def onPlayerClickBlockCraft(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -339,7 +339,7 @@ class PlayerInventoryListener extends Listener {
 
   //MineStackブロック一括クラフト画面2
   @EventHandler
-  def onPlayerClickBlockCraft2(event: InventoryClickEvent) {
+  def onPlayerClickBlockCraft2(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -630,7 +630,7 @@ class PlayerInventoryListener extends Listener {
 
   //MineStackブロック一括クラフト画面3
   @EventHandler
-  def onPlayerClickBlockCraft3(event: InventoryClickEvent) {
+  def onPlayerClickBlockCraft3(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return

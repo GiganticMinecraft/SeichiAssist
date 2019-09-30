@@ -13,7 +13,7 @@ class PlayerPickupItemListener  extends  Listener {
   private val config = SeichiAssist.seichiAssistConfig
 
   @EventHandler
-  def onPickupMineStackItem(event: PlayerPickupItemEvent) {
+  def onPickupMineStackItem(event: PlayerPickupItemEvent): Unit = {
     val player = event.getPlayer
 
     if (player.getGameMode != GameMode.SURVIVAL) return

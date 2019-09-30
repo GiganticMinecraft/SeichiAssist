@@ -2,11 +2,11 @@ package com.github.unchama.util
 class MillisecondTimer private() {
   private var startTime: Long = 0
 
-  def resetTimer() {
+  def resetTimer(): Unit = {
     startTime = System.nanoTime()
   }
 
-  def sendLapTimeMessage(message: String) {
+  def sendLapTimeMessage(message: String): Unit = {
     val recordedNanoSecondDuration = System.nanoTime() - startTime
 
     println(s"$message(time: ${recordedNanoSecondDuration / 1000L} ms)")

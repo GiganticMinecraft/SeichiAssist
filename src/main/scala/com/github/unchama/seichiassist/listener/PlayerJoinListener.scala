@@ -19,7 +19,7 @@ class PlayerJoinListener  extends  Listener {
   private val playerMap: mutable.HashMap[UUID, PlayerData] = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
 
-  private def loadPlayerData(playerUuid: UUID, playerName: String) {
+  private def loadPlayerData(playerUuid: UUID, playerName: String): Unit = {
     SeichiAssist.playermap(playerUuid) =
         databaseGateway.playerDataManipulator.loadPlayerData(playerUuid, playerName)
   }
@@ -28,7 +28,7 @@ class PlayerJoinListener  extends  Listener {
       "プレーヤーデータの読み込みに失敗しました。再接続しても読み込まれない場合管理者に連絡してください。"
 
   @EventHandler
-  def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent) {
+  def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent): Unit = {
     val maxTryCount = 10
 
     (1 until maxTryCount + 1).foreach { tryCount =>
@@ -56,7 +56,7 @@ class PlayerJoinListener  extends  Listener {
 
   // プレイヤーがjoinした時に実行
   @EventHandler
-  def onPlayerJoinEvent(event: PlayerJoinEvent) {
+  def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     val player: Player = event.getPlayer
 
     /*
@@ -125,7 +125,7 @@ class PlayerJoinListener  extends  Listener {
 
   // プレイヤーがワールドを移動したとき
   @EventHandler
-  def onPlayerChangedWorld(event: PlayerChangedWorldEvent) {
+  def onPlayerChangedWorld(event: PlayerChangedWorldEvent): Unit = {
     // 整地ワールドから他のワールドに移動したとき
     if (ManagedWorld.fromBukkitWorld(event.getFrom).exists(_.isSeichi)) {
       val p = event.getPlayer

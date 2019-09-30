@@ -25,7 +25,7 @@ class IconItemStackBuilder(material: Material, durability: Short = 0.toShort) ex
     this
   }
 
-  override def transformItemMetaOnBuild(meta: ItemMeta) {
+  override def transformItemMetaOnBuild(meta: ItemMeta): Unit = {
     if (!shouldShowAttribute) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
     }
