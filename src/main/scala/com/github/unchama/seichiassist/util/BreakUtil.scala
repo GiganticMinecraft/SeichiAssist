@@ -3,16 +3,16 @@ package com.github.unchama.seichiassist.util
 import java.util.Random
 import java.util.stream.IntStream
 
+import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
-import com.github.unchama.seichiassist._
 import org.bukkit.ChatColor._
+import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Dye
-import org.bukkit._
 
 
 object BreakUtil {

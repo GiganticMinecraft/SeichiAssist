@@ -5,7 +5,6 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.ContributeCommand.ContributeOperation._
-import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import enumeratum._
 import org.bukkit.ChatColor._

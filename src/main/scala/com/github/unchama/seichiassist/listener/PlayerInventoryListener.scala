@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.listener.invlistener.{OnActiveSkillUnselect, OnClickTitleMenu}
@@ -7,7 +8,6 @@ import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
-import com.github.unchama.seichiassist._
 import com.google.common.io.ByteStreams
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment

@@ -4,11 +4,11 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
+import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.entity.{Chicken, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Wool
-import org.bukkit._
 
 import scala.util.Random
 

@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist
 
-import kotlin.jvm.JvmStatic
 import org.bukkit.Material
 
 object MaterialSets {
