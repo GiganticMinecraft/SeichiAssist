@@ -6,10 +6,12 @@ import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.ContributeCommand.ContributeOperation._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import enumeratum._
 import org.bukkit.command.{CommandSender, TabExecutor}
 
 object ContributeCommand {
+  import com.github.unchama.targetedeffect.MessageEffects._
+  import enumeratum._
+
   sealed trait ContributeOperation extends EnumEntry
   object ContributeOperation extends Enum[ContributeOperation] {
     val values = findValues

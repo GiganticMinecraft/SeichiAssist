@@ -4,7 +4,6 @@ import org.bukkit.Material
 
 object MaterialSets {
   // このMaterialは整地スキルに対応するブロック群を示しています。
-  @JvmStatic
   val materials: Set[Material] = Set(
       Material.STONE, Material.NETHERRACK, Material.NETHER_BRICK, Material.DIRT, Material.GRAVEL, Material.LOG,
       Material.LOG_2, Material.GRASS, Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.DIAMOND_ORE,

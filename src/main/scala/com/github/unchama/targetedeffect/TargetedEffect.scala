@@ -15,11 +15,11 @@ object TargetedEffect {
   implicit def monoid[T]: Monoid[TargetedEffect[T]] = new Monoid[TargetedEffect[T]] {
     override def empty(): TargetedEffect[T] = EmptyEffect
 
-    override def combine(a: TargetedEffect[T], b: TargetedEffect[T]): TargetedEffect[T] =
-      t => for {
-        _ <- a(t)
-        _ <- b(t)
-      } yield Unit
+    override def combine(a: TargetedEffect[T], b: TargetedEffect[T]): TargetedEffect[T] = {
+      import TargetedEffects.TargetedEffectCombine
+
+      a.followedBy(b)
+    }
   }
 
   def apply[T](effect: T => Unit): TargetedEffect[T] = (minecraftObject: T) => IO { effect(minecraftObject) }
@@ -27,8 +27,11 @@ object TargetedEffect {
 
 object TargetedEffects {
   implicit class TargetedEffectCombine[T](val effect: TargetedEffect[T]) {
-    def +(anotherEffect: TargetedEffect[T]): TargetedEffect[T] =
-      TargetedEffect.monoid[T].combine(effect, anotherEffect)
+    def followedBy[T1 <: T](anotherEffect: TargetedEffect[T1]): TargetedEffect[T1] =
+      t1 => for {
+        _ <- effect(t1)
+        _ <- anotherEffect(t1)
+      } yield ()
   }
 
   implicit class TargetedEffectFold[T](val effects: List[TargetedEffect[T]]) {

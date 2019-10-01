@@ -14,7 +14,10 @@ class GachaPrize(_itemStack: ItemStack, var probability: Double) {
 
   import scala.jdk.CollectionConverters._
 
-  @Deprecated("ここをなんのデータクラスだと思っているんだ")
+  /**
+   * @deprecated ここをなんのデータクラスだと思っているんだ
+   */
+  @Deprecated()
   def compare(m: ItemStack, name: String): Boolean = {
     val mlore: List[String] = m.getItemMeta.getLore.asScala.toList
     val lore: List[String] = this.itemStack.getItemMeta.getLore.asScala.toList
@@ -33,7 +36,10 @@ class GachaPrize(_itemStack: ItemStack, var probability: Double) {
     } else false
   }
 
-  @Deprecated("ここをなんのデータクラスだと思っているんだ")
+  /**
+   * @deprecated ここをなんのデータクラスだと思っているんだ
+   */
+  @Deprecated()
   def appendOwnerLore(name: String): Unit = {
     val meta = itemStack.getItemMeta
     val lore = if (meta.hasLore) meta.getLore.asScala else Nil

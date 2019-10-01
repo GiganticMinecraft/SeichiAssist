@@ -10,12 +10,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Location, Material}
 
-sealed abstract case class ActiveSkillEffect(num: Int,
-                                             nameOnDatabase: String,
-                                             nameOnUI: String,
-                                             explanation: String,
-                                             usePoint: Int,
-                                             material: Material) extends EnumEntry {
+sealed abstract class ActiveSkillEffect(val num: Int,
+                                        val nameOnDatabase: String,
+                                        val nameOnUI: String,
+                                        val explanation: String,
+                                        val usePoint: Int,
+                                        val material: Material) extends EnumEntry {
   import com.github.unchama.seichiassist.effect.XYZTuple._
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
@@ -70,8 +70,10 @@ object ActiveSkillEffect extends Enum[ActiveSkillEffect] {
 
   val values: IndexedSeq[ActiveSkillEffect] = findValues
 
-  @Deprecated("for interop purpose only")
-  val arrayValues: Array[ActiveSkillEffect] = values.toArray
+  /**
+   * @deprecated for interop purpose only
+   */
+  @Deprecated() val arrayValues: Array[ActiveSkillEffect] = values.toArray
 
   def getNameByNum(effectNum: Int): String = ActiveSkillEffect.values
     .filter(_.isInstanceOf[ActiveSkillEffect])

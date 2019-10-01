@@ -31,8 +31,11 @@ import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 import scala.util.control.Breaks
 
+/**
+ * @deprecated PlayerDataはuuidに依存するべきではない
+ */
 class PlayerData(
-                  @Deprecated("PlayerDataはuuidに依存するべきではない") val uuid: UUID,
+                  @Deprecated() val uuid: UUID,
                   val name: String
                 ) {
 
@@ -233,7 +236,10 @@ class PlayerData(
     voteFairyPeriod = new ClosedRange(voteFairyPeriod.start, value)
   }
 
-  @Deprecated("PlayerDataはPlayerに依存するべきではない。")
+  /**
+   * @deprecated PlayerDataはPlayerに依存するべきではない。
+   */
+  @Deprecated()
   def player: Player = Bukkit.getPlayer(uuid)
 
   //プレイヤー名
@@ -390,11 +396,10 @@ class PlayerData(
     var displayName = player.getName
 
     //放置時に色を変える
-    val idleColor: String = {
-      case _ if idleMinute >= 10 => DARK_GRAY
-      case _ if idleMinute >= 3 => GRAY
-      case _ => ""
-    }
+    val idleColor: String =
+      if (idleMinute >= 10) s"$DARK_GRAY"
+      else if (idleMinute >= 3) s"$GRAY"
+      else ""
 
     displayName = idleColor.+(
       if (settings.nickName.id1 == 0 && settings.nickName.id2 == 0 && settings.nickName.id3 == 0) {
@@ -596,19 +601,17 @@ class PlayerData(
 
   //パッシブスキルの獲得量表示
   def getPassiveExp(): Double = {
-    {
-      case level < 8 => 0.0
-      case level < 18 => SeichiAssist.seichiAssistConfig.getDropExplevel(1)
-      case level < 28 => SeichiAssist.seichiAssistConfig.getDropExplevel(2)
-      case level < 38 => SeichiAssist.seichiAssistConfig.getDropExplevel(3)
-      case level < 48 => SeichiAssist.seichiAssistConfig.getDropExplevel(4)
-      case level < 58 => SeichiAssist.seichiAssistConfig.getDropExplevel(5)
-      case level < 68 => SeichiAssist.seichiAssistConfig.getDropExplevel(6)
-      case level < 78 => SeichiAssist.seichiAssistConfig.getDropExplevel(7)
-      case level < 88 => SeichiAssist.seichiAssistConfig.getDropExplevel(8)
-      case level < 98 => SeichiAssist.seichiAssistConfig.getDropExplevel(9)
-      case _ => SeichiAssist.seichiAssistConfig.getDropExplevel(10)
-    }
+    if (level < 8) 0.0
+    else if (level < 18) SeichiAssist.seichiAssistConfig.getDropExplevel(1)
+    else if (level < 28) SeichiAssist.seichiAssistConfig.getDropExplevel(2)
+    else if (level < 38) SeichiAssist.seichiAssistConfig.getDropExplevel(3)
+    else if (level < 48) SeichiAssist.seichiAssistConfig.getDropExplevel(4)
+    else if (level < 58) SeichiAssist.seichiAssistConfig.getDropExplevel(5)
+    else if (level < 68) SeichiAssist.seichiAssistConfig.getDropExplevel(6)
+    else if (level < 78) SeichiAssist.seichiAssistConfig.getDropExplevel(7)
+    else if (level < 88) SeichiAssist.seichiAssistConfig.getDropExplevel(8)
+    else if (level < 98) SeichiAssist.seichiAssistConfig.getDropExplevel(9)
+    else SeichiAssist.seichiAssistConfig.getDropExplevel(10)
   }
 
   //サブホームの位置をセットする
@@ -716,10 +719,10 @@ class PlayerData(
   }
 
   def toggleUnitPerGrid(): Unit = {
-    this.unitPerClick = {
-      case this.unitPerClick == 1 => 10
-      case this.unitPerClick == 10 => 100
-      case this.unitPerClick == 100 => 1
+    this.unitPerClick = this.unitPerClick match {
+      case 1 => 10
+      case 10 => 100
+      case 100 => 1
     }
   }
 
@@ -866,19 +869,26 @@ class PlayerData(
    */
   val incrementRegionNumber: TargetedEffect[Any] = UnfocusedEffect { this.regionCount += 1 }
 
-  @Deprecated("Should be moved to external scope")
+  /**
+   * @deprecated Should be moved to external scope
+   */
+  @Deprecated()
   val toggleExpBarVisibility: TargetedEffect[Player] =
     UnfocusedEffect {
       this.settings.isExpBarVisible = !this.settings.isExpBarVisible
-    } + deferredEffect {
-      IO ({
-        if (this.settings.isExpBarVisible)
-          s"${GREEN}整地量バー表示"
-        else
-          s"${RED}整地量バー非表示"
-      }.asMessageEffect())
-    } + UnfocusedEffect {
-      SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
+    }.followedBy {
+      deferredEffect {
+        IO ({
+          if (this.settings.isExpBarVisible)
+            s"${GREEN}整地量バー表示"
+          else
+            s"${RED}整地量バー非表示"
+          }.asMessageEffect())
+      }
+    }.followedBy {
+      UnfocusedEffect {
+        SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
+      }
     }
 }
 

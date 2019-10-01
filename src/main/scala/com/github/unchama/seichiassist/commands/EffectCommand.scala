@@ -38,7 +38,7 @@ object EffectCommand {
         if (playerData == null) return EmptyEffect
 
         val toggleResponse = playerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect
-        toggleResponse + guidance
+        toggleResponse.followedBy(guidance)
       }
 
       IO.pure(execution())

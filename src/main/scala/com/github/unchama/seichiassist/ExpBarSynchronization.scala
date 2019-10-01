@@ -36,9 +36,9 @@ class ExpBarSynchronization {
       val expBetweenLevels = nextLevelThreshold - previousLevelThreshold
       val progress = {
         // レベルアップ前にログアウトした場合、次回ログイン時のレベルアップ処理までに100%を超えている場合がある
-        case _ if expAfterPreviousThreshold >= expBetweenLevels => 1.0
-        case _ if expAfterPreviousThreshold <= 0 => 0.0
-        case _ => expAfterPreviousThreshold.toDouble / expBetweenLevels
+        if (expAfterPreviousThreshold >= expBetweenLevels) 1.0
+        else if (expAfterPreviousThreshold <= 0) 0.0
+        else expAfterPreviousThreshold.toDouble / expBetweenLevels
       }
 
       ExpBarProperties(text, progress)

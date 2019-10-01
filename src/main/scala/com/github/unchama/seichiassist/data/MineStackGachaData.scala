@@ -14,10 +14,16 @@ class MineStackGachaData(val objName: String,
 
   import scala.jdk.CollectionConverters._
 
-  @Deprecated("use itemStack.amount")
+  /**
+   * @deprecated use itemStack.amount
+   */
+  @Deprecated()
   val amount = itemStack.getAmount
 
-  @Deprecated("ここをなんのデータクラスだと思っているんだ")
+  /**
+   * @deprecated ここをなんのデータクラスだと思っているんだ
+   */
+  @Deprecated()
   def itemStackEquals(another: ItemStack): Boolean = {
     val crt = itemStack.getItemMeta
     val ant = another.getItemMeta
@@ -44,7 +50,10 @@ class MineStackGachaData(val objName: String,
     false
   }
 
-  @Deprecated("ここをなんのデータクラスだと思っているんだ")
+  /**
+   * @deprecated ここをなんのデータクラスだと思っているんだ
+   */
+  @Deprecated()
   def appendOwnerLore(name: String): Unit = {
     val meta = itemStack.getItemMeta
     val lore = if (meta.hasLore) meta.getLore.asScala else Nil

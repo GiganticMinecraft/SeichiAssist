@@ -22,8 +22,9 @@ import org.bukkit.inventory.ItemStack
 case class Button(override val itemStack: ItemStack,
                   private val effects: List[ButtonEffect]) extends Slot {
   override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
-    UnfocusedEffect { event.setCancelled(true) } +
-      this.effects.map { _.asyncEffectOn(event) }.asSequentialEffect()
+    UnfocusedEffect { event.setCancelled(true) }.followedBy {
+      this.effects.map(_.asyncEffectOn(event)).asSequentialEffect()
+    }
 
   def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effect +: effects)
 }

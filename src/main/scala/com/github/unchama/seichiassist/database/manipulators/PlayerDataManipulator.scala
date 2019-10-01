@@ -573,7 +573,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
           s"${RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
         )
 
-        errorEffect + messages.asMessageEffect()
+        errorEffect.followedBy(messages.asMessageEffect())
       case Right(lastQuit) =>
         s"${playerName}の最終ログアウト日時：$lastQuit".asMessageEffect()
     }

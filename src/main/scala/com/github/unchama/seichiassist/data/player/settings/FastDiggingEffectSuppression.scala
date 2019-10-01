@@ -16,18 +16,20 @@ class FastDiggingEffectSuppression {
   val suppressionDegreeToggleEffect: TargetedEffect[CommandSender] =
       targetedeffect.UnfocusedEffect {
         internalValue = (internalValue + 1) % 6
-      } + deferredEffect(IO {
-        {
-          internalValue match {
-            case 0 => s"${GREEN}採掘速度上昇効果:ON(無制限)"
-            case 1 => s"${GREEN}採掘速度上昇効果:ON(127制限)"
-            case 2 => s"${GREEN}採掘速度上昇効果:ON(200制限)"
-            case 3 => s"${GREEN}採掘速度上昇効果:ON(400制限)"
-            case 4 => s"${GREEN}採掘速度上昇効果:ON(600制限)"
-            case _ => s"${RED}採掘速度上昇効果:OFF"
-          }
-        }.asMessageEffect()
-      })
+      }.followedBy {
+        deferredEffect(IO {
+          {
+            internalValue match {
+              case 0 => s"${GREEN}採掘速度上昇効果:ON(無制限)"
+              case 1 => s"${GREEN}採掘速度上昇効果:ON(127制限)"
+              case 2 => s"${GREEN}採掘速度上昇効果:ON(200制限)"
+              case 3 => s"${GREEN}採掘速度上昇効果:ON(400制限)"
+              case 4 => s"${GREEN}採掘速度上昇効果:ON(600制限)"
+              case _ => s"${RED}採掘速度上昇効果:OFF"
+            }
+            }.asMessageEffect()
+        })
+      }
 
   def currentStatus(): IO[String] = IO {
     s"$RESET" + {

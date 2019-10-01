@@ -12,12 +12,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Location, Material}
 
-sealed case class ActiveSkillPremiumEffect(num: Int,
-                                           sql_name: String,
-                                           desc: String,
-                                           explain: String,
-                                           usePoint: Int,
-                                           material: Material) extends EnumEntry {
+sealed abstract class ActiveSkillPremiumEffect(val num: Int,
+                                               val sql_name: String,
+                                               val desc: String,
+                                               val explain: String,
+                                               val usePoint: Int,
+                                               val material: Material) extends EnumEntry {
   @Deprecated
   def getsqlName: String = this.sql_name
 
@@ -60,8 +60,11 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
 
   val values: IndexedSeq[ActiveSkillPremiumEffect] = findValues
 
-  @Deprecated("for interop purpose only")
-  val arrayValues = values.toArray
+  /**
+   * @deprecated for interop purpose only
+   */
+  @Deprecated()
+  val arrayValues: Array[ActiveSkillPremiumEffect] = values.toArray
 
   def fromSqlName(sqlName: String): Option[ActiveSkillPremiumEffect] = values.find(sqlName == _.sql_name)
 }
