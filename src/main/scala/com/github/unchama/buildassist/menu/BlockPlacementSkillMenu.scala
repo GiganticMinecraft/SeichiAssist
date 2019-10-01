@@ -325,6 +325,6 @@ object BlockPlacementSkillMenu extends Menu {
       _ <- session.openEffectThrough(Schedulers.sync)(player)
       layout <- computeMenuLayout(player)
       _ <- session.overwriteViewWith(layout)
-    } yield Unit
+    } yield ()
   }
 }

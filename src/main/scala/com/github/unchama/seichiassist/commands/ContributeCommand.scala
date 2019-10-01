@@ -4,13 +4,13 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.commands.ContributeCommand.ContributeOperation._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.command.{CommandSender, TabExecutor}
 
 object ContributeCommand {
   import com.github.unchama.targetedeffect.MessageEffects._
   import enumeratum._
+  import net.md_5.bungee.api.ChatColor._
 
   sealed trait ContributeOperation extends EnumEntry
   object ContributeOperation extends Enum[ContributeOperation] {
@@ -65,6 +65,7 @@ object ContributeCommand {
       val targetPlayerName = context.args.parsed(1).asInstanceOf[String]
       val point = context.args.parsed(2).asInstanceOf[Int]
 
+      import ContributeOperation._
       operation match {
         case ADD => addContributionPoint(targetPlayerName, point)
         case REMOVE => addContributionPoint(targetPlayerName, -point)

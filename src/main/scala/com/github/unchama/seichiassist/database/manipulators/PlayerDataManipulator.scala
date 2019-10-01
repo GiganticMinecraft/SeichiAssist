@@ -276,7 +276,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     for {
       _ <- EitherT(assertPlayerDataExistenceFor(targetPlayerName))
       _ <- EitherT(executeUpdate)
-      _ <- EitherT.right(updatePlayerDataMemoryCache)
+      _ <- EitherT.right[TargetedEffect[CommandSender]](updatePlayerDataMemoryCache)
     } yield ()
   }.value
 

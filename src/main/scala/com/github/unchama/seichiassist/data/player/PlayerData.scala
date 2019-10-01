@@ -726,6 +726,8 @@ class PlayerData(
     }
   }
 
+  import com.github.unchama.seichiassist.AntiTypesafe
+
   @AntiTypesafe
   def getVotingFairyStartTimeAsString(): String = {
     val cal = this.votingFairyStartTime

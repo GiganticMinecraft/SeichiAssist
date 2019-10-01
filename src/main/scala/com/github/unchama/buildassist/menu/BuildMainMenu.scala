@@ -338,7 +338,7 @@ object BuildMainMenu extends Menu {
       _ <- session.openEffectThrough(Schedulers.sync)(player)
       layout <- computeMenuLayout(player)
       _ <- session.overwriteViewWith(layout)
-    } yield Unit
+    } yield ()
   }
 
   private val EMPHASIZE = s"$UNDERLINE$BOLD"

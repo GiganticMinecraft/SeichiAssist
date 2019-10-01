@@ -7,4 +7,4 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.SOURCE)
-@interface AntiTypesafe {}
+public @interface AntiTypesafe {}

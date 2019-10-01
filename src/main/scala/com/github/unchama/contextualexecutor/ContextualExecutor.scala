@@ -44,11 +44,13 @@ object ContextualExecutor {
         true
       }
 
-      override def onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array[String]): List[String] = {
+      import scala.jdk.CollectionConverters._
+
+      override def onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array[String]): java.util.List[String] = {
         val context = RawCommandContext (sender, ExecutedCommand (command, alias), args.toList)
 
         contextualExecutor.tabCandidatesFor(context)
-      }
+      }.asJava
     }
   }
 }

@@ -66,7 +66,7 @@ object ShareInvCommand {
             s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
           )
         _ <- EitherT(databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory))
-        successEffect <- EitherT.right {
+        successEffect <- EitherT.right[TargetedEffect[Player]] {
           IO {
             // 現所持アイテムを全て削除
             playerInventory.clear()

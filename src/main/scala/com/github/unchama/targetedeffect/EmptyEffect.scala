@@ -8,5 +8,5 @@ import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
  */
 
 object EmptyEffect extends TargetedEffect[Any] {
-  override def apply(v1: Any): IO[Unit] = IO.pure(Unit)
+  override def apply(v1: Any): IO[Unit] = IO.pure(())
 }

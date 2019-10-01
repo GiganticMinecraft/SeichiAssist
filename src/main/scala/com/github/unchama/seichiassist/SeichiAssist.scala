@@ -210,7 +210,7 @@ class SeichiAssist extends JavaPlugin() {
     }
   }
 
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Unit
+  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean
       = SeichiAssist.buildAssist.onCommand(sender, command, label, args)
 
   private def startRepeatedJobs(): Unit = {

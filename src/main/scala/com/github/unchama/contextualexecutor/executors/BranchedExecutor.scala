@@ -14,7 +14,7 @@ case class BranchedExecutor(branches: Map[String, ContextualExecutor],
     def executeOptionally(executor: Option[ContextualExecutor]): IO[Unit] =
       executor match {
         case Some(executor) => executor.executeWith(rawContext)
-        case None => IO.pure(Unit)
+        case None => IO.pure(())
       }
 
     val (argHead, argTail) = rawContext.args match {

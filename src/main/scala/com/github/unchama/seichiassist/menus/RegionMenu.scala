@@ -35,11 +35,11 @@ object RegionMenu extends Menu {
       val iconItemStack = new IconItemStackBuilder(Material.WOOD_AXE)
           .title(s"$YELLOW$UNDERLINE${BOLD}保護設定用の木の斧を召喚")
           .lore(
-              wandUsage: _*,
+            (wandUsage ++ Array(
               s"$DARK_RED${UNDERLINE}クリックで召喚",
               s"$DARK_GREEN${UNDERLINE}※インベントリを空けておこう",
-              s"${DARK_GRAY}command=>[//wand]")
-          .build()
+              s"${DARK_GRAY}command=>[//wand]")).toList
+          ).build()
 
       Button(
         iconItemStack,

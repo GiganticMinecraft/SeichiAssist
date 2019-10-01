@@ -6,7 +6,7 @@ import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.command.CommandSender
 
 object TypeAliases {
-  type Result[Error, Success] = Either[Error, Success]
+  type Result[+Error, +Success] = Either[Error, Success]
 
   type ResponseEffectOrResult[-CS, +T] = Result[TargetedEffect[CS], T]
 
@@ -16,5 +16,5 @@ object TypeAliases {
 
   type CommandArgumentsParser[-CS] = (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs]]
 
-  type ScopedContextualExecution[-CS] = ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
+  type ScopedContextualExecution[-CS <: CommandSender] = ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
 }
