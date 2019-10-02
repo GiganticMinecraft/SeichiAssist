@@ -13,7 +13,7 @@ abstract class RepeatedTaskLauncher {
 
   protected val runRoutine: IO[Any]
 
-  val launch: IO[Nothing] = {
+  lazy val launch: IO[Nothing] = {
     val sleep = for {
       intervalTicks <- getRepeatIntervalTicks
       interval = FiniteDuration(intervalTicks * 50, TimeUnit.MILLISECONDS)
