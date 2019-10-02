@@ -131,8 +131,10 @@ public class VotingFairyListener implements Listener {
 			if (playerdata.toggleGiveApple() == 4) {
 				n /= 4;
 				m = 0;
-			}else {	//ちょっとつまみ食いする
-				m += new Random().nextInt(m/10);
+			} else { //ちょっとつまみ食いする
+				if (m >= 10) {
+					m += new Random().nextInt(m/10);
+				}
 			}
 
 			//りんご所持数で値変更
