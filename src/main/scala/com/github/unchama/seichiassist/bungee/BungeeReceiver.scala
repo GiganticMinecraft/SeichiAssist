@@ -65,6 +65,7 @@ class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageLi
         println(s"successfully unloaded data for $playerName by upstream request.")
       }.unsafeRunAsync {
         case Left(error) => error.printStackTrace()
+        case Right(_) =>
       }
     } catch {
       case e: Exception =>

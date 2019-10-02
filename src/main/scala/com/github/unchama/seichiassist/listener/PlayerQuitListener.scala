@@ -23,7 +23,10 @@ class PlayerQuitListener  extends  Listener {
 
     IO {
       PlayerDataSaving.savePlayerData(playerData)
-    }.unsafeRunAsync { case Left(error) => error.printStackTrace() }
+    }.unsafeRunAsync {
+      case Left(error) => error.printStackTrace()
+      case Right(_) =>
+    }
 
     //不要なplayerdataを削除
     playerMap.remove(uuid)

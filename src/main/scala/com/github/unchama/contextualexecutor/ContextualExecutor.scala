@@ -38,6 +38,7 @@ object ContextualExecutor {
             println(s"Caught exception while executing ${command.getName} command.")
             error.printStackTrace()
           }
+          case Right(_) =>
         }
 
         // 非同期の操作を含むことを前提とするため, Bukkitへのコマンドの成否を必ず成功扱いにする

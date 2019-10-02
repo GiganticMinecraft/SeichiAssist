@@ -259,7 +259,6 @@ object PlayerDataSaving {
           println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
           exception.printStackTrace()
           ActionStatus.Fail
-        case _ => ActionStatus.Fail
       }
     }
 

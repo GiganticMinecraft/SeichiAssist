@@ -81,7 +81,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
   def refineSender[CS1 <: CS : ClassTag](effectOnFail: TargetedEffect[CommandSender]): ContextualExecutorBuilder[CS1] = {
     val newSenderTypeValidation: SenderTypeValidation[CS1] = { sender =>
       val verificationProgram = for {
-        refined1: CS <- OptionT(senderTypeValidation(sender))
+        refined1 <- OptionT(senderTypeValidation(sender))
         refined2: CS1 <- refined1 match {
           case refined1: CS1 => OptionT.pure[IO](refined1)
           case _ => OptionT[IO, Nothing](effectOnFail(sender).map(_ => None))

@@ -64,6 +64,7 @@ class PlayerInventoryListener extends Listener {
           case Left(error) =>
             println("Caught exception while processing clickevent on BlockLineUpMenu")
             error.printStackTrace()
+          case Right(_) =>
         }
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //ブロックを並べるスキル設定

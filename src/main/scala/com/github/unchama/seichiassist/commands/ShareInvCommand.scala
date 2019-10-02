@@ -19,8 +19,9 @@ object ShareInvCommand {
   import scala.jdk.CollectionConverters._
 
   def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): IO[Unit] = {
-    itemStackOption.filter(_.getType != Material.AIR)
-      .fold(IO.pure()) { itemStack => IO { Util.dropItem(to, itemStack) } }
+    itemStackOption
+      .filter(_.getType != Material.AIR)
+      .fold(IO.pure(())) { itemStack => IO { Util.dropItem(to, itemStack) } }
   }
 
   private def withdrawFromSharedInventory(player: Player): IO[TargetedEffect[Player]] = {

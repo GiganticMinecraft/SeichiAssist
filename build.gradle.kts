@@ -102,5 +102,5 @@ tasks.jar {
 
 val compilerArgument = listOf("-Xlint:unchecked", "-Xlint:deprecation")
 
-val compileJava: JavaCompile by tasks
-compileJava.options.compilerArgs.addAll(compilerArgument)
+val compileScala: ScalaCompile by tasks
+compileScala.options.compilerArgs.addAll(compilerArgument)

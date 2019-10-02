@@ -448,6 +448,7 @@ class PlayerClickListener  extends  Listener {
       case Left(error) =>
         println("Caught exception while opening StickMenu")
         error.printStackTrace()
+      case Right(_) =>
     }
   }
 

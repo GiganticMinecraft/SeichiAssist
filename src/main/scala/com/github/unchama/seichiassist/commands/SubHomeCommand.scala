@@ -39,9 +39,7 @@ object SubHomeCommand {
       val subHomeId = context.args.parsed(0).asInstanceOf[Int]
       val player = context.sender
 
-      val subHomeLocation = SeichiAssist.playermap.get(player.getUniqueId) match {
-        case Some(playerData) => playerData.getSubHomeLocation(subHomeId - 1)
-      }
+      val subHomeLocation = SeichiAssist.playermap(player.getUniqueId).getSubHomeLocation(subHomeId - 1)
       subHomeLocation match {
         case None => IO(s"サブホームポイント${subHomeId}が設定されてません".asMessageEffect())
         case Some(location) => IO {

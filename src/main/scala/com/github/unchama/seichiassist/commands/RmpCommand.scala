@@ -71,6 +71,7 @@ object RmpCommand {
       def execute(): TargetedEffect[ConsoleCommandSender] = {
         isSeichiWorldWithWGRegionsOption match {
           case None | Some(false) => return "removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます".asMessageEffect()
+          case Some(true) =>
         }
 
         // 削除処理

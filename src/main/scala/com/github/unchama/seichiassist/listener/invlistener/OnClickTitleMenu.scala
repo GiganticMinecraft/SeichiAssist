@@ -111,6 +111,7 @@ object OnClickTitleMenu extends Listener {
           )(player).unsafeRunAsync {
             case Left(error) =>
               error.printStackTrace()
+            case Right(_) =>
           }
           return
         }//ホームメニューに戻る

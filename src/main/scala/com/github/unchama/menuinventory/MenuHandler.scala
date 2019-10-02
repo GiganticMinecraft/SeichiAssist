@@ -38,6 +38,7 @@ object MenuHandler extends Listener {
       case Left(error) =>
         println("Caught exception while handling a menu effect.")
         error.printStackTrace()
+      case Right(_) =>
     }
   }
 }

@@ -138,6 +138,7 @@ class PlayerInventoryListener  extends  Listener {
         )(player).unsafeRunAsync {
           case Left(error) => 
             error.printStackTrace()
+          case Right(_) =>
         }
       } else {
         itemstackcurrent.getType match {
@@ -385,6 +386,7 @@ class PlayerInventoryListener  extends  Listener {
         )(player).unsafeRunAsync {
           case Left(error) =>
             error.printStackTrace()
+          case Right(_) =>
         }
       } else {
         itemstackcurrent.getType match {
@@ -428,6 +430,8 @@ class PlayerInventoryListener  extends  Listener {
             player.playSound(player.getLocation, Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5.toFloat)
             player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player))
           }
+
+          case _ =>
         }
       }
     }
@@ -623,6 +627,7 @@ class PlayerInventoryListener  extends  Listener {
                 StickMenu.firstPage.open
             )(player).unsafeRunAsync {
               case Left(error) => error.printStackTrace()
+              case Right(_) =>
             }
           }
 
@@ -699,6 +704,7 @@ class PlayerInventoryListener  extends  Listener {
         )(player).unsafeRunAsync {
           case Left(error) =>
             error.printStackTrace()
+          case Right(_) =>
         }
       } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowDown") {
         val itemmeta = itemstackcurrent.getItemMeta
@@ -770,6 +776,7 @@ class PlayerInventoryListener  extends  Listener {
             )(player).unsafeRunAsync {
               case Left(error) =>
                 error.printStackTrace()
+              case Right(_) =>
             }
           }
 
@@ -848,6 +855,7 @@ class PlayerInventoryListener  extends  Listener {
             )(player).unsafeRunAsync {
               case Left(error) =>
                 error.printStackTrace()
+              case Right(_) =>
             }
           }
 
@@ -1385,6 +1393,7 @@ class PlayerInventoryListener  extends  Listener {
             StickMenu.firstPage.open
         )(player).unsafeRunAsync {
           case Left(value) => value.printStackTrace()
+          case Right(_) =>
         }
         // NOTE: WHEN
       } else if (itemstackcurrent.getType == Material.WATCH) {

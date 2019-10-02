@@ -59,6 +59,7 @@ sealed abstract class ActiveSkillEffect(val num: Int,
       case Left(error) =>
         println("Caught exception while running arrow-effect asynchronously")
         error.printStackTrace()
+      case Right(_) =>
     }
   }
 }

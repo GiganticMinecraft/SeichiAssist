@@ -198,29 +198,27 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     try {
       gateway.executeQuery(s"SELECT chainvote FROM $tableReference WHERE name LIKE '$name'")
         .recordIteration { lrs =>
-          try {
-            val TodayDate = dateFormat.parse(dateFormat.format(calendar.getTime))
-            val LastDate = dateFormat.parse(lastVote)
-            val TodayLong = TodayDate.getTime
-            val LastLong = LastDate.getTime
+          val TodayDate = dateFormat.parse(dateFormat.format(calendar.getTime))
+          val LastDate = dateFormat.parse(lastVote)
+          val TodayLong = TodayDate.getTime
+          val LastLong = LastDate.getTime
 
-            val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-            val count =
-                if (dateDiff <= 2L)
-                  lrs.getInt("chainvote") + 1
-                else
-                  1
+          val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
+          val count =
+              if (dateDiff <= 2L)
+                lrs.getInt("chainvote") + 1
+              else
+                1
 
-            //プレイヤーがオンラインの時即時反映させる
-            val player = Bukkit.getServer().getPlayer(name)
-            if (player != null) {
-              val playerData = SeichiAssist.playermap(player.getUniqueId)
+          //プレイヤーがオンラインの時即時反映させる
+          val player = Bukkit.getServer().getPlayer(name)
+          if (player != null) {
+            val playerData = SeichiAssist.playermap(player.getUniqueId)
 
-              playerData.ChainVote = count
-            }
-
-            gateway.executeUpdate(s"UPDATE $tableReference SET chainvote = $count WHERE name LIKE '$name'")
+            playerData.ChainVote = count
           }
+
+          gateway.executeUpdate(s"UPDATE $tableReference SET chainvote = $count WHERE name LIKE '$name'")
         }
     } catch {
       case e: SQLException =>

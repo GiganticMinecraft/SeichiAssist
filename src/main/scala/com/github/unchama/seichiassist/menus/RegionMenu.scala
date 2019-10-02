@@ -183,7 +183,7 @@ object RegionMenu extends Menu {
         }
 
         new IconItemStackBuilder(Material.GOLD_AXE)
-          .modify { b => if (canMakeRegion) b.enchanted() else this }
+          .modify { b => if (canMakeRegion) b.enchanted() }
           .title(s"$YELLOW$UNDERLINE${BOLD}保護の申請")
           .lore(lore.toList)
           .build()

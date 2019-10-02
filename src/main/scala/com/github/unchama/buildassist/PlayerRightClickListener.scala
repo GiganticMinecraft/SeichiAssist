@@ -53,6 +53,7 @@ class PlayerRightClickListener extends Listener {
           case Left(error) =>
             println("Caught exception while opening BuildMainMenu")
             error.printStackTrace()
+          case Right(_) =>
         }
       } else if (player.isSneaking) {
 

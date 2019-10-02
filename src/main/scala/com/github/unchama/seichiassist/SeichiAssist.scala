@@ -234,6 +234,7 @@ class SeichiAssist extends JavaPlugin() {
   private def cancelRepeatedJobs(): Unit = {
     repeatedTaskFiber match {
       case Some(x) => x.cancel.unsafeRunSync()
+      case None =>
     }
   }
 
