@@ -29,7 +29,7 @@ import org.bukkit.{Material, Sound}
  *
  * @author karayuu
  */
-private object FirstPage extends Menu {
+object FirstPage extends Menu {
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.player.CommandEffect._
 
