@@ -1,14 +1,10 @@
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
 plugins {
     java
+    scala
     maven
-    kotlin("jvm").version("1.3.40")
-    id("nebula.dependency-lock").version("2.2.4")
-    id("org.jetbrains.kotlin.kapt").version("1.3.40")
 }
 
 group = "click.seichi"
@@ -18,17 +14,9 @@ description = """ギガンティック☆整地鯖の独自要素を司るプラ
 project.sourceSets {
     getByName("main") {
         java.srcDir("src/main/java")
-
-        withConvention(KotlinSourceSet::class) {
-            kotlin.srcDir("src/main/java")
-        }
     }
     getByName("test") {
         java.srcDir("src/test/java")
-
-        withConvention(KotlinSourceSet::class) {
-            kotlin.srcDir("src/test/java")
-        }
     }
 }
 
@@ -68,24 +56,21 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 
     embed("org.flywaydb:flyway-core:5.2.4")
-    embed(kotlin("stdlib-jdk8"))
-    embed("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1")
 
-    embed("com.okkero.skedule:skedule:1.2.6")
+    embed("org.scala-lang:scala-library:2.13.1")
 
-    // arrow依存
-    val arrowVersion = "0.9.0"
-    embed("io.arrow-kt:arrow-core-data:$arrowVersion")
-    embed("io.arrow-kt:arrow-core-extensions:$arrowVersion")
-    embed("io.arrow-kt:arrow-syntax:$arrowVersion")
-    embed("io.arrow-kt:arrow-typeclasses:$arrowVersion")
-    embed("io.arrow-kt:arrow-extras-data:$arrowVersion")
-    embed("io.arrow-kt:arrow-extras-extensions:$arrowVersion")
-    kapt("io.arrow-kt:arrow-meta:$arrowVersion")
+    // cats依存
+    embed("org.typelevel:cats-core_2.13:2.0.0")
+    embed("org.typelevel:cats-effect_2.13:2.0.0")
 
-    embed("io.arrow-kt:arrow-effects-data:$arrowVersion")
-    embed("io.arrow-kt:arrow-effects-extensions:$arrowVersion")
-    embed("io.arrow-kt:arrow-effects-io-extensions:$arrowVersion")
+    embed("com.beachape:enumeratum_2.13:1.5.13")
+}
+
+task("repl", JavaExec::class) {
+    main = "scala.tools.nsc.MainGenericRunner"
+    classpath = sourceSets.main.get().runtimeClasspath
+    standardInput = System.`in`
+    args = listOf("-usejavacp")
 }
 
 tasks.processResources {
@@ -116,20 +101,6 @@ tasks.jar {
 }
 
 val compilerArgument = listOf("-Xlint:unchecked", "-Xlint:deprecation")
-val kotlinCompilerArgument = listOf("-Xjsr305=strict")
 
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-    freeCompilerArgs = compilerArgument + kotlinCompilerArgument
-}
-
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-    freeCompilerArgs = compilerArgument + kotlinCompilerArgument
-}
-
-val compileJava: JavaCompile by tasks
-compileJava.options.compilerArgs.addAll(compilerArgument)
-
+val compileScala: ScalaCompile by tasks
+compileScala.options.compilerArgs.addAll(compilerArgument)
