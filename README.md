@@ -6,7 +6,6 @@
 - [eclipse 4.4 luna](http://mergedoc.osdn.jp/) や [Intellij IDEA 2019.2](https://www.jetbrains.com/idea/) などの統合開発環境
 - [JDK 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 - [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
-- [Kotlin 1.3](https://plugins.jetbrains.com/plugin/6954-kotlin)
 - [Scala 2.11](https://www.scala-lang.org/download/)
 ## 前提プラグイン
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
