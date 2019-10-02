@@ -43,10 +43,10 @@ public class GridTemplate {
 
 	//セッター
 	public void setChunkAmount(Map<DirectionType, Integer> setMap) {
-		this.aheadAmount = setMap.get(DirectionType.AHEAD$.MODULE$);
-		this.behindAmount = setMap.get(DirectionType.BEHIND$.MODULE$);
-		this.rightAmount = setMap.get(DirectionType.RIGHT$.MODULE$);
-		this.leftAmount = setMap.get(DirectionType.LEFT$.MODULE$);
+		this.aheadAmount = setMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$);
+		this.behindAmount = setMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$);
+		this.rightAmount = setMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$);
+		this.leftAmount = setMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$);
 	}
 
 	/**

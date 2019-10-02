@@ -17,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import scala.Int;
+import scala.jdk.CollectionConverters;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -56,82 +57,82 @@ public class RegionMenuData {
                 ChatColor.AQUA + playerData.unitPerClick() * 15 + ChatColor.GREEN + "ブロック)/1クリック");
         lore0.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで変更");
         ItemStack menuicon0 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 0,
-                ChatColor.GREEN + "拡張単位の変更", lore0, true);
+                ChatColor.GREEN + "拡張単位の変更", CollectionConverters.ListHasAsScala(lore0).asScala().toList(), true);
         gridInv.setItem(0, menuicon0);
 
         //1マス目
-        List<String> lore1 = getGridLore(directionMap.get(DirectionType.AHEAD$.MODULE$), unitMap.getOrElse(DirectionType.AHEAD$.MODULE$, () -> null));
-        if (!playerData.canGridExtend(DirectionType.AHEAD$.MODULE$, player.getWorld().getName())) {
+        List<String> lore1 = getGridLore(directionMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$), unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, () -> null));
+        if (!playerData.canGridExtend(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, player.getWorld().getName())) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(DirectionType.AHEAD$.MODULE$)) {
+        } else if (!playerData.canGridReduce(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$)) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon1 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14,
-                ChatColor.DARK_GREEN + "前に" + playerData.unitPerClick() + "ユニット増やす/減らす", lore1, true);
+                ChatColor.DARK_GREEN + "前に" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore1).asScala().toList(), true);
         gridInv.setItem(1, menuicon1);
 
         //2マス目
         List<String> lore2 = new ArrayList<>();
         lore2.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで開く");
         ItemStack menuicon2 = Util.getMenuIcon(Material.CHEST, 1, ChatColor.GREEN + "設定保存メニュー",
-                lore2, true);
+                CollectionConverters.ListHasAsScala(lore2).asScala().toList(), true);
         gridInv.setItem(2, menuicon2);
 
         //3マス目
-        List<String> lore3 = getGridLore(directionMap.get(DirectionType.LEFT$.MODULE$), unitMap.getOrElse(DirectionType.LEFT$.MODULE$, () -> null));
-        if (!playerData.canGridExtend(DirectionType.LEFT$.MODULE$, player.getWorld().getName())) {
+        List<String> lore3 = getGridLore(directionMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$), unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, () -> null));
+        if (!playerData.canGridExtend(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, player.getWorld().getName())) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(DirectionType.LEFT$.MODULE$)) {
+        } else if (!playerData.canGridReduce(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$)) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon3 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10,
-                ChatColor.DARK_GREEN + "左に" + playerData.unitPerClick() + "ユニット増やす/減らす", lore3, true);
+                ChatColor.DARK_GREEN + "左に" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore3).asScala().toList(), true);
         gridInv.setItem(3, menuicon3);
 
         //4マス目
         List<String> lore4 = new ArrayList<>();
         lore4.add(ChatColor.GRAY + "現在の設定");
-        lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + unitMap.getOrElse(DirectionType.AHEAD$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(DirectionType.AHEAD$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
-        lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + unitMap.getOrElse(DirectionType.BEHIND$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(DirectionType.BEHIND$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
-        lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + unitMap.getOrElse(DirectionType.RIGHT$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(DirectionType.RIGHT$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
-        lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.getOrElse(DirectionType.LEFT$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(DirectionType.LEFT$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
         lore4.add(ChatColor.GRAY + "保護ユニット数：" + ChatColor.AQUA + playerData.gridChunkAmount());
         lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimitPerWorld(player.getWorld().getName()));
         ItemStack menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
-                lore4, true);
+                CollectionConverters.ListHasAsScala(lore4).asScala().toList(), true);
         gridInv.setItem(4, menuicon4);
 
         //5マス目
-        List<String> lore5 = getGridLore(directionMap.get(DirectionType.RIGHT$.MODULE$), unitMap.getOrElse(DirectionType.RIGHT$.MODULE$, () -> null));
-        if (!playerData.canGridExtend(DirectionType.RIGHT$.MODULE$, player.getWorld().getName())) {
+        List<String> lore5 = getGridLore(directionMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$), unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, () -> null));
+        if (!playerData.canGridExtend(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, player.getWorld().getName())) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(DirectionType.RIGHT$.MODULE$)) {
+        } else if (!playerData.canGridReduce(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$)) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5,
-                ChatColor.DARK_GREEN + "右に" + playerData.unitPerClick() + "ユニット増やす/減らす", lore5, true);
+                ChatColor.DARK_GREEN + "右に" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore5).asScala().toList(), true);
         gridInv.setItem(5, menuicon5);
 
         //6マス目
         List<String> lore6 = new ArrayList<>();
         lore6.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "取扱注意！！");
         ItemStack menuicon6 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 4, ChatColor.RED + "全設定リセット",
-                lore6, true);
+                CollectionConverters.ListHasAsScala(lore6).asScala().toList(), true);
         gridInv.setItem(6, menuicon6);
 
         //7マス目
-        List<String> lore7 = getGridLore(directionMap.get(DirectionType.BEHIND$.MODULE$), unitMap.getOrElse(DirectionType.BEHIND$.MODULE$, () -> null));
-        if (!playerData.canGridExtend(DirectionType.BEHIND$.MODULE$, player.getWorld().getName())) {
+        List<String> lore7 = getGridLore(directionMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$), unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, () -> null));
+        if (!playerData.canGridExtend(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, player.getWorld().getName())) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(DirectionType.BEHIND$.MODULE$)) {
+        } else if (!playerData.canGridReduce(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$)) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon7 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13,
-                ChatColor.DARK_GREEN + "後ろに" + playerData.unitPerClick() + "ユニット増やす/減らす", lore7, true);
+                ChatColor.DARK_GREEN + "後ろに" + playerData.unitPerClick() + "ユニット増やす/減らす", CollectionConverters.ListHasAsScala(lore7).asScala().toList(), true);
         gridInv.setItem(7, menuicon7);
 
         //8マス目
@@ -139,7 +140,7 @@ public class RegionMenuData {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "このワールドでは保護を作成できません");
             ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
-                    lore8, true);
+                    CollectionConverters.ListHasAsScala(lore8).asScala().toList(), true);
             gridInv.setItem(8, menuicon8);
         } else if (!playerData.canCreateRegion()) {
             List<String> lore8 = new ArrayList<>();
@@ -147,14 +148,14 @@ public class RegionMenuData {
             lore8.add(ChatColor.RED + "・保護の範囲が他の保護と重複している");
             lore8.add(ChatColor.RED + "・保護の作成上限に達している");
             ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
-                    lore8, true);
+                    CollectionConverters.ListHasAsScala(lore8).asScala().toList(), true);
             gridInv.setItem(8, menuicon8);
         } else {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.DARK_GREEN + "保護作成可能です");
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "クリックで作成");
             ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 11, ChatColor.GREEN + "保護作成",
-                    lore8, true);
+                    CollectionConverters.ListHasAsScala(lore8).asScala().toList(), true);
             gridInv.setItem(8, menuicon8);
         }
         return gridInv;
@@ -183,34 +184,34 @@ public class RegionMenuData {
         //0,360:south 90:west 180:north 270:east
         if (0.0 <= rotation && rotation < 45.0) {
             //前が北(North)
-            directionMap.put(DirectionType.BEHIND$.MODULE$, "南(South)");
-            directionMap.put(DirectionType.AHEAD$.MODULE$, "北(North)");
-            directionMap.put(DirectionType.LEFT$.MODULE$, "西(West)");
-            directionMap.put(DirectionType.RIGHT$.MODULE$, "東(East)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "南(South)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "北(North)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "西(West)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "東(East)");
         } else if (45.0 <= rotation && rotation < 135.0) {
             //前が東(East)
-            directionMap.put(DirectionType.RIGHT$.MODULE$, "南(South)");
-            directionMap.put(DirectionType.LEFT$.MODULE$, "北(North)");
-            directionMap.put(DirectionType.BEHIND$.MODULE$, "西(West)");
-            directionMap.put(DirectionType.AHEAD$.MODULE$, "東(East)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "南(South)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "北(North)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "西(West)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "東(East)");
         } else if (135.0 <= rotation && rotation < 225.0) {
             //前が南(South)
-            directionMap.put(DirectionType.AHEAD$.MODULE$, "南(South)");
-            directionMap.put(DirectionType.BEHIND$.MODULE$, "北(North)");
-            directionMap.put(DirectionType.RIGHT$.MODULE$, "西(West)");
-            directionMap.put(DirectionType.LEFT$.MODULE$, "東(East)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "南(South)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "北(North)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "西(West)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "東(East)");
         } else if (225.0 <= rotation && rotation < 315.0) {
             //前が西(West)
-            directionMap.put(DirectionType.LEFT$.MODULE$, "南(South)");
-            directionMap.put(DirectionType.RIGHT$.MODULE$, "北(North)");
-            directionMap.put(DirectionType.AHEAD$.MODULE$, "西(West)");
-            directionMap.put(DirectionType.BEHIND$.MODULE$, "東(East)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "南(South)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "北(North)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "西(West)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "東(East)");
         } else if (315.0 <= rotation && rotation < 360.0) {
             //前が北(North)
-            directionMap.put(DirectionType.BEHIND$.MODULE$, "南(South)");
-            directionMap.put(DirectionType.AHEAD$.MODULE$, "北(North)");
-            directionMap.put(DirectionType.LEFT$.MODULE$, "西(West)");
-            directionMap.put(DirectionType.RIGHT$.MODULE$, "東(East)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "南(South)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "北(North)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "西(West)");
+            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "東(East)");
         }
         return directionMap;
     }
@@ -232,7 +233,7 @@ public class RegionMenuData {
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "" + "クリックで戻る");
         ItemStack retIcon = Util.getMenuIcon(Material.BARRIER, 1, ChatColor.RED + "グリッド式保護メニューに戻る",
-                lore, true);
+                CollectionConverters.ListHasAsScala(lore).asScala().toList(), true);
         inv.setItem(getAisleAmount() * 9, retIcon);
 
         return inv;
@@ -268,13 +269,13 @@ public class RegionMenuData {
             lore.add(ChatColor.GREEN + "左クリックで設定を読み込み");
             lore.add(ChatColor.RED + "右クリックで現在の設定で上書き");
             return Util.getMenuIcon(Material.CHEST, 1,
-                    ChatColor.GREEN + "テンプレNo." + (i + 1) + "(設定済)", lore, true);
+                    ChatColor.GREEN + "テンプレNo." + (i + 1) + "(設定済)", CollectionConverters.ListHasAsScala(lore).asScala().toList(), true);
         } else {
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GREEN + "未設定");
             lore.add(ChatColor.RED + "左クリックで現在の設定を保存");
             return Util.getMenuIcon(Material.PAPER, 1,
-                    ChatColor.RED + "テンプレNo." + (i + 1), lore, true);
+                    ChatColor.RED + "テンプレNo." + (i + 1), CollectionConverters.ListHasAsScala(lore).asScala().toList(), true);
         }
     }
 }

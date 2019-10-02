@@ -532,7 +532,7 @@ public class PlayerBlockBreakListener implements Listener {
 			breaklist.add(block);
 			SeichiAssist.allblocklist().$plus$eq(block);
 			ActiveSkillEffect[] skilleffect = ActiveSkillEffect.arrayValues();
-			skilleffect(playerdata.activeskilldata().effectnum - 1).runBreakEffect(player,playerdata.activeskilldata(), tool, breaklist.toSet(), start, end,centerofblock);
+			skilleffect[playerdata.activeskilldata().effectnum - 1].runBreakEffect(player,playerdata.activeskilldata(), tool, breaklist.toSet(), start, end,centerofblock);
 		}
 
 		//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
@@ -540,7 +540,7 @@ public class PlayerBlockBreakListener implements Listener {
 			breaklist.add(block);
 			SeichiAssist.allblocklist().$plus$eq(block);
 			ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.arrayValues();
-			premiumeffect(playerdata.activeskilldata().effectnum - 1 - 100).runBreakEffect(player, tool, breaklist.toSet(), start, end,centerofblock);
+			premiumeffect[playerdata.activeskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, breaklist.toSet(), start, end,centerofblock);
 		}
 
 		//経験値を減らす

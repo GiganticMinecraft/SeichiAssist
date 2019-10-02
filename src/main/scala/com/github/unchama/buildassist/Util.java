@@ -93,7 +93,7 @@ public final class Util {
 	@Deprecated public static @Nullable
 	MineStackObj findMineStackObjectByName(final String name) {
 		return MineStackObjectList.minestacklist()
-				.filter(obj -> name.equals(obj.mineStackObjName()))
+				.filter((MineStackObj obj) -> name.equals(obj.mineStackObjName()))
 				.headOption().getOrElse(() -> null);
 	}
 
