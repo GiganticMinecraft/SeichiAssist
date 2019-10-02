@@ -256,7 +256,7 @@ object PlayerDataLoading {
         playerData.lastcheckdate = if (lastIn == null || lastIn == "") {
           Some(sdf.format(cal.getTime))
         } else {
-          None
+          Some(lastIn)
         }
         val chain = rs.getInt("ChainJoin")
         playerData.loginStatus = playerData.loginStatus.copy(consecutiveLoginDays = if (chain == 0) {
