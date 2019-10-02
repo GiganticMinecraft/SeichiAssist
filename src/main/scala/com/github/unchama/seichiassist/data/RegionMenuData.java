@@ -61,10 +61,10 @@ public class RegionMenuData {
         gridInv.setItem(0, menuicon0);
 
         //1マス目
-        List<String> lore1 = getGridLore(directionMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$), unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, () -> null));
-        if (!playerData.canGridExtend(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, player.getWorld().getName())) {
+        List<String> lore1 = getGridLore(directionMap.get(Util.DirectionType$.MODULE$.ahead()), unitMap.getOrElse(Util.DirectionType$.MODULE$.ahead(), () -> null));
+        if (!playerData.canGridExtend(Util.DirectionType$.MODULE$.ahead(), player.getWorld().getName())) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$)) {
+        } else if (!playerData.canGridReduce(Util.DirectionType$.MODULE$.ahead())) {
             lore1.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon1 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14,
@@ -79,10 +79,10 @@ public class RegionMenuData {
         gridInv.setItem(2, menuicon2);
 
         //3マス目
-        List<String> lore3 = getGridLore(directionMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$), unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, () -> null));
-        if (!playerData.canGridExtend(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, player.getWorld().getName())) {
+        List<String> lore3 = getGridLore(directionMap.get(Util.DirectionType$.MODULE$.left()), unitMap.getOrElse(Util.DirectionType$.MODULE$.left(), () -> null));
+        if (!playerData.canGridExtend(Util.DirectionType$.MODULE$.left(), player.getWorld().getName())) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$)) {
+        } else if (!playerData.canGridReduce(Util.DirectionType$.MODULE$.left())) {
             lore3.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon3 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10,
@@ -92,14 +92,14 @@ public class RegionMenuData {
         //4マス目
         List<String> lore4 = new ArrayList<>();
         lore4.add(ChatColor.GRAY + "現在の設定");
-        lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
-        lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
-        lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
-        lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$)).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + unitMap.getOrElse(Util.DirectionType$.MODULE$.ahead(), () -> null) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(Util.DirectionType$.MODULE$.ahead())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + unitMap.getOrElse(Util.DirectionType$.MODULE$.behind(), () -> null) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(Util.DirectionType$.MODULE$.behind())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + unitMap.getOrElse(Util.DirectionType$.MODULE$.right(), () -> null) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(Util.DirectionType$.MODULE$.right())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+        lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.getOrElse(Util.DirectionType$.MODULE$.left(), () -> null) + ChatColor.GRAY + "ユニット"
+                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(Util.DirectionType$.MODULE$.left())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
         lore4.add(ChatColor.GRAY + "保護ユニット数：" + ChatColor.AQUA + playerData.gridChunkAmount());
         lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimitPerWorld(player.getWorld().getName()));
         ItemStack menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",
@@ -107,10 +107,10 @@ public class RegionMenuData {
         gridInv.setItem(4, menuicon4);
 
         //5マス目
-        List<String> lore5 = getGridLore(directionMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$), unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, () -> null));
-        if (!playerData.canGridExtend(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, player.getWorld().getName())) {
+        List<String> lore5 = getGridLore(directionMap.get(Util.DirectionType$.MODULE$.right()), unitMap.getOrElse(Util.DirectionType$.MODULE$.right(), () -> null));
+        if (!playerData.canGridExtend(Util.DirectionType$.MODULE$.right(), player.getWorld().getName())) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$)) {
+        } else if (!playerData.canGridReduce(Util.DirectionType$.MODULE$.right())) {
             lore5.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5,
@@ -125,10 +125,10 @@ public class RegionMenuData {
         gridInv.setItem(6, menuicon6);
 
         //7マス目
-        List<String> lore7 = getGridLore(directionMap.get(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$), unitMap.getOrElse(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, () -> null));
-        if (!playerData.canGridExtend(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, player.getWorld().getName())) {
+        List<String> lore7 = getGridLore(directionMap.get(Util.DirectionType$.MODULE$.behind()), unitMap.getOrElse(Util.DirectionType$.MODULE$.behind(), () -> null));
+        if (!playerData.canGridExtend(Util.DirectionType$.MODULE$.behind(), player.getWorld().getName())) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上拡張できません");
-        } else if (!playerData.canGridReduce(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$)) {
+        } else if (!playerData.canGridReduce(Util.DirectionType$.MODULE$.behind())) {
             lore7.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "これ以上縮小できません");
         }
         ItemStack menuicon7 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13,
@@ -184,34 +184,34 @@ public class RegionMenuData {
         //0,360:south 90:west 180:north 270:east
         if (0.0 <= rotation && rotation < 45.0) {
             //前が北(North)
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "南(South)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "北(North)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "西(West)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "東(East)");
+            directionMap.put(Util.DirectionType$.MODULE$.behind(), "南(South)");
+            directionMap.put(Util.DirectionType$.MODULE$.ahead(), "北(North)");
+            directionMap.put(Util.DirectionType$.MODULE$.left(), "西(West)");
+            directionMap.put(Util.DirectionType$.MODULE$.right(), "東(East)");
         } else if (45.0 <= rotation && rotation < 135.0) {
             //前が東(East)
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "南(South)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "北(North)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "西(West)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "東(East)");
+            directionMap.put(Util.DirectionType$.MODULE$.right(), "南(South)");
+            directionMap.put(Util.DirectionType$.MODULE$.left(), "北(North)");
+            directionMap.put(Util.DirectionType$.MODULE$.behind(), "西(West)");
+            directionMap.put(Util.DirectionType$.MODULE$.ahead(), "東(East)");
         } else if (135.0 <= rotation && rotation < 225.0) {
             //前が南(South)
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "南(South)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "北(North)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "西(West)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "東(East)");
+            directionMap.put(Util.DirectionType$.MODULE$.ahead(), "南(South)");
+            directionMap.put(Util.DirectionType$.MODULE$.behind(), "北(North)");
+            directionMap.put(Util.DirectionType$.MODULE$.right(), "西(West)");
+            directionMap.put(Util.DirectionType$.MODULE$.left(), "東(East)");
         } else if (225.0 <= rotation && rotation < 315.0) {
             //前が西(West)
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "南(South)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "北(North)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "西(West)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "東(East)");
+            directionMap.put(Util.DirectionType$.MODULE$.left(), "南(South)");
+            directionMap.put(Util.DirectionType$.MODULE$.right(), "北(North)");
+            directionMap.put(Util.DirectionType$.MODULE$.ahead(), "西(West)");
+            directionMap.put(Util.DirectionType$.MODULE$.behind(), "東(East)");
         } else if (315.0 <= rotation && rotation < 360.0) {
             //前が北(North)
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$BEHIND$.MODULE$, "南(South)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$AHEAD$.MODULE$, "北(North)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$LEFT$.MODULE$, "西(West)");
-            directionMap.put(com.github.unchama.seichiassist.util.Util$DirectionType$RIGHT$.MODULE$, "東(East)");
+            directionMap.put(Util.DirectionType$.MODULE$.behind(), "南(South)");
+            directionMap.put(Util.DirectionType$.MODULE$.ahead(), "北(North)");
+            directionMap.put(Util.DirectionType$.MODULE$.left(), "西(West)");
+            directionMap.put(Util.DirectionType$.MODULE$.right(), "東(East)");
         }
         return directionMap;
     }

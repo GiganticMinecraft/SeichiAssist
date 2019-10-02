@@ -459,6 +459,14 @@ object Util {
     case object RIGHT extends DirectionType
     case object LEFT extends DirectionType
 
+    /**
+     * for Java interop
+     */
+    def ahead: AHEAD.type = AHEAD
+    def behind: BEHIND.type = BEHIND
+    def right: RIGHT.type = RIGHT
+    def left: LEFT.type = LEFT
+
     val values: IndexedSeq[DirectionType] = findValues
   }
 
