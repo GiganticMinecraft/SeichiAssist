@@ -128,7 +128,7 @@ class PlayerData(
   var unclaimedApologyItems = 0
 
   //拡張インベントリ
-  private var _pocketInventory: Inventory = createInventory(null, Left(InventoryRowSize(1)), Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
+  private var _pocketInventory: Inventory = createInventory(None, Left(InventoryRowSize(1)), Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
 
   def pocketInventory: Inventory = {
     // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
