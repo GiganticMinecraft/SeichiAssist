@@ -59,7 +59,7 @@ class PlayerData(
   lazy private val statisticsData: mutable.ArrayBuffer[Int] = {
     val buffer: mutable.ArrayBuffer[Int] = ArrayBuffer()
 
-    buffer ++= (MaterialSets.materials -- PlayerData.exclude)
+    buffer ++= (MaterialSets.materials -- PlayerData.exclude).toBuffer[Material]
       .map(material => player.getStatistic(Statistic.MINE_BLOCK, material))
 
     buffer
