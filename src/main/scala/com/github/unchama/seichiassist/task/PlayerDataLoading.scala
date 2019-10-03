@@ -254,9 +254,9 @@ object PlayerDataLoading {
         val sdf = new SimpleDateFormat("yyyy/MM/dd")
         val lastIn = rs.getString("lastcheckdate")
         playerData.lastcheckdate = if (lastIn == null || lastIn == "") {
-          Some(sdf.format(cal.getTime))
+          sdf.format(cal.getTime)
         } else {
-          Some(lastIn)
+          lastIn
         }
         val chain = rs.getInt("ChainJoin")
         playerData.loginStatus = playerData.loginStatus.copy(consecutiveLoginDays = if (chain == 0) {
@@ -274,7 +274,7 @@ object PlayerDataLoading {
 
         try {
           val TodayDate = sdf.parse(sdf.format(cal.getTime))
-          val LastDate = sdf.parse(playerData.lastcheckdate.get)
+          val LastDate = sdf.parse(playerData.lastcheckdate)
           val TodayLong = TodayDate.getTime
           val LastLong = LastDate.getTime
 
@@ -294,7 +294,7 @@ object PlayerDataLoading {
           case e: ParseException => e.printStackTrace()
         }
 
-        playerData.lastcheckdate = Some(sdf.format(cal.getTime))
+        playerData.lastcheckdate = sdf.format(cal.getTime)
 
         playerData.ChainVote = rs.getInt("chainvote")
 

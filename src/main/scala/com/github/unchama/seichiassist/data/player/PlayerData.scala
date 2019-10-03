@@ -165,7 +165,8 @@ class PlayerData(
   var p_givenvote = 0
 
   //連続・通算ログイン用
-  var lastcheckdate: Option[String] = None
+  // ロード時に初期化される
+  var lastcheckdate: String = _
   var loginStatus = LoginStatus(null, 0, 0)
 
   //期間限定ログイン用
