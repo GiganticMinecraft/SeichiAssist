@@ -5,6 +5,7 @@ trait ApplySyntax {
 }
 
 object Modify {
+  // TODO replace with Scala 2.13's tap in scala.util.chaining
   implicit class ModifyOps[T](x: T) {
     def modify(f: T => Unit): T = { f(x); x }
   }
