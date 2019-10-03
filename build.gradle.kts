@@ -93,6 +93,10 @@ tasks.withType(JavaCompile::class.java).all {
     this.options.encoding = "UTF-8"
 }
 
+tasks.withType(ScalaCompile::class.java).all {
+  this.options.encoding = "UTF-8"
+}
+
 tasks.jar {
     // Configurationをコピーしないと変更を行っているとみなされて怒られる
     val embedConfiguration = embed.copy()

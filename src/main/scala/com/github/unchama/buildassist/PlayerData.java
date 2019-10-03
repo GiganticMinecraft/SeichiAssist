@@ -85,7 +85,7 @@ public final class PlayerData {
 		//現在のランクの次を取得
 		int i = level;
 		//ランクが上がらなくなるまで処理
-        while (((Int) BuildAssist.levellist().apply(i)).toInt() <= totalbuildnum.doubleValue() && (i + 2) <= BuildAssist.levellist().size()) {
+        while (((int) BuildAssist.levellist().apply(i)) <= totalbuildnum.doubleValue() && (i + 2) <= BuildAssist.levellist().size()) {
             if (!BuildAssist.DEBUG()) {
 				//レベルアップ時のメッセージ
 				player.sendMessage(ChatColor.GOLD+"ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + i +")→建築Lv(" + (i+1) + ")】");
