@@ -5,8 +5,8 @@ import org.bukkit.plugin.java.JavaPlugin
 
 import scala.concurrent.ExecutionContext
 
-// rename to PluginExecutionContext
-object Schedulers {
+object PluginExecutionContexts {
+
   implicit val pluginInstance: JavaPlugin = SeichiAssist.instance
 
   val sync: ExecutionContext = new BukkitSyncExecutionContext()

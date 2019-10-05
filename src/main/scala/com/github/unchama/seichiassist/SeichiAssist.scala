@@ -219,7 +219,7 @@ class SeichiAssist extends JavaPlugin() {
     val startTask = {
       import cats.implicits._
 
-      val syncExecutionContext = Schedulers.sync
+      val syncExecutionContext = PluginExecutionContexts.sync
       val asyncExecutionContext = ExecutionContext.global
 
       // 実行がデフォルトで待機すべきコンテキストはasyncのほうであるため

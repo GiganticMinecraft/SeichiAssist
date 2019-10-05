@@ -47,10 +47,10 @@ abstract class RepeatingTask {
     } yield ()
 
     for {
-      _ <- IO.shift(taskExecutionContext)
       loop <- forever {
         for {
           _ <- sleep
+          _ <- IO.shift(taskExecutionContext)
           _ <- routineExecution
         } yield ()
       }
