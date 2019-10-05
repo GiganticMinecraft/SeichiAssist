@@ -139,8 +139,7 @@ object PlayerDataSaving {
       val playerUuid = playerdata.uuid.toString
 
       //実績のフラグ(BitSet)保存用変換処理
-      val titleArray = playerdata.TitleFlags.toArray
-      val flagString = titleArray.map(_.toLong.toHexString).mkString(",")
+      val flagString = playerdata.TitleFlags.toBitMask.map(_.toHexString).mkString(",")
 
       val command = {
         ("update seichiassist.playerdata set"
