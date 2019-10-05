@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
-import cats.effect.{ContextShift, Fiber, IO}
+import cats.effect.{ContextShift, Fiber, IO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -14,7 +14,8 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
-import com.github.unchama.seichiassist.task.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation, PlayerDataSaving}
+import com.github.unchama.seichiassist.task.PlayerDataSaving
+import com.github.unchama.seichiassist.task.repeating.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
@@ -25,6 +26,7 @@ import org.bukkit.{Bukkit, Material}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.concurrent.ExecutionContext
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
 
@@ -217,12 +219,18 @@ class SeichiAssist extends JavaPlugin() {
     val startTask = {
       import cats.implicits._
 
-      implicit val shift: ContextShift[IO] = IO.contextShift(Schedulers.sync)
+      val syncExecutionContext = Schedulers.sync
+      val asyncExecutionContext = ExecutionContext.global
+
+      // 実行がデフォルトで待機すべきコンテキストはasyncのほうであるため
+      implicit val defaultContextShift: ContextShift[IO] = IO.contextShift(asyncExecutionContext)
+
+      implicit val sleepTimer: Timer[IO] = IO.timer(asyncExecutionContext)
 
       val programs = List(
-        HalfHourRankingRoutine.launch,
-        PlayerDataPeriodicRecalculation.launch,
-        PlayerDataBackupTask.launch
+        new HalfHourRankingRoutine(asyncExecutionContext).launch,
+        new PlayerDataPeriodicRecalculation(syncExecutionContext).launch,
+        new PlayerDataBackupTask(asyncExecutionContext).launch
       )
 
       programs.parSequence.start

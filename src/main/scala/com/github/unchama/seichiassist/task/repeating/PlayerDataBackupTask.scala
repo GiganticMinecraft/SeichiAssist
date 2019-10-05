@@ -1,13 +1,17 @@
-package com.github.unchama.seichiassist.task
+package com.github.unchama.seichiassist.task.repeating
 
-import cats.effect.IO
+import cats.effect.{IO, Timer}
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.task.PlayerDataSaving
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 
 import scala.concurrent.ExecutionContext
-object PlayerDataBackupTask extends RepeatedTaskLauncher() {
+
+class PlayerDataBackupTask(override val taskExecutionContext: ExecutionContext)
+                          (override implicit val sleepTimer: Timer[IO]) extends RepeatingTask() {
+
   override val getRepeatIntervalTicks: IO[Long] = IO {
     if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 10
   }

@@ -1,15 +1,19 @@
-package com.github.unchama.seichiassist.task
+package com.github.unchama.seichiassist.task.repeating
 
-import cats.effect.IO
+import cats.effect.{IO, Timer}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
+import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.ChatColor._
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
 
-object PlayerDataPeriodicRecalculation extends RepeatedTaskLauncher() {
+import scala.concurrent.ExecutionContext
+
+class PlayerDataPeriodicRecalculation(override val taskExecutionContext: ExecutionContext)
+                                     (override implicit val sleepTimer: Timer[IO]) extends RepeatingTask() {
   override val getRepeatIntervalTicks: IO[Long] = IO { if (SeichiAssist.DEBUG) 20 * 10 else 20 * 60 }
 
   override val runRoutine: IO[Unit] = IO {
