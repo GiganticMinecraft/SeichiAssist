@@ -6,9 +6,9 @@ import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
-import com.github.unchama.seichiassist.{Schedulers, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -239,7 +239,7 @@ object RegionMenu extends Menu {
     val session = MenuInventoryView(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー").createNewSession()
 
     sequentialEffect(
-      session.openEffectThrough(Schedulers.sync),
+      session.openInventory,
       _ => computeMenuLayout(player).flatMap(session.overwriteViewWith)
     )
   }

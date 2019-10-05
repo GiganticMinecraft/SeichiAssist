@@ -5,7 +5,6 @@ import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
 
-import scala.concurrent.ExecutionContext
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
@@ -24,14 +23,8 @@ class MenuSession private[menuinventory](private var _view: MenuInventoryView) e
 
   /**
    * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.
-   *
-   * @param context インベントリを開く前に実行をシフトさせるためのContextShift
    */
-  def openEffectThrough(context: ExecutionContext): TargetedEffect[Player] = { player: Player =>
-    IO.contextShift(ExecutionContext.global)
-      .evalOn(context) {
-        IO { player.openInventory(sessionInventory) }
-      }
-  }
+  val openInventory: TargetedEffect[Player] =
+    player => IO { player.openInventory(sessionInventory) }
 
 }

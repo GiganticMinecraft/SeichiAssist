@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.external.{ExternalPlugins, WorldGuard}
-import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers, SeichiAssist, SkullOwners}
+import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -858,7 +858,7 @@ object FirstPage extends Menu {
     val session = MenuInventoryView(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
     sequentialEffect(
-      session.openEffectThrough(Schedulers.sync),
+      session.openInventory,
       _ => computeMenuLayout(player).flatMap(session.overwriteViewWith)
     )
   }

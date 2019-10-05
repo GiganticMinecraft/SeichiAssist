@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryRowSize, Menu, MenuInventoryView}
-import com.github.unchama.seichiassist.{Schedulers, SkullOwners}
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -335,7 +335,7 @@ object BuildMainMenu extends Menu {
       session <- IO.pure(
         MenuInventoryView(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB").createNewSession()
       )
-      _ <- session.openEffectThrough(Schedulers.sync)(player)
+      _ <- session.openInventory(player)
       layout <- computeMenuLayout(player)
       _ <- session.overwriteViewWith(layout)
     } yield ()

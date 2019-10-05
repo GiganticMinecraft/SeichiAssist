@@ -6,7 +6,7 @@ import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryRowSize, Menu, MenuInventoryView}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
-import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, Schedulers, SkullOwners}
+import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SkullOwners}
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffects._
 import org.bukkit.ChatColor._
@@ -115,7 +115,7 @@ object CategorizedMineStackMenu {
       ).createNewSession()
 
       sequentialEffect(
-          session.openEffectThrough(Schedulers.sync),
+          session.openInventory,
           _ => computeMenuLayout(player)(category, pageIndex).flatMap(session.overwriteViewWith)
       )
     }

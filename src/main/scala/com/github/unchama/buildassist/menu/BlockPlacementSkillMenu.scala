@@ -6,7 +6,7 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryRowSize, Menu, MenuInventoryView}
-import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers}
+import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -322,7 +322,7 @@ object BlockPlacementSkillMenu extends Menu {
       session <- IO.pure(
         MenuInventoryView(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面").createNewSession()
       )
-      _ <- session.openEffectThrough(Schedulers.sync)(player)
+      _ <- session.openInventory(player)
       layout <- computeMenuLayout(player)
       _ <- session.overwriteViewWith(layout)
     } yield ()

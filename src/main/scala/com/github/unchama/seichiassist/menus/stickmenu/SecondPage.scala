@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
-import com.github.unchama.seichiassist.{Schedulers, SeichiAssist, SkullOwners}
+import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -525,7 +525,7 @@ object SecondPage extends Menu {
     val session = MenuInventoryView(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()
 
     sequentialEffect(
-      session.openEffectThrough(Schedulers.sync),
+      session.openInventory,
       _ => computeMenuLayout(player).flatMap(session.overwriteViewWith)
     )
   }

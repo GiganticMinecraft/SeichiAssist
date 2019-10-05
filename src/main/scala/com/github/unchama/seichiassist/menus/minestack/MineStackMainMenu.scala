@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryRowSize, Me
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
-import com.github.unchama.seichiassist.{CommonSoundEffects, Schedulers, SeichiAssist}
+import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Material
@@ -94,7 +94,7 @@ object MineStackMainMenu extends Menu {
     ).createNewSession()
 
     sequentialEffect(
-        session.openEffectThrough(Schedulers.sync),
+        session.openInventory,
         _ => computeMineStackMainMenuLayout(player).flatMap(session.overwriteViewWith)
     )
   }
