@@ -8,12 +8,15 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.FiniteDuration
 
 class PlayerDataBackupTask(override val taskExecutionContext: ExecutionContext)
                           (override implicit val sleepTimer: Timer[IO]) extends RepeatingTask() {
 
-  override val getRepeatIntervalTicks: IO[Long] = IO {
-    if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 10
+  override val getRepeatInterval: IO[FiniteDuration] = IO {
+    import scala.concurrent.duration._
+
+    if (SeichiAssist.DEBUG) 20.seconds else 10.minutes
   }
 
   override val runRoutine: IO[Unit] = {

@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.task.repeating
 
-import java.util.concurrent.TimeUnit
-
 import cats.effect.{IO, Timer}
 import com.github.unchama.util.effect.IOUtils._
 
@@ -9,7 +7,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
 abstract class RepeatingTask {
-  protected val getRepeatIntervalTicks: IO[Long]
+  protected val getRepeatInterval: IO[FiniteDuration]
 
   protected val runRoutine: IO[Any]
 
@@ -27,14 +25,13 @@ abstract class RepeatingTask {
   val sleepTimer: Timer[IO]
 
   /**
-   * [[getRepeatIntervalTicks]]で指定される長さの待機処理と[[runRoutine]]を交互に行っていくプログラム.
+   * [[getRepeatInterval]]で指定される長さの待機処理と[[runRoutine]]を交互に行っていくプログラム.
    *
    * [[runRoutine]]が例外を吐こうと実行が終了することはない.
    */
   lazy val launch: IO[Nothing] = {
     val sleep = for {
-      intervalTicks <- getRepeatIntervalTicks
-      interval = FiniteDuration(intervalTicks * 50, TimeUnit.MILLISECONDS)
+      interval <- getRepeatInterval
       _ <- sleepTimer.sleep(interval)
     } yield ()
 

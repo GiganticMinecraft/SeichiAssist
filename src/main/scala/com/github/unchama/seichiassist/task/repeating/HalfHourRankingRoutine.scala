@@ -7,12 +7,15 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.FiniteDuration
 
 class HalfHourRankingRoutine(override val taskExecutionContext: ExecutionContext)
                             (override implicit val sleepTimer: Timer[IO]) extends RepeatingTask() {
 
-  override val getRepeatIntervalTicks: IO[Long] = IO {
-    if (SeichiAssist.DEBUG) 20 * 20 else 20 * 60 * 30
+  override val getRepeatInterval: IO[FiniteDuration] = IO {
+    import scala.concurrent.duration._
+
+    if (SeichiAssist.DEBUG) 20.seconds else 30.minutes
   }
 
   override val runRoutine: IO[Unit] = IO {

@@ -11,10 +11,16 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.FiniteDuration
 
 class PlayerDataPeriodicRecalculation(override val taskExecutionContext: ExecutionContext)
                                      (override implicit val sleepTimer: Timer[IO]) extends RepeatingTask() {
-  override val getRepeatIntervalTicks: IO[Long] = IO { if (SeichiAssist.DEBUG) 20 * 10 else 20 * 60 }
+
+  override val getRepeatInterval: IO[FiniteDuration] = IO {
+    import scala.concurrent.duration._
+
+    if (SeichiAssist.DEBUG) 10.seconds else 1.minute
+  }
 
   override val runRoutine: IO[Unit] = IO {
     import scala.jdk.CollectionConverters._
