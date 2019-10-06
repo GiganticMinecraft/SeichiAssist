@@ -80,7 +80,7 @@ object RegionMenu extends Menu {
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             closeInventoryEffect,
-            computedEffect(player => s"/rg list -p ${player.getName}".asCommandEffect())
+            computedEffect(player => s"rg list -p ${player.getName}".asCommandEffect())
           )
         )
       )
