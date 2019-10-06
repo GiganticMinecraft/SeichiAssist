@@ -51,7 +51,7 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   /**
    * [slotReplacement]でレイアウトの一箇所を置き換えた新しいレイアウトを計算する.
    */
-  def altered(slotReplacement: (Int, Slot)) = copy(map = map + slotReplacement)
+  def altered(slotReplacement: (Int, Slot)): IndexedSlotLayout = copy(map = map + slotReplacement)
 }
 
 object IndexedSlotLayout {
