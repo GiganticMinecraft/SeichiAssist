@@ -25,7 +25,7 @@ object LevelThresholds {
    * 199-200→1,500,000
    *
    */
-  val levelExpThresholds = List(
+  val levelExpThresholds: List[Long] = List(
       0, 15, 49, 106, 198, //5
       333, 705, 1265, 2105, 3347, //10
       4589, 5831, 7073, 8315, 9557, //15

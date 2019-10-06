@@ -1,8 +1,8 @@
 package com.github.unchama.util.failable;
 
 import com.github.unchama.util.ActionStatus;
-import com.github.unchama.util.collection.ImmutableListFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -98,6 +98,6 @@ public abstract class Try<F> {
 
     @SafeVarargs
     public static <F> Try<F> sequence(FailableAction<F>... actions) {
-        return sequence(ImmutableListFactory.of(actions));
+        return sequence(Arrays.asList(actions));
     }
 }

@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.database.migrations;
 
 import com.github.unchama.seichiassist.PackagePrivate;
-import com.github.unchama.util.collection.ImmutableListFactory;
 import com.github.unchama.util.collection.SetFactory;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -314,14 +313,14 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
 
         private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
                                                         @Nullable String parsedSubHomeNameData) {
-            final List<String> homePointSplitData = ImmutableListFactory.of(homePointRawData.split(","));
+            final List<String> homePointSplitData = Arrays.asList(homePointRawData.split(","));
             final List<List<String>> rawHomePoints = chunk(homePointSplitData, 4);
 
             final int subHomeCount = rawHomePoints.size();
 
             final List<@NotNull String> rawSubHomesNames = parsedSubHomeNameData == null
                     ? Collections.nCopies(subHomeCount, "")
-                    : ImmutableListFactory.of(parsedSubHomeNameData.split(","));
+                    : Arrays.asList(parsedSubHomeNameData.split(","));
 
             return IntStream
                     .range(0, subHomeCount)

@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
-import com.github.unchama.util.collection.ImmutableListFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,7 +20,7 @@ public class ItemData {
 		ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE, amount);
 		ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
 		itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "Thanks for Voting!");
-		List<String> lore = ImmutableListFactory.of("投票ありがとナス♡");
+		List<String> lore = Arrays.asList("投票ありがとナス♡");
 		itemmeta.addEnchant(Enchantment.DIG_SPEED, 3, true);
 		itemmeta.addEnchant(Enchantment.DURABILITY, 3, true);
 		itemmeta.setLore(lore);
