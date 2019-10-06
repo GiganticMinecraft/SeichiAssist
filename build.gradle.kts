@@ -94,7 +94,8 @@ tasks.withType(JavaCompile::class.java).all {
 }
 
 tasks.withType(ScalaCompile::class.java).all {
-  this.options.encoding = "UTF-8"
+    this.options.encoding = "UTF-8"
+    this.scalaCompileOptions.forkOptions.jvmArgs = listOf("-Xss64m")
 }
 
 tasks.jar {
