@@ -45,5 +45,6 @@ object LeftClickButtonEffect {
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[LeftClickButtonEffect]を構築する.
    */
-  def apply(effects: TargetedEffect[Player]*): FilteredButtonEffect = this({ sequentialEffect(effects: _*) })
+  def apply(effect: TargetedEffect[Player], effects: TargetedEffect[Player]*): FilteredButtonEffect =
+    this((_: ButtonEffectScope) => sequentialEffect(effects: _*))
 }
