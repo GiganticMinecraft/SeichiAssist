@@ -6112,7 +6112,7 @@ public class MenuInventoryData {
             itemstack = new ItemStack(Material.PAPER);
             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
             itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x + 1) + "の情報");
-            Location l = playerdata.getSubHomeLocation(x).get();
+            Location l = playerdata.getSubHomeLocation(x).getOrElse(() -> null);
             final List<String> subHomeLore;
             if (l != null) {
                 final ManagedWorld world = ManagedWorld$.MODULE$.fromBukkitWorld(l.getWorld()).getOrElse(() -> null);
