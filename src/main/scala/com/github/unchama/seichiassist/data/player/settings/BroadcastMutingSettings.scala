@@ -21,6 +21,9 @@ object BroadcastMutingSettings {
 
 }
 
-sealed abstract class BroadcastMutingSettings(val next: BroadcastMutingSettings,
+sealed abstract class BroadcastMutingSettings(nextThunk: => BroadcastMutingSettings,
                                               val shouldMuteMessages: Boolean,
-                                              val shouldMuteSounds: Boolean)
+                                              val shouldMuteSounds: Boolean) {
+  // case objectの循環参照のため
+  lazy val next: BroadcastMutingSettings = nextThunk
+}
