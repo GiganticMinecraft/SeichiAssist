@@ -6,7 +6,7 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryRowSize, Menu, MenuInventoryView}
+import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.UnfocusedEffect
@@ -333,7 +333,7 @@ object BuildMainMenu extends Menu {
   override val open: TargetedEffect[Player] = { player =>
     for {
       session <- IO.pure(
-        MenuInventoryView(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB").createNewSession()
+        InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB").createNewSession()
       )
       _ <- session.openInventory(player)
       layout <- computeMenuLayout(player)

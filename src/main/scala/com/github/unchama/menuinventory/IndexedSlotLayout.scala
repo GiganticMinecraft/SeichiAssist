@@ -28,6 +28,8 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   def setItemsOn(inventory: Inventory): IO[Unit] = {
     import cats.implicits._
 
+    // TODO inject ExecutionContext
+
     import scala.concurrent.ExecutionContext
 
     val effects = for (slotIndex <- 0 until inventory.getSize)

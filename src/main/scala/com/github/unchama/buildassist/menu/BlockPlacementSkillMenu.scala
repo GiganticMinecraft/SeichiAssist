@@ -5,7 +5,7 @@ import com.github.unchama.buildassist.{BuildAssist, PlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryRowSize, Menu, MenuInventoryView}
+import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
@@ -320,7 +320,7 @@ object BlockPlacementSkillMenu extends Menu {
   override val open: TargetedEffect[Player] = { player =>
     for {
       session <- IO.pure(
-        MenuInventoryView(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面").createNewSession()
+        InventoryFrame(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面").createNewSession()
       )
       _ <- session.openInventory(player)
       layout <- computeMenuLayout(player)

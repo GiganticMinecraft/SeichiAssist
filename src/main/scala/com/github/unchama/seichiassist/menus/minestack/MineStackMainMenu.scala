@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus.minestack
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryRowSize, Menu, MenuInventoryView}
+import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
@@ -88,7 +88,7 @@ object MineStackMainMenu extends Menu {
   import com.github.unchama.targetedeffect.TargetedEffects._
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = MenuInventoryView(
+    val session = InventoryFrame(
         Left(InventoryRowSize(6)),
         s"$DARK_PURPLE${BOLD}MineStackメインメニュー"
     ).createNewSession()

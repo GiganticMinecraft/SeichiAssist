@@ -1,25 +1,27 @@
 package com.github.unchama.menuinventory
 
 import cats.effect.IO
+import cats.effect.concurrent.Ref
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
-import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.{Inventory, InventoryHolder}
 
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession private[menuinventory](private var _view: MenuInventoryView) extends InventoryHolder {
-  private val sessionInventory = _view.createConfiguredInventory(this)
+class MenuSession private[menuinventory](private val frame: InventoryFrame) extends InventoryHolder {
 
-  def view: MenuInventoryView = _view
+  private val sessionInventory = frame.createConfiguredInventory(this)
+
+  val currentLayout: Ref[IO, IndexedSlotLayout] = Ref.unsafe(IndexedSlotLayout())
 
   def overwriteViewWith(layout: IndexedSlotLayout): IO[Unit] = {
-    _view = _view.copy(slotLayout = layout)
+    import cats.implicits._
 
-    view.slotLayout.setItemsOn(sessionInventory)
+    layout.setItemsOn(sessionInventory) *> currentLayout.set(layout)
   }
 
-  override def getInventory() = sessionInventory
+  override def getInventory: Inventory = sessionInventory
 
   /**
    * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.

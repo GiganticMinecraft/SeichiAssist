@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryRowSize, Menu, MenuInventoryView}
+import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SkullOwners}
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
@@ -109,7 +109,7 @@ object CategorizedMineStackMenu {
    */
   def forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = new Menu {
     override val open: TargetedEffect[Player] = computedEffect { player =>
-      val session = MenuInventoryView(
+      val session = InventoryFrame(
           Left(InventoryRowSize(6)),
           s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
       ).createNewSession()

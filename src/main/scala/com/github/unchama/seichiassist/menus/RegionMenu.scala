@@ -5,7 +5,7 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, Menu, MenuInventoryView}
+import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, Menu}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
@@ -236,7 +236,7 @@ object RegionMenu extends Menu {
   }
 
   override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = MenuInventoryView(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー").createNewSession()
+    val session = InventoryFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー").createNewSession()
 
     sequentialEffect(
       session.openInventory,

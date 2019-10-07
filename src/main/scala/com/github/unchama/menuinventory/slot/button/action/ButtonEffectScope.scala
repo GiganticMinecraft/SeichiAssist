@@ -14,8 +14,11 @@ case class ButtonEffectScope(event: InventoryClickEvent) {
 
   def overwriteCurrentSlotBy(newSlot: Slot): IO[Unit] = {
     val session = event.getInventory.getHolder.asInstanceOf[MenuSession]
-    val newLayout = session.view.slotLayout.altered(event.getSlot -> newSlot)
 
-    session.overwriteViewWith(newLayout)
+    for {
+      oldLayout <- session.currentLayout.get
+      newLayout = oldLayout.altered(event.getSlot -> newSlot)
+      _ <- session.overwriteViewWith(newLayout)
+    } yield ()
   }
 }
