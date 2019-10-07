@@ -20,9 +20,9 @@ import static com.github.unchama.seichiassist.util.TypeConverter.isParsableToInt
 
 /**
  * V1.1.0のマイグレーションを担当するオブジェクトのクラス。
- * <p>
+ *
  * このマイグレーションは1.1.0リリースにより本番環境に適用済みである。
- * <p>
+ *
  * クラスの変更は整合性を崩しかねないため、行ってはならない。
  * DBスキーマの変更やレコードへの干渉はマイグレーションを追加することで行うこと。
  */
@@ -57,8 +57,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
     private interface Migration {
         /**
          * マイグレーションを行う。
-         *
-         * @param connection            使用するConnectionオブジェクト
+         * @param connection 使用するConnectionオブジェクト
          * @param playerDataColumnNames seichiassist.playerdataのカラム名すべてを含むSet
          */
         void migrate(final Connection connection, final Set<String> playerDataColumnNames);
@@ -73,14 +72,14 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
                     final String copyQuery = "insert into grid_template" +
                             "(id, designer_uuid, ahead_length, behind_length, right_length, left_length) " +
                             "select " + templateId + " as id, uuid as designer_uuid, " +
-                            "ahead_" + templateId + " as ahead_length, " +
+                            "ahead_"  + templateId + " as ahead_length, " +
                             "behind_" + templateId + " as behind_length, " +
-                            "right_" + templateId + " as right_length, " +
-                            "left_" + templateId + " as left_length from playerdata where " +
-                            "ahead_" + templateId + " != 0 or " +
+                            "right_"  + templateId + " as right_length, " +
+                            "left_"   + templateId + " as left_length from playerdata where " +
+                            "ahead_"  + templateId + " != 0 or " +
                             "behind_" + templateId + " != 0 or " +
-                            "right_" + templateId + " != 0 or " +
-                            "left_" + templateId + " != 0";
+                            "right_"  + templateId + " != 0 or " +
+                            "left_"   + templateId + " != 0";
 
                     statement.executeUpdate(copyQuery);
 
@@ -152,7 +151,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
                 try (Statement statement = connection.createStatement()) {
                     final String copyCommand = "insert ignore into " + newTableName + "(player_uuid, effect_name) " +
                             "select uuid as player_uuid, '" + effectName + "' as effect_name from playerdata " +
-                            "where " + effectName;
+                            "where " +effectName;
                     statement.executeUpdate(copyCommand);
 
                     // 削除
@@ -227,9 +226,9 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
      * サブホームの情報を含むData Transfer Objectのクラス
      */
     private static class SubHomeDTO {
-        public final @Nullable String name;
         private final @NotNull String id;
         private final @NotNull String ownerUuid;
+        public final @Nullable String name;
         private final @NotNull SubHomeMetaLocation metaLocation;
 
         SubHomeDTO(@NotNull String id,
@@ -270,27 +269,6 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             this.serverId = serverId;
         }
 
-        /**
-         * @param <T> リストの型
-         * @return {@code list}から{@code chunkSize}個ずつ要素を取り出して作ったリストのリスト
-         * <p>
-         * 余った要素は捨てられるので、戻り値の要素はすべて同じ長さ({@code chunkSize})を持つことになる。
-         */
-        private static <T> List<List<T>> chunk(@NotNull List<T> inputList, @SuppressWarnings("SameParameterValue") int chunkSize) {
-            final int inputListSize = inputList.size();
-            final int outputListSize = inputListSize / chunkSize;
-
-            return IntStream
-                    .range(0, outputListSize)
-                    .mapToObj(outputIndex -> {
-                        final int chunkStartIndex = outputIndex * chunkSize;
-                        final int chunkEndIndex = chunkStartIndex + chunkSize;
-
-                        return inputList.subList(chunkStartIndex, chunkEndIndex);
-                    })
-                    .collect(Collectors.toCollection(ArrayList::new));
-        }
-
         private Optional<SubHomeDTO> parseIndividualRawData(@NotNull String subHomeId,
                                                             @NotNull List<@NotNull String> homePointData,
                                                             @NotNull String subHomeName) {
@@ -310,6 +288,27 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             final SubHomeDTO dto = new SubHomeDTO(subHomeId, uuid, nonEmptyName, metaLocation);
 
             return Optional.of(dto);
+        }
+
+        /**
+         * @param <T> リストの型
+         * @return {@code list}から{@code chunkSize}個ずつ要素を取り出して作ったリストのリスト
+         *
+         * 余った要素は捨てられるので、戻り値の要素はすべて同じ長さ({@code chunkSize})を持つことになる。
+         */
+        private static <T> List<List<T>> chunk(@NotNull List<T> inputList, @SuppressWarnings("SameParameterValue") int chunkSize) {
+            final int inputListSize = inputList.size();
+            final int outputListSize = inputListSize / chunkSize;
+
+            return IntStream
+                    .range(0, outputListSize)
+                    .mapToObj(outputIndex -> {
+                        final int chunkStartIndex = outputIndex * chunkSize;
+                        final int chunkEndIndex = chunkStartIndex + chunkSize;
+
+                        return inputList.subList(chunkStartIndex, chunkEndIndex);
+                    })
+                    .collect(Collectors.toCollection(ArrayList::new));
         }
 
         private List<Optional<SubHomeDTO>> parseRawData(@NotNull String homePointRawData,
@@ -345,7 +344,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
 
         @PackagePrivate
         List<SubHomeDTO> parseRawDataAndFilterUndefineds(@NotNull String homePointRawData,
-                                                         @Nullable String subHomeNameRawData) {
+                                                                               @Nullable String subHomeNameRawData) {
             return parseRawData(homePointRawData, parseSubHomeNameData(subHomeNameRawData)).stream()
                     .map(optionalData -> optionalData.orElse(null))
                     .filter(Objects::nonNull)
@@ -359,7 +358,7 @@ public class V1_1_0__Migrate_all_dynamic_columns extends BaseJavaMigration {
             final String subHomeNameColumnName = "subhome_name_" + serverId;
             final String selectQuery =
                     "select uuid, " + homePointColumnName + ", " + subHomeNameColumnName + " from playerdata " +
-                            "where " + homePointColumnName + " is not null";
+                    "where " + homePointColumnName + " is not null";
 
             final HashSet<SubHomeDTO> subHomes = new HashSet<>();
             try (final ResultSet homePointResultSet = connection.createStatement().executeQuery(selectQuery)) {
