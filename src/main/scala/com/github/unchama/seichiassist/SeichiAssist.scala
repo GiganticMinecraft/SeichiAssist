@@ -30,6 +30,7 @@ import org.bukkit.{Bukkit, Material}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
+
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
 

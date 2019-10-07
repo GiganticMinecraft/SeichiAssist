@@ -439,6 +439,8 @@ class PlayerClickListener  extends  Listener {
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
     val effect = sequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open

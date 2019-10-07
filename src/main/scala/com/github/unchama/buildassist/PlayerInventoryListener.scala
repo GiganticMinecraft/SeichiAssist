@@ -55,7 +55,7 @@ class PlayerInventoryListener extends Listener {
 			 */
       if (itemstackcurrent.getType == Material.SKULL_ITEM) {
         //ホームメニューへ帰還
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         sequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
@@ -152,6 +152,8 @@ class PlayerInventoryListener extends Listener {
       if (itemstackcurrent.getType == Material.SKULL_ITEM && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
         //ホームメニューへ帰還
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         sequentialEffect[Player](
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),

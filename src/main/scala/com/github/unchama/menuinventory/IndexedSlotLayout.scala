@@ -1,6 +1,7 @@
 package com.github.unchama.menuinventory
 
 import cats.effect.{ContextShift, IO}
+import com.github.unchama.menuinventory.Types.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.EmptyEffect
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
@@ -25,12 +26,8 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
   /**
    * 指定した[Inventory]に[Slot]により構成されたレイアウトを敷き詰める.
    */
-  def setItemsOn(inventory: Inventory): IO[Unit] = {
+  def setItemsOn(inventory: Inventory)(implicit ctx: LayoutPreparationContext): IO[Unit] = {
     import cats.implicits._
-
-    // TODO inject ExecutionContext
-
-    import scala.concurrent.ExecutionContext
 
     val effects = for (slotIndex <- 0 until inventory.getSize)
       yield IO {
@@ -38,7 +35,7 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
         inventory.setItem(slotIndex, itemStack)
       }
 
-    implicit val context: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+    implicit val context: ContextShift[IO] = IO.contextShift(ctx)
     effects.toList.parSequence_
   }
 

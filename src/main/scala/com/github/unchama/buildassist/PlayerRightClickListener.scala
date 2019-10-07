@@ -45,6 +45,7 @@ class PlayerRightClickListener extends Listener {
 
         event.setCancelled(true)
 
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         sequentialEffect[Player](
             CommonSoundEffects.menuTransitionFenceSound,

@@ -132,6 +132,8 @@ class PlayerInventoryListener  extends  Listener {
       //ページ変更処理
       // =>
       if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
         sequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
@@ -380,6 +382,8 @@ class PlayerInventoryListener  extends  Listener {
 
       //ページ変更処理
       if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
         sequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
@@ -622,6 +626,8 @@ class PlayerInventoryListener  extends  Listener {
         val name = skullMeta.getDisplayName
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" => {
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
             sequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
@@ -698,6 +704,8 @@ class PlayerInventoryListener  extends  Listener {
 			 */
       //ページ変更処理
       if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
         sequentialEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           StickMenu.firstPage.open
@@ -770,6 +778,8 @@ class PlayerInventoryListener  extends  Listener {
         val skullMeta = (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta])
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" => {
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
             sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
@@ -849,6 +859,8 @@ class PlayerInventoryListener  extends  Listener {
         val name = skullMeta.getDisplayName
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" => {
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
             sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
@@ -1388,6 +1400,8 @@ class PlayerInventoryListener  extends  Listener {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.closeInventory()
       } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
         sequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open

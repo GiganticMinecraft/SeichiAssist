@@ -2,6 +2,7 @@ package com.github.unchama.menuinventory
 
 import cats.effect.IO
 import cats.effect.concurrent.Ref
+import com.github.unchama.menuinventory.Types.LayoutPreparationContext
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{Inventory, InventoryHolder}
@@ -15,7 +16,7 @@ class MenuSession private[menuinventory](private val frame: InventoryFrame) exte
 
   val currentLayout: Ref[IO, IndexedSlotLayout] = Ref.unsafe(IndexedSlotLayout())
 
-  def overwriteViewWith(layout: IndexedSlotLayout): IO[Unit] = {
+  def overwriteViewWith(layout: IndexedSlotLayout)(implicit ctx: LayoutPreparationContext): IO[Unit] = {
     import cats.implicits._
 
     layout.setItemsOn(sessionInventory) *> currentLayout.set(layout)

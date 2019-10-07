@@ -16,8 +16,9 @@ import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.TargetedEffects._
-
+  
   private implicit class PlayerDataOps(val playerData: PlayerData) extends AnyVal {
     def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
   }

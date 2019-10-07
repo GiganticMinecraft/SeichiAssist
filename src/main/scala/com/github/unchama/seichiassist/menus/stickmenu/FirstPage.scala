@@ -29,6 +29,7 @@ import org.bukkit.{Material, Sound}
  * @author karayuu
  */
 object FirstPage extends Menu {
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.player.CommandEffect._
 

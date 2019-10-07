@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.menus
 
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.slot.button
+import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -15,7 +16,9 @@ import org.bukkit.Sound
 object CommonButtons {
   import com.github.unchama.targetedeffect.TargetedEffects._
 
-  val openStickMenu = {
+  val openStickMenu: Button = {
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
     val buttonEffect = sequentialEffect(
         FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
         StickMenu.firstPage.open

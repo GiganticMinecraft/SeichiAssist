@@ -12,6 +12,8 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 object CategorizedMineStackMenu {
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
   private val mineStackObjectPerPage = 9 * 5
 
   object Sections {

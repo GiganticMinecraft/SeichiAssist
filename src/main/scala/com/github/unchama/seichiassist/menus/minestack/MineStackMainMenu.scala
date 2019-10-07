@@ -13,6 +13,8 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 
 object MineStackMainMenu extends Menu {
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
   val categoryButtonLayout: IndexedSlotLayout = {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES => Material.DIAMOND_ORE

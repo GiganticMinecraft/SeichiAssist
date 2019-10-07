@@ -17,6 +17,7 @@ import org.bukkit.{Material, Sound}
 
 object BuildMainMenu extends Menu {
   import com.github.unchama.menuinventory.slot.button.RecomputedButton
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.TargetedEffects._
   import com.github.unchama.targetedeffect.player.CommandEffect._

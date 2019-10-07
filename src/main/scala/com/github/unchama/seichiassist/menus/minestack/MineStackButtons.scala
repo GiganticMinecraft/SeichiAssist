@@ -48,6 +48,7 @@ private object MineStackButtons {
 private[minestack] case class MineStackButtons(player: Player) {
   import MineStackButtons._
   import MineStackObjectCategory._
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.TargetedEffects._
   import com.github.unchama.util.syntax._
