@@ -6,7 +6,7 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -24,11 +24,11 @@ object BuildMainMenu extends Menu {
   import com.github.unchama.targetedeffect.player.CommandEffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
-  override val frame: InventoryFrame =
-    InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB")
+  override val frame: MenuFrame =
+    MenuFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB")
   private val EMPHASIZE = s"$UNDERLINE$BOLD"
 
-  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -56,7 +56,7 @@ object BuildMainMenu extends Menu {
 
     for {
       dynamicPart <- dynamicPartComputation
-    } yield menuinventory.IndexedSlotLayout(constantPart ++ dynamicPart)
+    } yield menuinventory.MenuSlotLayout(constantPart ++ dynamicPart)
   }
 
   private case class ButtonComputations(player: Player) extends AnyVal {

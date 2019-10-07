@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
@@ -34,12 +34,12 @@ object FirstPage extends Menu {
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.player.CommandEffect._
 
-  override val frame: InventoryFrame =
-    InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー")
+  override val frame: MenuFrame =
+    MenuFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー")
 
   import com.github.unchama.targetedeffect.TargetedEffects._
 
-  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -83,7 +83,7 @@ object FirstPage extends Menu {
 
     for {
       dynamicPart <- dynamicPartComputation
-    } yield IndexedSlotLayout(constantPart ++ dynamicPart.toMap)
+    } yield MenuSlotLayout(constantPart ++ dynamicPart.toMap)
   }
 
   private case class ButtonComputations(player: Player) {

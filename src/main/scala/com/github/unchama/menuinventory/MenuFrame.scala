@@ -9,7 +9,7 @@ import org.bukkit.inventory.{Inventory, InventoryHolder}
  * @param size  インベントリのサイズを決定するデータ
  * @param title インベントリのタイトル
  */
-case class InventoryFrame(size: InventorySize, title: String) {
+case class MenuFrame(size: InventorySize, title: String) {
   def createNewSession(): IO[MenuSession] = IO(new MenuSession(this))
 
   private[menuinventory] def createConfiguredInventory(holder: InventoryHolder): Inventory =

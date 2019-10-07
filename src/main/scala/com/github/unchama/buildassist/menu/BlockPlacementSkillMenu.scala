@@ -5,7 +5,7 @@ import com.github.unchama.buildassist.{BuildAssist, PlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -24,10 +24,10 @@ object BlockPlacementSkillMenu extends Menu {
     def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
   }
 
-  override val frame: InventoryFrame =
-    InventoryFrame(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
+  override val frame: MenuFrame =
+    MenuFrame(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
 
-  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -54,7 +54,7 @@ object BlockPlacementSkillMenu extends Menu {
 
     for {
       dynamicPart <- dynamicPartComputation
-    } yield menuinventory.IndexedSlotLayout(constantPart ++ dynamicPart)
+    } yield menuinventory.MenuSlotLayout(constantPart ++ dynamicPart)
   }
 
   private case class ButtonComputations(player: Player) extends AnyVal {

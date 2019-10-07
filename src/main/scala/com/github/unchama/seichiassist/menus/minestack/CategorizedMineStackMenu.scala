@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SkullOwners}
 import com.github.unchama.targetedeffect.TargetedEffects._
@@ -21,14 +21,14 @@ object CategorizedMineStackMenu {
    * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
    */
   def forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = new Menu {
-    override val frame: InventoryFrame =
-      InventoryFrame(Left(InventoryRowSize(6)), s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
+    override val frame: MenuFrame =
+      MenuFrame(Left(InventoryRowSize(6)), s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
 
-    override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] =
+    override def computeMenuLayout(player: Player): IO[MenuSlotLayout] =
       computeMenuLayoutOn(category, pageIndex)(player)
   }
 
-  private def computeMenuLayoutOn(category: MineStackObjectCategory, page: Int)(player: Player): IO[IndexedSlotLayout] = {
+  private def computeMenuLayoutOn(category: MineStackObjectCategory, page: Int)(player: Player): IO[MenuSlotLayout] = {
     import MineStackObjectCategory._
     import cats.implicits._
 
@@ -63,7 +63,7 @@ object CategorizedMineStackMenu {
       categorizedItemSection <- categorizedItemSectionComputation
       autoMineStackToggleButtonSection <- autoMineStackToggleButtonSectionComputation
       combinedLayout = uiOperationSection.++(categorizedItemSection).++(autoMineStackToggleButtonSection)
-    } yield IndexedSlotLayout(combinedLayout: _*)
+    } yield MenuSlotLayout(combinedLayout: _*)
   }
 
   object Sections {

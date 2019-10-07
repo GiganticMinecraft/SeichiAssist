@@ -13,7 +13,7 @@ import org.bukkit.inventory.{Inventory, ItemStack}
 /**
  * どのインデックスがどの[Slot]と関連付けられているかの情報を持つ[Map]のラッパークラス.
  */
-case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
+case class MenuSlotLayout(private val map: Map[Int, Slot]) {
   /**
    * クリックされた枠に対応した[Slot]が[InventoryClickEvent]に基づいて引き起こす作用を計算する.
    */
@@ -45,23 +45,23 @@ case class IndexedSlotLayout(private val map: Map[Int, Slot]) {
    * 新しいレイアウトのスロットは, 同じ場所が[another]で埋まっている場合[another]のものが,
    * そうでなければこのレイアウトのものがセットされている.
    */
-  def merge(another: IndexedSlotLayout): IndexedSlotLayout = IndexedSlotLayout(map ++ another.map)
+  def merge(another: MenuSlotLayout): MenuSlotLayout = MenuSlotLayout(map ++ another.map)
 
   /**
    * [slotReplacement]でレイアウトの一箇所を置き換えた新しいレイアウトを計算する.
    */
-  def altered(slotReplacement: (Int, Slot)): IndexedSlotLayout = copy(map = map + slotReplacement)
+  def altered(slotReplacement: (Int, Slot)): MenuSlotLayout = copy(map = map + slotReplacement)
 }
 
-object IndexedSlotLayout {
-  val emptyLayout = IndexedSlotLayout()
+object MenuSlotLayout {
+  val emptyLayout = MenuSlotLayout()
 
-  def apply(): IndexedSlotLayout = IndexedSlotLayout(Map[Int, Slot]())
+  def apply(): MenuSlotLayout = MenuSlotLayout(Map[Int, Slot]())
 
-  @inline def singleSlotLayout(indexedSlot: => (Int, Slot)): IndexedSlotLayout = IndexedSlotLayout(indexedSlot)
+  @inline def singleSlotLayout(indexedSlot: => (Int, Slot)): MenuSlotLayout = MenuSlotLayout(indexedSlot)
 
-  def apply(mappings: (Int, Slot)*): IndexedSlotLayout = IndexedSlotLayout(Map(mappings: _*))
+  def apply(mappings: (Int, Slot)*): MenuSlotLayout = MenuSlotLayout(Map(mappings: _*))
 
-  def combinedLayout(layouts: IndexedSlotLayout*): IndexedSlotLayout =
+  def combinedLayout(layouts: MenuSlotLayout*): MenuSlotLayout =
     layouts.toList.foldLeft(emptyLayout) { case (acc, layout) => acc.merge(layout) }
 }

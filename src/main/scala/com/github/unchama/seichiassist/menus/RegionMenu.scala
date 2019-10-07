@@ -5,7 +5,7 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, Menu}
+import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, Menu}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
@@ -22,10 +22,10 @@ object RegionMenu extends Menu {
   import com.github.unchama.targetedeffect.player.CommandEffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
-  override val frame: InventoryFrame =
-    InventoryFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
+  override val frame: MenuFrame =
+    MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
-  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -33,7 +33,7 @@ object RegionMenu extends Menu {
     for {
       buttonToClaimRegion <- computeButtonToClaimRegion
     } yield {
-      menuinventory.IndexedSlotLayout(
+      menuinventory.MenuSlotLayout(
         0 -> summonWandButton,
         1 -> buttonToClaimRegion,
         2 -> displayOpenerRegionButton,

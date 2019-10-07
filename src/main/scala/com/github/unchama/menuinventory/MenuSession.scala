@@ -10,9 +10,12 @@ import org.bukkit.inventory.{Inventory, InventoryHolder}
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession private[menuinventory](private val frame: InventoryFrame) extends InventoryHolder {
+class MenuSession private[menuinventory](private val frame: MenuFrame) extends InventoryHolder {
 
-  val currentLayout: Ref[IO, IndexedSlotLayout] = Ref.unsafe(IndexedSlotLayout())
+  val currentLayout: Ref[IO, MenuSlotLayout] = Ref.unsafe(MenuSlotLayout())
+
+  private val sessionInventory = frame.createConfiguredInventory(this)
+
   /**
    * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.
    */
@@ -20,9 +23,8 @@ class MenuSession private[menuinventory](private val frame: InventoryFrame) exte
     player => IO {
       player.openInventory(sessionInventory)
     }
-  private val sessionInventory = frame.createConfiguredInventory(this)
 
-  def overwriteViewWith(layout: IndexedSlotLayout)(implicit ctx: LayoutPreparationContext): IO[Unit] = {
+  def overwriteViewWith(layout: MenuSlotLayout)(implicit ctx: LayoutPreparationContext): IO[Unit] = {
     import cats.implicits._
 
     layout.setItemsOn(sessionInventory) *> currentLayout.set(layout)

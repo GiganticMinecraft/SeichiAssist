@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus.minestack
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
@@ -16,9 +16,9 @@ object MineStackMainMenu extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-  override val frame: InventoryFrame =
-    InventoryFrame(Left(InventoryRowSize(6)), s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
-  val categoryButtonLayout: IndexedSlotLayout = {
+  override val frame: MenuFrame =
+    MenuFrame(Left(InventoryRowSize(6)), s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
+  val categoryButtonLayout: MenuSlotLayout = {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES => Material.DIAMOND_ORE
       case MOB_DROP => Material.ENDER_PEARL
@@ -44,15 +44,15 @@ object MineStackMainMenu extends Menu {
       slotIndex -> button
     }.toMap
 
-    IndexedSlotLayout(layoutMap)
+    MenuSlotLayout(layoutMap)
   }
 
-  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     for {
       autoMineStackToggleButton <- MineStackButtons(player).computeAutoMineStackToggleButton()
       historicalMineStackSection <- ButtonComputations(player).computeHistoricalMineStackLayout()
     } yield {
-      IndexedSlotLayout(
+      MenuSlotLayout(
         0 -> autoMineStackToggleButton,
         45 -> CommonButtons.openStickMenu
       )
@@ -71,7 +71,7 @@ object MineStackMainMenu extends Menu {
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
-    def computeHistoricalMineStackLayout(): IO[IndexedSlotLayout] = {
+    def computeHistoricalMineStackLayout(): IO[MenuSlotLayout] = {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
       for {
@@ -88,7 +88,7 @@ object MineStackMainMenu extends Menu {
           .toList
           .map(_.sequence)
           .sequence
-      } yield IndexedSlotLayout(buttonMapping: _*)
+      } yield MenuSlotLayout(buttonMapping: _*)
     }
   }
 

@@ -16,12 +16,12 @@ trait Menu {
   /**
    * メニューのサイズとタイトルに関する情報
    */
-  val frame: InventoryFrame
+  val frame: MenuFrame
 
   /**
-   * @return `player`からメニューの[[IndexedSlotLayout]]を計算する[[IO]]
+   * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  def computeMenuLayout(player: Player): IO[IndexedSlotLayout]
+  def computeMenuLayout(player: Player): IO[MenuSlotLayout]
 
   /**
    * メニューを[Player]に開かせる[TargetedEffect].
