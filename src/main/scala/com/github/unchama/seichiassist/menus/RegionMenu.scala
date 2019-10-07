@@ -9,7 +9,6 @@ import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, Menu
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -217,7 +216,7 @@ object RegionMenu extends Menu {
     }
   }
 
-  private def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -235,13 +234,7 @@ object RegionMenu extends Menu {
     }
   }
 
-  override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = InventoryFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー").createNewSession()
-
-    sequentialEffect(
-      session.openInventory,
-      _ => computeMenuLayout(player).flatMap(session.overwriteViewWith)
-    )
-  }
+  override val frame: InventoryFrame =
+    InventoryFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
 }

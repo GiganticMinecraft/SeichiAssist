@@ -8,7 +8,6 @@ import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, Fi
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -299,7 +298,7 @@ object BuildMainMenu extends Menu {
     }
   }
 
-  private def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -330,16 +329,8 @@ object BuildMainMenu extends Menu {
     } yield menuinventory.IndexedSlotLayout(constantPart ++ dynamicPart)
   }
 
-  override val open: TargetedEffect[Player] = { player =>
-    for {
-      session <- IO.pure(
-        InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB").createNewSession()
-      )
-      _ <- session.openInventory(player)
-      layout <- computeMenuLayout(player)
-      _ <- session.overwriteViewWith(layout)
-    } yield ()
-  }
+  override val frame: InventoryFrame =
+    InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB")
 
   private val EMPHASIZE = s"$UNDERLINE$BOLD"
 

@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.{menuinventory, targetedeffect}
@@ -489,7 +488,7 @@ object SecondPage extends Menu {
     })
   }
 
-  private def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -521,12 +520,7 @@ object SecondPage extends Menu {
     } yield menuinventory.IndexedSlotLayout(constantPart ++ dynamicPart)
   }
 
-  override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー").createNewSession()
+  override val frame: InventoryFrame =
+    InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー")
 
-    sequentialEffect(
-      session.openInventory,
-      _ => computeMenuLayout(player).flatMap(session.overwriteViewWith)
-    )
-  }
 }

@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -71,7 +70,7 @@ object MineStackMainMenu extends Menu {
     }
   }
 
-  private def computeMineStackMainMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
     for {
       autoMineStackToggleButton <- MineStackButtons(player).computeAutoMineStackToggleButton()
       historicalMineStackSection <- ButtonComputations(player).computeHistoricalMineStackLayout()
@@ -85,17 +84,7 @@ object MineStackMainMenu extends Menu {
     }
   }
 
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  override val frame: InventoryFrame =
+    InventoryFrame(Left(InventoryRowSize(6)), s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
 
-  override val open: TargetedEffect[Player] = computedEffect { player =>
-    val session = InventoryFrame(
-        Left(InventoryRowSize(6)),
-        s"$DARK_PURPLE${BOLD}MineStackメインメニュー"
-    ).createNewSession()
-
-    sequentialEffect(
-        session.openInventory,
-        _ => computeMineStackMainMenuLayout(player).flatMap(session.overwriteViewWith)
-    )
-  }
 }

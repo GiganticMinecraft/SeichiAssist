@@ -8,7 +8,6 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{EmptyEffect, UnfocusedEffect}
 import com.github.unchama.{menuinventory, targetedeffect}
@@ -287,7 +286,7 @@ object BlockPlacementSkillMenu extends Menu {
     }
   }
   
-  def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -317,14 +316,6 @@ object BlockPlacementSkillMenu extends Menu {
     } yield menuinventory.IndexedSlotLayout(constantPart ++ dynamicPart)
   }
 
-  override val open: TargetedEffect[Player] = { player =>
-    for {
-      session <- IO.pure(
-        InventoryFrame(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面").createNewSession()
-      )
-      _ <- session.openInventory(player)
-      layout <- computeMenuLayout(player)
-      _ <- session.overwriteViewWith(layout)
-    } yield ()
-  }
+  override val frame: InventoryFrame =
+    InventoryFrame(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
 }

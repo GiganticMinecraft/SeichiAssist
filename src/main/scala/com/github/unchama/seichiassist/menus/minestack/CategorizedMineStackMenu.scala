@@ -7,7 +7,6 @@ import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SkullOwners}
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffects._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -66,7 +65,7 @@ object CategorizedMineStackMenu {
     }
   }
 
-  private def computeMenuLayout(player: Player)(category: MineStackObjectCategory, page: Int): IO[IndexedSlotLayout] = {
+  private def computeMenuLayoutOn(category: MineStackObjectCategory, page: Int)(player: Player): IO[IndexedSlotLayout] = {
     import MineStackObjectCategory._
     import cats.implicits._
 
@@ -74,7 +73,7 @@ object CategorizedMineStackMenu {
     val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
 
     // オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、最後のページを計算する
-    if (page >= totalNumberOfPages) return computeMenuLayout(player)(category, totalNumberOfPages - 1)
+    if (page >= totalNumberOfPages) return computeMenuLayoutOn(category, totalNumberOfPages - 1)(player)
 
     val playerMineStackButtons = MineStackButtons(player)
     import playerMineStackButtons._
@@ -108,16 +107,10 @@ object CategorizedMineStackMenu {
    * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
    */
   def forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = new Menu {
-    override val open: TargetedEffect[Player] = computedEffect { player =>
-      val session = InventoryFrame(
-          Left(InventoryRowSize(6)),
-          s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
-      ).createNewSession()
+    override val frame: InventoryFrame =
+      InventoryFrame(Left(InventoryRowSize(6)), s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
 
-      sequentialEffect(
-          session.openInventory,
-          _ => computeMenuLayout(player)(category, pageIndex).flatMap(session.overwriteViewWith)
-      )
-    }
+    override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] =
+      computeMenuLayoutOn(category, pageIndex)(player)
   }
 }

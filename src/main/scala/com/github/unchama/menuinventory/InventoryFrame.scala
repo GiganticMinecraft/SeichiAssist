@@ -1,5 +1,6 @@
 package com.github.unchama.menuinventory
 
+import cats.effect.IO
 import com.github.unchama.menuinventory.InventoryRowSize.InventorySize
 import com.github.unchama.util.InventoryUtil._
 import org.bukkit.inventory.{Inventory, InventoryHolder}
@@ -12,5 +13,5 @@ case class InventoryFrame(size: InventorySize, title: String) {
   private[menuinventory] def createConfiguredInventory(holder: InventoryHolder): Inventory =
     createInventory(Some(holder), size, Some(title))
 
-  def createNewSession(): MenuSession = new MenuSession(this)
+  def createNewSession(): IO[MenuSession] = IO(new MenuSession(this))
 }
