@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.task.repeating
+package com.github.unchama.concurrent
 
 import cats.effect.{IO, Timer}
 import com.github.unchama.util.effect.IOUtils._

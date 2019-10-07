@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.task.repeating
 
 import cats.effect.{IO, Timer}
+import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.task.PlayerDataSaving
 import com.github.unchama.seichiassist.util.Util

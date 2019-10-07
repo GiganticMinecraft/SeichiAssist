@@ -5,10 +5,12 @@ import java.util.concurrent.Executors
 
 import cats.effect.{ContextShift, Fiber, IO, Timer}
 import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -16,7 +18,7 @@ import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaving
-import com.github.unchama.seichiassist.task.repeating.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation, RepeatingTask}
+import com.github.unchama.seichiassist.task.repeating.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
