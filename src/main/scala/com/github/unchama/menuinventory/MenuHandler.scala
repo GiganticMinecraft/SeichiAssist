@@ -36,7 +36,7 @@ object MenuHandler extends Listener {
 
     val effect = for {
       layout <- holder.currentLayout.get
-      _ <- layout.computeAsyncEffectOn(event)(whoClicked)
+      _ <- layout.asyncEffectOn(event)(whoClicked)
     } yield ()
 
     effect.unsafeRunAsync {
