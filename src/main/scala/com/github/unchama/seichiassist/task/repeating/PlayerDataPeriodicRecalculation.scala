@@ -13,8 +13,8 @@ import org.bukkit.{Bukkit, Sound}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-class PlayerDataPeriodicRecalculation(override val taskExecutionContext: ExecutionContext)
-                                     (override implicit val sleepTimer: Timer[IO]) extends RepeatingTask() {
+case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: ExecutionContext)
+                                          (override val sleepTimer: Timer[IO]) extends RepeatingTask() {
 
   override val getRepeatInterval: IO[FiniteDuration] = IO {
     import scala.concurrent.duration._

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist
 
 import java.util.UUID
+import java.util.concurrent.Executors
 
 import cats.effect.{ContextShift, Fiber, IO, Timer}
 import com.github.unchama.buildassist.BuildAssist
@@ -15,7 +16,7 @@ import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaving
-import com.github.unchama.seichiassist.task.repeating.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
+import com.github.unchama.seichiassist.task.repeating.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation, RepeatingTask}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
@@ -222,18 +223,18 @@ class SeichiAssist extends JavaPlugin() {
       val syncExecutionContext = PluginExecutionContexts.sync
       val asyncExecutionContext = ExecutionContext.global
 
-      // 実行がデフォルトで待機すべきコンテキストはasyncのほうであるため
-      implicit val defaultContextShift: ContextShift[IO] = IO.contextShift(asyncExecutionContext)
-
-      implicit val sleepTimer: Timer[IO] = IO.timer(asyncExecutionContext)
-
-      val programs = List(
-        new HalfHourRankingRoutine(asyncExecutionContext).launch,
-        new PlayerDataPeriodicRecalculation(syncExecutionContext).launch,
-        new PlayerDataBackupTask(asyncExecutionContext).launch
+      val programs: List[Timer[IO] => RepeatingTask] = List(
+        HalfHourRankingRoutine(asyncExecutionContext),
+        PlayerDataPeriodicRecalculation(syncExecutionContext),
+        PlayerDataBackupTask(asyncExecutionContext)
       )
 
-      programs.parSequence.start
+      val schedulingThreadPool = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(programs.size + 1))
+
+      implicit val defaultContextShift: ContextShift[IO] = IO.contextShift(schedulingThreadPool)
+      val sleepTimer: Timer[IO] = IO.timer(schedulingThreadPool)
+
+      programs.map(_(sleepTimer).launch).parSequence.start
     }
 
     repeatedTaskFiber = Some(startTask.unsafeRunSync())

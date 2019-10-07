@@ -9,8 +9,8 @@ import org.bukkit.ChatColor._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-class HalfHourRankingRoutine(override val taskExecutionContext: ExecutionContext)
-                            (override implicit val sleepTimer: Timer[IO]) extends RepeatingTask() {
+case class HalfHourRankingRoutine(override val taskExecutionContext: ExecutionContext)
+                                 (override val sleepTimer: Timer[IO]) extends RepeatingTask() {
 
   override val getRepeatInterval: IO[FiniteDuration] = IO {
     import scala.concurrent.duration._
