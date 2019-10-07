@@ -14,21 +14,36 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 
 object MebiusCommand {
+
+  val executor: TabExecutor = {
+    import com.github.unchama.seichiassist.commands.MebiusCommand.ChildExecutors._
+
+    BranchedExecutor(
+      Map(
+        "get" -> getExecutor,
+        "reload" -> reloadExecutor,
+        "debug" -> debugExecutor,
+        "nickname" -> ChildExecutors.NickNameCommand.executor,
+        "naming" -> namingExecutor
+      ), whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
+    ).asNonBlockingTabExecutor()
+  }
+
   private object Messages {
     val commandDescription: TargetedEffect[CommandSender] = List(
       s"${RED}[Usage]",
       s"${RED}/mebius naming [name]",
       s"${RED}  現在頭に装着中のMEBIUSに[name]を命名します。",
-        "",
+      "",
       s"${RED}/mebius nickname",
       s"${RED}  MEBIUSから呼ばれる名前を表示します",
-        "",
+      "",
       s"${RED}/mebius nickname set [name]",
       s"${RED}  MEBIUSから呼ばれる名前を[name]に変更します",
-        "",
+      "",
       s"${RED}/mebius nickname reset",
       s"${RED}  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
-        ""
+      ""
     ).asMessageEffect()
 
     val permissionWarning: TargetedEffect[CommandSender] = s"${RED}このコマンドは権限者のみが実行可能です.".asMessageEffect()
@@ -71,8 +86,22 @@ object MebiusCommand {
         }
       }
       .build()
+    val namingExecutor: ContextualExecutor = playerCommandBuilder
+      .argumentsParsers(List(Parsers.identity))
+      .execution { context =>
+        val newName = s"${context.args.parsed(0).asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
+
+        if (!MebiusListener.setName(context.sender, newName)) {
+          IO(s"${RED}命名はMEBIUSを装着して行ってください.".asMessageEffect())
+        } else IO(EmptyEffect)
+      }
+      .build()
 
     object NickNameCommand {
+      val executor = BranchedExecutor(Map(
+        "reset" -> resetNickNameExecutor,
+        "set" -> setNickNameExecutor
+      ), whenArgInsufficient = Some(checkNickNameExecutor), whenBranchNotFound = Some(checkNickNameExecutor))
       private val checkNickNameExecutor = playerCommandBuilder
         .execution { context =>
           val message = MebiusListener.getNickname(context.sender)
@@ -82,7 +111,6 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
-
       private val resetNickNameExecutor = playerCommandBuilder
         .execution { context =>
           val message = if (MebiusListener.setNickname(context.sender, context.sender.getName)) {
@@ -94,7 +122,6 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
-
       private val setNickNameExecutor = playerCommandBuilder
         .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
         .execution { context =>
@@ -108,36 +135,6 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
-
-      val executor = BranchedExecutor(Map(
-        "reset" -> resetNickNameExecutor,
-        "set" -> setNickNameExecutor
-      ), whenArgInsufficient = Some(checkNickNameExecutor), whenBranchNotFound = Some(checkNickNameExecutor))
     }
-
-    val namingExecutor: ContextualExecutor = playerCommandBuilder
-      .argumentsParsers(List(Parsers.identity))
-      .execution { context =>
-        val newName = s"${context.args.parsed(0).asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
-
-        if (!MebiusListener.setName(context.sender, newName)) {
-          IO(s"${RED}命名はMEBIUSを装着して行ってください.".asMessageEffect())
-        } else IO(EmptyEffect)
-      }
-      .build()
-  }
-
-  val executor: TabExecutor = {
-    import com.github.unchama.seichiassist.commands.MebiusCommand.ChildExecutors._
-
-    BranchedExecutor(
-      Map(
-        "get" -> getExecutor,
-        "reload" -> reloadExecutor,
-        "debug" -> debugExecutor,
-        "nickname" -> ChildExecutors.NickNameCommand.executor,
-        "naming" -> namingExecutor
-      ), whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
-    ).asNonBlockingTabExecutor()
   }
 }

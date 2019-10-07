@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author kory
- *
+ * <p>
  * 失敗時に何も値を記録しないような {@link Try} の利用に関するヘルパー。
  */
 public class TryWithoutFailValue {

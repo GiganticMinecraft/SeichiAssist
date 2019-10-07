@@ -9,13 +9,24 @@ import org.bukkit.inventory.{ItemFlag, ItemStack}
  * ItemStackBuilderのベースとなる抽象クラス.
  *
  * @tparam M 派生クラスが生成する[ItemStack]が持つべきであろう[ItemMeta]の型.
- *
  * @author karayuu
  */
 abstract class AbstractItemStackBuilder[M <: ItemMeta] protected
 (material: Material, durability: Short) extends ItemStackBuilder {
 
   private val component: IconComponent = new IconComponent(material, durability)
+
+  final override def build(): ItemStack = {
+    val itemStack = component.itemStack()
+
+    itemStack.setItemMeta {
+      val meta = component.itemMeta().asInstanceOf[M]
+      transformItemMetaOnBuild(meta)
+      meta
+    }
+
+    itemStack
+  }
 
   override def title(title: String): this.type = {
     this.component.title = title
@@ -45,18 +56,6 @@ abstract class AbstractItemStackBuilder[M <: ItemMeta] protected
   override def flagged(flag: ItemFlag): this.type = {
     this.component.itemFlagSet = component.itemFlagSet + flag
     this
-  }
-
-  final override def build(): ItemStack = {
-    val itemStack = component.itemStack()
-
-    itemStack.setItemMeta {
-      val meta = component.itemMeta().asInstanceOf[M]
-      transformItemMetaOnBuild(meta)
-      meta
-    }
-
-    itemStack
   }
 
   /**

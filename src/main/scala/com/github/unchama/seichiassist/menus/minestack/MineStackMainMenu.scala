@@ -13,8 +13,11 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 
 object MineStackMainMenu extends Menu {
+
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
+  override val frame: InventoryFrame =
+    InventoryFrame(Left(InventoryRowSize(6)), s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
   val categoryButtonLayout: IndexedSlotLayout = {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES => Material.DIAMOND_ORE
@@ -44,34 +47,6 @@ object MineStackMainMenu extends Menu {
     IndexedSlotLayout(layoutMap)
   }
 
-  private case class ButtonComputations(player: Player) extends AnyVal {
-    import cats.implicits._
-    import player._
-
-    import scala.jdk.CollectionConverters._
-
-    /**
-     * メインメニュー内の「履歴」機能部分のレイアウトを計算する
-     */
-    def computeHistoricalMineStackLayout(): IO[IndexedSlotLayout] = {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-
-      for {
-        usageHistory <- IO { playerData.hisotryData.usageHistory }
-        buttonMapping <- usageHistory.asScala.zipWithIndex
-          .map { case(mineStackObject, index) =>
-            val slotIndex = 18 + index // 3行目から入れだす
-            val button = MineStackButtons(player).getMineStackItemButtonOf(mineStackObject)
-
-            slotIndex -> button
-          }
-          .toList
-          .map(_.sequence)
-          .sequence
-      } yield IndexedSlotLayout(buttonMapping: _*)
-    }
-  }
-
   override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
     for {
       autoMineStackToggleButton <- MineStackButtons(player).computeAutoMineStackToggleButton()
@@ -86,7 +61,35 @@ object MineStackMainMenu extends Menu {
     }
   }
 
-  override val frame: InventoryFrame =
-    InventoryFrame(Left(InventoryRowSize(6)), s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
+  private case class ButtonComputations(player: Player) extends AnyVal {
+
+    import cats.implicits._
+    import player._
+
+    import scala.jdk.CollectionConverters._
+
+    /**
+     * メインメニュー内の「履歴」機能部分のレイアウトを計算する
+     */
+    def computeHistoricalMineStackLayout(): IO[IndexedSlotLayout] = {
+      val playerData = SeichiAssist.playermap(getUniqueId)
+
+      for {
+        usageHistory <- IO {
+          playerData.hisotryData.usageHistory
+        }
+        buttonMapping <- usageHistory.asScala.zipWithIndex
+          .map { case (mineStackObject, index) =>
+            val slotIndex = 18 + index // 3行目から入れだす
+            val button = MineStackButtons(player).getMineStackItemButtonOf(mineStackObject)
+
+            slotIndex -> button
+          }
+          .toList
+          .map(_.sequence)
+          .sequence
+      } yield IndexedSlotLayout(buttonMapping: _*)
+    }
+  }
 
 }

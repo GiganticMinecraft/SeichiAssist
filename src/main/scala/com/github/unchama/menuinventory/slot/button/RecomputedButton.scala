@@ -10,8 +10,9 @@ object RecomputedButton {
    */
   def apply(buttonComputation: IO[Button])(implicit ctx: LayoutPreparationContext): IO[Button] =
     buttonComputation.map { computedButton =>
-      val recomputation = ButtonEffect { scope => _ =>
-        this(buttonComputation).flatMap(scope.overwriteCurrentSlotBy)
+      val recomputation = ButtonEffect { scope =>
+        _ =>
+          this (buttonComputation).flatMap(scope.overwriteCurrentSlotBy)
       }
 
       computedButton.withAnotherEffect(recomputation)

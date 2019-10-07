@@ -56,7 +56,8 @@ object PlayerDataLoading {
         + "player_uuid like '" + stringUuid + "' and "
         + "server_id = " + config.getServerNum)
 
-      stmt.executeQuery(subHomeDataQuery).recordIteration { lrs: ResultSet => import lrs._
+      stmt.executeQuery(subHomeDataQuery).recordIteration { lrs: ResultSet =>
+        import lrs._
         val subHomeId = getInt("id")
         val subHomeName = getString("name")
         val locationX = getInt("location_x")
@@ -93,7 +94,8 @@ object PlayerDataLoading {
 
       val objectAmounts = mutable.HashMap[MineStackObj, Long]()
 
-      stmt.executeQuery(mineStackDataQuery).recordIteration { lrs: ResultSet => import lrs._
+      stmt.executeQuery(mineStackDataQuery).recordIteration { lrs: ResultSet =>
+        import lrs._
         val objectName = getString("object_name")
         val objectAmount = getLong("amount")
         val mineStackObj = nameObjectMappings(objectName)

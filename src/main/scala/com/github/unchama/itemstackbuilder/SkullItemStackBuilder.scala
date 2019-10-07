@@ -9,7 +9,7 @@ import org.bukkit.{Bukkit, Material, SkullType}
  * Created by karayuu on 2019/04/09
  */
 class SkullItemStackBuilder(private val owner: SkullOwnerReference) extends
-    AbstractItemStackBuilder[SkullMeta](Material.SKULL_ITEM, SkullType.PLAYER.ordinal.toShort) {
+  AbstractItemStackBuilder[SkullMeta](Material.SKULL_ITEM, SkullType.PLAYER.ordinal.toShort) {
 
   /**
    * プレーヤーがサーバーに参加したことのない場合に
@@ -20,7 +20,6 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference) extends
    * Bukkitは`Persistent storage of users should be by UUID`と記している。
    *
    * @see SkullMeta.setOwner
-   *
    * @param ownerUUID [Material.SKULL_ITEM] に表示するプレーヤーのUUID
    */
   def this(ownerUUID: UUID) = this(SkullOwnerUuid(ownerUUID))
@@ -31,14 +30,15 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference) extends
   def this(ownerName: String) = this(SkullOwnerName(ownerName))
 
   override def transformItemMetaOnBuild(meta: SkullMeta): Unit = {
-   owner match {
-     case SkullOwnerUuid(uuid) =>
-       meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
-     case SkullOwnerName(name) =>
-       /**
-        * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
-        */
-       meta.setOwner(name)
-   }
+    owner match {
+      case SkullOwnerUuid(uuid) =>
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
+      case SkullOwnerName(name) =>
+
+        /**
+         * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+         */
+        meta.setOwner(name)
+    }
   }
 }

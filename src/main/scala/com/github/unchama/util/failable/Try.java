@@ -12,17 +12,36 @@ import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
 
 /**
- * @author kory
- *
- * 失敗する可能性のある処理を逐次実行するための構造を備えたオブジェクトのクラス
  * @param <F> 失敗時に記録される値の型
+ * @author kory
+ * <p>
+ * 失敗する可能性のある処理を逐次実行するための構造を備えたオブジェクトのクラス
  */
 public abstract class Try<F> {
+    private static <F> Try<F> succeed() {
+        return new SuccessfulTry<>();
+    }
+
+    public static <F> Try<F> sequence(List<FailableAction<F>> actions) {
+        Try<F> currentTry = Try.succeed();
+
+        for (final FailableAction<F> action : actions) {
+            currentTry = currentTry.ifOkThen(action.failValue, action.action);
+        }
+
+        return currentTry;
+    }
+
+    @SafeVarargs
+    public static <F> Try<F> sequence(FailableAction<F>... actions) {
+        return sequence(Arrays.asList(actions));
+    }
+
     /**
      * このインスタンスが成功状態ならば、{@code action}を実行し、
      * 失敗状態ならば{@code action}は実行せず内部状態を保つ。
      *
-     * @param action 実行する処理
+     * @param action    実行する処理
      * @param failValue 失敗したときに{@link FailedTry}の構築に使用される値
      * @return {@code action}が実行された場合、結果が{@link ActionStatus#Ok}ならば
      * {@link SuccessfulTry}を返し、そうでなければ{@code failValue}が入った
@@ -51,7 +70,8 @@ public abstract class Try<F> {
     }
 
     static final class SuccessfulTry<F> extends Try<F> {
-        private SuccessfulTry() {}
+        private SuccessfulTry() {
+        }
 
         @Override
         public Try<F> ifOkThen(F failValue, Supplier<ActionStatus> action) {
@@ -80,24 +100,5 @@ public abstract class Try<F> {
         public Optional<F> failedValue() {
             return Optional.of(failValue);
         }
-    }
-
-    private static <F> Try<F> succeed() {
-        return new SuccessfulTry<>();
-    }
-
-    public static <F> Try<F> sequence(List<FailableAction<F>> actions) {
-        Try<F> currentTry = Try.succeed();
-
-        for (final FailableAction<F> action: actions) {
-            currentTry = currentTry.ifOkThen(action.failValue, action.action);
-        }
-
-        return currentTry;
-    }
-
-    @SafeVarargs
-    public static <F> Try<F> sequence(FailableAction<F>... actions) {
-        return sequence(Arrays.asList(actions));
     }
 }

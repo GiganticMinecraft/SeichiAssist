@@ -13,6 +13,7 @@ class CoreProtectWrapper(val backbone: CoreProtectAPI) {
   def queueBlockRemoval(who: Player, where: Block): Boolean = {
     return backbone.logRemoval(who.getName, where.getLocation, where.getType, where.getData)
   }
+
   /*
   // For >= 1.13
   def queueBlockRemoval(who: Player, where: Location, data: BlockData): Boolean = {

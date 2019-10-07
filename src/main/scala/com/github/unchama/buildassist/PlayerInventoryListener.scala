@@ -30,11 +30,15 @@ class PlayerInventoryListener extends Listener {
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType != EntityType.PLAYER) return
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
 
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.getSize != 36) { return }
+    if (topinventory.getSize != 36) {
+      return
+    }
 
     val player = he.asInstanceOf[Player]
     val uuid = player.getUniqueId
@@ -126,7 +130,9 @@ class PlayerInventoryListener extends Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.getSize != 54) {
@@ -356,7 +362,9 @@ class PlayerInventoryListener extends Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.getSize != 54) {
@@ -647,7 +655,9 @@ class PlayerInventoryListener extends Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.getSize != 54) {

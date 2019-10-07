@@ -16,13 +16,15 @@ import org.bukkit.inventory.ItemStack
  *
  * [effectOn]は常に与えられた[InventoryClickEvent]をキャンセルする副作用を含みます.
  *
- * @param itemStack  [Inventory] へセットする [ItemStack]
+ * @param itemStack [Inventory] へセットする [ItemStack]
  * @author karayuu
  */
 case class Button(override val itemStack: ItemStack,
                   private val effects: List[ButtonEffect]) extends Slot {
   override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
-    UnfocusedEffect { event.setCancelled(true) }.followedBy {
+    UnfocusedEffect {
+      event.setCancelled(true)
+    }.followedBy {
       this.effects.map(_.asyncEffectOn(event)).asSequentialEffect()
     }
 

@@ -13,6 +13,7 @@ import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.{Bukkit, Material}
 
 object MenuInventoryData {
+
   import scala.jdk.CollectionConverters._
 
   /**
@@ -248,7 +249,7 @@ object MenuInventoryData {
     var lore: List[String] = null
     var itemstack: ItemStack = null
     var skullmeta = ItemMetaFactory.SKULL.getValue
- 
+
     // ホーム目を開く
     itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3.toShort)
     skullmeta.setDisplayName(YELLOW.toString() + "" + UNDERLINE + "" + BOLD + "ホームへ")

@@ -18,55 +18,19 @@ import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
 object ArrowEffects {
+
   import com.github.unchama.concurrent.syntax._
   import com.github.unchama.targetedeffect.TargetedEffects._
   import com.github.unchama.util.syntax._
 
   implicit val plugin: JavaPlugin = SeichiAssist.instance
-
-  def arrowEffect[P <: Projectile: ClassTag](
-    spawnConfiguration: ProjectileSpawnConfiguration,
-    sound: Option[Sound] = None,
-    projectileModifier: P => Unit = (_: P) => ()
-  ): TargetedEffect[Player] = {
-    val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
-    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(EmptyEffect)
-
-    sequentialEffect(
-      soundEffect,
-      player =>
-        for {
-          _ <- IO.shift(new BukkitSyncExecutionContext())
-          playerLocation <- IO { player.getLocation.clone() }
-          spawnLocation = playerLocation.clone()
-            .add(playerLocation.getDirection)
-            .add(spawnConfiguration.offset)
-          projectile <- IO {
-            playerLocation.getWorld.spawn(spawnLocation, runtimeClass)
-              .modify { entity => import entity._
-                setShooter(player)
-                setGravity(spawnConfiguration.gravity)
-                setMetadata("ArrowSkill", FixedMetadataValues.TRUE)
-                setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))
-              }
-              .modify(projectileModifier)
-          }
-          // TODO abstract away the release of resource
-          _ <- IO { SeichiAssist.entitylist += projectile }
-          _ <- IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
-          _ <- IO { projectile.remove(); SeichiAssist.entitylist -= projectile }
-        } yield ()
-    )
-  }
-
   val singleArrowBlizzardEffect: TargetedEffect[Player] = arrowEffect[Snowball](
-      ProjectileSpawnConfiguration(
-          1.0,
-          (0.0, 1.6, 0.0)
-      ),
-      Some(Sound.ENTITY_SNOWBALL_THROW)
+    ProjectileSpawnConfiguration(
+      1.0,
+      (0.0, 1.6, 0.0)
+    ),
+    Some(Sound.ENTITY_SNOWBALL_THROW)
   )
-
   val singleArrowMagicEffect: TargetedEffect[Player] = {
     val thrownPotionItem = new ItemStack(Material.SPLASH_POTION).modify { itemStack =>
       itemStack.setItemMeta {
@@ -79,30 +43,70 @@ object ArrowEffects {
 
     arrowEffect[ThrownPotion](
       ProjectileSpawnConfiguration(
-          0.8,
-          (0.0, 1.6, 0.0)
+        0.8,
+        (0.0, 1.6, 0.0)
       ),
       Some(Sound.ENTITY_WITCH_THROW),
       _.setItem(thrownPotionItem)
     )
   }
-
   val singleArrowMeteoEffect: TargetedEffect[Player] =
     arrowEffect[ThrownPotion](
       ProjectileSpawnConfiguration(
-          1.0,
-          (0.0, 1.6, 0.0)
+        1.0,
+        (0.0, 1.6, 0.0)
       ),
       Some(Sound.ENTITY_ARROW_SHOOT),
       _.setGlowing(true)
     )
-
   val singleArrowExplosionEffect: TargetedEffect[Player] =
     arrowEffect[SmallFireball](
       ProjectileSpawnConfiguration(
-          0.4,
-          (0.0, 1.6, 0.0)
+        0.4,
+        (0.0, 1.6, 0.0)
       ),
       Some(Sound.ENTITY_GHAST_SHOOT)
     )
+
+  def arrowEffect[P <: Projectile : ClassTag](
+                                               spawnConfiguration: ProjectileSpawnConfiguration,
+                                               sound: Option[Sound] = None,
+                                               projectileModifier: P => Unit = (_: P) => ()
+                                             ): TargetedEffect[Player] = {
+    val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
+    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(EmptyEffect)
+
+    sequentialEffect(
+      soundEffect,
+      player =>
+        for {
+          _ <- IO.shift(new BukkitSyncExecutionContext())
+          playerLocation <- IO {
+            player.getLocation.clone()
+          }
+          spawnLocation = playerLocation.clone()
+            .add(playerLocation.getDirection)
+            .add(spawnConfiguration.offset)
+          projectile <- IO {
+            playerLocation.getWorld.spawn(spawnLocation, runtimeClass)
+              .modify { entity =>
+                import entity._
+                setShooter(player)
+                setGravity(spawnConfiguration.gravity)
+                setMetadata("ArrowSkill", FixedMetadataValues.TRUE)
+                setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))
+              }
+              .modify(projectileModifier)
+          }
+          // TODO abstract away the release of resource
+          _ <- IO {
+            SeichiAssist.entitylist += projectile
+          }
+          _ <- IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
+          _ <- IO {
+            projectile.remove(); SeichiAssist.entitylist -= projectile
+          }
+        } yield ()
+    )
+  }
 }

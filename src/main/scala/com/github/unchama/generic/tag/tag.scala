@@ -19,12 +19,14 @@ package com.github.unchama.generic.tag
  */
 
 object tag {
+  type @@[+T, U] = T with Tagged[U]
+
   def apply[U] = new Tagger[U]
 
   trait Tagged[U]
-  type @@[+T, U] = T with Tagged[U]
 
   class Tagger[U] {
-    def apply[T](t : T) : T @@ U = t.asInstanceOf[T @@ U]
+    def apply[T](t: T): T @@ U = t.asInstanceOf[T @@ U]
   }
+
 }

@@ -58,9 +58,9 @@ object IndexedSlotLayout {
 
   def apply(): IndexedSlotLayout = IndexedSlotLayout(Map[Int, Slot]())
 
-  def apply(mappings: (Int, Slot)*): IndexedSlotLayout = IndexedSlotLayout(Map(mappings: _*))
-
   @inline def singleSlotLayout(indexedSlot: => (Int, Slot)): IndexedSlotLayout = IndexedSlotLayout(indexedSlot)
+
+  def apply(mappings: (Int, Slot)*): IndexedSlotLayout = IndexedSlotLayout(Map(mappings: _*))
 
   def combinedLayout(layouts: IndexedSlotLayout*): IndexedSlotLayout =
     layouts.toList.foldLeft(emptyLayout) { case (acc, layout) => acc.merge(layout) }

@@ -17,7 +17,7 @@ case class RawCommandContext(sender: CommandSender,
 /**
  * 変換されたコマンド引数の情報
  *
- * @param parsed コマンド引数のうち, [Any?]を型上限とするオブジェクトに変換されたもの.
+ * @param parsed        コマンド引数のうち, [Any?]を型上限とするオブジェクトに変換されたもの.
  * @param yetToBeParsed コマンド引数のうち, [parsed]へと変換されていない文字列.
  */
 case class PartiallyParsedArgs(parsed: List[Any], yetToBeParsed: List[String])
@@ -27,7 +27,7 @@ case class PartiallyParsedArgs(parsed: List[Any], yetToBeParsed: List[String])
  *
  * @tparam CS [CommandSender]オブジェクトの型上限. [sender]は[CS]であることまでが保証されている.
  * @param command 実行コマンドに関する情報
- * @param args 引数情報
+ * @param args    引数情報
  */
 case class ParsedArgCommandContext[+CS <: CommandSender](sender: CS,
                                                          command: ExecutedCommand,

@@ -48,8 +48,8 @@ class PlayerRightClickListener extends Listener {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         sequentialEffect[Player](
-            CommonSoundEffects.menuTransitionFenceSound,
-            BuildMainMenu.open
+          CommonSoundEffects.menuTransitionFenceSound,
+          BuildMainMenu.open
         )(player).unsafeRunAsync {
           case Left(error) =>
             println("Caught exception while opening BuildMainMenu")
@@ -182,22 +182,22 @@ class PlayerRightClickListener extends Listener {
                 b2.breakable {
                   //ブロック設置座標のブロック判別
                   if (player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.AIR ||
-                      player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.SNOW ||
-                      player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.LONG_GRASS ||
-                      player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.DEAD_BUSH ||
-                      player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.YELLOW_FLOWER ||
-                      player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.RED_ROSE ||
-                      player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.RED_MUSHROOM ||
-                      player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.BROWN_MUSHROOM) {
+                    player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.SNOW ||
+                    player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.LONG_GRASS ||
+                    player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.DEAD_BUSH ||
+                    player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.YELLOW_FLOWER ||
+                    player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.RED_ROSE ||
+                    player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.RED_MUSHROOM ||
+                    player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).getType == Material.BROWN_MUSHROOM) {
                     setunder = 1
                     if (playerdata.zsSkillDirtFlag) {
                       while (setunder < 5) {
                         //設置対象の[setunder]分の下のブロックが空気かどうか
                         if (player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.AIR ||
-                            player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.LAVA ||
-                            player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.STATIONARY_LAVA ||
-                            player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.WATER ||
-                            player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.STATIONARY_WATER) {
+                          player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.LAVA ||
+                          player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.STATIONARY_LAVA ||
+                          player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.WATER ||
+                          player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).getType == Material.STATIONARY_WATER) {
                           WGloc.setX(setblockX.toDouble)
                           WGloc.setY((setblockY - setunder).toDouble)
                           WGloc.setZ(setblockZ.toDouble)
@@ -223,7 +223,7 @@ class PlayerRightClickListener extends Listener {
                       b1.break
                     } else {
                       //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
-                      if (playerdata.zs_minestack_flag) {//label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
+                      if (playerdata.zs_minestack_flag) { //label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
                         for (cnt <- 0 until MineStackObjectList.minestacklist.size) {
                           if (offhanditem.getType == MineStackObjectList.minestacklist(cnt).material && offhanditem.getData.getData.toInt == MineStackObjectList.minestacklist(cnt).durability) {
                             no = cnt
@@ -310,7 +310,7 @@ class PlayerRightClickListener extends Listener {
                             player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).setType(offhanditem.getType)
                             player.getWorld.getBlockAt(setblockX, setblockY, setblockZ).setData(offhanditem.getData.getData)
 
-                            block_cnt += 1  //設置数カウント
+                            block_cnt += 1 //設置数カウント
                             b1.break()
                           }
                         } else {
@@ -347,7 +347,7 @@ class PlayerRightClickListener extends Listener {
           //player.sendMessage(RED + "敷き詰めスキル：処理終了" ) ;
 
           if (Util.inTrackedWorld(player)) {
-            Util.addBuild1MinAmount(player, new java.math.BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag))  //設置した数を足す
+            Util.addBuild1MinAmount(player, new java.math.BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag)) //設置した数を足す
           }
 
           return

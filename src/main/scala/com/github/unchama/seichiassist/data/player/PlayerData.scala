@@ -44,17 +44,10 @@ class PlayerData(
   import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
   import com.github.unchama.util.InventoryUtil._
 
-  val settings = new PlayerSettings()
+  lazy val mebius: MebiusTask = new MebiusTask(uuid)
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
-
-  //ハーフブロック破壊抑制用
-  private var allowBreakingHalfBlocks = false
-
-  //チェスト破壊トグル
-  var chestflag = true
-
   //各統計値差分計算用配列
   lazy private val statisticsData: mutable.ArrayBuffer[Int] = {
     val buffer: mutable.ArrayBuffer[Int] = ArrayBuffer()
@@ -64,95 +57,110 @@ class PlayerData(
 
     buffer
   }
-
-  var canCreateRegion = true
-  var unitPerClick = 1
-
+  //経験値マネージャ
+  lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
+  val settings = new PlayerSettings()
   //３０分間のデータを保存する．
   val halfhourblock: MineBlock = new MineBlock()
-
-  //今回の採掘速度上昇レベルを格納
-  var minespeedlv = 0
-
-  //前回の採掘速度上昇レベルを格納
-  var lastminespeedlv = 0
-
   //持ってるポーションエフェクト全てを格納する．
   val effectdatalist: mutable.ListBuffer[FastDiggingEffect] = mutable.ListBuffer.empty
+  //プレイヤー名
+  val lowercaseName: String = name.toLowerCase()
+  /**
+   * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
+   */
+  val computeFastDiggingEffect: IO[ForcedPotionEffect] = for {
+    activeEffects <- IO {
+      effectdatalist.toList
+    }
+    computedAmplifier <- IO {
+      val amplifierSum = activeEffects.map(_.amplifier).sum
+      Math.floor(amplifierSum - 1).toInt
+    }
+    maxSpeed <- settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
+    maxDuration <- IO {
+      activeEffects.map(_.duration).maxOption.getOrElse(0)
+    }
+  } yield {
+    // 実際に適用されるeffect量
+    val amplifier = Math.min(computedAmplifier, maxSpeed)
 
-  //プレイ時間差分計算用int
-  private var totalPlayTick: Option[Int] = None
+    val effect =
+      if (amplifier >= 0)
+        new PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
+      else
+        new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
 
+    effect.asTargetedEffect()
+  }
+  /**
+   * 保護申請の番号を更新させる[UnfocusedEffect]
+   */
+  val incrementRegionNumber: TargetedEffect[Any] = UnfocusedEffect {
+    this.regionCount += 1
+  }
+  /**
+   * @deprecated Should be moved to external scope
+   */
+  @Deprecated()
+  val toggleExpBarVisibility: TargetedEffect[Player] =
+  UnfocusedEffect {
+    this.settings.isExpBarVisible = !this.settings.isExpBarVisible
+  }.followedBy {
+    deferredEffect {
+      IO({
+        if (this.settings.isExpBarVisible)
+          s"${GREEN}整地量バー表示"
+        else
+          s"${RED}整地量バー非表示"
+        }.asMessageEffect())
+    }
+  }.followedBy {
+    UnfocusedEffect {
+      SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
+    }
+  }
+  private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
+  private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
+  //チェスト破壊トグル
+  var chestflag = true
+  var canCreateRegion = true
+  var unitPerClick = 1
+  //今回の採掘速度上昇レベルを格納
+  var minespeedlv = 0
+  //前回の採掘速度上昇レベルを格納
+  var lastminespeedlv = 0
   //投票受け取りボタン連打防止用
   var votecooldownflag = true
-
   //ガチャボタン連打防止用
   var gachacooldownflag = true
-
   //インベントリ共有ボタン連打防止用
   var shareinvcooldownflag = true
-
   var selectHomeNum = 0
   var setHomeNameNum = 0
   var isSubHomeNameChange = false
-
   var samepageflag = false //実績ショップ用
 
+  //endregion
   //MineStackの履歴
   var hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
-
-  //経験値マネージャ
-  lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
-
   var titlepage = 1 //実績メニュー用汎用ページ指定
-
   //現在座標
   var loc: Option[Location] = None
-
-  lazy val mebius: MebiusTask = new MebiusTask(uuid)
-
   //放置時間
   var idleMinute = 0
-
-  //endregion
-
   //共有インベントリにアイテムが入っているかどうか
   var contentsPresentInSharedInventory = false
-
   //ガチャの基準となるポイント
   var gachapoint = 0
-
   //現在のプレイヤーレベル
   var level = 1
   //詫び券をあげる数
   var unclaimedApologyItems = 0
-
-  //拡張インベントリ
-  private var _pocketInventory: Inventory = createInventory(None, Left(InventoryRowSize(1)), Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
-
-  def pocketInventory: Inventory = {
-    // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
-    if (_pocketInventory.getSize < pocketSize) {
-      val newInventory =
-        Bukkit.getServer
-          .createInventory(null, pocketSize, s"$DARK_PURPLE${BOLD}4次元ポケット")
-      _pocketInventory.asScala.zipWithIndex.map(_.swap).foreach { case (i, is) => newInventory.setItem(i, is) }
-      _pocketInventory = newInventory
-    }
-
-    _pocketInventory
-  }
-  def pocketInventory_=(inventory: Inventory): Unit = {
-    _pocketInventory = inventory
-  }
-
   //ワールドガード保護自動設定用
   var regionCount = 0
-
   var starLevels = StarLevel(0, 0, 0)
-
   var minestack = new MineStack()
-
   //プレイ時間
   var playTick = 0
   //トータル破壊ブロック
@@ -163,22 +171,15 @@ class PlayerData(
   var expmarge: Byte = 0
   //特典受け取り済み投票数
   var p_givenvote = 0
-
   //連続・通算ログイン用
   // ロード時に初期化される
   var lastcheckdate: String = _
   var loginStatus = LoginStatus(null, 0, 0)
-
   //期間限定ログイン用
   var LimitedLoginCount = 0
-
   var ChainVote = 0
-
   //アクティブスキル関連データ
   var activeskilldata: ActiveSkillData = new ActiveSkillData()
-
-  private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
-
   //二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 
@@ -192,15 +193,9 @@ class PlayerData(
   var buildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
   // 1周年記念
   var anniversary = false
-
-  //グリッド式保護関連
-  private var claimUnit = ClaimUnit(0, 0, 0, 0)
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
-
   //投票妖精関連
   var usingVotingFairy = false
-  private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
-
   var voteFairyPeriod = new ClosedRange(dummyDate, dummyDate)
   var hasVotingFairyMana = 0
   var VotingFairyRecoveryValue = 0
@@ -208,66 +203,43 @@ class PlayerData(
   var toggleVotingFairy = 1
   var p_apple: Long = 0
   var toggleVFSound = true
-
   //貢献度pt
   var added_mana = 0
   var contribute_point = 0
-
   //正月イベント用
   var hasNewYearSobaGive = false
   var newYearBagAmount = 0
-
   //バレンタインイベント用
   var hasChocoGave = false
-
   var giganticBerserk = GiganticBerserk(0, 0, 0, false, 0)
+  //ハーフブロック破壊抑制用
+  private var allowBreakingHalfBlocks = false
+  //プレイ時間差分計算用int
+  private var totalPlayTick: Option[Int] = None
 
   //region calculated
   // TODO many properties here may be inlined and deleted
+  //拡張インベントリ
+  private var _pocketInventory: Inventory = createInventory(None, Left(InventoryRowSize(1)), Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
+  //グリッド式保護関連
+  private var claimUnit = ClaimUnit(0, 0, 0, 0)
 
-  def votingFairyStartTime: GregorianCalendar = voteFairyPeriod.start
+  def pocketInventory: Inventory = {
+    // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
+    if (_pocketInventory.getSize < pocketSize) {
+      val newInventory =
+        Bukkit.getServer
+          .createInventory(null, pocketSize, s"$DARK_PURPLE${BOLD}4次元ポケット")
+      _pocketInventory.asScala.zipWithIndex.map(_.swap).foreach { case (i, is) => newInventory.setItem(i, is) }
+      _pocketInventory = newInventory
+    }
 
-  def votingFairyStartTime_=(value: GregorianCalendar): Unit = {
-    voteFairyPeriod = new ClosedRange(value, voteFairyPeriod.endInclusive)
+    _pocketInventory
   }
 
-  def votingFairyEndTime: GregorianCalendar = voteFairyPeriod.endInclusive
-
-  def votingFairyEndTime_=(value: GregorianCalendar): Unit = {
-    voteFairyPeriod = new ClosedRange(voteFairyPeriod.start, value)
+  def pocketInventory_=(inventory: Inventory): Unit = {
+    _pocketInventory = inventory
   }
-
-  /**
-   * @deprecated PlayerDataはPlayerに依存するべきではない。
-   */
-  @Deprecated()
-  def player: Player = Bukkit.getPlayer(uuid)
-
-  //プレイヤー名
-  val lowercaseName: String = name.toLowerCase()
-
-  /**
-   * スターレベルの合計を返すショートカットフィールド。
-   */
-  def totalStarLevel: Int = starLevels.total()
-
-  def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
-
-  def unitMap: Map[DirectionType, Int] = {
-    val unitMap = mutable.Map[DirectionType, Int]().empty
-
-    unitMap.put(DirectionType.AHEAD, claimUnit.ahead)
-    unitMap.put(DirectionType.BEHIND, claimUnit.behind)
-    unitMap.put(DirectionType.RIGHT, claimUnit.right)
-    unitMap.put(DirectionType.LEFT, claimUnit.left)
-
-    unitMap.toMap
-  }
-
-  def gridChunkAmount: Int = (claimUnit.ahead + claimUnit.behind + 1) * (claimUnit.right + claimUnit.left + 1)
-
-  //オフラインかどうか
-  def isOffline: Boolean = SeichiAssist.instance.getServer.getPlayer(uuid) == null
 
   //四次元ポケットのサイズを取得
   private def pocketSize: Int = level match {
@@ -276,6 +248,13 @@ class PlayerData(
     case _ if level < 66 => 9 * 5
     case _ => 9 * 6
   }
+
+  def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
+
+  def gridChunkAmount: Int = (claimUnit.ahead + claimUnit.behind + 1) * (claimUnit.right + claimUnit.left + 1)
+
+  //オフラインかどうか
+  def isOffline: Boolean = SeichiAssist.instance.getServer.getPlayer(uuid) == null
 
   def GBexp: Int = giganticBerserk.exp
 
@@ -319,70 +298,6 @@ class PlayerData(
     isVotingFairy()
   }
 
-  def updateNickname(id1: Int = settings.nickName.id1,
-                     id2: Int = settings.nickName.id2,
-                     id3: Int = settings.nickName.id3,
-                     style: Style = settings.nickName.style): Unit = {
-    settings.nickName = settings.nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
-  }
-
-  //quit時とondisable時、プレイヤーデータを最新の状態に更新
-  def updateOnQuit(): Unit = {
-    //総整地量を更新
-    updateAndCalcMinedBlockAmount()
-    //総プレイ時間更新
-    updatePlayTick()
-
-    activeskilldata.updateOnQuit()
-
-    mebius.cancel()
-
-    //クライアント経験値をサーバー保管
-    saveTotalExp()
-
-    activeskilldata.RemoveAllTask()
-  }
-
-  def giganticBerserkLevelUp(): Unit = {
-    val currentLevel = giganticBerserk.level
-    giganticBerserk = if (currentLevel >= 10) giganticBerserk else giganticBerserk.copy(level = currentLevel + 1, exp = 0)
-  }
-
-  def recalculateAchievePoint(): Unit = {
-    val max = TitleFlags.toList
-      .filter(index => (1000 to 9799) contains index)
-      .count(_ => true) * 10 /* Safe Conversation: BitSet indexes => Int */
-
-    achievePoint = achievePoint.copy(fromUnlockedAchievements = max)
-  }
-
-  def consumeAchievePoint(amount: Int): Unit = {
-    achievePoint = achievePoint.copy(used = achievePoint.used + amount)
-  }
-
-  def convertEffectPointToAchievePoint(): Unit = {
-    achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
-    activeskilldata.effectpoint -= 10
-  }
-
-  //エフェクトデータのdurationを60秒引く
-  def calcEffectData(): Unit = {
-    val tmplist = mutable.Buffer[FastDiggingEffect]()
-
-    //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
-    effectdatalist.foreach { effectData =>
-      effectData.duration -= 1200
-      tmplist += effectData
-    }
-
-    //tmplistのdurationが3秒以下（60tick）のものはeffectdatalistから削除
-    effectdatalist.foreach { effectData =>
-      if (effectData.duration <= 60) {
-        effectdatalist -= effectData
-      }
-    }
-  }
-
   //レベルを更新
   def updateLevel(): Unit = {
     updatePlayerLevel()
@@ -423,6 +338,10 @@ class PlayerData(
     player.setPlayerListName(displayName)
   }
 
+  /**
+   * スターレベルの合計を返すショートカットフィールド。
+   */
+  def totalStarLevel: Int = starLevels.total()
 
   //プレイヤーレベルを計算し、更新する。
   private def updatePlayerLevel(): Unit = {
@@ -470,7 +389,12 @@ class PlayerData(
     level = i
   }
 
-  //スターレベルの計算、更新
+  /**
+   * @deprecated PlayerDataはPlayerに依存するべきではない。
+   */
+  @Deprecated()
+  def player: Player = Bukkit.getPlayer(uuid)
+
   /**
    * スターレベルの計算、更新を行う。
    * このメソッドはスター数が増えたときにメッセージを送信する副作用を持つ。
@@ -503,6 +427,63 @@ class PlayerData(
     if (oldStars < newStars) {
       player.sendMessage(s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆($oldStars))→Lv200(☆($newStars))】")
     }
+  }
+
+  private def loadTotalExp(): Unit = {
+    val internalServerId = SeichiAssist.seichiAssistConfig.getServerNum
+    //経験値が統合されてない場合は統合する
+    if (expmarge.toInt != 0x07 && (1 to 3).contains(internalServerId)) {
+      if (expmarge.&(0x01 << internalServerId - 1).toByte == 0.toByte) {
+        if (expmarge.toInt == 0) {
+          // 初回は加算じゃなくベースとして代入にする
+          totalexp = expmanager.getCurrentExp
+        } else {
+          totalexp += expmanager.getCurrentExp
+        }
+        expmarge = (expmarge | (0x01 << internalServerId - 1).toByte).toByte
+      }
+    }
+    expmanager.setExp(totalexp)
+  }
+
+  private def isVotingFairy(): Unit = {
+    //効果は継続しているか
+    if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
+      this.usingVotingFairy = false
+      player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
+    } else if (this.usingVotingFairy) {
+      VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
+    }
+  }
+
+  def votingFairyEndTime: GregorianCalendar = voteFairyPeriod.endInclusive
+
+  def votingFairyEndTime_=(value: GregorianCalendar): Unit = {
+    voteFairyPeriod = new ClosedRange(voteFairyPeriod.start, value)
+  }
+
+  def updateNickname(id1: Int = settings.nickName.id1,
+                     id2: Int = settings.nickName.id2,
+                     id3: Int = settings.nickName.id3,
+                     style: Style = settings.nickName.style): Unit = {
+    settings.nickName = settings.nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
+  }
+
+  //quit時とondisable時、プレイヤーデータを最新の状態に更新
+  def updateOnQuit(): Unit = {
+    //総整地量を更新
+    updateAndCalcMinedBlockAmount()
+    //総プレイ時間更新
+    updatePlayTick()
+
+    activeskilldata.updateOnQuit()
+
+    mebius.cancel()
+
+    //クライアント経験値をサーバー保管
+    saveTotalExp()
+
+    activeskilldata.RemoveAllTask()
   }
 
   //総プレイ時間を更新する
@@ -541,6 +522,8 @@ class PlayerData(
     sum
   }
 
+  //スターレベルの計算、更新
+
   //ブロック別整地数反映量の調節
   private def calcBlockExp(m: Material, i: Int): Double = {
     val amount = i.toDouble
@@ -562,6 +545,50 @@ class PlayerData(
     val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
 
     amount * materialFactor * swMult * sw01PenaltyMult
+  }
+
+  private def saveTotalExp(): Unit = {
+    totalexp = expmanager.getCurrentExp
+  }
+
+  def giganticBerserkLevelUp(): Unit = {
+    val currentLevel = giganticBerserk.level
+    giganticBerserk = if (currentLevel >= 10) giganticBerserk else giganticBerserk.copy(level = currentLevel + 1, exp = 0)
+  }
+
+  def recalculateAchievePoint(): Unit = {
+    val max = TitleFlags.toList
+      .filter(index => (1000 to 9799) contains index)
+      .count(_ => true) * 10 /* Safe Conversation: BitSet indexes => Int */
+
+    achievePoint = achievePoint.copy(fromUnlockedAchievements = max)
+  }
+
+  def consumeAchievePoint(amount: Int): Unit = {
+    achievePoint = achievePoint.copy(used = achievePoint.used + amount)
+  }
+
+  def convertEffectPointToAchievePoint(): Unit = {
+    achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
+    activeskilldata.effectpoint -= 10
+  }
+
+  //エフェクトデータのdurationを60秒引く
+  def calcEffectData(): Unit = {
+    val tmplist = mutable.Buffer[FastDiggingEffect]()
+
+    //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
+    effectdatalist.foreach { effectData =>
+      effectData.duration -= 1200
+      tmplist += effectData
+    }
+
+    //tmplistのdurationが3秒以下（60tick）のものはeffectdatalistから削除
+    effectdatalist.foreach { effectData =>
+      if (effectData.duration <= 60) {
+        effectdatalist -= effectData
+      }
+    }
   }
 
   //現在の採掘量順位
@@ -645,27 +672,6 @@ class PlayerData(
     subHomeName.getOrElse(s"サブホームポイント${subHomeIndex + 1}")
   }
 
-  private def saveTotalExp(): Unit = {
-    totalexp = expmanager.getCurrentExp
-  }
-
-  private def loadTotalExp(): Unit = {
-    val internalServerId = SeichiAssist.seichiAssistConfig.getServerNum
-    //経験値が統合されてない場合は統合する
-    if (expmarge.toInt != 0x07 && (1 to 3).contains(internalServerId)) {
-      if (expmarge.&(0x01 << internalServerId - 1).toByte == 0.toByte) {
-        if (expmarge.toInt == 0) {
-          // 初回は加算じゃなくベースとして代入にする
-          totalexp = expmanager.getCurrentExp
-        } else {
-          totalexp += expmanager.getCurrentExp
-        }
-        expmarge = (expmarge | (0x01 << internalServerId - 1).toByte).toByte
-      }
-    }
-    expmanager.setExp(totalexp)
-  }
-
   def canBreakHalfBlock(): Boolean = this.allowBreakingHalfBlocks
 
   def canGridExtend(directionType: DirectionType, world: String): Boolean = {
@@ -692,6 +698,17 @@ class PlayerData(
     assumedUnitAmount <= limit
   }
 
+  def unitMap: Map[DirectionType, Int] = {
+    val unitMap = mutable.Map[DirectionType, Int]().empty
+
+    unitMap.put(DirectionType.AHEAD, claimUnit.ahead)
+    unitMap.put(DirectionType.BEHIND, claimUnit.behind)
+    unitMap.put(DirectionType.RIGHT, claimUnit.right)
+    unitMap.put(DirectionType.LEFT, claimUnit.left)
+
+    unitMap.toMap
+  }
+
   def canGridReduce(directionType: DirectionType): Boolean = {
     val chunkMap = unitMap
 
@@ -710,6 +727,8 @@ class PlayerData(
     }
   }
 
+  import com.github.unchama.seichiassist.AntiTypesafe
+
   def addUnitAmount(directionType: DirectionType, amount: Int): Unit = {
     directionType match {
       case DirectionType.AHEAD => this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
@@ -727,8 +746,6 @@ class PlayerData(
     }
   }
 
-  import com.github.unchama.seichiassist.AntiTypesafe
-
   @AntiTypesafe
   def getVotingFairyStartTimeAsString(): String = {
     val cal = this.votingFairyStartTime
@@ -742,6 +759,12 @@ class PlayerData(
       val format = new SimpleDateFormat("yyyy,MM,dd,HH,mm,")
       format.format(date)
     }
+  }
+
+  def votingFairyStartTime: GregorianCalendar = voteFairyPeriod.start
+
+  def votingFairyStartTime_=(value: GregorianCalendar): Unit = {
+    voteFairyPeriod = new ClosedRange(value, voteFairyPeriod.endInclusive)
   }
 
   def setVotingFairyTime(@AntiTypesafe str: String): Unit = {
@@ -767,16 +790,6 @@ class PlayerData(
 
       this.votingFairyStartTime = starts
       this.votingFairyEndTime = ends
-    }
-  }
-
-  private def isVotingFairy(): Unit = {
-    //効果は継続しているか
-    if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
-      this.usingVotingFairy = false
-      player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
-    } else if (this.usingVotingFairy) {
-      VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
     }
   }
 
@@ -842,57 +855,6 @@ class PlayerData(
       s"$GRAY$lowercaseName は実績No. $number を獲得していません。".asMessageEffect()
     }
   })
-
-  /**
-   * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
-   */
-  val computeFastDiggingEffect: IO[ForcedPotionEffect] = for {
-    activeEffects <- IO { effectdatalist.toList }
-    computedAmplifier <- IO {
-      val amplifierSum = activeEffects.map(_.amplifier).sum
-      Math.floor(amplifierSum - 1).toInt
-    }
-    maxSpeed <- settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
-    maxDuration <- IO { activeEffects.map(_.duration).maxOption.getOrElse(0) }
-  } yield {
-    // 実際に適用されるeffect量
-    val amplifier = Math.min(computedAmplifier, maxSpeed)
-
-    val effect =
-      if (amplifier >= 0)
-        new PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
-      else
-        new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
-
-    effect.asTargetedEffect()
-  }
-
-  /**
-   * 保護申請の番号を更新させる[UnfocusedEffect]
-   */
-  val incrementRegionNumber: TargetedEffect[Any] = UnfocusedEffect { this.regionCount += 1 }
-
-  /**
-   * @deprecated Should be moved to external scope
-   */
-  @Deprecated()
-  val toggleExpBarVisibility: TargetedEffect[Player] =
-    UnfocusedEffect {
-      this.settings.isExpBarVisible = !this.settings.isExpBarVisible
-    }.followedBy {
-      deferredEffect {
-        IO ({
-          if (this.settings.isExpBarVisible)
-            s"${GREEN}整地量バー表示"
-          else
-            s"${RED}整地量バー非表示"
-          }.asMessageEffect())
-      }
-    }.followedBy {
-      UnfocusedEffect {
-        SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-      }
-    }
 }
 
 object PlayerData {

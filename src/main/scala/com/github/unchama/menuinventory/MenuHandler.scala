@@ -19,7 +19,9 @@ object MenuHandler extends Listener {
     }
 
     //メニュー外のクリック排除
-    val clickedInventory = event.getClickedInventory.ifNull { return }
+    val clickedInventory = event.getClickedInventory.ifNull {
+      return
+    }
 
     val holder = event.getWhoClicked.getOpenInventory.getTopInventory.getHolder match {
       case session: MenuSession => session

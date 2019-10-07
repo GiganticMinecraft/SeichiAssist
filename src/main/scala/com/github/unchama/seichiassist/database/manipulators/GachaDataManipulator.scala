@@ -13,6 +13,7 @@ import org.bukkit.Bukkit
 import scala.collection.mutable.ArrayBuffer
 
 class GachaDataManipulator(private val gateway: DatabaseGateway) {
+
   import com.github.unchama.util.syntax.ResultSetSyntax._
 
   private val tableReference: String = gateway.databaseName + "." + DatabaseConstants.GACHADATA_TABLENAME
@@ -32,7 +33,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
         prizes.append(prize)
       }
     } catch {
-      case e @ (_ : SQLException | _ : IOException) =>
+      case e@(_: SQLException | _: IOException) =>
         println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
         e.printStackTrace()
         return false
@@ -53,15 +54,15 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     //次に現在のgachadatalistでmysqlを更新
-    for { gachadata <- SeichiAssist.gachadatalist } {
+    for {gachadata <- SeichiAssist.gachadatalist} {
       //Inventory作ってガチャのitemstackに突っ込む
       val inventory = Bukkit.getServer().createInventory(null, 9 * 1)
       inventory.setItem(0, gachadata.itemStack)
 
       command = ("insert into " + tableReference + " (probability, itemstack)"
-          + " values"
-          + "(" + gachadata.probability + "," +
-          "'" + BukkitSerialization.toBase64(inventory) + "')")
+        + " values"
+        + "(" + gachadata.probability + "," +
+        "'" + BukkitSerialization.toBase64(inventory) + "')")
       if (gateway.executeUpdate(command) == ActionStatus.Fail) {
         return false
       }

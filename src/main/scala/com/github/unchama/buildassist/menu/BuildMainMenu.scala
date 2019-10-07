@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}
 
 object BuildMainMenu extends Menu {
+
   import com.github.unchama.menuinventory.slot.button.RecomputedButton
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.MessageEffects._
@@ -23,99 +24,43 @@ object BuildMainMenu extends Menu {
   import com.github.unchama.targetedeffect.player.CommandEffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
-  private object ConstantButtons {
-    val buttonToFlyFor1Minute: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
-        .amount(1)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(1分)")
-        .lore(
-          s"$RESET${YELLOW}クリックすると以降1分間に渡り",
-          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
-          s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
-        )
-        .build()
+  override val frame: InventoryFrame =
+    InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB")
+  private val EMPHASIZE = s"$UNDERLINE$BOLD"
 
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-          sequentialEffect(
-            closeInventoryEffect,
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "fly 1".asCommandEffect()
-          )
-        }
+  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+    import ConstantButtons._
+    val computations = ButtonComputations(player)
+    import computations._
+    val constantPart = Map(
+      3 -> buttonToFlyFor1Minute,
+      4 -> buttonToFlyFor5Minutes,
+      5 -> buttonToFlyEndlessly,
+      6 -> buttonToTerminateFlight
+    )
+
+    import cats.implicits._
+
+    val dynamicPartComputation: IO[List[(Int, Button)]] =
+      List(
+        0 -> computeNotationOfStats(),
+        2 -> computeButtonToShowStateOfFlying(),
+        18 -> computeButtonToToggleRangedPlaceSkill(),
+        19 -> computeButtonToOpenRangedPlaceSkillMenu(),
+        27 -> computeButtonToLineUpBlocks(),
+        28 -> computeButtonToOpenLineUpBlocksMenu(),
+        35 -> computeButtonToOpenMenuToCraftItemsWhereMineStack()
       )
-    }
+        .map(_.sequence)
+        .sequence
 
-    val buttonToFlyFor5Minutes: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
-        .amount(5)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(5分)")
-        .lore(
-          s"$RESET${YELLOW}クリックすると以降5分間に渡り",
-          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
-          s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
-        )
-        .build()
-
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-          sequentialEffect(
-            closeInventoryEffect,
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "fly 5".asCommandEffect()
-          )
-        }
-      )
-    }
-
-    val buttonToFlyEndlessly: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.ELYTRA)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$RED$EMPHASIZE(無制限)")
-        .lore(
-          s"$RESET${YELLOW}クリックすると以降OFFにするまで",
-          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
-          s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
-        )
-        .build()
-
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-          sequentialEffect(
-            closeInventoryEffect,
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "fly endless".asCommandEffect()
-          )
-        }
-      )
-    }
-
-    val buttonToTerminateFlight: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.CHAINMAIL_BOOTS)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能、OFF")
-        .lore(
-          s"$RESET${RED}クリックすると、残り時間にかかわらず",
-          s"$RESET${RED}FLYを終了します。"
-        )
-        .flagged(ItemFlag.HIDE_ATTRIBUTES)
-        .build()
-
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-          sequentialEffect(
-            closeInventoryEffect,
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "fly finish".asCommandEffect()
-          )
-        }
-      )
-    }
+    for {
+      dynamicPart <- dynamicPartComputation
+    } yield menuinventory.IndexedSlotLayout(constantPart ++ dynamicPart)
   }
 
   private case class ButtonComputations(player: Player) extends AnyVal {
+
     import player._
 
     def computeNotationOfStats(): IO[Button] = RecomputedButton {
@@ -141,7 +86,7 @@ object BuildMainMenu extends Menu {
         .title(s"$YELLOW${EMPHASIZE}FLY機能 情報表示")
         .lore(
           s"$RESET${AQUA}FLY 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
-          s"$RESET${AQUA}FLY 残り時間: ${ if (openerData.endlessfly) "∞" else openerData.flytime }"
+          s"$RESET${AQUA}FLY 残り時間: ${if (openerData.endlessfly) "∞" else openerData.flytime}"
         )
         .build()
 
@@ -276,7 +221,9 @@ object BuildMainMenu extends Menu {
         FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            UnfocusedEffect { player.openInventory(MenuInventoryData.getBlockLineUpData(player)) }
+            UnfocusedEffect {
+              player.openInventory(MenuInventoryData.getBlockLineUpData(player))
+            }
           )
         }
       )
@@ -292,47 +239,105 @@ object BuildMainMenu extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            UnfocusedEffect { player.openInventory(MenuInventoryData.getBlockCraftData(player)) }
+            UnfocusedEffect {
+              player.openInventory(MenuInventoryData.getBlockCraftData(player))
+            }
           )
         }
       )
     }
   }
 
-  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
-    import ConstantButtons._
-    val computations = ButtonComputations(player)
-    import computations._
-    val constantPart = Map(
-      3 -> buttonToFlyFor1Minute,
-      4 -> buttonToFlyFor5Minutes,
-      5 -> buttonToFlyEndlessly,
-      6 -> buttonToTerminateFlight
-    )
+  private object ConstantButtons {
+    val buttonToFlyFor1Minute: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
+        .amount(1)
+        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(1分)")
+        .lore(
+          s"$RESET${YELLOW}クリックすると以降1分間に渡り",
+          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+          s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
+        )
+        .build()
 
-    import cats.implicits._
-
-    val dynamicPartComputation: IO[List[(Int, Button)]] =
-      List(
-        0 -> computeNotationOfStats(),
-        2 -> computeButtonToShowStateOfFlying(),
-        18 -> computeButtonToToggleRangedPlaceSkill(),
-        19 -> computeButtonToOpenRangedPlaceSkillMenu(),
-        27 -> computeButtonToLineUpBlocks(),
-        28 -> computeButtonToOpenLineUpBlocksMenu(),
-        35 -> computeButtonToOpenMenuToCraftItemsWhereMineStack()
+      Button(
+        iconItemStack,
+        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+          sequentialEffect(
+            closeInventoryEffect,
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            "fly 1".asCommandEffect()
+          )
+        }
       )
-        .map(_.sequence)
-        .sequence
+    }
 
-    for {
-      dynamicPart <- dynamicPartComputation
-    } yield menuinventory.IndexedSlotLayout(constantPart ++ dynamicPart)
+    val buttonToFlyFor5Minutes: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
+        .amount(5)
+        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(5分)")
+        .lore(
+          s"$RESET${YELLOW}クリックすると以降5分間に渡り",
+          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+          s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
+        )
+        .build()
+
+      Button(
+        iconItemStack,
+        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+          sequentialEffect(
+            closeInventoryEffect,
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            "fly 5".asCommandEffect()
+          )
+        }
+      )
+    }
+
+    val buttonToFlyEndlessly: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.ELYTRA)
+        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$RED$EMPHASIZE(無制限)")
+        .lore(
+          s"$RESET${YELLOW}クリックすると以降OFFにするまで",
+          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+          s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
+        )
+        .build()
+
+      Button(
+        iconItemStack,
+        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+          sequentialEffect(
+            closeInventoryEffect,
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            "fly endless".asCommandEffect()
+          )
+        }
+      )
+    }
+
+    val buttonToTerminateFlight: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.CHAINMAIL_BOOTS)
+        .title(s"$YELLOW${EMPHASIZE}FLY機能、OFF")
+        .lore(
+          s"$RESET${RED}クリックすると、残り時間にかかわらず",
+          s"$RESET${RED}FLYを終了します。"
+        )
+        .flagged(ItemFlag.HIDE_ATTRIBUTES)
+        .build()
+
+      Button(
+        iconItemStack,
+        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+          sequentialEffect(
+            closeInventoryEffect,
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            "fly finish".asCommandEffect()
+          )
+        }
+      )
+    }
   }
-
-  override val frame: InventoryFrame =
-    InventoryFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB")
-
-  private val EMPHASIZE = s"$UNDERLINE$BOLD"
 
 }

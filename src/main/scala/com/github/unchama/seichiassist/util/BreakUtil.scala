@@ -16,6 +16,7 @@ import org.bukkit.material.Dye
 
 
 object BreakUtil {
+
   import ManagedWorld._
 
   //他のプラグインの影響があってもブロックを破壊できるのか
@@ -147,20 +148,20 @@ object BreakUtil {
     //線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
     //拾った時のサブIDに合わせる
     if (itemstack.getType == Material.RAILS
-        || itemstack.getType == Material.HUGE_MUSHROOM_1
-        || itemstack.getType == Material.HUGE_MUSHROOM_2) {
+      || itemstack.getType == Material.HUGE_MUSHROOM_1
+      || itemstack.getType == Material.HUGE_MUSHROOM_2) {
 
       itemstack.setDurability(0.toShort)
     }
 
     MineStackObjectList.minestacklist.foreach { mineStackObj =>
       def addToMineStackAfterLevelCheck(): Boolean =
-          if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
-            false
-          } else {
-            playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
-            true
-          }
+        if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
+          false
+        } else {
+          playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
+          true
+        }
 
       //IDとサブIDが一致している
       if (material == mineStackObj.material && itemstack.getDurability.toInt == mineStackObj.durability) {
@@ -329,35 +330,8 @@ object BreakUtil {
     val probability = 1.0 / (enchantmentLevel + 1.0)
 
     return IntStream.range(0, num)
-        .filter { _ => probability > rand.nextDouble() }
-        .count().toShort
-  }
-
-  def getCardinalDirection(entity: Entity): String = {
-    var rotation = ((entity.getLocation.getYaw + 180) % 360).toDouble
-    val loc = entity.getLocation
-    val pitch = loc.getPitch
-    if (rotation < 0) {
-      rotation += 360.0
-    }
-
-    return if (pitch <= -30) {
-      "U"
-    } else if (pitch >= 25) {
-      "D"
-    } else if (0 <= rotation && rotation < 45.0) {
-      "N"
-    } else if (45.0 <= rotation && rotation < 135.0) {
-      "E"
-    } else if (135.0 <= rotation && rotation < 225.0) {
-      "S"
-    } else if (225.0 <= rotation && rotation < 315.0) {
-      "W"
-    } else if (315.0 <= rotation && rotation < 360.0) {
-      "N"
-    } else {
-      null
-    }
+      .filter { _ => probability > rand.nextDouble() }
+      .count().toShort
   }
 
   def BlockEqualsMaterialList(block: Block): Boolean = {
@@ -365,10 +339,10 @@ object BreakUtil {
   }
 
   /**
-   * @param player  破壊プレイヤー
-   * @param block    手動破壊対象またはアサルト/遠距離の指定座標
-   * @param isAssault  true:	アサルトアーマーによる破壊
-   * false:	アクティブスキルまたは手動による破壊
+   * @param player    破壊プレイヤー
+   * @param block     手動破壊対象またはアサルト/遠距離の指定座標
+   * @param isAssault true:	アサルトアーマーによる破壊
+   *                  false:	アクティブスキルまたは手動による破壊
    * @return 重力値（破壊範囲の上に積まれているブロック数）
    */
   def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
@@ -427,10 +401,10 @@ object BreakUtil {
           val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
           // 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
           skillBreakArea.y - 2
-        }// その他横向き発動時
+        } // その他横向き発動時
         // 横向きによる発動のうち、デュアルorトリアルのmineflagnumが1(上破壊)
         // 上向きによる発動
-      }// 単範囲/複数範囲破壊スキルの場合
+      } // 単範囲/複数範囲破壊スキルの場合
       // 遠距離スキルの場合向きに依らずblock中心の横範囲となる
     } else {
       /** 破壊要因スキルタイプ  */
@@ -446,8 +420,8 @@ object BreakUtil {
       } else {
         // 高さはスキル/2の切り上げ…blockが1段目なので-1してプラマイゼロ
         (skillBreakArea.y - 1) / 2
-      }// その他のアサルトスキルの場合
-    }// Assaultスキルの場合
+      } // その他のアサルトスキルの場合
+    } // Assaultスキルの場合
 
     // 3. 重力値計算
     /** OPENHEIGHTに達したかの計測カウンタ  */
@@ -479,6 +453,33 @@ object BreakUtil {
     }
 
     return gravity
+  }
+
+  def getCardinalDirection(entity: Entity): String = {
+    var rotation = ((entity.getLocation.getYaw + 180) % 360).toDouble
+    val loc = entity.getLocation
+    val pitch = loc.getPitch
+    if (rotation < 0) {
+      rotation += 360.0
+    }
+
+    return if (pitch <= -30) {
+      "U"
+    } else if (pitch >= 25) {
+      "D"
+    } else if (0 <= rotation && rotation < 45.0) {
+      "N"
+    } else if (45.0 <= rotation && rotation < 135.0) {
+      "E"
+    } else if (135.0 <= rotation && rotation < 225.0) {
+      "S"
+    } else if (225.0 <= rotation && rotation < 315.0) {
+      "W"
+    } else if (315.0 <= rotation && rotation < 360.0) {
+      "N"
+    } else {
+      null
+    }
   }
 
   def logRemove(player: Player, removedBlock: Block): Boolean = {

@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{GameMode, Sound}
 
-class PlayerPickupItemListener  extends  Listener {
+class PlayerPickupItemListener extends Listener {
   private val playerMap = SeichiAssist.playermap
   private val config = SeichiAssist.seichiAssistConfig
 

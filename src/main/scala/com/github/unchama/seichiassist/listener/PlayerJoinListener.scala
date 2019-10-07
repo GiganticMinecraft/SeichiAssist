@@ -15,17 +15,12 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
 import scala.collection.mutable
-class PlayerJoinListener  extends  Listener {
+
+class PlayerJoinListener extends Listener {
   private val playerMap: mutable.HashMap[UUID, PlayerData] = SeichiAssist.playermap
   private val databaseGateway = SeichiAssist.databaseGateway
-
-  private def loadPlayerData(playerUuid: UUID, playerName: String): Unit = {
-    SeichiAssist.playermap(playerUuid) =
-        databaseGateway.playerDataManipulator.loadPlayerData(playerUuid, playerName)
-  }
-
   private val failedToLoadDataError =
-      "プレーヤーデータの読み込みに失敗しました。再接続しても読み込まれない場合管理者に連絡してください。"
+    "プレーヤーデータの読み込みに失敗しました。再接続しても読み込まれない場合管理者に連絡してください。"
 
   @EventHandler
   def onPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent): Unit = {
@@ -52,6 +47,11 @@ class PlayerJoinListener  extends  Listener {
       // intentional blocking
       Thread.sleep(600)
     }
+  }
+
+  private def loadPlayerData(playerUuid: UUID, playerName: String): Unit = {
+    SeichiAssist.playermap(playerUuid) =
+      databaseGateway.playerDataManipulator.loadPlayerData(playerUuid, playerName)
   }
 
   // プレイヤーがjoinした時に実行
@@ -107,9 +107,9 @@ class PlayerJoinListener  extends  Listener {
       player.getInventory.addItem(new ItemStack(Material.DIAMOND_SPADE))
 
       player.getInventory.addItem(new ItemStack(Material.LOG, 64, 0.toShort),
-          new ItemStack(Material.LOG, 64, 0.toShort),
-          new ItemStack(Material.LOG, 64, 2.toShort),
-          new ItemStack(Material.LOG_2, 64, 1.toShort))
+        new ItemStack(Material.LOG, 64, 0.toShort),
+        new ItemStack(Material.LOG, 64, 2.toShort),
+        new ItemStack(Material.LOG_2, 64, 1.toShort))
 
       /* 期間限定ダイヤ配布.期間終了したので64→32に変更して恒久継続 */
       player.getInventory.addItem(new ItemStack(Material.DIAMOND, 32))

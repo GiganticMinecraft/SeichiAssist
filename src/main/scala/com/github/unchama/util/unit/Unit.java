@@ -6,5 +6,6 @@ package com.github.unchama.util.unit;
 public final class Unit {
     public static final Unit instance = new Unit();
 
-    private Unit() {}
+    private Unit() {
+    }
 }

@@ -22,10 +22,13 @@ object TargetedEffect {
     }
   }
 
-  def apply[T](effect: T => Unit): TargetedEffect[T] = (minecraftObject: T) => IO { effect(minecraftObject) }
+  def apply[T](effect: T => Unit): TargetedEffect[T] = (minecraftObject: T) => IO {
+    effect(minecraftObject)
+  }
 }
 
 object TargetedEffects {
+
   implicit class TargetedEffectCombine[T](val effect: TargetedEffect[T]) {
     def followedBy[T1 <: T](anotherEffect: TargetedEffect[T1]): TargetedEffect[T1] =
       t1 => for {
@@ -41,11 +44,11 @@ object TargetedEffects {
   /**
    * [TargetedEffect]を非純粋に計算しそれをすぐに実行するような作用を作成する.
    */
-  def deferredEffect[T](f: IO[TargetedEffect[T]]): TargetedEffect[T] = t => f.flatMap(_(t))
+  def deferredEffect[T](f: IO[TargetedEffect[T]]): TargetedEffect[T] = t => f.flatMap(_ (t))
 
   /**
-  * 実行対象の[T]から[TargetedEffect]を非純粋に計算しそれをすぐに実行するような作用を作成する.
-  */
+   * 実行対象の[T]から[TargetedEffect]を非純粋に計算しそれをすぐに実行するような作用を作成する.
+   */
   def computedEffect[T](f: T => TargetedEffect[T]): TargetedEffect[T] = t => f(t)(t)
 
   def sequentialEffect[T](effects: TargetedEffect[T]*): TargetedEffect[T] = effects.toList.asSequentialEffect()

@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
  */
 // TODO Scalaize and make this case class
 public class SubHome {
-    private final @NotNull Location location;
     public final @Nullable String name;
+    private final @NotNull Location location;
 
     public SubHome(@NotNull Location location, @Nullable String name) {
         this.location = location;

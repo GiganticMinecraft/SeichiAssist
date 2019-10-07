@@ -12,7 +12,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener
 
 import scala.jdk.CollectionConverters._
 
-class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageListener {
+class BungeeReceiver(private val plugin: SeichiAssist) extends PluginMessageListener {
 
   override def onPluginMessageReceived(channel: String, player: Player, message: Array[Byte]) = synchronized {
     // ストリームの準備
@@ -26,19 +26,6 @@ class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageLi
     } catch {
       case e: Exception => e.printStackTrace()
     }
-  }
-
-  private def writtenMessage(messages: String*): Array[Byte] = {
-    val b = new ByteArrayOutputStream()
-    val out = new DataOutputStream(b)
-
-    try {
-      messages.foreach(out.writeUTF)
-    } catch {
-      case e: Exception => e.printStackTrace()
-    }
-
-    b.toByteArray
   }
 
   private def savePlayerDataOnUpstreamRequest(playerName: String): Unit = {
@@ -84,13 +71,26 @@ class BungeeReceiver(private val plugin: SeichiAssist)  extends  PluginMessageLi
     val playerData = SeichiAssist.playermap(UUID.fromString(uuid))
 
     val message = writtenMessage(
-        "GetLocation",
-        wanter,
-        s"${player.getName}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})",
-        s"Server: $servername, World: ${player.getWorld.getName} ",
-        s"(${player.getLocation.getBlockX}, ${player.getLocation.getBlockY}, ${player.getLocation.getBlockZ})"
+      "GetLocation",
+      wanter,
+      s"${player.getName}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})",
+      s"Server: $servername, World: ${player.getWorld.getName} ",
+      s"(${player.getLocation.getBlockX}, ${player.getLocation.getBlockY}, ${player.getLocation.getBlockZ})"
     )
 
     player.sendPluginMessage(plugin, "SeichiAssistBungee", message)
+  }
+
+  private def writtenMessage(messages: String*): Array[Byte] = {
+    val b = new ByteArrayOutputStream()
+    val out = new DataOutputStream(b)
+
+    try {
+      messages.foreach(out.writeUTF)
+    } catch {
+      case e: Exception => e.printStackTrace()
+    }
+
+    b.toByteArray
   }
 }

@@ -5,8 +5,16 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object ItemStackOps {
+
   implicit class ItemStackOps(val itemStack: ItemStack) {
+
     import scala.jdk.CollectionConverters._
+
+    def appendOwnerInformation(owner: Player): Unit = {
+      lore =
+        (if (itemStack.getItemMeta.hasLore) this.lore else Nil) ++
+          List(s"$RESET${DARK_GREEN}所有者：${owner.getName}")
+    }
 
     /**
      * [ItemStack] の説明文を表すプロパティ.
@@ -16,16 +24,12 @@ object ItemStackOps {
      */
     def lore: List[String] = {
       itemStack.getItemMeta.getLore
-    }.asScala.toList
+      }.asScala.toList
+
     def lore_=(value: List[String]): Unit = {
       itemStack.getItemMeta.setLore(value.asJava)
     }
 
-    def appendOwnerInformation(owner: Player): Unit = {
-      lore =
-        (if (itemStack.getItemMeta.hasLore) this.lore else Nil) ++
-          List(s"$RESET${DARK_GREEN}所有者：${owner.getName}")
-    }
-
   }
+
 }

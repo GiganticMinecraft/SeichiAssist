@@ -11,11 +11,11 @@ object PlayerNickName {
 
   object Style {
 
+    def marshal(isLevel: Boolean): Style = if (isLevel) PlayerNickName.Style.Level else PlayerNickName.Style.SecondaryName
+
     case object Level extends Style(true)
 
     case object SecondaryName extends Style(false)
-
-    def marshal(isLevel: Boolean): Style = if (isLevel) PlayerNickName.Style.Level else PlayerNickName.Style.SecondaryName
 
   }
 

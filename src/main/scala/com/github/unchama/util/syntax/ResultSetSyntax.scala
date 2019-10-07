@@ -10,6 +10,7 @@ trait ResultSetSyntax {
 }
 
 object ResultSetSyntax {
+
   implicit class ResultSetOps(resultSet: ResultSet) {
     def recordIteration[T](operation: ResultSet => T): Option[T] = {
       try {
@@ -25,4 +26,5 @@ object ResultSetSyntax {
       }
     }
   }
+
 }

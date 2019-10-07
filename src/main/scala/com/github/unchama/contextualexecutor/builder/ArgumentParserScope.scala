@@ -13,8 +13,6 @@ import org.bukkit.command.CommandSender
  */
 // TODO update comment
 object ArgumentParserScope {
-  def failWith[CS](effect: TargetedEffect[CS]): ResponseEffectOrResult[CS, Nothing] = Left(effect)
-
   /**
    * メッセージなしで「失敗」を表す[ResponseEffectOrResult]を作成する.
    */
@@ -24,6 +22,8 @@ object ArgumentParserScope {
    * メッセージ付きの「失敗」を表す[ResponseEffectOrResult]を作成する.
    */
   def failWith(message: String): ResponseEffectOrResult[CommandSender, Nothing] = failWith(message.asMessageEffect())
+
+  def failWith[CS](effect: TargetedEffect[CS]): ResponseEffectOrResult[CS, Nothing] = Left(effect)
 
   /**
    * メッセージ付きの「失敗」を表す[ResponseEffectOrResult]を作成する.

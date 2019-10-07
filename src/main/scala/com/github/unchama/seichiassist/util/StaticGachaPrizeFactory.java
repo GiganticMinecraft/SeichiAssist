@@ -21,7 +21,7 @@ public final class StaticGachaPrizeFactory {
     public static @NotNull ItemStack getGachaRingo() {
         if (gachaRingo == null) {
             ItemMeta meta;
-            gachaRingo = new ItemStack(Material.GOLDEN_APPLE,1);
+            gachaRingo = new ItemStack(Material.GOLDEN_APPLE, 1);
             meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
             meta.setDisplayName(getGachaRingoName());
             List<String> lore = getGachaRingoLore();
@@ -32,13 +32,13 @@ public final class StaticGachaPrizeFactory {
     }
 
     //がちゃりんごの名前を取得
-    public static String getGachaRingoName(){
+    public static String getGachaRingoName() {
         String name = ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんご";
         return name;
     }
 
     //がちゃりんごの説明を取得
-    public static List<String> getGachaRingoLore(){
+    public static List<String> getGachaRingoLore() {
         List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "序盤に重宝します。"
                 , ChatColor.RESET + "" + ChatColor.AQUA + "マナ回復（小）");
         return lore;
@@ -64,10 +64,10 @@ public final class StaticGachaPrizeFactory {
     //椎名林檎の説明を取得
     public static List<String> getMaxRingoLore(String name) {
         return Arrays.asList(
-                ChatColor.RESET + "" +  ChatColor.GRAY + "使用するとマナが全回復します",
-                ChatColor.RESET + "" +  ChatColor.AQUA + "マナ完全回復",
-                ChatColor.RESET + "" +  ChatColor.DARK_GREEN + "所有者:" + name,
-                ChatColor.RESET + "" +  ChatColor.GRAY + "ガチャ景品と交換しました。"
+                ChatColor.RESET + "" + ChatColor.GRAY + "使用するとマナが全回復します",
+                ChatColor.RESET + "" + ChatColor.AQUA + "マナ完全回復",
+                ChatColor.RESET + "" + ChatColor.DARK_GREEN + "所有者:" + name,
+                ChatColor.RESET + "" + ChatColor.GRAY + "ガチャ景品と交換しました。"
         );
     }
 
@@ -76,7 +76,7 @@ public final class StaticGachaPrizeFactory {
      */
     public static @NotNull ItemStack getMineHeadItem() {
         if (sickleOfDeathGod == null) {
-            sickleOfDeathGod = new ItemStack(Material.CARROT_STICK,1,(short) 1);
+            sickleOfDeathGod = new ItemStack(Material.CARROT_STICK, 1, (short) 1);
             ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.FEATHER);
             itemmeta.setDisplayName(getMineHeadItemName());
             itemmeta.setLore(getMineHeadItemLore());
@@ -99,6 +99,6 @@ public final class StaticGachaPrizeFactory {
                 ChatColor.GRAY + "設置してある頭が",
                 ChatColor.GRAY + "左クリックで即時に回収できます",
                 ChatColor.DARK_GRAY + "インベントリに空きを作って使いましょう"
-                );
+        );
     }
 }

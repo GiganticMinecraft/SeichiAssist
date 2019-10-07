@@ -9,5 +9,5 @@ import com.github.unchama.targetedeffect.MessageEffects._
  */
 object PrintUsageExecutor extends ContextualExecutor {
   override def executeWith(rawContext: RawCommandContext): IO[Unit] =
-      rawContext.command.command.getUsage.asMessageEffect()(rawContext.sender)
+    rawContext.command.command.getUsage.asMessageEffect()(rawContext.sender)
 }

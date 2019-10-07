@@ -5,7 +5,9 @@ import com.github.unchama.seichiassist.data.Coordinate
 case class XYZTuple(x: Int, y: Int, z: Int)
 
 object XYZTuple {
+
   implicit class CoordinateOps(val coordinate: Coordinate) extends AnyVal {
+
     import coordinate._
 
     def toXYZTuple() = XYZTuple(x, y, z)
@@ -14,6 +16,7 @@ object XYZTuple {
   case class AxisAlignedCuboid(begin: XYZTuple, end: XYZTuple)
 
   implicit class AACOps(val cuboid: AxisAlignedCuboid) extends AnyVal {
+
     import cuboid._
 
     def forEachGridPoint(gridWidth: Int = 1)(action: XYZTuple => Unit): Unit = {
@@ -26,4 +29,5 @@ object XYZTuple {
       }
     }
   }
+
 }

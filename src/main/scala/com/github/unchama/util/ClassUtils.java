@@ -1,7 +1,8 @@
 package com.github.unchama.util;
 
 public class ClassUtils {
-    private ClassUtils() {}
+    private ClassUtils() {
+    }
 
     /**
      * 引数で与えられたクラスローダーを現在のスレッドの{@code ContextClassLoader}に指定してから、与えられたタスクを実行する。

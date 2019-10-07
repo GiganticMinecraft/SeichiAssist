@@ -16,118 +16,35 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.{Material, Sound}
 
 object RegionMenu extends Menu {
+
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.TargetedEffects._
   import com.github.unchama.targetedeffect.player.CommandEffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 
-  private object ConstantButtons {
+  override val frame: InventoryFrame =
+    InventoryFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
-    val summonWandButton: Button = {
-      val wandUsage = Array(
-          s"${GREEN}①召喚された斧を手に持ちます",
-          s"${GREEN}②保護したい領域の一方の角を${YELLOW}左${GREEN}クリック",
-          s"${GREEN}③もう一方の対角線上の角を${RED}右${GREEN}クリック",
-          s"${GREEN}④メニューの${YELLOW}金の斧${GREEN}をクリック"
-      )
+  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
+    import ConstantButtons._
+    val computations = ButtonComputations(player)
+    import computations._
 
-      val iconItemStack = new IconItemStackBuilder(Material.WOOD_AXE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}保護設定用の木の斧を召喚")
-          .lore(
-            (wandUsage ++ Array(
-              s"$DARK_RED${UNDERLINE}クリックで召喚",
-              s"$DARK_GREEN${UNDERLINE}※インベントリを空けておこう",
-              s"${DARK_GRAY}command=>[//wand]")).toList
-          ).build()
-
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
-              closeInventoryEffect,
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              "/wand".asCommandEffect(),
-              wandUsage.toList.asMessageEffect()
-          )
-        )
+    for {
+      buttonToClaimRegion <- computeButtonToClaimRegion
+    } yield {
+      menuinventory.IndexedSlotLayout(
+        0 -> summonWandButton,
+        1 -> buttonToClaimRegion,
+        2 -> displayOpenerRegionButton,
+        3 -> openRegionGUIButton,
+        4 -> openGridRegionMenuButton
       )
     }
-
-    val displayOpenerRegionButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.STONE_AXE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}保護一覧を表示")
-          .lore(
-              s"$DARK_RED${UNDERLINE}クリックで表示",
-              s"${GRAY}今いるワールドで",
-              s"${GRAY}あなたが保護している",
-              s"${GRAY}土地の一覧を表示します",
-              s"$RED$UNDERLINE/rg info 保護名",
-              s"${GRAY}該当保護の詳細情報を表示",
-              s"$RED$UNDERLINE/rg rem 保護名",
-              s"${GRAY}該当保護を削除する",
-              s"$RED$UNDERLINE/rg addmem 保護名 プレイヤー名",
-              s"${GRAY}該当保護に指定メンバーを追加",
-              s"$RED$UNDERLINE/rg removemenber 保護名 プレイヤー名",
-              s"${GRAY}該当保護の指定メンバーを削除",
-              s"${DARK_GRAY}その他のコマンドはwikiを参照",
-              s"${DARK_GRAY}command=>[/rg list]")
-          .build()
-
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            closeInventoryEffect,
-            computedEffect(player => s"rg list -p ${player.getName}".asCommandEffect())
-          )
-        )
-      )
-    }
-
-    val openRegionGUIButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_AXE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}RegionGUI機能")
-          .lore(
-              s"$DARK_RED${UNDERLINE}クリックで開く",
-              s"${RED}保護の管理が超簡単に！",
-              s"${YELLOW}自分の所有する保護内でクリックすると",
-              s"${YELLOW}保護の各種設定や削除が行えます",
-              s"${DARK_GRAY}command=>[/land]")
-          .build()
-
-      Button(
-          iconItemStack,
-          action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ => "land".asCommandEffect())
-      )
-    }
-
-    val openGridRegionMenuButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.IRON_AXE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}グリッド式保護作成画面へ")
-          .lore(
-              s"$DARK_RED${UNDERLINE}クリックで開く",
-              s"${RED}グリッド式保護の作成ができます",
-              s"${YELLOW}グリッド式保護とは...",
-              s"${GRAY}保護をユニット単位で管理するシステムのこと",
-              s"${AQUA}15ブロック=1ユニットとして",
-              s"${AQUA}保護が作成されます。")
-          .build()
-
-      Button(
-        iconItemStack,
-        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-            player => IO { player.openInventory(RegionMenuData.getGridWorldGuardMenu(player)) }
-          )
-        )
-      )
-    }
-
   }
 
   private case class ButtonComputations(player: Player) {
+
     import player._
 
     val computeButtonToClaimRegion: IO[Button] = IO {
@@ -137,9 +54,9 @@ object RegionMenu extends Menu {
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
       val isSelectionNull = selection == null
       val selectionHasEnoughSpace =
-          if (!isSelectionNull)
-            selection.getLength >= 10 && selection.getWidth >= 10
-          else false
+        if (!isSelectionNull)
+          selection.getLength >= 10 && selection.getWidth >= 10
+        else false
 
       val canMakeRegion = playerHasPermission && !isSelectionNull && selectionHasEnoughSpace
 
@@ -216,25 +133,112 @@ object RegionMenu extends Menu {
     }
   }
 
-  override def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
-    import ConstantButtons._
-    val computations = ButtonComputations(player)
-    import computations._
+  private object ConstantButtons {
 
-    for {
-      buttonToClaimRegion <- computeButtonToClaimRegion
-    } yield {
-      menuinventory.IndexedSlotLayout(
-        0 -> summonWandButton,
-        1 -> buttonToClaimRegion,
-        2 -> displayOpenerRegionButton,
-        3 -> openRegionGUIButton,
-        4 -> openGridRegionMenuButton
+    val summonWandButton: Button = {
+      val wandUsage = Array(
+        s"${GREEN}①召喚された斧を手に持ちます",
+        s"${GREEN}②保護したい領域の一方の角を${YELLOW}左${GREEN}クリック",
+        s"${GREEN}③もう一方の対角線上の角を${RED}右${GREEN}クリック",
+        s"${GREEN}④メニューの${YELLOW}金の斧${GREEN}をクリック"
+      )
+
+      val iconItemStack = new IconItemStackBuilder(Material.WOOD_AXE)
+        .title(s"$YELLOW$UNDERLINE${BOLD}保護設定用の木の斧を召喚")
+        .lore(
+          (wandUsage ++ Array(
+            s"$DARK_RED${UNDERLINE}クリックで召喚",
+            s"$DARK_GREEN${UNDERLINE}※インベントリを空けておこう",
+            s"${DARK_GRAY}command=>[//wand]")).toList
+        ).build()
+
+      Button(
+        iconItemStack,
+        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
+          sequentialEffect(
+            closeInventoryEffect,
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            "/wand".asCommandEffect(),
+            wandUsage.toList.asMessageEffect()
+          )
+        )
       )
     }
-  }
 
-  override val frame: InventoryFrame =
-    InventoryFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
+    val displayOpenerRegionButton: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.STONE_AXE)
+        .title(s"$YELLOW$UNDERLINE${BOLD}保護一覧を表示")
+        .lore(
+          s"$DARK_RED${UNDERLINE}クリックで表示",
+          s"${GRAY}今いるワールドで",
+          s"${GRAY}あなたが保護している",
+          s"${GRAY}土地の一覧を表示します",
+          s"$RED$UNDERLINE/rg info 保護名",
+          s"${GRAY}該当保護の詳細情報を表示",
+          s"$RED$UNDERLINE/rg rem 保護名",
+          s"${GRAY}該当保護を削除する",
+          s"$RED$UNDERLINE/rg addmem 保護名 プレイヤー名",
+          s"${GRAY}該当保護に指定メンバーを追加",
+          s"$RED$UNDERLINE/rg removemenber 保護名 プレイヤー名",
+          s"${GRAY}該当保護の指定メンバーを削除",
+          s"${DARK_GRAY}その他のコマンドはwikiを参照",
+          s"${DARK_GRAY}command=>[/rg list]")
+        .build()
+
+      Button(
+        iconItemStack,
+        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
+          sequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            closeInventoryEffect,
+            computedEffect(player => s"rg list -p ${player.getName}".asCommandEffect())
+          )
+        )
+      )
+    }
+
+    val openRegionGUIButton: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_AXE)
+        .title(s"$YELLOW$UNDERLINE${BOLD}RegionGUI機能")
+        .lore(
+          s"$DARK_RED${UNDERLINE}クリックで開く",
+          s"${RED}保護の管理が超簡単に！",
+          s"${YELLOW}自分の所有する保護内でクリックすると",
+          s"${YELLOW}保護の各種設定や削除が行えます",
+          s"${DARK_GRAY}command=>[/land]")
+        .build()
+
+      Button(
+        iconItemStack,
+        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ => "land".asCommandEffect())
+      )
+    }
+
+    val openGridRegionMenuButton: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.IRON_AXE)
+        .title(s"$YELLOW$UNDERLINE${BOLD}グリッド式保護作成画面へ")
+        .lore(
+          s"$DARK_RED${UNDERLINE}クリックで開く",
+          s"${RED}グリッド式保護の作成ができます",
+          s"${YELLOW}グリッド式保護とは...",
+          s"${GRAY}保護をユニット単位で管理するシステムのこと",
+          s"${AQUA}15ブロック=1ユニットとして",
+          s"${AQUA}保護が作成されます。")
+        .build()
+
+      Button(
+        iconItemStack,
+        FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
+          sequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
+            player => IO {
+              player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+            }
+          )
+        )
+      )
+    }
+
+  }
 
 }

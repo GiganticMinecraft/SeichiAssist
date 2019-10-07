@@ -11,38 +11,39 @@ import org.bukkit.inventory.{Inventory, ItemStack}
 import org.bukkit.{Bukkit, Material}
 
 class DonateDataManipulator(private val gateway: DatabaseGateway) {
+
   import com.github.unchama.util.syntax.ResultSetSyntax._
 
   import scala.jdk.CollectionConverters._
 
-  private def tableReference: String = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME
-
   def addPremiumEffectBuy(playerdata: PlayerData,
                           effect: ActiveSkillPremiumEffect): ActionStatus = {
     val command = ("insert into " + tableReference
-        + " (playername,playeruuid,effectnum,effectname,usepoint,date) "
-        + "value("
-        + "'" + playerdata.lowercaseName + "',"
-        + "'" + playerdata.uuid.toString() + "',"
-        + effect.num + ","
-        + "'" + effect.getsqlName + "',"
-        + effect.usePoint + ","
-        + "cast( now() as datetime )"
-        + ")")
+      + " (playername,playeruuid,effectnum,effectname,usepoint,date) "
+      + "value("
+      + "'" + playerdata.lowercaseName + "',"
+      + "'" + playerdata.uuid.toString() + "',"
+      + effect.num + ","
+      + "'" + effect.getsqlName + "',"
+      + effect.usePoint + ","
+      + "cast( now() as datetime )"
+      + ")")
 
     return gateway.executeUpdate(command)
   }
 
   def addDonate(name: String, point: Int): ActionStatus = {
     val command = ("insert into " + tableReference
-        + " (playername,getpoint,date) "
-        + "value("
-        + "'" + name + "',"
-        + point + ","
-        + "cast( now() as datetime )"
-        + ")")
+      + " (playername,getpoint,date) "
+      + "value("
+      + "'" + name + "',"
+      + point + ","
+      + "cast( now() as datetime )"
+      + ")")
     return gateway.executeUpdate(command)
   }
+
+  private def tableReference: String = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME
 
   def loadDonateData(playerdata: PlayerData, inventory: Inventory): Boolean = {
     var itemstack: ItemStack = null

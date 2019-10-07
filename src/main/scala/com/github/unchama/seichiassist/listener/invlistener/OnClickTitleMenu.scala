@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
 object OnClickTitleMenu extends Listener {
+
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
@@ -31,7 +32,9 @@ object OnClickTitleMenu extends Listener {
     }
 
     //インベントリが存在しない時終了
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
 
     import com.github.unchama.util.InventoryUtil._
 
@@ -45,11 +48,11 @@ object OnClickTitleMenu extends Listener {
     val playerdata = SeichiAssist.playermap(player.getUniqueId)
 
     def setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String =
-        """二つ名$first「
-          |${getTitle(1, first)}
-          |${if (second != 0) getTitle(2, second) else ""}
-          |${if (third != 0) getTitle(3, third) else ""}
-          |」が設定されました。""".trim.filter(_ != '\n')): Unit = {
+    """二つ名$first「
+      |${getTitle(1, first)}
+      |${if (second != 0) getTitle(2, second) else ""}
+      |${if (third != 0) getTitle(3, third) else ""}
+      |」が設定されました。""".trim.filter(_ != '\n')): Unit = {
       playerdata.updateNickname(first, second, third)
       player.sendMessage(message)
     }
@@ -62,7 +65,7 @@ object OnClickTitleMenu extends Listener {
     val isSkull = itemstackcurrent.getType == Material.SKULL_ITEM
     val prefix = s"${DARK_PURPLE}${BOLD}"
     title match {
-      case s"${prefix}実績・二つ名システム" => {
+      case s"${prefix}実績・二つ名システム " => {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -108,15 +111,15 @@ object OnClickTitleMenu extends Listener {
         } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
           import com.github.unchama.targetedeffect.TargetedEffects._
           sequentialEffect(
-              CommonSoundEffects.menuTransitionFenceSound,
-              StickMenu.firstPage.open
+            CommonSoundEffects.menuTransitionFenceSound,
+            StickMenu.firstPage.open
           )(player).unsafeRunAsync {
             case Left(error) =>
               error.printStackTrace()
             case Right(_) =>
           }
           return
-        }//ホームメニューに戻る
+        } //ホームメニューに戻る
         //カテゴリ「特殊」を開く
         //カテゴリ「やりこみ」を開く
         /*
@@ -126,13 +129,14 @@ object OnClickTitleMenu extends Listener {
           playerdata.titlepage = 1 ;
           player.openInventory(MenuInventoryData.getTitleBuild(player));
         }
-        *///カテゴリ「ログイン」を開く
+        */
+        //カテゴリ「ログイン」を開く
         //カテゴリ「整地」を開く
         //「二つ名組合せシステム」を開く
         //予約付与システム受け取り処理
       }
 
-      case s"${prefix}カテゴリ「整地」" => {
+      case s"${prefix}カテゴリ「整地」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -160,10 +164,10 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
 
-      case s"${prefix}カテゴリ「建築」" => {
+      case s"${prefix}カテゴリ「建築」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -175,13 +179,13 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
-        }//クリックしたボタンに応じた各処理内容の記述ここから
+        } //クリックしたボタンに応じた各処理内容の記述ここから
         //実績未実装のカテゴリです。
         //実績メニューに戻る
 
       }
 
-      case s"${prefix}カテゴリ「ログイン」" => {
+      case s"${prefix}カテゴリ「ログイン」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -210,7 +214,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
         //実績「記念日」を開く
         //実績「連続ログイン」を開く
         //実績「通算ログイン」を開く
@@ -219,7 +223,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}カテゴリ「やりこみ」" => {
+      case s"${prefix}カテゴリ「やりこみ」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -231,13 +235,13 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
-        }//クリックしたボタンに応じた各処理内容の記述ここから
+        } //クリックしたボタンに応じた各処理内容の記述ここから
         //実績未実装のカテゴリです。
         //実績メニューに戻る
 
       }
 
-      case s"${prefix}カテゴリ「特殊」" => {
+      case s"${prefix}カテゴリ「特殊」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -261,7 +265,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
         //実績「極秘任務」を開く
         //実績「JMS投票数」を開く
         //クリックしたボタンに応じた各処理内容の記述ここから
@@ -269,7 +273,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}二つ名組合せシステム" => {
+      case s"${prefix}二つ名組合せシステム " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -331,18 +335,19 @@ object OnClickTitleMenu extends Listener {
           case Material.LAVA_BUCKET => {
 
             player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-            player.openInventory(MenuInventoryData.setFreeTitle3Data(player))}
+            player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
+          }
           case _ =>
         }
         if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
 
       }
 
-      case s"${prefix}二つ名組合せ「前」" => {
+      case s"${prefix}二つ名組合せ「前」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -356,8 +361,8 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
           val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(Integer.parseInt(itemmeta.getDisplayName))
-              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2)
-              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3))
+            + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2)
+            + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id1 = Integer.parseInt(itemmeta.getDisplayName))
             player.sendMessage("前パーツ「" + SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1) + "」をセットしました。")
@@ -377,14 +382,14 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
           return
-        }//次ページ
+        } //次ページ
         //組み合わせメイン
         //パーツ未選択に
 
 
       }
 
-      case s"${prefix}二つ名組合せ「中」" => {
+      case s"${prefix}二つ名組合せ「中」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -398,8 +403,8 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
           val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1)
-              + SeichiAssist.seichiAssistConfig.getTitle2(Integer.parseInt(itemmeta.getDisplayName))
-              + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3))
+            + SeichiAssist.seichiAssistConfig.getTitle2(Integer.parseInt(itemmeta.getDisplayName))
+            + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id2 = Integer.parseInt(itemmeta.getDisplayName))
             player.sendMessage("中パーツ「" + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2) + "」をセットしました。")
@@ -419,14 +424,14 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
           return
-        }//次ページ
+        } //次ページ
         //組み合わせメインへ移動
         //パーツ未選択に
 
 
       }
 
-      case s"${prefix}二つ名組合せ「後」" => {
+      case s"${prefix}二つ名組合せ「後」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -440,8 +445,8 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
           val forcheck = (SeichiAssist.seichiAssistConfig.getTitle1(playerdata.settings.nickName.id1)
-              + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2)
-              + SeichiAssist.seichiAssistConfig.getTitle3(Integer.parseInt(itemmeta.getDisplayName)))
+            + SeichiAssist.seichiAssistConfig.getTitle2(playerdata.settings.nickName.id2)
+            + SeichiAssist.seichiAssistConfig.getTitle3(Integer.parseInt(itemmeta.getDisplayName)))
           if (forcheck.length < 9) {
             playerdata.updateNickname(id3 = Integer.parseInt(itemmeta.getDisplayName))
             player.sendMessage("後パーツ「" + SeichiAssist.seichiAssistConfig.getTitle3(playerdata.settings.nickName.id3) + "」をセットしました。")
@@ -461,14 +466,14 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
           return
-        }//次ページ
+        } //次ページ
         //組み合わせメイン
         //パーツ未選択に
 
 
       }
 
-      case s"${prefix}実績ポイントショップ" => {
+      case s"${prefix}実績ポイントショップ " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -527,12 +532,12 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setTitleShopData(player))
           return
-        }//次ページ
+        } //次ページ
         //組み合わせメイン
 
       }
 
-      case s"${prefix}実績「整地神ランキング」" => {
+      case s"${prefix}実績「整地神ランキング」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -585,10 +590,10 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSeichi(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「整地量」" => {
+      case s"${prefix}実績「整地量」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -635,10 +640,10 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSeichi(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「参加時間」" => {
+      case s"${prefix}実績「参加時間」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -663,76 +668,76 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemmeta.getDisplayName
           if (name.contains("No4001「" + SeichiAssist.seichiAssistConfig.getTitle1(4001)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4001) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4001) + "」")) {
             setTitle(4001, 9905, 4001)
           } else if (name.contains("No4002「" + SeichiAssist.seichiAssistConfig.getTitle1(4002)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4002) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4002) + "」")) {
             setTitle(first = 4002, third = 4002)
           } else if (name.contains("No4003「" + SeichiAssist.seichiAssistConfig.getTitle1(4003)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4003) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4003) + "」")) {
             setTitle(first = 4003, third = 4003)
             player.sendMessage("二つ名「" + SeichiAssist.seichiAssistConfig.getTitle1(4003)
-                + SeichiAssist.seichiAssistConfig.getTitle3(4003) + "」が設定されました。")
+              + SeichiAssist.seichiAssistConfig.getTitle3(4003) + "」が設定されました。")
           } else if (name.contains("No4004「" + SeichiAssist.seichiAssistConfig.getTitle1(4004)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4004) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4004) + "」")) {
             setTitle(4004, 9905, 4004)
           } else if (name.contains("No4005「" + SeichiAssist.seichiAssistConfig.getTitle1(4005)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4005) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4005) + "」")) {
             setTitle(first = 4005, third = 4005)
           } else if (name.contains("No4006「" + SeichiAssist.seichiAssistConfig.getTitle1(4006)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4006) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4006) + "」")) {
             setTitle(4006, 9905, 4006)
           } else if (name.contains("No4007「" + SeichiAssist.seichiAssistConfig.getTitle1(4007)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4007) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4007) + "」")) {
             setTitle(first = 4007, third = 4007)
           } else if (name.contains("No4008「" + SeichiAssist.seichiAssistConfig.getTitle1(4008)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4008) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4008) + "」")) {
             setTitle(first = 4008, third = 4008)
           } else if (name.contains("No4009「" + SeichiAssist.seichiAssistConfig.getTitle1(4009)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4009) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4009) + "」")) {
             setTitle(first = 4009, third = 4009)
           } else if (name.contains("No4010「" + SeichiAssist.seichiAssistConfig.getTitle1(4010)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4010) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4010) + "」")) {
             setTitle(4010, 9905, 4010)
           } else if (name.contains("No4011「" + SeichiAssist.seichiAssistConfig.getTitle1(4011)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(4011) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(4011) + "」")) {
             setTitle(4011, 9901, 4011)
           } else if (name.contains("No4012「" + SeichiAssist.seichiAssistConfig.getTitle1(4012)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4012) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4012) + "」")) {
             setTitle(4012, 0, 4012)
           } else if (name.contains("No4013「" + SeichiAssist.seichiAssistConfig.getTitle1(4013)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4013) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4013) + "」")) {
             setTitle(4013, 0, 4013)
           } else if (name.contains("No4014「" + SeichiAssist.seichiAssistConfig.getTitle1(4014)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4014) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(4014) + "」")) {
             setTitle(4014, 9905, 4014)
           } else if (name.contains("No4015「" + SeichiAssist.seichiAssistConfig.getTitle1(4015) + "」")) {
             setTitle(first = 4015)
             player.sendMessage("二つ名「" + SeichiAssist.seichiAssistConfig.getTitle1(4015) + "」が設定されました。")
           } else if (name.contains("No4016「" + SeichiAssist.seichiAssistConfig.getTitle1(4016)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4016) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4016) + "」")) {
             setTitle(first = 4016, third = 4016)
           } else if (name.contains("No4017「" + SeichiAssist.seichiAssistConfig.getTitle1(4017) + "」")) {
             setTitle(first = 4017)
           } else if (name.contains("No4018「" + SeichiAssist.seichiAssistConfig.getTitle1(4018)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4018) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4018) + "」")) {
             setTitle(first = 4018, third = 4018)
           } else if (name.contains("No4019「" + SeichiAssist.seichiAssistConfig.getTitle1(4019)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4019) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4019) + "」")) {
             setTitle(first = 4019, third = 4019)
           } else if (name.contains("No4020「" + SeichiAssist.seichiAssistConfig.getTitle1(4020)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4020) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4020) + "」")) {
             setTitle(first = 4020, third = 4020)
           } else if (name.contains("No4021「" + SeichiAssist.seichiAssistConfig.getTitle1(4021)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4021) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4021) + "」")) {
             setTitle(first = 4021, third = 4021)
             player.sendMessage("二つ名「" + SeichiAssist.seichiAssistConfig.getTitle1(4021)
-                + SeichiAssist.seichiAssistConfig.getTitle3(4021) + "」が設定されました。")
+              + SeichiAssist.seichiAssistConfig.getTitle3(4021) + "」が設定されました。")
           } else if (name.contains("No4022「" + SeichiAssist.seichiAssistConfig.getTitle1(4022)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9903) + SeichiAssist.seichiAssistConfig.getTitle3(4022) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9903) + SeichiAssist.seichiAssistConfig.getTitle3(4022) + "」")) {
             setTitle(4022, 9903, 4022)
           } else if (name.contains("No4023「" + SeichiAssist.seichiAssistConfig.getTitle1(4023)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(4023) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(4023) + "」")) {
             setTitle(first = 4023, third = 4023)
           }
           player.openInventory(MenuInventoryData.getTitleTimeData(player))
@@ -746,10 +751,10 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleLogin(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「通算ログイン」" => {
+      case s"${prefix}実績「通算ログイン」 " => {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -769,27 +774,27 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemmeta.getDisplayName
           if (name.contains("No5101「" + SeichiAssist.seichiAssistConfig.getTitle1(5101)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(5101) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(5101) + "」")) {
             setTitle(first = 5101, third = 5101)
           } else if (name.contains("No5102「" + SeichiAssist.seichiAssistConfig.getTitle1(5102)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9907) + SeichiAssist.seichiAssistConfig.getTitle3(5102) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9907) + SeichiAssist.seichiAssistConfig.getTitle3(5102) + "」")) {
             setTitle(5102, 9907, 5102)
           } else if (name.contains("No5103「" + SeichiAssist.seichiAssistConfig.getTitle1(5103)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」")) {
             setTitle(first = 5103, second = 9905)
           } else if (name.contains("No5104「" + SeichiAssist.seichiAssistConfig.getTitle1(5104)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(5104) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(5104) + "」")) {
             setTitle(5104, 9905, 5104)
           } else if (name.contains("No5105「" + SeichiAssist.seichiAssistConfig.getTitle1(5105)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9907) + SeichiAssist.seichiAssistConfig.getTitle3(5105) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9907) + SeichiAssist.seichiAssistConfig.getTitle3(5105) + "」")) {
             setTitle(5105, 9907, 5105)
           } else if (name.contains("No5106「" + SeichiAssist.seichiAssistConfig.getTitle1(5106) + "」")) {
             setTitle(first = 5105)
           } else if (name.contains("No5107「" + SeichiAssist.seichiAssistConfig.getTitle1(5107)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(5107) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9909) + SeichiAssist.seichiAssistConfig.getTitle3(5107) + "」")) {
             setTitle(5107, 9909, 5107)
           } else if (name.contains("No5108「" + SeichiAssist.seichiAssistConfig.getTitle1(5108)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(5108) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(5108) + "」")) {
             setTitle(first = 5108)
           } else if (name.contains("No5109「" + SeichiAssist.seichiAssistConfig.getTitle1(5109) + "」")) {
             setTitle(first = 5109)
@@ -798,30 +803,30 @@ object OnClickTitleMenu extends Listener {
           } else if (name.contains("No5111「" + SeichiAssist.seichiAssistConfig.getTitle1(5111) + "」")) {
             setTitle(first = 5111)
           } else if (name.contains("No5112「" + SeichiAssist.seichiAssistConfig.getTitle1(5112)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(5112) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(5112) + "」")) {
             setTitle(first = 5112, third = 5112)
           } else if (name.contains("No5113「" + SeichiAssist.seichiAssistConfig.getTitle1(5113)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(5113) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(5113) + "」")) {
             setTitle(5113, 9905, 5113)
           } else if (name.contains("No5114「" + SeichiAssist.seichiAssistConfig.getTitle1(5114)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(5114) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(5114) + "」")) {
             setTitle(first = 5114, third = 5114)
           } else if (name.contains("No5115「" + SeichiAssist.seichiAssistConfig.getTitle1(5115) + "」")) {
             setTitle(first = 5115)
           } else if (name.contains("No5116「" + SeichiAssist.seichiAssistConfig.getTitle1(5116)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(5116) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(5116) + "」")) {
             setTitle(5116, 9905, 5116)
           } else if (name.contains("No5117「" + SeichiAssist.seichiAssistConfig.getTitle1(5117)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(5117) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(5117) + "」")) {
             setTitle(first = 5117, third = 5117)
           } else if (name.contains("No5118「" + SeichiAssist.seichiAssistConfig.getTitle1(5118)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(5118) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(5118) + "」")) {
             setTitle(first = 5118, third = 5118)
           } else if (name.contains("No5119「" + SeichiAssist.seichiAssistConfig.getTitle1(5119)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(5119) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(5119) + "」")) {
             setTitle(5119, 9905, 5119)
           } else if (name.contains("No5120「" + SeichiAssist.seichiAssistConfig.getTitle1(5120)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(5120) + SeichiAssist.seichiAssistConfig.getTitle3(5120) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(5120) + SeichiAssist.seichiAssistConfig.getTitle3(5120) + "」")) {
             setTitle(5120, 5120, 5120)
           }
 
@@ -831,10 +836,10 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleLogin(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「連続ログイン」" => {
+      case s"${prefix}実績「連続ログイン」 " => {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -869,10 +874,10 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.getTitleLogin(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「JMS投票数」" => {
+      case s"${prefix}実績「JMS投票数」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -898,21 +903,21 @@ object OnClickTitleMenu extends Listener {
           if (name.contains("No6001「" + SeichiAssist.seichiAssistConfig.getTitle1(6001) + "」")) {
             setTitle(first = 6001)
           } else if (name.contains("No6002「" + SeichiAssist.seichiAssistConfig.getTitle1(6002)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(6002) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(6002) + "」")) {
             setTitle(first = 6002, third = 6002)
           } else if (name.contains("No6003「" + SeichiAssist.seichiAssistConfig.getTitle1(6003) + "」")) {
             setTitle(first = 6003)
           } else if (name.contains("No6004「" + SeichiAssist.seichiAssistConfig.getTitle1(6004)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9903) + SeichiAssist.seichiAssistConfig.getTitle3(6004) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9903) + SeichiAssist.seichiAssistConfig.getTitle3(6004) + "」")) {
             setTitle(first = 6004, second = 9903, third = 6004)
           } else if (name.contains("No6005「" + SeichiAssist.seichiAssistConfig.getTitle1(6005)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」")) {
             setTitle(first = 6005, second = 9905)
           } else if (name.contains("No6006「" + SeichiAssist.seichiAssistConfig.getTitle1(6006)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(6006) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(6006) + "」")) {
             setTitle(first = 6006, third = 6006)
           } else if (name.contains("No6007「" + SeichiAssist.seichiAssistConfig.getTitle1(6007)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9902) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9902) + "」")) {
             setTitle(first = 6007, second = 9902)
           } else if (name.contains("No6008「" + SeichiAssist.seichiAssistConfig.getTitle1(6008) + "」")) {
             setTitle(first = 6008)
@@ -922,10 +927,10 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「公式イベント」" => {
+      case s"${prefix}実績「公式イベント」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -950,103 +955,103 @@ object OnClickTitleMenu extends Listener {
           val name = itemmeta.getDisplayName
 
           if (name.contains("No7001「" + SeichiAssist.seichiAssistConfig.getTitle1(7001)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(7001) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(7001) + "」")) {
             setTitle(7001, 9901, 7001)
           } else if (name.contains("No7002「" + SeichiAssist.seichiAssistConfig.getTitle1(7002)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7002) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7002) + "」")) {
             setTitle(7002, 9905, 7002)
           } else if (name.contains("No7003「" + SeichiAssist.seichiAssistConfig.getTitle1(7003)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7003) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7003) + "」")) {
             setTitle(7003, 9905, 7003)
           } else if (name.contains("No7004「" + SeichiAssist.seichiAssistConfig.getTitle2(7004) + "」")) {
             setTitle(second = 7704)
           } else if (name.contains("No7005「" + SeichiAssist.seichiAssistConfig.getTitle1(7005)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9902) + SeichiAssist.seichiAssistConfig.getTitle3(7005) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9902) + SeichiAssist.seichiAssistConfig.getTitle3(7005) + "」")) {
             setTitle(7005, 9902, 7005)
           } else if (name.contains("No7006「" + SeichiAssist.seichiAssistConfig.getTitle1(7006)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7006) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7006) + "」")) {
             setTitle(7006, 9905, 7006)
           } else if (name.contains("No7007「" + SeichiAssist.seichiAssistConfig.getTitle1(7007)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7007) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7007) + "」")) {
             setTitle(7007, 9905, 7007)
           } else if (name.contains("No7008「" + SeichiAssist.seichiAssistConfig.getTitle1(7008)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7008) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7008) + "」")) {
             setTitle(7008, 9905, 7008)
           } else if (name.contains("No7009「" + SeichiAssist.seichiAssistConfig.getTitle1(7009)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7009) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7009) + "」")) {
             setTitle(7009, 9905, 7009)
           } else if (name.contains("No7010「" + SeichiAssist.seichiAssistConfig.getTitle1(7010)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7010) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7010) + "」")) {
             setTitle(first = 7010, third = 7010)
           } else if (name.contains("No7011「" + SeichiAssist.seichiAssistConfig.getTitle1(7011)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7011) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7011) + "」")) {
             setTitle(7011, 9905, 7011)
           } else if (name.contains("No7012「" + SeichiAssist.seichiAssistConfig.getTitle1(7012)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7012) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7012) + "」")) {
             setTitle(first = 7012, third = 7012)
           } else if (name.contains("No7013「" + SeichiAssist.seichiAssistConfig.getTitle1(7013) + "」")) {
             setTitle(first = 7013)
           } else if (name.contains("No7014「" + SeichiAssist.seichiAssistConfig.getTitle1(7014) + "」")) {
             setTitle(first = 7014)
           } else if (name.contains("No7015「" + SeichiAssist.seichiAssistConfig.getTitle1(7015)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9904) + SeichiAssist.seichiAssistConfig.getTitle3(7015) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9904) + SeichiAssist.seichiAssistConfig.getTitle3(7015) + "」")) {
             setTitle(7015, 9904, 7015)
           } else if (name.contains("No7016「" + SeichiAssist.seichiAssistConfig.getTitle1(7016)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7016) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7016) + "」")) {
             setTitle(first = 7016, third = 7016)
           } else if (name.contains("No7017「" + SeichiAssist.seichiAssistConfig.getTitle1(7017)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7017) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7017) + "」")) {
             setTitle(7017, 9905, 7017)
           } else if (name.contains("No7018「" + SeichiAssist.seichiAssistConfig.getTitle1(7018)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9904) + SeichiAssist.seichiAssistConfig.getTitle3(7018) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9904) + SeichiAssist.seichiAssistConfig.getTitle3(7018) + "」")) {
             setTitle(7018, 9904, 7018)
           } else if (name.contains("No7019「" + SeichiAssist.seichiAssistConfig.getTitle1(7019)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7019) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7019) + "」")) {
             setTitle(first = 7019, third = 7019)
           } else if (name.contains("No7020「" + SeichiAssist.seichiAssistConfig.getTitle1(7020)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7020) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7020) + "」")) {
             setTitle(first = 7020, third = 7020)
           } else if (name.contains("No7021「" + SeichiAssist.seichiAssistConfig.getTitle1(7021)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7021) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7021) + "」")) {
             setTitle(7021, 9905, 7021)
           } else if (name.contains("No7022「" + SeichiAssist.seichiAssistConfig.getTitle1(7022)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7022) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7022) + "」")) {
             setTitle(first = 7022, third = 7022)
           } else if (name.contains("No7023「" + SeichiAssist.seichiAssistConfig.getTitle1(7023)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7023) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7023) + "」")) {
             setTitle(7023, 9905, 7023)
           } else if (name.contains("No7024「" + SeichiAssist.seichiAssistConfig.getTitle1(7024)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7024) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7024) + "」")) {
             setTitle(first = 7024, third = 7024)
             player.sendMessage("二つ名「" + SeichiAssist.seichiAssistConfig.getTitle1(7024)
-                + SeichiAssist.seichiAssistConfig.getTitle3(7024) + "」が設定されました。")
+              + SeichiAssist.seichiAssistConfig.getTitle3(7024) + "」が設定されました。")
           } else if (name.contains("No7025「" + SeichiAssist.seichiAssistConfig.getTitle1(7025)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7025) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7025) + "」")) {
             setTitle(7025, 9905, 7025)
           } else if (name.contains("No7026「" + SeichiAssist.seichiAssistConfig.getTitle1(7026)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7026) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7026) + "」")) {
             setTitle(7026, 9905, 7026)
           } else if (name.contains("No7027「" + SeichiAssist.seichiAssistConfig.getTitle1(7027)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7027) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7027) + "」")) {
             player.sendMessage("二つ名「" + SeichiAssist.seichiAssistConfig.getTitle1(7027)
-                + SeichiAssist.seichiAssistConfig.getTitle3(7027) + "」が設定されました。")
+              + SeichiAssist.seichiAssistConfig.getTitle3(7027) + "」が設定されました。")
           } else if (name.contains("No7901「" + SeichiAssist.seichiAssistConfig.getTitle1(7901)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(7901) + SeichiAssist.seichiAssistConfig.getTitle3(7901) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(7901) + SeichiAssist.seichiAssistConfig.getTitle3(7901) + "」")) {
             setTitle(7901, 7901, 7901)
           } else if (name.contains("No7902「" + SeichiAssist.seichiAssistConfig.getTitle1(7902)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7902) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7902) + "」")) {
             setTitle(first = 7902, third = 7902)
           } else if (name.contains("No7903「" + SeichiAssist.seichiAssistConfig.getTitle1(7903)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7903) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7903) + "」")) {
             setTitle(7903, 9905, 7903)
           } else if (name.contains("No7904「" + SeichiAssist.seichiAssistConfig.getTitle1(7904)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9907) + SeichiAssist.seichiAssistConfig.getTitle3(7904) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9907) + SeichiAssist.seichiAssistConfig.getTitle3(7904) + "」")) {
             setTitle(7904, 9907, 7904)
           } else if (name.contains("No7905「" + SeichiAssist.seichiAssistConfig.getTitle1(7905)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7905) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7905) + "」")) {
             setTitle(first = 7905, third = 7905)
           } else if (name.contains("No7906「" + SeichiAssist.seichiAssistConfig.getTitle1(7906)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(7906) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(7906) + "」")) {
             setTitle(first = 7906, third = 7906)
           }
           player.openInventory(MenuInventoryData.getTitleEventData(player))
@@ -1055,10 +1060,10 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
           return
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「記念日」" => {
+      case s"${prefix}実績「記念日」 " => {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -1087,15 +1092,15 @@ object OnClickTitleMenu extends Listener {
           if (name.contains("No9001「" + SeichiAssist.seichiAssistConfig.getTitle1(9001) + "」")) {
             setTitle(first = 9001)
           } else if (name.contains("No9002「" + SeichiAssist.seichiAssistConfig.getTitle1(9002)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9002) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9002) + "」")) {
             setTitle(first = 9002, third = 9002)
           } else if (name.contains("No9003「" + SeichiAssist.seichiAssistConfig.getTitle1(9003) + "」")) {
             setTitle(first = 9003)
           } else if (name.contains("No9004「" + SeichiAssist.seichiAssistConfig.getTitle1(9004)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9004) + SeichiAssist.seichiAssistConfig.getTitle3(9004) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9004) + SeichiAssist.seichiAssistConfig.getTitle3(9004) + "」")) {
             setTitle(9004, 9004, 9004)
           } else if (name.contains("No9005「" + SeichiAssist.seichiAssistConfig.getTitle1(9005)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9005) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9005) + "」")) {
             setTitle(first = 9005, third = 9005)
 
           } else if (name.contains("No9006「" + SeichiAssist.seichiAssistConfig.getTitle1(9006) + "」")) {
@@ -1103,88 +1108,88 @@ object OnClickTitleMenu extends Listener {
           } else if (name.contains("No9007「" + SeichiAssist.seichiAssistConfig.getTitle1(9007) + "」")) {
             setTitle(first = 9007)
           } else if (name.contains("No9008「" + SeichiAssist.seichiAssistConfig.getTitle1(9008)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9008) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9008) + "」")) {
             setTitle(first = 9008, third = 9008)
           } else if (name.contains("No9009「" + SeichiAssist.seichiAssistConfig.getTitle1(9009) + "」")) {
             setTitle(first = 9009)
             player.sendMessage("二つ名「" + SeichiAssist.seichiAssistConfig.getTitle1(9009) + "」が設定されました。")
           } else if (name.contains("No9010「" + SeichiAssist.seichiAssistConfig.getTitle1(9010)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9903) + SeichiAssist.seichiAssistConfig.getTitle3(9010) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9903) + SeichiAssist.seichiAssistConfig.getTitle3(9010) + "」")) {
             setTitle(9010, 9903, 9010)
           } else if (name.contains("No9011「" + SeichiAssist.seichiAssistConfig.getTitle1(9011)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9011) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9011) + "」")) {
             setTitle(first = 9011, third = 9011)
           } else if (name.contains("No9012「" + SeichiAssist.seichiAssistConfig.getTitle1(9012)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9012) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9012) + "」")) {
             setTitle(first = 9012, third = 9012)
           } else if (name.contains("No9013「" + SeichiAssist.seichiAssistConfig.getTitle1(9013) + "」")) {
             setTitle(first = 9013)
           } else if (name.contains("No9014「" + SeichiAssist.seichiAssistConfig.getTitle2(9014) + "」")) {
             setTitle(second = 9014)
           } else if (name.contains("No9015「" + SeichiAssist.seichiAssistConfig.getTitle1(9015)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9015) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9015) + "」")) {
             setTitle(first = 9015, third = 9015)
           } else if (name.contains("No9016「" + SeichiAssist.seichiAssistConfig.getTitle1(9016)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9016) + SeichiAssist.seichiAssistConfig.getTitle3(9016) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9016) + SeichiAssist.seichiAssistConfig.getTitle3(9016) + "」")) {
             setTitle(9016, 9016, 9016)
           } else if (name.contains("No9017「" + SeichiAssist.seichiAssistConfig.getTitle1(9017)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9017) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9017) + "」")) {
             setTitle(first = 9017, third = 9017)
           } else if (name.contains("No9018「" + SeichiAssist.seichiAssistConfig.getTitle1(9018) + "」")) {
             setTitle(first = 9018)
           } else if (name.contains("No9019「" + SeichiAssist.seichiAssistConfig.getTitle1(9019)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(9019) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(9019) + "」")) {
             setTitle(9019, 9901, 9019)
           } else if (name.contains("No9020「" + SeichiAssist.seichiAssistConfig.getTitle1(9020)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9020) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9020) + "」")) {
             setTitle(first = 9020, third = 9020)
           } else if (name.contains("No9021「" + SeichiAssist.seichiAssistConfig.getTitle1(9021)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(9021) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9901) + SeichiAssist.seichiAssistConfig.getTitle3(9021) + "」")) {
             setTitle(9021, 9901, 9021)
           } else if (name.contains("No9022「" + SeichiAssist.seichiAssistConfig.getTitle1(9022)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9022) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9022) + "」")) {
             setTitle(first = 9022, third = 9022)
           } else if (name.contains("No9023「" + SeichiAssist.seichiAssistConfig.getTitle1(9023)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9023) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9023) + "」")) {
             setTitle(first = 9023, third = 9023)
           } else if (name.contains("No9024「" + SeichiAssist.seichiAssistConfig.getTitle1(9024)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9024) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9024) + "」")) {
             setTitle(first = 9024, third = 9024)
           } else if (name.contains("No9025「" + SeichiAssist.seichiAssistConfig.getTitle1(9025)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9025) + SeichiAssist.seichiAssistConfig.getTitle3(9025) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9025) + SeichiAssist.seichiAssistConfig.getTitle3(9025) + "」")) {
             setTitle(9025, 9025, 9025)
           } else if (name.contains("No9026「" + SeichiAssist.seichiAssistConfig.getTitle1(9026)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9026) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9026) + "」")) {
             setTitle(first = 9026, third = 9026)
           } else if (name.contains("No9027「" + SeichiAssist.seichiAssistConfig.getTitle1(9027)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9027) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9027) + "」")) {
             setTitle(first = 9027, third = 9027)
           } else if (name.contains("No9028「" + SeichiAssist.seichiAssistConfig.getTitle1(9028)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9028) + SeichiAssist.seichiAssistConfig.getTitle3(9028) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9028) + SeichiAssist.seichiAssistConfig.getTitle3(9028) + "」")) {
             setTitle(9028, 9028, 9028)
           } else if (name.contains("No9029「" + SeichiAssist.seichiAssistConfig.getTitle1(9029)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9029) + SeichiAssist.seichiAssistConfig.getTitle3(9029) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9029) + SeichiAssist.seichiAssistConfig.getTitle3(9029) + "」")) {
             setTitle(9029, 9029, 9029)
           } else if (name.contains("No9030「" + SeichiAssist.seichiAssistConfig.getTitle1(9030)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(9030) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(9030) + "」")) {
             setTitle(9030, 9905, 9030)
           } else if (name.contains("No9031「" + SeichiAssist.seichiAssistConfig.getTitle1(9031)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9908) + SeichiAssist.seichiAssistConfig.getTitle3(9031) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9908) + SeichiAssist.seichiAssistConfig.getTitle3(9031) + "」")) {
             setTitle(9031, 9908, 9031)
           } else if (name.contains("No9032「" + SeichiAssist.seichiAssistConfig.getTitle1(9032)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9032) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9032) + "」")) {
             setTitle(first = 9032, third = 9032)
           } else if (name.contains("No9033「" + SeichiAssist.seichiAssistConfig.getTitle1(9033)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9903) + SeichiAssist.seichiAssistConfig.getTitle3(9033) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9903) + SeichiAssist.seichiAssistConfig.getTitle3(9033) + "」")) {
             setTitle(9033, 9903, 9033)
           } else if (name.contains("No9034「" + SeichiAssist.seichiAssistConfig.getTitle1(9034)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9034) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9034) + "」")) {
             setTitle(first = 9034, third = 9034)
           } else if (name.contains("No9035「" + SeichiAssist.seichiAssistConfig.getTitle1(9035)
-                  + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(9035) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(9035) + "」")) {
             setTitle(9035, 9905, 9035)
           } else if (name.contains("No9036「" + SeichiAssist.seichiAssistConfig.getTitle1(9036)
-                  + SeichiAssist.seichiAssistConfig.getTitle3(9036) + "」")) {
+            + SeichiAssist.seichiAssistConfig.getTitle3(9036) + "」")) {
             setTitle(first = 9036, third = 9036)
           }
           player.openInventory(MenuInventoryData.getTitleExtraData(player))
@@ -1197,12 +1202,12 @@ object OnClickTitleMenu extends Listener {
           playerdata.titlepage = playerdata.titlepage + 1
           player.openInventory(MenuInventoryData.getTitleExtraData(player))
           return
-        }//次ページ
+        } //次ページ
         //実績メニューに戻る
 
       }
 
-      case s"${prefix}実績「極秘任務」" => {
+      case s"${prefix}実績「極秘任務」 " => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -1233,7 +1238,7 @@ object OnClickTitleMenu extends Listener {
         } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
-        }//実績メニューに戻る
+        } //実績メニューに戻る
       }
       case _ =>
     }

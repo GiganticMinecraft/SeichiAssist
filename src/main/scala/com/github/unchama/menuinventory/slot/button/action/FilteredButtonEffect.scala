@@ -10,9 +10,9 @@ import org.bukkit.event.inventory.InventoryClickEvent
  * "フィルタ"付きの[ButtonEffect]
  *
  * @param clickEventFilter InventoryClickEventを受け取り動作を行わせるかを決定する [ClickEventFilter]
- * @param effect InventoryClickEventを受け取り何かしらの作用を発生させる関数
+ * @param effect           InventoryClickEventを受け取り何かしらの作用を発生させる関数
  *
- * [effect]は[clickEventFilter] がtrueを返した際に発火されます.
+ *                         [effect]は[clickEventFilter] がtrueを返した際に発火されます.
  */
 case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter)
                                (private val effect: ButtonEffectScope => TargetedEffect[Player]) extends ButtonEffect {

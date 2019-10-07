@@ -4,17 +4,17 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class AsyncEntityRemover extends BukkitRunnable{
-	Entity e;
+public class AsyncEntityRemover extends BukkitRunnable {
+    Entity e;
 
-	public AsyncEntityRemover(Entity e) {
-		this.e = e;
-	}
+    public AsyncEntityRemover(Entity e) {
+        this.e = e;
+    }
 
-	@Override
-	public void run() {
-		SeichiAssist.entitylist().$minus$eq(e);
-		e.remove();
-	}
+    @Override
+    public void run() {
+        SeichiAssist.entitylist().$minus$eq(e);
+        e.remove();
+    }
 
 }

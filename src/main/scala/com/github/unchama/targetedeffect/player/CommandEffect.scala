@@ -5,6 +5,7 @@ import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
 
 object CommandEffect {
+
   implicit class StringToCommandEffect(val string: String) {
     def asCommandEffect(): TargetedEffect[Player] =
       p => IO {
@@ -12,4 +13,5 @@ object CommandEffect {
         p.chat(s"/$string")
       }
   }
+
 }

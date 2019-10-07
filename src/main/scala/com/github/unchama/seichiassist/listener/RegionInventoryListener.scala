@@ -18,15 +18,18 @@ import org.bukkit.{Location, Material, Sound}
 
 /**
  * 保護関連メニューのListenerクラス
+ *
  * @author karayuu
- * 2017/09/02
+ *         2017/09/02
  */
 class RegionInventoryListener extends Listener {
   var playermap = SeichiAssist.playermap
+
   import RegionInventoryListener._
 
   /**
    * グリッド式保護メニューInventoryClickListener
+   *
    * @param event InventoryClickEvent
    */
   @EventHandler
@@ -47,7 +50,9 @@ class RegionInventoryListener extends Listener {
     if (he.getType != EntityType.PLAYER) {
       return
     }
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリタイプがディスペンサーでない時終了
     if (topinventory.getType != InventoryType.DISPENSER) {
@@ -105,7 +110,7 @@ class RegionInventoryListener extends Listener {
     val selection = We.getSelection(player)
 
     val region = new ProtectedCuboidRegion(player.getName + "_" + playerData.regionCount,
-        selection.getNativeMinimumPoint.toBlockVector, selection.getNativeMaximumPoint.toBlockVector)
+      selection.getNativeMinimumPoint.toBlockVector, selection.getNativeMaximumPoint.toBlockVector)
     val manager = Wg.getRegionManager(player.getWorld)
 
     val task = new RegionAdder(Wg, manager, region)
@@ -114,7 +119,7 @@ class RegionInventoryListener extends Listener {
     val future = Wg.getExecutorService().submit(task)
 
     AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.getName + "_" + playerData.regionCount)
-        .registerWithSupervisor("保護申請中").thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
+      .registerWithSupervisor("保護申請中").thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
   }
 
   @EventHandler
@@ -135,7 +140,9 @@ class RegionInventoryListener extends Listener {
     if (he.getType != EntityType.PLAYER) {
       return
     }
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
 
     //インベントリ名が以下の時処理
@@ -202,7 +209,7 @@ object RegionInventoryListener {
 
   private def gridResetFunction(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-      playerData.setUnitAmount(DirectionType.AHEAD, 0)
+    playerData.setUnitAmount(DirectionType.AHEAD, 0)
     playerData.setUnitAmount(DirectionType.BEHIND, 0)
     playerData.setUnitAmount(DirectionType.RIGHT, 0)
     playerData.setUnitAmount(DirectionType.LEFT, 0)
@@ -283,7 +290,7 @@ object RegionInventoryListener {
           new Location(world, end_x + 15 * behindUnitAmount, 256.0, end_z + 15 * leftsideUnitAmount)
         )
       case _ => (null, null)
-    }//わざと何もしない。
+    } //わざと何もしない。
     wgSelect(start_loc, end_loc, player)
   }
 
@@ -291,6 +298,38 @@ object RegionInventoryListener {
     player.chat("//;")
     player.chat("//pos1 " + loc1.getX.toInt + "," + loc1.getY.toInt + "," + loc1.getZ.toInt)
     player.chat("//pos2 " + loc2.getX.toInt + "," + loc2.getY.toInt + "," + loc2.getZ.toInt)
+  }
+
+  /**
+   * ユニット単位における最短の終点(始点から対角になる)のx,z座標を取得します。
+   *
+   * @param player 該当プレイヤー
+   * @return x,z座標のMap
+   */
+  def getNearlyUnitEnd(player: Player): Map[String, Double] = {
+    val startCoordinate = getNearlyUnitStart(player)
+
+    Map(
+      "x" -> (startCoordinate("x") + 14.0),
+      "z" -> (startCoordinate("z") + 14.0)
+    )
+  }
+
+  /**
+   * ユニット単位における最短の始点のx,z座標を取得します。
+   *
+   * @param player 該当プレイヤー
+   * @return x,z座標のMap
+   */
+  def getNearlyUnitStart(player: Player): Map[String, Double] = {
+    def getNearestUnitStart(component: Int) = (component / 15) * 15
+
+    val playerLocation: Location = player.getLocation
+
+    Map(
+      "x" -> getNearestUnitStart(playerLocation.getBlockX),
+      "z" -> getNearestUnitStart(playerLocation.getBlockZ)
+    )
   }
 
   private def canCreateRegion(player: Player): Unit = {
@@ -330,35 +369,5 @@ object RegionInventoryListener {
     val template = new GridTemplate(unitMap(DirectionType.AHEAD), unitMap(DirectionType.BEHIND),
       unitMap(DirectionType.RIGHT), unitMap(DirectionType.LEFT))
     playerData.templateMap(i) = template
-  }
-
-  /**
-   * ユニット単位における最短の始点のx,z座標を取得します。
-   * @param player 該当プレイヤー
-   * @return x,z座標のMap
-   */
-  def getNearlyUnitStart(player: Player): Map[String, Double] = {
-    def getNearestUnitStart(component: Int) = (component / 15) * 15
-
-    val playerLocation: Location = player.getLocation
-
-    Map(
-      "x" -> getNearestUnitStart(playerLocation.getBlockX),
-      "z" -> getNearestUnitStart(playerLocation.getBlockZ)
-    )
-  }
-
-  /**
-   * ユニット単位における最短の終点(始点から対角になる)のx,z座標を取得します。
-   * @param player 該当プレイヤー
-   * @return x,z座標のMap
-   */
-  def getNearlyUnitEnd(player: Player): Map[String, Double] = {
-    val startCoordinate = getNearlyUnitStart(player)
-
-    Map(
-      "x" -> (startCoordinate("x") + 14.0),
-      "z" -> (startCoordinate("z") + 14.0)
-    )
   }
 }

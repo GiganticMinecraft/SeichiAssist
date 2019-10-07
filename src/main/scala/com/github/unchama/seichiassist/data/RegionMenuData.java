@@ -93,13 +93,13 @@ public class RegionMenuData {
         List<String> lore4 = new ArrayList<>();
         lore4.add(ChatColor.GRAY + "現在の設定");
         lore4.add(ChatColor.GRAY + "前方向：" + ChatColor.AQUA + unitMap.getOrElse(Util.DirectionType$.MODULE$.ahead(), () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(Util.DirectionType$.MODULE$.ahead())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+                + "(" + ChatColor.AQUA + nfNum.format(((Int) unitMap.apply(Util.DirectionType$.MODULE$.ahead())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
         lore4.add(ChatColor.GRAY + "後ろ方向：" + ChatColor.AQUA + unitMap.getOrElse(Util.DirectionType$.MODULE$.behind(), () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(Util.DirectionType$.MODULE$.behind())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+                + "(" + ChatColor.AQUA + nfNum.format(((Int) unitMap.apply(Util.DirectionType$.MODULE$.behind())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
         lore4.add(ChatColor.GRAY + "右方向：" + ChatColor.AQUA + unitMap.getOrElse(Util.DirectionType$.MODULE$.right(), () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(Util.DirectionType$.MODULE$.right())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+                + "(" + ChatColor.AQUA + nfNum.format(((Int) unitMap.apply(Util.DirectionType$.MODULE$.right())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
         lore4.add(ChatColor.GRAY + "左方向：" + ChatColor.AQUA + unitMap.getOrElse(Util.DirectionType$.MODULE$.left(), () -> null) + ChatColor.GRAY + "ユニット"
-                + "(" + ChatColor.AQUA + nfNum.format(((Int)unitMap.apply(Util.DirectionType$.MODULE$.left())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
+                + "(" + ChatColor.AQUA + nfNum.format(((Int) unitMap.apply(Util.DirectionType$.MODULE$.left())).toInt() * 15) + ChatColor.GRAY + "ブロック)");
         lore4.add(ChatColor.GRAY + "保護ユニット数：" + ChatColor.AQUA + playerData.gridChunkAmount());
         lore4.add(ChatColor.GRAY + "保護ユニット上限値：" + ChatColor.RED + config.getGridLimitPerWorld(player.getWorld().getName()));
         ItemStack menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, ChatColor.DARK_GREEN + "設定",

@@ -14,22 +14,23 @@ import org.bukkit.Sound
  * メニューUIに頻繁に現れるような[Button]を生成する、または定数として持っているオブジェクト.
  */
 object CommonButtons {
+
   import com.github.unchama.targetedeffect.TargetedEffects._
 
   val openStickMenu: Button = {
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
     val buttonEffect = sequentialEffect(
-        FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-        StickMenu.firstPage.open
+      FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
+      StickMenu.firstPage.open
     )
 
     button.Button(
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
-          .title(s"${YELLOW}${UNDERLINE}${BOLD}ホームへ")
-          .lore(List(s"${RESET}${DARK_RED}${UNDERLINE}クリックで移動"))
-          .build(),
-        FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE)(_ => buttonEffect)
+      new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
+        .title(s"${YELLOW}${UNDERLINE}${BOLD}ホームへ")
+        .lore(List(s"${RESET}${DARK_RED}${UNDERLINE}クリックで移動"))
+        .build(),
+      FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE)(_ => buttonEffect)
     )
   }
 }

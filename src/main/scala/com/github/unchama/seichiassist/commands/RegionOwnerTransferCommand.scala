@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
-import com.github.unchama.contextualexecutor.builder.{ArgumentParserScope, Parsers}
+import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
@@ -12,22 +12,8 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 object RegionOwnerTransferCommand {
-  private def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): IO[TargetedEffect[Player]] = IO {
-    val owners = region.getOwners
+  import com.github.unchama.contextualexecutor.builder.ArgumentParserScope._
 
-    if (!owners.contains(donner.getUniqueId)) {
-      "オーナーではないため権限を譲渡できません。".asMessageEffect()
-    } else if (owners.size() != 1) {
-      "オーナーが複数人いるため権限を譲渡できません。".asMessageEffect()
-    } else {
-      owners.clear()
-      owners.addPlayer(recipient.getUniqueId)
-
-      s"${recipient.getName}に${region.getId}のオーナー権限を譲渡しました。".asMessageEffect()
-    }
-  }
-
-  import ArgumentParserScope._
   val executor: TabExecutor = playerCommandBuilder
     .argumentsParsers(List(
       Parsers.identity,
@@ -53,4 +39,19 @@ object RegionOwnerTransferCommand {
     }
     .build()
     .asNonBlockingTabExecutor()
+
+  private def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): IO[TargetedEffect[Player]] = IO {
+    val owners = region.getOwners
+
+    if (!owners.contains(donner.getUniqueId)) {
+      "オーナーではないため権限を譲渡できません。".asMessageEffect()
+    } else if (owners.size() != 1) {
+      "オーナーが複数人いるため権限を譲渡できません。".asMessageEffect()
+    } else {
+      owners.clear()
+      owners.addPlayer(recipient.getUniqueId)
+
+      s"${recipient.getName}に${region.getId}のオーナー権限を譲渡しました。".asMessageEffect()
+    }
+  }
 }

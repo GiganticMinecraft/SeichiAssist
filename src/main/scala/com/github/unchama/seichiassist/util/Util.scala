@@ -49,6 +49,7 @@ object Util {
 
   /**
    * プレイヤーが整地ワールドにいるかどうかの判定処理(整地ワールド=true、それ以外=false)
+   *
    * @deprecated use ManagedWorld
    */
   @Deprecated()
@@ -64,10 +65,12 @@ object Util {
 
   //ガチャ券アイテムスタック型の取得
   def getskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).modify { skull => import skull._
+    new ItemStack(Material.SKULL_ITEM, 1).modify { skull =>
+      import skull._
       setDurability(3.toShort)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.modify { skullMeta => import skullMeta._
+        ItemMetaFactory.SKULL.getValue.modify { skullMeta =>
+          import skullMeta._
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
             List(
@@ -78,6 +81,20 @@ object Util {
           setOwner("unchama")
         }
       }
+    }
+  }
+
+  /**
+   * プレイヤーに安全にアイテムを付与します。
+   *
+   * @param player    付与する対象プレイヤー
+   * @param itemStack 付与するアイテム
+   */
+  def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
+    if (isPlayerInventoryFull(player)) {
+      dropItem(player, itemStack)
+    } else {
+      addItem(player, itemStack)
     }
   }
 
@@ -92,20 +109,6 @@ object Util {
   //指定されたアイテムを指定されたプレイヤーインベントリに追加する
   def addItem(player: Player, itemstack: ItemStack): Unit = {
     player.getInventory.addItem(itemstack)
-  }
-
-  /**
-   * プレイヤーに安全にアイテムを付与します。
-   *
-   * @param player 付与する対象プレイヤー
-   * @param itemStack 付与するアイテム
-   */
-  def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    if (isPlayerInventoryFull(player)) {
-      dropItem(player, itemStack)
-    } else {
-      addItem(player, itemStack)
-    }
   }
 
   def sendAdminMessage(str: String): Unit = {
@@ -126,7 +129,9 @@ object Util {
     Bukkit.getOnlinePlayers.asScala.map { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO { if (!playerSettings.shouldMuteMessages) player.sendMessage(str) }
+        _ <- IO {
+          if (!playerSettings.shouldMuteMessages) player.sendMessage(str)
+        }
       } yield ()
     }.toList.sequence.unsafeRunSync()
   }
@@ -135,7 +140,9 @@ object Util {
     Bukkit.getOnlinePlayers.asScala.foreach { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO { if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base) }
+        _ <- IO {
+          if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base)
+        }
       } yield ()
     }
   }
@@ -218,7 +225,9 @@ object Util {
     Bukkit.getOnlinePlayers.asScala.toList.map { player =>
       for {
         settings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO { if (!settings.shouldMuteSounds) player.playSound(player.getLocation, kind, volume, pitch) }
+        _ <- IO {
+          if (!settings.shouldMuteSounds) player.playSound(player.getLocation, kind, volume, pitch)
+        }
       } yield ()
     }.sequence.unsafeRunSync()
   }
@@ -290,19 +299,6 @@ object Util {
     false
   }
 
-  /**
-   * loreを捜査して、要素の中に`find`が含まれているかを調べる。
-   * @param lore 探される対象
-   * @param find 探す文字列
-   * @return 見つかった場合はその添字、見つからなかった場合は-1
-   */
-  def loreIndexOf(lore: List[String], find: String): Int = {
-    IntStream.range(0, lore.size)
-        .filter { i => lore(i).contains(find) }
-        .findFirst()
-        .orElse(-1)
-  }
-
   def isGachaTicket(itemstack: ItemStack): Boolean = {
     if (itemstack.getType != Material.SKULL_ITEM) return false
 
@@ -327,10 +323,12 @@ object Util {
   }
 
   def getForBugskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack => import itemStack._
+    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack =>
+      import itemStack._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.modify { meta => import meta._
+        ItemMetaFactory.SKULL.getValue.modify { meta =>
+          import meta._
           setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
           setLore {
             List(
@@ -346,10 +344,12 @@ object Util {
   }
 
   def getVoteskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack => import itemStack._
+    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack =>
+      import itemStack._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.modify { meta => import meta._
+        ItemMetaFactory.SKULL.getValue.modify { meta =>
+          import meta._
           setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
           setLore {
             List(
@@ -365,10 +365,12 @@ object Util {
   }
 
   def getExchangeskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack => import itemStack._
+    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack =>
+      import itemStack._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.modify { meta => import meta._
+        ItemMetaFactory.SKULL.getValue.modify { meta =>
+          import meta._
           setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
           setLore {
             List(
@@ -399,20 +401,22 @@ object Util {
 
   /**
    * GUIメニューアイコン作成用
-   * @author karayuu
    *
-   * @param material メニューアイコンMaterial
-   * @param amount メニューアイコンのアイテム個数
+   * @author karayuu
+   * @param material    メニューアイコンMaterial
+   * @param amount      メニューアイコンのアイテム個数
    * @param displayName メニューアイコンのDisplayName
-   * @param lore メニューアイコンのLore
+   * @param lore        メニューアイコンのLore
    * @param isHideFlags 攻撃値・ダメージ値を隠すかどうか(true: 隠す / false: 隠さない)
    * @return ItemStack型のメニューアイコン
    */
   def getMenuIcon(material: Material, amount: Int,
                   displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack = {
-    new ItemStack(material, amount).modify { itemStack => import itemStack._
+    new ItemStack(material, amount).modify { itemStack =>
+      import itemStack._
       setItemMeta {
-        getItemMeta.modify { meta => import meta._
+        getItemMeta.modify { meta =>
+          import meta._
           setDisplayName(displayName)
           setLore(lore.asJava)
           if (isHideFlags) {
@@ -425,22 +429,24 @@ object Util {
 
   /**
    * GUIメニューアイコン作成用
-   * @author karayuu
    *
-   * @param material メニューアイコンMaterial, not `null`
-   * @param amount メニューアイコンのアイテム個数
-   * @param durabity メニューアイコンのダメージ値
+   * @author karayuu
+   * @param material    メニューアイコンMaterial, not `null`
+   * @param amount      メニューアイコンのアイテム個数
+   * @param durabity    メニューアイコンのダメージ値
    * @param displayName メニューアイコンのDisplayName, not `null`
-   * @param lore メニューアイコンのLore, not `null`
+   * @param lore        メニューアイコンのLore, not `null`
    * @param isHideFlags 攻撃値・ダメージ値を隠すかどうか(true: 隠す / false: 隠さない)
    * @throws IllegalArgumentException Material,DisplayName, Loreのいずれかが `null` の時
    * @return ItemStack型のメニューアイコン
    */
   def getMenuIcon(material: Material, amount: Int, durabity: Int,
                   displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack =
-    new ItemStack(material, amount, durabity.toShort).modify { itemStack => import itemStack._
+    new ItemStack(material, amount, durabity.toShort).modify { itemStack =>
+      import itemStack._
       setItemMeta {
-        getItemMeta.modify { meta => import meta._
+        getItemMeta.modify { meta =>
+          import meta._
           setDisplayName(displayName)
           setLore(lore.asJava)
 
@@ -448,40 +454,6 @@ object Util {
         }
       }
     }
-
-  /**
-   * PlayerDataでチャンク数をゲット・セットするためのenum
-   */
-  sealed trait DirectionType extends EnumEntry
-  case object DirectionType extends Enum[DirectionType] {
-    case object AHEAD extends DirectionType
-    case object BEHIND extends DirectionType
-    case object RIGHT extends DirectionType
-    case object LEFT extends DirectionType
-
-    /**
-     * for Java interop
-     */
-    def ahead: AHEAD.type = AHEAD
-    def behind: BEHIND.type = BEHIND
-    def right: RIGHT.type = RIGHT
-    def left: LEFT.type = LEFT
-
-    val values: IndexedSeq[DirectionType] = findValues
-  }
-
-  /**
-   * PlayerDataなどで使用する方角関係のenum
-   */
-  sealed trait Direction extends EnumEntry
-  case object Direction extends Enum[Direction] {
-    case object NORTH extends Direction
-    case object SOUTH extends Direction
-    case object EAST extends Direction
-    case object WEST extends Direction
-
-    val values: IndexedSeq[Direction] = findValues
-  }
 
   def getPlayerDirection(player: Player): Direction = {
     var rotation = ((player.getLocation.getYaw + 180) % 360).toDouble
@@ -607,5 +579,66 @@ object Util {
   def isLimitedTitanItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.DIAMOND_AXE &&
       loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "特別なタイタンをあなたに♡") >= 0
+  }
+
+  /**
+   * loreを捜査して、要素の中に`find`が含まれているかを調べる。
+   *
+   * @param lore 探される対象
+   * @param find 探す文字列
+   * @return 見つかった場合はその添字、見つからなかった場合は-1
+   */
+  def loreIndexOf(lore: List[String], find: String): Int = {
+    IntStream.range(0, lore.size)
+      .filter { i => lore(i).contains(find) }
+      .findFirst()
+      .orElse(-1)
+  }
+
+  /**
+   * PlayerDataでチャンク数をゲット・セットするためのenum
+   */
+  sealed trait DirectionType extends EnumEntry
+
+  /**
+   * PlayerDataなどで使用する方角関係のenum
+   */
+  sealed trait Direction extends EnumEntry
+
+  case object DirectionType extends Enum[DirectionType] {
+
+    val values: IndexedSeq[DirectionType] = findValues
+
+    /**
+     * for Java interop
+     */
+    def ahead: AHEAD.type = AHEAD
+
+    def behind: BEHIND.type = BEHIND
+
+    def right: RIGHT.type = RIGHT
+
+    def left: LEFT.type = LEFT
+
+    case object AHEAD extends DirectionType
+
+    case object BEHIND extends DirectionType
+
+    case object RIGHT extends DirectionType
+
+    case object LEFT extends DirectionType
+  }
+
+  case object Direction extends Enum[Direction] {
+
+    val values: IndexedSeq[Direction] = findValues
+
+    case object NORTH extends Direction
+
+    case object SOUTH extends Direction
+
+    case object EAST extends Direction
+
+    case object WEST extends Direction
   }
 }
