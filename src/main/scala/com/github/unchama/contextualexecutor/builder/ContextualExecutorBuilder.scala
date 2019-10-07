@@ -19,9 +19,9 @@ import scala.reflect.ClassTag
  * この副作用を内包させるためにsuspending functionとして宣言されている.
  *
  * @tparam CS 生成するExecutorが受け付ける[CommandSender]のサブタイプの上限
- * @param senderTypeValidation [CommandSender]を[CS]にダウンキャストするような
- * @param argumentsParser [RawCommandContext]から[PartiallyParsedArgs]を作成するSuspending Function
- * @param contextualExecution [ParsedArgCommandContext]に基づいてコマンドのアクションを実行するSuspending Function
+ * @param senderTypeValidation [CommandSender]の[CS]へのダウンキャストを試みる関数
+ * @param argumentsParser [RawCommandContext]から[PartiallyParsedArgs]の作成を試みる関数
+ * @param contextualExecution [ParsedArgCommandContext]に基づいてコマンドの副作用を計算する関数
  */
 case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: SenderTypeValidation[CS],
                                                           argumentsParser: CommandArgumentsParser[CS],

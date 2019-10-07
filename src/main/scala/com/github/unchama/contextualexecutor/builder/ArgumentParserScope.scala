@@ -7,8 +7,7 @@ import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.command.CommandSender
 
 /**
- * [ContextualExecutorBuilder.argumentsParser]が要求する,
- * 引数文字列から[ResponseEffectOrResult[Any]]への関数の作成を行うためのスコープオブジェクト.
+ * 文字列から`ResponseEffectOrResult[Any]`への関数の作成を行うためのオブジェクト.
  *
  * [ArgumentParserScope.ScopeProvider.parser]を通してスコープ付き関数をそのような関数に変換できる.
  */

@@ -5,16 +5,25 @@ import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
 
 /**
- * メニュー一つに対応するオブジェクトへの抽象インターフェース
+ * 「メニュー」のtrait.
+ *
+ * このtraitを実装するオブジェクトは, インベントリ上で展開される意味づけされたUIの情報を持っている.
+ * これらのUIをメニューインベントリ, または単にメニューと呼ぶこととする.
  */
 trait Menu {
 
+  /**
+   * メニューのサイズとタイトルに関する情報
+   */
   val frame: InventoryFrame
 
+  /**
+   * @return `player`からメニューの[[IndexedSlotLayout]]を計算する[[IO]]
+   */
   def computeMenuLayout(player: Player): IO[IndexedSlotLayout]
 
   /**
-   * オブジェクトが表すメニューを[Player]に開かせる[TargetedEffect].
+   * メニューを[Player]に開かせる[TargetedEffect].
    */
   val open: TargetedEffect[Player] = { player =>
     for {
