@@ -50,7 +50,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
     var material: Material = null
     var lore2: List[String] = null
     val effect = ActiveSkillPremiumEffect.values
-
+    // TODO: ほんとうにStarSelectじゃなきゃだめ?
     val command = "select * from " + tableReference + " where playername = '" + playerdata.lowercaseName + "'"
     try {
       var count = 0

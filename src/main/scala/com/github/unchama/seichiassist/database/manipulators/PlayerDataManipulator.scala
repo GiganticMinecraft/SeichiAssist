@@ -58,7 +58,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       if (p_vote > p_givenvote) {
         command = ("update " + tableReference
           + " set p_givenvote = " + p_vote
-          + " where uuid like '" + struuid + "'")
+          + s" where uuid = '$struuid'")
         if (gateway.executeUpdate(command) == ActionStatus.Fail) {
           player.sendMessage(RED.toString() + "投票特典の受け取りに失敗しました")
           return 0
@@ -94,7 +94,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         // 576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
         command = ("update " + tableReference
           + " set numofsorryforbug = numofsorryforbug - 576"
-          + " where uuid like '" + struuid + "'")
+          + s" where uuid = '$struuid'")
         if (gateway.executeUpdate(command) == ActionStatus.Fail) {
           player.sendMessage(RED.toString() + "ガチャ券の受け取りに失敗しました")
           return 0
@@ -105,7 +105,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         // 0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
         command = ("update " + tableReference
           + " set numofsorryforbug = 0"
-          + " where uuid like '" + struuid + "'")
+          + s" where uuid = '$struuid'")
         if (gateway.executeUpdate(command) == ActionStatus.Fail) {
           player.sendMessage(RED.toString() + "ガチャ券の受け取りに失敗しました")
           return 0
@@ -140,7 +140,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     val command = ("update " + tableReference
       + " set p_vote = p_vote + 1" //1加算
 
-      + " where name like '" + playerName + "'")
+      + s" where name = '$playerName'")
 
     return gateway.executeUpdate(command)
   }
@@ -156,7 +156,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     val command = ("update " + tableReference
       + " set premiumeffectpoint = premiumeffectpoint + " + num //引数で来たポイント数分加算
 
-      + " where name like '" + playerName + "'")
+      + s" where name = '$playerName'")
 
     return gateway.executeUpdate(command)
   }
@@ -166,7 +166,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   def addPlayerBug(playerName: String, num: Int): ActionStatus = {
     val command = ("update " + tableReference
       + " set numofsorryforbug = numofsorryforbug + " + num
-      + " where name like '" + playerName + "'")
+      + s" where name = '$playerName'")
 
     return gateway.executeUpdate(command)
   }
@@ -177,7 +177,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     var lastVote: String = null
 
     try {
-      val readLastVote = gateway.executeQuery(s"SELECT lastvote FROM $tableReference WHERE name LIKE '$name'")
+      val readLastVote = gateway.executeQuery(s"SELECT lastvote FROM $tableReference WHERE name = '$name'")
         .recordIteration { lrs =>
           lrs.getString("lastvote")
         }.getOrElse(return false)
@@ -188,7 +188,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         else
           readLastVote
 
-      val update = s"UPDATE $tableReference  SET lastvote = '${dateFormat.format(calendar.getTime)}' WHERE name LIKE '$name'"
+      val update = s"UPDATE $tableReference  SET lastvote = '${dateFormat.format(calendar.getTime)}' WHERE name = '$name'"
 
       gateway.executeUpdate(update)
     } catch {
@@ -199,7 +199,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     try {
-      gateway.executeQuery(s"SELECT chainvote FROM $tableReference WHERE name LIKE '$name'")
+      gateway.executeQuery(s"SELECT chainvote FROM $tableReference WHERE name = '$name'")
         .recordIteration { lrs =>
           val TodayDate = dateFormat.parse(dateFormat.format(calendar.getTime))
           val LastDate = dateFormat.parse(lastVote)
@@ -221,7 +221,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             playerData.ChainVote = count
           }
 
-          gateway.executeUpdate(s"UPDATE $tableReference SET chainvote = $count WHERE name LIKE '$name'")
+          gateway.executeUpdate(s"UPDATE $tableReference SET chainvote = $count WHERE name = '$name'")
         }
     } catch {
       case e: SQLException =>
@@ -235,7 +235,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   def addContributionPoint(targetPlayerName: String, point: Int): IO[ResponseEffectOrResult[CommandSender, Unit]] = {
     val executeUpdate: IO[ResponseEffectOrResult[CommandSender, Unit]] = IO {
-      val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name LIKE '$targetPlayerName'"
+      val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name = '$targetPlayerName'"
 
       if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
         Bukkit.getLogger().warning(s"sql failed on updating $targetPlayerName's contribute_point")
@@ -265,7 +265,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   private def assertPlayerDataExistenceFor(playerName: String): IO[ResponseEffectOrResult[CommandSender, Unit]] =
     IO {
       try {
-        val resultSet = gateway.executeQuery(s"select * from $tableReference where name like $playerName")
+        // TODO: 本当にStarSelectじゃなきゃだめ?
+        val resultSet = gateway.executeQuery(s"select * from $tableReference where name = $playerName")
 
         if (!resultSet.next()) {
           Left(s"${RED}$playerName はデータベースに登録されていません。".asMessageEffect())
@@ -545,7 +546,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   def selectPocketInventoryOf(uuid: UUID): IO[ResponseEffectOrResult[CommandSender, Inventory]] = {
-    val command = s"select inventory from $tableReference where uuid like '$uuid'"
+    val command = s"select inventory from $tableReference where uuid = '$uuid'"
 
     val executeQuery = IO {
       gateway.executeQuery(command).recordIteration { lrs =>

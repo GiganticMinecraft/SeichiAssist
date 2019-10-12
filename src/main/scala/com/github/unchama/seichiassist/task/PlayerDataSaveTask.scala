@@ -95,7 +95,7 @@ object PlayerDataSaving {
 
       val removeCommand = ("delete from "
         + "seichiassist.unlocked_active_skill_effect "
-        + "where player_uuid like '" + playerUuid + "'")
+        + "where player_uuid = '" + playerUuid + "'")
       stmt.executeUpdate(removeCommand)
 
       activeSkillEffects.foreach { activeSkillEffect =>
@@ -119,7 +119,7 @@ object PlayerDataSaving {
 
       val removeCommand = ("delete from "
         + "seichiassist.unlocked_active_skill_premium_effect where "
-        + "player_uuid like '" + playerUuid + "'")
+        + "player_uuid = '" + playerUuid + "'")
       stmt.executeUpdate(removeCommand)
 
       activeSkillPremiumEffects.foreach { activeSkillPremiumEffect =>
@@ -234,7 +234,7 @@ object PlayerDataSaving {
           //バレンタインイベント
           + ",hasChocoGave = " + playerdata.hasChocoGave
 
-          + " where uuid like '" + playerUuid + "'")
+          + " where uuid = '" + playerUuid + "'")
       }
 
       stmt.executeUpdate(command)
