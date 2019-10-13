@@ -45,7 +45,7 @@ object PlayerDataLoading {
         + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME + " "
         + "set loginflag = true, "
         + "lastquit = cast(now() as datetime) "
-        + "where uuid like '" + stringUuid + "'")
+        + "where uuid = '" + stringUuid + "'")
 
       stmt.executeUpdate(loginInfoUpdateCommand)
     }
@@ -53,7 +53,7 @@ object PlayerDataLoading {
     def loadSubHomeData(stmt: Statement): Unit = {
       val subHomeDataQuery = ("select * from "
         + db + "." + DatabaseConstants.SUB_HOME_TABLENAME + " where "
-        + "player_uuid like '" + stringUuid + "' and "
+        + s"player_uuid = '$stringUuid' and "
         + "server_id = " + config.getServerNum)
 
       stmt.executeQuery(subHomeDataQuery).recordIteration { lrs: ResultSet =>
@@ -81,10 +81,10 @@ object PlayerDataLoading {
     def loadMineStack(stmt: Statement): Unit = {
       val mineStackDataQuery = ("select * from "
         + db + "." + DatabaseConstants.MINESTACK_TABLENAME + " where "
-        + "player_uuid like '" + stringUuid + "'")
+        + "player_uuid = '" + stringUuid + "'")
 
       /**
-       * TODO これはここにあるべきではない
+       * TODO:これはここにあるべきではない
        * 格納可能なアイテムのリストはプラグインインスタンスの中に動的に持たれるべきで、
        * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、
        * ロードされるたびに再計算されるべきではない
@@ -113,9 +113,10 @@ object PlayerDataLoading {
     }
 
     def loadGridTemplate(stmt: Statement): Unit = {
+      // TODO: 本当にStarSelectじゃなきゃだめ?
       val gridTemplateDataQuery = ("select * from "
         + db + "." + DatabaseConstants.GRID_TEMPLATE_TABLENAME + " where "
-        + "designer_uuid like '" + stringUuid + "'")
+        + s"designer_uuid = '$stringUuid'")
 
       stmt.executeQuery(gridTemplateDataQuery).recordIteration { resultSet: ResultSet =>
         val templateMap = mutable.HashMap[Int, GridTemplate]()
@@ -138,9 +139,10 @@ object PlayerDataLoading {
     }
 
     def loadSkillEffectUnlockState(stmt: Statement): Unit = {
+      // TODO: 本当にStarSelectじゃなきゃだめ?
       val unlockedSkillEffectQuery = ("select * from "
         + db + "." + DatabaseConstants.SKILL_EFFECT_TABLENAME + " where "
-        + "player_uuid like '" + stringUuid + "'")
+        + "player_uuid = '" + stringUuid + "'")
 
       stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
         val effectName = resultSet.getString("effect_name")
@@ -153,7 +155,7 @@ object PlayerDataLoading {
     def loadSkillPremiumEffectUnlockState(stmt: Statement): Unit = {
       val unlockedSkillEffectQuery = ("select * from "
         + db + "." + DatabaseConstants.SKILL_PREMIUM_EFFECT_TABLENAME + " where "
-        + "player_uuid like '" + stringUuid + "'")
+        + "player_uuid = '" + stringUuid + "'")
 
       stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
         val effectName = resultSet.getString("effect_name")
@@ -165,8 +167,9 @@ object PlayerDataLoading {
 
     def loadPlayerData(stmt: Statement): Unit = {
       //playerdataをsqlデータから得られた値で更新
+      // TODO: 本当にStarSelectじゃなきゃだめ?
       val command = ("select * from " + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME
-        + " where uuid like '" + stringUuid + "'")
+        + " where uuid = '" + stringUuid + "'")
 
       stmt.executeQuery(command).recordIteration { rs: ResultSet =>
 
