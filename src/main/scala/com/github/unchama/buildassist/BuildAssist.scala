@@ -38,6 +38,7 @@ class BuildAssist(plugin: Plugin) {
     Bukkit.getServer().getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
     Bukkit.getServer().getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
     Bukkit.getServer().getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
+    Bukkit.getServer.getPluginManager.registerEvents(new BlockLineUp(), plugin) //ブロックを並べるスキル
 
 
     for (p <- Bukkit.getServer.getOnlinePlayers.asScala) {
