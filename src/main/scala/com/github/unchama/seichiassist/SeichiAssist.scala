@@ -9,7 +9,7 @@ import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.GachaCommand
+import com.github.unchama.seichiassist.commands.legacy.{GachaCommand}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
@@ -102,7 +102,8 @@ class SeichiAssist extends JavaPlugin() {
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
-      "ef" -> EffectCommand.executor,
+      "map" -> MapCommand.executor,
+        "ef" -> EffectCommand.executor,
       "seichihaste" -> SeichiHasteCommand.executor,
       "seichiassist" -> SeichiAssistCommand.executor,
       "openpocket" -> OpenPocketCommand.executor,
