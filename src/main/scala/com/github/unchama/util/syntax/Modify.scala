@@ -1,5 +1,7 @@
 package com.github.unchama.util.syntax
 
+import scala.language.implicitConversions
+
 trait ApplySyntax {
   implicit def toApplyOps[T](x: T): Modify.ModifyOps[T] = new Modify.ModifyOps(x)
 }

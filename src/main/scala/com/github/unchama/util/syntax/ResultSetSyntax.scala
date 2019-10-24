@@ -4,6 +4,8 @@ import java.sql.ResultSet
 
 import com.github.unchama.util.syntax
 
+import scala.language.implicitConversions
+
 trait ResultSetSyntax {
   implicit def toResultSetOps(resultSet: ResultSet): ResultSetSyntax.ResultSetOps =
     new syntax.ResultSetSyntax.ResultSetOps(resultSet)

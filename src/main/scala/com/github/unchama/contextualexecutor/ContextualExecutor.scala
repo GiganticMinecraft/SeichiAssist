@@ -35,10 +35,9 @@ object ContextualExecutor {
         val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList)
 
         contextualExecutor.executeWith(context).unsafeRunAsync {
-          case Left(error) => {
+          case Left(error) =>
             println(s"Caught exception while executing ${command.getName} command.")
             error.printStackTrace()
-          }
           case Right(_) =>
         }
 

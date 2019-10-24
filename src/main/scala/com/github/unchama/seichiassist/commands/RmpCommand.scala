@@ -48,7 +48,7 @@ object RmpCommand {
           case _ => failWith(s"存在しないワールドです: $arg")
         }
       },
-      nonNegativeInteger(s"${RED}[日数]には非負整数を入力してください".asMessageEffect())
+      nonNegativeInteger(s"$RED[日数]には非負整数を入力してください".asMessageEffect())
     ), onMissingArguments = printDescriptionExecutor)
   private val removeExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
@@ -74,7 +74,7 @@ object RmpCommand {
             s"${GREEN}該当Regionは存在しません".asMessageEffect()
           } else {
             removalTargets.map { target =>
-              s"${YELLOW}[rmp] Deleted Region => ${world.getName}.${target.getId}".asMessageEffect()
+              s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}".asMessageEffect()
             }.asSequentialEffect()
           }
         }.merge
@@ -96,7 +96,7 @@ object RmpCommand {
           } else {
             removalTargets
               .map { target =>
-                s"${GREEN}[rmp] List Region => ${world.getName}.${target.getId}".asMessageEffect()
+                s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}".asMessageEffect()
               }
               .asSequentialEffect()
           }

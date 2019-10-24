@@ -31,18 +31,18 @@ object MebiusCommand {
 
   private object Messages {
     val commandDescription: TargetedEffect[CommandSender] = List(
-      s"${RED}[Usage]",
-      s"${RED}/mebius naming [name]",
-      s"${RED}  現在頭に装着中のMEBIUSに[name]を命名します。",
+      s"$RED[Usage]",
+      s"$RED/mebius naming [name]",
+      s"$RED  現在頭に装着中のMEBIUSに[name]を命名します。",
       "",
-      s"${RED}/mebius nickname",
-      s"${RED}  MEBIUSから呼ばれる名前を表示します",
+      s"$RED/mebius nickname",
+      s"$RED  MEBIUSから呼ばれる名前を表示します",
       "",
-      s"${RED}/mebius nickname set [name]",
-      s"${RED}  MEBIUSから呼ばれる名前を[name]に変更します",
+      s"$RED/mebius nickname set [name]",
+      s"$RED  MEBIUSから呼ばれる名前を[name]に変更します",
       "",
-      s"${RED}/mebius nickname reset",
-      s"${RED}  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
+      s"$RED/mebius nickname reset",
+      s"$RED  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
       ""
     ).asMessageEffect()
 

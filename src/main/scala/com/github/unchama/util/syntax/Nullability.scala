@@ -1,5 +1,7 @@
 package com.github.unchama.util.syntax
 
+import scala.language.implicitConversions
+
 trait NullabilitySyntax {
   implicit def toNullabilityExtensionReceiverOps[T](x: T): Nullability.NullabilityExtensionReceiver[T] =
     new Nullability.NullabilityExtensionReceiver(x)

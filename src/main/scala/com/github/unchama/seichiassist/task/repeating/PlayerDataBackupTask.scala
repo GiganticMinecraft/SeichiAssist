@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.task.repeating
 import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.task.PlayerDataSaving
+import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -26,15 +26,15 @@ case class PlayerDataBackupTask(override val taskExecutionContext: ExecutionCont
 
       if (SeichiAssist.playermap.nonEmpty) {
         Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ中…")
-        Bukkit.getLogger().info(s"${AQUA}プレイヤーデータセーブ中…")
+        Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
 
         //現在オンラインのプレイヤーのプレイヤーデータを永続化する
         Bukkit.getOnlinePlayers.asScala.toList
           .map(player => SeichiAssist.playermap(player.getUniqueId))
-          .foreach(PlayerDataSaving.savePlayerData)
+          .foreach(PlayerDataSaveTask.savePlayerData)
 
         Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ完了")
-        Bukkit.getLogger().info(s"${AQUA}プレイヤーデータセーブ完了")
+        Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
       }
     }
 

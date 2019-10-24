@@ -48,7 +48,7 @@ object SeichiHasteCommand {
                 }
 
                 playerData.effectdatalist.addOne(effectData)
-                s"${LIGHT_PURPLE}$name に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
+                s"$LIGHT_PURPLE$name に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
             }
           case ScopeSpecification.ALL =>
             SeichiAssist.playermap.values.foreach(_.effectdatalist.addOne(effectData))
@@ -80,7 +80,7 @@ object SeichiHasteCommand {
   sealed trait ScopeSpecification extends EnumEntry
 
   case object ScopeSpecification extends Enum[ScopeSpecification] {
-    val values = findValues
+    val values: IndexedSeq[ScopeSpecification] = findValues
 
     case object PLAYER extends ScopeSpecification
 

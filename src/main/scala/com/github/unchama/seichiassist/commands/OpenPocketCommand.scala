@@ -50,7 +50,7 @@ object OpenPocketCommand {
     .build()
     .asNonBlockingTabExecutor()
   private val descriptionPrintExecutor = new EchoExecutor(List(
-    s"${RED}/openpocket [プレイヤー名]",
+    s"$RED/openpocket [プレイヤー名]",
     "対象プレイヤーの四次元ポケットを開きます。",
     "編集結果はオンラインのプレイヤーにのみ反映されます。"
   ).asMessageEffect())

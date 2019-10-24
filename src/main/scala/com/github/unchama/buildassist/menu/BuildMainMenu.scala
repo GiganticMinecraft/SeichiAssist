@@ -72,7 +72,7 @@ object BuildMainMenu extends Menu {
           .lore(
             s"$RESET${AQUA}建築レベル: ${openerData.level}",
             s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.doubleValue()}",
-            s"$RESET${DARK_GRAY}※1分毎に更新"
+            s"$RESET$DARK_GRAY※1分毎に更新"
           )
           .build()
 
@@ -97,12 +97,12 @@ object BuildMainMenu extends Menu {
       IO {
         val openerData = BuildAssist.playermap(getUniqueId)
         val iconItemStack = new IconItemStackBuilder(Material.STONE)
-          .title(s"$GREEN${EMPHASIZE}「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
+          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
           .lore(
-            s"$RESET${YELLOW}「スニーク+左クリック」をすると、",
+            s"$RESET$YELLOW「スニーク+左クリック」をすると、",
             s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
             s"$RESET${YELLOW}インベントリ内から消費し設置します。",
-            s"$RESET${LIGHT_PURPLE}＜クリックでON/OFF切り替え＞"
+            s"$RESET$LIGHT_PURPLE＜クリックでON/OFF切り替え＞"
           )
           .build()
 
@@ -207,7 +207,7 @@ object BuildMainMenu extends Menu {
     def computeButtonToOpenLineUpBlocksMenu(): IO[Button] = IO {
       val openerData = BuildAssist.playermap(getUniqueId)
       val iconItemStack = new IconItemStackBuilder(Material.PAPER)
-        .title(s"$YELLOW${EMPHASIZE}「ブロックを並べるスキル（仮） 」設定画面へ")
+        .title(s"$YELLOW$EMPHASIZE「ブロックを並べるスキル（仮） 」設定画面へ")
         .lore(
           s"$RESET${GRAY}現在の設定",
           s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str(openerData.line_up_flg)}",

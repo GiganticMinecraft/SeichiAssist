@@ -18,7 +18,7 @@ class MineStackGachaData(val objName: String,
    * @deprecated use itemStack.amount
    */
   @Deprecated()
-  val amount = itemStack.getAmount
+  val amount: Int = itemStack.getAmount
 
   /**
    * @deprecated ここをなんのデータクラスだと思っているんだ
@@ -57,7 +57,7 @@ class MineStackGachaData(val objName: String,
   def appendOwnerLore(name: String): Unit = {
     val meta = itemStack.getItemMeta
     val lore = if (meta.hasLore) meta.getLore.asScala else Nil
-    itemStack.getItemMeta.setLore(lore.:+(s"${RESET}${DARK_GREEN}所有者：$name").asJava)
+    itemStack.getItemMeta.setLore(lore.:+(s"$RESET${DARK_GREEN}所有者：$name").asJava)
   }
 
   def copy(): MineStackGachaData = new MineStackGachaData(objName, itemStack.clone(), probability, level)

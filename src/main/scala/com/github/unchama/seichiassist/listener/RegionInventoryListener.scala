@@ -1,11 +1,16 @@
 package com.github.unchama.seichiassist.listener
 
-import com.github.unchama.seichiassist.SeichiAssist
+import java.util.UUID
+
+import com.github.unchama.seichiassist.{Config, SeichiAssist}
+import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GridTemplate, RegionMenuData}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
+import com.sk89q.worldedit.bukkit.WorldEditPlugin
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.bukkit.commands.AsyncCommandHelper
 import com.sk89q.worldguard.bukkit.commands.task.RegionAdder
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion
@@ -16,6 +21,8 @@ import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Location, Material, Sound}
 
+import scala.collection.mutable
+
 /**
  * 保護関連メニューのListenerクラス
  *
@@ -23,7 +30,7 @@ import org.bukkit.{Location, Material, Sound}
  *         2017/09/02
  */
 class RegionInventoryListener extends Listener {
-  var playermap = SeichiAssist.playermap
+  val playermap: mutable.HashMap[UUID, PlayerData] = SeichiAssist.playermap
 
   import RegionInventoryListener._
 
@@ -60,7 +67,7 @@ class RegionInventoryListener extends Listener {
     }
 
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == LIGHT_PURPLE.toString() + "グリッド式保護設定メニュー") {
+    if (topinventory.getTitle == LIGHT_PURPLE.toString + "グリッド式保護設定メニュー") {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
@@ -116,7 +123,7 @@ class RegionInventoryListener extends Listener {
     val task = new RegionAdder(Wg, manager, region)
     task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY)
     task.setOwnersInput(Array(player.getName))
-    val future = Wg.getExecutorService().submit(task)
+    val future = Wg.getExecutorService.submit(task)
 
     AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.getName + "_" + playerData.regionCount)
       .registerWithSupervisor("保護申請中").thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
@@ -146,7 +153,7 @@ class RegionInventoryListener extends Listener {
     //インベントリが存在しない時終了
 
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == LIGHT_PURPLE.toString() + "グリッド式保護・設定保存") {
+    if (topinventory.getTitle == LIGHT_PURPLE.toString + "グリッド式保護・設定保存") {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
@@ -181,7 +188,7 @@ class RegionInventoryListener extends Listener {
         }
 
         if (event.isLeftClick) {
-          player.sendMessage(GREEN.toString() + "グリッド式保護設定データ読み込み完了")
+          player.sendMessage(GREEN.toString + "グリッド式保護設定データ読み込み完了")
           player.playSound(player.getLocation, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
           playerData.setUnitAmount(DirectionType.AHEAD, template.getAheadAmount)
           playerData.setUnitAmount(DirectionType.BEHIND, template.getBehindAmount)
@@ -203,9 +210,9 @@ class RegionInventoryListener extends Listener {
 }
 
 object RegionInventoryListener {
-  var Wg = ExternalPlugins.getWorldGuard()
-  var We = ExternalPlugins.getWorldEdit()
-  var config = SeichiAssist.seichiAssistConfig
+  val Wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
+  val We: WorldEditPlugin = ExternalPlugins.getWorldEdit
+  var config: Config = SeichiAssist.seichiAssistConfig
 
   private def gridResetFunction(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -336,14 +343,14 @@ object RegionInventoryListener {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val selection = We.getSelection(player)
     val manager = Wg.getRegionManager(player.getWorld)
-    val wcfg = Wg.getGlobalStateManager().get(player.getWorld)
+    val wcfg = Wg.getGlobalStateManager.get(player.getWorld)
 
     if (selection == null) {
       playerData.canCreateRegion = false
     }
 
     val region = new ProtectedCuboidRegion(player.getName + "_" + playerData.regionCount,
-      selection.getNativeMinimumPoint().toBlockVector(), selection.getNativeMaximumPoint().toBlockVector())
+      selection.getNativeMinimumPoint.toBlockVector, selection.getNativeMaximumPoint.toBlockVector)
     val regions = manager.getApplicableRegions(region)
 
     if (regions.size() != 0) {
@@ -364,7 +371,7 @@ object RegionInventoryListener {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val unitMap = playerData.unitMap
 
-    player.sendMessage(GREEN.toString() + "グリッド式保護の現在の設定を保存しました。")
+    player.sendMessage(GREEN.toString + "グリッド式保護の現在の設定を保存しました。")
     player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
     val template = new GridTemplate(unitMap(DirectionType.AHEAD), unitMap(DirectionType.BEHIND),
       unitMap(DirectionType.RIGHT), unitMap(DirectionType.LEFT))

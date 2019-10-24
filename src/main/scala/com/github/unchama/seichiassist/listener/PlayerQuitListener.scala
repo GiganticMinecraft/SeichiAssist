@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.task.PlayerDataSaving
+import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -24,7 +24,7 @@ class PlayerQuitListener extends Listener {
     playerData.updateOnQuit()
 
     IO {
-      PlayerDataSaving.savePlayerData(playerData)
+      PlayerDataSaveTask.savePlayerData(playerData)
     }.unsafeRunAsync {
       case Left(error) => error.printStackTrace()
       case Right(_) =>

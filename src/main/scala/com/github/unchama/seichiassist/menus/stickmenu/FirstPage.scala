@@ -160,7 +160,7 @@ object FirstPage extends Menu {
 
     val computeRegionMenuButton: IO[Button] = IO {
       val buttonLore = {
-        val worldGuardPlugin = ExternalPlugins.getWorldGuard()
+        val worldGuardPlugin = ExternalPlugins.getWorldGuard
         val regionManager = worldGuardPlugin.getRegionManager(getWorld)
 
         val maxRegionCount = WorldGuard.getMaxRegionCount(player, getWorld)
@@ -207,7 +207,7 @@ object FirstPage extends Menu {
         }
 
         val annotation = List(
-          s"$RESET${DARK_GRAY}※スタックしたアイテムは",
+          s"$RESET$DARK_GRAY※スタックしたアイテムは",
           s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
           s"$RESET${DARK_GRAY}共有されます"
         )
@@ -238,7 +238,7 @@ object FirstPage extends Menu {
 
       val iconItemStack = {
         val loreAnnotation = List(
-          s"$RESET${DARK_GRAY}※4次元ポケットの中身は",
+          s"$RESET$DARK_GRAY※4次元ポケットの中身は",
           s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
           s"$RESET${DARK_GRAY}共有されます"
         )
@@ -319,9 +319,9 @@ object FirstPage extends Menu {
           val explanation = List(
             s"$RESET${GRAY}運営からのガチャ券を受け取ります",
             s"$RESET${GRAY}以下の場合に配布されます",
-            s"$RESET${GRAY}・各種不具合のお詫びとして",
-            s"$RESET${GRAY}・イベント景品として",
-            s"$RESET${GRAY}・各種謝礼として"
+            s"$RESET$GRAY・各種不具合のお詫びとして",
+            s"$RESET$GRAY・イベント景品として",
+            s"$RESET$GRAY・各種謝礼として"
           )
 
           val obtainableApologyItems = playerData.unclaimedApologyItems
@@ -559,9 +559,9 @@ object FirstPage extends Menu {
   private object ConstantButtons {
     val teleportServerButton: Button = {
       val buttonLore = List(
-        s"${GRAY}・各サバイバルサーバー",
-        s"${GRAY}・建築サーバー",
-        s"${GRAY}・公共施設サーバー",
+        s"$GRAY・各サバイバルサーバー",
+        s"$GRAY・建築サーバー",
+        s"$GRAY・公共施設サーバー",
         s"${GRAY}間を移動する時に使います",
         s"$DARK_RED${UNDERLINE}クリックして開く"
       )
@@ -583,8 +583,8 @@ object FirstPage extends Menu {
 
     val spawnCommandButton: Button = {
       val buttonLore = List(
-        s"${GRAY}・メインワールド",
-        s"${GRAY}・整地ワールド",
+        s"$GRAY・メインワールド",
+        s"$GRAY・整地ワールド",
         s"${GRAY}間を移動するときに使います",
         s"$DARK_RED${UNDERLINE}クリックするとワープします",
         s"${DARK_GRAY}command=>[/spawn]"

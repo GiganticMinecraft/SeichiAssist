@@ -131,11 +131,11 @@ class PlayerData(
   //前回の採掘速度上昇レベルを格納
   var lastminespeedlv = 0
   //投票受け取りボタン連打防止用
-  var votecooldownflag = true
+  val votecooldownflag = true
   //ガチャボタン連打防止用
-  var gachacooldownflag = true
+  val gachacooldownflag = true
   //インベントリ共有ボタン連打防止用
-  var shareinvcooldownflag = true
+  val shareinvcooldownflag = true
   var selectHomeNum = 0
   var setHomeNameNum = 0
   var isSubHomeNameChange = false
@@ -143,7 +143,7 @@ class PlayerData(
 
   //endregion
   //MineStackの履歴
-  var hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
+  val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
   var titlepage = 1 //実績メニュー用汎用ページ指定
   //現在座標
   var loc: Option[Location] = None
@@ -164,7 +164,7 @@ class PlayerData(
   //プレイ時間
   var playTick = 0
   //トータル破壊ブロック
-  var totalbreaknum = 0.toLong
+  var totalbreaknum: Long = 0.toLong
   //合計経験値
   var totalexp = 0
   //合計経験値統合済みフラグ
@@ -179,7 +179,7 @@ class PlayerData(
   var LimitedLoginCount = 0
   var ChainVote = 0
   //アクティブスキル関連データ
-  var activeskilldata: ActiveSkillData = new ActiveSkillData()
+  val activeskilldata: ActiveSkillData = new ActiveSkillData()
   //二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 
@@ -211,9 +211,9 @@ class PlayerData(
   var newYearBagAmount = 0
   //バレンタインイベント用
   var hasChocoGave = false
-  var giganticBerserk = GiganticBerserk(0, 0, 0, false, 0)
+  var giganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false, 0)
   //ハーフブロック破壊抑制用
-  private var allowBreakingHalfBlocks = false
+  private val allowBreakingHalfBlocks = false
   //プレイ時間差分計算用int
   private var totalPlayTick: Option[Int] = None
 
@@ -628,7 +628,7 @@ class PlayerData(
   }
 
   //パッシブスキルの獲得量表示
-  def getPassiveExp(): Double = {
+  def getPassiveExp: Double = {
     if (level < 8) 0.0
     else if (level < 18) SeichiAssist.seichiAssistConfig.getDropExplevel(1)
     else if (level < 28) SeichiAssist.seichiAssistConfig.getDropExplevel(2)
@@ -672,7 +672,7 @@ class PlayerData(
     subHomeName.getOrElse(s"サブホームポイント${subHomeIndex + 1}")
   }
 
-  def canBreakHalfBlock(): Boolean = this.allowBreakingHalfBlocks
+  def canBreakHalfBlock: Boolean = this.allowBreakingHalfBlocks
 
   def canGridExtend(directionType: DirectionType, world: String): Boolean = {
     val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world)
@@ -747,7 +747,7 @@ class PlayerData(
   }
 
   @AntiTypesafe
-  def getVotingFairyStartTimeAsString(): String = {
+  def getVotingFairyStartTimeAsString: String = {
     val cal = this.votingFairyStartTime
 
     if (votingFairyStartTime == dummyDate) {

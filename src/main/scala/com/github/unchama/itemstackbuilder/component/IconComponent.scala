@@ -15,7 +15,7 @@ import scala.jdk.javaapi.CollectionConverters.asJava
  * Created by karayuu on 2019/04/09
  */
 class IconComponent(val material: Material, private val durability: Short = 0.toShort) {
-  var title: String = Bukkit.getItemFactory().getItemMeta(material).ifNotNull(_.getDisplayName)
+  var title: String = Bukkit.getItemFactory.getItemMeta(material).ifNotNull(_.getDisplayName)
   var lore: List[String] = Nil
 
   var isUnbreakable: Boolean = false

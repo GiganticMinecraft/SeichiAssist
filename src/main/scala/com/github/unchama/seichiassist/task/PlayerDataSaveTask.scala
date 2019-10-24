@@ -11,7 +11,7 @@ import org.bukkit.ChatColor._
 
 import scala.util.Using
 
-object PlayerDataSaving {
+object PlayerDataSaveTask {
   /**
    * プレイヤーデータをDBに保存する処理(非同期で実行すること)
    * DBにセーブしたい値が増えた/減った場合は更新すること
@@ -24,7 +24,7 @@ object PlayerDataSaving {
     val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
     def updatePlayerMineStack(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString()
+      val playerUuid = playerdata.uuid.toString
       MineStackObjectList.minestacklist.foreach { mineStackObj =>
         val iThObjectName = mineStackObj.mineStackObjName
         val iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj)
@@ -39,7 +39,7 @@ object PlayerDataSaving {
     }
 
     def updateSubHome(): Unit = {
-      val playerUuid = playerdata.uuid.toString()
+      val playerUuid = playerdata.uuid.toString
       playerdata.subHomeEntries.foreach { case (subHomeId, subHome) =>
         val subHomeLocation = subHome.getLocation
 
@@ -69,7 +69,7 @@ object PlayerDataSaving {
     }
 
     def updateGridTemplate(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString()
+      val playerUuid = playerdata.uuid.toString
 
       // 既存データをすべてクリアする
       stmt.executeUpdate(s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'")
@@ -89,7 +89,7 @@ object PlayerDataSaving {
     }
 
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString()
+      val playerUuid = playerdata.uuid.toString
       val activeSkillEffects = ActiveSkillEffect.values
       val obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects
 
@@ -113,7 +113,7 @@ object PlayerDataSaving {
     }
 
     def updateActiveSkillPremiumEffectUnlockState(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString()
+      val playerUuid = playerdata.uuid.toString
       val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values
       val obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects
 
@@ -265,11 +265,11 @@ object PlayerDataSaving {
     (0 until 3).foreach { _ =>
       val result = executeUpdate()
       if (result == ActionStatus.Ok) {
-        println(s"${GREEN}${playerdata.lowercaseName}のプレイヤーデータ保存完了")
+        println(s"$GREEN${playerdata.lowercaseName}のプレイヤーデータ保存完了")
         return
       }
     }
 
-    println(s"${RED}${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+    println(s"$RED${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
   }
 }

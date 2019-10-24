@@ -18,13 +18,13 @@ object SeichiAssistCommand {
     whenArgInsufficient = Some(descriptionExecutor), whenBranchNotFound = Some(descriptionExecutor)
   ).asNonBlockingTabExecutor()
   private val descriptionExecutor = new EchoExecutor(List(
-    s"${YELLOW}${BOLD}[コマンドリファレンス]",
-    s"${RED}/seichiassist reload-config",
+    s"$YELLOW$BOLD[コマンドリファレンス]",
+    s"$RED/seichiassist reload-config",
     "config.ymlの設定値を再読み込みします",
-    s"${RED}/seichiassist toggle-debug",
+    s"$RED/seichiassist toggle-debug",
     "デバッグモードのON,OFFを切り替えます",
     "config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能",
-    s"${RED}/seichiassist set-anniversary-flag",
+    s"$RED/seichiassist set-anniversary-flag",
     "1周年記念フラグを立てる（コンソール限定コマンド）"
   ).asMessageEffect())
   private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()
@@ -64,7 +64,7 @@ object SeichiAssistCommand {
     .refineSenderWithError[ConsoleCommandSender]("コンソール専用コマンドです")
     .execution { _ =>
       IO {
-        SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(true, null)
+        SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(anniversary = true, null)
 
         "Anniversaryアイテムの配布を開始しました。".asMessageEffect()
       }

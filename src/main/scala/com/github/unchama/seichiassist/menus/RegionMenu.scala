@@ -92,8 +92,8 @@ object RegionMenu extends Menu {
               s"${GRAY}と出れば保護設定完了です",
               s"${RED}赤色で別の英文が出た場合",
               s"${GRAY}保護の設定に失敗しています",
-              s"${GRAY}・別の保護と被っていないか",
-              s"${GRAY}・保護数上限に達していないか",
+              s"$GRAY・別の保護と被っていないか",
+              s"$GRAY・保護数上限に達していないか",
               s"${GRAY}確認してください"
             ) else Seq()
         }
@@ -137,10 +137,10 @@ object RegionMenu extends Menu {
 
     val summonWandButton: Button = {
       val wandUsage = Array(
-        s"${GREEN}①召喚された斧を手に持ちます",
-        s"${GREEN}②保護したい領域の一方の角を${YELLOW}左${GREEN}クリック",
-        s"${GREEN}③もう一方の対角線上の角を${RED}右${GREEN}クリック",
-        s"${GREEN}④メニューの${YELLOW}金の斧${GREEN}をクリック"
+        s"$GREEN①召喚された斧を手に持ちます",
+        s"$GREEN②保護したい領域の一方の角を${YELLOW}左${GREEN}クリック",
+        s"$GREEN③もう一方の対角線上の角を${RED}右${GREEN}クリック",
+        s"$GREEN④メニューの${YELLOW}金の斧${GREEN}をクリック"
       )
 
       val iconItemStack = new IconItemStackBuilder(Material.WOOD_AXE)
@@ -148,7 +148,7 @@ object RegionMenu extends Menu {
         .lore(
           (wandUsage ++ Array(
             s"$DARK_RED${UNDERLINE}クリックで召喚",
-            s"$DARK_GREEN${UNDERLINE}※インベントリを空けておこう",
+            s"$DARK_GREEN$UNDERLINE※インベントリを空けておこう",
             s"${DARK_GRAY}command=>[//wand]")).toList
         ).build()
 

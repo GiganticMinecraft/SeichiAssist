@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
-import com.github.unchama.seichiassist.task.PlayerDataSaving
+import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.repeating.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
@@ -230,7 +230,7 @@ class SeichiAssist extends JavaPlugin() {
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
       playerdata.updateOnQuit()
 
-      PlayerDataSaving.savePlayerData(playerdata)
+      PlayerDataSaveTask.savePlayerData(playerdata)
 
       if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
         logger.info("データベース切断に失敗しました")
@@ -283,13 +283,13 @@ object SeichiAssist {
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
   var DEBUG = false
   //ガチャシステムのメンテナンスフラグ
-  var gachamente = false
+  val gachamente = false
   // TODO staticであるべきではない
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _
   var buildAssist: BuildAssist = _
   //(minestackに格納する)Gachadataに依存するデータリスト
-  var msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
+  val msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
   //総採掘量表示用
   var allplayerbreakblockint = 0L
   var allplayergiveapplelong = 0L

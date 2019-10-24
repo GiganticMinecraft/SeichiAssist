@@ -27,8 +27,8 @@ object CommonButtons {
 
     button.Button(
       new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
-        .title(s"${YELLOW}${UNDERLINE}${BOLD}ホームへ")
-        .lore(List(s"${RESET}${DARK_RED}${UNDERLINE}クリックで移動"))
+        .title(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
+        .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
         .build(),
       FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE)(_ => buttonEffect)
     )

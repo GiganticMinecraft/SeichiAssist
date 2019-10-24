@@ -8,6 +8,7 @@ import enumeratum._
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Location, Material}
 
 sealed abstract class ActiveSkillEffect(val num: Int,
@@ -25,13 +26,13 @@ sealed abstract class ActiveSkillEffect(val num: Int,
                      breakList: Set[Block],
                      start: Coordinate,
                      end: Coordinate,
-                     standard: Location) = {
+                     standard: Location): BukkitTask = {
     val plugin = SeichiAssist.instance
     val skillId = skillData.skillnum
 
     this match {
       case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
-      case Blizzard => {
+      case Blizzard =>
         val effect = new BlizzardTask(player, skillData, tool, breakList, start, end, standard)
 
         if (skillId < 3) {
@@ -40,12 +41,10 @@ sealed abstract class ActiveSkillEffect(val num: Int,
           val period = if (SeichiAssist.DEBUG) 100L else 10L
           effect.runTaskTimer(plugin, 0, period)
         }
-      }
-      case Meteo => {
+      case Meteo =>
         val delay = if (skillId < 3) 1L else 10L
 
         new MeteoTask(player, skillData, tool, breakList, start, end, standard).runTaskLater(plugin, delay)
-      }
     }
   }
 

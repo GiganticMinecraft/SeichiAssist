@@ -177,14 +177,13 @@ class BlockLineUp extends Listener {
     }
 
     val consumptionFromMainHand = mineStackObjectToBeUsed match {
-      case Some(obj) => {
+      case Some(obj) =>
         val mineStackAmount = playerMineStack.getStackedAmountOf(obj)
         val consumptionFromMineStack = Math.min(placedBlockCount.toLong, mineStackAmount)
 
         playerMineStack.subtractStackedAmountOf(obj, consumptionFromMineStack)
 
         placedBlockCount - consumptionFromMineStack.toInt
-      }
       case _ => placedBlockCount
     }
 

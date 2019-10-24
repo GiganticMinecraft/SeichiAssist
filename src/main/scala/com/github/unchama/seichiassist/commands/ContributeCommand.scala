@@ -33,10 +33,10 @@ object ContributeCommand {
     .asNonBlockingTabExecutor()
   private val printHelpMessageExecutor = new EchoExecutor(
     List(
-      s"${YELLOW}${BOLD}[コマンドリファレンス]",
-      s"${RED}/contribute add [プレイヤー名] [増加分ポイント]",
+      s"$YELLOW$BOLD[コマンドリファレンス]",
+      s"$RED/contribute add [プレイヤー名] [増加分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分増加させます",
-      s"${RED}/contribute remove [プレイヤー名] [減少分ポイント]",
+      s"$RED/contribute remove [プレイヤー名] [減少分ポイント]",
       "指定されたプレイヤーの貢献度ptを指定分減少させます(入力ミス回避用)"
     ).asMessageEffect()
   )
@@ -55,9 +55,9 @@ object ContributeCommand {
         responseOrResult.map { _ =>
           val operationResponse =
             if (point >= 0) {
-              s"${GREEN}${targetPlayerName}に貢献度ポイントを${point}追加しました"
+              s"$GREEN${targetPlayerName}に貢献度ポイントを${point}追加しました"
             } else {
-              s"${GREEN}${targetPlayerName}の貢献度ポイントを${point}減少させました"
+              s"$GREEN${targetPlayerName}の貢献度ポイントを${point}減少させました"
             }
           operationResponse.asMessageEffect()
         }.merge
@@ -67,7 +67,7 @@ object ContributeCommand {
   sealed trait ContributeOperation extends EnumEntry
 
   object ContributeOperation extends Enum[ContributeOperation] {
-    val values = findValues
+    val values: IndexedSeq[ContributeOperation] = findValues
 
     case object ADD extends ContributeOperation
 

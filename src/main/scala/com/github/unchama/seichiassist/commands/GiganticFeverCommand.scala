@@ -18,7 +18,7 @@ object GiganticFeverCommand {
       val config = SeichiAssist.seichiAssistConfig
 
       Util.sendEveryMessage(s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
-      Util.sendEveryMessage(s"${AQUA}(${config.getGiganticFeverDisplayTime}間)")
+      Util.sendEveryMessage(s"$AQUA(${config.getGiganticFeverDisplayTime}間)")
 
       Util.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL)
 

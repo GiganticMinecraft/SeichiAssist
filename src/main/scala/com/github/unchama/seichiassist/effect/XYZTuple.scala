@@ -10,7 +10,7 @@ object XYZTuple {
 
     import coordinate._
 
-    def toXYZTuple() = XYZTuple(x, y, z)
+    def toXYZTuple = XYZTuple(x, y, z)
   }
 
   case class AxisAlignedCuboid(begin: XYZTuple, end: XYZTuple)

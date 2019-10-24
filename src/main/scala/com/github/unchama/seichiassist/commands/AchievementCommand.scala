@@ -70,7 +70,7 @@ object AchievementCommand {
     .asNonBlockingTabExecutor()
   private val descriptionPrintExecutor = new EchoExecutor(
     List(
-      s"${RED}/achievement [操作] [実績No] [スコープ指定子]",
+      s"$RED/achievement [操作] [実績No] [スコープ指定子]",
       "[操作]にはgive(実績付与)またはdeprive(実績剥奪)のいずれかを入力することができます。",
       "[スコープ指定子]にはuser [ユーザー名], server, worldのいずれかを入力することができます。"
     ).asMessageEffect()

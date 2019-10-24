@@ -22,14 +22,14 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
       + " (playername,playeruuid,effectnum,effectname,usepoint,date) "
       + "value("
       + "'" + playerdata.lowercaseName + "',"
-      + "'" + playerdata.uuid.toString() + "',"
+      + "'" + playerdata.uuid.toString + "',"
       + effect.num + ","
       + "'" + effect.getsqlName + "',"
       + effect.usePoint + ","
       + "cast( now() as datetime )"
       + ")")
 
-    return gateway.executeUpdate(command)
+    gateway.executeUpdate(command)
   }
 
   def addDonate(name: String, point: Int): ActionStatus = {
@@ -40,7 +40,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
       + point + ","
       + "cast( now() as datetime )"
       + ")")
-    return gateway.executeUpdate(command)
+    gateway.executeUpdate(command)
   }
 
   private def tableReference: String = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME
@@ -60,12 +60,12 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
         val usePoint = lrs.getInt("usepoint")
         if (getPoint > 0) {
           itemstack = new ItemStack(Material.DIAMOND)
-          lore2 = List(RESET.toString() + "" + GREEN + "" + "金額：" + getPoint * 100,
+          lore2 = List(RESET.toString + "" + GREEN + "" + "金額：" + getPoint * 100,
             "" + RESET + GREEN + "プレミアムエフェクトポイント：+" + getPoint,
             "" + RESET + GREEN + "日時：" + lrs.getString("date")
           )
           itemstack.setItemMeta({
-            val meta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND)
+            val meta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND)
             meta.setDisplayName("" + AQUA + UNDERLINE + "" + BOLD + "寄付")
             meta.setLore(lore2.asJava)
             meta
@@ -80,8 +80,8 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
             "" + RESET + GOLD + "日時：" + lrs.getString("date")
           )
           itemstack.setItemMeta({
-            val meta = Bukkit.getItemFactory().getItemMeta(material)
-            meta.setDisplayName("" + RESET.toString() + YELLOW + "購入エフェクト：" + effect(num).desc)
+            val meta = Bukkit.getItemFactory.getItemMeta(material)
+            meta.setDisplayName("" + RESET.toString + YELLOW + "購入エフェクト：" + effect(num).desc)
             meta.setLore(lore2.asJava)
             meta
           })
