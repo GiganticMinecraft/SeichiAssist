@@ -81,7 +81,7 @@ object OnClickTitleMenu extends Listener {
         //表示内容をLVに変更
         if (itemstackcurrent.getType == Material.REDSTONE_TORCH_ON) {
           // Zero clear
-          playerdata.updateNickname(style = PlayerNickName.Style.Level)
+          playerdata.updateNickname(id1 = 0, id2 = 0, id3 = 0, style = PlayerNickName.Style.Level)
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
         } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_Present2") {
