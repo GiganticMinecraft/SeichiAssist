@@ -13,6 +13,10 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 object EffectCommand {
+  val executor: TabExecutor = BranchedExecutor(
+    Map("smart" -> messageFlagToggleExecutor),
+    whenArgInsufficient = Some(toggleExecutor), whenBranchNotFound = Some(printUsageExecutor)
+  ).asNonBlockingTabExecutor()
   private val printUsageExecutor = playerCommandBuilder
     .execution { _ =>
       val message = List(
@@ -28,7 +32,6 @@ object EffectCommand {
       }
     }
     .build()
-
   private val toggleExecutor = playerCommandBuilder
     .execution { context =>
       val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
@@ -44,7 +47,6 @@ object EffectCommand {
       IO.pure(execution())
     }
     .build()
-
   private val messageFlagToggleExecutor = playerCommandBuilder
     .execution { context =>
       val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
@@ -57,10 +59,5 @@ object EffectCommand {
       IO.pure(execution())
     }
     .build()
-
-  val executor: TabExecutor = BranchedExecutor(
-    Map("smart" -> messageFlagToggleExecutor),
-    whenArgInsufficient = Some(toggleExecutor), whenBranchNotFound = Some(printUsageExecutor)
-  ).asNonBlockingTabExecutor()
 
 }

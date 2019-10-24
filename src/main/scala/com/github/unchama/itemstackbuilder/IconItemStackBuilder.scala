@@ -7,9 +7,9 @@ import org.bukkit.inventory.meta.ItemMeta
 /**
  * ItemStack, 特にメニューに使用するスロットのIconを生成するBuilderです.
  *
- * @param material ItemStackに設定するMaterial
+ * @param material   ItemStackに設定するMaterial
  * @param durability ダメージ値
- * Created by karayuu on 2019/03/30
+ *                   Created by karayuu on 2019/03/30
  */
 class IconItemStackBuilder(material: Material, durability: Short = 0.toShort) extends
   AbstractItemStackBuilder[ItemMeta](material, durability) {

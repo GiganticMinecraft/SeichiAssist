@@ -4,16 +4,67 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SkullOwners}
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffects._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 object CategorizedMineStackMenu {
+
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
   private val mineStackObjectPerPage = 9 * 5
+
+  /**
+   * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
+   */
+  def forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = new Menu {
+    override val frame: MenuFrame =
+      MenuFrame(Left(InventoryRowSize(6)), s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
+
+    override def computeMenuLayout(player: Player): IO[MenuSlotLayout] =
+      computeMenuLayoutOn(category, pageIndex)(player)
+  }
+
+  private def computeMenuLayoutOn(category: MineStackObjectCategory, page: Int)(player: Player): IO[MenuSlotLayout] = {
+    import MineStackObjectCategory._
+    import cats.implicits._
+
+    val categoryItemList = MineStackObjectList.minestacklist.filter(_.category() == category)
+    val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
+
+    // オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、最後のページを計算する
+    if (page >= totalNumberOfPages) return computeMenuLayoutOn(category, totalNumberOfPages - 1)(player)
+
+    val playerMineStackButtons = MineStackButtons(player)
+    import playerMineStackButtons._
+
+    val uiOperationSection = Sections.uiOperationSection(totalNumberOfPages)(category, page)
+
+    // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
+    val categorizedItemSectionComputation =
+      categoryItemList.slice(mineStackObjectPerPage * page, mineStackObjectPerPage * page + mineStackObjectPerPage)
+        .map(getMineStackItemButtonOf)
+        .zipWithIndex
+        .map(_.swap)
+        .toList
+        .map(_.sequence)
+        .sequence
+
+    // 自動スタック機能トグルボタンを含むセクションの計算
+    val autoMineStackToggleButtonSectionComputation =
+      List((9 * 5 + 4) -> computeAutoMineStackToggleButton())
+        .map(_.sequence)
+        .sequence
+
+    for {
+      categorizedItemSection <- categorizedItemSectionComputation
+      autoMineStackToggleButtonSection <- autoMineStackToggleButtonSectionComputation
+      combinedLayout = uiOperationSection.++(categorizedItemSection).++(autoMineStackToggleButtonSection)
+    } yield MenuSlotLayout(combinedLayout: _*)
+  }
 
   object Sections {
     val mineStackMainMenuButtonSection: Seq[(Int, Button)] = {
@@ -63,61 +114,6 @@ object CategorizedMineStackMenu {
           Seq()
 
       mineStackMainMenuButtonSection ++ previousPageButtonSection ++ nextPageButtonSection
-    }
-  }
-
-  private def computeMenuLayout(player: Player)(category: MineStackObjectCategory, page: Int): IO[IndexedSlotLayout] = {
-    import MineStackObjectCategory._
-    import cats.implicits._
-
-    val categoryItemList = MineStackObjectList.minestacklist.filter(_.category() == category)
-    val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
-
-    // オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、最後のページを計算する
-    if (page >= totalNumberOfPages) return computeMenuLayout(player)(category, totalNumberOfPages - 1)
-
-    val playerMineStackButtons = MineStackButtons(player)
-    import playerMineStackButtons._
-
-    val uiOperationSection = Sections.uiOperationSection(totalNumberOfPages)(category, page)
-
-    // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
-    val categorizedItemSectionComputation =
-      categoryItemList.slice(mineStackObjectPerPage * page, mineStackObjectPerPage * page + mineStackObjectPerPage)
-        .map(getMineStackItemButtonOf)
-        .zipWithIndex
-        .map(_.swap)
-        .toList
-        .map(_.sequence)
-        .sequence
-
-    // 自動スタック機能トグルボタンを含むセクションの計算
-    val autoMineStackToggleButtonSectionComputation =
-      List((9 * 5 + 4) -> computeAutoMineStackToggleButton())
-        .map(_.sequence)
-        .sequence
-
-    for {
-      categorizedItemSection <- categorizedItemSectionComputation
-      autoMineStackToggleButtonSection <- autoMineStackToggleButtonSectionComputation
-      combinedLayout = uiOperationSection.++(categorizedItemSection).++(autoMineStackToggleButtonSection)
-    } yield IndexedSlotLayout(combinedLayout: _*)
-  }
-
-  /**
-   * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
-   */
-  def forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = new Menu {
-    override val open: TargetedEffect[Player] = computedEffect { player =>
-      val session = InventoryFrame(
-          Left(InventoryRowSize(6)),
-          s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
-      ).createNewSession()
-
-      sequentialEffect(
-          session.openInventory,
-          _ => computeMenuLayout(player)(category, pageIndex).flatMap(session.overwriteViewWith)
-      )
     }
   }
 }

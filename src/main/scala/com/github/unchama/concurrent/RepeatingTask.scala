@@ -7,23 +7,6 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
 abstract class RepeatingTask {
-  protected val getRepeatInterval: IO[FiniteDuration]
-
-  protected val runRoutine: IO[Any]
-
-  /**
-   * [[runRoutine]]が実行される[[ExecutionContext]].
-   *
-   * [[runRoutine]]の中で更にコンテキストを切り替えても問題ないが,
-   * 殆どの場合外部から実行コンテキストを指定するほうがわかりやすいため[[RepeatingTask]]に組み込んでいる.
-   */
-  val taskExecutionContext: ExecutionContext
-
-  /**
-   * 待機処理を担当する[[Timer]].
-   */
-  val sleepTimer: Timer[IO]
-
   /**
    * [[getRepeatInterval]]で指定される長さの待機処理と[[runRoutine]]を交互に行っていくプログラム.
    *
@@ -56,4 +39,17 @@ abstract class RepeatingTask {
       }
     } yield loop
   }
+  /**
+   * [[runRoutine]]が実行される[[ExecutionContext]].
+   *
+   * [[runRoutine]]の中で更にコンテキストを切り替えても問題ないが,
+   * 殆どの場合外部から実行コンテキストを指定するほうがわかりやすいため[[RepeatingTask]]に組み込んでいる.
+   */
+  val taskExecutionContext: ExecutionContext
+  /**
+   * 待機処理を担当する[[Timer]].
+   */
+  val sleepTimer: Timer[IO]
+  protected val getRepeatInterval: IO[FiniteDuration]
+  protected val runRoutine: IO[Any]
 }

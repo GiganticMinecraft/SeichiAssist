@@ -19,17 +19,26 @@ import org.bukkit.{Bukkit, World}
 import scala.jdk.CollectionConverters._
 
 object RmpCommand {
+  val executor: TabExecutor =
+    BranchedExecutor(
+      Map(
+        "remove" -> removeExecutor,
+        "list" -> listExecutor
+      ),
+      whenArgInsufficient = Some(printDescriptionExecutor),
+      whenBranchNotFound = Some(printDescriptionExecutor)
+    ).asNonBlockingTabExecutor()
+
+  import ArgumentParserScope._
   private val printDescriptionExecutor = new EchoExecutor(
     List(
       s"$RED/rmp remove [world名] [日数]",
-        "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
-        "",
+      "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
+      "",
       s"$RED/rmp list [world名] [日数]",
-        "全Ownerが[日数]間ログインしていないRegionを表示します"
+      "全Ownerが[日数]間ログインしていないRegionを表示します"
     ).asMessageEffect()
   )
-
-  import ArgumentParserScope._
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
     .refineSenderWithError[ConsoleCommandSender](s"${GREEN}このコマンドはコンソールから実行してください")
     .argumentsParsers(List(
@@ -41,26 +50,6 @@ object RmpCommand {
       },
       nonNegativeInteger(s"${RED}[日数]には非負整数を入力してください".asMessageEffect())
     ), onMissingArguments = printDescriptionExecutor)
-
-  @SuspendingMethod
-  private def getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] = {
-    val databaseGateway = SeichiAssist.databaseGateway
-
-    val leavers = databaseGateway.playerDataManipulator.selectLeaversUUIDs(daysThreshold)
-    if (leavers == null) {
-      return Left(s"${RED}データベースアクセスに失敗しました。".asMessageEffect())
-    }
-
-    val regions = ExternalPlugins.getWorldGuard.getRegionContainer.get(world).getRegions.asScala
-
-    val oldRegions = regions.values.filter { region =>
-      region.getId != "__global__" && region.getId != "spawn"&&
-        region.getOwners.getUniqueIds.asScala.forall(leavers.contains(_))
-    }.toList
-
-    Right(oldRegions)
-  }
-
   private val removeExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
       val world = context.args.parsed(0).asInstanceOf[World]
@@ -116,13 +105,22 @@ object RmpCommand {
     }
     .build()
 
-  val executor: TabExecutor =
-    BranchedExecutor(
-      Map(
-        "remove" -> removeExecutor,
-        "list" -> listExecutor
-      ),
-      whenArgInsufficient = Some(printDescriptionExecutor),
-      whenBranchNotFound = Some(printDescriptionExecutor)
-    ).asNonBlockingTabExecutor()
+  @SuspendingMethod
+  private def getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] = {
+    val databaseGateway = SeichiAssist.databaseGateway
+
+    val leavers = databaseGateway.playerDataManipulator.selectLeaversUUIDs(daysThreshold)
+    if (leavers == null) {
+      return Left(s"${RED}データベースアクセスに失敗しました。".asMessageEffect())
+    }
+
+    val regions = ExternalPlugins.getWorldGuard.getRegionContainer.get(world).getRegions.asScala
+
+    val oldRegions = regions.values.filter { region =>
+      region.getId != "__global__" && region.getId != "spawn" &&
+        region.getOwners.getUniqueIds.asScala.forall(leavers.contains(_))
+    }.toList
+
+    Right(oldRegions)
+  }
 }

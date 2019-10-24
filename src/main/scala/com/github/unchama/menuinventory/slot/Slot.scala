@@ -37,6 +37,7 @@ object Slot {
    */
   def plainSlotWith(itemStack: ItemStack): Slot = new Slot {
     override val itemStack: ItemStack = itemStack
+
     override def effectOn(event: InventoryClickEvent): EmptyEffect.type = EmptyEffect
   }
 }

@@ -19,53 +19,54 @@ import scala.jdk.CollectionConverters;
 import java.util.UUID;
 
 public class GachaItemListener implements Listener {
-	HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
-	//private SeichiAssist instance = SeichiAssist.instance;
-	@EventHandler
-	public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent e){
-		Player player = e.getPlayer();
-		PlayerData playerdata = playermap.apply(player.getUniqueId());
-		//念のためエラー分岐
-		if(playerdata == null){
-			Util.sendPlayerDataNullMessage(player);
-			Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
-			Bukkit.getLogger().warning("GachaItemListener.onPlayerItemConsumeEvent");
-			return;
-		}
-		int level = playerdata.level();
-		Mana mana = playerdata.activeskilldata().mana;
-		ItemStack i = e.getItem();
-		//Material m = i.getType();
-		ItemMeta itemmeta = i.getItemMeta();
+    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 
-		//これ以降は説明文あり
-		if(!itemmeta.hasLore())return;
-		List<String> lore = CollectionConverters.ListHasAsScala(itemmeta.getLore()).asScala().toList();
+    //private SeichiAssist instance = SeichiAssist.instance;
+    @EventHandler
+    public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent e) {
+        Player player = e.getPlayer();
+        PlayerData playerdata = playermap.apply(player.getUniqueId());
+        //念のためエラー分岐
+        if (playerdata == null) {
+            Util.sendPlayerDataNullMessage(player);
+            Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
+            Bukkit.getLogger().warning("GachaItemListener.onPlayerItemConsumeEvent");
+            return;
+        }
+        int level = playerdata.level();
+        Mana mana = playerdata.activeskilldata().mana;
+        ItemStack i = e.getItem();
+        //Material m = i.getType();
+        ItemMeta itemmeta = i.getItemMeta();
 
-		if(Util.loreIndexOf(lore,"マナ完全回復") > 0){
-			mana.setFull(player,level);
-			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
-		}
+        //これ以降は説明文あり
+        if (!itemmeta.hasLore()) return;
+        List<String> lore = CollectionConverters.ListHasAsScala(itemmeta.getLore()).asScala().toList();
 
-		if(Util.loreIndexOf(lore,"マナ回復（小）") > 0){
-			mana.increase(300, player, level);
-			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
-		}
+        if (Util.loreIndexOf(lore, "マナ完全回復") > 0) {
+            mana.setFull(player, level);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+        }
 
-		if(Util.loreIndexOf(lore,"マナ回復（中）") > 0){
-			mana.increase(1500, player, level);
-			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
-		}
+        if (Util.loreIndexOf(lore, "マナ回復（小）") > 0) {
+            mana.increase(300, player, level);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+        }
 
-		if(Util.loreIndexOf(lore,"マナ回復（大）") > 0){
-			mana.increase(10000, player, level);
-			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
-		}
+        if (Util.loreIndexOf(lore, "マナ回復（中）") > 0) {
+            mana.increase(1500, player, level);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+        }
 
-		if(Util.loreIndexOf(lore,"マナ回復（極）") > 0){
-			mana.increase(100000, player, level);
-			player.playSound(player.getLocation(),Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
-		}
-	}
+        if (Util.loreIndexOf(lore, "マナ回復（大）") > 0) {
+            mana.increase(10000, player, level);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+        }
+
+        if (Util.loreIndexOf(lore, "マナ回復（極）") > 0) {
+            mana.increase(100000, player, level);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
+        }
+    }
 
 }

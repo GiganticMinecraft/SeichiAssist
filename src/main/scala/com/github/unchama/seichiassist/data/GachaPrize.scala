@@ -6,11 +6,10 @@ import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
 class GachaPrize(_itemStack: ItemStack, var probability: Double) {
-  //アイテムデータ格納
-  var itemStack: ItemStack = _itemStack.clone()
-
   @Deprecated
   val itemStackAmount: Int = this.itemStack.getAmount
+  //アイテムデータ格納
+  var itemStack: ItemStack = _itemStack.clone()
 
   import scala.jdk.CollectionConverters._
 
@@ -55,7 +54,7 @@ object GachaPrize {
     var sum = 1.0
     val rand = Math.random()
 
-    for { gachadata <- SeichiAssist.gachadatalist } {
+    for {gachadata <- SeichiAssist.gachadatalist} {
       sum -= gachadata.probability
       if (sum <= rand) {
         return gachadata.copy()

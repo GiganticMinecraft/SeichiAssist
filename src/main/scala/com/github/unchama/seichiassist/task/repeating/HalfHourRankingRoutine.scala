@@ -53,9 +53,13 @@ case class HalfHourRankingRoutine(override val taskExecutionContext: ExecutionCo
 
     // ここで、0 => 第一位、 1 => 第二位、・・・n => 第(n+1)位にする (つまり降順)
     val sortedPlayerData = SeichiAssist.playermap.values.toList
-        .filter { _.halfhourblock.increase != 0L }
-        .sortBy { _.halfhourblock.increase }
-        .reverse
+      .filter {
+        _.halfhourblock.increase != 0L
+      }
+      .sortBy {
+        _.halfhourblock.increase
+      }
+      .reverse
 
     Util.sendEveryMessage("全体の整地量は " + AQUA + totalBreakCount + WHITE + " でした")
 

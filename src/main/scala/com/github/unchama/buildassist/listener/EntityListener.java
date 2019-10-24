@@ -9,18 +9,18 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class EntityListener implements Listener {
 
-	@EventHandler
-	public void onEntityExplodeEvent(final EntityExplodeEvent event) {
-		if ((event.getEntity() instanceof LargeFireball)) {
-			event.setCancelled(true);
-		}
-	}
+    @EventHandler
+    public void onEntityExplodeEvent(final EntityExplodeEvent event) {
+        if ((event.getEntity() instanceof LargeFireball)) {
+            event.setCancelled(true);
+        }
+    }
 
-	@EventHandler
-	public void onEntityDamageByEntityEvent(final EntityDamageByEntityEvent event) {
-		if (((event.getDamager() instanceof LargeFireball))
-				&& ((event.getEntity() instanceof Player))) {
-			event.setCancelled(true);
-		}
-	}
+    @EventHandler
+    public void onEntityDamageByEntityEvent(final EntityDamageByEntityEvent event) {
+        if (((event.getDamager() instanceof LargeFireball))
+                && ((event.getEntity() instanceof Player))) {
+            event.setCancelled(true);
+        }
+    }
 }

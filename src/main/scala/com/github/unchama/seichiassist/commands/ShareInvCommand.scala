@@ -14,15 +14,23 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
 
 object ShareInvCommand {
+
   import com.github.unchama.targetedeffect.MessageEffects._
 
   import scala.jdk.CollectionConverters._
 
-  def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): IO[Unit] = {
-    itemStackOption
-      .filter(_.getType != Material.AIR)
-      .fold(IO.pure(())) { itemStack => IO { Util.dropItem(to, itemStack) } }
-  }
+  val executor: TabExecutor = playerCommandBuilder
+    .execution { context =>
+      val senderData = SeichiAssist.playermap(context.sender.getUniqueId)
+
+      if (senderData.contentsPresentInSharedInventory) {
+        withdrawFromSharedInventory(context.sender)
+      } else {
+        depositToSharedInventory(context.sender)
+      }
+    }
+    .build()
+    .asNonBlockingTabExecutor()
 
   private def withdrawFromSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -46,7 +54,16 @@ object ShareInvCommand {
         }
         successful <- EitherT.rightT[IO, TargetedEffect[Player]](s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect())
       } yield successful
-    }.merge
+      }.merge
+  }
+
+  def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): IO[Unit] = {
+    itemStackOption
+      .filter(_.getType != Material.AIR)
+      .fold(IO.pure(())) { itemStack => IO {
+        Util.dropItem(to, itemStack)
+      }
+      }
   }
 
   private def depositToSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
@@ -55,7 +72,7 @@ object ShareInvCommand {
 
     val playerInventory = player.getInventory
 
-    def takeIfNotNull[App[_]: Applicative, E, A](a: A, fail: E): EitherT[App, E, A] =
+    def takeIfNotNull[App[_] : Applicative, E, A](a: A, fail: E): EitherT[App, E, A] =
       EitherT.cond[App](a != null, a, fail)
 
     {
@@ -81,19 +98,6 @@ object ShareInvCommand {
           }
         }
       } yield successEffect
-    }.merge
+      }.merge
   }
-
-  val executor: TabExecutor = playerCommandBuilder
-      .execution { context =>
-        val senderData = SeichiAssist.playermap(context.sender.getUniqueId)
-
-        if (senderData.contentsPresentInSharedInventory) {
-          withdrawFromSharedInventory(context.sender)
-        } else {
-          depositToSharedInventory(context.sender)
-        }
-      }
-      .build()
-      .asNonBlockingTabExecutor()
 }

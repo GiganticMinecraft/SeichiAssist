@@ -24,28 +24,28 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
     import generator._
 
     val lore = List(
-        List(seichiLevelDescription()),
-        levelProgressionDescription(),
-        noRewardsOutsideSeichiWorld,
-        passiveSkillDescription(),
-        List(
-            totalBreakAmountDescription(),
-            rankingDescription()
-        ),
-        rankingDiffDescription(),
-        List(
-            totalLoginTimeDescrpition(),
-            totalLoginDaysDescrption(),
-            totalChainLoginDaysDescription()
-        ),
-        totalChainVoteDaysDescription(),
-        List(
-            s"$DARK_GRAY※1分毎に更新",
-            s"${GREEN}統計データは",
-            s"${GREEN}各サバイバルサーバー間で",
-            s"${GREEN}共有されます"
-        ),
-        expBarDescription()
+      List(seichiLevelDescription()),
+      levelProgressionDescription(),
+      noRewardsOutsideSeichiWorld,
+      passiveSkillDescription(),
+      List(
+        totalBreakAmountDescription(),
+        rankingDescription()
+      ),
+      rankingDiffDescription(),
+      List(
+        totalLoginTimeDescrpition(),
+        totalLoginDaysDescrption(),
+        totalChainLoginDaysDescription()
+      ),
+      totalChainVoteDaysDescription(),
+      List(
+        s"$DARK_GRAY※1分毎に更新",
+        s"${GREEN}統計データは",
+        s"${GREEN}各サバイバルサーバー間で",
+        s"${GREEN}共有されます"
+      ),
+      expBarDescription()
     ).flatten
 
     IO.pure(lore)
@@ -85,10 +85,10 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    */
   private def passiveSkillDescription(): List[String] = {
     List(
-        s"${DARK_GRAY}パッシブスキル効果：",
-        s"${DARK_GRAY}1ブロック整地ごとに",
-        s"$DARK_GRAY${PlayerData.passiveSkillProbability}%の確率で",
-        s"$DARK_GRAY${playerData.getPassiveExp()}のマナを獲得"
+      s"${DARK_GRAY}パッシブスキル効果：",
+      s"${DARK_GRAY}1ブロック整地ごとに",
+      s"$DARK_GRAY${PlayerData.passiveSkillProbability}%の確率で",
+      s"$DARK_GRAY${playerData.getPassiveExp()}のマナを獲得"
     )
   }
 
@@ -101,27 +101,27 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * ランキングの順位の説明文
    */
   private def rankingDescription(): String =
-      s"${GOLD}ランキング：${playerData.calcPlayerRank()}位$GRAY(${SeichiAssist.ranklist.size}人中)"
+    s"${GOLD}ランキング：${playerData.calcPlayerRank()}位$GRAY(${SeichiAssist.ranklist.size}人中)"
 
   /**
    * 一つ前のランキングのプレイヤーとの整地量の差を表す説明文を返します.
    */
   private def rankingDiffDescription(): List[String] =
-      if (playerData.calcPlayerRank() != 1) {
-        val playerRanking = playerData.calcPlayerRank()
-        val rankData = SeichiAssist.ranklist(playerRanking - 2)
-        val differenceToTheBest = rankData.totalbreaknum - playerData.totalbreaknum
+    if (playerData.calcPlayerRank() != 1) {
+      val playerRanking = playerData.calcPlayerRank()
+      val rankData = SeichiAssist.ranklist(playerRanking - 2)
+      val differenceToTheBest = rankData.totalbreaknum - playerData.totalbreaknum
 
-        List(s"$AQUA${playerRanking - 1}位(${rankData.name})との差：$differenceToTheBest")
-      } else {
-        Nil
-      }
+      List(s"$AQUA${playerRanking - 1}位(${rankData.name})との差：$differenceToTheBest")
+    } else {
+      Nil
+    }
 
   /**
    * 総ログイン時間の説明文
    */
   private def totalLoginTimeDescrpition(): String =
-      s"${GRAY}総ログイン時間：${TypeConverter.toTimeString(TypeConverter.toSecond(playerData.playTick))}"
+    s"${GRAY}総ログイン時間：${TypeConverter.toTimeString(TypeConverter.toSecond(playerData.playTick))}"
 
   /**
    * 通算ログイン日数の説明文
@@ -137,20 +137,20 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * 連続投票日数の説明文.
    */
   private def totalChainVoteDaysDescription(): List[String] =
-      if (playerData.ChainVote > 0)
-        List(s"$RESET${GRAY}連続投票日数：${playerData.ChainVote}日")
-      else
-        Nil
+    if (playerData.ChainVote > 0)
+      List(s"$RESET${GRAY}連続投票日数：${playerData.ChainVote}日")
+    else
+      Nil
 
   /**
    * Expバーの説明文.
    */
   private def expBarDescription(): List[String] =
     if (playerData.settings.isExpBarVisible) List(
-        s"${GREEN}整地量バーを表示",
-        s"$DARK_RED${UNDERLINE}クリックで非表示"
+      s"${GREEN}整地量バーを表示",
+      s"$DARK_RED${UNDERLINE}クリックで非表示"
     ) else List(
-        s"${RED}整地量バーを非表示",
-        s"$DARK_GREEN${UNDERLINE}クリックで表示"
+      s"${RED}整地量バーを非表示",
+      s"$DARK_GREEN${UNDERLINE}クリックで表示"
     )
 }

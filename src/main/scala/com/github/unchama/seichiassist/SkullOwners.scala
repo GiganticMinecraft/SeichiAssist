@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist
 
 import com.github.unchama.itemstackbuilder.{SkullOwnerName, SkullOwnerReference}
+
 /**
  * プレーヤーヘッドにownerとして設定されるプレーヤー達に関する定数を保持するオブジェクト
  */
@@ -20,4 +21,5 @@ object SkullOwners {
   implicit class StringOps(val string: String) {
     def asSkullOwnerReference(): SkullOwnerReference = SkullOwnerName(string)
   }
+
 }

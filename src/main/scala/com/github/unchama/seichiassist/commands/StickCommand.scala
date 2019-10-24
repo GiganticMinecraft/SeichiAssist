@@ -10,19 +10,19 @@ import org.bukkit.{Material, Sound}
 
 object StickCommand {
   val executor: TabExecutor = playerCommandBuilder
-      .execution { context =>
-        val sender = context.sender
-        val stickItemStack = new ItemStack(Material.STICK, 1)
+    .execution { context =>
+      val sender = context.sender
+      val stickItemStack = new ItemStack(Material.STICK, 1)
 
-        if (!Util.isPlayerInventoryFull(sender)) {
-          Util.addItem(sender, stickItemStack)
-          sender.playSound(sender.getLocation, Sound.ENTITY_ITEM_PICKUP, 0.1f, 1.0f)
-        } else {
-          Util.dropItem(sender, stickItemStack)
-        }
-
-        IO(EmptyEffect)
+      if (!Util.isPlayerInventoryFull(sender)) {
+        Util.addItem(sender, stickItemStack)
+        sender.playSound(sender.getLocation, Sound.ENTITY_ITEM_PICKUP, 0.1f, 1.0f)
+      } else {
+        Util.dropItem(sender, stickItemStack)
       }
-      .build()
-      .asNonBlockingTabExecutor()
+
+      IO(EmptyEffect)
+    }
+    .build()
+    .asNonBlockingTabExecutor()
 }

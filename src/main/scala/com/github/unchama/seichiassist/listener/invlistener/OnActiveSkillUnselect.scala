@@ -24,7 +24,9 @@ object OnActiveSkillUnselect extends Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
 
     import com.github.unchama.util.InventoryUtil._
 
@@ -463,7 +465,7 @@ object OnActiveSkillUnselect extends Listener {
             player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.2.toFloat)
             playerdata.activeskilldata.updateActiveSkillPoint(player, playerdata.level)
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
-          }/*else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
+          } /*else if(playerdata.activeskilldata.condenskill < skilllevel - 1){
 						player.sendMessage(DARK_RED + "前提スキル[" + ActiveSkill.getActiveSkillName(skilltype,skilllevel - 1) + "]を習得する必要があります");
 						player.playSound(player.getLocation(), Sound.BLOCK_GLASS_PLACE, 1, (float) 0.1);
 					}*/

@@ -158,12 +158,12 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
        */
       List(
         1001 until 1013,
-        3001 until 3019,
-        4001 until 4023,
-        5001 until 5008,
-        5101 until 5020,
-        6001 until 6008,
-        8001 until 8002
+        3001 until 3020,
+        4001 until 4024,
+        5001 until 5009,
+        5101 until 5121,
+        6001 until 6009,
+        8001 until 8003
       ).flatten.foreach { achievementNumber =>
         if (!playerData.TitleFlags.contains(achievementNumber)) {
           SeichiAchievement.tryAchieve(player, achievementNumber)

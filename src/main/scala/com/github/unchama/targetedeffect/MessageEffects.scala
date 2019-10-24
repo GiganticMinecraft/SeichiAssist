@@ -3,6 +3,7 @@ package com.github.unchama.targetedeffect
 import org.bukkit.command.CommandSender
 
 object MessageEffects {
+
   implicit class StringMessageEffect(val string: String) {
     def asMessageEffect() =
       TargetedEffect { commandSender: CommandSender => commandSender.sendMessage(string) }
@@ -12,4 +13,5 @@ object MessageEffects {
     def asMessageEffect() =
       TargetedEffect { commandSender: CommandSender => commandSender.sendMessage(stringList.toArray) }
   }
+
 }

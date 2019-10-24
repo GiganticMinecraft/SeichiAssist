@@ -11,9 +11,25 @@ class ExpBarSynchronization {
 
   import com.github.unchama.util.syntax._
 
-  private case class ExpBarProperties(val title: String, val progress: Double)
-
   private val managedExpBars: mutable.HashMap[Player, BossBar] = mutable.HashMap()
+
+  def synchronizeFor(player: Player): Unit = {
+    desynchronizeFor(player)
+
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
+
+    if (playerData.settings.isExpBarVisible) {
+      val ExpBarProperties(title, progress) = computePropertiesFor(player)
+
+      managedExpBars(player) =
+        Bukkit.getServer.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID)
+          .modify { b =>
+            import b._
+            setProgress(progress)
+            addPlayer(player)
+          }
+    }
+  }
 
   private def computePropertiesFor(player: Player): ExpBarProperties = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -45,25 +61,10 @@ class ExpBarSynchronization {
     }
   }
 
-  def synchronizeFor(player: Player): Unit = {
-    desynchronizeFor(player)
-
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-
-    if (playerData.settings.isExpBarVisible) {
-      val ExpBarProperties(title, progress) = computePropertiesFor(player)
-
-      managedExpBars(player) =
-        Bukkit.getServer.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID)
-        .modify { b => import b._
-          setProgress(progress)
-          addPlayer(player)
-        }
-    }
-  }
-
   def desynchronizeFor(player: Player): Unit = {
     managedExpBars.get(player).foreach(_.removeAll())
     managedExpBars.remove(player)
   }
+
+  private case class ExpBarProperties(val title: String, val progress: Double)
 }

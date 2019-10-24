@@ -577,7 +577,7 @@ gigantic_fever_minutes: 120
 # ここに記載されたワールド名ではworldguard.region.claimパーミッションが無くても
 # グリッド式保護メニュー経由で保護が可能になります
 GridProtectEnableWorld:
- - world_test
+  - world_test
 
 # グリッドで指定可能な最大ユニット合計数の設定
 # (15ブロック=1ユニット)
@@ -615,7 +615,7 @@ LimitedLoginEvent:
   EventStart: "2019/03/01"
   #終了日(この日が最後のカウント対象になります)
   EventEnd: "2019/03/31"
-  
+
   #報酬設定
   #DAY0のデータは毎日配布されます
   #それ以外のデータは、期間内の累計ログイン数がその値になった日のみ配布されます

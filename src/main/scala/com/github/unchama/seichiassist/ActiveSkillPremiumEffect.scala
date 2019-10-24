@@ -55,17 +55,16 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
 }
 
 case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
-  case object MAGIC extends ActiveSkillPremiumEffect(1, "ef_magic", s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10, Material.RED_ROSE)
-
-  private val plugin = SeichiAssist.instance
 
   val values: IndexedSeq[ActiveSkillPremiumEffect] = findValues
-
   /**
    * @deprecated for interop purpose only
    */
   @Deprecated()
   val arrayValues: Array[ActiveSkillPremiumEffect] = values.toArray
+  private val plugin = SeichiAssist.instance
 
   def fromSqlName(sqlName: String): Option[ActiveSkillPremiumEffect] = values.find(sqlName == _.sql_name)
+
+  case object MAGIC extends ActiveSkillPremiumEffect(1, "ef_magic", s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10, Material.RED_ROSE)
 }

@@ -15,24 +15,24 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class PlayerChatEventListener implements Listener {
 
-	@EventHandler(priority=EventPriority.LOW)
-	public void setSubHomeName(AsyncPlayerChatEvent event) {
-		Player player = event.getPlayer();
-		PlayerData data = SeichiAssist.playermap().apply(player.getUniqueId());
+    @EventHandler(priority = EventPriority.LOW)
+    public void setSubHomeName(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        PlayerData data = SeichiAssist.playermap().apply(player.getUniqueId());
 
-		if (!data.isSubHomeNameChange()) {
-			return;
-		}
+        if (!data.isSubHomeNameChange()) {
+            return;
+        }
 
-		int n = data.setHomeNameNum();
+        int n = data.setHomeNameNum();
 
-		data.setSubHomeName(event.getMessage(), n);
+        data.setSubHomeName(event.getMessage(), n);
 
-		player.sendMessage(ChatColor.GREEN + "サブホームポイント" + (n+1) + "の名前を");
-		player.sendMessage(ChatColor.GREEN + event.getMessage() + "に更新しました");
+        player.sendMessage(ChatColor.GREEN + "サブホームポイント" + (n + 1) + "の名前を");
+        player.sendMessage(ChatColor.GREEN + event.getMessage() + "に更新しました");
 
-		data.isSubHomeNameChange_$eq(false);
-		event.setCancelled(true);
-	}
+        data.isSubHomeNameChange_$eq(false);
+        event.setCancelled(true);
+    }
 
 }

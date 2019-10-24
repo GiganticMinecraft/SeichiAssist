@@ -5,10 +5,9 @@ import com.github.unchama.buildassist.{BuildAssist, PlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{IndexedSlotLayout, InventoryFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
 import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{EmptyEffect, UnfocusedEffect}
 import com.github.unchama.{menuinventory, targetedeffect}
@@ -17,31 +16,51 @@ import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
+
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.TargetedEffects._
 
   private implicit class PlayerDataOps(val playerData: PlayerData) extends AnyVal {
     def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
   }
 
-  private object ConstantButtons {
-    val buttonToOpenPreviousPage: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.BARRIER)
-        .title(s"$YELLOW$UNDERLINE${BOLD}元のページへ")
-        .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
-        .build()
+  override val frame: MenuFrame =
+    MenuFrame(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
 
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          BuildMainMenu.open
-        )
+  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+    import ConstantButtons._
+    val computations = ButtonComputations(player)
+    import computations._
+
+    val constantPart = Map(
+      0 -> buttonToOpenPreviousPage
+    )
+
+    import cats.implicits._
+
+    val dynamicPartComputation =
+      List(
+        4 -> computeButtonToToggleDirtPlacement(),
+        13 -> computeButtonToShowCurrentStatus(),
+        19 -> computeButtonToMaximizeRange(),
+        20 -> computeButtonToIncreaseRange(),
+        22 -> computeButtonToResetRange(),
+        24 -> computeButtonToDecreaseRange(),
+        25 -> computeButtonToMinimizeRange(),
+        35 -> computeButtonToToggleConsumingMineStack()
       )
-    }
+        .map(_.sequence)
+        .sequence
+
+    for {
+      dynamicPart <- dynamicPartComputation
+    } yield menuinventory.MenuSlotLayout(constantPart ++ dynamicPart)
   }
 
   private case class ButtonComputations(player: Player) extends AnyVal {
+
     import player._
+
     def computeButtonToToggleDirtPlacement(): IO[Button] = RecomputedButton {
       IO {
         val playerData = BuildAssist.playermap(getUniqueId)
@@ -105,7 +124,9 @@ object BlockPlacementSkillMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          targetedeffect.UnfocusedEffect { playerData.AREAint = 5 },
+          targetedeffect.UnfocusedEffect {
+            playerData.AREAint = 5
+          },
           s"${RED}現在の範囲設定は 11×11 です".asMessageEffect(),
           open
         )
@@ -144,7 +165,9 @@ object BlockPlacementSkillMenu extends Menu {
               if (playerData.AREAint < 5)
                 sequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                  UnfocusedEffect { playerData.AREAint += 1 },
+                  UnfocusedEffect {
+                    playerData.AREAint += 1
+                  },
                   s"${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
                   open
                 )
@@ -172,7 +195,9 @@ object BlockPlacementSkillMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          targetedeffect.UnfocusedEffect { playerData.AREAint = 2 },
+          targetedeffect.UnfocusedEffect {
+            playerData.AREAint = 2
+          },
           s"${RED}現在の範囲設定は 5×5 です".asMessageEffect(),
           open
         )
@@ -241,7 +266,9 @@ object BlockPlacementSkillMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          targetedeffect.UnfocusedEffect { playerData.AREAint = 1 },
+          targetedeffect.UnfocusedEffect {
+            playerData.AREAint = 1
+          },
           s"${RED}現在の範囲設定は 3×3 です".asMessageEffect(),
           open
         )
@@ -286,45 +313,21 @@ object BlockPlacementSkillMenu extends Menu {
       }
     }
   }
-  
-  def computeMenuLayout(player: Player): IO[IndexedSlotLayout] = {
-    import ConstantButtons._
-    val computations = ButtonComputations(player)
-    import computations._
 
-    val constantPart = Map(
-      0 -> buttonToOpenPreviousPage
-    )
+  private object ConstantButtons {
+    val buttonToOpenPreviousPage: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.BARRIER)
+        .title(s"$YELLOW$UNDERLINE${BOLD}元のページへ")
+        .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
+        .build()
 
-    import cats.implicits._
-
-    val dynamicPartComputation =
-      List(
-        4 -> computeButtonToToggleDirtPlacement(),
-        13 -> computeButtonToShowCurrentStatus(),
-        19 -> computeButtonToMaximizeRange(),
-        20 -> computeButtonToIncreaseRange(),
-        22 -> computeButtonToResetRange(),
-        24 -> computeButtonToDecreaseRange(),
-        25 -> computeButtonToMinimizeRange(),
-        35 -> computeButtonToToggleConsumingMineStack()
+      Button(
+        iconItemStack,
+        LeftClickButtonEffect(
+          CommonSoundEffects.menuTransitionFenceSound,
+          BuildMainMenu.open
+        )
       )
-        .map(_.sequence)
-        .sequence
-
-    for {
-      dynamicPart <- dynamicPartComputation
-    } yield menuinventory.IndexedSlotLayout(constantPart ++ dynamicPart)
-  }
-
-  override val open: TargetedEffect[Player] = { player =>
-    for {
-      session <- IO.pure(
-        InventoryFrame(Left(InventoryRowSize(4)), s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面").createNewSession()
-      )
-      _ <- session.openInventory(player)
-      layout <- computeMenuLayout(player)
-      _ <- session.overwriteViewWith(layout)
-    } yield ()
+    }
   }
 }

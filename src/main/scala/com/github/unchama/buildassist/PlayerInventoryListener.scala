@@ -30,11 +30,15 @@ class PlayerInventoryListener extends Listener {
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType != EntityType.PLAYER) return
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
 
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
-    if (topinventory.getSize != 36) { return }
+    if (topinventory.getSize != 36) {
+      return
+    }
 
     val player = he.asInstanceOf[Player]
     val uuid = player.getUniqueId
@@ -55,7 +59,7 @@ class PlayerInventoryListener extends Listener {
 			 */
       if (itemstackcurrent.getType == Material.SKULL_ITEM) {
         //ホームメニューへ帰還
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         sequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
@@ -126,7 +130,9 @@ class PlayerInventoryListener extends Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.getSize != 54) {
@@ -152,6 +158,8 @@ class PlayerInventoryListener extends Listener {
       if (itemstackcurrent.getType == Material.SKULL_ITEM && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
         //ホームメニューへ帰還
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         sequentialEffect[Player](
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
@@ -354,7 +362,9 @@ class PlayerInventoryListener extends Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.getSize != 54) {
@@ -645,7 +655,9 @@ class PlayerInventoryListener extends Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.getSize != 54) {

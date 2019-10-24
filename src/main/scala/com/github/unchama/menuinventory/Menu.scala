@@ -1,15 +1,38 @@
 package com.github.unchama.menuinventory
 
+import cats.effect.IO
+import com.github.unchama.menuinventory.Types.LayoutPreparationContext
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.entity.Player
+
 /**
- * メニュー一つに対応するオブジェクトへの抽象インターフェース
+ * 「メニュー」のtrait.
+ *
+ * このtraitを実装するオブジェクトは, インベントリ上で展開される意味づけされたUIの情報を持っている.
+ * これらのUIをメニューインベントリ, または単にメニューと呼ぶこととする.
  */
 trait Menu {
 
   /**
-   * オブジェクトが表すメニューを[Player]に開かせる[TargetedEffect].
+   * メニューのサイズとタイトルに関する情報
    */
-  val open: TargetedEffect[Player]
+  val frame: MenuFrame
+
+  /**
+   * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+   */
+  def computeMenuLayout(player: Player): IO[MenuSlotLayout]
+
+  /**
+   * メニューを[Player]に開かせる[TargetedEffect].
+   */
+  def open(implicit ctx: LayoutPreparationContext): TargetedEffect[Player] = { player =>
+    for {
+      session <- frame.createNewSession()
+      _ <- session.openInventory(player)
+      layout <- computeMenuLayout(player)
+      _ <- session.overwriteViewWith(layout)
+    } yield ()
+  }
 
 }

@@ -10,6 +10,14 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
 object SubHomeCommand {
+  val executor: TabExecutor = BranchedExecutor(
+    Map(
+      "warp" -> warpExecutor,
+      "set" -> setExecutor,
+      "name" -> nameExecutor
+    ),
+    whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
+  ).asNonBlockingTabExecutor()
   private val printDescriptionExecutor = new EchoExecutor(
     List(
       s"${GREEN}/subhome コマンドの使い方",
@@ -21,19 +29,16 @@ object SubHomeCommand {
       s"${GREEN}/subhome name [名前変更したいサブホームの番号]"
     ).asMessageEffect()
   )
-
   private val subHomeMax = SeichiAssist.seichiAssistConfig.getSubHomeMax
-
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder
     .argumentsParsers(
       List(
         Parsers.closedRangeInt(
-            0, subHomeMax,
-            failureMessage = s"サブホームの番号を1～${subHomeMax}の間で入力してください".asMessageEffect())
+          0, subHomeMax,
+          failureMessage = s"サブホームの番号を1～${subHomeMax}の間で入力してください".asMessageEffect())
       ),
       onMissingArguments = printDescriptionExecutor
     )
-
   private val warpExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
       val subHomeId = context.args.parsed(0).asInstanceOf[Int]
@@ -49,7 +54,6 @@ object SubHomeCommand {
       }
     }
     .build()
-
   private val setExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
       val subHomeId = context.args.parsed(0).asInstanceOf[Int]
@@ -61,7 +65,6 @@ object SubHomeCommand {
       IO(s"現在位置をサブホームポイント${subHomeId}に設定しました".asMessageEffect())
     }
     .build()
-
   private val nameExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
       val subHomeId = context.args.parsed(0).asInstanceOf[Int]
@@ -79,13 +82,4 @@ object SubHomeCommand {
       }
     }
     .build()
-
-  val executor: TabExecutor = BranchedExecutor(
-    Map(
-      "warp" -> warpExecutor,
-      "set" -> setExecutor,
-      "name" -> nameExecutor
-    ),
-    whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
-  ).asNonBlockingTabExecutor()
 }

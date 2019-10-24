@@ -9,7 +9,7 @@ import scala.Some;
  * Created by karayuu on 2018/06/04
  */
 public final class MineStackDropObj extends MineStackObj {
-	public MineStackDropObj(String objname, String japanesename, int level, Material material, int durability) {
-		super(objname, Some.apply(japanesename), level, material, durability, false, -1, MineStackObjectCategory.MOB_DROP$.MODULE$);
-	}
+    public MineStackDropObj(String objname, String japanesename, int level, Material material, int durability) {
+        super(objname, Some.apply(japanesename), level, material, durability, false, -1, MineStackObjectCategory.MOB_DROP$.MODULE$);
+    }
 }

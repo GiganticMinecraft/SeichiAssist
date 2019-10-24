@@ -15,6 +15,7 @@ object PlayerDataSaving {
   /**
    * プレイヤーデータをDBに保存する処理(非同期で実行すること)
    * DBにセーブしたい値が増えた/減った場合は更新すること
+   *
    * @param playerdata 保存するプレーヤーデータ
    * @author unchama
    */
@@ -94,7 +95,7 @@ object PlayerDataSaving {
 
       val removeCommand = ("delete from "
         + "seichiassist.unlocked_active_skill_effect "
-        + "where player_uuid like '" + playerUuid + "'")
+        + "where player_uuid = '" + playerUuid + "'")
       stmt.executeUpdate(removeCommand)
 
       activeSkillEffects.foreach { activeSkillEffect =>
@@ -118,7 +119,7 @@ object PlayerDataSaving {
 
       val removeCommand = ("delete from "
         + "seichiassist.unlocked_active_skill_premium_effect where "
-        + "player_uuid like '" + playerUuid + "'")
+        + "player_uuid = '" + playerUuid + "'")
       stmt.executeUpdate(removeCommand)
 
       activeSkillPremiumEffects.foreach { activeSkillPremiumEffect =>
@@ -205,7 +206,7 @@ object PlayerDataSaving {
 
           //建築
           + ",build_lv = " + playerdata.buildCount.lv
-          + ",build_count = " + playerdata.buildCount.count//.toString()
+          + ",build_count = " + playerdata.buildCount.count //.toString()
           + ",build_count_flg = " + playerdata.buildCount.migrationFlag
 
           //投票
@@ -233,7 +234,7 @@ object PlayerDataSaving {
           //バレンタインイベント
           + ",hasChocoGave = " + playerdata.hasChocoGave
 
-          + " where uuid like '" + playerUuid + "'")
+          + " where uuid = '" + playerUuid + "'")
       }
 
       stmt.executeUpdate(command)

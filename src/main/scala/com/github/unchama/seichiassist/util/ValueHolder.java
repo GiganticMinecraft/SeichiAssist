@@ -10,6 +10,7 @@ import java.util.function.UnaryOperator;
  * このクラスは、コピー・ファクトリで安全にもともとの参照と異なる参照を新しく生成しなければならない。
  * また、呼び出し側は、もともとの参照と異なる参照が確実に作られることが保証されるコピー・ファクトリを実引数として与えなければならない。
  * このクラスは、ボクシングされるプリミティブの値を保持するのには無意味である。
+ *
  * @param <V> 参照の型
  */
 public class ValueHolder<V> {
@@ -22,7 +23,8 @@ public class ValueHolder<V> {
      *     new ValueHolder&lt;&gt;(o, t -> t)
      * </pre>
      * などといったもともとの参照に影響を与えることができるような参照を作成するコピー・ファクトリを与えるのは安全ではない。
-     * @param value 参照の型
+     *
+     * @param value       参照の型
      * @param copyFactory 新しい参照を作成するコピー・ファクトリ
      */
     public ValueHolder(V value, @NotNull UnaryOperator<V> copyFactory) {

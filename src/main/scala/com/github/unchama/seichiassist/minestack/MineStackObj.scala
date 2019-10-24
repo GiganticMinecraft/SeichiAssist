@@ -28,14 +28,14 @@ class MineStackObj(val mineStackObjName: String,
 
   def durability: Int = itemStack.getDurability.toInt
 
-  def canEqual(other: Any): Boolean = other.isInstanceOf[MineStackObj]
-
   override def equals(other: Any): Boolean = other match {
     case that: MineStackObj =>
       (that canEqual this) &&
         mineStackObjName == that.mineStackObjName
     case _ => false
   }
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[MineStackObj]
 
   override def hashCode(): Int = {
     val state = Seq(mineStackObjName)

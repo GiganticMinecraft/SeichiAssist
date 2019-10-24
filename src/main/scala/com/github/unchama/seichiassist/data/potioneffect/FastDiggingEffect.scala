@@ -3,11 +3,11 @@ package com.github.unchama.seichiassist.data.potioneffect
 import com.github.unchama.seichiassist.util.TypeConverter
 
 /**
- * @param duration 持続ティック数
+ * @param duration  持続ティック数
  * @param amplifier 効果の強さ
- * @param id 上昇値の種類
+ * @param id        上昇値の種類
  *
- * [id] は以下の値を取り得る:
+ *                  [id] は以下の値を取り得る:
  * - 0 不明な上昇値
  * - 1 接続人数から
  * - 2 採掘量から
@@ -15,8 +15,8 @@ import com.github.unchama.seichiassist.util.TypeConverter
  * - 4 投票から
  * - 5 コマンド入力から(イベントや不具合等)
  *
- * TODO これをイミュータブルなデータクラスに
- * TODO [id]はenumに[effectDescription]
+ *                  TODO これをイミュータブルなデータクラスに
+ *                  TODO [id]はenumに[effectDescription]
  */
 class FastDiggingEffect(var duration: Int, var amplifier: Double, private val id: Int) {
   def effectDescription: String = {

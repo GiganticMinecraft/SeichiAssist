@@ -30,12 +30,12 @@ import org.bukkit.{Bukkit, Material}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
+
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
 
-  private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
-
   val expBarSynchronization = new ExpBarSynchronization()
+  private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
   override def onEnable(): Unit = {
     val logger = getLogger
@@ -101,45 +101,47 @@ class SeichiAssist extends JavaPlugin() {
 
     // コマンドの登録
     Map(
-        "gacha" -> new GachaCommand(),
-        "map" -> MapCommand.executor,
+      "gacha" -> new GachaCommand(),
+      "map" -> MapCommand.executor,
         "ef" -> EffectCommand.executor,
-        "seichihaste" -> SeichiHasteCommand.executor,
-        "seichiassist" -> SeichiAssistCommand.executor,
-        "openpocket" -> OpenPocketCommand.executor,
-        "lastquit" -> LastQuitCommand.executor,
-        "stick" -> StickCommand.executor,
-        "rmp" -> RmpCommand.executor,
-        "shareinv" -> ShareInvCommand.executor,
-        "mebius" -> MebiusCommand.executor,
-        "achievement" -> AchievementCommand.executor,
-        "halfguard" -> HalfBlockProtectCommand.executor,
-        "event" -> EventCommand.executor,
-        "contribute" -> ContributeCommand.executor,
-        "subhome" -> SubHomeCommand.executor,
-        "gtfever" -> GiganticFeverCommand.executor,
-        "minehead" -> MineHeadCommand.executor,
-        "x-transfer" -> RegionOwnerTransferCommand.executor
+      "seichihaste" -> SeichiHasteCommand.executor,
+      "seichiassist" -> SeichiAssistCommand.executor,
+      "openpocket" -> OpenPocketCommand.executor,
+      "lastquit" -> LastQuitCommand.executor,
+      "stick" -> StickCommand.executor,
+      "rmp" -> RmpCommand.executor,
+      "shareinv" -> ShareInvCommand.executor,
+      "mebius" -> MebiusCommand.executor,
+      "achievement" -> AchievementCommand.executor,
+      "halfguard" -> HalfBlockProtectCommand.executor,
+      "event" -> EventCommand.executor,
+      "contribute" -> ContributeCommand.executor,
+      "subhome" -> SubHomeCommand.executor,
+      "gtfever" -> GiganticFeverCommand.executor,
+      "minehead" -> MineHeadCommand.executor,
+      "x-transfer" -> RegionOwnerTransferCommand.executor
     ).foreach {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
 
     //リスナーの登録
     List(
-        new PlayerJoinListener(),
-        new PlayerQuitListener(),
-        new PlayerClickListener(),
-        new PlayerChatEventListener(),
-        new PlayerBlockBreakListener(),
-        new PlayerInventoryListener(),
-        new EntityListener(),
-        new PlayerPickupItemListener(),
-        new PlayerDeathEventListener(),
-        new GachaItemListener(),
-        new MebiusListener(),
-        new RegionInventoryListener(),
-        new WorldRegenListener()
-    ).foreach { getServer.getPluginManager.registerEvents(_, this) }
+      new PlayerJoinListener(),
+      new PlayerQuitListener(),
+      new PlayerClickListener(),
+      new PlayerChatEventListener(),
+      new PlayerBlockBreakListener(),
+      new PlayerInventoryListener(),
+      new EntityListener(),
+      new PlayerPickupItemListener(),
+      new PlayerDeathEventListener(),
+      new GachaItemListener(),
+      new MebiusListener(),
+      new RegionInventoryListener(),
+      new WorldRegenListener()
+    ).foreach {
+      getServer.getPluginManager.registerEvents(_, this)
+    }
 
     //正月イベント用
     new NewYearsEvent(this)
@@ -172,6 +174,30 @@ class SeichiAssist extends JavaPlugin() {
 
     SeichiAssist.buildAssist = new BuildAssist(this)
     SeichiAssist.buildAssist.onEnable()
+  }
+
+  private def startRepeatedJobs(): Unit = {
+    val startTask = {
+      import cats.implicits._
+
+      val syncExecutionContext = PluginExecutionContexts.sync
+      val asyncExecutionContext = ExecutionContext.global
+
+      val programs: List[Timer[IO] => RepeatingTask] = List(
+        HalfHourRankingRoutine(asyncExecutionContext),
+        PlayerDataPeriodicRecalculation(syncExecutionContext),
+        PlayerDataBackupTask(asyncExecutionContext)
+      )
+
+      val schedulingThreadPool = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(programs.size + 1))
+
+      implicit val defaultContextShift: ContextShift[IO] = IO.contextShift(schedulingThreadPool)
+      val sleepTimer: Timer[IO] = IO.timer(schedulingThreadPool)
+
+      programs.map(_ (sleepTimer).launch).parSequence.start
+    }
+
+    repeatedTaskFiber = Some(startTask.unsafeRunSync())
   }
 
   override def onDisable(): Unit = {
@@ -217,30 +243,11 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean
-      = SeichiAssist.buildAssist.onCommand(sender, command, label, args)
+  = SeichiAssist.buildAssist.onCommand(sender, command, label, args)
 
-  private def startRepeatedJobs(): Unit = {
-    val startTask = {
-      import cats.implicits._
-
-      val syncExecutionContext = PluginExecutionContexts.sync
-      val asyncExecutionContext = ExecutionContext.global
-
-      val programs: List[Timer[IO] => RepeatingTask] = List(
-        HalfHourRankingRoutine(asyncExecutionContext),
-        PlayerDataPeriodicRecalculation(syncExecutionContext),
-        PlayerDataBackupTask(asyncExecutionContext)
-      )
-
-      val schedulingThreadPool = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(programs.size + 1))
-
-      implicit val defaultContextShift: ContextShift[IO] = IO.contextShift(schedulingThreadPool)
-      val sleepTimer: Timer[IO] = IO.timer(schedulingThreadPool)
-
-      programs.map(_(sleepTimer).launch).parSequence.start
-    }
-
-    repeatedTaskFiber = Some(startTask.unsafeRunSync())
+  def restartRepeatedJobs(): Unit = {
+    cancelRepeatedJobs()
+    startRepeatedJobs()
   }
 
   private def cancelRepeatedJobs(): Unit = {
@@ -249,65 +256,43 @@ class SeichiAssist extends JavaPlugin() {
       case None =>
     }
   }
-
-  def restartRepeatedJobs(): Unit = {
-    cancelRepeatedJobs()
-    startRepeatedJobs()
-  }
 }
 
 object SeichiAssist {
-  var instance: SeichiAssist = _
-
-  //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
-  var DEBUG = false
-
-  //ガチャシステムのメンテナンスフラグ
-  var gachamente = false
-
   val SEICHIWORLDNAME = "world_sw"
   val DEBUGWORLDNAME = "world"
-
+  //Gachadataに依存するデータリスト
+  val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
+  //Playerdataに依存するデータリスト
+  val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
+  //総採掘量ランキング表示用データリスト
+  val ranklist: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
+  //プレイ時間ランキング表示用データリスト
+  val ranklist_playtick: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
+  //投票ポイント表示用データリスト
+  val ranklist_p_vote: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
+  //マナ妖精表示用のデータリスト
+  val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
+  //プレミアムエフェクトポイント表示用データリスト
+  val ranklist_premiumeffectpoint: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
+  //プラグインで出すエンティティの保存
+  val entitylist: mutable.ArrayBuffer[Entity] = mutable.ArrayBuffer()
+  //プレイヤーがスキルで破壊するブロックリスト
+  val allblocklist: mutable.ArrayBuffer[Block] = mutable.ArrayBuffer()
+  var instance: SeichiAssist = _
+  //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
+  var DEBUG = false
+  //ガチャシステムのメンテナンスフラグ
+  var gachamente = false
   // TODO staticであるべきではない
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _
-
   var buildAssist: BuildAssist = _
-
-  //Gachadataに依存するデータリスト
-  val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
-
   //(minestackに格納する)Gachadataに依存するデータリスト
   var msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
-
-  //Playerdataに依存するデータリスト
-  val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
-
-  //総採掘量ランキング表示用データリスト
-  val ranklist: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-
-  //プレイ時間ランキング表示用データリスト
-  val ranklist_playtick: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-
-  //投票ポイント表示用データリスト
-  val ranklist_p_vote: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-
-  //マナ妖精表示用のデータリスト
-  val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-
-  //プレミアムエフェクトポイント表示用データリスト
-  val ranklist_premiumeffectpoint: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-
   //総採掘量表示用
   var allplayerbreakblockint = 0L
-
   var allplayergiveapplelong = 0L
-
-  //プラグインで出すエンティティの保存
-  val entitylist: mutable.ArrayBuffer[Entity] = mutable.ArrayBuffer()
-
-  //プレイヤーがスキルで破壊するブロックリスト
-  val allblocklist: mutable.ArrayBuffer[Block] = mutable.ArrayBuffer()
 
   private def generateGachaPrizes(): List[MineStackObj] = {
     val minestacklist = mutable.ArrayBuffer[MineStackObj]()

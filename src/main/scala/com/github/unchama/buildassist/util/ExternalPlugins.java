@@ -6,27 +6,27 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 public final class ExternalPlugins {
-	private ExternalPlugins() {
+    private ExternalPlugins() {
 
-	}
+    }
 
-	//ワールドガードAPIを返す
-	public static WorldGuardPlugin getWorldGuard() {
-		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+    //ワールドガードAPIを返す
+    public static WorldGuardPlugin getWorldGuard() {
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
-	    // WorldGuard may not be loaded
-	    if (!(plugin instanceof WorldGuardPlugin)) {
-	        throw new NullPointerException("WorldGuardPluginが見つかりませんでした。");
-	    }
+        // WorldGuard may not be loaded
+        if (!(plugin instanceof WorldGuardPlugin)) {
+            throw new NullPointerException("WorldGuardPluginが見つかりませんでした。");
+        }
 
-	    return (WorldGuardPlugin) plugin;
-	}
+        return (WorldGuardPlugin) plugin;
+    }
 
-	//ワールドエディットAPIを返す
-	public static WorldEditPlugin getWorldEdit() {
+    //ワールドエディットAPIを返す
+    public static WorldEditPlugin getWorldEdit() {
         Plugin pl = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
-        if(pl instanceof WorldEditPlugin)
-            return (WorldEditPlugin)pl;
+        if (pl instanceof WorldEditPlugin)
+            return (WorldEditPlugin) pl;
         else return null;
     }
 }

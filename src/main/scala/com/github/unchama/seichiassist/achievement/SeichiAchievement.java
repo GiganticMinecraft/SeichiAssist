@@ -187,19 +187,6 @@ public enum SeichiAchievement {
         this.condition = condition;
     }
 
-    public void achieve(Player player) {
-        PlayerData playerData = getPlayerData(player);
-        if (playerData.TitleFlags().contains(id)) return;
-
-        if (!condition.test(player)) {
-            // TODO: this shouldn't be here
-            if (9000 < id && id < 10000) player.sendMessage("実績No" + id + "は条件を満たしていません。");
-        } else {
-            playerData.TitleFlags().addOne(id);
-            player.sendMessage("実績No" + id + "解除！おめでとうございます！");
-        }
-    }
-
     public static void tryAchieve(Player player, int id) {
         PlayerData playerData = getPlayerData(player);
         Optional<SeichiAchievement> optionalAchievement = Arrays.stream(SeichiAchievement.values())
@@ -256,11 +243,12 @@ public enum SeichiAchievement {
     }
 
     /**
-     今日が{@code month}月の{@code weeks}週の{@code weekday}曜日かを判定する。
-     @param month 月
-     @param weeks 月の中で第何週目か。1-5までが受け付けられる
-     @param weekday 何曜日か。
-     @return 今日が{@code month}月の{@code weeks}週の{@code weekday}曜日かを判定するならtrue、そうでないならfalse
+     * 今日が{@code month}月の{@code weeks}週の{@code weekday}曜日かを判定する。
+     *
+     * @param month   月
+     * @param weeks   月の中で第何週目か。1-5までが受け付けられる
+     * @param weekday 何曜日か。
+     * @return 今日が{@code month}月の{@code weeks}週の{@code weekday}曜日かを判定するならtrue、そうでないならfalse
      */
     private static boolean todayIsAt(final Month month, final int weeks, final DayOfWeek weekday) {
         if (weeks < 1 || weeks > 5) {
@@ -281,6 +269,19 @@ public enum SeichiAchievement {
                 now.with(TemporalAdjusters.firstDayOfMonth())
                         .with(TemporalAdjusters.dayOfWeekInMonth(weeks, weekday))
         );
+    }
+
+    public void achieve(Player player) {
+        PlayerData playerData = getPlayerData(player);
+        if (playerData.TitleFlags().contains(id)) return;
+
+        if (!condition.test(player)) {
+            // TODO: this shouldn't be here
+            if (9000 < id && id < 10000) player.sendMessage("実績No" + id + "は条件を満たしていません。");
+        } else {
+            playerData.TitleFlags().addOne(id);
+            player.sendMessage("実績No" + id + "解除！おめでとうございます！");
+        }
     }
 
 }

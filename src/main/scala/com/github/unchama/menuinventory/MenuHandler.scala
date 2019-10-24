@@ -19,7 +19,9 @@ object MenuHandler extends Listener {
     }
 
     //メニュー外のクリック排除
-    val clickedInventory = event.getClickedInventory.ifNull { return }
+    val clickedInventory = event.getClickedInventory.ifNull {
+      return
+    }
 
     val holder = event.getWhoClicked.getOpenInventory.getTopInventory.getHolder match {
       case session: MenuSession => session
@@ -34,7 +36,7 @@ object MenuHandler extends Listener {
 
     val effect = for {
       layout <- holder.currentLayout.get
-      _ <- layout.computeAsyncEffectOn(event)(whoClicked)
+      _ <- layout.asyncEffectOn(event)(whoClicked)
     } yield ()
 
     effect.unsafeRunAsync {

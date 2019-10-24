@@ -21,7 +21,8 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
 
-class PlayerInventoryListener  extends  Listener {
+class PlayerInventoryListener extends Listener {
+
   import com.github.unchama.targetedeffect.TargetedEffects._
   import com.github.unchama.util.InventoryUtil._
   import com.github.unchama.util.syntax._
@@ -46,7 +47,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
     if (topinventory.row != 2) {
@@ -71,11 +74,11 @@ class PlayerInventoryListener  extends  Listener {
       //ページ変更処理
       val displayName = meta.getDisplayName
       val targetServerName =
-        if (displayName.contains("アルカディアサーバー" )) "s1"
-        else if (displayName.contains("エデンサーバー" )) "s2"
-        else if (displayName.contains("ヴァルハラサーバー" )) "s3"
-        else if (displayName.contains("建築サーバー" )) "s8"
-        else if (displayName.contains("公共施設サーバー" )) "s7"
+        if (displayName.contains("アルカディアサーバー")) "s1"
+        else if (displayName.contains("エデンサーバー")) "s2"
+        else if (displayName.contains("ヴァルハラサーバー")) "s3"
+        else if (displayName.contains("建築サーバー")) "s8"
+        else if (displayName.contains("公共施設サーバー")) "s7"
         else throw new IllegalStateException("Reached unreachable segment.")
 
       byteArrayDataOutput.writeUTF("Connect")
@@ -101,7 +104,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
     if (topinventory.row != 4) {
@@ -132,17 +137,19 @@ class PlayerInventoryListener  extends  Listener {
       //ページ変更処理
       // =>
       if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
         sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            StickMenu.firstPage.open
+          CommonSoundEffects.menuTransitionFenceSound,
+          StickMenu.firstPage.open
         )(player).unsafeRunAsync {
-          case Left(error) => 
+          case Left(error) =>
             error.printStackTrace()
           case Right(_) =>
         }
       } else {
         itemstackcurrent.getType match {
-           case Material.DIAMOND_PICKAXE => {
+          case Material.DIAMOND_PICKAXE => {
             // 複数破壊トグル
 
             if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel) {
@@ -162,26 +169,26 @@ class PlayerInventoryListener  extends  Listener {
             }
           }
 
-           case Material.DIAMOND_AXE => {
+          case Material.DIAMOND_AXE => {
             playerdata.chestflag = false
             player.sendMessage(GREEN.toString() + "スキルでのチェスト破壊を無効化しました。")
             player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat)
             player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
           }
 
-           case Material.CHEST => {
+          case Material.CHEST => {
             playerdata.chestflag = true
             player.sendMessage(RED.toString() + "スキルでのチェスト破壊を有効化しました。")
             player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
           }
 
-           case Material.STICK => {
+          case Material.STICK => {
             player.sendMessage(WHITE.toString() + "パッシブスキル:" + YELLOW + "" + UNDERLINE + "" + BOLD + "Gigantic" + RED + UNDERLINE + "" + BOLD + "Berserk" + WHITE + "はレベル10以上から使用可能です")
             player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat)
           }
 
-           case Material.WOOD_SWORD | Material.STONE_SWORD | Material.GOLD_SWORD | Material.IRON_SWORD | Material.DIAMOND_SWORD => {
+          case Material.WOOD_SWORD | Material.STONE_SWORD | Material.GOLD_SWORD | Material.IRON_SWORD | Material.DIAMOND_SWORD => {
             if (playerdata.giganticBerserk.canEvolve) {
               player.openInventory(MenuInventoryData.getGiganticBerserkEvolutionMenu(player))
               player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5.toFloat)
@@ -213,7 +220,9 @@ class PlayerInventoryListener  extends  Listener {
     }
 
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが45でない時終了
     if (topinventory.row != 5) {
@@ -380,9 +389,11 @@ class PlayerInventoryListener  extends  Listener {
 
       //ページ変更処理
       if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
         sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            StickMenu.firstPage.open
+          CommonSoundEffects.menuTransitionFenceSound,
+          StickMenu.firstPage.open
         )(player).unsafeRunAsync {
           case Left(error) =>
             error.printStackTrace()
@@ -417,7 +428,7 @@ class PlayerInventoryListener  extends  Listener {
 
           case Material.GLASS => {
             if (playerdata.activeskilldata.skilltype == 0 && playerdata.activeskilldata.skillnum == 0
-                && playerdata.activeskilldata.assaulttype == 0 && playerdata.activeskilldata.assaultnum == 0) {
+              && playerdata.activeskilldata.assaulttype == 0 && playerdata.activeskilldata.assaultnum == 0) {
               player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat)
               player.sendMessage(YELLOW.toString() + "既に全ての選択は削除されています")
             } else {
@@ -452,7 +463,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズ終了
     if (topinventory.row != 6) {
@@ -594,7 +607,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.row != 6) {
@@ -622,9 +637,11 @@ class PlayerInventoryListener  extends  Listener {
         val name = skullMeta.getDisplayName
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" => {
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
             sequentialEffect(
-                CommonSoundEffects.menuTransitionFenceSound,
-                StickMenu.firstPage.open
+              CommonSoundEffects.menuTransitionFenceSound,
+              StickMenu.firstPage.open
             )(player).unsafeRunAsync {
               case Left(error) => error.printStackTrace()
               case Right(_) =>
@@ -633,7 +650,7 @@ class PlayerInventoryListener  extends  Listener {
 
           case "MHF_ArrowDown" => {
             itemstackcurrent.getItemMeta
-            if (name.contains("整地神ランキング") && name.contains("ページ目")) {//移動するページの種類を判定
+            if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
               val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
@@ -644,7 +661,7 @@ class PlayerInventoryListener  extends  Listener {
 
           case "MHF_ArrowUp" => {
             itemstackcurrent.getItemMeta
-            if (name.contains("整地神ランキング") && name.contains("ページ目")) {//移動するページの種類を判定
+            if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
               val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
@@ -675,7 +692,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.row != 6) {
@@ -698,6 +717,8 @@ class PlayerInventoryListener  extends  Listener {
 			 */
       //ページ変更処理
       if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
         sequentialEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           StickMenu.firstPage.open
@@ -708,7 +729,7 @@ class PlayerInventoryListener  extends  Listener {
         }
       } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowDown") {
         val itemmeta = itemstackcurrent.getItemMeta
-        if (itemmeta.getDisplayName.contains("ログイン神ランキング") && itemmeta.getDisplayName.contains("ページ目")) {//移動するページの種類を判定
+        if (itemmeta.getDisplayName.contains("ログイン神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
           val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
           //開く音を再生
@@ -717,7 +738,7 @@ class PlayerInventoryListener  extends  Listener {
         }
       } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowUp") {
         val itemmeta = itemstackcurrent.getItemMeta
-        if (itemmeta.getDisplayName.contains("ログイン神ランキング") && itemmeta.getDisplayName.contains("ページ目")) {//移動するページの種類を判定
+        if (itemmeta.getDisplayName.contains("ログイン神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
           val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
           //開く音を再生
@@ -744,7 +765,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.row != 6) {
@@ -770,6 +793,8 @@ class PlayerInventoryListener  extends  Listener {
         val skullMeta = (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta])
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" => {
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
             sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
@@ -782,7 +807,7 @@ class PlayerInventoryListener  extends  Listener {
 
           case "MHF_ArrowDown" => {
             val itemmeta = itemstackcurrent.getItemMeta
-            if (itemmeta.getDisplayName.contains("投票神ランキング") && itemmeta.getDisplayName.contains("ページ目")) {//移動するページの種類を判定
+            if (itemmeta.getDisplayName.contains("投票神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
               val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
@@ -793,7 +818,7 @@ class PlayerInventoryListener  extends  Listener {
 
           case "MHF_ArrowUp" => {
             val itemmeta = itemstackcurrent.getItemMeta
-            if (itemmeta.getDisplayName.contains("投票神ランキング") && itemmeta.getDisplayName.contains("ページ目")) {//移動するページの種類を判定
+            if (itemmeta.getDisplayName.contains("投票神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
               val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
@@ -822,7 +847,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが54でない時終了
     if (topinventory.row != 6) {
@@ -849,6 +876,8 @@ class PlayerInventoryListener  extends  Listener {
         val name = skullMeta.getDisplayName
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" => {
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
             sequentialEffect(
               CommonSoundEffects.menuTransitionFenceSound,
               StickMenu.firstPage.open
@@ -860,7 +889,7 @@ class PlayerInventoryListener  extends  Listener {
           }
 
           case "MHF_ArrowDown" => {
-            if (name.contains("寄付神ランキング") && name.contains("ページ目")) {//移動するページの種類を判定
+            if (name.contains("寄付神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
               val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
@@ -870,7 +899,7 @@ class PlayerInventoryListener  extends  Listener {
           }
 
           case "MHF_ArrowUp" => {
-            if (name.contains("寄付神ランキング") && name.contains("ページ目")) {//移動するページの種類を判定
+            if (name.contains("寄付神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
               val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
@@ -899,7 +928,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが36でない時終了
     if (topinventory.row != 4) {
@@ -935,7 +966,9 @@ class PlayerInventoryListener  extends  Listener {
   def onGachaTradeEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid).ifNull { return }
+    val playerdata = playerMap(uuid).ifNull {
+      return
+    }
     //エラー分岐
     val name = playerdata.lowercaseName
     val inventory = event.getInventory
@@ -963,11 +996,11 @@ class PlayerInventoryListener  extends  Listener {
       item.foreach {
         case null =>
         case m if
-          SeichiAssist.gachamente ||
+        SeichiAssist.gachamente ||
           !m.hasItemMeta ||
           !m.getItemMeta.hasLore ||
           m.getType == Material.SKULL_ITEM =>
-            dropitem += m
+          dropitem += m
         case m =>
           //ガチャ景品リスト上を線形探索する
           val matchingGachaData = gachaDataList.find { gachadata =>
@@ -1066,21 +1099,21 @@ class PlayerInventoryListener  extends  Listener {
      */
 
     val requiredAmountPerTicket = Map(
-        Material.COAL_ORE -> 128,
-        Material.IRON_ORE -> 64,
-        Material.GOLD_ORE -> 8,
-        Material.LAPIS_ORE -> 8,
-        Material.DIAMOND_ORE -> 4,
-        Material.REDSTONE_ORE -> 32,
-        Material.EMERALD_ORE -> 4,         
-        Material.QUARTZ_ORE -> 16
+      Material.COAL_ORE -> 128,
+      Material.IRON_ORE -> 64,
+      Material.GOLD_ORE -> 8,
+      Material.LAPIS_ORE -> 8,
+      Material.DIAMOND_ORE -> 4,
+      Material.REDSTONE_ORE -> 32,
+      Material.EMERALD_ORE -> 4,
+      Material.QUARTZ_ORE -> 16
     )
 
     val inventoryContents = inventory.getContents.filter(_ != null)
 
     val (itemsToExchange, rejectedItems) =
-        inventoryContents
-            .partition { stack => requiredAmountPerTicket.contains(stack.getType) }
+      inventoryContents
+        .partition { stack => requiredAmountPerTicket.contains(stack.getType) }
 
     val exchangingAmount = itemsToExchange
       .groupBy(_.getType)
@@ -1088,8 +1121,8 @@ class PlayerInventoryListener  extends  Listener {
       .map { case (key, stacks) => key -> stacks.map(_.getAmount).sum }
 
     val ticketAmount = exchangingAmount
-        .map { case (material, amount) => amount / requiredAmountPerTicket(material) }
-        .sum
+      .map { case (material, amount) => amount / requiredAmountPerTicket(material) }
+      .sum
 
     //プレイヤー通知
     if (ticketAmount == 0) {
@@ -1104,7 +1137,8 @@ class PlayerInventoryListener  extends  Listener {
     val exchangeTicket = {
       new ItemStack(Material.PAPER).modify {
         _.setItemMeta {
-          Bukkit.getItemFactory().getItemMeta(Material.PAPER).modify { m => import m._
+          Bukkit.getItemFactory().getItemMeta(Material.PAPER).modify { m =>
+            import m._
             setDisplayName(s"$DARK_RED${BOLD}交換券")
             addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
             addItemFlags(ItemFlag.HIDE_ENCHANTS)
@@ -1126,15 +1160,15 @@ class PlayerInventoryListener  extends  Listener {
      * step3 非対象・余剰鉱石の返却
      */
     val itemStacksToReturn =
-        exchangingAmount
-          .flatMap { case (exchangedMaterial, exchangedAmount) =>
+      exchangingAmount
+        .flatMap { case (exchangedMaterial, exchangedAmount) =>
           val returningAmount = exchangedAmount % requiredAmountPerTicket(exchangedMaterial)
 
           if (returningAmount != 0)
             Some(new ItemStack(exchangedMaterial).modify(_.setAmount(returningAmount)))
           else
             None
-          }.++(rejectedItems)
+        }.++(rejectedItems)
 
     //返却処理
     itemStacksToReturn.foreach { itemStack =>
@@ -1147,7 +1181,9 @@ class PlayerInventoryListener  extends  Listener {
   def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid).ifNull { return }
+    val playerdata = playerMap(uuid).ifNull {
+      return
+    }
     //エラー分岐
     val name = playerdata.lowercaseName
     val inventory = event.getInventory
@@ -1173,10 +1209,10 @@ class PlayerInventoryListener  extends  Listener {
       item.foreach {
         case null =>
         case m if
-            SeichiAssist.gachamente ||
-            !m.hasItemMeta() ||
-            !m.getItemMeta.hasLore ||
-              m.getType == Material.SKULL_ITEM =>
+        SeichiAssist.gachamente ||
+          !m.hasItemMeta() ||
+          !m.getItemMeta.hasLore ||
+          m.getType == Material.SKULL_ITEM =>
           dropitem.addOne(m)
         case m =>
           //ガチャ景品リストを一個ずつ見ていくfor文
@@ -1246,7 +1282,9 @@ class PlayerInventoryListener  extends  Listener {
   def onTitanRepairEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid).ifNull { return }
+    val playerdata = playerMap(uuid).ifNull {
+      return
+    }
     //エラー分岐
     val inventory = event.getInventory
 
@@ -1301,7 +1339,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが4列でない時終了
     if (topinventory.row != 4) {
@@ -1342,7 +1382,7 @@ class PlayerInventoryListener  extends  Listener {
 
           //ガチャ券プレゼント処理
           val skull = Util.getVoteskull(player.getName)
-          for { i <- 0 to 9 } {
+          for {i <- 0 to 9} {
             if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
               Util.addItem(player, skull)
             } else {
@@ -1388,9 +1428,11 @@ class PlayerInventoryListener  extends  Listener {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.closeInventory()
       } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
         sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            StickMenu.firstPage.open
+          CommonSoundEffects.menuTransitionFenceSound,
+          StickMenu.firstPage.open
         )(player).unsafeRunAsync {
           case Left(value) => value.printStackTrace()
           case Right(_) =>
@@ -1437,7 +1479,7 @@ class PlayerInventoryListener  extends  Listener {
       } else if (itemstackcurrent.getType == Material.COMPASS) {
         VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound)
         player.closeInventory()
-      }//妖精召喚
+      } //妖精召喚
       //妖精音トグル
       //妖精リンゴトグル
       //妖精時間トグル
@@ -1461,7 +1503,9 @@ class PlayerInventoryListener  extends  Listener {
       return
     }
 
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
     //インベントリが存在しない時終了
     //インベントリサイズが3列でない時終了
     if (topinventory.row != 3) {
@@ -1543,7 +1587,9 @@ class PlayerInventoryListener  extends  Listener {
     }
 
     //インベントリが存在しない時終了
-    val topinventory = view.getTopInventory.ifNull { return }
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
 
     //インベントリが6列でない時終了
     if (topinventory.row != 6) {

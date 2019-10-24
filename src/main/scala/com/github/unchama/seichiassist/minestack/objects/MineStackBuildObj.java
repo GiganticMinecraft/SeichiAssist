@@ -9,7 +9,7 @@ import scala.Some;
  * Created by karayuu on 2018/06/04
  */
 public final class MineStackBuildObj extends MineStackObj {
-	public MineStackBuildObj(String objname, String japanesename, int level, Material material, int durability) {
-		super(objname, Some.apply(japanesename), level, material, durability, false, -1, MineStackObjectCategory.BUILDING$.MODULE$);
-	}
+    public MineStackBuildObj(String objname, String japanesename, int level, Material material, int durability) {
+        super(objname, Some.apply(japanesename), level, material, durability, false, -1, MineStackObjectCategory.BUILDING$.MODULE$);
+    }
 }

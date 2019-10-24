@@ -16,7 +16,9 @@ sealed abstract class ActiveSkillEffect(val num: Int,
                                         val explanation: String,
                                         val usePoint: Int,
                                         val material: Material) extends EnumEntry {
+
   import com.github.unchama.seichiassist.effect.XYZTuple._
+
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
@@ -65,12 +67,8 @@ sealed abstract class ActiveSkillEffect(val num: Int,
 }
 
 object ActiveSkillEffect extends Enum[ActiveSkillEffect] {
-  case object Explosion extends ActiveSkillEffect(1, s"ef_explosion", "${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
-  case object Blizzard extends ActiveSkillEffect(2, s"ef_blizzard", "${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
-  case object Meteo extends ActiveSkillEffect(3, s"ef_meteo", "${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
 
   val values: IndexedSeq[ActiveSkillEffect] = findValues
-
   /**
    * @deprecated for interop purpose only
    */
@@ -84,4 +82,10 @@ object ActiveSkillEffect extends Enum[ActiveSkillEffect] {
     .getOrElse("未設定")
 
   def fromSqlName(sqlName: String): Option[ActiveSkillEffect] = ActiveSkillEffect.values.find(_.nameOnDatabase == sqlName)
+
+  case object Explosion extends ActiveSkillEffect(1, s"ef_explosion", "${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
+
+  case object Blizzard extends ActiveSkillEffect(2, s"ef_blizzard", "${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
+
+  case object Meteo extends ActiveSkillEffect(3, s"ef_meteo", "${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
 }

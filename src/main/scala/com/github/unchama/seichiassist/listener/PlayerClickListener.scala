@@ -16,7 +16,7 @@ import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.{GameMode, Material, Sound}
 
-class PlayerClickListener  extends  Listener {
+class PlayerClickListener extends Listener {
 
   import com.github.unchama.seichiassist.util.ops.ItemStackOps._
   import com.github.unchama.targetedeffect.TargetedEffects._
@@ -100,7 +100,7 @@ class PlayerClickListener  extends  Listener {
           } else if (playerdata.activeskilldata.effectnum > 100) {
             val premiumeffect = ActiveSkillPremiumEffect.values
             premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).runArrowEffect(player)
-          }//エフェクトが指定されているときの処理
+          } //エフェクトが指定されているときの処理
         }
       }
     } else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
@@ -135,7 +135,7 @@ class PlayerClickListener  extends  Listener {
           } else if (playerdata.activeskilldata.effectnum > 100) {
             val premiumeffect = ActiveSkillPremiumEffect.values
             premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).runArrowEffect(player)
-          }//スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
+          } //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
           //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 
         }
@@ -183,7 +183,9 @@ class PlayerClickListener  extends  Listener {
     //もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return
 
-    val clickedItemStack = event.getItem.ifNull { return }
+    val clickedItemStack = event.getItem.ifNull {
+      return
+    }
 
     //ガチャ用の頭でなければ終了
     if (!Util.isGachaTicket(clickedItemStack)) return
@@ -215,12 +217,12 @@ class PlayerClickListener  extends  Listener {
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
 
     val count =
-        if (player.isSneaking) {
-          val amount = clickedItemStack.getAmount
-          player.sendMessage(s"$AQUA${amount}回ガチャを回しました。")
-          amount
-        }
-        else 1
+      if (player.isSneaking) {
+        val amount = clickedItemStack.getAmount
+        player.sendMessage(s"$AQUA${amount}回ガチャを回しました。")
+        amount
+      }
+      else 1
 
     if (!Util.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)) {
       player.sendMessage(RED.toString() + "ガチャ券の数が不正です。")
@@ -241,13 +243,13 @@ class PlayerClickListener  extends  Listener {
 
       //メッセージ設定
       val additionalMessage =
-          if (!Util.isPlayerInventoryFull(player)) {
-            Util.addItem(player, givenItem)
-            ""
-          } else {
-            Util.dropItem(player, givenItem)
-            s"${AQUA}プレゼントがドロップしました。"
-          }
+        if (!Util.isPlayerInventoryFull(player)) {
+          Util.addItem(player, givenItem)
+          ""
+        } else {
+          Util.dropItem(player, givenItem)
+          s"${AQUA}プレゼントがドロップしました。"
+        }
 
       //確率に応じてメッセージを送信
       if (probabilityOfItem < 0.001) {
@@ -262,32 +264,35 @@ class PlayerClickListener  extends  Listener {
                 }
               }
             )
-        }.unsafeRunSync()
+          }.unsafeRunSync()
 
         val loreWithoutOwnerName = givenItem.getItemMeta.getLore.asScala.toList
-            .filterNot { _ == s"§r§2所有者：${player.getName}" }
+          .filterNot {
+            _ == s"§r§2所有者：${player.getName}"
+          }
 
         val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq
-            .map { case (enchantment, level) =>
-              s"$GRAY${Util.getEnchantName(enchantment.getName, level)}"
-            }
+          .map { case (enchantment, level) =>
+            s"$GRAY${Util.getEnchantName(enchantment.getName, level)}"
+          }
 
         val message =
-            new TextComponent().modify { c => import c._
-              setText(s"$AQUA${givenItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！")
-              setHoverEvent {
-                new HoverEvent(
-                  HoverEvent.Action.SHOW_TEXT,
-                  Array(
-                    new TextComponent(
-                      s" ${givenItem.getItemMeta.getDisplayName}\n" +
-                        Util.getDescFormat(localizedEnchantmentList.toList) +
-                        Util.getDescFormat(loreWithoutOwnerName)
-                    )
+          new TextComponent().modify { c =>
+            import c._
+            setText(s"$AQUA${givenItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！")
+            setHoverEvent {
+              new HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                Array(
+                  new TextComponent(
+                    s" ${givenItem.getItemMeta.getDisplayName}\n" +
+                      Util.getDescFormat(localizedEnchantmentList.toList) +
+                      Util.getDescFormat(loreWithoutOwnerName)
                   )
                 )
-              }
+              )
             }
+          }
 
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
         Util.sendEveryMessageWithoutIgnore(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
@@ -322,7 +327,9 @@ class PlayerClickListener  extends  Listener {
     //UUIDを取得
     val uuid = player.getUniqueId
     //playerdataを取得
-    val playerdata = playerMap(uuid).ifNull { return }
+    val playerdata = playerMap(uuid).ifNull {
+      return
+    }
     //playerdataがない場合はreturn
 
 
@@ -387,7 +394,7 @@ class PlayerClickListener  extends  Listener {
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         } else if (skillTypeId > 0 && skillNumber > 0
-            && skillTypeId < 4) {
+          && skillTypeId < 4) {
           activemineflagnum = (activemineflagnum + 1) % 2
           activemineflagnum match {
             case 0 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
@@ -439,9 +446,11 @@ class PlayerClickListener  extends  Listener {
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
     val effect = sequentialEffect(
-        CommonSoundEffects.menuTransitionFenceSound,
-        StickMenu.firstPage.open
+      CommonSoundEffects.menuTransitionFenceSound,
+      StickMenu.firstPage.open
     )
 
     effect(player).unsafeRunAsync {
@@ -499,7 +508,7 @@ class PlayerClickListener  extends  Listener {
   def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent): Unit = {
     // 経験値瓶を持った状態でShift右クリックをした場合
     if (event.getPlayer.isSneaking && event.getPlayer.getInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
-        && (event.getAction == Action.RIGHT_CLICK_AIR || event.getAction == Action.RIGHT_CLICK_BLOCK)) {
+      && (event.getAction == Action.RIGHT_CLICK_AIR || event.getAction == Action.RIGHT_CLICK_BLOCK)) {
       event.setCancelled(true)
 
       (0 until event.getItem.getAmount).foreach { _ =>
