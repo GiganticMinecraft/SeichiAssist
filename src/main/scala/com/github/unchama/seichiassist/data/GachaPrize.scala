@@ -6,10 +6,11 @@ import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
 class GachaPrize(_itemStack: ItemStack, var probability: Double) {
-  @Deprecated
-  val itemStackAmount: Int = this.itemStack.getAmount
   //アイテムデータ格納
   val itemStack: ItemStack = _itemStack.clone()
+
+  @Deprecated
+  val itemStackAmount: Int = this.itemStack.getAmount
 
   import scala.jdk.CollectionConverters._
 

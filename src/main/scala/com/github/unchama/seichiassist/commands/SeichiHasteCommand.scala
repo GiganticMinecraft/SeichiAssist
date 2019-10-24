@@ -14,6 +14,32 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 
 object SeichiHasteCommand {
+  private val descriptionPrintExecutor = new EchoExecutor(List(
+    s"$RED/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
+    "指定されたプレイヤーに採掘速度上昇効果を付与します。",
+    "同じサーバーにログイン中であるプレーヤーにしか適用されません。",
+    "",
+    "[スコープ指定子]は、 player [プレーヤー名] または all のどちらかです。",
+    "",
+    "[説明文id]は上昇値に付加する説明文を指定します。",
+    "指定できるidは0から5の整数で、それぞれ次の説明文を指します。",
+    " - 0 不明な上昇値",
+    " - 1 接続人数から",
+    " - 2 採掘量から",
+    " - 3 ドラゲナイタイムから",
+    " - 4 投票から",
+    " - 5 コマンド入力から(イベントや不具合等)"
+  ).asMessageEffect())
+
+  sealed trait ScopeSpecification extends EnumEntry
+
+  case object ScopeSpecification extends Enum[ScopeSpecification] {
+    val values: IndexedSeq[ScopeSpecification] = findValues
+
+    case object PLAYER extends ScopeSpecification
+
+    case object ALL extends ScopeSpecification
+  }
 
   val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
     .argumentsParsers(
@@ -60,31 +86,4 @@ object SeichiHasteCommand {
     }
     .build()
     .asNonBlockingTabExecutor()
-  private val descriptionPrintExecutor = new EchoExecutor(List(
-    s"$RED/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
-    "指定されたプレイヤーに採掘速度上昇効果を付与します。",
-    "同じサーバーにログイン中であるプレーヤーにしか適用されません。",
-    "",
-    "[スコープ指定子]は、 player [プレーヤー名] または all のどちらかです。",
-    "",
-    "[説明文id]は上昇値に付加する説明文を指定します。",
-    "指定できるidは0から5の整数で、それぞれ次の説明文を指します。",
-    " - 0 不明な上昇値",
-    " - 1 接続人数から",
-    " - 2 採掘量から",
-    " - 3 ドラゲナイタイムから",
-    " - 4 投票から",
-    " - 5 コマンド入力から(イベントや不具合等)"
-  ).asMessageEffect())
-
-  sealed trait ScopeSpecification extends EnumEntry
-
-  case object ScopeSpecification extends Enum[ScopeSpecification] {
-    val values: IndexedSeq[ScopeSpecification] = findValues
-
-    case object PLAYER extends ScopeSpecification
-
-    case object ALL extends ScopeSpecification
-
-  }
 }

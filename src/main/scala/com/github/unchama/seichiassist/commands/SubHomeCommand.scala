@@ -10,14 +10,6 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
 object SubHomeCommand {
-  val executor: TabExecutor = BranchedExecutor(
-    Map(
-      "warp" -> warpExecutor,
-      "set" -> setExecutor,
-      "name" -> nameExecutor
-    ),
-    whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
-  ).asNonBlockingTabExecutor()
   private val printDescriptionExecutor = new EchoExecutor(
     List(
       s"$GREEN/subhome コマンドの使い方",
@@ -82,4 +74,13 @@ object SubHomeCommand {
       }
     }
     .build()
+
+  val executor: TabExecutor = BranchedExecutor(
+    Map(
+      "warp" -> warpExecutor,
+      "set" -> setExecutor,
+      "name" -> nameExecutor
+    ),
+    whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
+  ).asNonBlockingTabExecutor()
 }

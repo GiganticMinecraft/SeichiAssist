@@ -93,12 +93,7 @@ class PlayerData(
 
     effect.asTargetedEffect()
   }
-  /**
-   * 保護申請の番号を更新させる[UnfocusedEffect]
-   */
-  val incrementRegionNumber: TargetedEffect[Any] = UnfocusedEffect {
-    this.regionCount += 1
-  }
+
   /**
    * @deprecated Should be moved to external scope
    */
@@ -159,6 +154,13 @@ class PlayerData(
   var unclaimedApologyItems = 0
   //ワールドガード保護自動設定用
   var regionCount = 0
+  /**
+   * 保護申請の番号を更新させる[UnfocusedEffect]
+   */
+  val incrementRegionNumber: TargetedEffect[Any] = UnfocusedEffect {
+    this.regionCount += 1
+  }
+
   var starLevels = StarLevel(0, 0, 0)
   var minestack = new MineStack()
   //プレイ時間

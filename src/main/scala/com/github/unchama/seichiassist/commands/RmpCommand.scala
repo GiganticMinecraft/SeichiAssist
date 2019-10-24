@@ -19,17 +19,8 @@ import org.bukkit.{Bukkit, World}
 import scala.jdk.CollectionConverters._
 
 object RmpCommand {
-  val executor: TabExecutor =
-    BranchedExecutor(
-      Map(
-        "remove" -> removeExecutor,
-        "list" -> listExecutor
-      ),
-      whenArgInsufficient = Some(printDescriptionExecutor),
-      whenBranchNotFound = Some(printDescriptionExecutor)
-    ).asNonBlockingTabExecutor()
-
   import ArgumentParserScope._
+
   private val printDescriptionExecutor = new EchoExecutor(
     List(
       s"$RED/rmp remove [world名] [日数]",
@@ -123,4 +114,14 @@ object RmpCommand {
 
     Right(oldRegions)
   }
+
+  val executor: TabExecutor =
+    BranchedExecutor(
+      Map(
+        "remove" -> removeExecutor,
+        "list" -> listExecutor
+      ),
+      whenArgInsufficient = Some(printDescriptionExecutor),
+      whenBranchNotFound = Some(printDescriptionExecutor)
+    ).asNonBlockingTabExecutor()
 }

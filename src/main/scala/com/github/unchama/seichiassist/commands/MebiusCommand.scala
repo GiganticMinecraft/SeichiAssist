@@ -98,10 +98,6 @@ object MebiusCommand {
       .build()
 
     object NickNameCommand {
-      val executor = BranchedExecutor(Map(
-        "reset" -> resetNickNameExecutor,
-        "set" -> setNickNameExecutor
-      ), whenArgInsufficient = Some(checkNickNameExecutor), whenBranchNotFound = Some(checkNickNameExecutor))
       private val checkNickNameExecutor = playerCommandBuilder
         .execution { context =>
           val message = MebiusListener.getNickname(context.sender)
@@ -111,6 +107,7 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
+
       private val resetNickNameExecutor = playerCommandBuilder
         .execution { context =>
           val message = if (MebiusListener.setNickname(context.sender, context.sender.getName)) {
@@ -122,6 +119,7 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
+
       private val setNickNameExecutor = playerCommandBuilder
         .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
         .execution { context =>
@@ -135,6 +133,11 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
+
+      val executor = BranchedExecutor(Map(
+        "reset" -> resetNickNameExecutor,
+        "set" -> setNickNameExecutor
+      ), whenArgInsufficient = Some(checkNickNameExecutor), whenBranchNotFound = Some(checkNickNameExecutor))
     }
   }
 }

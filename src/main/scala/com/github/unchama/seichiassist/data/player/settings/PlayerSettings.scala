@@ -13,6 +13,27 @@ class PlayerSettings {
   import com.github.unchama.targetedeffect.TargetedEffects._
 
   val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
+  var autoMineStack = true
+  //内訳メッセージを出すフラグ
+  var receiveFastDiggingEffectStats = false
+  //ガチャ受け取り方法設定
+  var receiveGachaTicketEveryMinute = true
+  //キルログ表示トグル
+  var shouldDisplayDeathMessages = false
+  //ワールドガード保護ログ表示トグル
+  var shouldDisplayWorldGuardLogs = true
+
+  //region accessors and modifiers
+  var broadcastMutingSettings: BroadcastMutingSettings = BroadcastMutingSettings.MuteMessageAndSound
+  //複数種類破壊トグル
+  var multipleidbreakflag = false
+  //PvPトグル
+  var pvpflag = false
+  var nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
+  var isExpBarVisible = false
+  //ハーフブロック破壊抑制用
+  private var allowBreakingHalfBlocks = false
+
   val toggleAutoMineStack: TargetedEffect[Any] =
     UnfocusedEffect {
       this.autoMineStack = !this.autoMineStack
@@ -43,24 +64,4 @@ class PlayerSettings {
 
     responseMessage.asMessageEffect()
   })
-  var autoMineStack = true
-  //内訳メッセージを出すフラグ
-  var receiveFastDiggingEffectStats = false
-  //ガチャ受け取り方法設定
-  var receiveGachaTicketEveryMinute = true
-  //キルログ表示トグル
-  var shouldDisplayDeathMessages = false
-  //ワールドガード保護ログ表示トグル
-  var shouldDisplayWorldGuardLogs = true
-
-  //region accessors and modifiers
-  var broadcastMutingSettings: BroadcastMutingSettings = BroadcastMutingSettings.MuteMessageAndSound
-  //複数種類破壊トグル
-  var multipleidbreakflag = false
-  //PvPトグル
-  var pvpflag = false
-  var nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
-  var isExpBarVisible = false
-  //ハーフブロック破壊抑制用
-  private var allowBreakingHalfBlocks = false
 }

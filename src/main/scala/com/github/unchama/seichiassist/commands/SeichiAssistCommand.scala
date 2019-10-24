@@ -9,14 +9,6 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{ConsoleCommandSender, TabExecutor}
 
 object SeichiAssistCommand {
-  val executor: TabExecutor = BranchedExecutor(
-    Map(
-      "reload-config" -> reloadConfigExecutor,
-      "toggle-debug" -> toggleDebugExecutor,
-      "set-anniversary-flag" -> setAnniversaryFlagExecutor
-    ),
-    whenArgInsufficient = Some(descriptionExecutor), whenBranchNotFound = Some(descriptionExecutor)
-  ).asNonBlockingTabExecutor()
   private val descriptionExecutor = new EchoExecutor(List(
     s"$YELLOW$BOLD[コマンドリファレンス]",
     s"$RED/seichiassist reload-config",
@@ -27,6 +19,7 @@ object SeichiAssistCommand {
     s"$RED/seichiassist set-anniversary-flag",
     "1周年記念フラグを立てる（コンソール限定コマンド）"
   ).asMessageEffect())
+
   private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()
     .execution { _ =>
       IO {
@@ -35,6 +28,7 @@ object SeichiAssistCommand {
       }
     }
     .build()
+
   private val toggleDebugExecutor = ContextualExecutorBuilder.beginConfiguration()
     .execution { _ =>
       IO {
@@ -60,6 +54,7 @@ object SeichiAssistCommand {
       }
     }
     .build()
+
   private val setAnniversaryFlagExecutor = ContextualExecutorBuilder.beginConfiguration()
     .refineSenderWithError[ConsoleCommandSender]("コンソール専用コマンドです")
     .execution { _ =>
@@ -70,4 +65,13 @@ object SeichiAssistCommand {
       }
     }
     .build()
+
+  val executor: TabExecutor = BranchedExecutor(
+    Map(
+      "reload-config" -> reloadConfigExecutor,
+      "toggle-debug" -> toggleDebugExecutor,
+      "set-anniversary-flag" -> setAnniversaryFlagExecutor
+    ),
+    whenArgInsufficient = Some(descriptionExecutor), whenBranchNotFound = Some(descriptionExecutor)
+  ).asNonBlockingTabExecutor()
 }

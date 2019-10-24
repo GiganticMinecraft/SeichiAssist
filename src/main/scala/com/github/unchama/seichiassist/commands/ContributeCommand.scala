@@ -13,24 +13,6 @@ object ContributeCommand {
   import enumeratum._
   import net.md_5.bungee.api.ChatColor._
 
-  val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
-    .argumentsParsers(
-      List(operationParser, pointParser),
-      onMissingArguments = printHelpMessageExecutor
-    )
-    .execution { context =>
-      val operation = context.args.parsed(0).asInstanceOf[ContributeOperation]
-      val targetPlayerName = context.args.parsed(1).asInstanceOf[String]
-      val point = context.args.parsed(2).asInstanceOf[Int]
-
-      import ContributeOperation._
-      operation match {
-        case ADD => addContributionPoint(targetPlayerName, point)
-        case REMOVE => addContributionPoint(targetPlayerName, -point)
-      }
-    }
-    .build()
-    .asNonBlockingTabExecutor()
   private val printHelpMessageExecutor = new EchoExecutor(
     List(
       s"$YELLOW$BOLD[コマンドリファレンス]",
@@ -72,6 +54,24 @@ object ContributeCommand {
     case object ADD extends ContributeOperation
 
     case object REMOVE extends ContributeOperation
-
   }
+
+  val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
+    .argumentsParsers(
+      List(operationParser, pointParser),
+      onMissingArguments = printHelpMessageExecutor
+    )
+    .execution { context =>
+      val operation = context.args.parsed(0).asInstanceOf[ContributeOperation]
+      val targetPlayerName = context.args.parsed(1).asInstanceOf[String]
+      val point = context.args.parsed(2).asInstanceOf[Int]
+
+      import ContributeOperation._
+      operation match {
+        case ADD => addContributionPoint(targetPlayerName, point)
+        case REMOVE => addContributionPoint(targetPlayerName, -point)
+      }
+    }
+    .build()
+    .asNonBlockingTabExecutor()
 }
