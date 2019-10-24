@@ -65,7 +65,7 @@ object OnClickTitleMenu extends Listener {
     val isSkull = itemstackcurrent.getType == Material.SKULL_ITEM
     val prefix = s"${DARK_PURPLE}${BOLD}"
     title match {
-      case s"${prefix}実績・二つ名システム " => {
+      case s"${prefix}実績・二つ名システム" => {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -136,7 +136,7 @@ object OnClickTitleMenu extends Listener {
         //予約付与システム受け取り処理
       }
 
-      case s"${prefix}カテゴリ「整地」 " => {
+      case s"${prefix}カテゴリ「整地」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -167,7 +167,7 @@ object OnClickTitleMenu extends Listener {
         } //実績メニューに戻る
       }
 
-      case s"${prefix}カテゴリ「建築」 " => {
+      case s"${prefix}カテゴリ「建築」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -185,7 +185,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}カテゴリ「ログイン」 " => {
+      case s"${prefix}カテゴリ「ログイン」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -223,7 +223,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}カテゴリ「やりこみ」 " => {
+      case s"${prefix}カテゴリ「やりこみ」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -241,7 +241,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}カテゴリ「特殊」 " => {
+      case s"${prefix}カテゴリ「特殊」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -273,7 +273,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}二つ名組合せシステム " => {
+      case s"${prefix}二つ名組合せシステム" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -347,7 +347,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}二つ名組合せ「前」 " => {
+      case s"${prefix}二つ名組合せ「前」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -389,7 +389,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}二つ名組合せ「中」 " => {
+      case s"${prefix}二つ名組合せ「中」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -431,7 +431,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}二つ名組合せ「後」 " => {
+      case s"${prefix}二つ名組合せ「後」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -473,7 +473,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}実績ポイントショップ " => {
+      case s"${prefix}実績ポイントショップ" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -537,7 +537,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}実績「整地神ランキング」 " => {
+      case s"${prefix}実績「整地神ランキング」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -593,7 +593,7 @@ object OnClickTitleMenu extends Listener {
         } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「整地量」 " => {
+      case s"${prefix}実績「整地量」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -643,7 +643,7 @@ object OnClickTitleMenu extends Listener {
         } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「参加時間」 " => {
+      case s"${prefix}実績「参加時間」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -754,7 +754,7 @@ object OnClickTitleMenu extends Listener {
         } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「通算ログイン」 " => {
+      case s"${prefix}実績「通算ログイン」" => {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -839,7 +839,7 @@ object OnClickTitleMenu extends Listener {
         } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「連続ログイン」 " => {
+      case s"${prefix}実績「連続ログイン」" => {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -877,7 +877,7 @@ object OnClickTitleMenu extends Listener {
         } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「JMS投票数」 " => {
+      case s"${prefix}実績「JMS投票数」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -930,7 +930,7 @@ object OnClickTitleMenu extends Listener {
         } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「公式イベント」 " => {
+      case s"${prefix}実績「公式イベント」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -1063,7 +1063,7 @@ object OnClickTitleMenu extends Listener {
         } //実績メニューに戻る
       }
 
-      case s"${prefix}実績「記念日」 " => {
+      case s"${prefix}実績「記念日」" => {
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -1207,7 +1207,7 @@ object OnClickTitleMenu extends Listener {
 
       }
 
-      case s"${prefix}実績「極秘任務」 " => {
+      case s"${prefix}実績「極秘任務」" => {
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
