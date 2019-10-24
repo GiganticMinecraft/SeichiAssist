@@ -127,7 +127,8 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
       refinedSender <- OptionT(senderTypeValidation(rawContext.sender))
       parsedArgs <- OptionT(argumentsParser(refinedSender, rawContext))
       context = ParsedArgCommandContext(refinedSender, rawContext.command, parsedArgs)
-      _ <- OptionT.liftF(contextualExecution(context))
+      executionResponse <- OptionT.liftF(contextualExecution(context))
+      _ <- OptionT.liftF(executionResponse(context.sender))
     } yield ()
 
     optionalExecution.value.map(_ => ())
