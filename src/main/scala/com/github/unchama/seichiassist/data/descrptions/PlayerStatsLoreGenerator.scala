@@ -88,7 +88,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
       s"${DARK_GRAY}パッシブスキル効果：",
       s"${DARK_GRAY}1ブロック整地ごとに",
       s"$DARK_GRAY${PlayerData.passiveSkillProbability}%の確率で",
-      s"$DARK_GRAY${playerData.getPassiveExp()}のマナを獲得"
+      s"$DARK_GRAY${playerData.getPassiveExp}のマナを獲得"
     )
   }
 

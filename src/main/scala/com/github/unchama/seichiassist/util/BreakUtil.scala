@@ -66,7 +66,7 @@ object BreakUtil {
     if (breakblock.getWorld.asManagedWorld().exists(_.isSeichi)) {
       val isBlockY5Step = material == Material.STEP && breakblock.getY == 5 && breakblock.getData == 0.toByte
 
-      if (isBlockY5Step && !playerdata.canBreakHalfBlock()) return false
+      if (isBlockY5Step && !playerdata.canBreakHalfBlock) return false
     }
 
     true

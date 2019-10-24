@@ -25,7 +25,7 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
   def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: Coordinate, end: Coordinate, standard: Location): Unit = {
     import XYZTuple.CoordinateOps
 
-    runBreakEffect(player, tool, breaklist, start.toXYZTuple(), end.toXYZTuple(), standard)
+    runBreakEffect(player, tool, breaklist, start.toXYZTuple, end.toXYZTuple, standard)
   }
 
   def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: XYZTuple, end: XYZTuple, standard: Location): Unit = {

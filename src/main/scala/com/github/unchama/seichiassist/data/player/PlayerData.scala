@@ -126,11 +126,11 @@ class PlayerData(
   //前回の採掘速度上昇レベルを格納
   var lastminespeedlv = 0
   //投票受け取りボタン連打防止用
-  val votecooldownflag = true
+  var votecooldownflag = true
   //ガチャボタン連打防止用
-  val gachacooldownflag = true
+  var gachacooldownflag = true
   //インベントリ共有ボタン連打防止用
-  val shareinvcooldownflag = true
+  var shareinvcooldownflag = true
   var selectHomeNum = 0
   var setHomeNameNum = 0
   var isSubHomeNameChange = false

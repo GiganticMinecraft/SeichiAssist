@@ -31,7 +31,7 @@ sealed abstract class ActiveSkillEffect(val num: Int,
     val skillId = skillData.skillnum
 
     this match {
-      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start.toXYZTuple(), end.toXYZTuple(), standard).runTask(plugin)
+      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start.toXYZTuple, end.toXYZTuple, standard).runTask(plugin)
       case Blizzard =>
         val effect = new BlizzardTask(player, skillData, tool, breakList, start, end, standard)
 
