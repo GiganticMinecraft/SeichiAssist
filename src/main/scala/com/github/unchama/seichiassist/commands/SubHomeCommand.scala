@@ -10,23 +10,15 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
 object SubHomeCommand {
-  val executor: TabExecutor = BranchedExecutor(
-    Map(
-      "warp" -> warpExecutor,
-      "set" -> setExecutor,
-      "name" -> nameExecutor
-    ),
-    whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
-  ).asNonBlockingTabExecutor()
   private val printDescriptionExecutor = new EchoExecutor(
     List(
-      s"${GREEN}/subhome コマンドの使い方",
+      s"$GREEN/subhome コマンドの使い方",
       s"${GREEN}移動する場合",
-      s"${GREEN}/subhome warp [移動したいサブホームの番号]",
+      s"$GREEN/subhome warp [移動したいサブホームの番号]",
       s"${GREEN}セットする場合",
-      s"${GREEN}/subhome set [セットしたいサブホームの番号]",
+      s"$GREEN/subhome set [セットしたいサブホームの番号]",
       s"${GREEN}名前変更する場合",
-      s"${GREEN}/subhome name [名前変更したいサブホームの番号]"
+      s"$GREEN/subhome name [名前変更したいサブホームの番号]"
     ).asMessageEffect()
   )
   private val subHomeMax = SeichiAssist.seichiAssistConfig.getSubHomeMax
@@ -77,9 +69,18 @@ object SubHomeCommand {
       IO {
         List(
           s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
-          s"${YELLOW}※入力されたチャット内容は他のプレイヤーには見えません"
+          s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
         ).asMessageEffect()
       }
     }
     .build()
+
+  val executor: TabExecutor = BranchedExecutor(
+    Map(
+      "warp" -> warpExecutor,
+      "set" -> setExecutor,
+      "name" -> nameExecutor
+    ),
+    whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
+  ).asNonBlockingTabExecutor()
 }

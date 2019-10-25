@@ -95,10 +95,10 @@ class PlayerJoinListener extends Listener {
     }
 
     // 初見さんへの処理
-    if (!player.hasPlayedBefore()) {
+    if (!player.hasPlayedBefore) {
       //初見さんであることを全体告知
-      Util.sendEveryMessage(LIGHT_PURPLE.toString() + "" + BOLD + player.getName + "さんはこのサーバーに初めてログインしました！")
-      Util.sendEveryMessage(WHITE.toString() + "webサイトはもう読みましたか？→" + YELLOW + "" + UNDERLINE + "https://www.seichi.network/gigantic")
+      Util.sendEveryMessage(LIGHT_PURPLE.toString + "" + BOLD + player.getName + "さんはこのサーバーに初めてログインしました！")
+      Util.sendEveryMessage(WHITE.toString + "webサイトはもう読みましたか？→" + YELLOW + "" + UNDERLINE + "https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       player.getInventory.addItem(new ItemStack(Material.STICK))
@@ -145,7 +145,7 @@ class PlayerJoinListener extends Listener {
         // アクティブスキルがONになっている
         if (pd.activeskilldata.mineflagnum != 0) {
           // メッセージを表示
-          p.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
+          p.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
           // 内部状態をアサルトOFFに変更
           pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0)
           // トグル音を鳴らす

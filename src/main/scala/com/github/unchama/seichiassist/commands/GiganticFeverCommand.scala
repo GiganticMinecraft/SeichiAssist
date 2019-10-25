@@ -13,12 +13,14 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
 object GiganticFeverCommand {
+  private val worldsToToggleDifficulty = ManagedWorld.seichiWorlds.map(_.alphabetName).toList
+
   val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
     .execution { _ =>
       val config = SeichiAssist.seichiAssistConfig
 
       Util.sendEveryMessage(s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
-      Util.sendEveryMessage(s"${AQUA}(${config.getGiganticFeverDisplayTime}間)")
+      Util.sendEveryMessage(s"$AQUA(${config.getGiganticFeverDisplayTime}間)")
 
       Util.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL)
 
@@ -32,5 +34,4 @@ object GiganticFeverCommand {
     }
     .build()
     .asNonBlockingTabExecutor()
-  private val worldsToToggleDifficulty = ManagedWorld.seichiWorlds.map(_.alphabetName).toList
 }

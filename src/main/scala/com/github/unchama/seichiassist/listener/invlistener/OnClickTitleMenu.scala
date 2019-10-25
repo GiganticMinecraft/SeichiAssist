@@ -63,9 +63,9 @@ object OnClickTitleMenu extends Listener {
     val title = topinventory.getTitle
     //インベントリ名が以下の時処理
     val isSkull = itemstackcurrent.getType == Material.SKULL_ITEM
-    val prefix = s"${DARK_PURPLE}${BOLD}"
+    val prefix = s"$DARK_PURPLE$BOLD"
     title match {
-      case s"${prefix}実績・二つ名システム" => {
+      case s"${prefix}実績・二つ名システム " =>
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -81,10 +81,10 @@ object OnClickTitleMenu extends Listener {
         //表示内容をLVに変更
         if (itemstackcurrent.getType == Material.REDSTONE_TORCH_ON) {
           // Zero clear
-          playerdata.updateNickname(id1 = 0, id2 = 0, id3 = 0, style = PlayerNickName.Style.Level)
+          playerdata.updateNickname(style = PlayerNickName.Style.Level)
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_Present2") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_Present2") {
           SeichiAchievement.tryAchieve(player, playerdata.giveachvNo)
           playerdata.giveachvNo = 0
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -108,7 +108,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           import com.github.unchama.targetedeffect.TargetedEffects._
           sequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
@@ -134,9 +134,8 @@ object OnClickTitleMenu extends Listener {
         //カテゴリ「整地」を開く
         //「二つ名組合せシステム」を開く
         //予約付与システム受け取り処理
-      }
 
-      case s"${prefix}カテゴリ「整地」" => {
+      case s"${prefix}カテゴリ「整地」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -160,14 +159,13 @@ object OnClickTitleMenu extends Listener {
           //ItemMeta itemmeta = itemstackcurrent.getItemMeta();
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleRankData(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
         } //実績メニューに戻る
-      }
 
-      case s"${prefix}カテゴリ「建築」" => {
+      case s"${prefix}カテゴリ「建築」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -175,7 +173,7 @@ object OnClickTitleMenu extends Listener {
         //プレイヤーインベントリのクリックの場合終了
         if (event.getClickedInventory.getType == InventoryType.PLAYER) {
           return
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
@@ -183,9 +181,7 @@ object OnClickTitleMenu extends Listener {
         //実績未実装のカテゴリです。
         //実績メニューに戻る
 
-      }
-
-      case s"${prefix}カテゴリ「ログイン」" => {
+      case s"${prefix}カテゴリ「ログイン」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -210,7 +206,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleExtraData(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
@@ -221,9 +217,7 @@ object OnClickTitleMenu extends Listener {
         //クリックしたボタンに応じた各処理内容の記述ここから
         //実績「参加時間」を開く
 
-      }
-
-      case s"${prefix}カテゴリ「やりこみ」" => {
+      case s"${prefix}カテゴリ「やりこみ」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -231,7 +225,7 @@ object OnClickTitleMenu extends Listener {
         //プレイヤーインベントリのクリックの場合終了
         if (event.getClickedInventory.getType == InventoryType.PLAYER) {
           return
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
@@ -239,9 +233,7 @@ object OnClickTitleMenu extends Listener {
         //実績未実装のカテゴリです。
         //実績メニューに戻る
 
-      }
-
-      case s"${prefix}カテゴリ「特殊」" => {
+      case s"${prefix}カテゴリ「特殊」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -261,7 +253,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSecretData(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
@@ -271,9 +263,7 @@ object OnClickTitleMenu extends Listener {
         //クリックしたボタンに応じた各処理内容の記述ここから
         //実績「公式イベント」を開く
 
-      }
-
-      case s"${prefix}二つ名組合せシステム" => {
+      case s"${prefix}二つ名組合せシステム " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -288,15 +278,14 @@ object OnClickTitleMenu extends Listener {
          */
         itemstackcurrent.getType match {
           //実績ポイント最新化
-          case Material.EMERALD_ORE => {
+          case Material.EMERALD_ORE =>
 
             player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             playerdata.recalculateAchievePoint()
             player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-          }
 
           //エフェクトポイント→実績ポイント変換
-          case Material.EMERALD => {
+          case Material.EMERALD =>
             player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             //不足してたらスルー
             if (playerdata.activeskilldata.effectpoint < 10) {
@@ -308,46 +297,39 @@ object OnClickTitleMenu extends Listener {
             playerdata.recalculateAchievePoint()
 
             player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-          }
 
           //パーツショップ
-          case Material.ITEM_FRAME => {
+          case Material.ITEM_FRAME =>
 
             player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
             player.openInventory(MenuInventoryData.setTitleShopData(player))
-          }
 
           //前パーツ
-          case Material.WATER_BUCKET => {
+          case Material.WATER_BUCKET =>
 
             player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
             player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
-          }
 
           //中パーツ
-          case Material.MILK_BUCKET => {
+          case Material.MILK_BUCKET =>
 
             player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
             player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
-          }
 
           //後パーツ
-          case Material.LAVA_BUCKET => {
+          case Material.LAVA_BUCKET =>
 
             player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
             player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
-          }
           case _ =>
         }
-        if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleMenuData(player))
           return
         } //実績メニューに戻る
 
-      }
-
-      case s"${prefix}二つ名組合せ「前」" => {
+      case s"${prefix}二つ名組合せ「前」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -378,7 +360,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
           return
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowRight") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
           return
@@ -386,10 +368,7 @@ object OnClickTitleMenu extends Listener {
         //組み合わせメイン
         //パーツ未選択に
 
-
-      }
-
-      case s"${prefix}二つ名組合せ「中」" => {
+      case s"${prefix}二つ名組合せ「中」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -420,7 +399,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
           return
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowRight") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
           return
@@ -428,10 +407,7 @@ object OnClickTitleMenu extends Listener {
         //組み合わせメインへ移動
         //パーツ未選択に
 
-
-      }
-
-      case s"${prefix}二つ名組合せ「後」" => {
+      case s"${prefix}二つ名組合せ「後」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -462,7 +438,7 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
           return
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowRight") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
           return
@@ -470,10 +446,7 @@ object OnClickTitleMenu extends Listener {
         //組み合わせメイン
         //パーツ未選択に
 
-
-      }
-
-      case s"${prefix}実績ポイントショップ" => {
+      case s"${prefix}実績ポイントショップ " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -528,16 +501,14 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
           return
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowRight") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.setTitleShopData(player))
           return
         } //次ページ
         //組み合わせメイン
 
-      }
-
-      case s"${prefix}実績「整地神ランキング」" => {
+      case s"${prefix}実績「整地神ランキング」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -586,14 +557,13 @@ object OnClickTitleMenu extends Listener {
             setTitle(1009, 9909, 1009)
           player.openInventory(MenuInventoryData.getTitleRankData(player))
 
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSeichi(player))
           return
         } //実績メニューに戻る
-      }
 
-      case s"${prefix}実績「整地量」" => {
+      case s"${prefix}実績「整地量」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -636,14 +606,13 @@ object OnClickTitleMenu extends Listener {
           else if (name.contains("No3019「" + SeichiAssist.seichiAssistConfig.getTitle1(3019) + "」")) setTitle(first = 3019)
           player.openInventory(MenuInventoryData.getTitleAmountData(player))
 
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSeichi(player))
           return
         } //実績メニューに戻る
-      }
 
-      case s"${prefix}実績「参加時間」" => {
+      case s"${prefix}実績「参加時間」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -747,14 +716,13 @@ object OnClickTitleMenu extends Listener {
           playerdata.TitleFlags.addOne(8003)
           player.sendMessage("お疲れ様でした！今日のお給料の代わりに二つ名をどうぞ！")
           player.openInventory(MenuInventoryData.getTitleTimeData(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleLogin(player))
           return
         } //実績メニューに戻る
-      }
 
-      case s"${prefix}実績「通算ログイン」" => {
+      case s"${prefix}実績「通算ログイン」 " =>
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -832,14 +800,13 @@ object OnClickTitleMenu extends Listener {
 
           player.openInventory(MenuInventoryData.getTitleJoinAmountData(player))
 
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleLogin(player))
           return
         } //実績メニューに戻る
-      }
 
-      case s"${prefix}実績「連続ログイン」" => {
+      case s"${prefix}実績「連続ログイン」 " =>
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -859,25 +826,24 @@ object OnClickTitleMenu extends Listener {
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           val name = itemstackcurrent.getItemMeta.getDisplayName
 
-          if (name.contains(("No5001「" + SeichiAssist.seichiAssistConfig.getTitle1(5001) + SeichiAssist.seichiAssistConfig.getTitle2(5001) + "」"))) setTitle(first = 5001, second = 5001)
-          else if (name.contains(("No5002「" + SeichiAssist.seichiAssistConfig.getTitle1(5002) + SeichiAssist.seichiAssistConfig.getTitle3(5002) + "」"))) setTitle(first = 5002, third = 5002)
+          if (name.contains("No5001「" + SeichiAssist.seichiAssistConfig.getTitle1(5001) + SeichiAssist.seichiAssistConfig.getTitle2(5001) + "」")) setTitle(first = 5001, second = 5001)
+          else if (name.contains("No5002「" + SeichiAssist.seichiAssistConfig.getTitle1(5002) + SeichiAssist.seichiAssistConfig.getTitle3(5002) + "」")) setTitle(first = 5002, third = 5002)
           else if (name.contains("No5003「" + SeichiAssist.seichiAssistConfig.getTitle1(5003) + "」")) setTitle(first = 5003)
-          else if (name.contains(("No5004「" + SeichiAssist.seichiAssistConfig.getTitle1(5004) + SeichiAssist.seichiAssistConfig.getTitle3(5004) + "」"))) setTitle(first = 5004, third = 5004)
-          else if (name.contains(("No5005「" + SeichiAssist.seichiAssistConfig.getTitle1(5005) + SeichiAssist.seichiAssistConfig.getTitle3(5005) + "」"))) setTitle(first = 5005, third = 5005)
-          else if (name.contains(("No5006「" + SeichiAssist.seichiAssistConfig.getTitle1(5006) + SeichiAssist.seichiAssistConfig.getTitle3(5006) + "」"))) setTitle(first = 5006, third = 5006)
+          else if (name.contains("No5004「" + SeichiAssist.seichiAssistConfig.getTitle1(5004) + SeichiAssist.seichiAssistConfig.getTitle3(5004) + "」")) setTitle(first = 5004, third = 5004)
+          else if (name.contains("No5005「" + SeichiAssist.seichiAssistConfig.getTitle1(5005) + SeichiAssist.seichiAssistConfig.getTitle3(5005) + "」")) setTitle(first = 5005, third = 5005)
+          else if (name.contains("No5006「" + SeichiAssist.seichiAssistConfig.getTitle1(5006) + SeichiAssist.seichiAssistConfig.getTitle3(5006) + "」")) setTitle(first = 5006, third = 5006)
           else if (name.contains("No5007「" + SeichiAssist.seichiAssistConfig.getTitle1(5007) + "」")) setTitle(first = 5007)
-          else if (name.contains(("No5008「" + SeichiAssist.seichiAssistConfig.getTitle1(5008) + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」"))) setTitle(first = 5008, second = 9905)
+          else if (name.contains("No5008「" + SeichiAssist.seichiAssistConfig.getTitle1(5008) + SeichiAssist.seichiAssistConfig.getTitle2(9905) + "」")) setTitle(first = 5008, second = 9905)
 
           player.openInventory(MenuInventoryData.getTitleJoinChainData(player))
 
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.getTitleLogin(player))
           return
         } //実績メニューに戻る
-      }
 
-      case s"${prefix}実績「JMS投票数」" => {
+      case s"${prefix}実績「JMS投票数」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -923,14 +889,13 @@ object OnClickTitleMenu extends Listener {
             setTitle(first = 6008)
           }
           player.openInventory(MenuInventoryData.getTitleSupportData(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
           return
         } //実績メニューに戻る
-      }
 
-      case s"${prefix}実績「公式イベント」" => {
+      case s"${prefix}実績「公式イベント」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -1056,14 +1021,13 @@ object OnClickTitleMenu extends Listener {
           }
           player.openInventory(MenuInventoryData.getTitleEventData(player))
 
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
           return
         } //実績メニューに戻る
-      }
 
-      case s"${prefix}実績「記念日」" => {
+      case s"${prefix}実績「記念日」 " =>
         event.setCancelled(true)
 
         //プレイヤーインベントリのクリックの場合終了
@@ -1193,11 +1157,11 @@ object OnClickTitleMenu extends Listener {
             setTitle(first = 9036, third = 9036)
           }
           player.openInventory(MenuInventoryData.getTitleExtraData(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleLogin(player))
           return
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowRight") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           playerdata.titlepage = playerdata.titlepage + 1
           player.openInventory(MenuInventoryData.getTitleExtraData(player))
@@ -1205,9 +1169,7 @@ object OnClickTitleMenu extends Listener {
         } //次ページ
         //実績メニューに戻る
 
-      }
-
-      case s"${prefix}実績「極秘任務」" => {
+      case s"${prefix}実績「極秘任務」 " =>
         event.setCancelled(true)
 
         //実績解除処理部分の読みこみ
@@ -1235,11 +1197,10 @@ object OnClickTitleMenu extends Listener {
           else if (name.contains("No8003「" + SeichiAssist.seichiAssistConfig.getTitle1(8003) + SeichiAssist.seichiAssistConfig.getTitle3(8003) + "」")) setTitle(first = 8003, third = 8003)
 
           player.openInventory(MenuInventoryData.getTitleSecretData(player))
-        } else if (isSkull && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+        } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
         } //実績メニューに戻る
-      }
       case _ =>
     }
   }

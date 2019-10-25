@@ -29,7 +29,7 @@ class MagicTask(private val player: Player,
     val rd = new Random().nextInt(colors.length)
 
     blocks.foreach { b =>
-      BreakUtil.breakBlock(player, b, skillCenter, tool, false)
+      BreakUtil.breakBlock(player, b, skillCenter, tool, stepflag = false)
 
       b.setType(Material.WOOL)
       val state = b.getState

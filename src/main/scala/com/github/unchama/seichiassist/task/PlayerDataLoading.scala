@@ -34,7 +34,7 @@ object PlayerDataLoading {
     val databaseGateway = SeichiAssist.databaseGateway
 
     val uuid: UUID = playerUUID
-    val stringUuid: String = uuid.toString().toLowerCase()
+    val stringUuid: String = uuid.toString.toLowerCase()
     val db: String = SeichiAssist.seichiAssistConfig.getDB
     val timer: MillisecondTimer = MillisecondTimer.getInitializedTimerInstance
 
@@ -73,7 +73,7 @@ object PlayerDataLoading {
           playerData.setSubHomeLocation(location, subHomeId)
           playerData.setSubHomeName(subHomeName, subHomeId)
         } else {
-          println(s"Resetting ${playerName}'s subhome ${subHomeName}(${subHomeId}) in $worldName - world name not found.")
+          println(s"Resetting $playerName's subhome $subHomeName($subHomeId) in $worldName - world name not found.")
         }
       }
     }

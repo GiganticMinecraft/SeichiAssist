@@ -25,8 +25,8 @@ object Util {
   private val types = List(FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST, FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR)
 
   def sendPlayerDataNullMessage(player: Player): Unit = {
-    player.sendMessage(RED.toString() + "初回ログイン時の読み込み中か、読み込みに失敗しています")
-    player.sendMessage(RED.toString() + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい")
+    player.sendMessage(RED.toString + "初回ログイン時の読み込み中か、読み込みに失敗しています")
+    player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい")
   }
 
   //スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
@@ -319,7 +319,7 @@ object Util {
       itemstack.setAmount(itemstack.getAmount - count)
     } else
       return itemstack.getAmount >= count
-    return true
+    true
   }
 
   def getForBugskull(name: String): ItemStack = {
@@ -329,12 +329,12 @@ object Util {
       setItemMeta {
         ItemMetaFactory.SKULL.getValue.modify { meta =>
           import meta._
-          setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
+          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
             List(
-              s"${RESET}${GREEN}右クリックで使えます",
-              s"${RESET}${DARK_GREEN}所有者：$name",
-              s"${RESET}${DARK_RED}運営から不具合のお詫びです"
+              s"$RESET${GREEN}右クリックで使えます",
+              s"$RESET${DARK_GREEN}所有者：$name",
+              s"$RESET${DARK_RED}運営から不具合のお詫びです"
             ).asJava
           }
           setOwner("unchama")
@@ -350,12 +350,12 @@ object Util {
       setItemMeta {
         ItemMetaFactory.SKULL.getValue.modify { meta =>
           import meta._
-          setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
+          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
             List(
-              s"${RESET}${GREEN}右クリックで使えます",
-              s"${RESET}${DARK_GREEN}所有者：$name",
-              s"${RESET}${LIGHT_PURPLE}投票ありがとナス♡"
+              s"$RESET${GREEN}右クリックで使えます",
+              s"$RESET${DARK_GREEN}所有者：$name",
+              s"$RESET${LIGHT_PURPLE}投票ありがとナス♡"
             ).asJava
           }
           setOwner("unchama")
@@ -371,12 +371,12 @@ object Util {
       setItemMeta {
         ItemMetaFactory.SKULL.getValue.modify { meta =>
           import meta._
-          setDisplayName(s"${YELLOW}${BOLD}ガチャ券")
+          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
             List(
-              s"${RESET}${GREEN}右クリックで使えます",
-              s"${RESET}${DARK_GREEN}所有者：$name",
-              s"${RESET}${GRAY}ガチャ景品と交換しました。"
+              s"$RESET${GREEN}右クリックで使えます",
+              s"$RESET${DARK_GREEN}所有者：$name",
+              s"$RESET${GRAY}ガチャ景品と交換しました。"
             ).asJava
           }
           setOwner("unchama")
@@ -471,20 +471,20 @@ object Util {
   def showTime(cal: Calendar): String = {
     val date = cal.getTime
     val format = new SimpleDateFormat("yyyy/MM/dd HH:mm")
-    return format.format(date)
+    format.format(date)
   }
 
   def showHour(cal: Calendar): String = {
     val date = cal.getTime
     val format = new SimpleDateFormat("HH:mm")
-    return format.format(date)
+    format.format(date)
   }
 
   def getTimeZone(cal: Calendar): String = {
     val date = cal.getTime
     val format = new SimpleDateFormat("HH")
     val n = TypeConverter.toInt(format.format(date))
-    return if (4 <= n && n < 10)
+    if (4 <= n && n < 10)
       "morning"
     else if (10 <= n && n < 18)
       "day"
@@ -494,7 +494,7 @@ object Util {
 
   def isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean = {
     val cur = Calendar.getInstance()
-    return cur.after(start) && cur.before(end)
+    cur.after(start) && cur.before(end)
   }
 
   def setDifficulty(worldNameList: List[String], difficulty: Difficulty): Unit = {
@@ -502,7 +502,7 @@ object Util {
       val world = Bukkit.getWorld(name)
 
       if (world == null)
-        Bukkit.getLogger().warning(name + "という名前のワールドは存在しません。")
+        Bukkit.getLogger.warning(name + "という名前のワールドは存在しません。")
       else
         world.setDifficulty(difficulty)
     }

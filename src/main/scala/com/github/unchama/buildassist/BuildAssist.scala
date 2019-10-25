@@ -1,5 +1,6 @@
 package com.github.unchama.buildassist
 
+import java.util
 import java.util.{ArrayList, EnumSet, UUID}
 
 import com.github.unchama.buildassist.listener.{BlockPlaceEventListener, EntityListener, PlayerJoinListener, PlayerQuitListener}
@@ -15,7 +16,7 @@ class BuildAssist(plugin: Plugin) {
   import collection.JavaConverters._
 
   //起動するタスクリスト
-  private val tasklist = new ArrayList[BukkitTask]()
+  private val tasklist = new util.ArrayList[BukkitTask]()
   private var commandlist = mutable.HashMap[String, CommandExecutor]()
 
   {
@@ -32,12 +33,12 @@ class BuildAssist(plugin: Plugin) {
     commandlist = mutable.HashMap()
     commandlist += "fly" -> new FlyCommand()
 
-    Bukkit.getServer().getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
-    Bukkit.getServer().getPluginManager.registerEvents(new EntityListener(), plugin)
-    Bukkit.getServer().getPluginManager.registerEvents(new PlayerRightClickListener(), plugin)
-    Bukkit.getServer().getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
-    Bukkit.getServer().getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
-    Bukkit.getServer().getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
+    Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
+    Bukkit.getServer.getPluginManager.registerEvents(new EntityListener(), plugin)
+    Bukkit.getServer.getPluginManager.registerEvents(new PlayerRightClickListener(), plugin)
+    Bukkit.getServer.getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
+    Bukkit.getServer.getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
+    Bukkit.getServer.getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
     Bukkit.getServer.getPluginManager.registerEvents(new BlockLineUp(), plugin) //ブロックを並べるスキル
 
 
@@ -95,7 +96,7 @@ object BuildAssist {
     5000000
   )
   //範囲設置ブロックの対象リスト
-  val materiallist = EnumSet.of(
+  val materiallist = util.EnumSet.of(
 
 
     Material.STONE //石
@@ -183,11 +184,11 @@ object BuildAssist {
     Material.WOOL, Material.CARPET, Material.WORKBENCH
   )
   //ハーフブロックまとめ
-  val material_slab = EnumSet.of(
+  val material_slab = util.EnumSet.of(
     Material.STONE_SLAB2, Material.PURPUR_SLAB, Material.WOOD_STEP, Material.STEP
   )
   //直列設置ブロックの対象リスト
-  val materiallist2 = EnumSet.of(
+  val materiallist2 = util.EnumSet.of(
     Material.STONE //石
     , Material.GRASS //草
     , Material.DIRT //土
@@ -257,13 +258,13 @@ object BuildAssist {
     , Material.CONCRETE //コンクリート
     , Material.CONCRETE_POWDER //コンクリートパウダー
   )
-  val material_slab2 = EnumSet.of(
+  val material_slab2 = util.EnumSet.of(
     Material.STONE_SLAB2 //赤砂岩
     , Material.PURPUR_SLAB //プルパー
     , Material.WOOD_STEP //木
     , Material.STEP //石
   )
-  val material_destruction = EnumSet.of(
+  val material_destruction = util.EnumSet.of(
     Material.LONG_GRASS //草
     , Material.DEAD_BUSH //枯れ木
     , Material.YELLOW_FLOWER //タンポポ
@@ -277,9 +278,9 @@ object BuildAssist {
     , Material.STATIONARY_WATER //水
   )
   var plugin: Plugin = _
-  var DEBUG: Boolean = false
+  val DEBUG: Boolean = false
   var config: BuildAssistConfig = _
-  var line_up_str = Seq("OFF", "上側", "下側")
-  var line_up_step_str = Seq("上側", "下側", "両方")
-  var line_up_off_on_str = Seq("OFF", "ON")
+  val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
+  val line_up_step_str: Seq[String] = Seq("上側", "下側", "両方")
+  val line_up_off_on_str: Seq[String] = Seq("OFF", "ON")
 }

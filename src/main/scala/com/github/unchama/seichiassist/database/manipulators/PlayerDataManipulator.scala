@@ -35,7 +35,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   //投票特典配布時の処理(p_givenvoteの値の更新もココ)
   def compareVotePoint(player: Player, playerdata: PlayerData): Int = {
     ifCoolDownDoneThenGet(player, playerdata) {
-      val struuid = playerdata.uuid.toString()
+      val struuid = playerdata.uuid.toString
 
       var p_vote = 0
       var p_givenvote = 0
@@ -50,7 +50,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         case e: SQLException =>
           println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
           e.printStackTrace()
-          player.sendMessage(RED.toString() + "投票特典の受け取りに失敗しました")
+          player.sendMessage(RED.toString + "投票特典の受け取りに失敗しました")
           return 0
       }
 
@@ -60,21 +60,21 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
           + " set p_givenvote = " + p_vote
           + s" where uuid = '$struuid'")
         if (gateway.executeUpdate(command) == ActionStatus.Fail) {
-          player.sendMessage(RED.toString() + "投票特典の受け取りに失敗しました")
+          player.sendMessage(RED.toString + "投票特典の受け取りに失敗しました")
           return 0
         }
 
         return p_vote - p_givenvote
       }
-      player.sendMessage(YELLOW.toString() + "投票特典は全て受け取り済みのようです")
+      player.sendMessage(YELLOW.toString + "投票特典は全て受け取り済みのようです")
       0
     }
   }
 
   //最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
   def givePlayerBug(player: Player, playerdata: PlayerData): Int = {
-    return ifCoolDownDoneThenGet(player, playerdata) {
-      val struuid = playerdata.uuid.toString()
+    ifCoolDownDoneThenGet(player, playerdata) {
+      val struuid = playerdata.uuid.toString
       var numofsorryforbug = 0
 
       var command = s"select numofsorryforbug from $tableReference where uuid = '$struuid'"
@@ -86,7 +86,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         case e: SQLException =>
           println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
           e.printStackTrace()
-          player.sendMessage(RED.toString() + "ガチャ券の受け取りに失敗しました")
+          player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
           return 0
       }
 
@@ -96,7 +96,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
           + " set numofsorryforbug = numofsorryforbug - 576"
           + s" where uuid = '$struuid'")
         if (gateway.executeUpdate(command) == ActionStatus.Fail) {
-          player.sendMessage(RED.toString() + "ガチャ券の受け取りに失敗しました")
+          player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
           return 0
         }
 
@@ -107,14 +107,14 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
           + " set numofsorryforbug = 0"
           + s" where uuid = '$struuid'")
         if (gateway.executeUpdate(command) == ActionStatus.Fail) {
-          player.sendMessage(RED.toString() + "ガチャ券の受け取りに失敗しました")
+          player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
           return 0
         }
 
         return numofsorryforbug
       }
 
-      player.sendMessage(YELLOW.toString() + "ガチャ券は全て受け取り済みのようです")
+      player.sendMessage(YELLOW.toString + "ガチャ券は全て受け取り済みのようです")
       0
     }
   }
@@ -122,7 +122,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   @inline private def ifCoolDownDoneThenGet(player: Player, playerdata: PlayerData)(supplier: => Int): Int = {
     //連打による負荷防止の為クールダウン処理
     if (!playerdata.votecooldownflag) {
-      player.sendMessage(RED.toString() + "しばらく待ってからやり直してください")
+      player.sendMessage(RED.toString + "しばらく待ってからやり直してください")
       return 0
     }
     new CoolDownTask(player, true, false, false).runTaskLater(plugin, 1200)
@@ -142,7 +142,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
       + s" where name = '$playerName'")
 
-    return gateway.executeUpdate(command)
+    gateway.executeUpdate(command)
   }
 
   /**
@@ -158,7 +158,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
       + s" where name = '$playerName'")
 
-    return gateway.executeUpdate(command)
+    gateway.executeUpdate(command)
   }
 
 
@@ -168,7 +168,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       + " set numofsorryforbug = numofsorryforbug + " + num
       + s" where name = '$playerName'")
 
-    return gateway.executeUpdate(command)
+    gateway.executeUpdate(command)
   }
 
   def addChainVote(name: String): Boolean = {
@@ -193,7 +193,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       gateway.executeUpdate(update)
     } catch {
       case e: SQLException =>
-        Bukkit.getLogger().warning(s"${Util.getName(name)} sql failed. => lastvote")
+        Bukkit.getLogger.warning(s"${Util.getName(name)} sql failed. => lastvote")
         e.printStackTrace()
         return false
     }
@@ -214,7 +214,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
               1
 
           //プレイヤーがオンラインの時即時反映させる
-          val player = Bukkit.getServer().getPlayer(name)
+          val player = Bukkit.getServer.getPlayer(name)
           if (player != null) {
             val playerData = SeichiAssist.playermap(player.getUniqueId)
 
@@ -225,12 +225,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         }
     } catch {
       case e: SQLException =>
-        Bukkit.getLogger().warning(Util.getName(name) + " sql failed. => chainvote")
+        Bukkit.getLogger.warning(Util.getName(name) + " sql failed. => chainvote")
         e.printStackTrace()
         return false
     }
 
-    return true
+    true
   }
 
   def addContributionPoint(targetPlayerName: String, point: Int): IO[ResponseEffectOrResult[CommandSender, Unit]] = {
@@ -238,7 +238,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name = '$targetPlayerName'"
 
       if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
-        Bukkit.getLogger().warning(s"sql failed on updating $targetPlayerName's contribute_point")
+        Bukkit.getLogger.warning(s"sql failed on updating $targetPlayerName's contribute_point")
         Left(s"${RED}貢献度ptの変更に失敗しました。".asMessageEffect())
       } else {
         Right(())
@@ -269,13 +269,13 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         val resultSet = gateway.executeQuery(s"select * from $tableReference where name = $playerName")
 
         if (!resultSet.next()) {
-          Left(s"${RED}$playerName はデータベースに登録されていません。".asMessageEffect())
+          Left(s"$RED$playerName はデータベースに登録されていません。".asMessageEffect())
         } else {
           Right(())
         }
       } catch {
         case e: SQLException =>
-          Bukkit.getLogger().warning(s"sql failed on checking data existence of $playerName")
+          Bukkit.getLogger.warning(s"sql failed on checking data existence of $playerName")
           e.printStackTrace()
 
           Left(s"${RED}プレーヤーデータへのアクセスに失敗しました。".asMessageEffect())
@@ -284,14 +284,14 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   // anniversary変更
   def setAnniversary(anniversary: Boolean, uuid: Option[UUID]): Boolean = {
-    var command = s"UPDATE $tableReference SET anniversary = $anniversary" +
+    val command = s"UPDATE $tableReference SET anniversary = $anniversary" +
       uuid.map(u => s" WHERE uuid = '$u'").getOrElse("")
 
     if (gateway.executeUpdate(command) == ActionStatus.Fail) {
-      Bukkit.getLogger().warning("sql failed. => setAnniversary")
+      Bukkit.getLogger.warning("sql failed. => setAnniversary")
       return false
     }
-    return true
+    true
   }
 
   // TODO remove `playerData` from argument
@@ -411,7 +411,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     if (!successPlayTickRankingUpdate()) return false
     if (!successVoteRankingUpdate()) return false
     if (!successPremiumEffectPointRanking()) return false
-    return successAppleNumberRankingUpdate()
+    successAppleNumberRankingUpdate()
 
   }
 
@@ -511,7 +511,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
     SeichiAssist.ranklist_premiumeffectpoint.clear()
     SeichiAssist.ranklist_premiumeffectpoint.addAll(ranklist)
-    return true
+    true
   }
 
   //ランキング表示用に上げたりんご数のカラムだけ全員分引っ張る
@@ -536,13 +536,13 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
     SeichiAssist.ranklist_p_apple.clear()
     SeichiAssist.ranklist_p_apple.addAll(ranklist)
-    return true
+    true
   }
 
   //全員に詫びガチャの配布
   def addAllPlayerBug(amount: Int): ActionStatus = {
     val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
-    return gateway.executeUpdate(command)
+    gateway.executeUpdate(command)
   }
 
   def selectPocketInventoryOf(uuid: UUID): IO[ResponseEffectOrResult[CommandSender, Inventory]] = {

@@ -39,7 +39,7 @@ case class HalfHourRankingRoutine(override val taskExecutionContext: ExecutionCo
 
         //increaseが0超過の場合プレイヤー個人に個人整地量を通知
         if (halfHourBlock.increase > 0) {
-          player.sendMessage(s"あなたの整地量は ${AQUA}${halfHourBlock.increase}${WHITE} でした")
+          player.sendMessage(s"あなたの整地量は $AQUA${halfHourBlock.increase}$WHITE でした")
         }
       } else {
         //ﾌﾟﾚｲﾔｰがオフラインの時の処理
@@ -71,8 +71,8 @@ case class HalfHourRankingRoutine(override val taskExecutionContext: ExecutionCo
         .zip(rankingPositionColor)
         .zipWithIndex
         .foreach { case ((playerData, positionColor), index) =>
-          val playerNameText = s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}${WHITE}"
-          val increaseAmountText = s"${AQUA}${playerData.halfhourblock.increase}${WHITE}"
+          val playerNameText = s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}$WHITE"
+          val increaseAmountText = s"$AQUA${playerData.halfhourblock.increase}$WHITE"
 
           Util.sendEveryMessage(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
         }

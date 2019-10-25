@@ -225,7 +225,7 @@ class PlayerClickListener extends Listener {
       else 1
 
     if (!Util.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)) {
-      player.sendMessage(RED.toString() + "ガチャ券の数が不正です。")
+      player.sendMessage(RED.toString + "ガチャ券の数が不正です。")
       return
     }
 
@@ -390,15 +390,15 @@ class PlayerClickListener extends Listener {
             case 2 => ":ON-Under(下向き）"
             case _ => throw new RuntimeException("This branch should not be reached")
           }
-          player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
+          player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         } else if (skillTypeId > 0 && skillNumber > 0
           && skillTypeId < 4) {
           activemineflagnum = (activemineflagnum + 1) % 2
           activemineflagnum match {
-            case 0 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
-            case 1 => player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + ":ON")
+            case 0 => player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
+            case 1 => player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + ":ON")
           }
           playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -419,9 +419,9 @@ class PlayerClickListener extends Listener {
             activemineflagnum = (activemineflagnum + 1) % 2
           }
           if (activemineflagnum == 0) {
-            player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":OFF")
+            player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":OFF")
           } else {
-            player.sendMessage(GOLD.toString() + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":ON")
+            player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":ON")
           }
           playerdata.activeskilldata.updateAssaultSkill(player, assaultTypeId, assaultNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
@@ -487,7 +487,7 @@ class PlayerClickListener extends Listener {
       }
       //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
       if (playerdata.level < SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel) {
-        player.sendMessage(GREEN.toString() + "4次元ポケットを入手するには整地レベルが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
+        player.sendMessage(GREEN.toString + "4次元ポケットを入手するには整地レベルが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
         return
       }
       if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
@@ -549,7 +549,7 @@ class PlayerClickListener extends Listener {
 
     //インベントリに空がない場合無視
     if (Util.isPlayerInventoryFull(p)) {
-      p.sendMessage(RED.toString() + "インベントリがいっぱいです")
+      p.sendMessage(RED.toString + "インベントリがいっぱいです")
       return
     }
 

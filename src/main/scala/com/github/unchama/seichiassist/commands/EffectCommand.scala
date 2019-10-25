@@ -13,17 +13,13 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 object EffectCommand {
-  val executor: TabExecutor = BranchedExecutor(
-    Map("smart" -> messageFlagToggleExecutor),
-    whenArgInsufficient = Some(toggleExecutor), whenBranchNotFound = Some(printUsageExecutor)
-  ).asNonBlockingTabExecutor()
   private val printUsageExecutor = playerCommandBuilder
     .execution { _ =>
       val message = List(
-        s"${YELLOW}${BOLD}[コマンドリファレンス]",
-        s"${RED}/ef",
+        s"$YELLOW$BOLD[コマンドリファレンス]",
+        s"$RED/ef",
         "採掘速度上昇効果の制限を変更することができます。",
-        s"${RED}/ef smart",
+        s"$RED/ef smart",
         "採掘速度上昇効果の内訳を表示するかしないかを変更することができます。"
       )
 
@@ -32,6 +28,7 @@ object EffectCommand {
       }
     }
     .build()
+
   private val toggleExecutor = playerCommandBuilder
     .execution { context =>
       val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
@@ -47,6 +44,7 @@ object EffectCommand {
       IO.pure(execution())
     }
     .build()
+
   private val messageFlagToggleExecutor = playerCommandBuilder
     .execution { context =>
       val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
@@ -60,4 +58,8 @@ object EffectCommand {
     }
     .build()
 
+  val executor: TabExecutor = BranchedExecutor(
+    Map("smart" -> messageFlagToggleExecutor),
+    whenArgInsufficient = Some(toggleExecutor), whenBranchNotFound = Some(printUsageExecutor)
+  ).asNonBlockingTabExecutor()
 }

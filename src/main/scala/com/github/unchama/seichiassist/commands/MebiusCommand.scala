@@ -31,18 +31,18 @@ object MebiusCommand {
 
   private object Messages {
     val commandDescription: TargetedEffect[CommandSender] = List(
-      s"${RED}[Usage]",
-      s"${RED}/mebius naming [name]",
-      s"${RED}  現在頭に装着中のMEBIUSに[name]を命名します。",
+      s"$RED[Usage]",
+      s"$RED/mebius naming [name]",
+      s"$RED  現在頭に装着中のMEBIUSに[name]を命名します。",
       "",
-      s"${RED}/mebius nickname",
-      s"${RED}  MEBIUSから呼ばれる名前を表示します",
+      s"$RED/mebius nickname",
+      s"$RED  MEBIUSから呼ばれる名前を表示します",
       "",
-      s"${RED}/mebius nickname set [name]",
-      s"${RED}  MEBIUSから呼ばれる名前を[name]に変更します",
+      s"$RED/mebius nickname set [name]",
+      s"$RED  MEBIUSから呼ばれる名前を[name]に変更します",
       "",
-      s"${RED}/mebius nickname reset",
-      s"${RED}  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
+      s"$RED/mebius nickname reset",
+      s"$RED  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
       ""
     ).asMessageEffect()
 
@@ -98,10 +98,6 @@ object MebiusCommand {
       .build()
 
     object NickNameCommand {
-      val executor = BranchedExecutor(Map(
-        "reset" -> resetNickNameExecutor,
-        "set" -> setNickNameExecutor
-      ), whenArgInsufficient = Some(checkNickNameExecutor), whenBranchNotFound = Some(checkNickNameExecutor))
       private val checkNickNameExecutor = playerCommandBuilder
         .execution { context =>
           val message = MebiusListener.getNickname(context.sender)
@@ -111,6 +107,7 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
+
       private val resetNickNameExecutor = playerCommandBuilder
         .execution { context =>
           val message = if (MebiusListener.setNickname(context.sender, context.sender.getName)) {
@@ -122,6 +119,7 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
+
       private val setNickNameExecutor = playerCommandBuilder
         .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
         .execution { context =>
@@ -135,6 +133,11 @@ object MebiusCommand {
           IO(message.asMessageEffect())
         }
         .build()
+
+      val executor = BranchedExecutor(Map(
+        "reset" -> resetNickNameExecutor,
+        "set" -> setNickNameExecutor
+      ), whenArgInsufficient = Some(checkNickNameExecutor), whenBranchNotFound = Some(checkNickNameExecutor))
     }
   }
 }

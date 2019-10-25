@@ -31,11 +31,10 @@ case class BranchedExecutor(branches: Map[String, ContextualExecutor],
 
   override def tabCandidatesFor(context: RawCommandContext): List[String] = {
     context.args match {
-      case head :: tail => {
+      case head :: tail =>
         val childExecutor = branches.getOrElse(head, return Nil)
 
         childExecutor.tabCandidatesFor(context.copy(args = tail))
-      }
       case Nil => branches.keys.toArray.sorted.toList
     }
   }

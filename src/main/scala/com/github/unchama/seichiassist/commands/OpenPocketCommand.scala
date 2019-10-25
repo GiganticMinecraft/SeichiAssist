@@ -14,6 +14,12 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 object OpenPocketCommand {
+  private val descriptionPrintExecutor = new EchoExecutor(List(
+    s"$RED/openpocket [プレイヤー名]",
+    "対象プレイヤーの四次元ポケットを開きます。",
+    "編集結果はオンラインのプレイヤーにのみ反映されます。"
+  ).asMessageEffect())
+
   val executor: TabExecutor = playerCommandBuilder
     .argumentsParsers(List(Parsers.identity), onMissingArguments = descriptionPrintExecutor)
     .execution { context =>
@@ -49,9 +55,4 @@ object OpenPocketCommand {
     }
     .build()
     .asNonBlockingTabExecutor()
-  private val descriptionPrintExecutor = new EchoExecutor(List(
-    s"${RED}/openpocket [プレイヤー名]",
-    "対象プレイヤーの四次元ポケットを開きます。",
-    "編集結果はオンラインのプレイヤーにのみ反映されます。"
-  ).asMessageEffect())
 }

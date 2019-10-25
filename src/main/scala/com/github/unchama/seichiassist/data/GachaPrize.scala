@@ -6,10 +6,11 @@ import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
 class GachaPrize(_itemStack: ItemStack, var probability: Double) {
+  //アイテムデータ格納
+  val itemStack: ItemStack = _itemStack.clone()
+
   @Deprecated
   val itemStackAmount: Int = this.itemStack.getAmount
-  //アイテムデータ格納
-  var itemStack: ItemStack = _itemStack.clone()
 
   import scala.jdk.CollectionConverters._
 
@@ -42,7 +43,7 @@ class GachaPrize(_itemStack: ItemStack, var probability: Double) {
   def appendOwnerLore(name: String): Unit = {
     val meta = itemStack.getItemMeta
     val lore = if (meta.hasLore) meta.getLore.asScala else Nil
-    itemStack.getItemMeta.setLore(lore.:+(s"${RESET}${DARK_GREEN}所有者：$name").asJava)
+    itemStack.getItemMeta.setLore(lore.:+(s"$RESET${DARK_GREEN}所有者：$name").asJava)
   }
 
   def copy(): GachaPrize = new GachaPrize(this.itemStack.clone(), probability)
@@ -61,6 +62,6 @@ object GachaPrize {
       }
     }
 
-    new GachaPrize(StaticGachaPrizeFactory.getGachaRingo(), 1.0)
+    new GachaPrize(StaticGachaPrizeFactory.getGachaRingo, 1.0)
   }
 }

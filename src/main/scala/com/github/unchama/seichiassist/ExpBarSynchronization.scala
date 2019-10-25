@@ -35,7 +35,7 @@ class ExpBarSynchronization {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val playerLevel = playerData.level
 
-    return if (playerLevel >= LevelThresholds.levelExpThresholds.size) {
+    if (playerLevel >= LevelThresholds.levelExpThresholds.size) {
       // BarをMAXにして総整地量を表示
       val text = s"$GOLD${BOLD}Lv $playerLevel(総整地量: ${String.format("%,d", playerData.totalbreaknum)})"
       val progress = 1.0
@@ -66,5 +66,5 @@ class ExpBarSynchronization {
     managedExpBars.remove(player)
   }
 
-  private case class ExpBarProperties(val title: String, val progress: Double)
+  private case class ExpBarProperties(title: String, progress: Double)
 }

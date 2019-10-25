@@ -32,22 +32,22 @@ object BreakUtil {
     val material = breakblock.getType
 
     //壊されるブロックがワールドガード範囲だった場合処理を終了
-    if (!ExternalPlugins.getWorldGuard().canBuild(player, breakblock.getLocation)) {
+    if (!ExternalPlugins.getWorldGuard.canBuild(player, breakblock.getLocation)) {
       if (playerdata.settings.shouldDisplayWorldGuardLogs) {
-        player.sendMessage(RED.toString() + "ワールドガードで保護されています。")
+        player.sendMessage(RED.toString + "ワールドガードで保護されています。")
       }
       return false
     }
 
     if (!equalsIgnoreNameCaseWorld(player.getWorld.getName)) {
-      val wrapper = ExternalPlugins.getCoreProtectWrapper()
+      val wrapper = ExternalPlugins.getCoreProtectWrapper
       if (wrapper == null) {
-        Bukkit.getLogger().warning("CoreProtectにアクセスできませんでした。")
+        Bukkit.getLogger.warning("CoreProtectにアクセスできませんでした。")
       } else {
         val failure = !wrapper.queueBlockRemoval(player, breakblock)
         //もし失敗したらプレイヤーに報告し処理を終了
         if (failure) {
-          player.sendMessage(RED.toString() + "coreprotectに保存できませんでした。管理者に報告してください。")
+          player.sendMessage(RED.toString + "coreprotectに保存できませんでした。管理者に報告してください。")
           return false
         }
       }
@@ -55,10 +55,10 @@ object BreakUtil {
 
     if (material == Material.CHEST || material == Material.TRAPPED_CHEST) {
       if (!playerdata.chestflag) {
-        player.sendMessage(RED.toString() + "スキルでのチェスト破壊は無効化されています")
+        player.sendMessage(RED.toString + "スキルでのチェスト破壊は無効化されています")
         return false
       } else if (!Util.isSeichiWorld(player)) {
-        player.sendMessage(RED.toString() + "スキルでのチェスト破壊は整地ワールドでのみ有効です")
+        player.sendMessage(RED.toString + "スキルでのチェスト破壊は整地ワールドでのみ有効です")
         return false
       }
     }
@@ -66,10 +66,10 @@ object BreakUtil {
     if (breakblock.getWorld.asManagedWorld().exists(_.isSeichi)) {
       val isBlockY5Step = material == Material.STEP && breakblock.getY == 5 && breakblock.getData == 0.toByte
 
-      if (isBlockY5Step && !playerdata.canBreakHalfBlock()) return false
+      if (isBlockY5Step && !playerdata.canBreakHalfBlock) return false
     }
 
-    return true
+    true
   }
 
   private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
@@ -189,7 +189,7 @@ object BreakUtil {
       }
     }
 
-    return false
+    false
   }
 
   def dropItemOnTool(breakblock: Block, tool: ItemStack): Option[ItemStack] = {
@@ -266,7 +266,7 @@ object BreakUtil {
             Some(new ItemStack(breakmaterial, 1, b.toShort))
           }
         case Material.GRASS => Some(new ItemStack(Material.DIRT))
-        case Material.GRAVEL => {
+        case Material.GRAVEL =>
           val p = fortunelevel match {
             case 1 => 0.14
             case 2 => 0.25
@@ -276,7 +276,6 @@ object BreakUtil {
           val dropMaterial = if (p > rand) Material.FLINT else Material.GRAVEL
 
           Some(new ItemStack(dropMaterial, bonus))
-        }
         case Material.LEAVES | Material.LEAVES_2 => None
         case Material.CLAY => Some(new ItemStack(Material.CLAY_BALL, 4))
         case Material.MONSTER_EGGS =>
@@ -294,9 +293,9 @@ object BreakUtil {
     //０～１のランダムな値を取得
     val rand = Math.random()
     //10%の確率で経験値付与
-    return if (rand < 0.1) {
+    if (rand < 0.1) {
       //Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
-      if (playerdata.level < 8 || playerdata.activeskilldata.skillcanbreakflag == false) {
+      if (playerdata.level < 8 || !playerdata.activeskilldata.skillcanbreakflag) {
         0.0
       } else if (playerdata.level < 18) {
         SeichiAssist.seichiAssistConfig.getDropExplevel(1)
@@ -329,13 +328,13 @@ object BreakUtil {
     val rand = new Random()
     val probability = 1.0 / (enchantmentLevel + 1.0)
 
-    return IntStream.range(0, num)
+    IntStream.range(0, num)
       .filter { _ => probability > rand.nextDouble() }
       .count().toShort
   }
 
   def BlockEqualsMaterialList(block: Block): Boolean = {
-    return MaterialSets.materials.contains(block.getType)
+    MaterialSets.materials.contains(block.getType)
   }
 
   /**
@@ -452,7 +451,7 @@ object BreakUtil {
       }
     }
 
-    return gravity
+    gravity
   }
 
   def getCardinalDirection(entity: Entity): String = {
@@ -463,7 +462,7 @@ object BreakUtil {
       rotation += 360.0
     }
 
-    return if (pitch <= -30) {
+    if (pitch <= -30) {
       "U"
     } else if (pitch >= 25) {
       "D"
@@ -483,9 +482,9 @@ object BreakUtil {
   }
 
   def logRemove(player: Player, removedBlock: Block): Boolean = {
-    val wrapper = ExternalPlugins.getCoreProtectWrapper()
+    val wrapper = ExternalPlugins.getCoreProtectWrapper
     if (wrapper == null) {
-      player.sendMessage(RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")
+      player.sendMessage(RED.toString + "error:coreprotectに保存できませんでした。管理者に報告してください。")
       return false
     }
 
@@ -493,10 +492,10 @@ object BreakUtil {
 
     //もし失敗したらプレイヤーに報告し処理を終了
     if (failure) {
-      player.sendMessage(RED.toString() + "error:coreprotectに保存できませんでした。管理者に報告してください。")
+      player.sendMessage(RED.toString + "error:coreprotectに保存できませんでした。管理者に報告してください。")
       return false
     }
-    return true
+    true
   }
 
 }

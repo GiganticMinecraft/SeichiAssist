@@ -5,7 +5,7 @@ import java.util.UUID
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.task.PlayerDataSaving
+import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.messaging.PluginMessageListener
@@ -14,7 +14,7 @@ import scala.jdk.CollectionConverters._
 
 class BungeeReceiver(private val plugin: SeichiAssist) extends PluginMessageListener {
 
-  override def onPluginMessageReceived(channel: String, player: Player, message: Array[Byte]) = synchronized {
+  override def onPluginMessageReceived(channel: String, player: Player, message: Array[Byte]): Unit = synchronized {
     // ストリームの準備
     val stream = new ByteArrayInputStream(message)
     val in = new DataInputStream(stream)
@@ -44,7 +44,7 @@ class BungeeReceiver(private val plugin: SeichiAssist) extends PluginMessageList
       playerData.updateOnQuit()
 
       IO {
-        PlayerDataSaving.savePlayerData(playerData)
+        PlayerDataSaveTask.savePlayerData(playerData)
         SeichiAssist.playermap.remove(uuid)
 
         val message = writtenMessage("PlayerDataUnloaded", playerName)

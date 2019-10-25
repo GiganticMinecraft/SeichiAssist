@@ -9,7 +9,7 @@ import scala.collection.mutable
 
 object MineStackObjectList {
   // 採掘可能ブロック
-  val minestacklistmine = List(
+  val minestacklistmine: List[MineStackMineObj] = List(
     new MineStackMineObj("coal_ore", "石炭鉱石", 1, Material.COAL_ORE, 0),
     new MineStackMineObj("coal", "石炭", 1, Material.COAL, 0),
     new MineStackMineObj("coal_block", "石炭ブロック", 1, Material.COAL_BLOCK, 0),
@@ -35,7 +35,7 @@ object MineStackObjectList {
   )
 
   // モンスター+動物ドロップ
-  val minestacklistdrop = List(
+  val minestacklistdrop: List[MineStackDropObj] = List(
     new MineStackDropObj("ender_pearl", "エンダーパール", 1, Material.ENDER_PEARL, 0),
     new MineStackDropObj("ender_eye", "エンダーアイ", 1, Material.EYE_OF_ENDER, 0),
     new MineStackDropObj("slime_ball", "スライムボール", 1, Material.SLIME_BALL, 0),
@@ -68,7 +68,7 @@ object MineStackObjectList {
   )
 
   // 採掘で入手可能な農業系ブロック
-  val minestacklistfarm = List(
+  val minestacklistfarm: List[MineStackFarmObj] = List(
     new MineStackFarmObj("seeds", "種", 1, Material.SEEDS, 0),
     new MineStackFarmObj("apple", "リンゴ", 1, Material.APPLE, 0),
     new MineStackFarmObj("long_grass1", "草", 1, Material.LONG_GRASS, 1),
@@ -153,7 +153,7 @@ object MineStackObjectList {
   )
 
   // 建築系ブロック
-  val minestacklistbuild = List(
+  val minestacklistbuild: List[MineStackBuildObj] = List(
     new MineStackBuildObj("log", "オークの原木", 1, Material.LOG, 0),
     new MineStackBuildObj("wood", "オークの木材", 1, Material.WOOD, 0),
     new MineStackBuildObj("wood_step0", "オークの木材ハーフブロック", 1, Material.WOOD_STEP, 0),
@@ -443,7 +443,7 @@ object MineStackObjectList {
   )
 
   // レッドストーン系ブロック
-  val minestacklistrs = List(
+  val minestacklistrs: List[MineStackRsObj] = List(
     new MineStackRsObj("redstone", "レッドストーン", 1, Material.REDSTONE, 0),
     new MineStackRsObj("stone_button", "石のボタン", 1, Material.STONE_BUTTON, 0),
     new MineStackRsObj("wood_button", "木のボタン", 1, Material.WOOD_BUTTON, 0),
@@ -516,7 +516,7 @@ object MineStackObjectList {
   /**
    * デフォルトでガチャの内容に含まれている景品。
    */
-  val minestackBuiltinGachaPrizes = List(
+  val minestackBuiltinGachaPrizes: List[MineStackObj] = List(
     new MineStackObj("gachaimo", null, 1, StaticGachaPrizeFactory.getGachaRingo, true, -1, MineStackObjectCategory.GACHA_PRIZES),
     new MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )

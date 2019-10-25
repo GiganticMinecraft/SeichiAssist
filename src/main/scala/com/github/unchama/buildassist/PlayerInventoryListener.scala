@@ -1,5 +1,7 @@
 package com.github.unchama.buildassist
 
+import java.util.UUID
+
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -10,8 +12,10 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
+import scala.collection.mutable
+
 class PlayerInventoryListener extends Listener {
-  var playerMap = BuildAssist.playermap
+  val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
 
   import com.github.unchama.targetedeffect.TargetedEffects._
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -47,7 +51,7 @@ class PlayerInventoryListener extends Listener {
     //プレイヤーデータが無い場合は処理終了
 
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == s"${DARK_PURPLE.toString}${BOLD}「ブロックを並べるスキル（仮）」設定") {
+    if (topinventory.getTitle == s"${DARK_PURPLE.toString}$BOLD「ブロックを並べるスキル（仮）」設定") {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
@@ -73,7 +77,7 @@ class PlayerInventoryListener extends Listener {
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //ブロックを並べるスキル設定
         if (playerdata.level < BuildAssist.config.getblocklineuplevel()) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
           playerdata.line_up_flg = (playerdata.line_up_flg + 1) % 3
 
@@ -95,7 +99,7 @@ class PlayerInventoryListener extends Listener {
       } else if (itemstackcurrent.getType == Material.TNT) {
         //ブロックを並べるスキル一部ブロックを破壊して並べる設定
         playerdata.line_up_des_flg = if (playerdata.line_up_des_flg == 0) 1 else 0
-        player.sendMessage(s"${GREEN.toString()}破壊設定 ：${BuildAssist.line_up_off_on_str(playerdata.line_up_des_flg)}")
+        player.sendMessage(s"${GREEN.toString}破壊設定 ：${BuildAssist.line_up_off_on_str(playerdata.line_up_des_flg)}")
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getBlockLineUpData(player))
 
@@ -105,7 +109,7 @@ class PlayerInventoryListener extends Listener {
           player.sendMessage(s"${RED.toString}建築LVが足りません")
         } else {
           playerdata.line_up_minestack_flg = if (playerdata.line_up_minestack_flg == 0) 1 else 0
-          player.sendMessage(GREEN.toString() + "マインスタック優先設定 ：" + BuildAssist.line_up_off_on_str(playerdata.line_up_minestack_flg))
+          player.sendMessage(GREEN.toString + "マインスタック優先設定 ：" + BuildAssist.line_up_off_on_str(playerdata.line_up_minestack_flg))
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
@@ -145,7 +149,7 @@ class PlayerInventoryListener extends Listener {
     //プレイヤーデータが無い場合は処理終了
 
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == DARK_PURPLE.toString() + "" + BOLD + "MineStackブロック一括クラフト1") {
+    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "MineStackブロック一括クラフト1") {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
@@ -155,7 +159,7 @@ class PlayerInventoryListener extends Listener {
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      if (itemstackcurrent.getType == Material.SKULL_ITEM && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowLeft") {
+      if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         //ホームメニューへ帰還
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
 
@@ -165,7 +169,7 @@ class PlayerInventoryListener extends Listener {
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
           BuildMainMenu.open
         )(player)
-      } else if (itemstackcurrent.getType == Material.SKULL_ITEM && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowDown") {
+      } else if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowDown") {
         //2ページ目へ
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.getBlockCraftData2(player))
@@ -173,7 +177,7 @@ class PlayerInventoryListener extends Listener {
         //石を石ハーフブロックに変換10～10万
       } else if (itemstackcurrent.getType == Material.STEP) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(1)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -182,11 +186,11 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("step0")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 2).toLong)
-            player.sendMessage(GREEN.toString() + "石" + Math.pow(10.0, x.toDouble).toInt + "個→石ハーフブロック" + Math.pow(10.0, x.toDouble).toInt * 2 + "個変換")
+            player.sendMessage(GREEN.toString + "石" + Math.pow(10.0, x.toDouble).toInt + "個→石ハーフブロック" + Math.pow(10.0, x.toDouble).toInt * 2 + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData(player))
         }
@@ -194,7 +198,7 @@ class PlayerInventoryListener extends Listener {
         //石を石レンガに変換10～10万
       } else if (itemstackcurrent.getType == Material.SMOOTH_BRICK) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(1)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -203,11 +207,11 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("smooth_brick0")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "石" + Math.pow(10.0, x.toDouble).toInt + "個→石レンガ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "石" + Math.pow(10.0, x.toDouble).toInt + "個→石レンガ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData(player))
         }
@@ -217,7 +221,7 @@ class PlayerInventoryListener extends Listener {
         //				player.sendMessage(RED + "data:"+itemstackcurrent.getDurability() );
 
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -226,11 +230,11 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("polished_granite")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "花崗岩" + Math.pow(10.0, x.toDouble).toInt + "個→磨かれた花崗岩" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "花崗岩" + Math.pow(10.0, x.toDouble).toInt + "個→磨かれた花崗岩" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData(player))
         }
@@ -238,7 +242,7 @@ class PlayerInventoryListener extends Listener {
         //閃緑岩を磨かれた閃緑岩に変換10～1万
       } else if (itemstackcurrent.getType == Material.STONE && itemstackcurrent.getDurability.toInt == 4) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -247,11 +251,11 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("polished_diorite")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "閃緑岩" + Math.pow(10.0, x.toDouble).toInt + "個→磨かれた閃緑岩" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "閃緑岩" + Math.pow(10.0, x.toDouble).toInt + "個→磨かれた閃緑岩" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData(player))
         }
@@ -259,7 +263,7 @@ class PlayerInventoryListener extends Listener {
         //安山岩を磨かれた安山岩に変換10～1万
       } else if (itemstackcurrent.getType == Material.STONE && itemstackcurrent.getDurability.toInt == 6) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -268,11 +272,11 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("polished_andesite")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "安山岩" + Math.pow(10.0, x.toDouble).toInt + "個→磨かれた安山岩" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "安山岩" + Math.pow(10.0, x.toDouble).toInt + "個→磨かれた安山岩" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData(player))
         }
@@ -280,7 +284,7 @@ class PlayerInventoryListener extends Listener {
         //ネザー水晶をネザー水晶ブロックに変換10～1万
       } else if (itemstackcurrent.getType == Material.QUARTZ_BLOCK) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -289,11 +293,11 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("quartz_block")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "ネザー水晶" + Math.pow(10.0, x.toDouble).toInt * 4 + "個→ネザー水晶ブロック" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "ネザー水晶" + Math.pow(10.0, x.toDouble).toInt * 4 + "個→ネザー水晶ブロック" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData(player))
         }
@@ -301,7 +305,7 @@ class PlayerInventoryListener extends Listener {
         //レンガをレンガブロックに変換10～1万
       } else if (itemstackcurrent.getType == Material.BRICK) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -310,18 +314,18 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("brick")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "レンガ" + Math.pow(10.0, x.toDouble).toInt * 4 + "個→レンガブロック" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "レンガ" + Math.pow(10.0, x.toDouble).toInt * 4 + "個→レンガブロック" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData(player))
         }
         //ネザーレンガをネザーレンガブロックに変換10～1万
       } else if (itemstackcurrent.getType == Material.NETHER_BRICK) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -330,11 +334,11 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("nether_brick")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "ネザーレンガ" + Math.pow(10.0, x.toDouble).toInt * 4 + "個→ネザーレンガブロック" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "ネザーレンガ" + Math.pow(10.0, x.toDouble).toInt * 4 + "個→ネザーレンガブロック" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData(player))
         }
@@ -377,7 +381,7 @@ class PlayerInventoryListener extends Listener {
     //プレイヤーデータが無い場合は処理終了
 
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == DARK_PURPLE.toString() + "" + BOLD + "MineStackブロック一括クラフト2") {
+    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "MineStackブロック一括クラフト2") {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
@@ -387,12 +391,12 @@ class PlayerInventoryListener extends Listener {
       /*
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
-      if (itemstackcurrent.getType == Material.SKULL_ITEM && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowUp") {
+      if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowUp") {
         //1ページ目へ
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.getBlockCraftData(player))
 
-      } else if (itemstackcurrent.getType == Material.SKULL_ITEM && (itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]).getOwner == "MHF_ArrowDown") {
+      } else if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowDown") {
         //3ページ目へ
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.getBlockCraftData3(player))
@@ -400,7 +404,7 @@ class PlayerInventoryListener extends Listener {
         //雪玉を雪（ブロック）に変換10～1万
       } else if (itemstackcurrent.getType == Material.SNOW_BLOCK) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -409,11 +413,11 @@ class PlayerInventoryListener extends Listener {
           val id_2 = Util.findMineStackObjectByName("snow_block")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "雪玉" + Math.pow(10.0, x.toDouble).toInt * 4 + "個→雪（ブロック）" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "雪玉" + Math.pow(10.0, x.toDouble).toInt * 4 + "個→雪（ブロック）" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -421,7 +425,7 @@ class PlayerInventoryListener extends Listener {
         //ネザーウォートとネザーレンガを赤いネザーレンガに変換10～10万
       } else if (itemstackcurrent.getType == Material.RED_NETHER_BRICK) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(2)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -431,12 +435,12 @@ class PlayerInventoryListener extends Listener {
           val id_3 = Util.findMineStackObjectByName("nether_brick_item")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 2 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt * 2) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 2).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, (Math.pow(10.0, x.toDouble).toInt * 2).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "ネザーウォート" + Math.pow(10.0, x.toDouble).toInt * 2 + "個+ネザーレンガ" + Math.pow(10.0, x.toDouble).toInt * 2 + "個→赤いネザーレンガ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "ネザーウォート" + Math.pow(10.0, x.toDouble).toInt * 2 + "個+ネザーレンガ" + Math.pow(10.0, x.toDouble).toInt * 2 + "個→赤いネザーレンガ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -444,7 +448,7 @@ class PlayerInventoryListener extends Listener {
         //石炭を消費して鉄鉱石を鉄インゴットに変換4～4000
       } else if (itemstackcurrent.getType == Material.IRON_INGOT && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -454,12 +458,12 @@ class PlayerInventoryListener extends Listener {
           val id_3 = Util.findMineStackObjectByName("coal")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
-            player.sendMessage(GREEN.toString() + "鉄鉱石" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→鉄インゴット" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
+            player.sendMessage(GREEN.toString + "鉄鉱石" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→鉄インゴット" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -467,7 +471,7 @@ class PlayerInventoryListener extends Listener {
         //溶岩バケツを消費して鉄鉱石を鉄インゴットに変換50～5万
       } else if (itemstackcurrent.getType == Material.IRON_INGOT && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -478,13 +482,13 @@ class PlayerInventoryListener extends Listener {
           val id_4 = Util.findMineStackObjectByName("bucket")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 50 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_4, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "鉄鉱石" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→鉄インゴット" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "鉄鉱石" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→鉄インゴット" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -493,7 +497,7 @@ class PlayerInventoryListener extends Listener {
         //石炭を消費して金鉱石を金インゴットに変換4～4000
       } else if (itemstackcurrent.getType == Material.GOLD_INGOT && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -503,12 +507,12 @@ class PlayerInventoryListener extends Listener {
           val id_3 = Util.findMineStackObjectByName("coal")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
-            player.sendMessage(GREEN.toString() + "金鉱石" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→金インゴット" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
+            player.sendMessage(GREEN.toString + "金鉱石" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→金インゴット" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -516,7 +520,7 @@ class PlayerInventoryListener extends Listener {
         //溶岩バケツを消費して金鉱石を金インゴットに変換50～5万
       } else if (itemstackcurrent.getType == Material.GOLD_INGOT && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -527,13 +531,13 @@ class PlayerInventoryListener extends Listener {
           val id_4 = Util.findMineStackObjectByName("bucket")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 50 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_4, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "金鉱石" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→金インゴット" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "金鉱石" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→金インゴット" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -542,7 +546,7 @@ class PlayerInventoryListener extends Listener {
         //石炭を消費して砂をガラスに変換4～4000
       } else if (itemstackcurrent.getType == Material.GLASS && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -552,12 +556,12 @@ class PlayerInventoryListener extends Listener {
           val id_3 = Util.findMineStackObjectByName("coal")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
-            player.sendMessage(GREEN.toString() + "砂" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→ガラス" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
+            player.sendMessage(GREEN.toString + "砂" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→ガラス" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -565,7 +569,7 @@ class PlayerInventoryListener extends Listener {
         //溶岩バケツを消費して砂をガラスに変換50～5万
       } else if (itemstackcurrent.getType == Material.GLASS && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -576,13 +580,13 @@ class PlayerInventoryListener extends Listener {
           val id_4 = Util.findMineStackObjectByName("bucket")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 50 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_4, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "砂" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→ガラス" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "砂" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→ガラス" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -591,7 +595,7 @@ class PlayerInventoryListener extends Listener {
         //石炭を消費してネザーラックをネザーレンガに変換4～4000
       } else if (itemstackcurrent.getType == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -601,12 +605,12 @@ class PlayerInventoryListener extends Listener {
           val id_3 = Util.findMineStackObjectByName("coal")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
-            player.sendMessage(GREEN.toString() + "ネザーラック" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→ネザーレンガ" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
+            player.sendMessage(GREEN.toString + "ネザーラック" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→ネザーレンガ" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -614,7 +618,7 @@ class PlayerInventoryListener extends Listener {
         //溶岩バケツを消費してネザーラックをネザーレンガに変換50～5万
       } else if (itemstackcurrent.getType == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -625,13 +629,13 @@ class PlayerInventoryListener extends Listener {
           val id_4 = Util.findMineStackObjectByName("bucket")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 50 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_4, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "ネザーラック" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→ネザーレンガ" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "ネザーラック" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→ネザーレンガ" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData2(player))
         }
@@ -670,7 +674,7 @@ class PlayerInventoryListener extends Listener {
     //プレイヤーデータが無い場合は処理終了
 
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == DARK_PURPLE.toString() + "" + BOLD + "MineStackブロック一括クラフト3") {
+    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "MineStackブロック一括クラフト3") {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
@@ -694,7 +698,7 @@ class PlayerInventoryListener extends Listener {
         //石炭を消費して粘土をレンガに変換4～4000
       } else if (itemstackcurrent.getType == Material.CLAY_BRICK && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -704,12 +708,12 @@ class PlayerInventoryListener extends Listener {
           val id_3 = Util.findMineStackObjectByName("coal")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 4 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 4).toLong)
-            player.sendMessage(GREEN.toString() + "粘土" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→レンガ" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
+            player.sendMessage(GREEN.toString + "粘土" + Math.pow(10.0, x.toDouble).toInt * 4 + "個+石炭" + Math.pow(10.0, x.toDouble).toInt + "個→レンガ" + Math.pow(10.0, x.toDouble).toInt * 4 + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData3(player))
         }
@@ -717,7 +721,7 @@ class PlayerInventoryListener extends Listener {
         //溶岩バケツを消費して粘土をレンガに変換50～5万
       } else if (itemstackcurrent.getType == Material.CLAY_BRICK && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
         if (playerdata.level < BuildAssist.config.getMinestackBlockCraftlevel(3)) {
-          player.sendMessage(RED.toString() + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
 
           val playerdata_s = SeichiAssist.playermap.getOrElse(uuid, return)
@@ -728,13 +732,13 @@ class PlayerInventoryListener extends Listener {
           val id_4 = Util.findMineStackObjectByName("bucket")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           if (playerdata_s.minestack.getStackedAmountOf(id_1) < Math.pow(10.0, x.toDouble).toInt * 50 || playerdata_s.minestack.getStackedAmountOf(id_3) < Math.pow(10.0, x.toDouble).toInt) {
-            player.sendMessage(RED.toString() + "アイテムが足りません")
+            player.sendMessage(RED.toString + "アイテムが足りません")
           } else {
             playerdata_s.minestack.subtractStackedAmountOf(id_1, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.subtractStackedAmountOf(id_3, Math.pow(10.0, x.toDouble).toInt.toLong)
             playerdata_s.minestack.addStackedAmountOf(id_2, (Math.pow(10.0, x.toDouble).toInt * 50).toLong)
             playerdata_s.minestack.addStackedAmountOf(id_4, Math.pow(10.0, x.toDouble).toInt.toLong)
-            player.sendMessage(GREEN.toString() + "粘土" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→レンガ" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
+            player.sendMessage(GREEN.toString + "粘土" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+溶岩バケツ" + Math.pow(10.0, x.toDouble).toInt + "個→レンガ" + Math.pow(10.0, x.toDouble).toInt * 50 + "個+バケツ" + Math.pow(10.0, x.toDouble).toInt + "個変換")
           }
           player.openInventory(MenuInventoryData.getBlockCraftData3(player))
         }

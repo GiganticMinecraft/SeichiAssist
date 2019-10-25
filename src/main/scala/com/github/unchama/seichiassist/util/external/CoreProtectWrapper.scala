@@ -7,11 +7,11 @@ import org.bukkit.entity.Player
 
 class CoreProtectWrapper(val backbone: CoreProtectAPI) {
   def queueBlockRemoval(who: Player, where: Location, rawType: Byte): Boolean = {
-    return backbone.logRemoval(who.getName, where, where.getBlock.getType, rawType)
+    backbone.logRemoval(who.getName, where, where.getBlock.getType, rawType)
   }
 
   def queueBlockRemoval(who: Player, where: Block): Boolean = {
-    return backbone.logRemoval(who.getName, where.getLocation, where.getType, where.getData)
+    backbone.logRemoval(who.getName, where.getLocation, where.getType, where.getData)
   }
 
   /*

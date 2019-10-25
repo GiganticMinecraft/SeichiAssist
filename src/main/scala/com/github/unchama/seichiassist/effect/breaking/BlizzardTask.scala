@@ -24,12 +24,12 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
     //1回目のrun
     if (skillData.skillnum > 2) {
       blocks.foreach { block =>
-        BreakUtil.breakBlock(player, block, droploc, tool, false)
+        BreakUtil.breakBlock(player, block, droploc, tool, stepflag = false)
         block.getType
       }
     } else {
       blocks.foreach { block =>
-        BreakUtil.breakBlock(player, block, droploc, tool, true)
+        BreakUtil.breakBlock(player, block, droploc, tool, stepflag = true)
         SeichiAssist.allblocklist -= block
       }
       cancel()

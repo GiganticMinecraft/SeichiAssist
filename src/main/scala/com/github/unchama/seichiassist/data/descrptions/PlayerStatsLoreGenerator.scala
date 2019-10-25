@@ -59,7 +59,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
     val starLevel = playerData.totalStarLevel
     val level = playerData.level
 
-    return if (starLevel <= 0) {
+    if (starLevel <= 0) {
       s"${AQUA}整地レベル:$level"
     } else {
       s"${AQUA}整地レベル:$level☆$starLevel"
@@ -70,7 +70,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * 次のレベルまでの残り必要整地量の説明文
    */
   private def levelProgressionDescription(): List[String] = {
-    return if (playerData.level < LevelThresholds.levelExpThresholds.size) {
+    if (playerData.level < LevelThresholds.levelExpThresholds.size) {
       //TODO:この計算は,ここにあるべきではない.
       val expRequiredToLevelUp = LevelThresholds.levelExpThresholds(playerData.level) - playerData.totalbreaknum
 
@@ -88,7 +88,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
       s"${DARK_GRAY}パッシブスキル効果：",
       s"${DARK_GRAY}1ブロック整地ごとに",
       s"$DARK_GRAY${PlayerData.passiveSkillProbability}%の確率で",
-      s"$DARK_GRAY${playerData.getPassiveExp()}のマナを獲得"
+      s"$DARK_GRAY${playerData.getPassiveExp}のマナを獲得"
     )
   }
 

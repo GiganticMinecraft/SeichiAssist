@@ -1,6 +1,7 @@
 package com.github.unchama.concurrent.syntax
 
 import scala.concurrent.duration.FiniteDuration
+import scala.language.implicitConversions
 
 trait MinecraftTimeUnitSyntax {
   implicit def intTickAmountToMinecraftTimeUnitOps(int: Int): MinecraftTimeUnitOps = MinecraftTimeUnitOps(int.toLong)

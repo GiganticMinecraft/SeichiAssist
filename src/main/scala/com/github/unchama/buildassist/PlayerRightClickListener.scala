@@ -132,7 +132,7 @@ class PlayerRightClickListener extends Listener {
                   Y2 = searchY
                 } else {
                   SetReady = false
-                  player.sendMessage(RED.toString() + "範囲内に「オフハンドと同じブロック」が多すぎます。(Y軸2つ分以内にして下さい)")
+                  player.sendMessage(RED.toString + "範囲内に「オフハンドと同じブロック」が多すぎます。(Y軸2つ分以内にして下さい)")
                   b1.break
                 }
               }
@@ -151,16 +151,16 @@ class PlayerRightClickListener extends Listener {
           }
 
           if (Y1 == 256) {
-            player.sendMessage(RED.toString() + "範囲内に「オフハンドと同じブロック」を設置してください。(基準になります)")
+            player.sendMessage(RED.toString + "範囲内に「オフハンドと同じブロック」を設置してください。(基準になります)")
             SetReady = false
           }
 
           //上の処理で「スキル条件を満たしていない」と判断された場合、処理終了
-          if (SetReady == false) {
-            player.sendMessage(RED.toString() + "発動条件が満たされませんでした。")
+          if (!SetReady) {
+            player.sendMessage(RED.toString + "発動条件が満たされませんでした。")
           }
 
-          if (SetReady == true) {
+          if (SetReady) {
             //実際に範囲内にブロックを設置する処理
             //設置範囲の基準となる座標
             var setblockX = playerlocx - AREAint
@@ -203,7 +203,7 @@ class PlayerRightClickListener extends Listener {
                           WGloc.setZ(setblockZ.toDouble)
                           //他人の保護がかかっている場合は処理を終了
                           if (!Util.getWorldGuard.canBuild(player, WGloc)) {
-                            player.sendMessage(RED.toString() + "付近に誰かの保護がかかっているようです")
+                            player.sendMessage(RED.toString + "付近に誰かの保護がかかっているようです")
                           } else {
                             //保護のない場合、土を設置する処理
                             player.getWorld.getBlockAt(setblockX, setblockY - setunder, setblockZ).setType(Material.DIRT)
@@ -219,7 +219,7 @@ class PlayerRightClickListener extends Listener {
                     WGloc.setY(setblockY.toDouble)
                     WGloc.setZ(setblockZ.toDouble)
                     if (!Util.getWorldGuard.canBuild(player, WGloc)) {
-                      player.sendMessage(RED.toString() + "付近に誰かの保護がかかっているようです")
+                      player.sendMessage(RED.toString + "付近に誰かの保護がかかっているようです")
                       b1.break
                     } else {
                       //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
@@ -277,7 +277,7 @@ class PlayerRightClickListener extends Listener {
                             searchedInv = 0
                           } else if (searchedInv == 8) {
                             searchedInv = 36
-                            player.sendMessage(RED.toString() + "アイテムが不足しています！")
+                            player.sendMessage(RED.toString + "アイテムが不足しています！")
                           } else {
                             searchedInv += 1
                           }
@@ -293,7 +293,7 @@ class PlayerRightClickListener extends Listener {
                               searchedInv = 0
                             } else if (searchedInv == 8) {
                               searchedInv = 36
-                              player.sendMessage(RED.toString() + "アイテムが不足しています!")
+                              player.sendMessage(RED.toString + "アイテムが不足しています!")
                             } else {
                               searchedInv += 1
                             }
@@ -319,7 +319,7 @@ class PlayerRightClickListener extends Listener {
                             searchedInv = 0
                           } else if (searchedInv == 8) {
                             searchedInv = 36
-                            player.sendMessage(RED.toString() + "アイテムが不足しています!")
+                            player.sendMessage(RED.toString + "アイテムが不足しています!")
                           } else {
                             searchedInv += 1
                           }

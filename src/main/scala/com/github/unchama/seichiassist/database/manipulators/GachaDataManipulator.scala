@@ -56,7 +56,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
     //次に現在のgachadatalistでmysqlを更新
     for {gachadata <- SeichiAssist.gachadatalist} {
       //Inventory作ってガチャのitemstackに突っ込む
-      val inventory = Bukkit.getServer().createInventory(null, 9 * 1)
+      val inventory = Bukkit.getServer.createInventory(null, 9 * 1)
       inventory.setItem(0, gachadata.itemStack)
 
       command = ("insert into " + tableReference + " (probability, itemstack)"

@@ -119,7 +119,7 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
 
       //前の上昇量と今の上昇量が違うか内訳表示フラグがオンの時告知する
       if (playerData.lastminespeedlv != minespeedlv || playerData.settings.receiveFastDiggingEffectStats) {
-        player.sendMessage(s"${YELLOW}★${WHITE}採掘速度上昇レベルが$YELLOW${minespeedlv + 1}${WHITE}になりました")
+        player.sendMessage(s"$YELLOW★${WHITE}採掘速度上昇レベルが$YELLOW${minespeedlv + 1}${WHITE}になりました")
         if (playerData.settings.receiveFastDiggingEffectStats) {
           player.sendMessage("----------------------------内訳-----------------------------")
           for (ed <- playerData.effectdatalist) {
