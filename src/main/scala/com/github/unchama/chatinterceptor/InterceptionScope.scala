@@ -38,15 +38,13 @@ class InterceptionScope[K, R](implicit val cs: ContextShift[IO]) {
     result <- deferred.get
   } yield result
 
-  def suggestInterception(key: K, response: R): IO[InterceptorResponse] = for {
-    deferredOption <- IO { map.remove(key) }
-    response <- deferredOption match {
+  def suggestInterception(key: K, response: R): IO[InterceptorResponse] =
+    IO { map.remove(key) }.flatMap {
       case Some(deferred) => for {
         _ <- deferred.complete(Left(response))
       } yield Intercepted
       case None => IO.pure(Ignored)
     }
-  } yield response
 }
 
 object InterceptionScope {
