@@ -226,7 +226,6 @@ object PlayerDataLoading {
         playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
 
         playerData.selectHomeNum = 0
-        playerData.setHomeNameNum = 0
 
         //実績、二つ名の情報
         playerData.settings.nickName = PlayerNickName(
