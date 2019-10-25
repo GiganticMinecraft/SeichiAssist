@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
+import com.github.unchama.chatinterceptor.CancellationReason.Overridden
+import com.github.unchama.chatinterceptor.ChatInterceptor.ChatInterceptionScope
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.SeichiAssist
@@ -57,25 +59,46 @@ object SubHomeCommand {
       IO(s"現在位置をサブホームポイント${subHomeId}に設定しました".asMessageEffect())
     }
     .build()
-  private val nameExecutor = argsAndSenderConfiguredBuilder
+
+  private def nameExecutor(implicit scope: ChatInterceptionScope) = argsAndSenderConfiguredBuilder
     .execution { context =>
       val subHomeId = context.args.parsed(0).asInstanceOf[Int]
-      val player = context.sender
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
 
-      // TODO チャット傍受を手続き的に記述できるようにする
-      playerData.setHomeNameNum = subHomeId
+      IO.pure {
+        val sendInterceptionMessage =
+          List(
+            s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
+            s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
+          ).asMessageEffect()
 
-      IO {
-        List(
-          s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
-          s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
-        ).asMessageEffect()
+        val sendCancellationMessage =
+          s"${YELLOW}入力がキャンセルされました。".asMessageEffect()
+
+        def sendCompletionMessage(inputName: String) =
+          List(
+            s"${GREEN}サブホームポイント${subHomeId}の名前を",
+            s"$GREEN${inputName}に更新しました"
+          ).asMessageEffect()
+
+        import com.github.unchama.targetedeffect.TargetedEffects._
+        import cats.implicits._
+
+        sendInterceptionMessage.followedBy { player =>
+          val playerData = SeichiAssist.playermap(player.getUniqueId)
+
+          scope.interceptFrom(player.getUniqueId).flatMap {
+            case Left(newName) =>
+              IO { playerData.setSubHomeName(newName, subHomeId - 1) } *>
+                sendCompletionMessage(newName)(player)
+            case Right(Overridden) => sendCancellationMessage(player)
+            case Right(_) => IO.pure(())
+          }
+        }
       }
     }
     .build()
 
-  val executor: TabExecutor = BranchedExecutor(
+  def executor(implicit scope: ChatInterceptionScope): TabExecutor = BranchedExecutor(
     Map(
       "warp" -> warpExecutor,
       "set" -> setExecutor,

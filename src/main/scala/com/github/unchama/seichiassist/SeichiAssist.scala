@@ -5,11 +5,12 @@ import java.util.concurrent.Executors
 
 import cats.effect.{ContextShift, Fiber, IO, Timer}
 import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.{GachaCommand}
+import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
@@ -29,7 +30,7 @@ import org.bukkit.{Bukkit, Material}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
@@ -99,11 +100,13 @@ class SeichiAssist extends JavaPlugin() {
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistrs
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
 
+    import SeichiAssist.Scopes.globalChatInterceptionScope
+
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
       "map" -> MapCommand.executor,
-        "ef" -> EffectCommand.executor,
+      "ef" -> EffectCommand.executor,
       "seichihaste" -> SeichiHasteCommand.executor,
       "seichiassist" -> SeichiAssistCommand.executor,
       "openpocket" -> OpenPocketCommand.executor,
@@ -138,7 +141,8 @@ class SeichiAssist extends JavaPlugin() {
       new GachaItemListener(),
       new MebiusListener(),
       new RegionInventoryListener(),
-      new WorldRegenListener()
+      new WorldRegenListener(),
+      new ChatInterceptor(List(globalChatInterceptionScope))
     ).foreach {
       getServer.getPluginManager.registerEvents(_, this)
     }
@@ -180,19 +184,15 @@ class SeichiAssist extends JavaPlugin() {
     val startTask = {
       import cats.implicits._
 
-      val syncExecutionContext = PluginExecutionContexts.sync
-      val asyncExecutionContext = ExecutionContext.global
-
       val programs: List[Timer[IO] => RepeatingTask] = List(
-        HalfHourRankingRoutine(asyncExecutionContext),
-        PlayerDataPeriodicRecalculation(syncExecutionContext),
-        PlayerDataBackupTask(asyncExecutionContext)
+        HalfHourRankingRoutine(SeichiAssist.Concurrency.asyncExecutionContext),
+        PlayerDataPeriodicRecalculation(SeichiAssist.Concurrency.syncExecutionContext),
+        PlayerDataBackupTask(SeichiAssist.Concurrency.asyncExecutionContext)
       )
 
-      val schedulingThreadPool = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(programs.size + 1))
+      val sleepTimer: Timer[IO] = IO.timer(SeichiAssist.Concurrency.cachedThreadPool)
 
-      implicit val defaultContextShift: ContextShift[IO] = IO.contextShift(schedulingThreadPool)
-      val sleepTimer: Timer[IO] = IO.timer(schedulingThreadPool)
+      import SeichiAssist.Concurrency.asyncContextShift
 
       programs.map(_ (sleepTimer).launch).parSequence.start
     }
@@ -293,6 +293,23 @@ object SeichiAssist {
   //総採掘量表示用
   var allplayerbreakblockint = 0L
   var allplayergiveapplelong = 0L
+
+  object Concurrency {
+    val syncExecutionContext: ExecutionContext = PluginExecutionContexts.sync
+    val asyncExecutionContext: ExecutionContextExecutor = ExecutionContext.global
+
+    val cachedThreadPool: ExecutionContextExecutor = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
+
+    implicit val asyncContextShift: ContextShift[IO] = IO.contextShift(SeichiAssist.Concurrency.cachedThreadPool)
+  }
+
+  object Scopes {
+    implicit val globalChatInterceptionScope: InterceptionScope[UUID, String] = {
+      import SeichiAssist.Concurrency.asyncContextShift
+
+      new InterceptionScope[UUID, String]()
+    }
+  }
 
   private def generateGachaPrizes(): List[MineStackObj] = {
     val minestacklist = mutable.ArrayBuffer[MineStackObj]()
