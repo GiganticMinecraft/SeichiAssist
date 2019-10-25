@@ -132,7 +132,6 @@ class SeichiAssist extends JavaPlugin() {
       new PlayerJoinListener(),
       new PlayerQuitListener(),
       new PlayerClickListener(),
-      new PlayerChatEventListener(),
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
       new EntityListener(),

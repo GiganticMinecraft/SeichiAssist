@@ -227,7 +227,6 @@ object PlayerDataLoading {
 
         playerData.selectHomeNum = 0
         playerData.setHomeNameNum = 0
-        playerData.isSubHomeNameChange = false
 
         //実績、二つ名の情報
         playerData.settings.nickName = PlayerNickName(

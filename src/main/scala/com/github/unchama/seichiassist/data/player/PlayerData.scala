@@ -132,8 +132,6 @@ class PlayerData(
   //インベントリ共有ボタン連打防止用
   var shareinvcooldownflag = true
   var selectHomeNum = 0
-  var setHomeNameNum = 0
-  var isSubHomeNameChange = false
   var samepageflag = false //実績ショップ用
 
   //endregion
