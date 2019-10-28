@@ -86,18 +86,18 @@ object AchievementCommand {
       val operation = context.args.parsed(0).asInstanceOf[AchievementOperation]
       val achievementNumber = context.args.parsed(1).asInstanceOf[Int]
 
-      def execution(): TargetedEffect[CommandSender] = {
+      def execution(): IO[TargetedEffect[CommandSender]] = {
         val targetPlayerNames: List[String] = context.args.parsed(2).asInstanceOf[ScopeSpecification] match {
           case ScopeSpecification.USER =>
             val targetPlayerName =
               context.args.yetToBeParsed.headOption
-                .getOrElse(return s"${RED}プレーヤー名が未入力です。".asMessageEffect())
+                .getOrElse(return IO.pure(s"${RED}プレーヤー名が未入力です。".asMessageEffect()))
             List(targetPlayerName)
           case ScopeSpecification.SERVER => Bukkit.getServer.getOnlinePlayers.asScala.map(_.getName).toList
           case ScopeSpecification.WORLD =>
             sender match {
               case player: Player => player.getWorld.getPlayers.asScala.map(_.getName).toList
-              case _ => return "コンソール実行の場合は「world」処理は実行できません。".asMessageEffect()
+              case _ => return IO.pure("コンソール実行の場合は「world」処理は実行できません。".asMessageEffect())
             }
         }
 
@@ -105,26 +105,23 @@ object AchievementCommand {
         import com.github.unchama.targetedeffect.TargetedEffect.monoid
 
         targetPlayerNames.map { playerName =>
-          sender: CommandSender =>
-            IO {
-              Option(Bukkit.getPlayer(playerName)) match {
-                case Some(player) =>
-                  val playerData = SeichiAssist.playermap(player.getUniqueId)
-                  operation match {
-                    case AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
-                    case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
-                  }
-                case None =>
-                  sender.sendMessage(s"$playerName は現在サーバーにログインしていません。")
-                // TODO 実績付与予約システムに書き込むようにする
-              }
-
-              ()
+          IO {
+            Option(Bukkit.getPlayer(playerName)) match {
+              case Some(player) =>
+                val playerData = SeichiAssist.playermap(player.getUniqueId)
+                operation match {
+                  case AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
+                  case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
+                }
+              case None =>
+                s"$playerName は現在サーバーにログインしていません。".asMessageEffect()
+              // TODO 実績付与予約システムに書き込むようにする
             }
+          }
         }.combineAll
       }
 
-      IO.pure(execution())
+      execution()
     }
     .build()
     .asNonBlockingTabExecutor()
