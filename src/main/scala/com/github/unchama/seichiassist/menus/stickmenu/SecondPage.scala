@@ -109,7 +109,7 @@ object SecondPage extends Menu {
                 expManager.changeExp(-10000)
               },
               targetedeffect.UnfocusedEffect {
-                Util.dropItem(player, skullToGive)
+                Util.addItemToPlayerSafely(player, skullToGive)
               },
               s"${GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
