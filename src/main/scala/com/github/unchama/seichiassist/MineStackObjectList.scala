@@ -517,7 +517,7 @@ object MineStackObjectList {
    * デフォルトでガチャの内容に含まれている景品。
    */
   val minestackBuiltinGachaPrizes: List[MineStackObj] = List(
-    new MineStackObj("gachaimo", null, 1, StaticGachaPrizeFactory.getGachaRingo, true, -1, MineStackObjectCategory.GACHA_PRIZES),
+    new MineStackObj("gachaimo", None, 1, StaticGachaPrizeFactory.getGachaRingo, true, -1, MineStackObjectCategory.GACHA_PRIZES),
     new MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
 

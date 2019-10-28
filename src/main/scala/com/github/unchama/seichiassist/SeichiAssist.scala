@@ -313,7 +313,7 @@ object SeichiAssist {
     for (i <- msgachadatalist.indices) {
       val g = msgachadatalist(i)
       if (g.itemStack.getType != Material.EXP_BOTTLE) { //経験値瓶だけはすでにリストにあるので除外
-        minestacklist += new MineStackObj(g.objName, null, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES)
+        minestacklist += new MineStackObj(g.objName, None, g.level, g.itemStack, true, i, MineStackObjectCategory.GACHA_PRIZES)
       }
     }
     minestacklist.toList
