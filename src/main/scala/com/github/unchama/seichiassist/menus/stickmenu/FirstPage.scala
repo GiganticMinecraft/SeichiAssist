@@ -331,7 +331,7 @@ object FirstPage extends Menu {
             else
               s"$RESET${RED}獲得できるガチャ券はありません"
 
-          explanation + currentStatus
+          explanation.appended(currentStatus)
         }
 
         new SkullItemStackBuilder(SkullOwners.whitecat_haru)
