@@ -17,12 +17,11 @@ import org.bukkit.{Material, Sound}
 
 private object MineStackButtons {
 
-  import com.github.unchama.util.syntax._
-
   import scala.jdk.CollectionConverters._
+  import scala.util.chaining._
 
   implicit class ItemStackOps(val itemStack: ItemStack) extends AnyVal {
-    def withAmount(amount: Int): ItemStack = itemStack.clone().modify(_.setAmount(amount))
+    def withAmount(amount: Int): ItemStack = itemStack.clone().tap(_.setAmount(amount))
   }
 
   implicit class MineStackObjectOps(val mineStackObj: MineStackObj) extends AnyVal {
@@ -31,8 +30,8 @@ private object MineStackButtons {
       if (mineStackObj.stackType == MineStackObjectCategory.GACHA_PRIZES && mineStackObj.gachaType >= 0) {
         val gachaData = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
         if (gachaData.probability < 0.1) {
-          return mineStackObj.itemStack.clone().modify { cloned =>
-            val meta = cloned.getItemMeta.modify { itemMeta =>
+          return mineStackObj.itemStack.clone().tap { cloned =>
+            val meta = cloned.getItemMeta.tap { itemMeta =>
               val itemLore = if (itemMeta.hasLore) itemMeta.getLore.asScala.toList else List()
               itemMeta.setLore((itemLore :+ s"$RESET${DARK_GREEN}所有者：${player.getName}").asJava)
             }
@@ -54,7 +53,6 @@ private[minestack] case class MineStackButtons(player: Player) {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.TargetedEffects._
-  import com.github.unchama.util.syntax._
   import player._
 
   import scala.jdk.CollectionConverters._
@@ -63,10 +61,12 @@ private[minestack] case class MineStackButtons(player: Player) {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
-    val itemStack = mineStackObj.itemStack.clone().modify { itemStack =>
+    import scala.util.chaining._
+
+    val itemStack = mineStackObj.itemStack.clone().tap { itemStack =>
       import itemStack._
       setItemMeta {
-        getItemMeta.modify { itemMeta =>
+        getItemMeta.tap { itemMeta =>
           import itemMeta._
           setDisplayName {
             val name = mineStackObj.uiName.getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
