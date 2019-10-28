@@ -47,15 +47,17 @@ object OnClickTitleMenu extends Listener {
     val player = he.asInstanceOf[Player]
     val playerdata = SeichiAssist.playermap(player.getUniqueId)
 
-    def setTitle(first: Int = 0, second: Int = 0, third: Int = 0, message: String =
-    """二つ名$first「
+    def _setTitle(first: Int = 0, second: Int = 0, third: Int = 0)(message: String =
+    s"""二つ名$first「
       |${getTitle(1, first)}
       |${if (second != 0) getTitle(2, second) else ""}
       |${if (third != 0) getTitle(3, third) else ""}
-      |」が設定されました。""".trim.filter(_ != '\n')): Unit = {
+      |」が設定されました。""".stripMargin.filter(_ != '\n')): Unit = {
       playerdata.updateNickname(first, second, third)
       player.sendMessage(message)
     }
+
+    def setTitle(first: Int = 0, second: Int = 0, third: Int = 0): Unit = _setTitle(first, second, third)()
 
     //経験値変更用のクラスを設定
     //ExperienceManager expman = new ExperienceManager(player);
