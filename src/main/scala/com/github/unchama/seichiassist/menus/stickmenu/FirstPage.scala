@@ -275,7 +275,7 @@ object FirstPage extends Menu {
 
     val computeEnderChestButton: IO[Button] = IO {
       val playerData = SeichiAssist.playermap(getUniqueId)
-      val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel
+      val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.getDokodemoEnderlevel
 
       val iconItemStack = {
         val loreHeading = {
