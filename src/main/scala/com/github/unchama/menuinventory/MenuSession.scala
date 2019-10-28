@@ -62,8 +62,9 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
 
     for {
       oldLayout <- currentLayout.get
+      diff = differences(oldLayout, newLayout)
       _ <- currentLayout.set(newLayout)
-      _ <- updateMenuSlots(differences(oldLayout, newLayout))
+      _ <- updateMenuSlots(diff)
     } yield ()
   }
 

@@ -28,7 +28,7 @@ case class Button(override val itemStack: ItemStack,
       this.effects.map(_.asyncEffectOn(event)).asSequentialEffect()
     }
 
-  def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effect +: effects)
+  def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effects.appended(effect))
 }
 
 case object Button {

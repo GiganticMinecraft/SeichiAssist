@@ -141,16 +141,14 @@ class SeichiAssist extends JavaPlugin() {
       new MebiusListener(),
       new RegionInventoryListener(),
       new WorldRegenListener(),
-      new ChatInterceptor(List(globalChatInterceptionScope))
+      new ChatInterceptor(List(globalChatInterceptionScope)),
+      MenuHandler
     ).foreach {
       getServer.getPluginManager.registerEvents(_, this)
     }
 
     //正月イベント用
     new NewYearsEvent(this)
-
-    //Menu用Listener
-    getServer.getPluginManager.registerEvents(MenuHandler, this)
 
     //オンラインの全てのプレイヤーを処理
     getServer.getOnlinePlayers.asScala.foreach { p =>
