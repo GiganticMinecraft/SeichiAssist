@@ -559,7 +559,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   def inquireLastQuitOf(playerName: String): IO[TargetedEffect[CommandSender]] = {
     val fetchLastQuitData: IO[ResponseEffectOrResult[CommandSender, String]] = EitherT.right(IO {
-      val command = s"select lastquit from $tableReference where playerName = '$playerName'"
+      val command = s"select lastquit from $tableReference where name = '$playerName'"
 
       gateway.executeQuery(command)
         .recordIteration(_.getString("lastquit"))
