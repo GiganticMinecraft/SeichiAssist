@@ -149,7 +149,9 @@ object BreakUtil {
     //拾った時のサブIDに合わせる
     if (itemstack.getType == Material.RAILS
       || itemstack.getType == Material.HUGE_MUSHROOM_1
-      || itemstack.getType == Material.HUGE_MUSHROOM_2) {
+      || itemstack.getType == Material.HUGE_MUSHROOM_2
+      || itemstack.getType == Material.PURPUR_STAIRS
+      || itemstack.getType == Material.BONE_BLOCK) {
 
       itemstack.setDurability(0.toShort)
     }

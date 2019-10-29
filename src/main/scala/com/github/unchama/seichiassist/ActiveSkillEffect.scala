@@ -10,6 +10,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Location, Material}
+import org.bukkit.ChatColor._
 
 sealed abstract class ActiveSkillEffect(val num: Int,
                                         val nameOnDatabase: String,
@@ -75,16 +76,16 @@ object ActiveSkillEffect extends Enum[ActiveSkillEffect] {
 
   def getNameByNum(effectNum: Int): String = ActiveSkillEffect.values
     .filter(_.isInstanceOf[ActiveSkillEffect])
-    .map[ActiveSkillEffect](_.asInstanceOf)
     .find(activeSkillEffect => activeSkillEffect.num == effectNum)
     .map(_.nameOnUI)
     .getOrElse("未設定")
 
   def fromSqlName(sqlName: String): Option[ActiveSkillEffect] = ActiveSkillEffect.values.find(_.nameOnDatabase == sqlName)
 
-  case object Explosion extends ActiveSkillEffect(1, s"ef_explosion", "${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
+  case object Explosion extends ActiveSkillEffect(1, s"ef_explosion", s"${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
 
-  case object Blizzard extends ActiveSkillEffect(2, s"ef_blizzard", "${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
+  case object Blizzard extends ActiveSkillEffect(2, s"ef_blizzard", s"${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
 
-  case object Meteo extends ActiveSkillEffect(3, s"ef_meteo", "${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
+  case object Meteo extends ActiveSkillEffect(3, s"ef_meteo", s"${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
+
 }
