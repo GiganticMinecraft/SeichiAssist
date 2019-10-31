@@ -96,7 +96,7 @@ object BuildAssist {
     5000000
   )
   //範囲設置ブロックの対象リスト
-  val materiallist = util.EnumSet.of(
+  val materiallist: java.util.Set[Material] = util.EnumSet.of(
 
 
     Material.STONE //石
@@ -183,12 +183,9 @@ object BuildAssist {
     Material.WOOD_STAIRS, Material.WOOD_STEP,
     Material.WOOL, Material.CARPET, Material.WORKBENCH
   )
-  //ハーフブロックまとめ
-  val material_slab = util.EnumSet.of(
-    Material.STONE_SLAB2, Material.PURPUR_SLAB, Material.WOOD_STEP, Material.STEP
-  )
+
   //直列設置ブロックの対象リスト
-  val materiallist2 = util.EnumSet.of(
+  val materiallist2: java.util.Set[Material] = util.EnumSet.of(
     Material.STONE //石
     , Material.GRASS //草
     , Material.DIRT //土
@@ -258,13 +255,16 @@ object BuildAssist {
     , Material.CONCRETE //コンクリート
     , Material.CONCRETE_POWDER //コンクリートパウダー
   )
-  val material_slab2 = util.EnumSet.of(
+
+  //ハーフブロックとして扱うMaterial
+  val material_slab2: java.util.Set[Material] = util.EnumSet.of(
     Material.STONE_SLAB2 //赤砂岩
     , Material.PURPUR_SLAB //プルパー
     , Material.WOOD_STEP //木
     , Material.STEP //石
   )
-  val material_destruction = util.EnumSet.of(
+
+  val material_destruction: java.util.Set[Material] = util.EnumSet.of(
     Material.LONG_GRASS //草
     , Material.DEAD_BUSH //枯れ木
     , Material.YELLOW_FLOWER //タンポポ
@@ -277,6 +277,7 @@ object BuildAssist {
     , Material.WATER //水
     , Material.STATIONARY_WATER //水
   )
+
   var plugin: Plugin = _
   val DEBUG: Boolean = false
   var config: BuildAssistConfig = _
