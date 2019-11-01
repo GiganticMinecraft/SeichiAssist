@@ -9,7 +9,8 @@ import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRow
 import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.{EmptyEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.UnfocusedEffect
+import com.github.unchama.targetedeffect.TargetedEffects._
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player

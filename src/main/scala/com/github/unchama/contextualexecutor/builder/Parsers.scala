@@ -1,8 +1,8 @@
 package com.github.unchama.contextualexecutor.builder
 
 import com.github.unchama.contextualexecutor.builder.TypeAliases.SingleArgumentParser
-import com.github.unchama.targetedeffect.EmptyEffect
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import org.bukkit.command.CommandSender
 
 object Parsers {

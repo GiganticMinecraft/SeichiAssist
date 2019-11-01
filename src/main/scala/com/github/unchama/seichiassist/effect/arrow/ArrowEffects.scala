@@ -1,10 +1,11 @@
 package com.github.unchama.seichiassist.effect.arrow
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.concurrent.BukkitSyncExecutionContext
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.FixedMetadataValues
-import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.entity._
@@ -78,7 +79,7 @@ object ArrowEffects {
 
     sequentialEffect(
       soundEffect,
-      player =>
+      Kleisli(player =>
         for {
           _ <- IO.shift(new BukkitSyncExecutionContext())
           playerLocation <- IO {
@@ -107,6 +108,7 @@ object ArrowEffects {
             projectile.remove(); SeichiAssist.entitylist -= projectile
           }
         } yield ()
+      )
     )
   }
 }

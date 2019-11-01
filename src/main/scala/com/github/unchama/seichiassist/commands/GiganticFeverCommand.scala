@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
-import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Difficulty
 import org.bukkit.command.TabExecutor

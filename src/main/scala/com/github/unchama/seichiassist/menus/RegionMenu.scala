@@ -5,10 +5,11 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, Menu}
+import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
+import com.github.unchama.targetedeffect.TargetedEffects
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -231,7 +232,7 @@ object RegionMenu extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-            player => IO {
+            TargetedEffects.delay { player =>
               player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
             }
           )

@@ -1,6 +1,6 @@
 package com.github.unchama.menuinventory.slot.button.action
 
-import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffects._
 import org.bukkit.entity.Player

@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data.player.settings
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
@@ -49,13 +50,14 @@ class PlayerSettings {
   val getBroadcastMutingSettings: IO[BroadcastMutingSettings] = IO {
     broadcastMutingSettings
   }
-  val toggleBroadcastMutingSettings: TargetedEffect[Any] = (_: Any) =>
+  val toggleBroadcastMutingSettings: TargetedEffect[Any] = Kleisli.liftF(
     for {
       currentSettings <- getBroadcastMutingSettings
       nextSettings = currentSettings.next
     } yield {
       broadcastMutingSettings = nextSettings
     }
+  )
   val toggleHalfBreakFlag: TargetedEffect[Player] = deferredEffect(IO {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 

@@ -6,7 +6,7 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.listener.MebiusListener
-import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.util.syntax.Nullability._

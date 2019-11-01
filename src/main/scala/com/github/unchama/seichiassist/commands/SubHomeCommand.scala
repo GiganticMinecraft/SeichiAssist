@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.commands
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptor.ChatInterceptionScope
@@ -83,7 +84,7 @@ object SubHomeCommand {
         import com.github.unchama.targetedeffect.TargetedEffects._
         import cats.implicits._
 
-        sendInterceptionMessage.followedBy { player =>
+        sendInterceptionMessage.followedBy(Kleisli { player =>
           val playerData = SeichiAssist.playermap(player.getUniqueId)
 
           scope.interceptFrom(player.getUniqueId).flatMap {
@@ -93,7 +94,7 @@ object SubHomeCommand {
             case Right(Overridden) => sendCancellationMessage(player)
             case Right(_) => IO.pure(())
           }
-        }
+        })
       }
     }
     .build()

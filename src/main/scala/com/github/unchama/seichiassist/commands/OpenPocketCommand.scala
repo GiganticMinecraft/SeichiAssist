@@ -5,7 +5,7 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import org.bukkit.Bukkit

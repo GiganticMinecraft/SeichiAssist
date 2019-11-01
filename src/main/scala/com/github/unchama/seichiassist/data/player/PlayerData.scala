@@ -66,8 +66,9 @@ class PlayerData(
   val effectdatalist: mutable.ListBuffer[FastDiggingEffect] = mutable.ListBuffer.empty
   //プレイヤー名
   val lowercaseName: String = name.toLowerCase()
+
   /**
-   * プレーヤーに付与されるべき採掘速度上昇効果を適用する[TargetedEffect].
+   * プレーヤーに付与されるべき採掘速度上昇効果を計算する.
    */
   val computeFastDiggingEffect: IO[ForcedPotionEffect] = for {
     activeEffects <- IO {

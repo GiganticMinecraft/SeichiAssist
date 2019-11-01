@@ -4,10 +4,10 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects.TargetedEffectCombine
+import com.github.unchama.targetedeffect.TargetedEffects.KleisliCombine
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player

@@ -4,14 +4,14 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.UnfocusedEffect
+import com.github.unchama.targetedeffect.{TargetedEffects, UnfocusedEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
@@ -424,7 +424,7 @@ object SecondPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            player => IO {
+            TargetedEffects.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
@@ -460,7 +460,7 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            player => IO {
+            TargetedEffects.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
@@ -489,7 +489,7 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-            player => IO {
+            TargetedEffects.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
