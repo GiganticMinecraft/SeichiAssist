@@ -5,12 +5,11 @@ import com.github.unchama.buildassist.{BuildAssist, PlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.UnfocusedEffect
-import com.github.unchama.targetedeffect.TargetedEffects._
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -172,7 +171,7 @@ object BlockPlacementSkillMenu extends Menu {
                   s"${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
                   open
                 )
-              else EmptyEffect
+              else emptyEffect
             }
           )
         )
@@ -243,7 +242,7 @@ object BlockPlacementSkillMenu extends Menu {
                   s"${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
                   open
                 )
-              else EmptyEffect
+              else emptyEffect
             }
           )
         )

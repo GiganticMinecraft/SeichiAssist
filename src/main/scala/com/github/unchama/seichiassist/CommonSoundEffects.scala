@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist
 
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.Sound
 import org.bukkit.entity.Player

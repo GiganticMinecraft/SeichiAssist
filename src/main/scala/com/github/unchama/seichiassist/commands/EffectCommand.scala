@@ -4,10 +4,9 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects.KleisliCombine
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffects.{KleisliCombine, emptyEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -35,7 +34,7 @@ object EffectCommand {
       val guidance = "再度 /ef コマンドを実行することでトグルします。".asMessageEffect()
 
       def execution(): TargetedEffect[Player] = {
-        if (playerData == null) return EmptyEffect
+        if (playerData == null) return emptyEffect
 
         val toggleResponse = playerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect
         toggleResponse.followedBy(guidance)
@@ -50,7 +49,7 @@ object EffectCommand {
       val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
 
       def execution(): TargetedEffect[Player] = {
-        if (playerData == null) return EmptyEffect
+        if (playerData == null) return emptyEffect
         playerData.toggleMessageFlag()
       }
 

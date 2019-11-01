@@ -17,7 +17,6 @@ import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist, SkullO
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{TargetedEffects, UnfocusedEffect}
-import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.util.InventoryUtil
 import org.bukkit.ChatColor.{DARK_RED, RESET, _}
 import org.bukkit.entity.Player
@@ -357,7 +356,7 @@ object FirstPage extends Menu {
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
               s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
             )
-          } else EmptyEffect
+          } else emptyEffect
         }))
       )
     })
@@ -463,8 +462,8 @@ object FirstPage extends Menu {
                 s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー".asMessageEffect(),
                 FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
               )
-            } else EmptyEffect
-          } else EmptyEffect
+            } else emptyEffect
+          } else emptyEffect
         }
       )
     })
@@ -546,7 +545,7 @@ object FirstPage extends Menu {
                   s"${AQUA}チョコチップクッキーを付与しました。".asMessageEffect()
                 )
               } else {
-                EmptyEffect
+                emptyEffect
               }
             })
           )

@@ -3,8 +3,7 @@ package com.github.unchama.seichiassist.data.player.settings
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerNickName
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.UnfocusedEffect
+import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 

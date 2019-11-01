@@ -8,7 +8,7 @@ import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoEx
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffects.TargetedEffectFold
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import com.sk89q.worldguard.protection.regions.ProtectedRegion

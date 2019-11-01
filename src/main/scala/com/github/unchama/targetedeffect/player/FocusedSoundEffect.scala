@@ -1,7 +1,6 @@
 package com.github.unchama.targetedeffect.player
 
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects
+import com.github.unchama.targetedeffect.{TargetedEffect, TargetedEffects}
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 

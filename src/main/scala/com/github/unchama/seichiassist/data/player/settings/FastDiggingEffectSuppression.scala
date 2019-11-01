@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.data.player.settings
 
 import cats.effect.IO
 import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 

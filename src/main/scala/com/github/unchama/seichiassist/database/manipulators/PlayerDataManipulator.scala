@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.task.{CoolDownTask, PlayerDataLoading}
 import com.github.unchama.seichiassist.util.{BukkitSerialization, Util}
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.util.ActionStatus
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._

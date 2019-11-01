@@ -2,8 +2,7 @@ package com.github.unchama.targetedeffect.player
 
 import com.github.unchama.generic
 import com.github.unchama.generic.tag.tag.@@
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects
+import com.github.unchama.targetedeffect.{TargetedEffect, TargetedEffects}
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 

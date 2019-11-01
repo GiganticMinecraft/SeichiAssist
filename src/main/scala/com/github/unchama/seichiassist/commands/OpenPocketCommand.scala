@@ -5,9 +5,9 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffects.emptyEffect
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
@@ -33,7 +33,7 @@ object OpenPocketCommand {
 
           context.sender.openInventory(targetInventory)
 
-          EmptyEffect
+          emptyEffect
         } else {
           val targetPlayerUuid = Bukkit.getOfflinePlayer(playerName).getUniqueId
           if (targetPlayerUuid == null) {
@@ -47,7 +47,7 @@ object OpenPocketCommand {
                 result.getOrElse(return s"${RED}プレーヤー $playerName のuuidを取得できませんでした。".asMessageEffect()))
             }
 
-          EmptyEffect
+          emptyEffect
         }
       }
 

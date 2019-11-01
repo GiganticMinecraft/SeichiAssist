@@ -5,8 +5,7 @@ import cats.effect.IO
 import com.github.unchama.concurrent.BukkitSyncExecutionContext
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.FixedMetadataValues
-import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.entity._
 import org.bukkit.inventory.ItemStack
@@ -75,7 +74,7 @@ object ArrowEffects {
                                                projectileModifier: P => Unit = (_: P) => ()
                                              ): TargetedEffect[Player] = {
     val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
-    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(EmptyEffect)
+    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(emptyEffect)
 
     sequentialEffect(
       soundEffect,

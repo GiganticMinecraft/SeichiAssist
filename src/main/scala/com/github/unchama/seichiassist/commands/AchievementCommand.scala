@@ -5,7 +5,7 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
@@ -102,7 +102,7 @@ object AchievementCommand {
         }
 
         import cats.implicits._
-        import com.github.unchama.targetedeffect.TargetedEffect.monoid
+        import com.github.unchama.targetedeffect.TargetedEffectInstances.monoid
 
         targetPlayerNames.map { playerName =>
           IO {

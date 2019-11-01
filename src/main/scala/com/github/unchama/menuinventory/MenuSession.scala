@@ -1,12 +1,11 @@
 package com.github.unchama.menuinventory
 
 import cats.Eq
-import cats.effect.{ContextShift, IO}
 import cats.effect.concurrent.Ref
+import cats.effect.{ContextShift, IO}
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects
+import com.github.unchama.targetedeffect.{TargetedEffect, TargetedEffects}
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}

@@ -6,9 +6,9 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.listener.MebiusListener
-import com.github.unchama.targetedeffect.TargetedEffects.EmptyEffect
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffects.emptyEffect
 import com.github.unchama.util.syntax.Nullability._
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
@@ -60,7 +60,7 @@ object MebiusCommand {
           IO(Messages.permissionWarning)
         } else {
           MebiusListener.debugGive(context.sender)
-          IO(EmptyEffect)
+          IO(emptyEffect)
         }
       }
       .build()
@@ -71,7 +71,7 @@ object MebiusCommand {
           IO(Messages.permissionWarning)
         } else {
           MebiusListener.reload()
-          IO(EmptyEffect)
+          IO(emptyEffect)
         }
       }
       .build()
@@ -82,7 +82,7 @@ object MebiusCommand {
           IO(Messages.permissionWarning)
         } else {
           MebiusListener.debug(context.sender)
-          IO(EmptyEffect)
+          IO(emptyEffect)
         }
       }
       .build()
@@ -93,7 +93,7 @@ object MebiusCommand {
 
         if (!MebiusListener.setName(context.sender, newName)) {
           IO(s"${RED}命名はMEBIUSを装着して行ってください.".asMessageEffect())
-        } else IO(EmptyEffect)
+        } else IO(emptyEffect)
       }
       .build()
 
