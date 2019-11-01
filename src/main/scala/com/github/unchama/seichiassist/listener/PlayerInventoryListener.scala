@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, ItemData, MenuInventoryData}
@@ -139,14 +140,13 @@ class PlayerInventoryListener extends Listener {
       if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        sequentialEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          StickMenu.firstPage.open
-        )(player).unsafeRunAsync {
-          case Left(error) =>
-            error.printStackTrace()
-          case Right(_) =>
-        }
+        unsafe.runAsyncTargetedEffect(player)(
+          sequentialEffect(
+            CommonSoundEffects.menuTransitionFenceSound,
+            StickMenu.firstPage.open
+          ),
+          "棒メニューの1ページ目を開く"
+        )
       } else {
         itemstackcurrent.getType match {
           case Material.DIAMOND_PICKAXE =>
@@ -386,14 +386,13 @@ class PlayerInventoryListener extends Listener {
       if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        sequentialEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          StickMenu.firstPage.open
-        )(player).unsafeRunAsync {
-          case Left(error) =>
-            error.printStackTrace()
-          case Right(_) =>
-        }
+        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+          sequentialEffect(
+            CommonSoundEffects.menuTransitionFenceSound,
+            StickMenu.firstPage.open
+          ),
+          "棒メニューの1ページ目を開く"
+        )
       } else {
         itemstackcurrent.getType match {
           case Material.STONE_BUTTON =>
@@ -631,13 +630,13 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowLeft" =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-            sequentialEffect(
-              CommonSoundEffects.menuTransitionFenceSound,
-              StickMenu.firstPage.open
-            )(player).unsafeRunAsync {
-              case Left(error) => error.printStackTrace()
-              case Right(_) =>
-            }
+            seichiassist.unsafe.runAsyncTargetedEffect(player)(
+              sequentialEffect(
+                CommonSoundEffects.menuTransitionFenceSound,
+                StickMenu.firstPage.open
+              ),
+              "棒メニューの1ページ目を開く"
+            )
 
           case "MHF_ArrowDown" =>
             itemstackcurrent.getItemMeta
@@ -708,14 +707,13 @@ class PlayerInventoryListener extends Listener {
       if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        sequentialEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          StickMenu.firstPage.open
-        )(player).unsafeRunAsync {
-          case Left(error) =>
-            error.printStackTrace()
-          case Right(_) =>
-        }
+        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+          sequentialEffect(
+            CommonSoundEffects.menuTransitionFenceSound,
+            StickMenu.firstPage.open
+          ),
+          "棒メニューの1ページ目を開く"
+        )
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowDown") {
         val itemmeta = itemstackcurrent.getItemMeta
         if (itemmeta.getDisplayName.contains("ログイン神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
@@ -784,14 +782,13 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowLeft" =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-            sequentialEffect(
-              CommonSoundEffects.menuTransitionFenceSound,
-              StickMenu.firstPage.open
-            )(player).unsafeRunAsync {
-              case Left(error) =>
-                error.printStackTrace()
-              case Right(_) =>
-            }
+            seichiassist.unsafe.runAsyncTargetedEffect(player)(
+              sequentialEffect(
+                CommonSoundEffects.menuTransitionFenceSound,
+                StickMenu.firstPage.open
+              ),
+              "棒メニューの1ページ目を開く"
+            )
 
           case "MHF_ArrowDown" =>
             val itemmeta = itemstackcurrent.getItemMeta
@@ -864,14 +861,13 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowLeft" =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-            sequentialEffect(
-              CommonSoundEffects.menuTransitionFenceSound,
-              StickMenu.firstPage.open
-            )(player).unsafeRunAsync {
-              case Left(error) =>
-                error.printStackTrace()
-              case Right(_) =>
-            }
+            seichiassist.unsafe.runAsyncTargetedEffect(player)(
+              sequentialEffect(
+                CommonSoundEffects.menuTransitionFenceSound,
+                StickMenu.firstPage.open
+              ),
+              "棒メニューの1ページ目を開く"
+            )
 
           case "MHF_ArrowDown" =>
             if (name.contains("寄付神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
@@ -1413,13 +1409,14 @@ class PlayerInventoryListener extends Listener {
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        sequentialEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          StickMenu.firstPage.open
-        )(player).unsafeRunAsync {
-          case Left(value) => value.printStackTrace()
-          case Right(_) =>
-        }
+        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+          sequentialEffect(
+            CommonSoundEffects.menuTransitionFenceSound,
+            StickMenu.firstPage.open
+          ),
+          "棒メニューの1ページ目を開く"
+        )
+
         // NOTE: WHEN
       } else if (itemstackcurrent.getType == Material.WATCH) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)

@@ -1,10 +1,11 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
+import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
-import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
+import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist, unsafe}
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
@@ -112,14 +113,15 @@ object OnClickTitleMenu extends Listener {
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
         } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
           import com.github.unchama.targetedeffect.TargetedEffects._
-          sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            StickMenu.firstPage.open
-          )(player).unsafeRunAsync {
-            case Left(error) =>
-              error.printStackTrace()
-            case Right(_) =>
-          }
+
+          seichiassist.unsafe.runAsyncTargetedEffect(player)(
+            sequentialEffect(
+              CommonSoundEffects.menuTransitionFenceSound,
+              StickMenu.firstPage.open
+            ),
+            "棒メニューの1ページ目を開く"
+          )
+
           return
         } //ホームメニューに戻る
         //カテゴリ「特殊」を開く

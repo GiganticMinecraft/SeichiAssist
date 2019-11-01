@@ -1,9 +1,9 @@
 package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
+import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SeichiAssist}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
@@ -35,15 +35,13 @@ class PlayerLeftClickListener extends Listener {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-    sequentialEffect(
-      CommonSoundEffects.menuTransitionFenceSound,
-      BuildMainMenu.open
-    )(player).unsafeRunAsync {
-      case Left(error) =>
-        println("Caught exception while opening BuildMainMenu")
-        error.printStackTrace()
-      case Right(_) =>
-    }
+    seichiassist.unsafe.runAsyncTargetedEffect(player)(
+      sequentialEffect(
+        CommonSoundEffects.menuTransitionFenceSound,
+        BuildMainMenu.open
+      ),
+      "BuildMainMenuを開く"
+    )
 
     event.setCancelled(true)
   }

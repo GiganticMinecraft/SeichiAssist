@@ -1,16 +1,17 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
 import enumeratum._
+import org.bukkit.ChatColor._
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Location, Material}
-import org.bukkit.ChatColor._
 
 sealed abstract class ActiveSkillEffect(val num: Int,
                                         val nameOnDatabase: String,
@@ -57,12 +58,10 @@ sealed abstract class ActiveSkillEffect(val num: Int,
       case Meteo => ArrowEffects.singleArrowMeteoEffect
     }
 
-    effect(player).unsafeRunAsync {
-      case Left(error) =>
-        println("Caught exception while running arrow-effect asynchronously")
-        error.printStackTrace()
-      case Right(_) =>
-    }
+    seichiassist.unsafe.runAsyncTargetedEffect(player)(
+      effect,
+      "ArrowEffectを非同期で実行する"
+    )
   }
 }
 
