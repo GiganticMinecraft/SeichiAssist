@@ -19,7 +19,6 @@ class PlayerLeftClickListener extends Listener {
   @EventHandler
   def onPlayerLeftClickWithStick(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
-    val eventHand = event.getHand
 
     event.getAction match {
       case Action.LEFT_CLICK_AIR | Action.LEFT_CLICK_BLOCK =>
@@ -28,9 +27,9 @@ class PlayerLeftClickListener extends Listener {
 
     {
       val hasStickOnMainHand = player.getInventory.getItemInMainHand.getType == Material.STICK
-      val actionWasOnMainHand = eventHand == EquipmentSlot.HAND
+      val actionWasOnMainHand = event.getHand == EquipmentSlot.HAND
 
-      if (!hasStickOnMainHand || actionWasOnMainHand) return
+      if (!hasStickOnMainHand || !actionWasOnMainHand) return
     }
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
