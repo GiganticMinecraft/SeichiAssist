@@ -81,8 +81,8 @@ object SubHomeCommand {
             s"$GREEN${inputName}に更新しました"
           ).asMessageEffect()
 
-        import com.github.unchama.targetedeffect.TargetedEffects._
         import cats.implicits._
+        import com.github.unchama.generic.syntax._
 
         sendInterceptionMessage.followedBy(Kleisli { player =>
           val playerData = SeichiAssist.playermap(player.getUniqueId)

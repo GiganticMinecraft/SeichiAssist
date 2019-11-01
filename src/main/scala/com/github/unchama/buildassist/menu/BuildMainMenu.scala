@@ -6,9 +6,8 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -20,7 +19,7 @@ object BuildMainMenu extends Menu {
   import com.github.unchama.menuinventory.slot.button.RecomputedButton
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.MessageEffects._
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.CommandEffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
 

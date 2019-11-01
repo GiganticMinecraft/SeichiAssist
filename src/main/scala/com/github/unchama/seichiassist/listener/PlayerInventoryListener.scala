@@ -24,7 +24,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener extends Listener {
 
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.util.InventoryUtil._
   import com.github.unchama.util.syntax._
 

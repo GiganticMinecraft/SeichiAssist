@@ -8,7 +8,6 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.UnfocusedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
@@ -18,7 +17,7 @@ import org.bukkit.{Material, Sound}
 object BlockPlacementSkillMenu extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
 
   private implicit class PlayerDataOps(val playerData: PlayerData) extends AnyVal {
     def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1

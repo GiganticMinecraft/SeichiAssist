@@ -16,7 +16,6 @@ import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.seichiassist.util.{ClosedRange, Util}
-import com.github.unchama.targetedeffect.{TargetedEffect, TargetedEffects, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.command.CommandSender
@@ -37,8 +36,8 @@ class PlayerData(
                   val name: String
                 ) {
 
-  import TargetedEffects._
   import com.github.unchama.targetedeffect.MessageEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
   import com.github.unchama.util.InventoryUtil._
 
@@ -97,23 +96,27 @@ class PlayerData(
    * @deprecated Should be moved to external scope
    */
   @Deprecated()
-  val toggleExpBarVisibility: TargetedEffect[Player] =
-  UnfocusedEffect {
-    this.settings.isExpBarVisible = !this.settings.isExpBarVisible
-  }.followedBy {
-    deferredEffect {
-      IO({
-        if (this.settings.isExpBarVisible)
-          s"${GREEN}整地量バー表示"
-        else
-          s"${RED}整地量バー非表示"
-        }.asMessageEffect())
-    }
-  }.followedBy {
+  val toggleExpBarVisibility: TargetedEffect[Player] = {
+    import com.github.unchama.generic.syntax._
+
     UnfocusedEffect {
-      SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
+      this.settings.isExpBarVisible = !this.settings.isExpBarVisible
+    }.followedBy {
+      deferredEffect {
+        IO({
+          if (this.settings.isExpBarVisible)
+            s"${GREEN}整地量バー表示"
+          else
+            s"${RED}整地量バー非表示"
+          }.asMessageEffect())
+      }
+    }.followedBy {
+      UnfocusedEffect {
+        SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
+      }
     }
   }
+
   private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
   private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
   //チェスト破壊トグル

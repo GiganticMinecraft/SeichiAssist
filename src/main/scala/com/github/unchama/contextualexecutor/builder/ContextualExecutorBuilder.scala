@@ -5,8 +5,9 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.TypeAliases.{CommandArgumentsParser, ScopedContextualExecution, SenderTypeValidation, SingleArgumentParser}
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
+import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.{TargetedEffect, TargetedEffects}
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.CommandSender
 
 import scala.reflect.ClassTag
@@ -139,7 +140,7 @@ object ContextualExecutorBuilder {
     case (_, context) =>
       IO.pure(Some(PartiallyParsedArgs(List(), context.args)))
   }
-  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(TargetedEffects.emptyEffect) }
+  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(targetedeffect.emptyEffect) }
   private val defaultSenderValidation: SenderTypeValidation[CommandSender] = { sender: CommandSender => IO.pure(Some(sender)) }
 
   def beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)

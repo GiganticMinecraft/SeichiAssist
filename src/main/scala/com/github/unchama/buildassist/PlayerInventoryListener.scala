@@ -18,7 +18,7 @@ import scala.collection.mutable
 class PlayerInventoryListener extends Listener {
   val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
 
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
   //ブロックを並べるスキル（仮）設定画面

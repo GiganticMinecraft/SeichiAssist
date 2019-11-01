@@ -2,8 +2,7 @@ package com.github.unchama.menuinventory.slot.button
 
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
-import com.github.unchama.targetedeffect.TargetedEffects._
-import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect, _}
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
@@ -20,12 +19,16 @@ import org.bukkit.inventory.ItemStack
  */
 case class Button(override val itemStack: ItemStack,
                   private val effects: List[ButtonEffect]) extends Slot {
-  override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
+  override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] = {
+    import com.github.unchama.generic.syntax._
+    import syntax._
+
     UnfocusedEffect {
       event.setCancelled(true)
     }.followedBy {
       this.effects.map(_.asyncEffectOn(event)).asSequentialEffect()
     }
+  }
 
   def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effects.appended(effect))
 }

@@ -1,8 +1,7 @@
 package com.github.unchama.menuinventory
 
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects.emptyEffect
+import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 

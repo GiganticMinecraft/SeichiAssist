@@ -1,7 +1,6 @@
 package com.github.unchama.menuinventory.slot.button.action
 
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects.{emptyEffect, _}
+import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect, _}
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
@@ -38,6 +37,8 @@ case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter)
  * 左クリックに限定した[FilteredButtonEffect]
  */
 object LeftClickButtonEffect {
+  import com.github.unchama.generic.syntax._
+
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[LeftClickButtonEffect]を構築する.
    */

@@ -14,7 +14,7 @@ import scala.util.control.Breaks
 
 class PlayerLeftClickListener extends Listener {
 
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
 
   @EventHandler
   def onPlayerLeftClickWithStick(event: PlayerInteractEvent): Unit = {

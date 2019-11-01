@@ -15,7 +15,7 @@ import org.bukkit.Sound
  */
 object CommonButtons {
 
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
 
   val openStickMenu: Button = {
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext

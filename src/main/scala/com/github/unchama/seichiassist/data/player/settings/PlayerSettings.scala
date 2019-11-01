@@ -3,14 +3,13 @@ package com.github.unchama.seichiassist.data.player.settings
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerNickName
-import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 class PlayerSettings {
 
   import com.github.unchama.targetedeffect.MessageEffects._
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
 
   val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
   var autoMineStack = true

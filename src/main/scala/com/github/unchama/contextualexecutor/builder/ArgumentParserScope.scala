@@ -1,8 +1,9 @@
 package com.github.unchama.contextualexecutor.builder
 
+import com.github.unchama
 import com.github.unchama.contextualexecutor.builder.TypeAliases.ResponseEffectOrResult
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.{TargetedEffect, TargetedEffects}
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.CommandSender
 
 /**
@@ -15,7 +16,7 @@ object ArgumentParserScope {
   /**
    * メッセージなしで「失敗」を表す[ResponseEffectOrResult]を作成する.
    */
-  def failWithoutError(): ResponseEffectOrResult[Any, Nothing] = failWith(TargetedEffects.emptyEffect)
+  def failWithoutError(): ResponseEffectOrResult[Any, Nothing] = failWith(unchama.targetedeffect.emptyEffect)
 
   /**
    * メッセージ付きの「失敗」を表す[ResponseEffectOrResult]を作成する.

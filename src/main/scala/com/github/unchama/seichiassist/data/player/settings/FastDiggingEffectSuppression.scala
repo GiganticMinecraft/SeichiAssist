@@ -2,14 +2,13 @@ package com.github.unchama.seichiassist.data.player.settings
 
 import cats.effect.IO
 import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 
 class FastDiggingEffectSuppression {
 
   import com.github.unchama.targetedeffect.MessageEffects._
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
 
   private var internalValue = 0
 
@@ -60,7 +59,9 @@ class FastDiggingEffectSuppression {
     }
   }
 
-  val suppressionDegreeToggleEffect: TargetedEffect[CommandSender] =
+  val suppressionDegreeToggleEffect: TargetedEffect[CommandSender] = {
+    import com.github.unchama.generic.syntax._
+
     targetedeffect.UnfocusedEffect {
       internalValue = (internalValue + 1) % 6
     }.followedBy {
@@ -77,4 +78,5 @@ class FastDiggingEffectSuppression {
           }.asMessageEffect()
       })
     }
+  }
 }

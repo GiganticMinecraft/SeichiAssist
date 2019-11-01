@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
-import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist, unsafe}
+import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
@@ -112,7 +112,7 @@ object OnClickTitleMenu extends Listener {
           playerdata.titlepage = 1
           player.openInventory(MenuInventoryData.getTitleSpecial(player))
         } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
-          import com.github.unchama.targetedeffect.TargetedEffects._
+          import com.github.unchama.targetedeffect.sequentialEffect
 
           seichiassist.unsafe.runAsyncTargetedEffect(player)(
             sequentialEffect(

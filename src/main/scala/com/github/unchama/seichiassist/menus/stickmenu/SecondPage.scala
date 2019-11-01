@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.{TargetedEffects, UnfocusedEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
@@ -25,7 +24,7 @@ import org.bukkit.{Material, Sound}
 object SecondPage extends Menu {
 
   import com.github.unchama.targetedeffect.MessageEffects._
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.CommandEffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.util.InventoryUtil._
@@ -424,7 +423,7 @@ object SecondPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            TargetedEffects.delay { player =>
+            targetedeffect.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
@@ -460,7 +459,7 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            TargetedEffects.delay { player =>
+            targetedeffect.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
@@ -489,7 +488,7 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-            TargetedEffects.delay { player =>
+            targetedeffect.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(

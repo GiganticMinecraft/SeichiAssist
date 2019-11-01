@@ -16,7 +16,6 @@ import com.github.unchama.seichiassist.util.external.{ExternalPlugins, WorldGuar
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.{TargetedEffects, UnfocusedEffect}
 import com.github.unchama.util.InventoryUtil
 import org.bukkit.ChatColor.{DARK_RED, RESET, _}
 import org.bukkit.entity.Player
@@ -37,7 +36,7 @@ object FirstPage extends Menu {
   override val frame: MenuFrame =
     MenuFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー")
 
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
 
   override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._
@@ -264,7 +263,7 @@ object FirstPage extends Menu {
             if (playerData.level >= minimumRequiredLevel)
               sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
-                TargetedEffects.delay { player =>
+                targetedeffect.delay { player =>
                   player.openInventory(playerData.pocketInventory)
                 }
               ) else FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
@@ -299,7 +298,7 @@ object FirstPage extends Menu {
             if (playerData.level >= minimumRequiredLevel) {
               sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
-                TargetedEffects.delay { player =>
+                targetedeffect.delay { player =>
                   player.openInventory(player.getEnderChest)
                 }
               )
@@ -574,7 +573,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f),
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getServerSwitchMenu(player))
           }
         )
@@ -596,7 +595,7 @@ object FirstPage extends Menu {
           .lore(buttonLore)
           .build(),
         LeftClickButtonEffect(
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.closeInventory()
           },
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -620,7 +619,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getTitleMenuData(player))
           }
         )
@@ -642,7 +641,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getRankingList(0))
           }
         )
@@ -663,7 +662,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getRankingList_playtick(0))
           }
         )
@@ -685,7 +684,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getRankingList_p_vote(0))
           }
         )
@@ -728,7 +727,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(
               InventoryUtil.createInventory(
                 size = Left(InventoryRowSize(4)),
@@ -755,7 +754,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getHomeMenuData(player))
           }
         )
@@ -822,7 +821,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
           }
         )
@@ -850,7 +849,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(
               InventoryUtil.createInventory(
                 size = Left(InventoryRowSize(4)),
@@ -875,7 +874,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          TargetedEffects.delay { player =>
+          targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getVotingMenuData(player))
           }
         )

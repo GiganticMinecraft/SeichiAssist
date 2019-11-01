@@ -1,6 +1,7 @@
 package com.github.unchama.targetedeffect.player
 
-import com.github.unchama.targetedeffect.{TargetedEffect, TargetedEffects}
+import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
@@ -9,7 +10,7 @@ import org.bukkit.entity.Player
  */
 object FocusedSoundEffect {
   def apply(sound: Sound, volume: Float, pitch: Float): TargetedEffect[Player] =
-    TargetedEffects.delay { player =>
+    targetedeffect.delay { player =>
       player.playSound(player.getLocation, sound, volume, pitch)
     }
 }

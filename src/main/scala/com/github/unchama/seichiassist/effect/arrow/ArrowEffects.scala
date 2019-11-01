@@ -5,7 +5,6 @@ import cats.effect.IO
 import com.github.unchama.concurrent.BukkitSyncExecutionContext
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.FixedMetadataValues
-import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.entity._
 import org.bukkit.inventory.ItemStack
@@ -20,7 +19,7 @@ import scala.reflect.ClassTag
 object ArrowEffects {
 
   import com.github.unchama.concurrent.syntax._
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
 
   implicit val plugin: JavaPlugin = SeichiAssist.instance

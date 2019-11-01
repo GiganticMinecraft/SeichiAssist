@@ -566,10 +566,10 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         .get
     }).value
 
-    import com.github.unchama.targetedeffect.TargetedEffects._
-
     catchingDatabaseErrors(playerName, fetchLastQuitData).map {
       case Left(errorEffect) =>
+        import com.github.unchama.generic.syntax._
+
         val messages = List(
           s"${RED}最終ログアウト日時の照会に失敗しました。",
           s"${RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",
