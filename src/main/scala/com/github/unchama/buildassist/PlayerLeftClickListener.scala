@@ -48,8 +48,9 @@ class PlayerLeftClickListener extends Listener {
     event.setCancelled(true)
   }
 
+  // 範囲設置スキルの発動を担うハンドラメソッド
   @EventHandler
-  def onPlayerLeftClick(event: PlayerInteractEvent): Unit = {
+  def onPlayerAttemptToMassBuild(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val playerUuid = player.getUniqueId
     val action = event.getAction
