@@ -35,9 +35,10 @@ package object targetedeffect {
   }
 
   /**
-   * 実行対象の[T]から[TargetedEffect]を非純粋に計算しそれをすぐに実行するような作用を作成する.
+   * `f`により実行対象の[T]から[TargetedEffect]を純粋に計算して、それをすぐに実行するような作用を作成する.
    */
-  def computedEffect[T](f: T => TargetedEffect[T]): TargetedEffect[T] = Kleisli(t => f(t)(t))
+  def computedEffect[F[_], T, R](f: T => Kleisli[F, T, R]): Kleisli[F, T, R] =
+    Kleisli(t => f(t)(t))
 
   import targetedeffect.syntax._
   def sequentialEffect[T](effects: TargetedEffect[T]*): TargetedEffect[T] = effects.toList.asSequentialEffect()
