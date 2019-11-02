@@ -12,7 +12,7 @@ case class MenuSlotLayout(private[menuinventory] val layoutMap: Map[Int, Slot]) 
   /**
    * @return クリックされた枠に対応した[Slot]が[InventoryClickEvent]に基づいて引き起こす作用
    */
-  def asyncEffectOn(event: InventoryClickEvent): TargetedEffect[Player] =
+  def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
     layoutMap.get(event.getSlot) match {
       case Some(slot) => slot.effectOn(event)
       case None => emptyEffect

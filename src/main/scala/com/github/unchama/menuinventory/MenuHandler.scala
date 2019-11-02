@@ -34,16 +34,8 @@ object MenuHandler extends Listener {
       return
     }
 
-    val effect = for {
-      layout <- holder.currentLayout.get
-      _ <- layout.asyncEffectOn(event)(whoClicked)
-    } yield ()
-
-    effect.unsafeRunAsync {
-      case Left(error) =>
-        println("Caught exception while handling a menu effect.")
-        error.printStackTrace()
-      case Right(_) =>
-    }
+    holder.currentLayout.get
+      .flatMap(layout => layout.effectOn(event)(whoClicked))
+      .unsafeRunSync()
   }
 }
