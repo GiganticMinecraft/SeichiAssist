@@ -66,6 +66,12 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
       diff = differences(oldLayout, newLayout)
       _ <- currentLayout.set(newLayout)
       _ <- updateMenuSlots(diff)
+      _ <- IO {
+        sessionInventory.getViewers.forEach {
+          case p: Player => p.updateInventory()
+          case _ =>
+        }
+      }
     } yield ()
   }
 
