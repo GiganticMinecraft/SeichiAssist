@@ -102,7 +102,6 @@ object AchievementCommand {
         }
 
         import cats.implicits._
-        import com.github.unchama.targetedeffect.instances._
 
         targetPlayerNames.map { playerName =>
           IO {

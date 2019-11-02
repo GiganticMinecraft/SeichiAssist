@@ -1,10 +1,13 @@
 package com.github.unchama.targetedeffect.syntax
 
-import com.github.unchama.targetedeffect.{TargetedEffect, instances}
+import cats.kernel.Monoid
+import com.github.unchama.targetedeffect.TargetedEffect
 
 trait TargetedEffectCombineAll {
   implicit class TargetedEffectFold[T](val effects: List[TargetedEffect[T]]) {
-    def asSequentialEffect(): TargetedEffect[T] = instances.monoid[T].combineAll(effects)
+    import cats.implicits._
+
+    def asSequentialEffect(): TargetedEffect[T] = Monoid[TargetedEffect[T]].combineAll(effects)
   }
 }
 
