@@ -151,7 +151,7 @@ object FirstPage extends Menu {
             sequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               openerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect,
-              deferredEffect(openerData.computeFastDiggingEffect)
+              deferredEffect[IO, Player, Unit](openerData.computeFastDiggingEffect)
             )
           }
         )
@@ -263,7 +263,7 @@ object FirstPage extends Menu {
             if (playerData.level >= minimumRequiredLevel)
               sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
-                targetedeffect.delay { player =>
+                targetedeffect.delay { player: Player =>
                   player.openInventory(playerData.pocketInventory)
                 }
               ) else FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
@@ -298,7 +298,7 @@ object FirstPage extends Menu {
             if (playerData.level >= minimumRequiredLevel) {
               sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
-                targetedeffect.delay { player =>
+                targetedeffect.delay { player: Player =>
                   player.openInventory(player.getEnderChest)
                 }
               )
