@@ -50,7 +50,6 @@ class PlayerLeftClickListener extends Listener {
   def onPlayerAttemptToMassBuild(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val playerUuid = player.getUniqueId
-    val action = event.getAction
 
     val playerWorld = player.getWorld
 
@@ -60,7 +59,7 @@ class PlayerLeftClickListener extends Listener {
     val inventory = player.getInventory
     val offHandItem = inventory.getItemInOffHand
 
-    action match {
+    event.getAction match {
       case Action.LEFT_CLICK_AIR | Action.LEFT_CLICK_BLOCK =>
       case _ => return
     }
@@ -78,30 +77,24 @@ class PlayerLeftClickListener extends Listener {
     val areaInt = buildAssistPlayerData.AREAint
     val searchInt = areaInt + 1
     val areaIntB = areaInt * 2 + 1
-    val searchIntB = searchInt * 2 + 1
-
-    //同ブロック探索(7*6*7)の開始座標を計算
-    var searchX = playerLocX - searchInt
-    var searchY = playerLocY - 4
-    var searchZ = playerLocZ - searchInt
 
     //同上(Y座標記録)
     var Y1 = 256
-    var Y2 = 256
 
-    //スキル発動条件を満たすか
-    var shouldPerformSkill = false
+    def shouldPerformSkill(): Boolean = {
+      var shouldPerformSkill = false
 
-    var block_cnt = 0
+      val searchIntB = searchInt * 2 + 1
 
-    //MineStack No.用
-    var no = -1
+      //同ブロック探索(7*6*7)の開始座標を計算
+      var searchX = playerLocX - searchInt
+      var searchY = playerLocY - 4
+      var searchZ = playerLocZ - searchInt
 
-    val b1 = new Breaks
+      var Y2 = 256
 
-    //オフハンドアイテムと、範囲内のブロックに一致する物があるかどうか判別
-    //同じ物がない場合・同じ物が3か所以上のY軸で存在する場合→SetReady = false
-    b1.breakable {
+      //オフハンドアイテムと、範囲内のブロックに一致する物があるかどうか判別
+      //同じ物がない場合・同じ物が3か所以上のY軸で存在する場合→SetReady = false
       while (searchY < playerLocY + 2) {
         val block = player.getWorld.getBlockAt(searchX, searchY, searchZ)
 
@@ -112,9 +105,8 @@ class PlayerLeftClickListener extends Listener {
           } else if (Y2 == searchY || Y2 == 256) {
             Y2 = searchY
           } else {
-            shouldPerformSkill = false
             player.sendMessage(RED.toString + "範囲内に「オフハンドと同じブロック」が多すぎます。(Y軸2つ分以内にして下さい)")
-            b1.break
+            return false
           }
         }
         searchX += 1
@@ -128,19 +120,16 @@ class PlayerLeftClickListener extends Listener {
           }
         }
       }
+
+      if (Y1 != 256) {
+        shouldPerformSkill
+      } else {
+        player.sendMessage(RED.toString + "範囲内に「オフハンドと同じブロック」を設置してください。(基準になります)")
+        false
+      }
     }
 
-    if (Y1 == 256) {
-      player.sendMessage(RED.toString + "範囲内に「オフハンドと同じブロック」を設置してください。(基準になります)")
-      shouldPerformSkill = false
-    }
-
-    //上の処理で「スキル条件を満たしていない」と判断された場合、処理終了
-    if (!shouldPerformSkill) {
-      player.sendMessage(RED.toString + "発動条件が満たされませんでした。")
-    }
-
-    if (shouldPerformSkill) {
+    if (shouldPerformSkill()) {
       //実際に範囲内にブロックを設置する処理
       //設置範囲の基準となる座標
       var setBlockX = playerLocX - areaInt
@@ -155,10 +144,17 @@ class PlayerLeftClickListener extends Listener {
 
       val WGloc = new Location(playerWorld, 0.0, 0.0, 0.0)
 
-      b1.breakable {
-        val b2 = new Breaks
+      var block_cnt = 0
 
+      //MineStack No.用
+      var no = -1
+
+      val b1 = new Breaks
+
+      b1.breakable {
         while (setBlockZ < playerLocZ + searchInt) {
+          val b2 = new Breaks
+
           b2.breakable {
             //ブロック設置座標のブロック判別
             if (player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.AIR ||
@@ -318,10 +314,12 @@ class PlayerLeftClickListener extends Listener {
           }
         }
       }
-    }
 
-    if (Util.inTrackedWorld(player)) {
-      Util.addBuild1MinAmount(player, new java.math.BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag)) //設置した数を足す
+      if (Util.inTrackedWorld(player)) {
+        Util.addBuild1MinAmount(player, new java.math.BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag)) //設置した数を足す
+      }
+    } else {
+      player.sendMessage(s"${RED}発動条件が満たされませんでした。")
     }
   }
 }
