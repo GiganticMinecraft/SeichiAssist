@@ -7,7 +7,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.{EquipmentSlot, ItemStack}
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{Location, Material}
 
 import scala.util.control.Breaks
@@ -60,7 +60,7 @@ class PlayerLeftClickListener extends Listener {
     val offHandItem = inventory.getItemInOffHand
 
     event.getAction match {
-      case Action.LEFT_CLICK_AIR | Action.LEFT_CLICK_BLOCK =>
+      case Action.LEFT_CLICK_BLOCK =>
       case _ => return
     }
 
@@ -68,253 +68,200 @@ class PlayerLeftClickListener extends Listener {
         BuildAssist.materiallist.contains(offHandItem.getType) &&
         buildAssistPlayerData.ZoneSetSkillFlag)) return
 
-    //プレイヤーの足の座標を取得
-    val playerLocX = player.getLocation.getBlockX
-    val playerLocY = player.getLocation.getBlockY
-    val playerLocZ = player.getLocation.getBlockZ
+    val clickedBlock = event.getClickedBlock
+
+    if (!(offHandItem.getType == clickedBlock.getType && offHandItem.getData.getData == clickedBlock.getData)) {
+      player.sendMessage(s"$RED「オフハンドと同じブロック」をクリックしてください。(基準になります)")
+      return
+    }
 
     //スキルの範囲設定用
     val areaInt = buildAssistPlayerData.AREAint
     val searchInt = areaInt + 1
     val areaIntB = areaInt * 2 + 1
 
-    def computeTargetY(): Option[Int] = {
-      val searchIntB = searchInt * 2 + 1
+    //設置範囲の基準となる座標
+    val centerX = clickedBlock.getX
+    val surfaceY = clickedBlock.getY
+    val centerZ = clickedBlock.getZ
 
-      // 同ブロック探索(7*6*7)の開始座標を計算
-      var searchX = playerLocX - searchInt
-      var searchY = playerLocY - 4
-      var searchZ = playerLocZ - searchInt
+    var setBlockX = centerX - areaInt
+    var setBlockZ = centerZ - areaInt
 
-      var Y1: Option[Int] = None
-      var Y2: Option[Int] = None
+    var searchedInv = 9
 
-      // オフハンドアイテムと、範囲内のブロックに一致する物があるかどうか判別
-      // 同じ物がない場合・同じ物が3か所以上のY軸で存在する場合→SetReady = false
-      while (searchY < playerLocY + 2) {
-        val block = player.getWorld.getBlockAt(searchX, searchY, searchZ)
+    var ItemInInvAmount = 0
 
-        if (offHandItem.getType == block.getType && offHandItem.getData.getData == block.getData) {
-          if (Y1.isEmpty || Y1.get == searchY) {
-            Y1 = Some(searchY)
-          } else if (Y2.isEmpty || Y2.get == searchY) {
-            Y2 = Some(searchY)
-          } else {
-            player.sendMessage(RED.toString + "範囲内に「オフハンドと同じブロック」が多すぎます。(Y軸2つ分以内にして下さい)")
-            return None
+    var block_cnt = 0
+
+    //MineStack No.用
+    var no = -1
+
+    val replaceableMaterials = Set(
+      Material.AIR,
+      Material.SNOW,
+      Material.LONG_GRASS,
+      Material.DEAD_BUSH,
+      Material.YELLOW_FLOWER,
+      Material.RED_ROSE,
+      Material.RED_MUSHROOM,
+      Material.BROWN_MUSHROOM
+    )
+
+    val fillTargetMaterials = Set(
+      Material.AIR,
+      Material.LAVA,
+      Material.STATIONARY_LAVA,
+      Material.WATER,
+      Material.STATIONARY_WATER
+    )
+
+    val b1 = new Breaks
+    b1.breakable {
+      while (setBlockZ < centerZ + searchInt) {
+        val b2 = new Breaks
+
+        b2.breakable {
+          //ブロック設置座標のブロック判別
+          val surfaceLocation = new Location(playerWorld, setBlockX, surfaceY, setBlockZ)
+          val currentBlockAtSurface = surfaceLocation.getBlock
+
+          def commitPlacement(): Unit = {
+            currentBlockAtSurface.setType(offHandItem.getType)
+            currentBlockAtSurface.setData(offHandItem.getData.getData)
+
+            //ブロックカウント
+            block_cnt += 1
           }
-        }
-        searchX += 1
 
-        if (searchX > playerLocX + searchInt) {
-          searchX = searchX - searchIntB
-          searchZ += 1
-          if (searchZ > playerLocZ + searchInt) {
-            searchZ = searchZ - searchIntB
-            searchY += 1
-          }
-        }
-      }
+          if (replaceableMaterials.contains(currentBlockAtSurface.getType)) {
+            if (buildAssistPlayerData.zsSkillDirtFlag) {
+              (1 to 5).foreach { setBlockYOffsetBelow =>
+                val fillLocation = new Location(playerWorld, setBlockX, surfaceY - setBlockYOffsetBelow, setBlockZ)
+                val blockToBeFilled = fillLocation.getBlock
 
-      if (Y1.isDefined) {
-        Y1
-      } else {
-        player.sendMessage(RED.toString + "範囲内に「オフハンドと同じブロック」を設置してください。(基準になります)")
-        None
-      }
-    }
-
-    computeTargetY() match {
-      case Some(setBlockY) =>
-        //実際に範囲内にブロックを設置する処理
-        //設置範囲の基準となる座標
-        var setBlockX = playerLocX - areaInt
-        var setBlockZ = playerLocZ - areaInt
-        var setUnder = 1
-
-        var searchedInv = 9
-
-        var ItemInInv: ItemStack = null
-        var ItemInInvAmount = 0
-
-        val WGloc = new Location(playerWorld, 0.0, 0.0, 0.0)
-
-        var block_cnt = 0
-
-        //MineStack No.用
-        var no = -1
-
-        val b1 = new Breaks
-
-        b1.breakable {
-          while (setBlockZ < playerLocZ + searchInt) {
-            val b2 = new Breaks
-
-            b2.breakable {
-              //ブロック設置座標のブロック判別
-              if (player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.AIR ||
-                player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.SNOW ||
-                player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.LONG_GRASS ||
-                player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.DEAD_BUSH ||
-                player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.YELLOW_FLOWER ||
-                player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.RED_ROSE ||
-                player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.RED_MUSHROOM ||
-                player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).getType == Material.BROWN_MUSHROOM) {
-                setUnder = 1
-
-                if (buildAssistPlayerData.zsSkillDirtFlag) {
-                  while (setUnder < 5) {
-                    //設置対象の[setunder]分の下のブロックが空気かどうか
-                    if (player.getWorld.getBlockAt(setBlockX, setBlockY - setUnder, setBlockZ).getType == Material.AIR ||
-                      player.getWorld.getBlockAt(setBlockX, setBlockY - setUnder, setBlockZ).getType == Material.LAVA ||
-                      player.getWorld.getBlockAt(setBlockX, setBlockY - setUnder, setBlockZ).getType == Material.STATIONARY_LAVA ||
-                      player.getWorld.getBlockAt(setBlockX, setBlockY - setUnder, setBlockZ).getType == Material.WATER ||
-                      player.getWorld.getBlockAt(setBlockX, setBlockY - setUnder, setBlockZ).getType == Material.STATIONARY_WATER) {
-                      WGloc.setX(setBlockX.toDouble)
-                      WGloc.setY((setBlockY - setUnder).toDouble)
-                      WGloc.setZ(setBlockZ.toDouble)
-                      //他人の保護がかかっている場合は処理を終了
-                      if (!Util.getWorldGuard.canBuild(player, WGloc)) {
-                        player.sendMessage(RED.toString + "付近に誰かの保護がかかっているようです")
-                      } else {
-                        //保護のない場合、土を設置する処理
-                        player.getWorld.getBlockAt(setBlockX, setBlockY - setUnder, setBlockZ).setType(Material.DIRT)
-                      }
-                    }
-                    setUnder += 1
-                  }
-                }
-
-                //他人の保護がかかっている場合は処理を終了
-                WGloc.setX(setBlockX.toDouble)
-                WGloc.setY(setBlockY.toDouble)
-                WGloc.setZ(setBlockZ.toDouble)
-                if (!Util.getWorldGuard.canBuild(player, WGloc)) {
-                  player.sendMessage(RED.toString + "付近に誰かの保護がかかっているようです")
-                  b1.break
-                } else {
-                  //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
-                  if (buildAssistPlayerData.zs_minestack_flag) { //label指定は基本的に禁じ手だが、今回は後付けなので使わせてもらう。(解読性向上のため、1箇所のみの利用)
-                    for (cnt <- 0 until MineStackObjectList.minestacklist.size) {
-                      if (offHandItem.getType == MineStackObjectList.minestacklist(cnt).material && offHandItem.getData.getData.toInt == MineStackObjectList.minestacklist(cnt).durability) {
-                        no = cnt
-                        b1.break
-                        //no:設置するブロック・max:設置できる最大量
-                      }
-                    }
-                    if (no > 0) {
-                      //設置するブロックがMineStackに登録済み
-                      //1引く
-                      val mineStackObj = MineStackObjectList.minestacklist(no)
-                      if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObj) > 0) {
-                        seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObj, 1)
-
-                        //設置処理
-                        player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).setType(offHandItem.getType)
-                        player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).setData(offHandItem.getData.getData)
-
-                        //ブロックカウント
-                        block_cnt += 1
-
-                        //あとの設定
-                        setBlockX += 1
-
-                        if (setBlockX > playerLocX + areaInt) {
-                          setBlockX = setBlockX - areaIntB
-                          setBlockZ += 1
-                        }
-                        b2.break()
-                      }
-                    }
-                  }
-
-
-                  //インベントリの左上から一つずつ確認する。
-                  //※一度「該当アイテムなし」と判断したスロットは次回以降スキップする様に組んであるゾ
-                  while (searchedInv < 36) {
-                    //該当スロットのアイテムデータ取得
-                    ItemInInv = player.getInventory.getItem(searchedInv)
-                    if (ItemInInv == null) {
-                    } else {
-                      ItemInInvAmount = ItemInInv.getAmount
-                    }
-                    //スロットのアイテムが空白だった場合の処理(エラー回避のため)
-                    if (ItemInInv == null) {
-                      //確認したスロットが空気だった場合に次スロットへ移動
-                      if (searchedInv == 35) {
-                        searchedInv = 0
-                      } else if (searchedInv == 8) {
-                        searchedInv = 36
-                        player.sendMessage(RED.toString + "アイテムが不足しています！")
-                      } else {
-                        searchedInv += 1
-                      }
-                      //スロットアイテムがオフハンドと一致した場合
-                    } else if (ItemInInv.getType == offHandItem.getType) {
-                      //数量以外のデータ(各種メタ)が一致するかどうか検知(仮)
-                      val ItemInInvCheck = ItemInInv
-                      ItemInInvCheck.setAmount(1)
-                      offHandItem.setAmount(1)
-
-                      if (ItemInInvCheck != offHandItem) {
-                        if (searchedInv == 35) {
-                          searchedInv = 0
-                        } else if (searchedInv == 8) {
-                          searchedInv = 36
-                          player.sendMessage(RED.toString + "アイテムが不足しています!")
-                        } else {
-                          searchedInv += 1
-                        }
-                      } else {
-                        //取得したインベントリデータから数量を1ひき、インベントリに反映する
-                        if (ItemInInvAmount == 1) {
-                          ItemInInv.setType(Material.AIR)
-                          ItemInInv.setAmount(1)
-                        } else {
-                          ItemInInv.setAmount(ItemInInvAmount - 1)
-                        }
-                        player.getInventory.setItem(searchedInv, ItemInInv)
-                        //ブロックを設置する
-                        player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).setType(offHandItem.getType)
-                        player.getWorld.getBlockAt(setBlockX, setBlockY, setBlockZ).setData(offHandItem.getData.getData)
-
-                        block_cnt += 1 //設置数カウント
-                        b1.break()
-                      }
-                    } else {
-                      //確認したスロットが違うアイテムだった場合に、次のスロットへと対象を移す
-                      if (searchedInv == 35) {
-                        searchedInv = 0
-                      } else if (searchedInv == 8) {
-                        searchedInv = 36
-                        player.sendMessage(RED.toString + "アイテムが不足しています!")
-                      } else {
-                        searchedInv += 1
-                      }
-                    }
+                if (fillTargetMaterials.contains(blockToBeFilled.getType)) {
+                  if (!Util.getWorldGuard.canBuild(player, fillLocation)) {
+                    //他人の保護がかかっている場合は通知を行う
+                    player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
+                  } else {
+                    //保護のない場合、土を設置する処理
+                    blockToBeFilled.setType(Material.DIRT)
                   }
                 }
               }
             }
 
-            if (searchedInv == 36) {
-              b1.break()
+            //他人の保護がかかっている場合は処理を終了
+            if (!Util.getWorldGuard.canBuild(player, surfaceLocation)) {
+              player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
+              b1.break
             }
 
-            setBlockX += 1
+            //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
+            if (buildAssistPlayerData.zs_minestack_flag) {
+              val b3 = new Breaks
+              b3.breakable {
+                for (cnt <- 0 until MineStackObjectList.minestacklist.size) {
+                  if (offHandItem.getType == MineStackObjectList.minestacklist(cnt).material && offHandItem.getData.getData.toInt == MineStackObjectList.minestacklist(cnt).durability) {
+                    no = cnt
+                    b3.break
+                    //no:設置するブロック・max:設置できる最大量
+                  }
+                }
+              }
+              if (no > 0) {
+                //設置するブロックがMineStackに登録済み
+                //1引く
+                val mineStackObj = MineStackObjectList.minestacklist(no)
+                if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObj) > 0) {
+                  seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObj, 1)
 
-            if (setBlockX > playerLocX + areaInt) {
-              setBlockX = setBlockX - areaIntB
-              setBlockZ += 1
+                  commitPlacement()
+                  b2.break()
+                }
+              }
             }
+
+            //インベントリの左上から一つずつ確認する。
+            //※一度「該当アイテムなし」と判断したスロットは次回以降スキップする様に組んであるゾ
+            while (searchedInv < 36) {
+              //該当スロットのアイテムデータ取得
+              val itemInInv = player.getInventory.getItem(searchedInv)
+              if (itemInInv == null) {
+              } else {
+                ItemInInvAmount = itemInInv.getAmount
+              }
+              //スロットのアイテムが空白だった場合の処理(エラー回避のため)
+              if (itemInInv == null) {
+                //確認したスロットが空気だった場合に次スロットへ移動
+                if (searchedInv == 35) {
+                  searchedInv = 0
+                } else if (searchedInv == 8) {
+                  searchedInv = 36
+                  player.sendMessage(RED.toString + "アイテムが不足しています！")
+                } else {
+                  searchedInv += 1
+                }
+                //スロットアイテムがオフハンドと一致した場合
+              } else if (itemInInv.getType == offHandItem.getType) {
+                //数量以外のデータ(各種メタ)が一致するかどうか検知(仮)
+                val ItemInInvCheck = itemInInv
+                ItemInInvCheck.setAmount(1)
+                offHandItem.setAmount(1)
+
+                if (ItemInInvCheck != offHandItem) {
+                  if (searchedInv == 35) {
+                    searchedInv = 0
+                  } else if (searchedInv == 8) {
+                    searchedInv = 36
+                    player.sendMessage(RED.toString + "アイテムが不足しています!")
+                  } else {
+                    searchedInv += 1
+                  }
+                } else {
+                  //取得したインベントリデータから数量を1ひき、インベントリに反映する
+                  if (ItemInInvAmount == 1) {
+                    itemInInv.setType(Material.AIR)
+                    itemInInv.setAmount(1)
+                  } else {
+                    itemInInv.setAmount(ItemInInvAmount - 1)
+                  }
+                  player.getInventory.setItem(searchedInv, itemInInv)
+
+                  commitPlacement()
+                  b2.break()
+                }
+              } else {
+                //確認したスロットが違うアイテムだった場合に、次のスロットへと対象を移す
+                if (searchedInv == 35) {
+                  searchedInv = 0
+                } else if (searchedInv == 8) {
+                  searchedInv = 36
+                  player.sendMessage(RED.toString + "アイテムが不足しています!")
+                } else {
+                  searchedInv += 1
+                }
+              }
+            }
+          }
+
+          if (searchedInv == 36) {
+            b1.break()
           }
         }
 
-        if (Util.inTrackedWorld(player)) {
-          Util.addBuild1MinAmount(player, new java.math.BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag)) //設置した数を足す
+        setBlockX += 1
+
+        if (setBlockX > centerX + areaInt) {
+          setBlockX = setBlockX - areaIntB
+          setBlockZ += 1
         }
-      case None =>
-        player.sendMessage(s"${RED}発動条件が満たされませんでした。")
+      }
+    }
+
+    if (Util.inTrackedWorld(player)) {
+      Util.addBuild1MinAmount(player, new java.math.BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag)) //設置した数を足す
     }
   }
 }
