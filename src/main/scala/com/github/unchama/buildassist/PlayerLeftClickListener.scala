@@ -7,7 +7,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{Location, Material}
 
 import scala.util.control.Breaks
@@ -88,14 +88,16 @@ class PlayerLeftClickListener extends Listener {
     var setBlockX = centerX - areaInt
     var setBlockZ = centerZ - areaInt
 
-    var searchedInv = 9
-
-    var ItemInInvAmount = 0
+    var sourceSearchIndex = 9
 
     var block_cnt = 0
 
-    //MineStack No.用
-    var no = -1
+    val minestackObjectToUse =
+      MineStackObjectList.minestacklist
+        .find { obj =>
+          offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
+        }
+        .filter(_ => buildAssistPlayerData.zs_minestack_flag)
 
     val replaceableMaterials = Set(
       Material.AIR,
@@ -119,8 +121,8 @@ class PlayerLeftClickListener extends Listener {
     val b1 = new Breaks
     b1.breakable {
       while (setBlockZ < centerZ + searchInt) {
-        val b2 = new Breaks
 
+        val b2 = new Breaks
         b2.breakable {
           //ブロック設置座標のブロック判別
           val surfaceLocation = new Location(playerWorld, setBlockX, surfaceY, setBlockZ)
@@ -155,99 +157,51 @@ class PlayerLeftClickListener extends Listener {
             //他人の保護がかかっている場合は処理を終了
             if (!Util.getWorldGuard.canBuild(player, surfaceLocation)) {
               player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
-              b1.break
+              b1.break()
             }
 
-            //ここでMineStackの処理。flagがtrueならInvに関係なしにここに持ってくる
-            if (buildAssistPlayerData.zs_minestack_flag) {
-              val b3 = new Breaks
-              b3.breakable {
-                for (cnt <- 0 until MineStackObjectList.minestacklist.size) {
-                  if (offHandItem.getType == MineStackObjectList.minestacklist(cnt).material && offHandItem.getData.getData.toInt == MineStackObjectList.minestacklist(cnt).durability) {
-                    no = cnt
-                    b3.break
-                    //no:設置するブロック・max:設置できる最大量
-                  }
-                }
-              }
-              if (no > 0) {
-                //設置するブロックがMineStackに登録済み
-                //1引く
-                val mineStackObj = MineStackObjectList.minestacklist(no)
-                if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObj) > 0) {
-                  seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObj, 1)
+            minestackObjectToUse match {
+              case Some(mineStackObject) =>
+                if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObject) > 0) {
+                  seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObject, 1)
 
                   commitPlacement()
                   b2.break()
                 }
-              }
+              case None =>
             }
 
-            //インベントリの左上から一つずつ確認する。
-            //※一度「該当アイテムなし」と判断したスロットは次回以降スキップする様に組んであるゾ
-            while (searchedInv < 36) {
-              //該当スロットのアイテムデータ取得
-              val itemInInv = player.getInventory.getItem(searchedInv)
-              if (itemInInv == null) {
-              } else {
-                ItemInInvAmount = itemInInv.getAmount
-              }
-              //スロットのアイテムが空白だった場合の処理(エラー回避のため)
-              if (itemInInv == null) {
-                //確認したスロットが空気だった場合に次スロットへ移動
-                if (searchedInv == 35) {
-                  searchedInv = 0
-                } else if (searchedInv == 8) {
-                  searchedInv = 36
-                  player.sendMessage(RED.toString + "アイテムが不足しています！")
-                } else {
-                  searchedInv += 1
-                }
-                //スロットアイテムがオフハンドと一致した場合
-              } else if (itemInInv.getType == offHandItem.getType) {
-                //数量以外のデータ(各種メタ)が一致するかどうか検知(仮)
-                val ItemInInvCheck = itemInInv
-                ItemInInvCheck.setAmount(1)
-                offHandItem.setAmount(1)
+            // インベントリの左上から一つずつ確認する。
+            // 一度「該当アイテムなし」と判断したスロットは次回以降スキップする
+            while (sourceSearchIndex < 36) {
+              val consumptionSource = player.getInventory.getItem(sourceSearchIndex)
 
-                if (ItemInInvCheck != offHandItem) {
-                  if (searchedInv == 35) {
-                    searchedInv = 0
-                  } else if (searchedInv == 8) {
-                    searchedInv = 36
-                    player.sendMessage(RED.toString + "アイテムが不足しています!")
-                  } else {
-                    searchedInv += 1
-                  }
+              if (consumptionSource == null || !consumptionSource.isSimilar(offHandItem)) {
+                if (sourceSearchIndex >= 35) {
+                  sourceSearchIndex = 0
+                } else if (sourceSearchIndex == 8) {
+                  player.sendMessage(s"${RED}アイテムが不足しています!")
+                  b1.break()
                 } else {
-                  //取得したインベントリデータから数量を1ひき、インベントリに反映する
-                  if (ItemInInvAmount == 1) {
-                    itemInInv.setType(Material.AIR)
-                    itemInInv.setAmount(1)
-                  } else {
-                    itemInInv.setAmount(ItemInInvAmount - 1)
-                  }
-                  player.getInventory.setItem(searchedInv, itemInInv)
-
-                  commitPlacement()
-                  b2.break()
+                  sourceSearchIndex += 1
                 }
               } else {
-                //確認したスロットが違うアイテムだった場合に、次のスロットへと対象を移す
-                if (searchedInv == 35) {
-                  searchedInv = 0
-                } else if (searchedInv == 8) {
-                  searchedInv = 36
-                  player.sendMessage(RED.toString + "アイテムが不足しています!")
-                } else {
-                  searchedInv += 1
-                }
+                val sourceStackAmount = consumptionSource.getAmount
+
+                //取得したインベントリデータから数量を1ひき、インベントリに反映する
+                val updatedItem =
+                  if (sourceStackAmount == 1) {
+                    new ItemStack(Material.AIR)
+                  } else {
+                    import scala.util.chaining._
+                    consumptionSource.clone().tap { _.setAmount(sourceStackAmount - 1) }
+                  }
+                player.getInventory.setItem(sourceSearchIndex, updatedItem)
+
+                commitPlacement()
+                b2.break()
               }
             }
-          }
-
-          if (searchedInv == 36) {
-            b1.break()
           }
         }
 
