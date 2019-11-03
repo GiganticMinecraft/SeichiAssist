@@ -16,6 +16,8 @@ class PlayerLeftClickListener extends Listener {
 
   import com.github.unchama.targetedeffect._
 
+  import scala.util.chaining._
+
   @EventHandler
   def onPlayerLeftClickWithStick(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
@@ -56,8 +58,8 @@ class PlayerLeftClickListener extends Listener {
     val buildAssistPlayerData = BuildAssist.playermap.getOrElse(playerUuid, return)
     val seichiAssistPlayerData = SeichiAssist.playermap.getOrElse(playerUuid, return)
 
-    val inventory = player.getInventory
-    val offHandItem = inventory.getItemInOffHand
+    val playerInventory = player.getInventory
+    val offHandItem = playerInventory.getItemInOffHand
 
     event.getAction match {
       case Action.LEFT_CLICK_BLOCK =>
@@ -77,7 +79,6 @@ class PlayerLeftClickListener extends Listener {
 
     //スキルの範囲設定用
     val areaInt = buildAssistPlayerData.AREAint
-    val searchInt = areaInt + 1
     val areaIntB = areaInt * 2 + 1
 
     //設置範囲の基準となる座標
@@ -85,8 +86,8 @@ class PlayerLeftClickListener extends Listener {
     val surfaceY = clickedBlock.getY
     val centerZ = clickedBlock.getZ
 
-    var setBlockX = centerX - areaInt
-    var setBlockZ = centerZ - areaInt
+    var setTargetX = centerX - areaInt
+    var setTargetZ = centerZ - areaInt
 
     var itemSourceSearchInventoryIndex = 9
 
@@ -120,40 +121,74 @@ class PlayerLeftClickListener extends Listener {
 
     val b1 = new Breaks
     b1.breakable {
-      while (setBlockZ < centerZ + searchInt) {
-
+      while (setTargetZ <= centerZ + areaInt) {
         val b2 = new Breaks
         b2.breakable {
-          //ブロック設置座標のブロック判別
-          val surfaceLocation = new Location(playerWorld, setBlockX, surfaceY, setBlockZ)
-          val currentBlockAtSurface = surfaceLocation.getBlock
+          val targetSurfaceLocation = new Location(playerWorld, setTargetX, surfaceY, setTargetZ)
+          val targetSurfaceBlock = targetSurfaceLocation.getBlock
 
           def commitPlacement(): Unit = {
-            currentBlockAtSurface.setType(offHandItem.getType)
-            currentBlockAtSurface.setData(offHandItem.getData.getData)
+            targetSurfaceBlock.setType(offHandItem.getType)
+            targetSurfaceBlock.setData(offHandItem.getData.getData)
 
             placementCount += 1
           }
 
-          if (replaceableMaterials.contains(currentBlockAtSurface.getType)) {
-            if (buildAssistPlayerData.zsSkillDirtFlag) {
-              (1 to 5).foreach { setBlockYOffsetBelow =>
-                val fillLocation = new Location(playerWorld, setBlockX, surfaceY - setBlockYOffsetBelow, setBlockZ)
-                val blockToBeFilled = fillLocation.getBlock
+          def fillBelowSurfaceWithDirt(): Unit = {
+            (1 to 5).foreach { setBlockYOffsetBelow =>
+              val fillLocation = new Location(playerWorld, setTargetX, surfaceY - setBlockYOffsetBelow, setTargetZ)
+              val blockToBeReplaced = fillLocation.getBlock
 
-                if (fillTargetMaterials.contains(blockToBeFilled.getType)) {
-                  if (Util.getWorldGuard.canBuild(player, fillLocation)) {
-                    blockToBeFilled.setType(Material.DIRT)
-                  } else {
-                    //他人の保護がかかっている場合は通知を行う
-                    player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
-                  }
+              if (fillTargetMaterials.contains(blockToBeReplaced.getType)) {
+                if (Util.getWorldGuard.canBuild(player, fillLocation)) {
+                  blockToBeReplaced.setType(Material.DIRT)
+                } else {
+                  //他人の保護がかかっている場合は通知を行う
+                  player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
                 }
               }
             }
+          }
+
+          def consumeOnePlacementItemFromInventory(): Option[Unit] = {
+            @scala.annotation.tailrec def forever(block: => Unit): Nothing = { block; forever(block) }
+
+            // インベントリの左上から一つずつ確認する。
+            // 一度「該当アイテムなし」と判断したスロットは次回以降スキップする
+            forever {
+              val consumptionSource = playerInventory.getItem(itemSourceSearchInventoryIndex)
+
+              if (consumptionSource != null && consumptionSource.isSimilar(offHandItem)) {
+                val sourceStackAmount = consumptionSource.getAmount
+
+                //取得したインベントリデータから数量を1ひき、インベントリに反映する
+                val updatedItem =
+                  if (sourceStackAmount == 1)
+                    new ItemStack(Material.AIR)
+                  else
+                    consumptionSource.clone().tap(_.setAmount(sourceStackAmount - 1))
+                playerInventory.setItem(itemSourceSearchInventoryIndex, updatedItem)
+
+                return Some(())
+              } else {
+                if (itemSourceSearchInventoryIndex == 35) {
+                  itemSourceSearchInventoryIndex = 0
+                } else if (itemSourceSearchInventoryIndex == 8) {
+                  return None
+                } else {
+                  itemSourceSearchInventoryIndex += 1
+                }
+              }
+            }
+          }
+
+          if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
+            if (buildAssistPlayerData.zsSkillDirtFlag) {
+              fillBelowSurfaceWithDirt()
+            }
 
             //他人の保護がかかっている場合は処理を終了
-            if (!Util.getWorldGuard.canBuild(player, surfaceLocation)) {
+            if (!Util.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
               player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
               b1.break()
             }
@@ -169,45 +204,21 @@ class PlayerLeftClickListener extends Listener {
               case None =>
             }
 
-            // インベントリの左上から一つずつ確認する。
-            // 一度「該当アイテムなし」と判断したスロットは次回以降スキップする
-            while (itemSourceSearchInventoryIndex < 36) {
-              val consumptionSource = player.getInventory.getItem(itemSourceSearchInventoryIndex)
-
-              if (consumptionSource == null || !consumptionSource.isSimilar(offHandItem)) {
-                if (itemSourceSearchInventoryIndex >= 35) {
-                  itemSourceSearchInventoryIndex = 0
-                } else if (itemSourceSearchInventoryIndex == 8) {
-                  player.sendMessage(s"${RED}アイテムが不足しています!")
-                  b1.break()
-                } else {
-                  itemSourceSearchInventoryIndex += 1
-                }
-              } else {
-                val sourceStackAmount = consumptionSource.getAmount
-
-                //取得したインベントリデータから数量を1ひき、インベントリに反映する
-                val updatedItem =
-                  if (sourceStackAmount == 1) {
-                    new ItemStack(Material.AIR)
-                  } else {
-                    import scala.util.chaining._
-                    consumptionSource.clone().tap { _.setAmount(sourceStackAmount - 1) }
-                  }
-                player.getInventory.setItem(itemSourceSearchInventoryIndex, updatedItem)
-
+            consumeOnePlacementItemFromInventory() match {
+              case Some(_) =>
                 commitPlacement()
-                b2.break()
-              }
+              case None =>
+                player.sendMessage(s"${RED}アイテムが不足しています!")
+                b1.break()
             }
           }
         }
 
-        setBlockX += 1
+        setTargetX += 1
 
-        if (setBlockX > centerX + areaInt) {
-          setBlockX = setBlockX - areaIntB
-          setBlockZ += 1
+        if (setTargetX > centerX + areaInt) {
+          setTargetX = setTargetX - areaIntB
+          setTargetZ += 1
         }
       }
     }
