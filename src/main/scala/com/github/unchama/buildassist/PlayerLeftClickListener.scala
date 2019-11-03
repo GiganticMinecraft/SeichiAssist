@@ -127,13 +127,6 @@ class PlayerLeftClickListener extends Listener {
             val targetSurfaceLocation = new Location(playerWorld, targetX, surfaceY, targetZ)
             val targetSurfaceBlock = targetSurfaceLocation.getBlock
 
-            def commitPlacement(): Unit = {
-              targetSurfaceBlock.setType(offHandItem.getType)
-              targetSurfaceBlock.setData(offHandItem.getData.getData)
-
-              placementCount += 1
-            }
-
             def fillBelowSurfaceWithDirt(): Unit = {
               (1 to 5).foreach { setBlockYOffsetBelow =>
                 val fillLocation = new Location(playerWorld, targetX, surfaceY - setBlockYOffsetBelow, targetZ)
@@ -148,6 +141,17 @@ class PlayerLeftClickListener extends Listener {
                   }
                 }
               }
+            }
+
+            def commitPlacement(): Unit = {
+              if (buildAssistPlayerData.zsSkillDirtFlag) {
+                fillBelowSurfaceWithDirt()
+              }
+
+              targetSurfaceBlock.setType(offHandItem.getType)
+              targetSurfaceBlock.setData(offHandItem.getData.getData)
+
+              placementCount += 1
             }
 
             def consumeOnePlacementItemFromInventory(): Option[Unit] = {
@@ -185,10 +189,6 @@ class PlayerLeftClickListener extends Listener {
             }
 
             if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
-              if (buildAssistPlayerData.zsSkillDirtFlag) {
-                fillBelowSurfaceWithDirt()
-              }
-
               //他人の保護がかかっている場合は処理を終了
               if (!Util.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
                 player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
