@@ -88,9 +88,9 @@ class PlayerLeftClickListener extends Listener {
     var setBlockX = centerX - areaInt
     var setBlockZ = centerZ - areaInt
 
-    var sourceSearchIndex = 9
+    var itemSourceSearchInventoryIndex = 9
 
-    var block_cnt = 0
+    var placementCount = 0
 
     val minestackObjectToUse =
       MineStackObjectList.minestacklist
@@ -132,8 +132,7 @@ class PlayerLeftClickListener extends Listener {
             currentBlockAtSurface.setType(offHandItem.getType)
             currentBlockAtSurface.setData(offHandItem.getData.getData)
 
-            //ブロックカウント
-            block_cnt += 1
+            placementCount += 1
           }
 
           if (replaceableMaterials.contains(currentBlockAtSurface.getType)) {
@@ -143,12 +142,11 @@ class PlayerLeftClickListener extends Listener {
                 val blockToBeFilled = fillLocation.getBlock
 
                 if (fillTargetMaterials.contains(blockToBeFilled.getType)) {
-                  if (!Util.getWorldGuard.canBuild(player, fillLocation)) {
+                  if (Util.getWorldGuard.canBuild(player, fillLocation)) {
+                    blockToBeFilled.setType(Material.DIRT)
+                  } else {
                     //他人の保護がかかっている場合は通知を行う
                     player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
-                  } else {
-                    //保護のない場合、土を設置する処理
-                    blockToBeFilled.setType(Material.DIRT)
                   }
                 }
               }
@@ -173,17 +171,17 @@ class PlayerLeftClickListener extends Listener {
 
             // インベントリの左上から一つずつ確認する。
             // 一度「該当アイテムなし」と判断したスロットは次回以降スキップする
-            while (sourceSearchIndex < 36) {
-              val consumptionSource = player.getInventory.getItem(sourceSearchIndex)
+            while (itemSourceSearchInventoryIndex < 36) {
+              val consumptionSource = player.getInventory.getItem(itemSourceSearchInventoryIndex)
 
               if (consumptionSource == null || !consumptionSource.isSimilar(offHandItem)) {
-                if (sourceSearchIndex >= 35) {
-                  sourceSearchIndex = 0
-                } else if (sourceSearchIndex == 8) {
+                if (itemSourceSearchInventoryIndex >= 35) {
+                  itemSourceSearchInventoryIndex = 0
+                } else if (itemSourceSearchInventoryIndex == 8) {
                   player.sendMessage(s"${RED}アイテムが不足しています!")
                   b1.break()
                 } else {
-                  sourceSearchIndex += 1
+                  itemSourceSearchInventoryIndex += 1
                 }
               } else {
                 val sourceStackAmount = consumptionSource.getAmount
@@ -196,7 +194,7 @@ class PlayerLeftClickListener extends Listener {
                     import scala.util.chaining._
                     consumptionSource.clone().tap { _.setAmount(sourceStackAmount - 1) }
                   }
-                player.getInventory.setItem(sourceSearchIndex, updatedItem)
+                player.getInventory.setItem(itemSourceSearchInventoryIndex, updatedItem)
 
                 commitPlacement()
                 b2.break()
@@ -215,7 +213,8 @@ class PlayerLeftClickListener extends Listener {
     }
 
     if (Util.inTrackedWorld(player)) {
-      Util.addBuild1MinAmount(player, new java.math.BigDecimal(block_cnt * BuildAssist.config.getBlockCountMag)) //設置した数を足す
+      //設置した数を足す
+      Util.addBuild1MinAmount(player, new java.math.BigDecimal(placementCount * BuildAssist.config.getBlockCountMag))
     }
   }
 }
