@@ -39,13 +39,16 @@ object ShareInvCommand {
     {
       for {
         serial <- EitherT(databaseGateway.playerDataManipulator.loadShareInv(player, playerData))
-        _ <- EitherT.cond[IO](serial != "", (), "${RESET}${RED}${BOLD}収納アイテムが存在しません。".asMessageEffect())
+        _ <- EitherT.cond[IO](serial != "", (), s"$RESET$RED${BOLD}収納アイテムが存在しません。".asMessageEffect())
         _ <- EitherT(databaseGateway.playerDataManipulator.clearShareInv(player, playerData))
         playerInventory = player.getInventory
         _ <- EitherT.right {
           IO {
             // アイテムを取り出す. 手持ちはドロップさせる
-            playerInventory.getContents.map(stack => dropIfNotEmpty(Some(stack), player))
+            playerInventory.getContents
+              .filterNot(_ == null)
+              .filterNot(_.getType == Material.AIR)
+              .map(stack => dropIfNotEmpty(Some(stack), player))
             playerInventory.setContents(ItemListSerialization.deserializeFromBase64(serial).asScala.toArray)
 
             playerData.contentsPresentInSharedInventory = false
@@ -59,11 +62,7 @@ object ShareInvCommand {
 
   def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): IO[Unit] = {
     itemStackOption
-      .filter(_.getType != Material.AIR)
-      .fold(IO.pure(())) { itemStack => IO {
-        Util.dropItem(to, itemStack)
-      }
-      }
+      .fold(IO.pure(())) { itemStack => IO { Util.dropItem(to, itemStack) } }
   }
 
   private def depositToSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
