@@ -1,6 +1,7 @@
-package com.github.unchama.buildassist
+package com.github.unchama.buildassist.listener
 
 import com.github.unchama.buildassist.util.ExternalPlugins
+import com.github.unchama.buildassist.{BuildAssist, Util}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -10,12 +11,12 @@ import org.bukkit.{Material, Sound}
 
 import scala.util.control.Breaks
 
-class BlockLineUp extends Listener {
+object BlockLineUpTriggerListener extends Listener {
 
   import collection.JavaConverters._
 
   @EventHandler
-  def onPlayerClick(event: PlayerInteractEvent): Unit = {
+  def onBlockLineUpSkillTrigger(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val action = event.getAction
     val playerWorld = player.getWorld

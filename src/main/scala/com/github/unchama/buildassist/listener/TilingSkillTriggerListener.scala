@@ -1,55 +1,22 @@
-package com.github.unchama.buildassist
+package com.github.unchama.buildassist.listener
 
-import com.github.unchama.buildassist.menu.BuildMainMenu
-import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SeichiAssist}
-import org.bukkit.ChatColor._
+import com.github.unchama.buildassist.{BuildAssist, Util}
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import org.bukkit.ChatColor.RED
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.{EquipmentSlot, ItemStack}
+import org.bukkit.inventory.ItemStack
 import org.bukkit.{Location, Material}
 
+import scala.util.chaining._
 import scala.util.control.Breaks
 
-class PlayerLeftClickListener extends Listener {
-
-  import com.github.unchama.targetedeffect._
-
-  import scala.util.chaining._
-
-  @EventHandler
-  def onPlayerLeftClickWithStick(event: PlayerInteractEvent): Unit = {
-    val player = event.getPlayer
-
-    event.getAction match {
-      case Action.LEFT_CLICK_AIR | Action.LEFT_CLICK_BLOCK =>
-      case _ => return
-    }
-
-    {
-      val hasStickOnMainHand = player.getInventory.getItemInMainHand.getType == Material.STICK
-      val actionWasOnMainHand = event.getHand == EquipmentSlot.HAND
-
-      if (!hasStickOnMainHand || !actionWasOnMainHand) return
-    }
-
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-
-    seichiassist.unsafe.runAsyncTargetedEffect(player)(
-      sequentialEffect(
-        CommonSoundEffects.menuTransitionFenceSound,
-        BuildMainMenu.open
-      ),
-      "BuildMainMenuを開く"
-    )
-
-    event.setCancelled(true)
-  }
+object TilingSkillTriggerListener extends Listener {
 
   // 範囲設置スキルの発動を担うハンドラメソッド
   @EventHandler
-  def onPlayerAttemptToMassBuild(event: PlayerInteractEvent): Unit = {
+  def onTilingSkillTrigger(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val playerUuid = player.getUniqueId
 
@@ -67,8 +34,8 @@ class PlayerLeftClickListener extends Listener {
     }
 
     if (!(player.isSneaking &&
-        BuildAssist.materiallist.contains(offHandItem.getType) &&
-        buildAssistPlayerData.ZoneSetSkillFlag)) return
+      BuildAssist.materiallist.contains(offHandItem.getType) &&
+      buildAssistPlayerData.ZoneSetSkillFlag)) return
 
     val clickedBlock = event.getClickedBlock
 
@@ -224,4 +191,5 @@ class PlayerLeftClickListener extends Listener {
       Util.addBuild1MinAmount(player, new java.math.BigDecimal(placementCount * BuildAssist.config.getBlockCountMag))
     }
   }
+
 }

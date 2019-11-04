@@ -1,9 +1,8 @@
 package com.github.unchama.buildassist
 
-import java.util
-import java.util.{ArrayList, EnumSet, UUID}
+import java.util.UUID
 
-import com.github.unchama.buildassist.listener.{BlockPlaceEventListener, EntityListener, PlayerJoinListener, PlayerQuitListener}
+import com.github.unchama.buildassist.listener._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
@@ -35,11 +34,12 @@ class BuildAssist(plugin: Plugin) {
 
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new EntityListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerLeftClickListener(), plugin)
+    Bukkit.getServer.getPluginManager.registerEvents(PlayerLeftClickListener, plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
     Bukkit.getServer.getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
-    Bukkit.getServer.getPluginManager.registerEvents(new BlockLineUp(), plugin) //ブロックを並べるスキル
+    Bukkit.getServer.getPluginManager.registerEvents(BlockLineUpTriggerListener, plugin) //ブロックを並べるスキル
+    Bukkit.getServer.getPluginManager.registerEvents(TilingSkillTriggerListener, plugin) //一括設置スキル
 
 
     for (p <- Bukkit.getServer.getOnlinePlayers.asScala) {
