@@ -49,8 +49,9 @@ object ArrowEffects {
       _.setItem(thrownPotionItem)
     )
   }
+
   val singleArrowMeteoEffect: TargetedEffect[Player] =
-    arrowEffect[ThrownPotion](
+    arrowEffect[LargeFireball](
       ProjectileSpawnConfiguration(
         1.0,
         (0.0, 1.6, 0.0)
@@ -58,6 +59,7 @@ object ArrowEffects {
       Some(Sound.ENTITY_ARROW_SHOOT),
       _.setGlowing(true)
     )
+
   val singleArrowExplosionEffect: TargetedEffect[Player] =
     arrowEffect[SmallFireball](
       ProjectileSpawnConfiguration(
