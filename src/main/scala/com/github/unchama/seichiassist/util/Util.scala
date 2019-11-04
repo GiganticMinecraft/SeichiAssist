@@ -305,7 +305,7 @@ object Util {
     val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
 
     // オーナーがunchamaか？
-    !skullMeta.hasOwner && skullMeta.getOwner == "unchama"
+    skullMeta.hasOwner && skullMeta.getOwner == "unchama"
   }
 
   def removeItemfromPlayerInventory(inventory: PlayerInventory,
