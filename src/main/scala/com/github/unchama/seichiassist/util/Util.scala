@@ -91,11 +91,9 @@ object Util {
    * @param itemStack 付与するアイテム
    */
   def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    if (isPlayerInventoryFull(player)) {
-      dropItem(player, itemStack)
-    } else {
-      addItem(player, itemStack)
-    }
+    player.getInventory
+      .addItem(itemStack)
+      .values().forEach(dropItem(player, _))
   }
 
   //プレイヤーのインベントリがフルかどうか確認
