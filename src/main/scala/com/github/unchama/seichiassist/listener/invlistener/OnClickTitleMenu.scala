@@ -933,7 +933,7 @@ object OnClickTitleMenu extends Listener {
           + SeichiAssist.seichiAssistConfig.getTitle2(9905) + SeichiAssist.seichiAssistConfig.getTitle3(7003) + "」")) {
           setTitle(7003, 9905, 7003)
         } else if (name.contains("No7004「" + SeichiAssist.seichiAssistConfig.getTitle2(7004) + "」")) {
-          setTitle(second = 7704)
+          _setTitle(second = 7004)(s"二つ名7004「${getTitle(2, 7004)}」が設定されました。")
         } else if (name.contains("No7005「" + SeichiAssist.seichiAssistConfig.getTitle1(7005)
           + SeichiAssist.seichiAssistConfig.getTitle2(9902) + SeichiAssist.seichiAssistConfig.getTitle3(7005) + "」")) {
           setTitle(7005, 9902, 7005)
