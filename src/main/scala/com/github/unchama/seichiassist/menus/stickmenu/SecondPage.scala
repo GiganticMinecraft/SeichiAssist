@@ -87,7 +87,7 @@ object SecondPage extends Menu {
 
         new SkullItemStackBuilder(SkullOwners.MHF_Villager)
           .title(s"$YELLOW$UNDERLINE${BOLD}自分の頭を召喚")
-          .lore(baseLore + actionNavigation)
+          .lore(baseLore.appended(actionNavigation))
           .build()
       }
 
