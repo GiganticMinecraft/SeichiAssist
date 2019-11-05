@@ -208,7 +208,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
           val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
           val count =
-            if (dateDiff <= 2L)
+            if (dateDiff <= 4L)
               lrs.getInt("chainvote") + 1
             else
               1

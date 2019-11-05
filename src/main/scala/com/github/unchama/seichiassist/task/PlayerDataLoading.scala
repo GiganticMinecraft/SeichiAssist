@@ -285,7 +285,7 @@ object PlayerDataLoading {
           if (dateDiff >= 1L) {
             val newTotalLoginDay = playerData.loginStatus.totalLoginDay + 1
             val newConsecutiveLoginDays =
-              if (dateDiff <= 2L)
+              if (dateDiff <= 4L)
                 playerData.loginStatus.consecutiveLoginDays + 1
               else
                 1
