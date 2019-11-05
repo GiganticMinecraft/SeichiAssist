@@ -27,7 +27,13 @@ object ItemStackOps {
       }.asScala.toList
 
     def lore_=(value: List[String]): Unit = {
-      itemStack.getItemMeta.setLore(value.asJava)
+      import scala.util.chaining._
+
+      itemStack.tap { i => import i._
+        setItemMeta {
+          getItemMeta.tap(_.setLore(value.asJava))
+        }
+      }
     }
 
   }

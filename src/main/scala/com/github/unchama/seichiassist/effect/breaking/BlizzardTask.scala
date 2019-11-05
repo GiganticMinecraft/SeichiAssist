@@ -25,7 +25,7 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
     if (skillData.skillnum > 2) {
       blocks.foreach { block =>
         BreakUtil.breakBlock(player, block, droploc, tool, stepflag = false)
-        block.getType
+        block.setType(Material.PACKED_ICE)
       }
     } else {
       blocks.foreach { block =>

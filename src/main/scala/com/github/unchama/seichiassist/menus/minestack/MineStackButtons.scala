@@ -107,7 +107,8 @@ private[minestack] case class MineStackButtons(player: Player) {
       val currentAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
       val grantAmount = Math.min(mineStackObj.itemStack.getMaxStackSize.toLong, currentAmount).toInt
 
-      val soundEffectPitch = if (currentAmount >= grantAmount) 1.0f else 0.5f
+      val soundEffectPitch =
+        if (grantAmount == mineStackObj.itemStack.getMaxStackSize.toLong) 1.0f else 0.5f
       val grantItemStack = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
       sequentialEffect(

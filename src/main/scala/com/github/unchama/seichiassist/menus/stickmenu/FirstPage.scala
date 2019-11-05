@@ -350,7 +350,7 @@ object FirstPage extends Menu {
             sequentialEffect(
               UnfocusedEffect {
                 (1 to numberOfItemsToGive).foreach { _ => Util.addItemToPlayerSafely(player, itemToGive) }
-                playerData.unclaimedApologyItems = 0
+                playerData.unclaimedApologyItems -= numberOfItemsToGive
               },
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
               s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()

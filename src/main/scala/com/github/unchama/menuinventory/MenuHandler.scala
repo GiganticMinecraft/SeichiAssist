@@ -11,7 +11,7 @@ import org.bukkit.event.{EventHandler, Listener}
  * @author karayuu
  */
 object MenuHandler extends Listener {
-  @EventHandler
+  @EventHandler(ignoreCancelled = true)
   def onInventoryClick(event: InventoryClickEvent): Unit = {
     val whoClicked = event.getWhoClicked match {
       case player: Player => player
@@ -28,8 +28,8 @@ object MenuHandler extends Listener {
       case _ => return
     }
 
-    //プレイヤーインベントリ内のクリック排除
-    if (clickedInventory.getType == InventoryType.PLAYER) {
+    // 上インベントリ以外のクリックを排除
+    if (clickedInventory != event.getWhoClicked.getOpenInventory.getTopInventory) {
       event.setCancelled(true)
       return
     }
