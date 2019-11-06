@@ -1,11 +1,12 @@
 package com.github.unchama.menuinventory
 
 import cats.Eq
-import cats.effect.{ContextShift, IO}
 import cats.effect.concurrent.Ref
+import cats.effect.{ContextShift, IO}
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}
@@ -23,7 +24,7 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
    * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.
    */
   val openInventory: TargetedEffect[Player] =
-    player => IO {
+    targetedeffect.delay { player =>
       player.openInventory(sessionInventory)
     }
 
@@ -65,6 +66,12 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
       diff = differences(oldLayout, newLayout)
       _ <- currentLayout.set(newLayout)
       _ <- updateMenuSlots(diff)
+      _ <- IO {
+        sessionInventory.getViewers.forEach {
+          case p: Player => p.updateInventory()
+          case _ =>
+        }
+      }
     } yield ()
   }
 

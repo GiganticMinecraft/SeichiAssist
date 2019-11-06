@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect.plugin
 import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.effect.XYZTuple
@@ -45,12 +46,10 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
     }
 
     // TODO take this outside
-    effect(player).unsafeRunAsync {
-      case Left(error) =>
-        println("Caught exception while executing arrow effect.")
-        error.printStackTrace()
-      case Right(_) =>
-    }
+    seichiassist.unsafe.runAsyncTargetedEffect(player)(
+      effect,
+      "ArrowEffectを非同期で実行する"
+    )
   }
 }
 

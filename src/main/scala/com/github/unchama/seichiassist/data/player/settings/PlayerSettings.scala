@@ -1,16 +1,15 @@
 package com.github.unchama.seichiassist.data.player.settings
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerNickName
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.UnfocusedEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 class PlayerSettings {
 
   import com.github.unchama.targetedeffect.MessageEffects._
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
 
   val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
   var autoMineStack = true
@@ -49,13 +48,14 @@ class PlayerSettings {
   val getBroadcastMutingSettings: IO[BroadcastMutingSettings] = IO {
     broadcastMutingSettings
   }
-  val toggleBroadcastMutingSettings: TargetedEffect[Any] = (_: Any) =>
+  val toggleBroadcastMutingSettings: TargetedEffect[Any] = Kleisli.liftF(
     for {
       currentSettings <- getBroadcastMutingSettings
       nextSettings = currentSettings.next
     } yield {
       broadcastMutingSettings = nextSettings
     }
+  )
   val toggleHalfBreakFlag: TargetedEffect[Player] = deferredEffect(IO {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 

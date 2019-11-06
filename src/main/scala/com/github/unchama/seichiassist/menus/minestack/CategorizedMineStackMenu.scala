@@ -4,10 +4,10 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SkullOwners}
-import com.github.unchama.targetedeffect.TargetedEffects._
+import com.github.unchama.targetedeffect._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 

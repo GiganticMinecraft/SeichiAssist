@@ -1,7 +1,6 @@
 package com.github.unchama.menuinventory.slot
 
-import com.github.unchama.targetedeffect.EmptyEffect
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
@@ -38,6 +37,6 @@ object Slot {
   def plainSlotWith(itemStack: ItemStack): Slot = new Slot {
     override val itemStack: ItemStack = itemStack
 
-    override def effectOn(event: InventoryClickEvent): EmptyEffect.type = EmptyEffect
+    override def effectOn(event: InventoryClickEvent): emptyEffect.type = emptyEffect
   }
 }

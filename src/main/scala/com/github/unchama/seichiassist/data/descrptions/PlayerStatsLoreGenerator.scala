@@ -18,12 +18,12 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   /**
    * Player統計のLoreを返します.
    */
-  def computeLore(): IO[List[String]] = {
+  def computeLore(): IO[List[String]] = IO {
     val generator = new WarningsGenerator(targetPlayer)
 
     import generator._
 
-    val lore = List(
+    List(
       List(seichiLevelDescription()),
       levelProgressionDescription(),
       noRewardsOutsideSeichiWorld,
@@ -47,8 +47,6 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
       ),
       expBarDescription()
     ).flatten
-
-    IO.pure(lore)
   }
 
   /**

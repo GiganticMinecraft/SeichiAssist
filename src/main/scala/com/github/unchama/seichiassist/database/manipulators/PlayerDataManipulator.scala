@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.task.{CoolDownTask, PlayerDataLoading}
 import com.github.unchama.seichiassist.util.{BukkitSerialization, Util}
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.util.ActionStatus
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -559,17 +559,17 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
   def inquireLastQuitOf(playerName: String): IO[TargetedEffect[CommandSender]] = {
     val fetchLastQuitData: IO[ResponseEffectOrResult[CommandSender, String]] = EitherT.right(IO {
-      val command = s"select lastquit from $tableReference where playerName = '$playerName'"
+      val command = s"select lastquit from $tableReference where name = '$playerName'"
 
       gateway.executeQuery(command)
         .recordIteration(_.getString("lastquit"))
         .get
     }).value
 
-    import com.github.unchama.targetedeffect.TargetedEffects._
-
     catchingDatabaseErrors(playerName, fetchLastQuitData).map {
       case Left(errorEffect) =>
+        import com.github.unchama.generic.syntax._
+
         val messages = List(
           s"${RED}最終ログアウト日時の照会に失敗しました。",
           s"${RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",

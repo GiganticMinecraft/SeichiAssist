@@ -1,5 +1,6 @@
 package com.github.unchama.menuinventory.slot.button
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
@@ -10,10 +11,10 @@ object RecomputedButton {
    */
   def apply(buttonComputation: IO[Button])(implicit ctx: LayoutPreparationContext): IO[Button] =
     buttonComputation.map { computedButton =>
-      val recomputation = ButtonEffect { scope =>
-        _ =>
-          this (buttonComputation).flatMap(scope.overwriteCurrentSlotBy)
-      }
+      val recomputation =
+        ButtonEffect(scope => Kleisli.liftF(
+          this(buttonComputation).flatMap(scope.overwriteCurrentSlotBy)
+        ))
 
       computedButton.withAnotherEffect(recomputation)
     }

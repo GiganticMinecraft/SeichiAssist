@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
-import com.github.unchama.targetedeffect.EmptyEffect
+import com.github.unchama.targetedeffect.emptyEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Difficulty
 import org.bukkit.command.TabExecutor
@@ -30,7 +30,7 @@ object GiganticFeverCommand {
       Util.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD)
       Util.sendEveryMessage(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
 
-      IO(EmptyEffect)
+      IO(emptyEffect)
     }
     .build()
     .asNonBlockingTabExecutor()

@@ -1,11 +1,10 @@
 package com.github.unchama.seichiassist.effect.arrow
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.concurrent.BukkitSyncExecutionContext
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effect.FixedMetadataValues
-import com.github.unchama.targetedeffect.EmptyEffect
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.entity._
 import org.bukkit.inventory.ItemStack
@@ -20,7 +19,7 @@ import scala.reflect.ClassTag
 object ArrowEffects {
 
   import com.github.unchama.concurrent.syntax._
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
 
   implicit val plugin: JavaPlugin = SeichiAssist.instance
@@ -50,8 +49,9 @@ object ArrowEffects {
       _.setItem(thrownPotionItem)
     )
   }
+
   val singleArrowMeteoEffect: TargetedEffect[Player] =
-    arrowEffect[ThrownPotion](
+    arrowEffect[Arrow](
       ProjectileSpawnConfiguration(
         1.0,
         (0.0, 1.6, 0.0)
@@ -59,6 +59,7 @@ object ArrowEffects {
       Some(Sound.ENTITY_ARROW_SHOOT),
       _.setGlowing(true)
     )
+
   val singleArrowExplosionEffect: TargetedEffect[Player] =
     arrowEffect[SmallFireball](
       ProjectileSpawnConfiguration(
@@ -74,11 +75,11 @@ object ArrowEffects {
                                                projectileModifier: P => Unit = (_: P) => ()
                                              ): TargetedEffect[Player] = {
     val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
-    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(EmptyEffect)
+    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(emptyEffect)
 
     sequentialEffect(
       soundEffect,
-      player =>
+      Kleisli(player =>
         for {
           _ <- IO.shift(new BukkitSyncExecutionContext())
           playerLocation <- IO {
@@ -107,6 +108,7 @@ object ArrowEffects {
             projectile.remove(); SeichiAssist.entitylist -= projectile
           }
         } yield ()
+      )
     )
   }
 }

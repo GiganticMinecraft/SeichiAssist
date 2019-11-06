@@ -3,7 +3,8 @@ package com.github.unchama.buildassist
 import java.util.UUID
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist
+import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
@@ -17,7 +18,7 @@ import scala.collection.mutable
 class PlayerInventoryListener extends Listener {
   val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
 
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
   //ブロックを並べるスキル（仮）設定画面
@@ -65,15 +66,13 @@ class PlayerInventoryListener extends Listener {
         //ホームメニューへ帰還
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        sequentialEffect(
-          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-          BuildMainMenu.open
-        )(player).unsafeRunAsync {
-          case Left(error) =>
-            println("Caught exception while processing clickevent on BlockLineUpMenu")
-            error.printStackTrace()
-          case Right(_) =>
-        }
+        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+          sequentialEffect(
+            CommonSoundEffects.menuTransitionFenceSound,
+            BuildMainMenu.open
+          ),
+          "BuildMainMenuを開く"
+        )
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //ブロックを並べるスキル設定
         if (playerdata.level < BuildAssist.config.getblocklineuplevel()) {
@@ -161,14 +160,15 @@ class PlayerInventoryListener extends Listener {
 			 */
       if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         //ホームメニューへ帰還
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        sequentialEffect[Player](
-          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-          BuildMainMenu.open
-        )(player)
+        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+          sequentialEffect(
+            CommonSoundEffects.menuTransitionFenceSound,
+            BuildMainMenu.open
+          ),
+          "BuildMainMenuを開く"
+        )
       } else if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowDown") {
         //2ページ目へ
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -19,7 +20,7 @@ import org.bukkit.{GameMode, Material, Sound}
 class PlayerClickListener extends Listener {
 
   import com.github.unchama.seichiassist.util.ops.ItemStackOps._
-  import com.github.unchama.targetedeffect.TargetedEffects._
+  import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
 
   import scala.jdk.CollectionConverters._
@@ -448,17 +449,13 @@ class PlayerClickListener extends Listener {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-    val effect = sequentialEffect(
-      CommonSoundEffects.menuTransitionFenceSound,
-      StickMenu.firstPage.open
+    seichiassist.unsafe.runAsyncTargetedEffect(player)(
+      sequentialEffect(
+        CommonSoundEffects.menuTransitionFenceSound,
+        StickMenu.firstPage.open
+      ),
+      "棒メニューの1ページ目を開く"
     )
-
-    effect(player).unsafeRunAsync {
-      case Left(error) =>
-        println("Caught exception while opening StickMenu")
-        error.printStackTrace()
-      case Right(_) =>
-    }
   }
 
   //プレイヤーの拡張インベントリを開くイベント

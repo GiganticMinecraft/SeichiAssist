@@ -6,7 +6,7 @@ import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.{ItemListSerialization, Util}
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -39,13 +39,16 @@ object ShareInvCommand {
     {
       for {
         serial <- EitherT(databaseGateway.playerDataManipulator.loadShareInv(player, playerData))
-        _ <- EitherT.cond[IO](serial != "", (), "${RESET}${RED}${BOLD}収納アイテムが存在しません。".asMessageEffect())
+        _ <- EitherT.cond[IO](serial != "", (), s"$RESET$RED${BOLD}収納アイテムが存在しません。".asMessageEffect())
         _ <- EitherT(databaseGateway.playerDataManipulator.clearShareInv(player, playerData))
         playerInventory = player.getInventory
         _ <- EitherT.right {
           IO {
             // アイテムを取り出す. 手持ちはドロップさせる
-            playerInventory.getContents.map(stack => dropIfNotEmpty(Some(stack), player))
+            playerInventory.getContents
+              .filterNot(_ == null)
+              .filterNot(_.getType == Material.AIR)
+              .foreach(stack => dropIfNotEmpty(Some(stack), player))
             playerInventory.setContents(ItemListSerialization.deserializeFromBase64(serial).asScala.toArray)
 
             playerData.contentsPresentInSharedInventory = false
@@ -57,13 +60,11 @@ object ShareInvCommand {
       }.merge
   }
 
-  def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): IO[Unit] = {
-    itemStackOption
-      .filter(_.getType != Material.AIR)
-      .fold(IO.pure(())) { itemStack => IO {
-        Util.dropItem(to, itemStack)
-      }
-      }
+  def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): Unit = {
+    itemStackOption match {
+      case Some(itemStack) => Util.dropItem(to, itemStack)
+      case None =>
+    }
   }
 
   private def depositToSharedInventory(player: Player): IO[TargetedEffect[Player]] = {

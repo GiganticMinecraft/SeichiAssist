@@ -226,6 +226,9 @@ public class PlayerBlockBreakListener implements Listener {
         double useAllMana = 0;
         //全ての耐久消費量
         short alldurability = tool.getDurability();
+
+        //重力値計算
+        int gravity = BreakUtil.getGravity(player, block, false);
         //繰り返し回数だけ繰り返す
         for (int i = 0; i < breaknum; i++) {
             breaklist.clear();
@@ -280,16 +283,13 @@ public class PlayerBlockBreakListener implements Listener {
                 }
             }
 
-            //重力値計算
-            int gravity = BreakUtil.getGravity(player, block, false);
-
 
             //減る経験値計算
             //実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
 
             useAllMana += (double) (breaklist.size() + 1) * (gravity + 1)
                     * ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata().skilltype, playerdata.activeskilldata().skillnum)
-                    / (ifallbreaknum * breaknum);
+                    / ifallbreaknum ;
 
 
             //減る耐久値の計算

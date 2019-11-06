@@ -7,9 +7,9 @@ import com.github.unchama.contextualexecutor.builder.{ArgumentParserScope, Conte
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.MessageEffects._
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects.TargetedEffectFold
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._
@@ -20,6 +20,7 @@ import scala.jdk.CollectionConverters._
 
 object RmpCommand {
   import ArgumentParserScope._
+  import targetedeffect.syntax._
 
   private val printDescriptionExecutor = new EchoExecutor(
     List(

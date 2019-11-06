@@ -1,8 +1,9 @@
 package com.github.unchama.menuinventory
 
+import cats.data
 import cats.effect.IO
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 
 /**
@@ -26,7 +27,7 @@ trait Menu {
   /**
    * メニューを[Player]に開かせる[TargetedEffect].
    */
-  def open(implicit ctx: LayoutPreparationContext): TargetedEffect[Player] = { player =>
+  def open(implicit ctx: LayoutPreparationContext): TargetedEffect[Player] = data.Kleisli { player =>
     for {
       session <- frame.createNewSession()
       _ <- session.openInventory(player)

@@ -2,7 +2,7 @@ package com.github.unchama.contextualexecutor.executors
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.{ContextualExecutor, RawCommandContext}
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.CommandSender
 
 /**

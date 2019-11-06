@@ -1,10 +1,10 @@
 package com.github.unchama.menuinventory.slot.button
 
+import cats.data
+import cats.effect.IO
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
-import com.github.unchama.targetedeffect.TargetedEffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffects._
-import com.github.unchama.targetedeffect.UnfocusedEffect
+import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect, _}
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
@@ -21,12 +21,26 @@ import org.bukkit.inventory.ItemStack
  */
 case class Button(override val itemStack: ItemStack,
                   private val effects: List[ButtonEffect]) extends Slot {
-  override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
+  override def effectOn(event: InventoryClickEvent): TargetedEffect[Player] = {
+    import com.github.unchama.generic.syntax._
+    import syntax._
+
     UnfocusedEffect {
       event.setCancelled(true)
-    }.followedBy {
-      this.effects.map(_.asyncEffectOn(event)).asSequentialEffect()
-    }
+    }.followedBy(data.Kleisli { t =>
+      this.effects
+        .map(_.asyncEffectOn(event))
+        .asSequentialEffect()(t)
+        .runAsync {
+          case Left(error) => IO {
+            println("Buttonの副作用の非同期実行中にエラーが発生しました.")
+            error.printStackTrace()
+          }
+          case Right(_) => IO.pure(())
+        }
+        .toIO
+    })
+  }
 
   def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effects.appended(effect))
 }

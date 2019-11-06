@@ -91,11 +91,9 @@ object Util {
    * @param itemStack 付与するアイテム
    */
   def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    if (isPlayerInventoryFull(player)) {
-      dropItem(player, itemStack)
-    } else {
-      addItem(player, itemStack)
-    }
+    player.getInventory
+      .addItem(itemStack)
+      .values().forEach(dropItem(player, _))
   }
 
   //プレイヤーのインベントリがフルかどうか確認
@@ -129,22 +127,21 @@ object Util {
     Bukkit.getOnlinePlayers.asScala.map { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO {
-          if (!playerSettings.shouldMuteMessages) player.sendMessage(str)
-        }
+        _ <- IO { if (!playerSettings.shouldMuteMessages) player.sendMessage(str) }
       } yield ()
     }.toList.sequence.unsafeRunSync()
   }
 
   def sendEveryMessageWithoutIgnore(base: BaseComponent): Unit = {
-    Bukkit.getOnlinePlayers.asScala.foreach { player =>
+    import cats.implicits._
+
+    // TODO remove duplicates
+    Bukkit.getOnlinePlayers.asScala.map { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO {
-          if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base)
-        }
+        _ <- IO { if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base) }
       } yield ()
-    }
+    }.toList.sequence.unsafeRunSync()
   }
 
   /**
@@ -305,7 +302,7 @@ object Util {
     val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
 
     // オーナーがunchamaか？
-    !skullMeta.hasOwner && skullMeta.getOwner == "unchama"
+    skullMeta.hasOwner && skullMeta.getOwner == "unchama"
   }
 
   def removeItemfromPlayerInventory(inventory: PlayerInventory,
