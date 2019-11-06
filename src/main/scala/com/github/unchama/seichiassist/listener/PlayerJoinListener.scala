@@ -81,7 +81,7 @@ class PlayerJoinListener extends Listener {
       val playerData = playerMap(player.getUniqueId)
 
       //期間限定ログインイベント判別処理
-      limitedLoginEvent.getLastcheck(playerData.lastcheckdate)
+      limitedLoginEvent.setLastCheckDate(playerData.lastcheckdate)
       limitedLoginEvent.TryGetItem(player)
 
       // 1周年記念
