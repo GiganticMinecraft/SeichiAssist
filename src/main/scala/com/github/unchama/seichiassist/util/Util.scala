@@ -127,22 +127,21 @@ object Util {
     Bukkit.getOnlinePlayers.asScala.map { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO {
-          if (!playerSettings.shouldMuteMessages) player.sendMessage(str)
-        }
+        _ <- IO { if (!playerSettings.shouldMuteMessages) player.sendMessage(str) }
       } yield ()
     }.toList.sequence.unsafeRunSync()
   }
 
   def sendEveryMessageWithoutIgnore(base: BaseComponent): Unit = {
-    Bukkit.getOnlinePlayers.asScala.foreach { player =>
+    import cats.implicits._
+
+    // TODO remove duplicates
+    Bukkit.getOnlinePlayers.asScala.map { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO {
-          if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base)
-        }
+        _ <- IO { if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base) }
       } yield ()
-    }
+    }.toList.sequence.unsafeRunSync()
   }
 
   /**

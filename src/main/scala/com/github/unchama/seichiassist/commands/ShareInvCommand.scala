@@ -48,7 +48,7 @@ object ShareInvCommand {
             playerInventory.getContents
               .filterNot(_ == null)
               .filterNot(_.getType == Material.AIR)
-              .map(stack => dropIfNotEmpty(Some(stack), player))
+              .foreach(stack => dropIfNotEmpty(Some(stack), player))
             playerInventory.setContents(ItemListSerialization.deserializeFromBase64(serial).asScala.toArray)
 
             playerData.contentsPresentInSharedInventory = false
@@ -60,9 +60,11 @@ object ShareInvCommand {
       }.merge
   }
 
-  def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): IO[Unit] = {
-    itemStackOption
-      .fold(IO.pure(())) { itemStack => IO { Util.dropItem(to, itemStack) } }
+  def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): Unit = {
+    itemStackOption match {
+      case Some(itemStack) => Util.dropItem(to, itemStack)
+      case None =>
+    }
   }
 
   private def depositToSharedInventory(player: Player): IO[TargetedEffect[Player]] = {

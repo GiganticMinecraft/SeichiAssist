@@ -133,16 +133,16 @@ object SecondPage extends Menu {
         iconItemStack = {
           val soundConfigurationState =
             if (currentSettings.shouldMuteSounds) {
-              s"$RESET${GREEN}全体通知音:消音しない"
-            } else {
               s"$RESET${RED}全体通知音:消音する"
+            } else {
+              s"$RESET${GREEN}全体通知音:消音しない"
             }
 
           val messageConfigurationState =
             if (currentSettings.shouldMuteMessages) {
-              s"$RESET${GREEN}全体メッセージ:表示する"
-            } else {
               s"$RESET${RED}全体メッセージ:表示しない"
+            } else {
+              s"$RESET${GREEN}全体メッセージ:表示する"
             }
 
           new IconItemStackBuilder(Material.JUKEBOX)
