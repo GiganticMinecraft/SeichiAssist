@@ -21,7 +21,6 @@ object MebiusCommand {
     BranchedExecutor(
       Map(
         "get" -> getExecutor,
-        "reload" -> reloadExecutor,
         "debug" -> debugExecutor,
         "nickname" -> ChildExecutors.NickNameCommand.executor,
         "naming" -> namingExecutor
@@ -60,17 +59,6 @@ object MebiusCommand {
           IO(Messages.permissionWarning)
         } else {
           MebiusListener.debugGive(context.sender)
-          IO(EmptyEffect)
-        }
-      }
-      .build()
-
-    val reloadExecutor: ContextualExecutor = playerCommandBuilder
-      .execution { context =>
-        if (!context.sender.isOp) {
-          IO(Messages.permissionWarning)
-        } else {
-          MebiusListener.reload()
           IO(EmptyEffect)
         }
       }
