@@ -12,8 +12,8 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   type ParameterizedText[A] = A => String
 
   case class AutoUnlocked[A](id: Int, condition: AchievementCondition[A]) extends SeichiAchievement
-  case class PlayerUnlocked[A](id: Int, condition: AchievementCondition[A]) extends SeichiAchievement
-  case class HiddenPlayerUnlocked[A](id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement
+  case class ManuallyUnlocked[A](id: Int, condition: AchievementCondition[A]) extends SeichiAchievement
+  case class HiddenAtFirst[A](id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement
   case class GrantedByConsole[A](id: Int, condition: String) extends SeichiAchievement
 
   object Conditions {
@@ -60,7 +60,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   object No_1012 extends AutoUnlocked(1012, brokenBlockRankingPosition_<=(500))
 
   // 整地量
-  object No_3001 extends HiddenPlayerUnlocked(3001, dependsOn(3002, brokenBlockAmount_>=(2147483646L, "int型の壁")))
+  object No_3001 extends HiddenAtFirst(3001, dependsOn(3002, brokenBlockAmount_>=(2147483646L, "int型の壁")))
   object No_3002 extends AutoUnlocked(3002, brokenBlockAmount_>=(1000000000L, "10億"))
   object No_3003 extends AutoUnlocked(3003, brokenBlockAmount_>=(500000000L, "5億"))
   object No_3004 extends AutoUnlocked(3004, brokenBlockAmount_>=(100000000L, "1億"))
@@ -71,14 +71,14 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   object No_3009 extends AutoUnlocked(3009, brokenBlockAmount_>=(500000L, "50万"))
   object No_3010 extends AutoUnlocked(3010, brokenBlockAmount_>=(100000L, "10万"))
   object No_3011 extends AutoUnlocked(3011, brokenBlockAmount_>=(10000L, "1万"))
-  object No_3012 extends HiddenPlayerUnlocked(3012, dependsOn(3001, brokenBlockAmount_>=(3000000000L, "30億")))
-  object No_3013 extends HiddenPlayerUnlocked(3013, dependsOn(3001, brokenBlockAmount_>=(4000000000L, "40億")))
-  object No_3014 extends HiddenPlayerUnlocked(3014, dependsOn(3001, brokenBlockAmount_>=(5000000000L, "50億")))
-  object No_3015 extends HiddenPlayerUnlocked(3015, dependsOn(3014, brokenBlockAmount_>=(6000000000L, "60億")))
-  object No_3016 extends HiddenPlayerUnlocked(3016, dependsOn(3015, brokenBlockAmount_>=(7000000000L, "70億")))
-  object No_3017 extends HiddenPlayerUnlocked(3017, dependsOn(3016, brokenBlockAmount_>=(8000000000L, "80億")))
-  object No_3018 extends HiddenPlayerUnlocked(3018, dependsOn(3017, brokenBlockAmount_>=(9000000000L, "90億")))
-  object No_3019 extends HiddenPlayerUnlocked(3019, dependsOn(3018, brokenBlockAmount_>=(10000000000L, "100億")))
+  object No_3012 extends HiddenAtFirst(3012, dependsOn(3001, brokenBlockAmount_>=(3000000000L, "30億")))
+  object No_3013 extends HiddenAtFirst(3013, dependsOn(3001, brokenBlockAmount_>=(4000000000L, "40億")))
+  object No_3014 extends HiddenAtFirst(3014, dependsOn(3001, brokenBlockAmount_>=(5000000000L, "50億")))
+  object No_3015 extends HiddenAtFirst(3015, dependsOn(3014, brokenBlockAmount_>=(6000000000L, "60億")))
+  object No_3016 extends HiddenAtFirst(3016, dependsOn(3015, brokenBlockAmount_>=(7000000000L, "70億")))
+  object No_3017 extends HiddenAtFirst(3017, dependsOn(3016, brokenBlockAmount_>=(8000000000L, "80億")))
+  object No_3018 extends HiddenAtFirst(3018, dependsOn(3017, brokenBlockAmount_>=(9000000000L, "90億")))
+  object No_3019 extends HiddenAtFirst(3019, dependsOn(3018, brokenBlockAmount_>=(10000000000L, "100億")))
 
 
   val values: IndexedSeq[SeichiAchievement] = findValues
