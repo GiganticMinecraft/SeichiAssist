@@ -19,7 +19,7 @@ import java.util.function.Predicate;
  *
  * @author unicroak
  */
-public enum SeichiAchievement {
+public enum SeichiAchievementOld {
 
     // 整地ランキング
     NO_1001(1001, player -> getRank(player) == 1),
@@ -182,14 +182,14 @@ public enum SeichiAchievement {
     private final int id;
     private final Predicate<Player> condition;
 
-    SeichiAchievement(int id, Predicate<Player> condition) {
+    SeichiAchievementOld(int id, Predicate<Player> condition) {
         this.id = id;
         this.condition = condition;
     }
 
     public static void tryAchieve(Player player, int id) {
         PlayerData playerData = getPlayerData(player);
-        Optional<SeichiAchievement> optionalAchievement = Arrays.stream(SeichiAchievement.values())
+        Optional<SeichiAchievementOld> optionalAchievement = Arrays.stream(SeichiAchievementOld.values())
                 .filter(achievement -> achievement.id == id)
                 .findFirst();
 

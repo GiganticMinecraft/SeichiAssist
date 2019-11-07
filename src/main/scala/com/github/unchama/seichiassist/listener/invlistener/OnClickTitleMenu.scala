@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
 import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist.achievement.SeichiAchievement
+import com.github.unchama.seichiassist.achievement.SeichiAchievementOld
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -88,7 +88,7 @@ object OnClickTitleMenu extends Listener {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getTitleMenuData(player))
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_Present2") {
-        SeichiAchievement.tryAchieve(player, playerdata.giveachvNo)
+        SeichiAchievementOld.tryAchieve(player, playerdata.giveachvNo)
         playerdata.giveachvNo = 0
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getTitleMenuData(player))
@@ -1047,7 +1047,7 @@ object OnClickTitleMenu extends Listener {
         val name = itemmeta.getDisplayName
         (9001 to 9036).foreach { i =>
           if (name.contains(s"No$i「???」")) {
-            SeichiAchievement.tryAchieve(player, i)
+            SeichiAchievementOld.tryAchieve(player, i)
           }
         }
 
