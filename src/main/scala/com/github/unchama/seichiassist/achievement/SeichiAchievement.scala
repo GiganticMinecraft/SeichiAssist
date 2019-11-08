@@ -32,7 +32,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
         SeichiAssist.playermap(player.getUniqueId).calcPlayerRank() <= n
       } }
 
-      AchievementCondition(predicate, "条件：「整地神ランキング」" + _ + "位達成", n)
+      AchievementCondition(predicate, "「整地神ランキング」" + _ + "位達成", n)
     }
 
     def brokenBlockAmount_>=(amount: Long, localizedAmount: String): AchievementCondition[String] = {
@@ -40,7 +40,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
         SeichiAssist.playermap(player.getUniqueId).totalbreaknum >= amount
       } }
 
-      AchievementCondition(predicate, "条件：整地量が " + _ + "を超える", localizedAmount)
+      AchievementCondition(predicate, "整地量が " + _ + "を超える", localizedAmount)
     }
 
     def totalPlayTime_>=(duration: FiniteDuration, localizedDuration: String): AchievementCondition[String] = {
@@ -53,7 +53,32 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
         playDuration.toMillis >= duration.toMillis
       } }
 
-      AchievementCondition(predicate, "条件：参加時間が " + _ + " を超える", localizedDuration)
+      AchievementCondition(predicate, "参加時間が " + _ + " を超える", localizedDuration)
+    }
+
+    def consecutiveLoginDays_>=(n: Int): AchievementCondition[String] = {
+      val predicate = { player: Player => IO {
+        SeichiAssist.playermap(player.getUniqueId).loginStatus.consecutiveLoginDays >= n
+      } }
+
+      AchievementCondition(predicate, "連続ログイン日数が " + _ + " に到達", s"${n}日")
+    }
+
+    def totalPlayedDays_>=(n: Int): AchievementCondition[String] = {
+      val predicate = { player: Player => IO {
+        SeichiAssist.playermap(player.getUniqueId).loginStatus.totalLoginDay >= n
+      } }
+
+      AchievementCondition(predicate, "通算ログイン日数が " + _ + " に到達", s"${n}日")
+    }
+
+    val conditionFor8003: HiddenAchievementCondition[Unit] = {
+      val shouldDisplay8003: PlayerPredicate = { player => IO {
+        val playerData = SeichiAssist.playermap(player.getUniqueId)
+        (playerData.playTick % (20 * 60 * 60 * 8) <= (20 * 60)) && playerData.TitleFlags.contains(8003)
+      } }
+
+      HiddenAchievementCondition(shouldDisplay8003, AchievementCondition(shouldDisplay8003, _ => "", ()))
     }
   }
 
@@ -122,6 +147,40 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_4022 extends HiddenAtFirst(4022, dependsOn(4021, totalPlayTime_>=(18000.hours, "18000時間")))
   case object No_4023 extends HiddenAtFirst(4023, dependsOn(4022, totalPlayTime_>=(20000.hours, "20000時間")))
 
+  // 連続ログイン
+  case object No_5001 extends AutoUnlocked(5001, consecutiveLoginDays_>=(100))
+  case object No_5002 extends AutoUnlocked(5002, consecutiveLoginDays_>=(50))
+  case object No_5003 extends AutoUnlocked(5003, consecutiveLoginDays_>=(30))
+  case object No_5004 extends AutoUnlocked(5004, consecutiveLoginDays_>=(20))
+  case object No_5005 extends AutoUnlocked(5005, consecutiveLoginDays_>=(10))
+  case object No_5006 extends AutoUnlocked(5006, consecutiveLoginDays_>=(5))
+  case object No_5007 extends AutoUnlocked(5007, consecutiveLoginDays_>=(3))
+  case object No_5008 extends AutoUnlocked(5008, consecutiveLoginDays_>=(2))
+
+  // 通算ログイン
+  case object No_5101 extends AutoUnlocked(5101, totalPlayedDays_>=(365))
+  case object No_5102 extends AutoUnlocked(5102, totalPlayedDays_>=(300))
+  case object No_5103 extends AutoUnlocked(5103, totalPlayedDays_>=(200))
+  case object No_5104 extends AutoUnlocked(5104, totalPlayedDays_>=(100))
+  case object No_5105 extends AutoUnlocked(5105, totalPlayedDays_>=(75))
+  case object No_5106 extends AutoUnlocked(5106, totalPlayedDays_>=(50))
+  case object No_5107 extends AutoUnlocked(5107, totalPlayedDays_>=(30))
+  case object No_5108 extends AutoUnlocked(5108, totalPlayedDays_>=(20))
+  case object No_5109 extends AutoUnlocked(5109, totalPlayedDays_>=(10))
+  case object No_5110 extends AutoUnlocked(5110, totalPlayedDays_>=(5))
+  case object No_5111 extends AutoUnlocked(5111, totalPlayedDays_>=(2))
+  case object No_5112 extends HiddenAtFirst(5112, dependsOn(5101, totalPlayedDays_>=(400)))
+  case object No_5113 extends HiddenAtFirst(5113, dependsOn(5112, totalPlayedDays_>=(500)))
+  case object No_5114 extends HiddenAtFirst(5114, dependsOn(5113, totalPlayedDays_>=(600)))
+  case object No_5115 extends HiddenAtFirst(5115, dependsOn(5114, totalPlayedDays_>=(700)))
+  case object No_5116 extends HiddenAtFirst(5116, dependsOn(5115, totalPlayedDays_>=(730)))
+  case object No_5117 extends HiddenAtFirst(5117, dependsOn(5116, totalPlayedDays_>=(800)))
+  case object No_5118 extends HiddenAtFirst(5118, dependsOn(5117, totalPlayedDays_>=(900)))
+  case object No_5119 extends HiddenAtFirst(5119, dependsOn(5118, totalPlayedDays_>=(1000)))
+  case object No_5120 extends HiddenAtFirst(5120, dependsOn(5119, totalPlayedDays_>=(1095)))
+
+  // 実績8003のみ解除条件の記載が付随しないため特殊な扱いをする必要がある
+  case object No_8003 extends HiddenAtFirst(8003, conditionFor8003)
 
   val values: IndexedSeq[SeichiAchievement] = findValues
 }

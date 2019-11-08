@@ -4,7 +4,8 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement.{Parameteri
 
 case class WithPlaceholder[A](placeholder: A)
 object WithPlaceholder {
-  implicit val stringIsWithPlaceHolder: WithPlaceholder[String] = WithPlaceholder("???")
+  implicit val stringIsWithPlaceholder: WithPlaceholder[String] = WithPlaceholder("???")
+  implicit val unitIsWithPlaceholder: WithPlaceholder[Unit] = WithPlaceholder(())
 }
 
 case class AchievementCondition[P](shouldUnlock: PlayerPredicate,
