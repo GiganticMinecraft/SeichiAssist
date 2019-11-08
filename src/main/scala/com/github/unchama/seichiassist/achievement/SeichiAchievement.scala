@@ -4,18 +4,20 @@ import java.time.{DayOfWeek, Month}
 
 import enumeratum.{Enum, EnumEntry}
 
-sealed abstract class SeichiAchievement extends EnumEntry
+sealed abstract class SeichiAchievement extends EnumEntry {
+  val id: Int
+}
 
 sealed trait Unlockable
 sealed trait AutoUnlocked extends Unlockable
 sealed trait ManuallyUnlocked extends Unlockable
 
 object SeichiAchievement extends Enum[SeichiAchievement] {
-  case class NormalAuto[A](id: Int, condition: AchievementCondition[A]) extends SeichiAchievement with AutoUnlocked
-  case class NormalManual[A](id: Int, condition: AchievementCondition[A]) extends SeichiAchievement with ManuallyUnlocked
-  case class HiddenAuto[A](id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement with AutoUnlocked
-  case class HiddenManual[A](id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement with ManuallyUnlocked
-  case class GrantedByConsole[A](id: Int, condition: String, explanation: Option[List[String]]) extends SeichiAchievement
+  case class NormalAuto[A](override val id: Int, condition: AchievementCondition[A]) extends SeichiAchievement with AutoUnlocked
+  case class NormalManual[A](override val id: Int, condition: AchievementCondition[A]) extends SeichiAchievement with ManuallyUnlocked
+  case class HiddenAuto[A](override val id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement with AutoUnlocked
+  case class HiddenManual[A](override val id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement with ManuallyUnlocked
+  case class GrantedByConsole[A](override val id: Int, condition: String, explanation: Option[List[String]]) extends SeichiAchievement
 
   import AchievementConditions._
   import AchievementConditions.SecretAchievementConditions._
@@ -166,7 +168,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   object No_8002 extends HiddenAuto(8002, conditionFor8002)
   object No_8003 extends HiddenManual(8003, conditionFor8003)
 
-  // 特殊
+  // 記念日
   object No_9001 extends NormalManual(9001, playedOn(Month.JANUARY, 1, "とある始まりの日"))
   object No_9002 extends NormalManual(9002, playedOn(Month.DECEMBER, 25, "とある聖夜の日"))
   object No_9003 extends NormalManual(9003, playedOn(Month.DECEMBER, 31, "とある終わりの日"))
