@@ -1,11 +1,14 @@
 package com.github.unchama.seichiassist.achievement
 
-import java.time.{DayOfWeek, LocalDate, Month}
+import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 import java.time.temporal.TemporalAdjusters
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
+import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -88,13 +91,47 @@ object AchievementConditions {
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
 
-
-  val conditionFor8003: HiddenAchievementCondition[Unit] = {
-    val shouldDisplay8003: PlayerPredicate = { player => IO {
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
-      (playerData.playTick % (20 * 60 * 60 * 8) <= (20 * 60)) && playerData.TitleFlags.contains(8003)
+  val conditionFor8001: HiddenAchievementCondition[Unit] = {
+    val shouldDisplay: PlayerPredicate = { _ => IO {
+      LocalTime.now().getSecond == 0 && LocalTime.now().getMinute == 0
     } }
 
-    HiddenAchievementCondition(shouldDisplay8003, AchievementCondition(shouldDisplay8003, _ => "", ()))
+    val shouldUnlock: PlayerPredicate = { player => IO {
+      val stackIsAsRequired: ItemStack => Boolean = { stack =>
+        import scala.util.chaining._
+
+        stack != null &&
+          stack.getType == Material.SKULL_ITEM &&
+          stack.getItemMeta.asInstanceOf[SkullMeta].pipe(meta =>
+            meta.hasOwner && meta.getOwningPlayer.getName == "unchama"
+          )
+      }
+
+      (0 until 9 * 4)
+        .map(player.getInventory.getItem(_))
+        .forall(stackIsAsRequired)
+    } }
+
+    HiddenAchievementCondition(shouldDisplay, AchievementCondition(shouldUnlock, _ => "器を満たす奇跡の少女", ()))
+  }
+
+  val conditionFor8002: HiddenAchievementCondition[Unit] = {
+    val shouldDisplay: PlayerPredicate =
+      playerDataPredicate(p => IO { p.totalbreaknum % 1000000L == 0L && p.totalbreaknum != 0L })
+
+    val unlockCondition: PlayerPredicate =
+      playerDataPredicate(p => IO { p.totalbreaknum % 1000000L == 777777L })
+
+    HiddenAchievementCondition(shouldDisplay, AchievementCondition(unlockCondition, _ => "[[[[[[LuckyNumber]]]]]]", ()))
+  }
+
+  val conditionFor8003: HiddenAchievementCondition[Unit] = {
+    val shouldDisplay: PlayerPredicate =
+      playerDataPredicate(p => IO { p.playTick % (20 * 60 * 60) >= 0 && p.playTick % (20 * 60 * 60) <= (20 * 60) })
+
+    val unlockCondition: PlayerPredicate =
+      playerDataPredicate(p => IO { p.playTick % (20 * 60 * 60 * 8) <= (20 * 60) })
+
+    HiddenAchievementCondition(shouldDisplay, AchievementCondition(unlockCondition, _ => "定時分働いたら記録を確認！", ()))
   }
 }
