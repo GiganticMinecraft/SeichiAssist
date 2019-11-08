@@ -1,5 +1,9 @@
 package com.github.unchama.seichiassist.achievement
 
+import java.time.temporal.{TemporalAdjusters, WeekFields}
+import java.time.{DayOfWeek, LocalDate, Month}
+import java.util.Locale
+
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
@@ -67,6 +71,37 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
 
       AchievementCondition(predicate, "JMS投票数が " + _ + " を超える", n.toString)
     }
+
+    def playedIn(month: Month): AchievementCondition[String] = {
+      val predicate: PlayerPredicate = _ => IO { LocalDate.now().getMonth == month }
+
+      AchievementCondition(predicate, _ + "月にプレイ", month.getValue.toString)
+    }
+
+    def playedOn(month: Month, dayOfMonth: Int, dateSpecification: String): AchievementCondition[String] = {
+      val predicate: PlayerPredicate = _ =>
+        IO {
+          LocalDate.now().getMonth == month &&
+          LocalDate.now().getDayOfMonth == dayOfMonth
+        }
+
+      AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
+    }
+
+    def playedOn(month: Month, weekOfMonth: Int, dayOfWeek: DayOfWeek, dateSpecification: String): AchievementCondition[String] = {
+      val predicate: PlayerPredicate = _ =>
+        IO {
+          val now = LocalDate.now()
+
+          // 現在の月の第[[weekOfMonth]][[dayOfWeek]]曜日
+          val dayOfWeekOnWeekOfTheMonth = now.`with`(TemporalAdjusters.dayOfWeekInMonth(weekOfMonth, dayOfWeek))
+
+          now.getMonth == month && now == dayOfWeekOnWeekOfTheMonth
+        }
+
+      AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
+    }
+
 
     val conditionFor8003: HiddenAchievementCondition[Unit] = {
       val shouldDisplay8003: PlayerPredicate = { player => IO {
@@ -223,6 +258,44 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
 
   // 実績8003のみ解除条件の記載が付随しないため特殊な扱いをする必要がある
   object No_8003 extends HiddenAtFirst(8003, conditionFor8003)
+
+  // 特殊
+  object No_9001 extends ManuallyUnlocked(9001, playedOn(Month.JANUARY, 1, "とある始まりの日"))
+  object No_9002 extends ManuallyUnlocked(9002, playedOn(Month.DECEMBER, 25, "とある聖夜の日"))
+  object No_9003 extends ManuallyUnlocked(9003, playedOn(Month.DECEMBER, 31, "とある終わりの日"))
+  object No_9004 extends ManuallyUnlocked(9004, playedIn(Month.JANUARY))
+  object No_9005 extends ManuallyUnlocked(9005, playedIn(Month.FEBRUARY))
+  object No_9006 extends ManuallyUnlocked(9006, playedOn(Month.FEBRUARY, 3, "とあるお豆の絨毯爆撃の日"))
+  object No_9007 extends ManuallyUnlocked(9007, playedOn(Month.FEBRUARY, 11, "建国記念日"))
+  object No_9008 extends ManuallyUnlocked(9008, playedOn(Month.FEBRUARY, 14, "とあるカカオまみれの日"))
+  object No_9009 extends ManuallyUnlocked(9009, playedIn(Month.MARCH))
+  object No_9010 extends ManuallyUnlocked(9010, playedOn(Month.MARCH, 3, "とある女の子の日"))
+  object No_9011 extends ManuallyUnlocked(9011, playedOn(Month.MARCH, 14, "燃え尽きたカカオだらけの日"))
+  object No_9012 extends ManuallyUnlocked(9012, playedOn(Month.MARCH, 20, "春分の日"))
+  object No_9013 extends ManuallyUnlocked(9013, playedIn(Month.APRIL))
+  object No_9014 extends ManuallyUnlocked(9014, playedOn(Month.APRIL, 1, "とある嘘の日"))
+  object No_9015 extends ManuallyUnlocked(9015, playedOn(Month.APRIL, 15, "とある良い子の日"))
+  object No_9016 extends ManuallyUnlocked(9016, playedOn(Month.APRIL, 22, "とある掃除デー"))
+  object No_9017 extends ManuallyUnlocked(9017, playedIn(Month.MAY))
+  object No_9018 extends ManuallyUnlocked(9018, playedOn(Month.MAY, 5, "とある子供の日"))
+  object No_9019 extends ManuallyUnlocked(9019, playedOn(Month.MAY, 5, "端午の節句"))
+  object No_9020 extends ManuallyUnlocked(9020, playedOn(Month.MAY, 2, DayOfWeek.SUNDAY, "母の日"))
+  object No_9021 extends ManuallyUnlocked(9021, playedIn(Month.JUNE))
+  object No_9022 extends ManuallyUnlocked(9022, playedOn(Month.JUNE, 12, "とある日記の日"))
+  object No_9023 extends ManuallyUnlocked(9023, playedOn(Month.JUNE, 17, "父の日"))
+  object No_9024 extends ManuallyUnlocked(9024, playedOn(Month.JUNE, 29, "とある生誕の日"))
+  object No_9025 extends ManuallyUnlocked(9025, playedIn(Month.JULY))
+  object No_9026 extends ManuallyUnlocked(9026, playedOn(Month.JULY, 7, "七夕"))
+  object No_9027 extends ManuallyUnlocked(9027, playedOn(Month.JULY, 17, "とある東京の日"))
+  object No_9028 extends ManuallyUnlocked(9028, playedOn(Month.JULY, 29, "とある肉の日"))
+  object No_9029 extends ManuallyUnlocked(9029, playedIn(Month.AUGUST))
+  object No_9030 extends ManuallyUnlocked(9030, playedOn(Month.AUGUST, 7, "とあるバナナの日"))
+  object No_9031 extends ManuallyUnlocked(9031, playedOn(Month.AUGUST, 16, "とあるJDの日"))
+  object No_9032 extends ManuallyUnlocked(9032, playedOn(Month.AUGUST, 29, "とある焼肉の日"))
+  object No_9033 extends ManuallyUnlocked(9033, playedIn(Month.SEPTEMBER))
+  object No_9034 extends ManuallyUnlocked(9034, playedOn(Month.SEPTEMBER, 2, "とあるくじの日"))
+  object No_9035 extends ManuallyUnlocked(9035, playedOn(Month.SEPTEMBER, 12, "とあるマラソンの日"))
+  object No_9036 extends ManuallyUnlocked(9036, playedOn(Month.SEPTEMBER, 29, "とあるふぐの日"))
 
   val values: IndexedSeq[SeichiAchievement] = findValues
 }
