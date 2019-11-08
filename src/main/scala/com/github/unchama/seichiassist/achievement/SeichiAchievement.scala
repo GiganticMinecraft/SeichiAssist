@@ -5,6 +5,8 @@ import com.github.unchama.seichiassist.SeichiAssist
 import enumeratum.{Enum, EnumEntry}
 import org.bukkit.entity.Player
 
+import scala.concurrent.duration.FiniteDuration
+
 sealed abstract class SeichiAchievement extends EnumEntry
 
 object SeichiAchievement extends Enum[SeichiAchievement] {
@@ -30,7 +32,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
         SeichiAssist.playermap(player.getUniqueId).calcPlayerRank() <= n
       } }
 
-      AchievementCondition(predicate, "「整地神ランキング」" + _ + "位達成", n)
+      AchievementCondition(predicate, "条件：「整地神ランキング」" + _ + "位達成", n)
     }
 
     def brokenBlockAmount_>=(amount: Long, localizedAmount: String): AchievementCondition[String] = {
@@ -39,6 +41,19 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
       } }
 
       AchievementCondition(predicate, "条件：整地量が " + _ + "を超える", localizedAmount)
+    }
+
+    def totalPlayTime_>=(duration: FiniteDuration, localizedDuration: String): AchievementCondition[String] = {
+      import com.github.unchama.concurrent.syntax._
+
+      val predicate = { player: Player => IO {
+        val playTick = SeichiAssist.playermap(player.getUniqueId).playTick
+        val playDuration = playTick.ticks
+
+        playDuration.toMillis >= duration.toMillis
+      } }
+
+      AchievementCondition(predicate, "条件：参加時間が " + _ + " を超える", localizedDuration)
     }
   }
 
@@ -79,6 +94,33 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   object No_3017 extends HiddenAtFirst(3017, dependsOn(3016, brokenBlockAmount_>=(8000000000L, "80億")))
   object No_3018 extends HiddenAtFirst(3018, dependsOn(3017, brokenBlockAmount_>=(9000000000L, "90億")))
   object No_3019 extends HiddenAtFirst(3019, dependsOn(3018, brokenBlockAmount_>=(10000000000L, "100億")))
+
+  import scala.concurrent.duration._
+
+  // 参加時間
+  case object No_4001 extends HiddenAtFirst(4001, dependsOn(4002, totalPlayTime_>=(2000.hours, "2000時間")))
+  case object No_4002 extends AutoUnlocked(4002, totalPlayTime_>=(1000.hours, "1000時間"))
+  case object No_4003 extends AutoUnlocked(4003, totalPlayTime_>=(500.hours, "500時間"))
+  case object No_4004 extends AutoUnlocked(4004, totalPlayTime_>=(250.hours, "250時間"))
+  case object No_4005 extends AutoUnlocked(4005, totalPlayTime_>=(100.hours, "100時間"))
+  case object No_4006 extends AutoUnlocked(4006, totalPlayTime_>=(50.hours, "50時間"))
+  case object No_4007 extends AutoUnlocked(4007, totalPlayTime_>=(24.hours, "24時間"))
+  case object No_4008 extends AutoUnlocked(4008, totalPlayTime_>=(15.hours, "15時間"))
+  case object No_4009 extends AutoUnlocked(4009, totalPlayTime_>=(5.hours, "5時間"))
+  case object No_4010 extends AutoUnlocked(4010, totalPlayTime_>=(1.hour, "1時間"))
+  case object No_4011 extends HiddenAtFirst(4011, dependsOn(4002, totalPlayTime_>=(3000.hours, "3000時間")))
+  case object No_4012 extends HiddenAtFirst(4012, dependsOn(4002, totalPlayTime_>=(4000.hours, "4000時間")))
+  case object No_4013 extends HiddenAtFirst(4013, dependsOn(4002, totalPlayTime_>=(5000.hours, "5000時間")))
+  case object No_4014 extends HiddenAtFirst(4014, dependsOn(4013, totalPlayTime_>=(6000.hours, "6000時間")))
+  case object No_4015 extends HiddenAtFirst(4015, dependsOn(4013, totalPlayTime_>=(7000.hours, "7000時間")))
+  case object No_4016 extends HiddenAtFirst(4016, dependsOn(4013, totalPlayTime_>=(8000.hours, "8000時間")))
+  case object No_4017 extends HiddenAtFirst(4017, dependsOn(4013, totalPlayTime_>=(9000.hours, "9000時間")))
+  case object No_4018 extends HiddenAtFirst(4018, dependsOn(4013, totalPlayTime_>=(10000.hours, "10000時間")))
+  case object No_4019 extends HiddenAtFirst(4019, dependsOn(4018, totalPlayTime_>=(12000.hours, "12000時間")))
+  case object No_4020 extends HiddenAtFirst(4020, dependsOn(4019, totalPlayTime_>=(14000.hours, "14000時間")))
+  case object No_4021 extends HiddenAtFirst(4021, dependsOn(4020, totalPlayTime_>=(16000.hours, "16000時間")))
+  case object No_4022 extends HiddenAtFirst(4022, dependsOn(4021, totalPlayTime_>=(18000.hours, "18000時間")))
+  case object No_4023 extends HiddenAtFirst(4023, dependsOn(4022, totalPlayTime_>=(20000.hours, "20000時間")))
 
 
   val values: IndexedSeq[SeichiAchievement] = findValues
