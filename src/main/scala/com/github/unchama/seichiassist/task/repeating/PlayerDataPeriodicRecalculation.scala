@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.task.repeating
 import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.achievement.SeichiAchievementOld
+import com.github.unchama.seichiassist.achievement.{SeichiAchievement, SeichiAchievementOld}
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
@@ -153,22 +153,28 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
       }
 
 
+      import cats.implicits._
+      import SeichiAchievement._
+
       /*
        * 実績解除判定
        */
-      List(
-        1001 until 1013,
-        3001 until 3020,
-        4001 until 4024,
-        5001 until 5009,
-        5101 until 5121,
-        6001 until 6009,
-        8001 until 8003
-      ).flatten.foreach { achievementNumber =>
-        if (!playerData.TitleFlags.contains(achievementNumber)) {
-          SeichiAchievementOld.tryAchieve(player, achievementNumber)
-        }
-      }
+      autoUnlockedAchievements
+        .filterNot(achievement => !playerData.TitleFlags.contains(achievement.id))
+        .map { achievement => achievement.asUnlockable.shouldUnlockFor(player).map((achievement.id, _)) }
+        .toList
+        .sequence
+        .map(_.flatMap {
+          case (achievementId, true) => Some(achievementId)
+          case _ => None
+        })
+        .flatMap(unlockTargets => IO {
+          playerData.TitleFlags.addAll(unlockTargets)
+          unlockTargets
+            .map("実績No" + _ + "が解除されました！おめでとうございます！")
+            .foreach(player.sendMessage)
+        })
+        .unsafeRunSync()
 
       //投票妖精関連
       if (playerData.usingVotingFairy) {

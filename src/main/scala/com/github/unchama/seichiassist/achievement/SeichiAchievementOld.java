@@ -271,7 +271,7 @@ public enum SeichiAchievementOld {
         );
     }
 
-    public void achieve(Player player) {
+    private void achieve(Player player) {
         PlayerData playerData = getPlayerData(player);
         if (playerData.TitleFlags().contains(id)) return;
 

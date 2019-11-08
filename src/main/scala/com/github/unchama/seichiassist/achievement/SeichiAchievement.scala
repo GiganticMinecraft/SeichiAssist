@@ -2,22 +2,31 @@ package com.github.unchama.seichiassist.achievement
 
 import java.time.{DayOfWeek, Month}
 
+import cats.effect.IO
 import enumeratum.{Enum, EnumEntry}
+import org.bukkit.entity.Player
 
 sealed abstract class SeichiAchievement extends EnumEntry {
   val id: Int
 }
 
-sealed trait Unlockable
-sealed trait AutoUnlocked extends Unlockable
-sealed trait ManuallyUnlocked extends Unlockable
-
 object SeichiAchievement extends Enum[SeichiAchievement] {
-  case class NormalAuto[A](override val id: Int, condition: AchievementCondition[A]) extends SeichiAchievement with AutoUnlocked
-  case class NormalManual[A](override val id: Int, condition: AchievementCondition[A]) extends SeichiAchievement with ManuallyUnlocked
-  case class HiddenAuto[A](override val id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement with AutoUnlocked
-  case class HiddenManual[A](override val id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement with ManuallyUnlocked
-  case class GrantedByConsole[A](override val id: Int, condition: String, explanation: Option[List[String]]) extends SeichiAchievement
+  sealed trait Unlockable
+  sealed trait AutoUnlocked
+  sealed trait ManuallyUnlocked
+
+  sealed abstract class Normal[P] extends SeichiAchievement with Unlockable {
+    val condition: AchievementCondition[P]
+  }
+  sealed abstract class Hidden[P] extends SeichiAchievement with Unlockable {
+    val condition: HiddenAchievementCondition[P]
+  }
+  case class GrantedByConsole(override val id: Int, condition: String, explanation: Option[List[String]]) extends SeichiAchievement
+
+  case class NormalAuto[P](override val id: Int, override val condition: AchievementCondition[P]) extends Normal[P] with AutoUnlocked
+  case class NormalManual[P](override val id: Int, override val condition: AchievementCondition[P]) extends Normal[P] with ManuallyUnlocked
+  case class HiddenAuto[P](override val id: Int, override val condition: HiddenAchievementCondition[P]) extends Hidden[P] with AutoUnlocked
+  case class HiddenManual[P](override val id: Int, override val condition: HiddenAchievementCondition[P]) extends Hidden[P] with ManuallyUnlocked
 
   import AchievementConditions._
   import AchievementConditions.SecretAchievementConditions._
@@ -207,4 +216,25 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   object No_9036 extends NormalManual(9036, playedOn(Month.SEPTEMBER, 29, "とあるふぐの日"))
 
   val values: IndexedSeq[SeichiAchievement] = findValues
+
+  val autoUnlockedAchievements: IndexedSeq[SeichiAchievement with AutoUnlocked] =
+    values.flatMap {
+      case u: AutoUnlocked => Some(u)
+      case _ => None
+    }
+
+  implicit class AutoUnlockedOps(autoUnlocked: AutoUnlocked) {
+    val asUnlockable: SeichiAchievement with Unlockable with AutoUnlocked = autoUnlocked match {
+      case n@NormalAuto(_, _) => n
+      case h@HiddenAuto(_, _) => h
+    }
+  }
+
+  implicit class UnlockableOps(unlockable: Unlockable) {
+    val shouldUnlockFor: Player => IO[Boolean] =
+      unlockable match {
+        case normal: Normal[_] => normal.condition.shouldUnlock
+        case hidden: Hidden[_] => hidden.condition.condition.shouldUnlock
+      }
+  }
 }
