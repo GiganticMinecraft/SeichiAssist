@@ -2,16 +2,11 @@ package com.github.unchama.seichiassist.achievement
 
 import java.time.{DayOfWeek, Month}
 
-import cats.effect.IO
 import enumeratum.{Enum, EnumEntry}
-import org.bukkit.entity.Player
 
 sealed abstract class SeichiAchievement extends EnumEntry
 
 object SeichiAchievement extends Enum[SeichiAchievement] {
-  type PlayerPredicate = Player => IO[Boolean]
-  type ParameterizedText[A] = A => String
-
   case class AutoUnlocked[A](id: Int, condition: AchievementCondition[A]) extends SeichiAchievement
   case class ManuallyUnlocked[A](id: Int, condition: AchievementCondition[A]) extends SeichiAchievement
   case class HiddenAtFirst[A](id: Int, condition: HiddenAchievementCondition[A]) extends SeichiAchievement

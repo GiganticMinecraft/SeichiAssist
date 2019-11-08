@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.achievement
 
-import com.github.unchama.seichiassist.achievement.SeichiAchievement.{ParameterizedText, PlayerPredicate}
-
 case class WithPlaceholder[A](placeholder: A)
 object WithPlaceholder {
   implicit val stringIsWithPlaceholder: WithPlaceholder[String] = WithPlaceholder("???")

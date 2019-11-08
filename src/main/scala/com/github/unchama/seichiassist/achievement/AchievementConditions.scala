@@ -5,7 +5,6 @@ import java.time.temporal.TemporalAdjusters
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.achievement.SeichiAchievement.PlayerPredicate
 import com.github.unchama.seichiassist.data.player.PlayerData
 
 import scala.concurrent.duration.FiniteDuration
