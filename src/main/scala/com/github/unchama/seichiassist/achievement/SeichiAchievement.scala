@@ -18,6 +18,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case class GrantedByConsole[A](id: Int, condition: String, explanation: Option[List[String]]) extends SeichiAchievement
 
   import AchievementConditions._
+  import AchievementConditions.SecretAchievementConditions._
   import WithPlaceholder._
 
   // 整地神ランキング
