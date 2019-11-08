@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.achievement
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.player.PlayerData
 import enumeratum.{Enum, EnumEntry}
 import org.bukkit.entity.Player
 
@@ -19,26 +20,24 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case class GrantedByConsole[A](id: Int, condition: String) extends SeichiAchievement
 
   object Conditions {
-    def hasUnlocked(id: Int): PlayerPredicate = { player => IO {
-      SeichiAssist.playermap(player.getUniqueId).TitleFlags.contains(id)
-    } }
+    def playerDataPredicate(predicate: PlayerData => IO[Boolean]): PlayerPredicate = { player =>
+      IO { SeichiAssist.playermap(player.getUniqueId) }.flatMap(predicate)
+    }
+
+    def hasUnlocked(id: Int): PlayerPredicate = playerDataPredicate(d => IO { d.TitleFlags.contains(id) })
 
     def dependsOn[A: WithPlaceholder](id: Int, condition: AchievementCondition[A]): HiddenAchievementCondition[A] = {
       HiddenAchievementCondition(hasUnlocked(id), condition)
     }
 
     def brokenBlockRankingPosition_<=(n: Int): AchievementCondition[Int] = {
-      val predicate = { player: Player => IO {
-        SeichiAssist.playermap(player.getUniqueId).calcPlayerRank() <= n
-      } }
+      val predicate = playerDataPredicate(d => IO { d.calcPlayerRank() <= n })
 
       AchievementCondition(predicate, "「整地神ランキング」" + _ + "位達成", n)
     }
 
     def brokenBlockAmount_>=(amount: Long, localizedAmount: String): AchievementCondition[String] = {
-      val predicate = { player: Player => IO {
-        SeichiAssist.playermap(player.getUniqueId).totalbreaknum >= amount
-      } }
+      val predicate = playerDataPredicate(d => IO { d.totalbreaknum >= amount })
 
       AchievementCondition(predicate, "整地量が " + _ + "を超える", localizedAmount)
     }
@@ -46,30 +45,27 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
     def totalPlayTime_>=(duration: FiniteDuration, localizedDuration: String): AchievementCondition[String] = {
       import com.github.unchama.concurrent.syntax._
 
-      val predicate = { player: Player => IO {
-        val playTick = SeichiAssist.playermap(player.getUniqueId).playTick
-        val playDuration = playTick.ticks
-
-        playDuration.toMillis >= duration.toMillis
-      } }
+      val predicate = playerDataPredicate(d => IO { d.playTick.ticks.toMillis >= duration.toMillis })
 
       AchievementCondition(predicate, "参加時間が " + _ + " を超える", localizedDuration)
     }
 
     def consecutiveLoginDays_>=(n: Int): AchievementCondition[String] = {
-      val predicate = { player: Player => IO {
-        SeichiAssist.playermap(player.getUniqueId).loginStatus.consecutiveLoginDays >= n
-      } }
+      val predicate = playerDataPredicate(d => IO { d.loginStatus.consecutiveLoginDays >= n })
 
       AchievementCondition(predicate, "連続ログイン日数が " + _ + " に到達", s"${n}日")
     }
 
     def totalPlayedDays_>=(n: Int): AchievementCondition[String] = {
-      val predicate = { player: Player => IO {
-        SeichiAssist.playermap(player.getUniqueId).loginStatus.totalLoginDay >= n
-      } }
+      val predicate = playerDataPredicate(d => IO { d.loginStatus.totalLoginDay >= n })
 
       AchievementCondition(predicate, "通算ログイン日数が " + _ + " に到達", s"${n}日")
+    }
+
+    def voteCount_>=(n: Int): AchievementCondition[String] = {
+      val predicate = playerDataPredicate(d => IO { d.p_vote_forT >= n })
+
+      AchievementCondition(predicate, "JMS投票数が " + _ + " を超える", n.toString)
     }
 
     val conditionFor8003: HiddenAchievementCondition[Unit] = {
@@ -178,6 +174,16 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_5118 extends HiddenAtFirst(5118, dependsOn(5117, totalPlayedDays_>=(900)))
   case object No_5119 extends HiddenAtFirst(5119, dependsOn(5118, totalPlayedDays_>=(1000)))
   case object No_5120 extends HiddenAtFirst(5120, dependsOn(5119, totalPlayedDays_>=(1095)))
+
+  // 投票数
+  case object No_6001 extends AutoUnlocked(6001, voteCount_>=(365))
+  case object No_6002 extends AutoUnlocked(6002, voteCount_>=(200))
+  case object No_6003 extends AutoUnlocked(6003, voteCount_>=(100))
+  case object No_6004 extends AutoUnlocked(6004, voteCount_>=(50))
+  case object No_6005 extends AutoUnlocked(6005, voteCount_>=(25))
+  case object No_6006 extends AutoUnlocked(6006, voteCount_>=(10))
+  case object No_6007 extends AutoUnlocked(6007, voteCount_>=(5))
+  case object No_6008 extends AutoUnlocked(6008, voteCount_>=(1))
 
   // 実績8003のみ解除条件の記載が付随しないため特殊な扱いをする必要がある
   case object No_8003 extends HiddenAtFirst(8003, conditionFor8003)
