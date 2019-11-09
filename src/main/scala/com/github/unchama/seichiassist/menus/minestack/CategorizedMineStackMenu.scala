@@ -45,13 +45,10 @@ object CategorizedMineStackMenu {
 
     // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
     val categorizedItemSectionComputation =
-      categoryItemList.slice(mineStackObjectPerPage * page, mineStackObjectPerPage * page + mineStackObjectPerPage)
-        .map(getMineStackItemButtonOf)
-        .zipWithIndex
-        .map(_.swap)
-        .toList
-        .map(_.sequence)
-        .sequence
+      categoryItemList
+        .slice(mineStackObjectPerPage * page, mineStackObjectPerPage * page + mineStackObjectPerPage).toList
+        .traverse(getMineStackItemButtonOf)
+        .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算
     val autoMineStackToggleButtonSectionComputation =
