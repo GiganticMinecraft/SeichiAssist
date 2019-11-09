@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.achievement
 
+import com.github.unchama.seichiassist.SeichiAssist
+
 object TitleMapping {
   case class TitleCombination(first: Option[AchievementId],
                               second: Option[AchievementId] = None,
@@ -178,4 +180,13 @@ object TitleMapping {
     8002 -> TitleCombination(Some(8002), Some(9905), Some(8002)),
     8003 -> TitleCombination(Some(8003), None, Some(8003)),
   )
+
+  def getTitleFor(id: AchievementId): Option[String] =
+    mapping.get(id).map { case TitleCombination(first, second, third) =>
+      val config = SeichiAssist.seichiAssistConfig
+
+      first.map(config.getTitle1).getOrElse("") +
+        second.map(config.getTitle2).getOrElse("") +
+        third.map(config.getTitle3).getOrElse("")
+    }
 }
