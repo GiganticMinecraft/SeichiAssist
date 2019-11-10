@@ -24,29 +24,31 @@ case class AchievementGroupMenuButtons(viewer: Player) {
             .filter(_ => hasUnlocked)
             .getOrElse("???")
 
-        s"$YELLOW$UNDERLINE${BOLD}No1002「$displayTitleName」"
+        s"$YELLOW$UNDERLINE${BOLD}No${achievement.id}「$displayTitleName」"
       }
 
       val lore = {
         val conditionDescriptionBlock =
-          achievement match {
-            case normal: SeichiAchievement.Normal[_] =>
-              List(normal.condition.condition)
-            case hidden: SeichiAchievement.Hidden[_] =>
-              val description =
-                if (hasUnlocked)
-                  hidden.condition.condition.condition
-                else
-                  hidden.condition.hiddenCondition
-              List(description)
-            case SeichiAchievement.GrantedByConsole(_, condition, explanation) =>
-              List(condition) ++ explanation.getOrElse(Nil)
-          }
+          {
+            achievement match {
+              case normal: SeichiAchievement.Normal[_] =>
+                List(normal.condition.condition)
+              case hidden: SeichiAchievement.Hidden[_] =>
+                val description =
+                  if (hasUnlocked)
+                    hidden.condition.condition.condition
+                  else
+                    hidden.condition.hiddenCondition
+                List(description)
+              case SeichiAchievement.GrantedByConsole(_, condition, explanation) =>
+                List(condition) ++ explanation.getOrElse(Nil)
+            }
+          }.map(s"$RESET$RED" + _)
 
         val unlockSchemeDescription =
           achievement match {
             case _: AutoUnlocked =>
-              List(s"$RED※この実績は自動解禁式です。")
+              List(s"$RESET$RED※この実績は自動解禁式です。")
             case m: ManuallyUnlocked =>
               m match {
                 case _: Hidden[_] =>
