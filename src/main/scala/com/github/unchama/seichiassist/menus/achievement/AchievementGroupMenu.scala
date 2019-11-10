@@ -29,41 +29,41 @@ object AchievementGroupMenu {
         apply(group, maxPageNumber)
       }
     } else {
-      def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
-        CommonButtons.transferButton(
-          new SkullItemStackBuilder(skullOwnerReference),
-          s"MineStack${pageIndex + 1}ページ目へ",
-          AchievementGroupMenu(group, pageNumber)
-        )
-
-      val toCategoryMenuButtonSection = Map(
-        9 * 3 -> CommonButtons.transferButton(
-          new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-          s"「${group.parent.name}」カテゴリメニューへ",
-          AchievementCategoryMenu(group.parent)
-        )
-      )
-
-      val previousPageButtonSection =
-        if (pageNumber > 1) {
-          Map(9 * 3 + 7 -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowLeft))
-        } else {
-          Map()
-        }
-
-      val nextPageButtonSection =
-        if (pageNumber < maxPageNumber) {
-          Map(9 * 3 + 8 -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowRight))
-        } else {
-          Map()
-        }
-
       new Menu {
         import com.github.unchama.menuinventory.InventoryRowSize._
 
         override val frame: MenuFrame = MenuFrame(4.rows(), s"$YELLOW$UNDERLINE${BOLD}実績「${group.name}」")
 
         override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+          val toCategoryMenuButtonSection = Map(
+            9 * 3 -> CommonButtons.transferButton(
+              new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+              s"「${group.parent.name}」カテゴリメニューへ",
+              AchievementCategoryMenu(group.parent)
+            )
+          )
+
+          def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
+            CommonButtons.transferButton(
+              new SkullItemStackBuilder(skullOwnerReference),
+              s"MineStack${pageIndex + 1}ページ目へ",
+              AchievementGroupMenu(group, pageNumber)
+            )
+
+          val previousPageButtonSection =
+            if (pageNumber > 1) {
+              Map(9 * 3 + 7 -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowLeft))
+            } else {
+              Map()
+            }
+
+          val nextPageButtonSection =
+            if (pageNumber < maxPageNumber) {
+              Map(9 * 3 + 8 -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowRight))
+            } else {
+              Map()
+            }
+
           import cats.implicits._
 
           val dynamicPartComputation =
