@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.achievement.hierarchy
 
-import com.github.unchama.seichiassist.achievement.SeichiAchievement
+import com.github.unchama.seichiassist.achievement.{AchievementId, SeichiAchievement}
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 
 sealed abstract class AchievementGroup[+Parent <: Singleton](val name: String,
-                                                             val achievements: Seq[SeichiAchievement],
+                                                             achievementIds: Seq[AchievementId],
                                                              val parent: Parent) {
-  def this(name: String, achievementIds: Seq[Int], parent: Parent) =
-    this(name, SeichiAchievement.values.filter(achievementIds.contains), parent)
+  val achievements: Seq[SeichiAchievement] =
+    SeichiAchievement.values.filter(achievementIds.contains)
 }
 
 object AchievementGroup {
@@ -32,10 +32,10 @@ object AchievementGroup {
 
 
   case object MebiusBreeder
-    extends AchievementGroup("MEBIUSブリーダー", Seq.empty[SeichiAchievement], Challenges)
+    extends AchievementGroup("MEBIUSブリーダー", Seq.empty, Challenges)
 
   case object StarLevel
-    extends AchievementGroup("スターレベル", Seq.empty[SeichiAchievement], Challenges)
+    extends AchievementGroup("スターレベル", Seq.empty, Challenges)
 
 
   case object OfficialEvent

@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.menus
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
-import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.seichiassist.menus.ColorScheme.{clickResultDescription, navigation}
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -18,19 +17,20 @@ object CommonButtons {
 
   def transferButton(partialBuilder: AbstractItemStackBuilder[Nothing],
                      transferDescription: String,
-                     target: Menu)
+                     target: Menu,
+                     actionDescription: String = "クリックで移動")
                     (implicit layoutPreparationContext: LayoutPreparationContext): Button =
     Button(
       partialBuilder
         .title(navigation(transferDescription))
-        .lore(List(clickResultDescription("クリックで移動")))
+        .lore(List(clickResultDescription(actionDescription)))
         .build(),
-      action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+      action.LeftClickButtonEffect(
         sequentialEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           target.open
         )
-      }
+      )
     )
 
   val openStickMenu: Button = {

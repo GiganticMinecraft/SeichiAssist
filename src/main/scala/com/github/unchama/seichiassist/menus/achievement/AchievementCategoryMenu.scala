@@ -1,14 +1,23 @@
 package com.github.unchama.seichiassist.menus.achievement
 
+import cats.effect.IO
+import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
+import com.github.unchama.seichiassist.menus.CommonButtons
 import org.bukkit.Material
+import org.bukkit.entity.Player
 
 object AchievementCategoryMenu {
-  type AchievementGroupRepr[Parent] = (AchievementGroup[Parent], Material)
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-  def groupsLayoutFor(achievementCategory: AchievementCategory): Map[Int, AchievementGroupRepr[AchievementCategory]] =
+  type AchievementGroupRepr = (AchievementGroup[_], Material)
+
+  def groupsLayoutFor(achievementCategory: AchievementCategory): Map[Int, AchievementGroupRepr] =
     achievementCategory match {
       case BrokenBlock =>
         Map(
@@ -36,4 +45,35 @@ object AchievementCategoryMenu {
           9 * 1 + 6 -> (Secrets, Material.DIAMOND_BARDING),
         )
     }
+
+  def buttonFor(achievementGroupRepr: AchievementGroupRepr): Button =
+    achievementGroupRepr match {
+      case (group, material) =>
+        CommonButtons.transferButton(
+          new IconItemStackBuilder(material),
+          s"実績「${group.name}」",
+          AchievementGroupMenu(group)
+        )
+    }
+
+  def apply(category: AchievementCategory): Menu = {
+    val groupButtons =
+      groupsLayoutFor(category).view.mapValues(buttonFor).toMap
+
+    val toMainMenuButton =
+      CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+        "実績・二つ名メニューへ",
+        AchievementMenu,
+      )
+
+    new Menu {
+      import com.github.unchama.menuinventory.InventoryRowSize._
+
+      override val frame: MenuFrame = MenuFrame(4.rows(), s"カテゴリ「${category.name}」")
+
+      override def computeMenuLayout(player: Player): IO[MenuSlotLayout] =
+        IO.pure(MenuSlotLayout(groupButtons ++ Map(9 * 3 -> toMainMenuButton)))
+    }
+  }
 }
