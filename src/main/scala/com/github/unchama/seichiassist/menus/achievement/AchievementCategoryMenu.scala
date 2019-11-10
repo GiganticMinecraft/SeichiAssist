@@ -42,8 +42,8 @@ object AchievementCategoryMenu {
         )
       case Specials =>
         Map(
-          9 * 1 + 2 -> (OfficialEvent, Material.COMPASS),
-          9 * 1 + 4 -> (VoteCounts, Material.BOOK),
+          9 * 1 + 2 -> (OfficialEvent, Material.BLAZE_POWDER),
+          9 * 1 + 4 -> (VoteCounts, Material.YELLOW_FLOWER),
           9 * 1 + 6 -> (Secrets, Material.DIAMOND_BARDING),
         )
     }
