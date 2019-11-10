@@ -90,7 +90,7 @@ object AchievementMenu extends Menu {
       action.LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         delay { player =>
-          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         }
       )
     )
