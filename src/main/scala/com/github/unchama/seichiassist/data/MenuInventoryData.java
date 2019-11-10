@@ -41,7 +41,6 @@ public class MenuInventoryData {
     private static int checkTitle3 = 0;
     private static int checkTitleS = 0;
     private static int NoKeep = 0;
-    private static Player p;
 
     //パッシブスキルメニュー
     public static Inventory getPassiveSkillMenuData(Player p) {

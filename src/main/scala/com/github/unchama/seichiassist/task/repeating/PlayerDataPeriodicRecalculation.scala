@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.task.repeating
 import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.achievement.{SeichiAchievement, SeichiAchievementOld}
+import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
@@ -153,8 +153,8 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
       }
 
 
-      import cats.implicits._
       import SeichiAchievement._
+      import cats.implicits._
 
       /*
        * 実績解除判定
