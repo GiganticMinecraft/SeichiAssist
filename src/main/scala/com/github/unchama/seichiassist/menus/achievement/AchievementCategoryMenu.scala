@@ -91,7 +91,7 @@ object AchievementCategoryMenu {
     new Menu {
       import com.github.unchama.menuinventory.InventoryRowSize._
 
-      override val frame: MenuFrame = MenuFrame(4.rows(), s"カテゴリ「${category.name}」")
+      override val frame: MenuFrame = MenuFrame(4.rows(), s"$DARK_PURPLE${BOLD}カテゴリ「${category.name}」")
 
       override def computeMenuLayout(player: Player): IO[MenuSlotLayout] =
         IO.pure(MenuSlotLayout(groupButtons ++ Map(9 * 3 -> toMainMenuButton)))
