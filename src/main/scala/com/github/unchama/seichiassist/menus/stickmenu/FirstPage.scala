@@ -695,7 +695,7 @@ object FirstPage extends Menu {
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",
-        StickMenu.secondPage.open
+        StickMenu.secondPage
       )
 
     val gachaPrizeExchangeButton: Button = {
