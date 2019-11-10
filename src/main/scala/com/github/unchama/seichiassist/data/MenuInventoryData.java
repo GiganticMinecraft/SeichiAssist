@@ -22,7 +22,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import scala.collection.mutable.HashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 public class MenuInventoryData {
     private static HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
@@ -663,136 +666,6 @@ public class MenuInventoryData {
         AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
 
         databaseGateway.donateDataManipulator.loadDonateData(playerdata, inventory);
-
-        return inventory;
-    }
-
-    //実績メニュー
-    public static Inventory getTitleMenuData(Player p) {
-        //プレイヤーを取得
-        Player player = p.getPlayer();
-        //UUID取得
-        UUID uuid = player.getUniqueId();
-        //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (playerdata == null) {
-            player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-            Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-            return null;
-        }
-
-        Inventory inventory = Bukkit.getServer().createInventory(null, 4 * 9, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績・二つ名システム");
-        ItemStack itemstack;
-        ItemMeta itemmeta;
-        SkullMeta skullmeta;
-        List<String> lore;
-
-        //表示切り替え(LV・二つ名)
-        itemstack = new ItemStack(Material.REDSTONE_TORCH_ON, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.REDSTONE_TORCH_ON);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地レベルを表示");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "このボタンをクリックすると、"
-                , ChatColor.RESET + "" + ChatColor.RED + "「整地LV」に表示を切り替えます。"
-                , ChatColor.RESET + "" + ChatColor.YELLOW + "※反映されるまで最大1分ほどかかります。");
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(0, itemstack);
-
-        //予約付与受け取りボタン
-        if (!(playerdata.giveachvNo() == 0)) {
-            itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-            skullmeta = ItemMetaFactory.SKULL.getValue();
-            itemstack.setDurability((short) 3);
-            skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "【実績付与システム】");
-            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "運営チームからあなたへ、"
-                    , ChatColor.RESET + "" + ChatColor.RED + "「二つ名」のプレゼントが届いています。"
-                    , ChatColor.RESET + "" + ChatColor.YELLOW + "クリックすることで受け取れます！");
-            skullmeta.setLore(lore);
-            skullmeta.setOwner("MHF_Present2");
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, 1, itemstack.clone());
-        }
-
-        //二つ名組合せシステム画面へ移動
-        itemstack = new ItemStack(Material.ANVIL, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ANVIL);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "「二つ名組合せシステム」");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "設定画面を表示します。");
-        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(8, itemstack);
-
-        //カテゴリ画面へ移動
-        itemstack = new ItemStack(Material.GOLD_PICKAXE, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GOLD_PICKAXE);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「整地」");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "以下の実績が含まれます。"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「整地量」"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「整地神ランキング」");
-        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(10, itemstack);
-
-        itemstack = new ItemStack(Material.GLASS, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「建築」");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.YELLOW + "今後実装予定のカテゴリです。");
-        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(12, itemstack);
-
-        itemstack = new ItemStack(Material.COMPASS, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「ログイン」");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "以下の実績が含まれます。"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「参加時間」"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「通算ログイン」"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「連続ログイン」"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「記念日」");
-        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(14, itemstack);
-
-        itemstack = new ItemStack(Material.BLAZE_POWDER, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BLAZE_POWDER);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「やりこみ」");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "以下の実績が含まれます。"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「MEBIUSブリーダー」"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「スターレベル」");
-        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(16, itemstack);
-
-        itemstack = new ItemStack(Material.EYE_OF_ENDER, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EYE_OF_ENDER);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "カテゴリ「特殊」");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "以下の実績が含まれます。"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「公式イベント」"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「JMS投票数」"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "「極秘実績」");
-        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(22, itemstack);
-
-
-        // 1ページ目を開く
-        itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-        skullmeta = ItemMetaFactory.SKULL.getValue();
-        itemstack.setDurability((short) 3);
-        skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-        skullmeta.setLore(lore);
-        skullmeta.setOwner("MHF_ArrowLeft");
-        itemstack.setItemMeta(skullmeta);
-        AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
 
         return inventory;
     }
