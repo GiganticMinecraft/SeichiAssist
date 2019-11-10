@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.achievement.hierarchy
 import com.github.unchama.seichiassist.achievement.{AchievementId, SeichiAchievement}
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 
-sealed abstract class AchievementGroup[+Parent <: Singleton](val name: String,
-                                                             achievementIds: Seq[AchievementId],
-                                                             val parent: Parent) {
+sealed abstract class AchievementGroup(val name: String,
+                                       achievementIds: Seq[AchievementId],
+                                       val parent: AchievementCategory) {
   val achievements: Seq[SeichiAchievement] =
     SeichiAchievement.values.filter(achievementIds.contains)
 }

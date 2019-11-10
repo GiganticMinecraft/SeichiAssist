@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 object AchievementCategoryMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-  type AchievementGroupRepr = (AchievementGroup[_], Material)
+  type AchievementGroupRepr = (AchievementGroup, Material)
 
   def groupsLayoutFor(achievementCategory: AchievementCategory): Map[Int, AchievementGroupRepr] =
     achievementCategory match {

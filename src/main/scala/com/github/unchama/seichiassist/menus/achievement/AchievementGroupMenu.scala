@@ -12,7 +12,7 @@ import org.bukkit.entity.Player
 object AchievementGroupMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-  def apply[Parent <: AchievementCategory with Singleton](group: AchievementGroup[Parent], pageNumber: Int = 1): Menu = {
+  def apply(group: AchievementGroup, pageNumber: Int = 1): Menu = {
     val displayIndexRange = (3 * 9 * (pageNumber - 1)) until (3 * 9 * pageNumber)
     val displayAchievements = group.achievements.zipWithIndex
       .filter { case (_, index) => displayIndexRange.contains(index) }
