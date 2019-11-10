@@ -46,7 +46,7 @@ object AchievementGroupMenu {
           def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
             CommonButtons.transferButton(
               new SkullItemStackBuilder(skullOwnerReference),
-              s"MineStack${pageIndex + 1}ページ目へ",
+              s"${pageIndex + 1}ページ目へ",
               AchievementGroupMenu(group, pageNumber)
             )
 
