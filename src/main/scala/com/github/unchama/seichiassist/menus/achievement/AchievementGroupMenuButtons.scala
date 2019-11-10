@@ -98,7 +98,7 @@ case class AchievementGroupMenuButtons(viewer: Player) {
             SeichiAssist
               .playermap(player.getUniqueId)
               .updateNickname(firstId.getOrElse(0), secondId.getOrElse(0), thirdId.getOrElse(0))
-            player.sendMessage(s"二つ名「${TitleMapping.getTitleFor(achievement.id)}」が設定されました。")
+            player.sendMessage(s"二つ名「${TitleMapping.getTitleFor(achievement.id).get}」が設定されました。")
           }
 
           delay(setNickname)
