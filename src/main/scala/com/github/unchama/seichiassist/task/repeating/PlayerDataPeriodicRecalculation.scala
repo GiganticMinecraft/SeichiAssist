@@ -160,7 +160,7 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
        * 実績解除判定
        */
       autoUnlockedAchievements
-        .filterNot(achievement => !playerData.TitleFlags.contains(achievement.id))
+        .filterNot(achievement => playerData.TitleFlags.contains(achievement.id))
         .map { achievement => achievement.asUnlockable.shouldUnlockFor(player).map((achievement.id, _)) }
         .toList
         .sequence
