@@ -8,6 +8,7 @@ import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, Menu
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
+import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu}
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
@@ -618,10 +619,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-          // TODO メニューに置き換える
-          targetedeffect.delay { player =>
-            player.openInventory(MenuInventoryData.getTitleMenuData(player))
-          }
+          AchievementMenu.open
         )
       )
     }

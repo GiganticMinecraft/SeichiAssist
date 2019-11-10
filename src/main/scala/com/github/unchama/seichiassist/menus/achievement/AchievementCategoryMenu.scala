@@ -3,12 +3,14 @@ package com.github.unchama.seichiassist.menus.achievement
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
-import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.{CommonSoundEffects, SkullOwners}
+import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
@@ -49,11 +51,30 @@ object AchievementCategoryMenu {
   def buttonFor(achievementGroupRepr: AchievementGroupRepr): Button =
     achievementGroupRepr match {
       case (group, material) =>
-        CommonButtons.transferButton(
-          new IconItemStackBuilder(material),
-          s"実績「${group.name}」",
-          AchievementGroupMenu(group)
-        )
+        val partialBuilder =
+          new IconItemStackBuilder(material)
+            .title(ColorScheme.navigation(s"実績「${group.name}」"))
+
+        import com.github.unchama.targetedeffect._
+
+        if (group.achievements.nonEmpty) {
+          Button(
+            partialBuilder
+              .lore(s"${RED}獲得状況を表示します。")
+              .build(),
+            LeftClickButtonEffect(
+              CommonSoundEffects.menuTransitionFenceSound,
+              AchievementGroupMenu(group).open
+            )
+          )
+        } else {
+          Button(
+            partialBuilder
+              .lore(s"${RED}獲得状況を表示します。※未実装")
+              .build(),
+            LeftClickButtonEffect(emptyEffect)
+          )
+        }
     }
 
   def apply(category: AchievementCategory): Menu = {
