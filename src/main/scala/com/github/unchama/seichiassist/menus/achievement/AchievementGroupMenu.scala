@@ -7,7 +7,6 @@ import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import com.github.unchama.seichiassist.menus.CommonButtons
-import org.bukkit.ChatColor
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
@@ -62,14 +61,8 @@ object AchievementGroupMenu {
       new Menu {
         import com.github.unchama.menuinventory.InventoryRowSize._
 
-        /**
-         * メニューのサイズとタイトルに関する情報
-         */
         override val frame: MenuFrame = MenuFrame(4.rows(), s"$YELLOW$UNDERLINE${BOLD}実績「${group.name}」")
 
-        /**
-         * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
-         */
         override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
           import cats.implicits._
 
