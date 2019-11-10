@@ -4,14 +4,17 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.CommonSoundEffects
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
+import com.github.unchama.seichiassist.data.MenuInventoryData
+import com.github.unchama.seichiassist.data.player.PlayerNickName
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.sequentialEffect
 import org.bukkit.ChatColor._
-import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.{Material, Sound}
 
 object AchievementMenu extends Menu {
   import com.github.unchama.menuinventory.InventoryRowSize._
@@ -38,7 +41,7 @@ object AchievementMenu extends Menu {
             AchievementCategoryMenu.groupsLayoutFor(category).values.map(_._1)
 
           val partialBuilder =
-            new IconItemStackBuilder(material).lore(ColorScheme.navigation(s"「${category.name}」"))
+            new IconItemStackBuilder(material).title(ColorScheme.navigation(s"カテゴリ「${category.name}」"))
 
           if (includedGroups.nonEmpty) {
             Button(
@@ -62,8 +65,35 @@ object AchievementMenu extends Menu {
 
     val categoryButtonsSection = categoryLayout.view.mapValues(buttonFor).toMap
 
-    val toggleTitleToPlayerLevelButton: Button = ???
-    val toTitleConfigurationMenu: Button = ???
+    import com.github.unchama.targetedeffect._
+    val toggleTitleToPlayerLevelButton = Button(
+      new IconItemStackBuilder(Material.REDSTONE_TORCH_ON)
+        .title("整地レベルを表示")
+        .lore(List(
+          s"${RED}このボタンをクリックすると、",
+          s"$RED「整地LV」に表示を切り替えます。",
+          s"$YELLOW※反映されるまで最大1分ほどかかります。"
+        ))
+        .build(),
+      action.LeftClickButtonEffect(
+        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+        delay { player =>
+          SeichiAssist.playermap(player.getUniqueId).updateNickname(style = PlayerNickName.Style.Level)
+        }
+      )
+    )
+    val toTitleConfigurationMenu: Button = Button(
+      new IconItemStackBuilder(Material.ANVIL)
+        .title(ColorScheme.navigation("「二つ名組み合わせシステム」"))
+        .lore(s"${RED}設定画面を表示します。")
+        .build(),
+      action.LeftClickButtonEffect(
+        CommonSoundEffects.menuTransitionFenceSound,
+        delay { player =>
+          player.openInventory(MenuInventoryData.getTitleMenuData(player))
+        }
+      )
+    )
 
     categoryButtonsSection ++
       Map(
