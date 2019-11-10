@@ -43,11 +43,11 @@ object AchievementGroupMenu {
             )
           )
 
-          def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
+          def buttonToTransferTo(newPageNumber: Int, skullOwnerReference: SkullOwnerReference): Button =
             CommonButtons.transferButton(
               new SkullItemStackBuilder(skullOwnerReference),
-              s"${pageIndex + 1}ページ目へ",
-              AchievementGroupMenu(group, pageNumber)
+              s"${newPageNumber}ページ目へ",
+              AchievementGroupMenu(group, newPageNumber)
             )
 
           val previousPageButtonSection =
