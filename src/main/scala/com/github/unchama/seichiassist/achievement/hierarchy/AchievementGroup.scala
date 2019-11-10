@@ -7,7 +7,7 @@ sealed abstract class AchievementGroup(val name: String,
                                        achievementIds: Seq[AchievementId],
                                        val parent: AchievementCategory) {
   val achievements: Seq[SeichiAchievement] =
-    SeichiAchievement.values.filter(achievementIds.contains)
+    SeichiAchievement.values.filter(achievement => achievementIds.contains(achievement.id))
 }
 
 object AchievementGroup {
