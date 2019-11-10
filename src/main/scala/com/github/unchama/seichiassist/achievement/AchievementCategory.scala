@@ -5,7 +5,7 @@ import org.bukkit.Material
 case class AchievementGroup(name: String, representation: Material, achievements: Seq[SeichiAchievement])
 
 object AchievementGroup {
-  def apply(name: String, representation: Material, achievementIds: Seq[Int]) =
+  def apply(name: String, representation: Material, achievementIds: Seq[Int]): AchievementGroup =
     AchievementGroup(name, representation, SeichiAchievement.values.filter(achievementIds.contains))
 }
 

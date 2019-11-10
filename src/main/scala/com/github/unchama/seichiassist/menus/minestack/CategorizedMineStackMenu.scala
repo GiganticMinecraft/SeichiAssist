@@ -5,6 +5,7 @@ import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerRef
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SkullOwners}
 import com.github.unchama.targetedeffect._
@@ -64,39 +65,22 @@ object CategorizedMineStackMenu {
   }
 
   object Sections {
-    val mineStackMainMenuButtonSection: Seq[(Int, Button)] = {
-      val mineStackMainMenuButton = Button(
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
-          .title(s"$YELLOW$UNDERLINE${BOLD}MineStackメインメニューへ")
-          .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
-          .build(),
-        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-          sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            MineStackMainMenu.open
-          )
-        }
+    val mineStackMainMenuButtonSection: Seq[(Int, Button)] = Seq(
+      9 * 5 -> CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+        "MineStackメインメニューへ",
+        MineStackMainMenu
       )
-
-      Seq {
-        9 * 5 -> mineStackMainMenuButton
-      }
-    }
+    )
 
     // ページ操作等のボタンを含むレイアウトセクション
     def uiOperationSection(totalNumberOfPages: Int)(category: MineStackObjectCategory, page: Int): Seq[(Int, Button)] = {
-      def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference) = Button(
-        new SkullItemStackBuilder(skullOwnerReference)
-          .title(s"$YELLOW$UNDERLINE${BOLD}MineStack${pageIndex + 1}ページ目へ")
-          .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
-          .build(),
-        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            forCategory(category, pageIndex).open
-          )
-        }
-      )
+      def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
+        CommonButtons.transferButton(
+          new SkullItemStackBuilder(skullOwnerReference),
+          s"MineStack${pageIndex + 1}ページ目へ",
+          forCategory(category, pageIndex)
+        )
 
       val previousPageButtonSection =
         if (page > 0)

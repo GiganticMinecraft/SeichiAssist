@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, Menu
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
-import com.github.unchama.seichiassist.menus.RegionMenu
+import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu}
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
@@ -691,21 +691,12 @@ object FirstPage extends Menu {
       )
     }
 
-    val secondPageButton: Button = {
-      val iconItemStack =
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight)
-          .title(s"$YELLOW$UNDERLINE${BOLD}2ページ目へ")
-          .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
-          .build()
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          StickMenu.secondPage.open
-        )
+    val secondPageButton: Button =
+      CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
+        "2ページ目へ",
+        StickMenu.secondPage.open
       )
-    }
 
     val gachaPrizeExchangeButton: Button = {
       val iconItemStack =
