@@ -5,16 +5,14 @@ import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerRef
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.achievement.{AchievementCategory, AchievementGroup}
+import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import org.bukkit.entity.Player
 
 object AchievementGroupMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-  def apply(parentCategory: AchievementCategory,
-            group: AchievementGroup,
-            pageNumber: Int = 1): Menu = {
+  def apply[Parent <: AchievementCategory](group: AchievementGroup[Parent], pageNumber: Int = 1): Menu = {
     val displayIndexRange = (3 * 9 * (pageNumber - 1)) until (3 * 9 * pageNumber)
     val displayAchievements = group.achievements.zipWithIndex
       .filter { case (_, index) => displayIndexRange.contains(index) }
@@ -27,7 +25,7 @@ object AchievementGroupMenu {
       if (groupAchievementsCount == 0) {
         ??? // parent category
       } else {
-        apply(parentCategory, group, maxPageNumber)
+        apply(group, maxPageNumber)
       }
     } else {
       new Menu {
@@ -42,7 +40,7 @@ object AchievementGroupMenu {
           CommonButtons.transferButton(
             new SkullItemStackBuilder(skullOwnerReference),
             s"MineStack${pageIndex + 1}ページ目へ",
-            AchievementGroupMenu(parentCategory, group, pageNumber)
+            AchievementGroupMenu(group, pageNumber)
           )
 
         /**
@@ -52,7 +50,7 @@ object AchievementGroupMenu {
           val toCategoryMenuButtonSection = Map(
             9 * 3 -> CommonButtons.transferButton(
               new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-              s"「${parentCategory.name}」カテゴリメニューへ",
+              s"「${group.parent.name}」カテゴリメニューへ",
               ??? // parent category
             )
           )
