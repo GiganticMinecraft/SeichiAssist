@@ -32,7 +32,7 @@ object AchievementGroupMenu {
       new Menu {
         import com.github.unchama.menuinventory.InventoryRowSize._
 
-        override val frame: MenuFrame = MenuFrame(4.rows(), s"$YELLOW$UNDERLINE${BOLD}実績「${group.name}」")
+        override val frame: MenuFrame = MenuFrame(4.rows, s"$YELLOW$UNDERLINE${BOLD}実績「${group.name}」")
 
         override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
           val toCategoryMenuButtonSection = Map(
