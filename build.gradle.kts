@@ -63,6 +63,8 @@ dependencies {
     embed("org.typelevel:cats-core_2.13:2.0.0")
     embed("org.typelevel:cats-effect_2.13:2.0.0")
 
+    embed("eu.timepit:refined_2.13:0.9.10")
+
     embed("com.beachape:enumeratum_2.13:1.5.13")
 }
 

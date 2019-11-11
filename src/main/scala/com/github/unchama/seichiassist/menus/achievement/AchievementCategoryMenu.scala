@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
@@ -16,6 +16,7 @@ import org.bukkit.entity.Player
 
 object AchievementCategoryMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import eu.timepit.refined.auto._
 
   type AchievementGroupRepr = (AchievementGroup, Material)
 
@@ -23,28 +24,28 @@ object AchievementCategoryMenu {
     achievementCategory match {
       case BrokenBlock =>
         Map(
-          9 * 1 + 3 -> (BrokenBlockAmount, Material.IRON_PICKAXE),
-          9 * 1 + 5 -> (BrokenBlockRanking, Material.DIAMOND_PICKAXE)
+          ChestSlotRef(1, 3) -> (BrokenBlockAmount, Material.IRON_PICKAXE),
+          ChestSlotRef(1, 5) -> (BrokenBlockRanking, Material.DIAMOND_PICKAXE)
         )
       case Building =>
         Map()
       case Login =>
         Map(
-          9 * 1 + 1 -> (PlayTime, Material.COMPASS),
-          9 * 1 + 3 -> (TotalLogins, Material.BOOK),
-          9 * 1 + 5 -> (ConsecutiveLogins, Material.BOOK_AND_QUILL),
-          9 * 1 + 7 -> (Anniversaries, Material.NETHER_STAR)
+          ChestSlotRef(1, 1) -> (PlayTime, Material.COMPASS),
+          ChestSlotRef(1, 3) -> (TotalLogins, Material.BOOK),
+          ChestSlotRef(1, 5) -> (ConsecutiveLogins, Material.BOOK_AND_QUILL),
+          ChestSlotRef(1, 7) -> (Anniversaries, Material.NETHER_STAR)
         )
       case Challenges =>
         Map(
-          9 * 1 + 3 -> (MebiusBreeder, Material.DIAMOND_HELMET),
-          9 * 1 + 5 -> (StarLevel, Material.GOLD_INGOT)
+          ChestSlotRef(1, 3) -> (MebiusBreeder, Material.DIAMOND_HELMET),
+          ChestSlotRef(1, 5) -> (StarLevel, Material.GOLD_INGOT)
         )
       case Specials =>
         Map(
-          9 * 1 + 2 -> (OfficialEvent, Material.BLAZE_POWDER),
-          9 * 1 + 4 -> (VoteCounts, Material.YELLOW_FLOWER),
-          9 * 1 + 6 -> (Secrets, Material.DIAMOND_BARDING),
+          ChestSlotRef(1, 2) -> (OfficialEvent, Material.BLAZE_POWDER),
+          ChestSlotRef(1, 4) -> (VoteCounts, Material.YELLOW_FLOWER),
+          ChestSlotRef(1, 6) -> (Secrets, Material.DIAMOND_BARDING),
         )
     }
 

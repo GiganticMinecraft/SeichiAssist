@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus.achievement
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 import com.github.unchama.seichiassist.data.MenuInventoryData
@@ -19,6 +19,7 @@ import org.bukkit.{Material, Sound}
 object AchievementMenu extends Menu {
   import com.github.unchama.menuinventory.InventoryRowSize._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import eu.timepit.refined.auto._
 
   override val frame: MenuFrame = MenuFrame(4.rows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")
 
@@ -26,11 +27,11 @@ object AchievementMenu extends Menu {
 
   val categoryLayout: Map[Int, AchievementCategoryRepr] =
     Map(
-      9 * 1 + 1 -> (BrokenBlock, Material.GOLD_PICKAXE),
-      9 * 1 + 3 -> (Building, Material.GLASS),
-      9 * 1 + 5 -> (Login, Material.COMPASS),
-      9 * 1 + 7 -> (Challenges, Material.BLAZE_POWDER),
-      9 * 2 + 4 -> (Specials, Material.EYE_OF_ENDER)
+      ChestSlotRef(1, 1) -> (BrokenBlock, Material.GOLD_PICKAXE),
+      ChestSlotRef(1, 3) -> (Building, Material.GLASS),
+      ChestSlotRef(1, 5) -> (Login, Material.COMPASS),
+      ChestSlotRef(1, 7) -> (Challenges, Material.BLAZE_POWDER),
+      ChestSlotRef(2, 4) -> (Specials, Material.EYE_OF_ENDER)
     )
 
   val menuLayout: Map[Int, Button] = {
@@ -97,9 +98,9 @@ object AchievementMenu extends Menu {
 
     categoryButtonsSection ++
       Map(
-        0 -> toggleTitleToPlayerLevelButton,
-        8 -> toTitleConfigurationMenu,
-        9 * 3 -> CommonButtons.openStickMenu
+        ChestSlotRef(0, 0) -> toggleTitleToPlayerLevelButton,
+        ChestSlotRef(0, 8) -> toTitleConfigurationMenu,
+        ChestSlotRef(9, 0) -> CommonButtons.openStickMenu
       )
   }
 

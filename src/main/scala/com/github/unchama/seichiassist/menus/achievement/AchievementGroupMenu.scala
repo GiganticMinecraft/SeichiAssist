@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus.achievement
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 
 object AchievementGroupMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import eu.timepit.refined.auto._
 
   def apply(group: AchievementGroup, pageNumber: Int = 1): Menu = {
     val displayIndexRange = (3 * 9 * (pageNumber - 1)) until (3 * 9 * pageNumber)
@@ -52,14 +53,14 @@ object AchievementGroupMenu {
 
           val previousPageButtonSection =
             if (pageNumber > 1) {
-              Map(9 * 3 + 7 -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowLeft))
+              Map(ChestSlotRef(3, 7) -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowLeft))
             } else {
               Map()
             }
 
           val nextPageButtonSection =
             if (pageNumber < maxPageNumber) {
-              Map(9 * 3 + 8 -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowRight))
+              Map(ChestSlotRef(3, 8) -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowRight))
             } else {
               Map()
             }
