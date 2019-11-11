@@ -32,13 +32,13 @@ case class AchievementGroupMenuButtons(viewer: Player) {
           {
             achievement match {
               case normal: SeichiAchievement.Normal[_] =>
-                List(normal.condition.condition)
+                List(normal.condition.parameterizedDescription)
               case hidden: SeichiAchievement.Hidden[_] =>
                 val description =
                   if (hasUnlocked)
-                    hidden.condition.condition.condition
+                    hidden.condition.underlying.parameterizedDescription
                   else
-                    hidden.condition.hiddenCondition
+                    hidden.condition.maskedDescription
                 List(description)
               case SeichiAchievement.GrantedByConsole(_, condition, explanation) =>
                 List(condition) ++ explanation.getOrElse(Nil)

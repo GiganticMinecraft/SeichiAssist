@@ -28,8 +28,8 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case class HiddenAuto[P](override val id: Int, override val condition: HiddenAchievementCondition[P]) extends Hidden[P] with AutoUnlocked
   case class HiddenManual[P](override val id: Int, override val condition: HiddenAchievementCondition[P]) extends Hidden[P] with ManuallyUnlocked
 
-  import AchievementConditions._
   import AchievementConditions.SecretAchievementConditions._
+  import AchievementConditions._
   import WithPlaceholder._
 
   // 整地神ランキング
@@ -234,7 +234,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
     val shouldUnlockFor: Player => IO[Boolean] =
       unlockable match {
         case normal: Normal[_] => normal.condition.shouldUnlock
-        case hidden: Hidden[_] => hidden.condition.condition.shouldUnlock
+        case hidden: Hidden[_] => hidden.condition.underlying.shouldUnlock
       }
   }
 }

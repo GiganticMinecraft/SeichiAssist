@@ -9,12 +9,12 @@ object WithPlaceholder {
 case class AchievementCondition[P](shouldUnlock: PlayerPredicate,
                                    conditionTemplate: ParameterizedText[P],
                                    parameter: P) {
-  val condition: String = conditionTemplate(parameter)
+  val parameterizedDescription: String = conditionTemplate(parameter)
 }
 
 case class HiddenAchievementCondition[P: WithPlaceholder](shouldDisplayToUI: PlayerPredicate,
-                                                          condition: AchievementCondition[P]) {
-  val hiddenCondition: String =
-    condition.conditionTemplate(implicitly[WithPlaceholder[P]].placeholder)
+                                                          underlying: AchievementCondition[P]) {
+  val maskedDescription: String =
+    underlying.conditionTemplate(implicitly[WithPlaceholder[P]].placeholder)
 }
 
