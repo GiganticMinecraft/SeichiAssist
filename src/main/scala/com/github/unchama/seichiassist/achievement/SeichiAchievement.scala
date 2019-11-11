@@ -145,8 +145,6 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   object No_7006 extends GrantedByConsole(7006, "公式イベント「第一回建築コンペ」で配布", Some(List("開催テーマは「桜」でした。")))
   object No_7007 extends GrantedByConsole(7007, "公式イベント「第二回建築コンペ」で配布", Some(List("開催テーマは「アスレチック」でした。")))
   object No_7008 extends GrantedByConsole(7008, "公式イベント「GTテクスチャコンペ」で採用", None)
-  // 7009は元の仕様では獲得していないと表示されないことになっている
-  object No_7009 extends GrantedByConsole(7009, "公式イベント「第二回整地大会」で優勝", Some(List("整地鯖一周年記念イベントでした！")))
   object No_7010 extends GrantedByConsole(7010, "公式イベント「第三回建築コンペ」で配布", Some(List("開催テーマＡは「氷像(夏)」でした。")))
   object No_7011 extends GrantedByConsole(7011, "公式イベント「第三回建築コンペ」で配布", Some(List("開催テーマＢは「海岸建築(夏)」でした。")))
   object No_7012 extends GrantedByConsole(7012, "公式イベント「第三回建築コンペ」で配布", Some(List("開催テーマＣは「海上建築(夏)」でした。")))
