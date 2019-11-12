@@ -14,7 +14,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
-case class AchievementGroupMenuButtons(viewer: Player) {
+object AchievementGroupMenuButtons {
   def buttonFor(achievement: SeichiAchievement, hasUnlocked: Boolean): Button = {
     val itemStack = {
       val material = if (hasUnlocked) Material.DIAMOND_BLOCK else Material.BEDROCK
@@ -136,7 +136,7 @@ case class AchievementGroupMenuButtons(viewer: Player) {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-  def computeButtonFor(achievement: SeichiAchievement): IO[Button] = RecomputedButton {
+  def buttonComputationFor(viewer: Player)(achievement: SeichiAchievement): IO[Button] = RecomputedButton {
     for {
       hasObtainedTheAchievement <- IO { SeichiAssist.playermap(viewer.getUniqueId).TitleFlags.contains(achievement.id) }
     } yield buttonFor(achievement, hasObtainedTheAchievement)

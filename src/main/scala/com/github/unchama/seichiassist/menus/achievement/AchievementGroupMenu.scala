@@ -69,7 +69,7 @@ object AchievementGroupMenu {
 
           val dynamicPartComputation =
             displayAchievements.toList
-              .traverse(AchievementGroupMenuButtons(player).computeButtonFor)
+              .traverse(AchievementGroupMenuButtons.buttonComputationFor(player))
               .map(_.zipWithIndex.map(_.swap))
 
           for {
