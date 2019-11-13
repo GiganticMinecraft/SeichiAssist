@@ -198,7 +198,7 @@ public class MenuInventoryData {
                 lore.add(ChatColor.GRAY + "" + playerdata.giganticBerserk().exp() + "/" + LevelThresholds.giganticBerserkLevelList().apply(n));
             }
             //level
-            lore.add(ChatColor.GRAY + "現在" + (playerdata.giganticBerserk().level() + 1) + "レベル,回復率 " + (100 * playerdata.giganticBerserk().manaRegenerationProbability()) + ".0%");
+            lore.add(ChatColor.GRAY + "現在" + (playerdata.giganticBerserk().level() + 1) + "レベル,回復率 " + (100 * playerdata.giganticBerserk().manaRegenerationProbability()) + "%");
 
             if (playerdata.giganticBerserk().canEvolve()) {
                 lore.add("");
