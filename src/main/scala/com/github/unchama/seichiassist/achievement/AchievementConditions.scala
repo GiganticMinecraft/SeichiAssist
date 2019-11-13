@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.achievement
 
-import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 import java.time.temporal.TemporalAdjusters
+import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
@@ -145,7 +145,7 @@ object AchievementConditions {
           p.playTick % (20 * 60 * 60) >= 0 && p.playTick % (20 * 60 * 60) <= (20 * 60)
         })
 
-      HiddenAchievementCondition(shouldDisplay, AchievementCondition(unlockConditionFor8003, _ => "定時分働いたら記録を確認！", ()))
+      HiddenAchievementCondition(shouldDisplay, AchievementCondition(_ => IO.pure(false), _ => "定時分働いたら記録を確認！", ()))
     }
   }
 }
