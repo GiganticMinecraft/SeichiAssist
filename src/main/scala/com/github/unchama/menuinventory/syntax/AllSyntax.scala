@@ -9,4 +9,15 @@ trait InventorySizeIntOps {
   }
 }
 
+trait InventorySizeOps {
+  implicit final class InventorySizeOps(val size: InventorySize) {
+    def slotCount: Int =
+      size match {
+        case Left(rowSize) => rowSize.rows * 9
+        case Right(inventoryType) => inventoryType.getDefaultSize
+      }
+  }
+}
+
 trait AllSyntax extends InventorySizeIntOps
+  with InventorySizeOps

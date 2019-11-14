@@ -16,7 +16,7 @@ object CategorizedMineStackMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import eu.timepit.refined.auto._
 
-  private val mineStackObjectPerPage = 9 * 5
+  private val mineStackObjectPerPage = 5.rows.slotCount
 
   /**
    * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]

@@ -55,7 +55,9 @@ object AchievementGroupMenu {
 
   def apply(group: AchievementGroup, pageNumber: Int = 1): Menu = {
     val entriesToDisplay = {
-      val displayPerPage = 3 * 9
+      import com.github.unchama.menuinventory.syntax._
+
+      val displayPerPage = 3.rows.slotCount
       val displayFromIndex = displayPerPage * (pageNumber - 1)
       val displayUptoIndex = displayFromIndex + displayPerPage
 
@@ -78,7 +80,7 @@ object AchievementGroupMenu {
 
         override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
           val toCategoryMenuButtonSection = Map(
-            9 * 3 -> CommonButtons.transferButton(
+            ChestSlotRef(3, 0) -> CommonButtons.transferButton(
               new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
               s"「${group.parent.name}」カテゴリメニューへ",
               AchievementCategoryMenu(group.parent)
