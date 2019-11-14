@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.menus.minestack
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
-import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.{InventoryRowSize, _}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}

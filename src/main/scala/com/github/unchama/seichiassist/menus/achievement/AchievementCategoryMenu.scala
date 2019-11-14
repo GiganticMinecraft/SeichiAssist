@@ -91,7 +91,7 @@ object AchievementCategoryMenu {
       )
 
     new Menu {
-      import com.github.unchama.menuinventory.InventoryRowSize._
+      import com.github.unchama.menuinventory.syntax._
 
       override val frame: MenuFrame = MenuFrame(4.rows, s"$DARK_PURPLE${BOLD}カテゴリ「${category.name}」")
 

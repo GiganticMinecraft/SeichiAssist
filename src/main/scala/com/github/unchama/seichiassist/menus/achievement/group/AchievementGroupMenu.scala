@@ -72,7 +72,7 @@ object AchievementGroupMenu {
         apply(group, maxPageNumber)
     } else {
       new Menu {
-        import com.github.unchama.menuinventory.InventoryRowSize._
+        import com.github.unchama.menuinventory.syntax._
 
         override val frame: MenuFrame = MenuFrame(4.rows, ColorScheme.navigation(s"実績「${group.name}」"))
 

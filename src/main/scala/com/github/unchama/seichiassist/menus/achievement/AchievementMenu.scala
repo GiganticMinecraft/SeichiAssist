@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
 object AchievementMenu extends Menu {
-  import com.github.unchama.menuinventory.InventoryRowSize._
+  import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import eu.timepit.refined.auto._
 

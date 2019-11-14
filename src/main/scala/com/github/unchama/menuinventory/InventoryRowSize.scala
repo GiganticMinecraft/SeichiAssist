@@ -12,9 +12,4 @@ object InventoryRowSize {
    * インベントリのサイズを表すデータ型.
    */
   type InventorySize = Either[InventoryRowSize, InventoryType]
-
-  implicit class IntInventorySizeOps(val rowNumber: Int) extends AnyVal {
-    def rows: InventorySize = Left(InventoryRowSize(rowNumber))
-  }
-
 }
