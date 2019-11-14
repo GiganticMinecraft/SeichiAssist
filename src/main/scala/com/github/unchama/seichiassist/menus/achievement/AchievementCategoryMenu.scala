@@ -58,7 +58,7 @@ object AchievementCategoryMenu {
 
         import com.github.unchama.targetedeffect._
 
-        if (group.achievements.nonEmpty) {
+        if (AchievementGroupMenu.sequentialEntriesIn(group).nonEmpty) {
           Button(
             partialBuilder
               .lore(s"${RED}獲得状況を表示します。")

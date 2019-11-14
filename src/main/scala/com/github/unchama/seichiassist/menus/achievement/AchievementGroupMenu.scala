@@ -243,7 +243,7 @@ object AchievementGroupMenu {
       sequentialEntriesIn(group).slice(displayFromIndex, displayUptoIndex)
     }
 
-    val groupAchievementsCount = group.achievements.size
+    val groupAchievementsCount = entriesToDisplay.size
     val maxPageNumber = Math.ceil(groupAchievementsCount / 27.0).toInt
 
     if (entriesToDisplay.isEmpty) {
