@@ -4,12 +4,13 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory._
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
-import com.github.unchama.seichiassist.menus.RegionMenu
+import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
+import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu}
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.external.{ExternalPlugins, WorldGuard}
@@ -32,6 +33,7 @@ object FirstPage extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.player.CommandEffect._
+  import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
     MenuFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー")
@@ -44,38 +46,38 @@ object FirstPage extends Menu {
     import computations._
 
     val constantPart = Map(
-      7 -> teleportServerButton,
-      8 -> spawnCommandButton,
-      9 -> achievementSystemButton,
-      11 -> passiveSkillBookButton,
-      16 -> gachaPrizeExchangeButton,
-      17 -> oreExchangeButton,
-      18 -> homePointMenuButton,
-      19 -> randomTeleportButton,
-      23 -> fastCraftButton,
-      30 -> votePointMenuButton,
-      32 -> seichiGodRankingButton,
-      33 -> loginGodRankingButton,
-      34 -> voteGodRankingButton,
-      35 -> secondPageButton
+      ChestSlotRef(0, 7) -> teleportServerButton,
+      ChestSlotRef(0, 8) -> spawnCommandButton,
+      ChestSlotRef(1, 0) -> achievementSystemButton,
+      ChestSlotRef(1, 2) -> passiveSkillBookButton,
+      ChestSlotRef(1, 7) -> gachaPrizeExchangeButton,
+      ChestSlotRef(1, 8) -> oreExchangeButton,
+      ChestSlotRef(2, 0) -> homePointMenuButton,
+      ChestSlotRef(2, 1) -> randomTeleportButton,
+      ChestSlotRef(2, 5) -> fastCraftButton,
+      ChestSlotRef(3, 3) -> votePointMenuButton,
+      ChestSlotRef(3, 5) -> seichiGodRankingButton,
+      ChestSlotRef(3, 6) -> loginGodRankingButton,
+      ChestSlotRef(3, 7) -> voteGodRankingButton,
+      ChestSlotRef(3, 8) -> secondPageButton
     )
 
     import cats.implicits._
 
     val dynamicPartComputation =
       List(
-        0 -> computeStatsButton,
-        1 -> computeEffectSuppressionButton,
-        3 -> computeRegionMenuButton,
-        5 -> computeValentineChocolateButton,
-        10 -> computeStarLevelStatsButton,
-        13 -> computeActiveSkillButton,
-        21 -> computePocketOpenButton,
-        22 -> computeEnderChestButton,
-        24 -> computeMineStackButton,
-        27 -> computeGachaTicketButton,
-        28 -> computeGachaTicketDeliveryButton,
-        29 -> computeApologyItemsButton,
+        ChestSlotRef(0, 0) -> computeStatsButton,
+        ChestSlotRef(0, 1) -> computeEffectSuppressionButton,
+        ChestSlotRef(0, 3) -> computeRegionMenuButton,
+        ChestSlotRef(0, 5) -> computeValentineChocolateButton,
+        ChestSlotRef(1, 1) -> computeStarLevelStatsButton,
+        ChestSlotRef(1, 4) -> computeActiveSkillButton,
+        ChestSlotRef(2, 3) -> computePocketOpenButton,
+        ChestSlotRef(2, 4) -> computeEnderChestButton,
+        ChestSlotRef(2, 6) -> computeMineStackButton,
+        ChestSlotRef(3, 0) -> computeGachaTicketButton,
+        ChestSlotRef(3, 1) -> computeGachaTicketDeliveryButton,
+        ChestSlotRef(3, 2) -> computeApologyItemsButton,
       )
         .map(_.sequence)
         .sequence
@@ -618,10 +620,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-          // TODO メニューに置き換える
-          targetedeffect.delay { player =>
-            player.openInventory(MenuInventoryData.getTitleMenuData(player))
-          }
+          AchievementMenu.open
         )
       )
     }
@@ -691,21 +690,12 @@ object FirstPage extends Menu {
       )
     }
 
-    val secondPageButton: Button = {
-      val iconItemStack =
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight)
-          .title(s"$YELLOW$UNDERLINE${BOLD}2ページ目へ")
-          .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
-          .build()
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          StickMenu.secondPage.open
-        )
+    val secondPageButton: Button =
+      CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
+        "2ページ目へ",
+        StickMenu.secondPage
       )
-    }
 
     val gachaPrizeExchangeButton: Button = {
       val iconItemStack =

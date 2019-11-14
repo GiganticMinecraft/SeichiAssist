@@ -2,18 +2,18 @@ package com.github.unchama.seichiassist.menus.minestack
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
-import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
-import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory._
+import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
-import com.github.unchama.seichiassist.{CommonSoundEffects, MineStackObjectList, SkullOwners}
-import com.github.unchama.targetedeffect._
+import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 object CategorizedMineStackMenu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import eu.timepit.refined.auto._
 
   private val mineStackObjectPerPage = 9 * 5
 
@@ -45,17 +45,14 @@ object CategorizedMineStackMenu {
 
     // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
     val categorizedItemSectionComputation =
-      categoryItemList.slice(mineStackObjectPerPage * page, mineStackObjectPerPage * page + mineStackObjectPerPage)
-        .map(getMineStackItemButtonOf)
-        .zipWithIndex
-        .map(_.swap)
-        .toList
-        .map(_.sequence)
-        .sequence
+      categoryItemList
+        .slice(mineStackObjectPerPage * page, mineStackObjectPerPage * page + mineStackObjectPerPage).toList
+        .traverse(getMineStackItemButtonOf)
+        .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算
     val autoMineStackToggleButtonSectionComputation =
-      List((9 * 5 + 4) -> computeAutoMineStackToggleButton())
+      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton())
         .map(_.sequence)
         .sequence
 
@@ -67,49 +64,32 @@ object CategorizedMineStackMenu {
   }
 
   object Sections {
-    val mineStackMainMenuButtonSection: Seq[(Int, Button)] = {
-      val mineStackMainMenuButton = Button(
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
-          .title(s"$YELLOW$UNDERLINE${BOLD}MineStackメインメニューへ")
-          .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
-          .build(),
-        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-          sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            MineStackMainMenu.open
-          )
-        }
+    val mineStackMainMenuButtonSection: Seq[(Int, Button)] = Seq(
+      ChestSlotRef(5, 0) -> CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+        "MineStackメインメニューへ",
+        MineStackMainMenu
       )
-
-      Seq {
-        9 * 5 -> mineStackMainMenuButton
-      }
-    }
+    )
 
     // ページ操作等のボタンを含むレイアウトセクション
     def uiOperationSection(totalNumberOfPages: Int)(category: MineStackObjectCategory, page: Int): Seq[(Int, Button)] = {
-      def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference) = Button(
-        new SkullItemStackBuilder(skullOwnerReference)
-          .title(s"$YELLOW$UNDERLINE${BOLD}MineStack${pageIndex + 1}ページ目へ")
-          .lore(List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動"))
-          .build(),
-        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            forCategory(category, pageIndex).open
-          )
-        }
-      )
+      def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
+        CommonButtons.transferButton(
+          new SkullItemStackBuilder(skullOwnerReference),
+          s"MineStack${pageIndex + 1}ページ目へ",
+          forCategory(category, pageIndex)
+        )
 
       val previousPageButtonSection =
         if (page > 0)
-          Seq(9 * 5 + 7 -> buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp))
+          Seq(ChestSlotRef(5, 7) -> buttonToTransferTo(page - 1, SkullOwners.MHF_ArrowUp))
         else
           Seq()
 
       val nextPageButtonSection =
         if (page + 1 < totalNumberOfPages)
-          Seq(9 * 5 + 8 -> buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown))
+          Seq(ChestSlotRef(5, 8) -> buttonToTransferTo(page + 1, SkullOwners.MHF_ArrowDown))
         else
           Seq()
 

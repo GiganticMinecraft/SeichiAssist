@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus.minestack
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{MenuSlotLayout, MenuFrame, InventoryRowSize, Menu}
+import com.github.unchama.menuinventory._
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
@@ -15,6 +15,7 @@ import org.bukkit.entity.Player
 object MineStackMainMenu extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
     MenuFrame(Left(InventoryRowSize(6)), s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
@@ -53,8 +54,8 @@ object MineStackMainMenu extends Menu {
       historicalMineStackSection <- ButtonComputations(player).computeHistoricalMineStackLayout()
     } yield {
       MenuSlotLayout(
-        0 -> autoMineStackToggleButton,
-        45 -> CommonButtons.openStickMenu
+        ChestSlotRef(0, 0) -> autoMineStackToggleButton,
+        ChestSlotRef(0, 5) -> CommonButtons.openStickMenu
       )
         .merge(categoryButtonLayout)
         .merge(historicalMineStackSection)

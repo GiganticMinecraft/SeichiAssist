@@ -1056,7 +1056,6 @@ class PlayerInventoryListener extends Listener {
   //実績メニューの処理
   @EventHandler
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
-    OnClickTitleMenu.onPlayerClickTitleMenuEvent(event)
   }
 
   //鉱石・交換券変換システム
