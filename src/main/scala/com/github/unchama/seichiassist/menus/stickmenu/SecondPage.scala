@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.menuinventory.{InventoryRowSize, _}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -29,9 +29,10 @@ object SecondPage extends Menu {
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.util.InventoryUtil._
   import eu.timepit.refined.auto._
+  import menuinventory.syntax._
 
   override val frame: MenuFrame =
-    MenuFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー")
+    MenuFrame(4.rows, s"${LIGHT_PURPLE}木の棒メニュー")
 
   override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._
@@ -428,7 +429,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = Left(InventoryRowSize(4)),
+                  size = 4.rows,
                   title = Some(s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ")
                 )
               )
@@ -464,7 +465,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = Left(InventoryRowSize(4)),
+                  size = 4.rows,
                   title = Some(s"$GOLD${BOLD}修繕したい限定タイタンを入れてネ")
                 )
               )
@@ -493,7 +494,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = Left(InventoryRowSize(4)),
+                  size = 4.rows,
                   title = Some(s"$RED${BOLD}ゴミ箱(取扱注意)")
                 )
               )

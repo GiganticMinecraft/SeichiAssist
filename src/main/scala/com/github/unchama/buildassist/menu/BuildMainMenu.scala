@@ -6,7 +6,7 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -22,9 +22,10 @@ object BuildMainMenu extends Menu {
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.CommandEffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
+  import menuinventory.syntax._
 
-  override val frame: MenuFrame =
-    MenuFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニューB")
+  override val frame: MenuFrame = MenuFrame(4.rows, s"${LIGHT_PURPLE}木の棒メニューB")
+
   private val EMPHASIZE = s"$UNDERLINE$BOLD"
 
   override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {

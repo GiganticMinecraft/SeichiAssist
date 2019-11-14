@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.menus.minestack
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
+import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.{InventoryRowSize, _}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 
 object CategorizedMineStackMenu {
 
+  import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import eu.timepit.refined.auto._
 
@@ -22,7 +23,7 @@ object CategorizedMineStackMenu {
    */
   def forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = new Menu {
     override val frame: MenuFrame =
-      MenuFrame(Left(InventoryRowSize(6)), s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
+      MenuFrame(6.rows, s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
 
     override def computeMenuLayout(player: Player): IO[MenuSlotLayout] =
       computeMenuLayoutOn(category, pageIndex)(player)
