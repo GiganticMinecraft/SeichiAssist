@@ -38,7 +38,7 @@ object AchievementGroupMenu {
   def sequentialEntriesIn(group: AchievementGroup): List[GroupMenuEntry] =
     group match {
       case BrokenBlockAmount =>
-        AchievementEntry.within(3001 to 3009)
+        AchievementEntry.within(3001 to 3019)
 
       case BrokenBlockRanking =>
         AchievementEntry.within(1001 to 1012)
