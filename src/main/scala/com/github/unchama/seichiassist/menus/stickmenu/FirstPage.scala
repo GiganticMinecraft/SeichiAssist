@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.menuinventory._
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
@@ -30,13 +30,14 @@ import org.bukkit.{Material, Sound}
  */
 object FirstPage extends Menu {
 
+  import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect.player.CommandEffect._
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
-    MenuFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー")
+    MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
 
   import com.github.unchama.targetedeffect._
 
@@ -720,7 +721,7 @@ object FirstPage extends Menu {
           targetedeffect.delay { player =>
             player.openInventory(
               InventoryUtil.createInventory(
-                size = Left(InventoryRowSize(4)),
+                size = 4.chestRows,
                 title = Some(s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください")
               )
             )
@@ -842,7 +843,7 @@ object FirstPage extends Menu {
           targetedeffect.delay { player =>
             player.openInventory(
               InventoryUtil.createInventory(
-                size = Left(InventoryRowSize(4)),
+                size = 4.chestRows,
                 title = Some(s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください")
               )
             )
