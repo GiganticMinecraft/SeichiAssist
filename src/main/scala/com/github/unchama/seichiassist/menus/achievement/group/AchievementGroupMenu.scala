@@ -57,7 +57,7 @@ object AchievementGroupMenu {
     val entriesToDisplay = {
       import com.github.unchama.menuinventory.syntax._
 
-      val displayPerPage = 3.rows.slotCount
+      val displayPerPage = 3.chestRows.slotCount
       val displayFromIndex = displayPerPage * (pageNumber - 1)
       val displayUptoIndex = displayFromIndex + displayPerPage
 
@@ -76,7 +76,7 @@ object AchievementGroupMenu {
       new Menu {
         import com.github.unchama.menuinventory.syntax._
 
-        override val frame: MenuFrame = MenuFrame(4.rows, ColorScheme.navigation(s"実績「${group.name}」"))
+        override val frame: MenuFrame = MenuFrame(4.chestRows, ColorScheme.navigation(s"実績「${group.name}」"))
 
         override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
           val toCategoryMenuButtonSection = Map(

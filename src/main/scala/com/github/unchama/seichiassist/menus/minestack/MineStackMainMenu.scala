@@ -19,7 +19,7 @@ object MineStackMainMenu extends Menu {
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
-    MenuFrame(6.rows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
+    MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
   val categoryButtonLayout: MenuSlotLayout = {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES => Material.DIAMOND_ORE

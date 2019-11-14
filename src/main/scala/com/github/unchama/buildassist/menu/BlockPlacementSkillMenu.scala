@@ -25,7 +25,7 @@ object BlockPlacementSkillMenu extends Menu {
   }
 
   override val frame: MenuFrame =
-    MenuFrame(4.rows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
+    MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
 
   override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._

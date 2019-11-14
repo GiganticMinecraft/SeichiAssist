@@ -12,7 +12,7 @@ object InventoryUtil {
   }
 
   def createInventory(holder: Option[InventoryHolder] = None,
-                      size: InventorySize = 4.rows,
+                      size: InventorySize = 4.chestRows,
                       title: Option[String] = None): Inventory =
     size match {
       case Left(size) => Bukkit.createInventory(holder.orNull, size.rows * 9, title.orNull)

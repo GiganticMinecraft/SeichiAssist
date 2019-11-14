@@ -5,7 +5,7 @@ import com.github.unchama.menuinventory.InventoryRowSize.InventorySize
 
 trait InventorySizeIntOps {
   implicit final class IntInventorySizeOps(val rowNumber: Int) {
-    def rows: InventorySize = Left(InventoryRowSize(rowNumber))
+    def chestRows: InventorySize = Left(InventoryRowSize(rowNumber))
   }
 }
 

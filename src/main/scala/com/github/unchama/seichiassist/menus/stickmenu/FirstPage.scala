@@ -37,7 +37,7 @@ object FirstPage extends Menu {
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
-    MenuFrame(4.rows, s"${LIGHT_PURPLE}木の棒メニュー")
+    MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
 
   import com.github.unchama.targetedeffect._
 
@@ -721,7 +721,7 @@ object FirstPage extends Menu {
           targetedeffect.delay { player =>
             player.openInventory(
               InventoryUtil.createInventory(
-                size = 4.rows,
+                size = 4.chestRows,
                 title = Some(s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください")
               )
             )
@@ -843,7 +843,7 @@ object FirstPage extends Menu {
           targetedeffect.delay { player =>
             player.openInventory(
               InventoryUtil.createInventory(
-                size = 4.rows,
+                size = 4.chestRows,
                 title = Some(s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください")
               )
             )

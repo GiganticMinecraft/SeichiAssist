@@ -24,7 +24,7 @@ object BuildMainMenu extends Menu {
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import menuinventory.syntax._
 
-  override val frame: MenuFrame = MenuFrame(4.rows, s"${LIGHT_PURPLE}木の棒メニューB")
+  override val frame: MenuFrame = MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニューB")
 
   private val EMPHASIZE = s"$UNDERLINE$BOLD"
 

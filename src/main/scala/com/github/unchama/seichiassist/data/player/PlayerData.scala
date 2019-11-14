@@ -222,7 +222,7 @@ class PlayerData(
   //region calculated
   // TODO many properties here may be inlined and deleted
   //拡張インベントリ
-  private var _pocketInventory: Inventory = createInventory(None, 1.rows, Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
+  private var _pocketInventory: Inventory = createInventory(None, 1.chestRows, Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
   //グリッド式保護関連
   private var claimUnit = ClaimUnit(0, 0, 0, 0)
 

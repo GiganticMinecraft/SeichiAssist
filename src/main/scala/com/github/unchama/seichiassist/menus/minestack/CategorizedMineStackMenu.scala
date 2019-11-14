@@ -16,14 +16,14 @@ object CategorizedMineStackMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import eu.timepit.refined.auto._
 
-  private val mineStackObjectPerPage = 5.rows.slotCount
+  private val mineStackObjectPerPage = 5.chestRows.slotCount
 
   /**
    * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
    */
   def forCategory(category: MineStackObjectCategory, pageIndex: Int = 0): Menu = new Menu {
     override val frame: MenuFrame =
-      MenuFrame(6.rows, s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
+      MenuFrame(6.chestRows, s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
 
     override def computeMenuLayout(player: Player): IO[MenuSlotLayout] =
       computeMenuLayoutOn(category, pageIndex)(player)

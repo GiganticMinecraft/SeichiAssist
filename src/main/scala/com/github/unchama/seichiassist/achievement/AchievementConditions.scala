@@ -112,7 +112,7 @@ object AchievementConditions {
           }
 
           import com.github.unchama.menuinventory.syntax._
-          (0 until 4.rows.slotCount)
+          (0 until 4.chestRows.slotCount)
             .map(player.getInventory.getItem(_))
             .forall(stackIsAsRequired)
         }

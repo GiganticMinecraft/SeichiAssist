@@ -32,7 +32,7 @@ object SecondPage extends Menu {
   import menuinventory.syntax._
 
   override val frame: MenuFrame =
-    MenuFrame(4.rows, s"${LIGHT_PURPLE}木の棒メニュー")
+    MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
 
   override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._
@@ -429,7 +429,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = 4.rows,
+                  size = 4.chestRows,
                   title = Some(s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ")
                 )
               )
@@ -465,7 +465,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = 4.rows,
+                  size = 4.chestRows,
                   title = Some(s"$GOLD${BOLD}修繕したい限定タイタンを入れてネ")
                 )
               )
@@ -494,7 +494,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = 4.rows,
+                  size = 4.chestRows,
                   title = Some(s"$RED${BOLD}ゴミ箱(取扱注意)")
                 )
               )
