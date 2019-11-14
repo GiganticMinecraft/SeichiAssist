@@ -100,7 +100,7 @@ object AchievementMenu extends Menu {
       Map(
         ChestSlotRef(0, 0) -> toggleTitleToPlayerLevelButton,
         ChestSlotRef(0, 8) -> toTitleConfigurationMenu,
-        ChestSlotRef(9, 0) -> CommonButtons.openStickMenu
+        ChestSlotRef(3, 0) -> CommonButtons.openStickMenu
       )
   }
 
