@@ -118,7 +118,7 @@ public class MebiusListener implements Listener {
     // 起動時
     public MebiusListener() {
         me = this;
-        if (SeichiAssist.seichiAssistConfig().getMebiusDebug() == 1) {
+        if (SeichiAssist.seichiAssistConfig().isInDebugMebiusMode()) {
             // mebiusdebug=1の時はコマンドでトグル可能
             Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "メビウス帽子のdebugモードトグル機能：有効");
             DEBUGENABLE = true;
