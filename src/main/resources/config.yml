@@ -154,18 +154,27 @@ GridLimitPerWorld:
 GridTemplateKeepAmount: '5'
 
 ##自動再生成時の設定
+AutoGenerete:
+  road:
+    height: &road_height 70
+    road_length: &road_chunk 8
+    road_y_margin: &road_margin 5
+    block:
+      id: &road_block_id 98
+      damage: &road_block_damage 0
+  world_size: &world_size 2000
 #道のY座標
-road_Y: 70
+road_Y: *road_height
 #道の長さ(チャンク単位)
-road_length: 8
+road_length: *road_chunk
 #道の上の空洞の高さ
-space_height: 5
+space_height: *road_margin
 #道のブロックID
-road_blockid: 98
+road_blockid: *road_block_id
 #道のブロックダメージ値
-road_blockdamage: 0
+road_blockdamage: *road_block_damage
 #再生成時のワールドサイズ
-world_size: 2000
+world_size: *world_size
 
 #貢献度1当たりのマナ増加量
 contribute_added_mana: 10
