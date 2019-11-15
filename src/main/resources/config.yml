@@ -20,6 +20,15 @@ pw: *db_password
 # 複数サーバ構成にする場合はこの値をサーバごとに変更します
 servernum: 1
 
+# 色々な設定、説明は割愛
+defaultmineamount: 3
+minutespeedamount: 0.01
+onlineplayersamount: 0.5
+presentinterval: 1000
+multipleidblockbreaklevel: 1
+passiveportalinventorylevel: 1
+dokodemoenderlevel: 25
+
 DropExp:
   - &dr1 6
   - &dr2 10
@@ -31,23 +40,6 @@ DropExp:
   - &dr8 76
   - &dr9 94
   - &dr10 114
-
-# 色々な設定、説明は割愛
-defaultmineamount: 3
-minutespeedamount: 0.01
-onlineplayersamount: 0.5
-presentinterval: 1000
-dualbreaklevel: 10
-trialbreaklevel: 20
-explosionlevel: 30
-thunderstormlevel: 40
-blizzardlevel: 50
-meteolevel: 60
-gravitylevel: 100
-multipleidblockbreaklevel: 1
-passiveportalinventorylevel: 1
-dokodemoenderlevel: 25
-
 
 # MineStackの開放レベルの設定
 MineStackLevel:
@@ -421,7 +413,6 @@ dropexplevel7: *dr7
 dropexplevel8: *dr8
 dropexplevel9: *dr9
 dropexplevel10: *dr10
-
 
 # 実績名の名称設定
 # 中パーツ(初期開放)
