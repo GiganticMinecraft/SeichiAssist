@@ -69,8 +69,8 @@ public class LimitedLoginEvent {
                     loginDays++;
                     configDays = 0;
                     do {
-                        internalItemId = Integer.parseInt(config.getLimitedLoginEventItem(configDays));
-                        amount = Integer.parseInt(config.getLimitedLoginEventAmount(configDays));
+                        internalItemId = config.getPresentItemIdForLimitedDurationCampaign(configDays).getAsInt();
+                        amount = config.getPresentAmountForLimitedDurationCampaign(configDays);
                         switch (internalItemId) {
                             case 1://配布対象「ガチャ券」
                                 final String message;
