@@ -135,16 +135,21 @@ public class Config {
         return config.getString("lv" + i + "message", "");
     }
 
+    private NicknameParts getNickname(final int i) {
+        // もしも存在しないIDであれば二つ名の代わりにエラーメッセージを返す
+        return Nicknames.map().get(i).getOrElse(() -> (NicknameParts) new Undefined(i));
+    }
+
     public String getTitle1(int i) {
-        return config.getString("AchvA" + i, "");
+        return getNickname(i).head().get();
     }
 
     public String getTitle2(int i) {
-        return config.getString("AchvB" + i, "");
+        return getNickname(i).middle().get();
     }
 
     public String getTitle3(int i) {
-        return config.getString("AchvC" + i, "");
+        return getNickname(i).tail().get();
     }
 
     //サーバー番号取得
