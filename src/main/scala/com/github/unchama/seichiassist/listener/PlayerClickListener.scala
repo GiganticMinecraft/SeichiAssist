@@ -339,8 +339,8 @@ class PlayerClickListener extends Listener {
       return
     }
 
-    //アクティブスキルを発動できるレベルに達していない場合処理終了
-    if (playerdata.level < SeichiAssist.seichiAssistConfig.getDualBreaklevel) {
+    //アクティブスキルを解禁できるスキルポイントに達していない場合処理終了
+    if (playerdata.activeskilldata.skillpoint < 10 /* Skills.DUAL_BREAK.getRequiredActiveSkillPoint() */) {
       return
     }
 
