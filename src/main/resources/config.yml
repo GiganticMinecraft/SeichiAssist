@@ -3,118 +3,425 @@
 
 # MySQLデータベースへの接続設定
 # xamppの設定を変えていなければデフォルトの値で問題ありません
-host: 'localhost'
-port: '3306'
-db: 'seichiassist'
-id: 'root'
-pw: ''
+database:
+  host: &db_host 'localhost'
+  # 特にポートを指定しないときは-1にする
+  port: &db_port 3306
+  table: &db_table 'seichiassist'
+  user: &db_user 'root'
+  password: &db_password ''
+host: *db_host
+port: *db_port
+db: *db_table
+id: *db_user
+pw: *db_password
 
 # サーバ識別設定
 # 複数サーバ構成にする場合はこの値をサーバごとに変更します
-servernum: '1'
+servernum: 1
+
+DropExp:
+  - &dr1 6
+  - &dr2 10
+  - &dr3 16
+  - &dr4 24
+  - &dr5 34
+  - &dr6 46
+  - &dr7 60
+  - &dr8 76
+  - &dr9 94
+  - &dr10 114
 
 # 色々な設定、説明は割愛
-defaultmineamount: '3'
-minutespeedamount: '0.01'
-onlineplayersamount: '0.5'
-presentinterval: '1000'
-dualbreaklevel: '10'
-trialbreaklevel: '20'
-explosionlevel: '30'
-thunderstormlevel: '40'
-blizzardlevel: '50'
-meteolevel: '60'
-gravitylevel: '100'
-multipleidblockbreaklevel: '1'
-dropexplevel1: '6'
-dropexplevel2: '10'
-dropexplevel3: '16'
-dropexplevel4: '24'
-dropexplevel5: '34'
-dropexplevel6: '46'
-dropexplevel7: '60'
-dropexplevel8: '76'
-dropexplevel9: '94'
-dropexplevel10: '114'
-passiveportalinventorylevel: '1'
-dokodemoenderlevel: '25'
+defaultmineamount: 3
+minutespeedamount: 0.01
+onlineplayersamount: 0.5
+presentinterval: 1000
+dualbreaklevel: 10
+trialbreaklevel: 20
+explosionlevel: 30
+thunderstormlevel: 40
+blizzardlevel: 50
+meteolevel: 60
+gravitylevel: 100
+multipleidblockbreaklevel: 1
+passiveportalinventorylevel: 1
+dokodemoenderlevel: 25
+
 
 # MineStackの開放レベルの設定
-minestacklevel1: '12'
-minestacklevel2: '17'
-minestacklevel3: '22'
-minestacklevel4: '27'
-minestacklevel5: '32'
-minestacklevel6: '37'
-minestacklevel7: '42'
-minestacklevel8: '47'
-minestacklevel9: '52'
-minestacklevel10: '57'
-minestacklevel11: '62'
-minestacklevel12: '67'
-minestacklevel13: '72'
-minestacklevel14: '77'
-minestacklevel15: '82'
-minestacklevel16: '87'
-minestacklevel17: '92'
-minestacklevel18: '97'
-minestacklevel19: '102'
-minestacklevel20: '107'
-minestacklevel21: '112'
-minestacklevel22: '117'
-minestacklevel23: '122'
-minestacklevel24: '127'
-minestacklevel25: '132'
-minestacklevel26: '137'
-minestacklevel27: '142'
-minestacklevel28: '147'
-minestacklevel29: '152'
-minestacklevel30: '157'
-minestacklevel31: '162'
-minestacklevel32: '167'
-minestacklevel33: '172'
-minestacklevel34: '177'
-minestacklevel35: '182'
-minestacklevel36: '187'
-minestacklevel37: '192'
-minestacklevel38: '197'
+MineStackLevel:
+- &ms1 12
+- &ms2 17
+- &ms3 22
+- &ms4 27
+- &ms5 32
+- &ms6 37
+- &ms7 42
+- &ms8 47
+- &ms9 52
+- &ms10 57
+- &ms11 62
+- &ms12 67
+- &ms13 72
+- &ms14 77
+- &ms15 82
+- &ms16 87
+- &ms17 92
+- &ms18 97
+- &ms19 102
+- &ms20 107
+- &ms21 112
+- &ms22 117
+- &ms23 122
+- &ms24 127
+- &ms25 132
+- &ms26 137
+- &ms27 142
+- &ms28 147
+- &ms29 152
+- &ms30 157
+- &ms31 162
+- &ms32 167
+- &ms33 172
+- &ms34 177
+- &ms35 182
+- &ms36 187
+- &ms37 192
+- &ms38 197
 
 # レベルアップ時にプレイヤーに表示されるメッセージの設定
-lv1message: "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
-lv2message: "おめでとうございます！最初のレベルアップです！\nレベル8に到達すると整地するだけで経験値がもらえるようになります。"
-lv3message: "やけに早く掘れる気がする…？それは仕様です＾＾\n整地鯖では接続人数や採掘量に応じて採掘速度にブーストが掛かります。"
-lv4message: "整地鯖では死んでもロストしません。気軽に冒険、整地してくださいね。\nそういえば当鯖の「ルール」もう確認しましたか？\n手遅れになる前に確認しておきましょうネ。木の棒メニューからどうぞ。"
-lv5message: "Dynmapでどこに誰がいるのか、何があるのかなどを見ることができます。\nURLはこちら→http://seichi.click/d/DynmapLinks"
-lv6message: "各ワールドへの移動方法は覚えていますか？\n木の棒メニューのビーコンボタンをクリックするとすぐ行けますよ！"
-lv7message: "あと300ブロックほど整地するとガチャ券を獲得できます！\nガチャ券を右クリックすると豪華景品が獲得できるかも？"
-lv8message: "おめでとう！新しいパッシブスキル[マナ獲得]を解除しました。\n特定のブロック破壊で確率でマナを獲得できるようになりました！"
-lv9message: "整地鯖をもっと良くするために、是非JPMCSに投票をお願いします。\n1日1回投票出来ます。投票すると様々な特典を受け取れます！\nURLはこちら→https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote"
-lv10message: "初めてのアクティブスキル[デュアルブレイク]を習得できます！\n習得するには木の棒メニューのスキルブックをクリック！\nレベル12に到達するとMineStack機能が使えるようになります。\nブロック破壊スキルでは溶岩も消去することができますが溶岩1個につきブロック10個分の耐久値を消費します。"
-lv11message: "そろそろ家建てません…？自分の家はメインワールドで建てることができます。\n他人の保護の無い所に保護を設定してから建てましょう。\n保護方法は公式wikiに詳しい説明があります。木の棒メニューからどうぞ。\n自分のチェストは設定した保護内に置けば自動でロックされます。"
-lv12message: "MineStack機能を解除しました！木の棒メニューから呼び出せます。\n対象ブロックを無限にスタック出来、いつでも取り出せます。\nレベル16に到達すると四次元ポケットが使えるようになります。"
-lv13message: "建築の時など、採掘速度のブースト効果が邪魔な時は\n木の棒メニューから効果のONとOFFを変更できます。"
-lv14message: "「ガチャ券がイチイチ地面に落っこちるのがうざい！」\nって人に朗報です。木の棒メニューからガチャ券の取得方法を変更できます。"
-lv15message: "家を建てたら木の棒メニューからホームポイントを設定しておきましょう。\nどこからでもクリック1つで自宅へ瞬間移動できますよ！"
-lv18message: "整地の際に獲得できる経験値量が増えました。\n経験値量は10レベルごとに増加し、スキルがより長く使えるようになります！"
-lv20message: "新しいアクティブスキル[トリアルブレイク]を習得できます！\n習得するには木の棒メニューのスキルブックをクリック！"
-lv25message: "どこでもエンダーチェスト機能を解除しました！\n木の棒メニューから呼び出せます。"
-lv28message: "整地の際に獲得できる経験値量が増えました。"
-lv30message: "新しいアクティブスキル[エクスプロージョン]を習得できます！\n習得するには木の棒メニューのスキルブックをクリック！"
-lv38message: "整地の際に獲得できる経験値量が増えました。"
-lv40message: "新しいアクティブスキルを習得できます！\n習得するには木の棒メニューのスキルブックをクリック！\nツリーが分かれていますので、お好きなスキルをドウゾ。"
-lv46message: "四次元ポケットの容量が増加しました！"
-lv48message: "整地の際に獲得できる経験値量が増えました。"
-lv56message: "四次元ポケットの容量が増加しました！"
-lv58message: "整地の際に獲得できる経験値量が増えました。"
-lv66message: "四次元ポケットの容量が増加しました！"
-lv68message: "整地の際に獲得できる経験値量が増えました。"
-lv78message: "整地の際に獲得できる経験値量が増えました。"
-lv88message: "整地の際に獲得できる経験値量が増えました。"
-lv98message: "整地の際に獲得できる経験値量が増えました。"
+LevelUpMessage:
+  1: &lv1 |
+    整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。
+    初めての方は整地ワールドで掘ってレベルを上げてみましょう！
+    木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！
+  2: &lv2 |
+    おめでとうございます！最初のレベルアップです！
+    レベル8に到達すると整地するだけで経験値がもらえるようになります。
+  3: &lv3 |
+    やけに早く掘れる気がする…？それは仕様です＾＾
+    整地鯖では接続人数や採掘量に応じて採掘速度にブーストが掛かります。
+  4: &lv4 |
+    整地鯖では死んでもロストしません。気軽に冒険、整地してくださいね。
+    そういえば当鯖の「ルール」もう確認しましたか？
+    手遅れになる前に確認しておきましょうネ。木の棒メニューからどうぞ。
+  5: &lv5 |
+    Dynmapでどこに誰がいるのか、何があるのかなどを見ることができます。
+    URLはこちら→http://seichi.click/d/DynmapLinks
+  6: &lv6 |
+    各ワールドへの移動方法は覚えていますか？
+    木の棒メニューのビーコンボタンをクリックするとすぐ行けますよ！
+  7: &lv7 |
+    あと300ブロックほど整地するとガチャ券を獲得できます！
+    ガチャ券を右クリックすると豪華景品が獲得できるかも？
+  8: &lv8 |
+    おめでとう！新しいパッシブスキル[マナ獲得]を解除しました。
+    特定のブロック破壊で確率でマナを獲得できるようになりました！
+  9: &lv9 |
+    整地鯖をもっと良くするために、是非JPMCSに投票をお願いします。
+    1日1回投票出来ます。投票すると様々な特典を受け取れます！
+    URLはこちら→https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote
+  10: &lv10 |
+    初めてのアクティブスキル[デュアルブレイク]を習得できます！\n習得するには木の棒メニューのスキルブックをクリック！
+    レベル12に到達するとMineStack機能が使えるようになります。
+    ブロック破壊スキルでは溶岩も消去することができますが溶岩1個につきブロック10個分の耐久値を消費します。
+  11: &lv11 |
+    そろそろ家建てません…？自分の家はメインワールドで建てることができます。\n他人の保護の無い所に保護を設定してから建てましょう。
+    保護方法は公式wikiに詳しい説明があります。木の棒メニューからどうぞ。
+    自分のチェストは設定した保護内に置けば自動でロックされます。
+  12: &lv12 |
+    MineStack機能を解除しました！木の棒メニューから呼び出せます。
+    対象ブロックを無限にスタック出来、いつでも取り出せます。
+    レベル16に到達すると四次元ポケットが使えるようになります。
+  13: &lv13 |
+    建築の時など、採掘速度のブースト効果が邪魔な時は
+    木の棒メニューから効果のONとOFFを変更できます。
+  14: &lv14 |
+    「ガチャ券がイチイチ地面に落っこちるのがうざい！」
+    って人に朗報です。木の棒メニューからガチャ券の取得方法を変更できます。
+  15: &lv15 |
+    家を建てたら木の棒メニューからホームポイントを設定しておきましょう。
+    どこからでもクリック1つで自宅へ瞬間移動できますよ！
+  18: &lv18 |
+    整地の際に獲得できる経験値量が増えました。
+    経験値量は10レベルごとに増加し、スキルがより長く使えるようになります！
+  20: &lv20 |
+    新しいアクティブスキル[トリアルブレイク]を習得できます！
+    習得するには木の棒メニューのスキルブックをクリック！
+  25: &lv25 |
+    どこでもエンダーチェスト機能を解除しました！
+    木の棒メニューから呼び出せます。
+  28: &lv28 |
+    整地の際に獲得できる経験値量が増えました。
+  30: &lv30 |
+    新しいアクティブスキル[エクスプロージョン]を習得できます！
+    習得するには木の棒メニューのスキルブックをクリック！
+  38: &lv38 |
+    整地の際に獲得できる経験値量が増えました。
+  40: &lv40 |
+    新しいアクティブスキルを習得できます！
+    習得するには木の棒メニューのスキルブックをクリック！
+    ツリーが分かれていますので、お好きなスキルをドウゾ。
+  46: &lv46 |
+    四次元ポケットの容量が増加しました！
+  48: &lv48 |
+    整地の際に獲得できる経験値量が増えました。
+  56: &lv56 |
+    四次元ポケットの容量が増加しました！
+  58: &lv58 |
+    整地の際に獲得できる経験値量が増えました。
+  66: &lv66 |
+    四次元ポケットの容量が増加しました！
+  68: &lv68 |
+    整地の際に獲得できる経験値量が増えました。
+  78: &lv78 |
+    整地の際に獲得できる経験値量が増えました。
+  88: &lv88 |
+    整地の際に獲得できる経験値量が増えました。
+  98: &lv98 |
+    整地の際に獲得できる経験値量が増えました。
+
+#貢献度1当たりのマナ増加量
+contribute_added_mana: 10
+
+#期間限定ログインイベント(ここの設定を変更することで毎年使いまわしが可能です。)
+#日付は必ず"西暦4桁/月2桁/日2桁"で入力すること!!
+LimitedLoginEvent:
+  #開始日(この日からカウントされるようになります)
+  EventStart: "2019/03/01"
+  #終了日(この日が最後のカウント対象になります)
+  EventEnd: "2019/03/31"
+
+  #報酬設定
+  #DAY0のデータは毎日配布されます
+  #それ以外のデータは、期間内の累計ログイン数がその値になった日のみ配布されます
+  #Itemで配布内容を、Amountで数量を指定します
+  Present:
+    Everyday:
+      Item: &everyday_item 1
+      Amount: &everyday_amount 30
+    20:
+      Item: &day20_item 1
+      Amount: &day20_amount 100
+  DAY0_Item: *everyday_item
+  DAY0_Amount: *everyday_amount
+  DAY20_Item: *day20_item
+  DAY20_Amount: *day20_amount
+  #Tips:[Item]内容一覧(追加・変更はコード修正が必要です)
+  #"1":ガチャ券
+
+#お正月イベント関連(ここの設定を変更することで毎年使いまわしが可能です。)
+#日付は必ず"西暦4桁-月2桁-日2桁"で入力すること!!
+NewYearEvent:
+  #お正月用「年越し蕎麦」配布日
+  GivingNewYearSobaDay: "2017-12-31"
+  #お正月用「年越し蕎麦」Loreに記入される年
+  NewYearSobaYear: "2017"
+  #お年玉袋ドロップ開始日/終了日
+  DropNewYearBagStartDay: "2018-01-01"
+  DropNewYearBagEndDay: "2018-01-31"
+  #お年玉袋ドロップ数(1/nブロック)
+  NewYearBagDropProbability: 500
+  #(お年玉袋ItemNBT識別用);基本的に来年度の年を入力してください。
+  NewYear: "2018"
+  #正月リンゴの使用可能期限
+  NewYearAppleStartDay: "2018-01-01"
+  NewYearAppleEndDay: "2018-02-07"
+
+#GiganticBerserk
+#1分間上限
+GBLimit: 20
+
+#各種URL
+Url:
+  official: "https://www.seichi.network/gigantic"
+  rule: "https://www.seichi.network/rule"
+  map: "https://www.seichi.network/map"
+  jms: "https://minecraft.jp/servers/54d3529e4ddda180780041a7"
+
+#Fly時の1分辺りの経験値消費量
+flyexp: '50'
+
+#ブロックを並べるスキル
+blocklineup:
+  level: '15'
+  mana_mag: '0.0'
+  minestack_level: '30'
+
+#範囲設置スキル
+ZoneSetSkill:
+  level: '15'
+  minestack: '30'
+
+#スキルを使って並べた時のブロックカウント倍率
+BlockCountMag: '0.2'
+
+# MineStackブロック一括クラフト
+minestack_BlockCraft:
+  level1: '25'
+  level2: '35'
+  level3: '45'
+
+#ブロック設置カウントの1分上限
+BuildNum1minLimit: '256'
+
+# デバッグモードの設定
+# debugmode: false=デバッグモードオフ, true=デバッグモードオン
+# 変更値を反映させるにはサーバを再起動するか/reloadしてください
+debugmode: true
+
+# デバッグモード(メビウス帽子専用)の設定
+# debugmode: false=デバッグモードオフ, true=デバッグモードオン
+# 変更値を反映させるにはサーバを再起動するか/reloadしてください
+mebiusdebug: true
+
+# ギガンティック→椎名林檎交換レートの設定
+# デフォルト値はギガンティック1個につき椎名林檎4個
+ConvertRateToShina: 4
+
+# ギガンティック・フィーバーの効果継続時間を指定します。(単位:分)
+gigantic_fever_minutes: 120
+
+GridProtect:
+  # グリッド式保護メニュー経由で保護が可能なワールド名一覧
+  # ここに記載されたワールド名ではworldguard.region.claimパーミッションが無くても
+  # グリッド式保護メニュー経由で保護が可能になります
+  EnableWorld: &gp_ew
+    - world_test
+  Limits:
+    ## デフォルト値
+    Default: &gp_others 32
+    ## ワールド毎の最大個数
+    Worlds:
+      world: &gp_w1 16
+      world_2: &gp_w2 32
+  #グリッド式保護のテンプレート保存最大数
+  MaxTemplates: &gp_tm 5
+
+##自動再生成時の設定
+AutoGenerete:
+  road:
+    height: &road_height 70
+    road_length: &road_chunk 8
+    road_y_margin: &road_margin 5
+    block:
+      id: &road_block_id 98
+      damage: &road_block_damage 0
+  world_size: &world_size 2000
 
 # サブホームポイント数の設定
 # 7以下に設定
 subhomemax: 5
+
+### 以下の項目はレガシーなキーでありシンボリックリンクなので変更しないこと ###
+
+# MineStackの開放レベルとMineStackが持つレベル層の関係
+minestacklevel1: *ms1
+minestacklevel2: *ms2
+minestacklevel3: *ms3
+minestacklevel4: *ms4
+minestacklevel5: *ms5
+minestacklevel6: *ms6
+minestacklevel7: *ms7
+minestacklevel8: *ms8
+minestacklevel9: *ms9
+minestacklevel10: *ms10
+minestacklevel11: *ms11
+minestacklevel12: *ms12
+minestacklevel13: *ms13
+minestacklevel14: *ms14
+minestacklevel15: *ms15
+minestacklevel16: *ms16
+minestacklevel17: *ms17
+minestacklevel18: *ms18
+minestacklevel19: *ms19
+minestacklevel20: *ms20
+minestacklevel21: *ms21
+minestacklevel22: *ms22
+minestacklevel23: *ms23
+minestacklevel24: *ms24
+minestacklevel25: *ms25
+minestacklevel26: *ms26
+minestacklevel27: *ms27
+minestacklevel28: *ms28
+minestacklevel29: *ms29
+minestacklevel30: *ms30
+minestacklevel31: *ms31
+minestacklevel32: *ms32
+minestacklevel33: *ms33
+minestacklevel34: *ms34
+minestacklevel35: *ms35
+minestacklevel36: *ms36
+minestacklevel37: *ms37
+minestacklevel38: *ms38
+
+# レベルアップ時にプレイヤーに表示されるメッセージの設定
+lv1message: *lv1
+lv2message: *lv2
+lv3message: *lv3
+lv4message: *lv4
+lv5message: *lv5
+lv6message: *lv6
+lv7message: *lv7
+lv8message: *lv8
+lv9message: *lv9
+lv10message: *lv10
+lv11message: *lv11
+lv12message: *lv12
+lv13message: *lv13
+lv14message: *lv14
+lv15message: *lv15
+lv18message: *lv18
+lv20message: *lv20
+lv25message: *lv25
+lv28message: *lv28
+lv30message: *lv30
+lv38message: *lv38
+lv40message: *lv40
+lv46message: *lv46
+lv48message: *lv48
+lv56message: *lv56
+lv58message: *lv58
+lv66message: *lv66
+lv68message: *lv68
+lv78message: *lv78
+lv88message: *lv88
+lv98message: *lv98
+
+#再生成関連
+#道のY座標
+road_Y: *road_height
+#道の長さ(チャンク単位)
+road_length: *road_chunk
+#道の上の空洞の高さ
+space_height: *road_margin
+#道のブロックID
+road_blockid: *road_block_id
+#道のブロックダメージ値
+road_blockdamage: *road_block_damage
+#再生成時のワールドサイズ
+world_size: *world_size
+
+GridProtectEnableWorld: *gp_ew
+GridLimitDefault: *gp_others
+GridLimitPerWorld:
+  world: *gp_w1
+  world_2: *gp_w2
+
+GridTemplateKeepAmount: *gp_tm
+
+dropexplevel1: *dr1
+dropexplevel2: *dr2
+dropexplevel3: *dr3
+dropexplevel4: *dr4
+dropexplevel5: *dr5
+dropexplevel6: *dr6
+dropexplevel7: *dr7
+dropexplevel8: *dr8
+dropexplevel9: *dr9
+dropexplevel10: *dr10
+
 
 # 実績名の名称設定
 # 中パーツ(初期開放)
@@ -555,138 +862,3 @@ AchvA9035: "無尽蔵"
 AchvC9035: "気力"
 AchvA9036: "猛毒"
 AchvC9036: "直撃"
-
-# デバッグモードの設定
-# debugmode: 0=デバッグモードオフ, 1=デバッグモードオン
-# 変更値を反映させるにはサーバを再起動するか/reloadしてください
-debugmode: '0'
-
-# デバッグモード(メビウス帽子専用)の設定
-# debugmode: 0=デバッグモードオフ, 1=デバッグモードオン
-# 変更値を反映させるにはサーバを再起動するか/reloadしてください
-mebiusdebug: '0'
-
-# ギガンティック→椎名林檎交換レートの設定
-# デフォルト値はギガンティック1個につき椎名林檎4個
-rategigantictoringo: '4'
-
-# ギガンティック・フィーバーの効果継続時間を指定します。(単位:分)
-gigantic_fever_minutes: 120
-
-# グリッド式保護メニュー経由で保護が可能なワールド名一覧
-# ここに記載されたワールド名ではworldguard.region.claimパーミッションが無くても
-# グリッド式保護メニュー経由で保護が可能になります
-GridProtectEnableWorld:
-  - world_test
-
-# グリッドで指定可能な最大ユニット合計数の設定
-# (15ブロック=1ユニット)
-## デフォルト値
-GridLimitDefault: '32'
-## ワールド毎の値(ここにないワールドはDefault値を見る)
-GridLimitPerWorld:
-  world: '16'
-  world_2: '32'
-
-#グリッド式保護のテンプレート保存最大数
-GridTemplateKeepAmount: '5'
-
-##自動再生成時の設定
-AutoGenerete:
-  road:
-    height: &road_height 70
-    road_length: &road_chunk 8
-    road_y_margin: &road_margin 5
-    block:
-      id: &road_block_id 98
-      damage: &road_block_damage 0
-  world_size: &world_size 2000
-#道のY座標
-road_Y: *road_height
-#道の長さ(チャンク単位)
-road_length: *road_chunk
-#道の上の空洞の高さ
-space_height: *road_margin
-#道のブロックID
-road_blockid: *road_block_id
-#道のブロックダメージ値
-road_blockdamage: *road_block_damage
-#再生成時のワールドサイズ
-world_size: *world_size
-
-#貢献度1当たりのマナ増加量
-contribute_added_mana: 10
-
-#期間限定ログインイベント(ここの設定を変更することで毎年使いまわしが可能です。)
-#日付は必ず"西暦4桁/月2桁/日2桁"で入力すること!!
-LimitedLoginEvent:
-  #開始日(この日からカウントされるようになります)
-  EventStart: "2019/03/01"
-  #終了日(この日が最後のカウント対象になります)
-  EventEnd: "2019/03/31"
-
-  #報酬設定
-  #DAY0のデータは毎日配布されます
-  #それ以外のデータは、期間内の累計ログイン数がその値になった日のみ配布されます
-  #Itemで配布内容を、Amountで数量を指定します
-  DAY0_Item: "1"
-  DAY0_Amount: "30"
-  DAY20_Item: "1"
-  DAY20_Amount: "100"
-  #Tips:[Item]内容一覧(追加・変更はコード修正が必要です)
-  #"1":ガチャ券
-
-#お正月イベント関連(ここの設定を変更することで毎年使いまわしが可能です。)
-#日付は必ず"西暦4桁-月2桁-日2桁"で入力すること!!
-NewYearEvent:
-  #お正月用「年越し蕎麦」配布日
-  GivingNewYearSobaDay: "2017-12-31"
-  #お正月用「年越し蕎麦」Loreに記入される年
-  NewYearSobaYear: "2017"
-  #お年玉袋ドロップ開始日/終了日
-  DropNewYearBagStartDay: "2018-01-01"
-  DropNewYearBagEndDay: "2018-01-31"
-  #お年玉袋ドロップ数(1/nブロック)
-  NewYearBagDropProbability: 500
-  #(お年玉袋ItemNBT識別用);基本的に来年度の年を入力してください。
-  NewYear: "2018"
-  #正月リンゴの使用可能期限
-  NewYearAppleStartDay: "2018-01-01"
-  NewYearAppleEndDay: "2018-02-07"
-
-#GiganticBerserk
-#1分間上限
-GBLimit: 20
-
-#各種URL
-Url:
-  official: "https://www.seichi.network/gigantic"
-  rule: "https://www.seichi.network/rule"
-  map: "https://www.seichi.network/map"
-  jms: "https://minecraft.jp/servers/54d3529e4ddda180780041a7"
-
-#Fly時の1分辺りの経験値消費量
-flyexp: '50'
-
-#ブロックを並べるスキル
-blocklineup:
-  level: '15'
-  mana_mag: '0.0'
-  minestack_level: '30'
-
-#範囲設置スキル
-ZoneSetSkill:
-  level: '15'
-  minestack: '30'
-
-#スキルを使って並べた時のブロックカウント倍率
-BlockCountMag: '0.2'
-
-# MineStackブロック一括クラフト
-minestack_BlockCraft:
-  level1: '25'
-  level2: '35'
-  level3: '45'
-
-#ブロック設置カウントの1分上限
-BuildNum1minLimit: '256'
