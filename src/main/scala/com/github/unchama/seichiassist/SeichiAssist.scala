@@ -50,10 +50,10 @@ class SeichiAssist extends JavaPlugin() {
 
 
     //コンフィグ系の設定は全てConfig.javaに移動
-    SeichiAssist.seichiAssistConfig = new Config(this)
+    SeichiAssist.seichiAssistConfig = new Config()
     SeichiAssist.seichiAssistConfig.loadConfig()
 
-    if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
+    if (SeichiAssist.seichiAssistConfig.isInDebugMode) {
       //debugmode=1の時は最初からデバッグモードで鯖を起動
       logger.info(s"${RED}seichiassistをデバッグモードで起動します")
       logger.info(s"${RED}コンソールから/seichi debugmode")

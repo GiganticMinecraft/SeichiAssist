@@ -9,38 +9,32 @@ import java.util.OptionalInt;
 
 public class Config {
     private static FileConfiguration config;
-    private SeichiAssist plugin;
 
-    //コンストラクタ
-    Config(SeichiAssist _plugin) {
-        plugin = _plugin;
+    Config() {
         saveDefaultConfig();
     }
 
-    //コンフィグのロード
     public void loadConfig() {
         config = getConfig();
     }
 
-    //コンフィグのリロード
     public void reloadConfig() {
-        plugin.reloadConfig();
+        SeichiAssist.instance().reloadConfig();
         config = getConfig();
     }
 
-    //コンフィグのセーブ
     public void saveConfig() {
-        plugin.saveConfig();
+        SeichiAssist.instance().saveConfig();
     }
 
     //config.ymlがない時にDefaultのファイルを生成
     public void saveDefaultConfig() {
-        plugin.saveDefaultConfig();
+        SeichiAssist.instance().saveDefaultConfig();
     }
 
     //config.ymlファイルからの読み込み
     public FileConfiguration getConfig() {
-        return plugin.getConfig();
+        return SeichiAssist.instance().getConfig();
     }
 
     public double getMinuteMineSpeed() {
@@ -53,38 +47,6 @@ public class Config {
 
     public int getGachaPresentInterval() {
         return config.getInt("presentinterval");
-    }
-
-    public int getDefaultMineAmount() {
-        return config.getInt("defaultmineamount");
-    }
-
-    public int getDualBreaklevel() {
-        return config.getInt("dualbreaklevel");
-    }
-
-    public int getTrialBreaklevel() {
-        return config.getInt("trialbreaklevel");
-    }
-
-    public int getExplosionlevel() {
-        return config.getInt("explosionlevel");
-    }
-
-    public int getThunderStormlevel() {
-        return config.getInt("thunderstormlevel");
-    }
-
-    public int getBlizzardlevel() {
-        return config.getInt("blizzardlevel");
-    }
-
-    public int getMeteolevel() {
-        return config.getInt("meteolevel");
-    }
-
-    public int getGravitylevel() {
-        return config.getInt("gravitylevel");
     }
 
     public int getMultipleIDBlockBreaklevel() {
@@ -161,25 +123,15 @@ public class Config {
 
     //サブホーム最大数取得
     public int getSubHomeMax() {
-        return TypeConverter.toInt(config.getString("subhomemax"));
+        return config.getInt("subhomemax");
     }
 
     public boolean isInDebugMode() {
         return config.getBoolean("debugmode");
     }
 
-    @Deprecated
-    public int getDebugMode() {
-        return isInDebugMode() ? 1 : 0;
-    }
-
     public boolean isInDebugMebiusMode() {
         return config.getBoolean("mebiusdebug");
-    }
-
-    @Deprecated
-    public int getMebiusDebug() {
-        return isInDebugMebiusMode() ? 1 : 0;
     }
 
     public int rateGiganticToRingo() {
@@ -327,6 +279,6 @@ public class Config {
      * @return 該当URL.ただし, typeNameが誤っていた場合は""を返します.
      */
     public String getUrl(String typeName) {
-        return config.getString("Url." + typeName);
+        return config.getString("Url." + typeName, "");
     }
 }

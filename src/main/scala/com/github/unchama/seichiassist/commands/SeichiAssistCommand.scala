@@ -33,7 +33,7 @@ object SeichiAssistCommand {
     .execution { _ =>
       IO {
         //debugフラグ反転処理
-        if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
+        if (SeichiAssist.seichiAssistConfig.isInDebugMode) {
           //メッセージフラグを反転
           SeichiAssist.DEBUG = !SeichiAssist.DEBUG
           SeichiAssist.instance.restartRepeatedJobs()
