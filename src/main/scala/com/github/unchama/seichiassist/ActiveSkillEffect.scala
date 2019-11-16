@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
+import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
 import enumeratum._
@@ -26,14 +27,14 @@ sealed abstract class ActiveSkillEffect(val num: Int,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
                      breakList: Set[Block],
-                     start: Coordinate,
-                     end: Coordinate,
+                     start: XYZTuple,
+                     end: XYZTuple,
                      standard: Location): BukkitTask = {
     val plugin = SeichiAssist.instance
     val skillId = skillData.skillnum
 
     this match {
-      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start.toXYZTuple, end.toXYZTuple, standard).runTask(plugin)
+      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start, end, standard).runTask(plugin)
       case Blizzard =>
         val effect = new BlizzardTask(player, skillData, tool, breakList, start, end, standard)
 
