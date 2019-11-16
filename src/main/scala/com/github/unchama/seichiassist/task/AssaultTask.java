@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.effect.XYZTuple;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.ChatColor;
@@ -38,7 +39,7 @@ public class AssaultTask extends BukkitRunnable {
     PlayerInventory inventory;
     ItemStack tool;
     //一回の破壊の範囲
-    Coordinate breaklength;
+    XYZTuple breaklength;
     //１回の全て破壊したときのブロック数
     int ifallbreaknum;
     //破壊エリアデータ
@@ -138,7 +139,7 @@ public class AssaultTask extends BukkitRunnable {
         } else if (playerdata.activeskilldata().assaulttype == ActiveSkill.ARMOR.gettypenum()) {
             breakflag = true;
         }
-        ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z);
+        ifallbreaknum = (breaklength.x() * breaklength.y() * breaklength.z());
 
 
     }
@@ -224,12 +225,12 @@ public class AssaultTask extends BukkitRunnable {
             assaultarea.setDir(dir);
             assaultarea.makeArea();
         }
-        Coordinate start = assaultarea.getStartList().get(0);
-        Coordinate end = assaultarea.getEndList().get(0);
+        XYZTuple start = assaultarea.getStartList().get(0);
+        XYZTuple end = assaultarea.getEndList().get(0);
 
-        for (int y = end.y; y >= start.y; y--) { //上から
-            for (int x = start.x; x <= end.x; x++) {
-                for (int z = start.z; z <= end.z; z++) {
+        for (int y = end.y(); y >= start.y(); y--) { //上から
+            for (int x = start.x(); x <= end.x(); x++) {
+                for (int z = start.z(); z <= end.z(); z++) {
                     breakblock = block.getRelative(x, y, z);
                     boolean lava_materialflag = breakblock.getType() == Material.STATIONARY_LAVA
                             || breakblock.getType() == Material.LAVA;

@@ -7,10 +7,6 @@ case class XYZTuple(x: Int, y: Int, z: Int)
 object XYZTuple {
 
   implicit class CoordinateOps(val coordinate: Coordinate) extends AnyVal {
-
-    import coordinate._
-
-    def toXYZTuple = XYZTuple(x, y, z)
   }
 
   case class AxisAlignedCuboid(begin: XYZTuple, end: XYZTuple)

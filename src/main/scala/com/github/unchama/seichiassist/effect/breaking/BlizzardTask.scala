@@ -13,8 +13,8 @@ import org.bukkit.{Effect, Location, Material}
 class BlizzardTask(private val player: Player, private val skillData: ActiveSkillData,
                    private val tool: ItemStack,
                    private val blocks: Set[Block],
-                   private val start: Coordinate,
-                   private val end: Coordinate,
+                   private val start: XYZTuple,
+                   private val end: XYZTuple,
                    private val droploc: Location) extends RoundedTask() {
   //音の聞こえる距離
   private var soundRadius: Int = 0
@@ -41,7 +41,7 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
 
   override def secondAction(): Unit = {
     //2回目のrun
-    AxisAlignedCuboid(XYZTuple(start.x, start.y, start.z), XYZTuple(end.x, end.y, end.z))
+    AxisAlignedCuboid(start, end)
       .forEachGridPoint() { xyzTuple: XYZTuple =>
         //逐一更新が必要な位置
         val effectloc = droploc.clone().add(xyzTuple.x.toDouble, xyzTuple.y.toDouble, xyzTuple.z.toDouble)
