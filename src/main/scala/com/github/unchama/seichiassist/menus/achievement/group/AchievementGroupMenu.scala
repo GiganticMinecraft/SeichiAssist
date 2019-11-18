@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 object AchievementGroupMenu {
@@ -64,7 +65,7 @@ object AchievementGroupMenu {
       sequentialEntriesIn(group).slice(displayFromIndex, displayUptoIndex)
     }
 
-    val groupAchievementsCount = entriesToDisplay.size
+    val groupAchievementsCount = sequentialEntriesIn(group).size
     val maxPageNumber = Math.ceil(groupAchievementsCount / 27.0).toInt
 
     if (entriesToDisplay.isEmpty) {
