@@ -8,5 +8,5 @@ object NicknameStyle {
   def marshal(isLevel: Boolean): NicknameStyle = if (isLevel) Level else TitleCombination
 }
 
-case class PlayerNickName(style: NicknameStyle = NicknameStyle.TitleCombination,
+case class PlayerNickname(style: NicknameStyle = NicknameStyle.TitleCombination,
                           id1: Int = 0, id2: Int = 0, id3: Int = 0)

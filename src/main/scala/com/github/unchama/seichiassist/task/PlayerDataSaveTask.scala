@@ -187,10 +187,10 @@ object PlayerDataSaveTask {
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
           + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteMessages
 
-          + ",displayTypeLv = " + (playerdata.settings.nickName.style == NicknameStyle.Level)
-          + ",displayTitle1No = " + playerdata.settings.nickName.id1
-          + ",displayTitle2No = " + playerdata.settings.nickName.id2
-          + ",displayTitle3No = " + playerdata.settings.nickName.id3
+          + ",displayTypeLv = " + (playerdata.settings.nickname.style == NicknameStyle.Level)
+          + ",displayTitle1No = " + playerdata.settings.nickname.id1
+          + ",displayTitle2No = " + playerdata.settings.nickname.id2
+          + ",displayTitle3No = " + playerdata.settings.nickname.id3
           + ",giveachvNo = " + playerdata.giveachvNo
           + ",achvPointMAX = " + playerdata.achievePoint.fromUnlockedAchievements
           + ",achvPointUSE = " + playerdata.achievePoint.used

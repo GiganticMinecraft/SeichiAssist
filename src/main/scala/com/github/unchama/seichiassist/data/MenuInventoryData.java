@@ -744,8 +744,8 @@ public class MenuInventoryData {
         itemstack = new ItemStack(Material.BOOK, 1);
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.seichiAssistConfig().getTitle1(playerdata.settings().nickName().id1())
-                + SeichiAssist.seichiAssistConfig().getTitle2(playerdata.settings().nickName().id2()) + SeichiAssist.seichiAssistConfig().getTitle3(playerdata.settings().nickName().id3()) + "」");
+        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.seichiAssistConfig().getTitle1(playerdata.settings().nickname().id1())
+                + SeichiAssist.seichiAssistConfig().getTitle2(playerdata.settings().nickname().id2()) + SeichiAssist.seichiAssistConfig().getTitle3(playerdata.settings().nickname().id3()) + "」");
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemmeta.setLore(lore);
         itemstack.setItemMeta(itemmeta);

@@ -21,7 +21,7 @@ object MebiusCommand {
       Map(
         "get" -> getExecutor,
         "debug" -> debugExecutor,
-        "nickname" -> ChildExecutors.NickNameCommand.executor,
+        "nickname" -> ChildExecutors.NicknameCommand.executor,
         "naming" -> namingExecutor
       ), whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
@@ -84,8 +84,8 @@ object MebiusCommand {
       }
       .build()
 
-    object NickNameCommand {
-      private val checkNickNameExecutor = playerCommandBuilder
+    object NicknameCommand {
+      private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
           val message = MebiusListener.getNickname(context.sender)
             .ifNotNull(name => s"${GREEN}現在のメビウスからの呼び名 : $name")
@@ -95,7 +95,7 @@ object MebiusCommand {
         }
         .build()
 
-      private val resetNickNameExecutor = playerCommandBuilder
+      private val resetNicknameExecutor = playerCommandBuilder
         .execution { context =>
           val message = if (MebiusListener.setNickname(context.sender, context.sender.getName)) {
             s"${GREEN}メビウスからの呼び名を${context.sender.getName}にリセットしました."
@@ -107,7 +107,7 @@ object MebiusCommand {
         }
         .build()
 
-      private val setNickNameExecutor = playerCommandBuilder
+      private val setNicknameExecutor = playerCommandBuilder
         .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
         .execution { context =>
           val newName = s"${context.args.parsed(0).asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
@@ -122,9 +122,9 @@ object MebiusCommand {
         .build()
 
       val executor = BranchedExecutor(Map(
-        "reset" -> resetNickNameExecutor,
-        "set" -> setNickNameExecutor
-      ), whenArgInsufficient = Some(checkNickNameExecutor), whenBranchNotFound = Some(checkNickNameExecutor))
+        "reset" -> resetNicknameExecutor,
+        "set" -> setNicknameExecutor
+      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
     }
   }
 }

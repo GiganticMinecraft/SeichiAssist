@@ -320,7 +320,7 @@ class PlayerData(
       else ""
 
     displayName = idleColor + {
-      val nickname = settings.nickName
+      val nickname = settings.nickname
       val hasNothingSet = Seq(nickname.id1, nickname.id2, nickname.id3).forall(_ == 0)
 
       if (hasNothingSet || (nickname.style == NicknameStyle.Level)) {
@@ -466,11 +466,11 @@ class PlayerData(
     voteFairyPeriod = new ClosedRange(voteFairyPeriod.start, value)
   }
 
-  def updateNickname(id1: Int = settings.nickName.id1,
-                     id2: Int = settings.nickName.id2,
-                     id3: Int = settings.nickName.id3,
-                     style: NicknameStyle = settings.nickName.style): Unit = {
-    settings.nickName = settings.nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
+  def updateNickname(id1: Int = settings.nickname.id1,
+                     id2: Int = settings.nickname.id2,
+                     id3: Int = settings.nickname.id3,
+                     style: NicknameStyle = settings.nickname.style): Unit = {
+    settings.nickname = settings.nickname.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
   }
 
   //quit時とondisable時、プレイヤーデータを最新の状態に更新
