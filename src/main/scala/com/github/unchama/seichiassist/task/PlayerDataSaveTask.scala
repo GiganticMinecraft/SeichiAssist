@@ -6,20 +6,19 @@ import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{ActiveSkillEffect, ActiveSkillPremiumEffect, MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
-import com.github.unchama.util.kotlin2scala.SuspendingMethod
 import org.bukkit.ChatColor._
 
 import scala.util.Using
 
 object PlayerDataSaveTask {
   /**
-   * プレイヤーデータをDBに保存する処理(非同期で実行すること)
+   * プレイヤーデータをDBに同期的に保存する処理
    * DBにセーブしたい値が増えた/減った場合は更新すること
    *
    * @param playerdata 保存するプレーヤーデータ
    * @author unchama
    */
-  @SuspendingMethod def savePlayerData(playerdata: PlayerData): Unit = {
+  def savePlayerData(playerdata: PlayerData): Unit = {
     val databaseGateway = SeichiAssist.databaseGateway
     val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
