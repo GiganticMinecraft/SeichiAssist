@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.data.player.PlayerNickName
+import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -79,7 +79,7 @@ object AchievementMenu extends Menu {
       action.LeftClickButtonEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
         delay { player =>
-          SeichiAssist.playermap(player.getUniqueId).updateNickname(style = PlayerNickName.Style.Level)
+          SeichiAssist.playermap(player.getUniqueId).updateNickname(style = NicknameStyle.Level)
         }
       )
     )

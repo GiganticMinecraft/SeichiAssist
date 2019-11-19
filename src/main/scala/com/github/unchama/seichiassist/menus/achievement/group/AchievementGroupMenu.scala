@@ -54,6 +54,7 @@ object AchievementGroupMenu {
     }
 
   def apply(group: AchievementGroup, pageNumber: Int = 1): Menu = {
+    val groupEntries = sequentialEntriesIn(group)
     val entriesToDisplay = {
       import com.github.unchama.menuinventory.syntax._
 
@@ -61,10 +62,10 @@ object AchievementGroupMenu {
       val displayFromIndex = displayPerPage * (pageNumber - 1)
       val displayUptoIndex = displayFromIndex + displayPerPage
 
-      sequentialEntriesIn(group).slice(displayFromIndex, displayUptoIndex)
+      groupEntries.slice(displayFromIndex, displayUptoIndex)
     }
 
-    val groupAchievementsCount = entriesToDisplay.size
+    val groupAchievementsCount = groupEntries.size
     val maxPageNumber = Math.ceil(groupAchievementsCount / 27.0).toInt
 
     if (entriesToDisplay.isEmpty) {

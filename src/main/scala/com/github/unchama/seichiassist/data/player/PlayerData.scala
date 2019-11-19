@@ -319,22 +319,24 @@ class PlayerData(
       else if (idleMinute >= 3) s"$GRAY"
       else ""
 
-    displayName = idleColor.+(
-      if (settings.nickName.id1 == 0 && settings.nickName.id2 == 0 && settings.nickName.id3 == 0) {
-        if (totalStarLevel <= 0) {
+    displayName = idleColor + {
+      val nickname = settings.nickName
+      val hasNothingSet = Seq(nickname.id1, nickname.id2, nickname.id3).forall(_ == 0)
+
+      if (hasNothingSet || (nickname.style == NicknameStyle.Level)) {
+        if (totalStarLevel <= 0)
           s"[ Lv$level ]$displayName$WHITE"
-        } else {
+        else
           s"[Lv$level☆$totalStarLevel]$displayName$WHITE"
-        }
       } else {
         val config = SeichiAssist.seichiAssistConfig
-        val displayTitle1 = config.getTitle1(settings.nickName.id1)
-        val displayTitle2 = config.getTitle2(settings.nickName.id2)
-        val displayTitle3 = config.getTitle3(settings.nickName.id3)
+        val displayTitle1 = config.getTitle1(nickname.id1)
+        val displayTitle2 = config.getTitle2(nickname.id2)
+        val displayTitle3 = config.getTitle3(nickname.id3)
 
         s"[$displayTitle1$displayTitle2$displayTitle3]$displayName$WHITE"
       }
-    )
+    }
 
     player.setDisplayName(displayName)
     player.setPlayerListName(displayName)
@@ -467,7 +469,7 @@ class PlayerData(
   def updateNickname(id1: Int = settings.nickName.id1,
                      id2: Int = settings.nickName.id2,
                      id3: Int = settings.nickName.id3,
-                     style: Style = settings.nickName.style): Unit = {
+                     style: NicknameStyle = settings.nickName.style): Unit = {
     settings.nickName = settings.nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
   }
 
