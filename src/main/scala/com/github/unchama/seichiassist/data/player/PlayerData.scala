@@ -6,6 +6,7 @@ import java.util.{GregorianCalendar, UUID}
 import cats.effect.IO
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.data.player.PlayerNickName.Style
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -319,22 +320,24 @@ class PlayerData(
       else if (idleMinute >= 3) s"$GRAY"
       else ""
 
-    displayName = idleColor.+(
-      if (settings.nickName.id1 == 0 && settings.nickName.id2 == 0 && settings.nickName.id3 == 0) {
-        if (totalStarLevel <= 0) {
+    displayName = idleColor + {
+      val nickname = settings.nickName
+      val hasNothingSet = Seq(nickname.id1, nickname.id2, nickname.id3).forall(_ == 0)
+
+      if (hasNothingSet || (nickname.style == Style.Level)) {
+        if (totalStarLevel <= 0)
           s"[ Lv$level ]$displayName$WHITE"
-        } else {
+        else
           s"[Lv$level☆$totalStarLevel]$displayName$WHITE"
-        }
       } else {
         val config = SeichiAssist.seichiAssistConfig
-        val displayTitle1 = config.getTitle1(settings.nickName.id1)
-        val displayTitle2 = config.getTitle2(settings.nickName.id2)
-        val displayTitle3 = config.getTitle3(settings.nickName.id3)
+        val displayTitle1 = config.getTitle1(nickname.id1)
+        val displayTitle2 = config.getTitle2(nickname.id2)
+        val displayTitle3 = config.getTitle3(nickname.id3)
 
         s"[$displayTitle1$displayTitle2$displayTitle3]$displayName$WHITE"
       }
-    )
+    }
 
     player.setDisplayName(displayName)
     player.setPlayerListName(displayName)
