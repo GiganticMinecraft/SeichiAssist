@@ -42,7 +42,7 @@ public class BuildAssistConfig {
 
 
     public int getFlyExp() {
-        return Integer.parseInt(config.getString("flyexp"));
+        return config.getInt("flyexp");
     }
 /*
 	public String getURL(){
@@ -61,12 +61,12 @@ public class BuildAssistConfig {
 
     //ブロックを並べるスキル開放LV
     public int getblocklineuplevel() {
-        return Integer.parseInt(config.getString("blocklineup.level"));
+        return config.getInt("blocklineup.level");
     }
 
     //ブロックを並べるスキルのマナ消費倍率
     public double getblocklineupmana_mag() {
-        return TypeConverter.toDouble(config.getString("blocklineup.mana_mag"));
+        return config.getDouble("blocklineup.mana_mag");
     }
 
     //ブロックを並べるスキルマインスタック優先開放LV
@@ -75,27 +75,27 @@ public class BuildAssistConfig {
     }
 
     public int getZoneSetSkillLevel() {
-        return TypeConverter.toInt(config.getString("ZoneSetSkill.level"));
+        return config.getInt("ZoneSetSkill.level");
     }
 
     //スキルを使って並べた時のブロックカウント倍率
-    public double getBlockCountMag() {
-        return TypeConverter.toDouble(config.getString("BlockCountMag"));
+    public double getBulkPlaceMultiplier() {
+        return config.getDouble("BlockCountMag");
     }
 
     //MineStackブロック一括クラフト開放LV
     public int getMinestackBlockCraftlevel(int lv) {
-        return TypeConverter.toInt(config.getString("minestack_BlockCraft.level" + lv));
+        return config.getInt("minestack_BlockCraft.level" + lv);
     }
 
     //ブロック設置カウントの1分上限
-    public int getBuildNum1minLimit() {
-        return TypeConverter.toInt(config.getString("BuildNum1minLimit"));
+    public int getCountLimitPerEveryMinute() {
+        return config.getInt("BuildNum1minLimit");
     }
 
     //ブロック範囲設置スキルのマインスタック優先解放レベル
     public int getZoneskillMinestacklevel() {
-        return TypeConverter.toInt(config.getString("ZoneSetSkill.minestack"));
+        return config.getInt("ZoneSetSkill.minestack");
     }
 
 }
