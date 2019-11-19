@@ -62,11 +62,11 @@ public class Config {
     }
 
     public int getDokodemoEnderlevel() {
-        return TypeConverter.toInt(config.getString("dokodemoenderlevel"));
+        return (config.getInt("dokodemoenderlevel"));
     }
 
     public int getMineStacklevel(int i) {
-        return TypeConverter.toInt(config.getString("minestacklevel" + i, ""));
+        return config.getIntegerList("MineStackLevel").get(i - 1);
     }
 
     public String getDB() {

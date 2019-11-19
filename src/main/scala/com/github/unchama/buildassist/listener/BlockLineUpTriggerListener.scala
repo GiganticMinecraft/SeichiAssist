@@ -174,7 +174,7 @@ object BlockLineUpTriggerListener extends Listener {
     //カウント対象ワールドの場合カウント値を足す
     if (Util.inTrackedWorld(player)) {
       //対象ワールドかチェック
-      Util.addBuild1MinAmount(player, new java.math.BigDecimal(placedBlockCount * BuildAssist.config.getBlockCountMag)) //設置した数を足す
+      Util.addBuild1MinAmount(player, new java.math.BigDecimal(placedBlockCount * BuildAssist.config.getBulkPlaceMultiplier)) //設置した数を足す
     }
 
     val consumptionFromMainHand = mineStackObjectToBeUsed match {

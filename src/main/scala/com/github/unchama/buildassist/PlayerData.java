@@ -162,10 +162,10 @@ public final class PlayerData {
 
         //1分制限の判断
         final BigDecimal newBuildCount;
-        if (build_num_1min.doubleValue() <= BuildAssist.config().getBuildNum1minLimit()) {
+        if (build_num_1min.doubleValue() <= BuildAssist.config().getCountLimitPerEveryMinute()) {
             newBuildCount = totalbuildnum.add(build_num_1min);
         } else {
-            newBuildCount = totalbuildnum.add(new BigDecimal(BuildAssist.config().getBuildNum1minLimit()));
+            newBuildCount = totalbuildnum.add(new BigDecimal(BuildAssist.config().getCountLimitPerEveryMinute()));
         }
 
         playerData.buildCount_$eq(new BuildCount(level, newBuildCount, oldBuildCount.migrationFlag()));

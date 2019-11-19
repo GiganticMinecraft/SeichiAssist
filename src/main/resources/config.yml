@@ -232,31 +232,36 @@ Url:
   map: "https://www.seichi.network/map"
   jms: "https://minecraft.jp/servers/54d3529e4ddda180780041a7"
 
+
 #Fly時の1分辺りの経験値消費量
-flyexp: '50'
+flyexp: 50
 
 #ブロックを並べるスキル
 blocklineup:
-  level: '15'
-  mana_mag: '0.0'
-  minestack_level: '30'
+  level: 15
+  mana_mag: 0.0
+  minestack_level: 30
 
 #範囲設置スキル
 ZoneSetSkill:
-  level: '15'
-  minestack: '30'
+  level: 15
+  minestack: 30
 
 #スキルを使って並べた時のブロックカウント倍率
-BlockCountMag: '0.2'
+BlockCountMag: 0.2
 
 # MineStackブロック一括クラフト
 minestack_BlockCraft:
-  level1: '25'
-  level2: '35'
-  level3: '45'
+  level:
+    - &bulkCraft1 25
+    - &bulkCraft2 35
+    - &bulkCraft3 45
+  level1: *bulkCraft1
+  level2: *bulkCraft2
+  level3: *bulkCraft3
 
 #ブロック設置カウントの1分上限
-BuildNum1minLimit: '256'
+BuildNum1minLimit: 256
 
 # デバッグモードの設定
 # debugmode: false=デバッグモードオフ, true=デバッグモードオン
@@ -306,7 +311,7 @@ AutoGenerete:
 # 7以下に設定
 subhomemax: 5
 
-### 以下の項目はレガシーなキーでありシンボリックリンクなので変更しないこと ###
+### ----------------------- 以下の項目はレガシーなキーでありシンボリックリンクなので変更しないこと ----------------------- ###
 
 # MineStackの開放レベルとMineStackが持つレベル層の関係
 minestacklevel1: *ms1
