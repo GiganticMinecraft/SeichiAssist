@@ -79,7 +79,7 @@ object AchievementMenu extends Menu {
       action.LeftClickButtonEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
         delay { player =>
-          SeichiAssist.playermap(player.getUniqueId).updateNickname(0, 0, 0, NicknameStyle.Level)
+          SeichiAssist.playermap(player.getUniqueId).updateNickname(style = NicknameStyle.Level)
         }
       )
     )
