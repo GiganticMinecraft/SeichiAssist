@@ -1,8 +1,11 @@
 package com.github.unchama.seichiassist.listener;
 
-import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.ActiveSkillEffect;
+import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
+import com.github.unchama.seichiassist.MaterialSets;
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
-import com.github.unchama.seichiassist.data.XYZTuple;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.effect.XYZTuple;
@@ -221,7 +224,7 @@ public class PlayerBlockBreakListener implements Listener {
         //一回の破壊の範囲
         final XYZTuple breaklength = area.getBreakLength();
         //１回の全て破壊したときのブロック数
-        final int ifallbreaknum = (breaklength.x * breaklength.y * breaklength.z * breaknum);
+        final int ifallbreaknum = (breaklength.x() * breaklength.y() * breaklength.z() * breaknum);
 
         //全てのマナ消費量
         double useAllMana = 0;
@@ -237,9 +240,9 @@ public class PlayerBlockBreakListener implements Listener {
             XYZTuple start = startlist.get(i);
             XYZTuple end = endlist.get(i);
             //for(int y = start.y(); y <= end.y() ; y++){
-            for (int y = end.y()(); y >= start.y()(); y--) { //上から処理に変更
-                for (int x = start.x()(); x <= end.x()(); x++) {
-                    for (int z = start.z()(); z <= end.z()(); z++) {
+            for (int y = end.y(); y >= start.y(); y--) { //上から処理に変更
+                for (int x = start.x(); x <= end.x(); x++) {
+                    for (int z = start.z(); z <= end.z(); z++) {
                         breakblock = block.getRelative(x, y, z);
                         if (x == 0 && y == 0 && z == 0) continue;
 
