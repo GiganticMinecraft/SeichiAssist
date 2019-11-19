@@ -174,35 +174,6 @@ LevelUpMessage:
   98: &lv98 |
     整地の際に獲得できる経験値量が増えました。
 
-#貢献度1当たりのマナ増加量
-contribute_added_mana: 10
-
-#期間限定ログインイベント(ここの設定を変更することで毎年使いまわしが可能です。)
-#日付は必ず"西暦4桁/月2桁/日2桁"で入力すること!!
-LimitedLoginEvent:
-  #開始日(この日からカウントされるようになります)
-  EventStart: "2019/03/01"
-  #終了日(この日が最後のカウント対象になります)
-  EventEnd: "2019/03/31"
-
-  #報酬設定
-  #DAY0のデータは毎日配布されます
-  #それ以外のデータは、期間内の累計ログイン数がその値になった日のみ配布されます
-  #Itemで配布内容を、Amountで数量を指定します
-  Present:
-    Everyday:
-      Item: &everyday_item 1
-      Amount: &everyday_amount 30
-    20:
-      Item: &day20_item 1
-      Amount: &day20_amount 100
-  DAY0_Item: *everyday_item
-  DAY0_Amount: *everyday_amount
-  DAY20_Item: *day20_item
-  DAY20_Amount: *day20_amount
-  #Tips:[Item]内容一覧(追加・変更はコード修正が必要です)
-  #"1":ガチャ券
-
 #お正月イベント関連(ここの設定を変更することで毎年使いまわしが可能です。)
 #日付は必ず"西暦4桁-月2桁-日2桁"で入力すること!!
 NewYearEvent:
@@ -420,3 +391,32 @@ dropexplevel9: *dr9
 dropexplevel10: *dr10
 
 # 実績名の名称設定 -> Nicknames.scalaを参照すること
+
+#貢献度1当たりのマナ増加量
+contribute_added_mana: 10
+
+#期間限定ログインイベント(ここの設定を変更することで毎年使いまわしが可能です。)
+#日付は必ず"西暦4桁/月2桁/日2桁"で入力すること!!
+LimitedLoginEvent:
+  #開始日(この日からカウントされるようになります)
+  EventStart: "2019/03/01"
+  #終了日(この日が最後のカウント対象になります)
+  EventEnd: "2019/03/31"
+
+  #報酬設定
+  #DAY0のデータは毎日配布されます
+  #それ以外のデータは、期間内の累計ログイン数がその値になった日のみ配布されます
+  #Itemで配布内容を、Amountで数量を指定します
+  Present:
+    Everyday:
+      Item: &everyday_item 1
+      Amount: &everyday_amount 30
+    20:
+      Item: &day20_item 1
+      Amount: &day20_amount 100
+  DAY0_Item: *everyday_item
+  DAY0_Amount: *everyday_amount
+  DAY20_Item: *day20_item
+  DAY20_Amount: *day20_amount
+  #Tips:[Item]内容一覧(追加・変更はコード修正が必要です)
+  #"1":ガチャ券
