@@ -6,7 +6,6 @@ import java.util.{GregorianCalendar, UUID}
 import cats.effect.IO
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.data.player.PlayerNickName.Style
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -324,7 +323,7 @@ class PlayerData(
       val nickname = settings.nickName
       val hasNothingSet = Seq(nickname.id1, nickname.id2, nickname.id3).forall(_ == 0)
 
-      if (hasNothingSet || (nickname.style == Style.Level)) {
+      if (hasNothingSet || (nickname.style == NicknameStyle.Level)) {
         if (totalStarLevel <= 0)
           s"[ Lv$level ]$displayName$WHITE"
         else
@@ -470,7 +469,7 @@ class PlayerData(
   def updateNickname(id1: Int = settings.nickName.id1,
                      id2: Int = settings.nickName.id2,
                      id3: Int = settings.nickName.id3,
-                     style: Style = settings.nickName.style): Unit = {
+                     style: NicknameStyle = settings.nickName.style): Unit = {
     settings.nickName = settings.nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
   }
 

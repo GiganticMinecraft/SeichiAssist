@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.task
 
 import java.sql.{SQLException, Statement}
 
-import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{ActiveSkillEffect, ActiveSkillPremiumEffect, MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
@@ -187,7 +187,7 @@ object PlayerDataSaveTask {
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
           + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteMessages
 
-          + ",displayTypeLv = " + playerdata.settings.nickName.style.displayLevel
+          + ",displayTypeLv = " + (playerdata.settings.nickName.style == NicknameStyle.Level)
           + ",displayTitle1No = " + playerdata.settings.nickName.id1
           + ",displayTitle2No = " + playerdata.settings.nickName.id2
           + ",displayTitle3No = " + playerdata.settings.nickName.id3

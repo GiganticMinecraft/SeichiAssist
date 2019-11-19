@@ -229,7 +229,7 @@ object PlayerDataLoading {
 
         //実績、二つ名の情報
         playerData.settings.nickName = PlayerNickName(
-          PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
+          NicknameStyle.marshal(rs.getBoolean("displayTypeLv")),
           rs.getInt("displayTitle1No"),
           rs.getInt("displayTitle2No"),
           rs.getInt("displayTitle3No")

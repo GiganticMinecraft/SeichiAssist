@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.data.player.settings
 
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.seichiassist.data.player.PlayerNickName
+import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerNickName}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
@@ -28,7 +28,7 @@ class PlayerSettings {
   var multipleidbreakflag = false
   //PvPトグル
   var pvpflag = false
-  var nickName = PlayerNickName(PlayerNickName.Style.Level, 0, 0, 0)
+  var nickName = PlayerNickName(NicknameStyle.Level, 0, 0, 0)
   var isExpBarVisible = false
   //ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
