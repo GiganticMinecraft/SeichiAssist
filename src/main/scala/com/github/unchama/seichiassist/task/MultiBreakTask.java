@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.task;
 import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.effect.XYZTuple;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,15 +27,15 @@ public class MultiBreakTask extends BukkitRunnable {
     private ItemStack tool;
     private List<List<Block>> multibreaklist;
     private List<List<Block>> multilavalist;
-    private List<Coordinate> startlist;
-    private List<Coordinate> endlist;
+    private List<XYZTuple> startlist;
+    private List<XYZTuple> endlist;
     private int breaknum;
     private PlayerData playerdata;
     private int count;
 
     public MultiBreakTask(Player player, Block centerblock, ItemStack tool,
                           List<List<Block>> multibreaklist, List<List<Block>> multilavalist,
-                          List<Coordinate> startlist, List<Coordinate> endlist) {
+                          List<XYZTuple> startlist, List<XYZTuple> endlist) {
         this.player = player;
         this.droploc = centerblock.getLocation().add(0.5, 0.5, 0.5);
         this.tool = tool;
@@ -63,8 +63,8 @@ public class MultiBreakTask extends BukkitRunnable {
 
             final Set<Block> converted = CollectionConverters.ListHasAsScala(multibreaklist.get(count)).asScala().toSet();
 
-            final Coordinate startPoint = startlist.get(count);
-            final Coordinate endPoint = endlist.get(count);
+            final XYZTuple startPoint = startlist.get(count);
+            final XYZTuple endPoint = endlist.get(count);
             //エフェクトが選択されていない時の通常処理
             if (playerdata.activeskilldata().effectnum == 0) {
                 //ブロックを破壊する処理

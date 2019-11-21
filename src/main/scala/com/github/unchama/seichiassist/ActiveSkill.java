@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.data.Coordinate;
+import com.github.unchama.seichiassist.effect.XYZTuple;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionType;
 
@@ -280,115 +281,115 @@ public enum ActiveSkill {
         return repeattimes;
     }
 
-    public Coordinate getBreakLength(int skilllevel) {
-        Coordinate breaklength = new Coordinate(0, 0, 0);
+    public XYZTuple getBreakLength(int skilllevel) {
+        XYZTuple breaklength = new XYZTuple(0, 0, 0);
         switch (this) {
             case ARROW:
                 switch (skilllevel) {
                     case 4:
-                        breaklength.setXYZ(3, 3, 3);
+                        breaklength = new XYZTuple(3, 3, 3);
                         break;
                     case 5:
-                        breaklength.setXYZ(5, 3, 5);
+                        breaklength = new XYZTuple(5, 3, 5);
                         break;
                     case 6:
-                        breaklength.setXYZ(7, 5, 7);
+                        breaklength = new XYZTuple(7, 5, 7);
                         break;
                     case 7:
-                        breaklength.setXYZ(9, 7, 9);
+                        breaklength = new XYZTuple(9, 7, 9);
                         break;
                     case 8:
-                        breaklength.setXYZ(11, 9, 11);
+                        breaklength = new XYZTuple(11, 9, 11);
                         break;
                     case 9:
-                        breaklength.setXYZ(13, 11, 13);
+                        breaklength = new XYZTuple(13, 11, 13);
                         break;
                 }
                 break;
             case MULTI:
                 switch (skilllevel) {
                     case 4:
-                        breaklength.setXYZ(3, 3, 3);
+                        breaklength = new XYZTuple(3, 3, 3);
                         break;
                     case 5:
-                        breaklength.setXYZ(3, 3, 3);
+                        breaklength = new XYZTuple(3, 3, 3);
                         break;
                     case 6:
-                        breaklength.setXYZ(5, 5, 5);
+                        breaklength = new XYZTuple(5, 5, 5);
                         break;
                     case 7:
-                        breaklength.setXYZ(5, 5, 5);
+                        breaklength = new XYZTuple(5, 5, 5);
                         break;
                     case 8:
-                        breaklength.setXYZ(7, 7, 7);
+                        breaklength = new XYZTuple(7, 7, 7);
                         break;
                     case 9:
-                        breaklength.setXYZ(7, 7, 7);
+                        breaklength = new XYZTuple(7, 7, 7);
                         break;
                 }
                 break;
             case BREAK:
                 switch (skilllevel) {
                     case 1:
-                        breaklength.setXYZ(1, 2, 1);
+                        breaklength = new XYZTuple(1, 2, 1);
                         break;
                     case 2:
-                        breaklength.setXYZ(3, 2, 1);
+                        breaklength = new XYZTuple(3, 2, 1);
                         break;
                     case 3:
-                        breaklength.setXYZ(3, 3, 3);
+                        breaklength = new XYZTuple(3, 3, 3);
                         break;
                     case 4:
-                        breaklength.setXYZ(5, 3, 5);
+                        breaklength = new XYZTuple(5, 3, 5);
                         break;
                     case 5:
-                        breaklength.setXYZ(7, 5, 7);
+                        breaklength = new XYZTuple(7, 5, 7);
                         break;
                     case 6:
-                        breaklength.setXYZ(9, 7, 9);
+                        breaklength = new XYZTuple(9, 7, 9);
                         break;
                     case 7:
-                        breaklength.setXYZ(11, 9, 11);
+                        breaklength = new XYZTuple(11, 9, 11);
                         break;
                     case 8:
-                        breaklength.setXYZ(13, 11, 13);
+                        breaklength = new XYZTuple(13, 11, 13);
                         break;
                     case 9:
-                        breaklength.setXYZ(15, 13, 15);
+                        breaklength = new XYZTuple(15, 13, 15);
                         break;
                 }
                 break;
             case WATERCONDENSE:
                 switch (skilllevel) {
                     case 7:
-                        breaklength.setXYZ(7, 7, 7);
+                        breaklength = new XYZTuple(7, 7, 7);
                         break;
                     case 8:
-                        breaklength.setXYZ(11, 11, 11);
+                        breaklength = new XYZTuple(11, 11, 11);
                         break;
                     case 9:
-                        breaklength.setXYZ(15, 15, 15);
+                        breaklength = new XYZTuple(15, 15, 15);
                         break;
                 }
                 break;
             case LAVACONDENSE:
                 switch (skilllevel) {
                     case 7:
-                        breaklength.setXYZ(7, 7, 7);
+                        breaklength = new XYZTuple(7, 7, 7);
                         break;
                     case 8:
-                        breaklength.setXYZ(9, 9, 9);
+                        breaklength = new XYZTuple(9, 9, 9);
                         break;
                     case 9:
-                        breaklength.setXYZ(11, 11, 11);
+                        breaklength = new XYZTuple(11, 11, 11);
                         break;
                 }
                 break;
             case ARMOR:
-                breaklength.setXYZ(11, 11, 11);
+                breaklength = new XYZTuple(11, 11, 11);
                 break;
             case FLUIDCONDENSE:
-                breaklength.setXYZ(11, 11, 11);
+                breaklength = new XYZTuple(11, 11, 11);
         }
         return breaklength;
     }

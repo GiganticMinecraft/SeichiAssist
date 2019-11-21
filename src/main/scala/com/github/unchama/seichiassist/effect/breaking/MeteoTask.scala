@@ -18,8 +18,8 @@ class MeteoTask(
                  private val skillData: ActiveSkillData,
                  private val tool: ItemStack,
                  private val blocks: Set[Block],
-                 private val start: Coordinate,
-                 private val end: Coordinate, _droploc: Location) extends BukkitRunnable() {
+                 private val start: XYZTuple,
+                 private val end: XYZTuple, _droploc: Location) extends BukkitRunnable() {
   //スキルが発動される中心位置
   private val droploc: Location = _droploc.clone()
   //破壊するブロックの中心位置
