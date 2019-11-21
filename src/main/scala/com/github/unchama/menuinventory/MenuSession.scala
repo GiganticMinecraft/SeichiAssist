@@ -69,6 +69,8 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
       _ <- IO {
         import scala.jdk.CollectionConverters._
 
+        val viewerList = sessionInventory.getViewers
+
         /**
          * 再現条件が不明であるが、このIOが走っているときに並行して
          * sessionInventory.getViewersで帰ってくるリストが変更される場合があるらしい。
@@ -76,7 +78,7 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
          * というメッセージとともにConcurrentModificationExceptionが飛ぶという事象があった。原因及び再現方法は不明。)
          * getViewersのコピーだけ同期的に(toSetすることで)行うような実装とする。
          */
-        synchronized { sessionInventory.getViewers.asScala.toSet }
+        viewerList.synchronized { viewerList.asScala.toSet }
           .foreach {
             case p: Player => p.updateInventory()
             case _ =>
