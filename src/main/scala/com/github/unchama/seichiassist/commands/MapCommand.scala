@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.commands
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates
-import com.github.unchama.targetedeffect.MessageEffects._
+import com.github.unchama.targetedeffect.syntax._
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 

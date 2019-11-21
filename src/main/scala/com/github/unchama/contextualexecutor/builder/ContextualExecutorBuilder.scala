@@ -6,8 +6,8 @@ import com.github.unchama.contextualexecutor.builder.TypeAliases.{CommandArgumen
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
 import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.syntax._
 import org.bukkit.command.CommandSender
 
 import scala.reflect.ClassTag

@@ -23,10 +23,9 @@ import org.bukkit.{Material, Sound}
  */
 object SecondPage extends Menu {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.CommandEffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects._
+  import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.InventoryUtil._
   import eu.timepit.refined.auto._
   import menuinventory.syntax._

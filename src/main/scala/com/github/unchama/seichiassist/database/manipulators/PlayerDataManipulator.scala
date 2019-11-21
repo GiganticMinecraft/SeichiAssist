@@ -25,7 +25,7 @@ import scala.collection.mutable
 
 class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
+  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.syntax.ResultSetSyntax._
 
   private val plugin = SeichiAssist.instance

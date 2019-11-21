@@ -15,7 +15,7 @@ import org.bukkit.{Bukkit, Material}
 
 object ShareInvCommand {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
+  import com.github.unchama.targetedeffect.syntax._
 
   import scala.jdk.CollectionConverters._
 

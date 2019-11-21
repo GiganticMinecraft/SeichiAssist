@@ -8,7 +8,6 @@ import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoEx
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._

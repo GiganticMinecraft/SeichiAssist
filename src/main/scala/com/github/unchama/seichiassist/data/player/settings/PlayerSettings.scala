@@ -8,8 +8,8 @@ import org.bukkit.entity.Player
 
 class PlayerSettings {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
+  import com.github.unchama.targetedeffect.syntax._
 
   val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
   var autoMineStack = true

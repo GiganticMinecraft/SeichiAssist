@@ -36,9 +36,9 @@ class PlayerData(
                   val name: String
                 ) {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
+  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.InventoryUtil._
 
   lazy val mebius: MebiusTask = new MebiusTask(uuid)

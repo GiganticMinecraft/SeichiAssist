@@ -32,8 +32,7 @@ object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-  import com.github.unchama.targetedeffect.MessageEffects._
-  import com.github.unchama.targetedeffect.player.CommandEffect._
+  import com.github.unchama.targetedeffect.syntax._
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
