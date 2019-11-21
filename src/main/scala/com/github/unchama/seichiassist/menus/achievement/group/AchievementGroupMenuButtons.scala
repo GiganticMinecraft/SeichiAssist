@@ -80,8 +80,8 @@ object AchievementGroupMenuButtons {
     }
 
     val clickEffect = {
-      import com.github.unchama.targetedeffect.MessageEffects._
       import com.github.unchama.targetedeffect._
+      import com.github.unchama.targetedeffect.syntax._
 
       val clickSound = FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
@@ -135,8 +135,8 @@ object AchievementGroupMenuButtons {
     Button(itemStack, LeftClickButtonEffect(clickEffect))
   }
 
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
+  import com.github.unchama.targetedeffect.syntax._
 
   // 実績8003を解除するためのボタン
   val unlock8003Button: Button = Button(

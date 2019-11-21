@@ -18,10 +18,9 @@ object BuildMainMenu extends Menu {
 
   import com.github.unchama.menuinventory.slot.button.RecomputedButton
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.CommandEffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects._
+  import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+  import com.github.unchama.targetedeffect.syntax._
   import menuinventory.syntax._
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニューB")

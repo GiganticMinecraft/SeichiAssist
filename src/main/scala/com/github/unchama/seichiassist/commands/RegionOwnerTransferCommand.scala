@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.commands
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.targetedeffect.MessageEffects._
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.syntax._
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.Bukkit

@@ -9,7 +9,7 @@ import org.bukkit.command.{CommandSender, TabExecutor}
 
 object ContributeCommand {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
+  import com.github.unchama.targetedeffect.syntax._
   import enumeratum._
   import net.md_5.bungee.api.ChatColor._
 

@@ -17,10 +17,9 @@ import org.bukkit.{Material, Sound}
 
 object RegionMenu extends Menu {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.CommandEffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects._
+  import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+  import com.github.unchama.targetedeffect.syntax._
 
   override val frame: MenuFrame =
     MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
