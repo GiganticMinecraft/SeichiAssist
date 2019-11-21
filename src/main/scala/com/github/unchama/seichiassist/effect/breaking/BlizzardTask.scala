@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.effect.breaking
 
-import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
+import com.github.unchama.seichiassist.data.ActiveSkillData
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.XYZTuple.AxisAlignedCuboid
 import com.github.unchama.seichiassist.util.BreakUtil

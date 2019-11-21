@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.effect.XYZTuple;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionType;

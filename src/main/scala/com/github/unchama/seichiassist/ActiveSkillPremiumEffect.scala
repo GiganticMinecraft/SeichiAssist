@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect.plugin
-import com.github.unchama.seichiassist.data.Coordinate
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.MagicTask

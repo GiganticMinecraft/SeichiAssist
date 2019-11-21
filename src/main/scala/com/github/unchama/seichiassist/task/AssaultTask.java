@@ -4,7 +4,6 @@ import com.github.unchama.seichiassist.ActiveSkill;
 import com.github.unchama.seichiassist.MaterialSets;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
-import com.github.unchama.seichiassist.data.Coordinate;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.effect.XYZTuple;

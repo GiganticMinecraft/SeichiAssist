@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillEffect.{Blizzard, Explosion, Meteo}
-import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
+import com.github.unchama.seichiassist.data.ActiveSkillData
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
@@ -20,8 +20,6 @@ sealed abstract class ActiveSkillEffect(val num: Int,
                                         val explanation: String,
                                         val usePoint: Int,
                                         val material: Material) extends EnumEntry {
-
-  import com.github.unchama.seichiassist.effect.XYZTuple._
 
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
