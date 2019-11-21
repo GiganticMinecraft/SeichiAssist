@@ -67,10 +67,20 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
       _ <- currentLayout.set(newLayout)
       _ <- updateMenuSlots(diff)
       _ <- IO {
-        sessionInventory.getViewers.forEach {
-          case p: Player => p.updateInventory()
-          case _ =>
-        }
+        import scala.jdk.CollectionConverters._
+
+        /**
+         * 再現条件が不明であるが、このIOが走っているときに並行して
+         * sessionInventory.getViewersで帰ってくるリストが変更される場合があるらしい。
+         * (実際、2019年11月21日に、合計13000件ほど「BuildMainMenuを開く最中にエラーが発生しました。」
+         * というメッセージとともにConcurrentModificationExceptionが飛ぶという事象があった。原因及び再現方法は不明。)
+         * getViewersのコピーだけ同期的に(toSetすることで)行うような実装とする。
+         */
+        synchronized { sessionInventory.getViewers.asScala.toSet }
+          .foreach {
+            case p: Player => p.updateInventory()
+            case _ =>
+          }
       }
     } yield ()
   }
