@@ -91,9 +91,16 @@ object Util {
    * @param itemStack 付与するアイテム
    */
   def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
+    import scala.jdk.CollectionConverters._
+
+    if (itemStack.getType == Material.AIR)
+      Bukkit.getLogger.warning("adding Material.AIR to player inventory")
+
     player.getInventory
       .addItem(itemStack)
-      .values().forEach(dropItem(player, _))
+      .values().asScala
+      .filter(_.getType != Material.AIR)
+      .foreach(dropItem(player, _))
   }
 
   //プレイヤーのインベントリがフルかどうか確認
