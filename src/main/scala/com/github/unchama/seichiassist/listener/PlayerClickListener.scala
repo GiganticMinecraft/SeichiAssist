@@ -4,6 +4,7 @@ import cats.effect.IO
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.GachaPrize
+import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.{AsyncEntityRemover, CoolDownTask}
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -92,16 +93,22 @@ class PlayerClickListener extends Listener {
           } else {
             new CoolDownTask(player, false, false, false).runTaskLater(plugin, cooldown)
           }
-          //エフェクトが指定されていないときの処理
-          if (playerdata.activeskilldata.effectnum == 0) {
-            runArrowSkill(player, classOf[Arrow])
-          } else if (playerdata.activeskilldata.effectnum <= 100) {
-            val skilleffect = ActiveSkillEffect.values
-            skilleffect(playerdata.activeskilldata.effectnum - 1).runArrowEffect(player)
-          } else if (playerdata.activeskilldata.effectnum > 100) {
-            val premiumeffect = ActiveSkillPremiumEffect.values
-            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).runArrowEffect(player)
-          } //エフェクトが指定されているときの処理
+
+          val projectArrowEffect =
+            if (playerdata.activeskilldata.effectnum == 0) {
+              // エフェクトが指定されていないとき
+              ArrowEffects.normalArrowEffect
+            } else if (playerdata.activeskilldata.effectnum <= 100) {
+              // 通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
+              val skilleffect = ActiveSkillEffect.values
+              skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect(player)
+            } else {
+              // スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
+              val premiumeffect = ActiveSkillPremiumEffect.values
+              premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).arrowEffect(player)
+            }
+
+          seichiassist.unsafe.runAsyncTargetedEffect(player)(projectArrowEffect, "ArrowEffectを非同期で実行する")
         }
       }
     } else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
@@ -132,10 +139,10 @@ class PlayerClickListener extends Listener {
             runArrowSkill(player, classOf[Arrow])
           } else if (playerdata.activeskilldata.effectnum <= 100) {
             val skilleffect = ActiveSkillEffect.values
-            skilleffect(playerdata.activeskilldata.effectnum - 1).runArrowEffect(player)
+            skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect(player)
           } else if (playerdata.activeskilldata.effectnum > 100) {
             val premiumeffect = ActiveSkillPremiumEffect.values
-            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).runArrowEffect(player)
+            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).arrowEffect(player)
           } //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
           //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
 

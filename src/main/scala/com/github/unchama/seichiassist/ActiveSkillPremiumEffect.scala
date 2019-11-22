@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist
 
-import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect.plugin
 import com.github.unchama.seichiassist.effect.XYZTuple
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.MagicTask
+import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
@@ -32,17 +32,10 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
   }
 
   //エフェクトの実行処理分岐
-  def runArrowEffect(player: Player): Unit = {
-    val effect = this match {
+  def arrowEffect(player: Player): TargetedEffect[Player] =
+    this match {
       case ActiveSkillPremiumEffect.MAGIC => ArrowEffects.singleArrowMagicEffect
     }
-
-    // TODO take this outside
-    seichiassist.unsafe.runAsyncTargetedEffect(player)(
-      effect,
-      "ArrowEffectを非同期で実行する"
-    )
-  }
 }
 
 case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
