@@ -29,7 +29,7 @@ class BlizzardTask(private val player: Player,
     } else {
       blocks.foreach { block =>
         BreakUtil.breakBlock(player, block, droploc, tool, stepflag = true)
-        SeichiAssist.allblocklist -= block
+        SeichiAssist.managedBlocks -= block
       }
       cancel()
     }
@@ -53,7 +53,7 @@ class BlizzardTask(private val player: Player,
         else
           b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE)
 
-        SeichiAssist.allblocklist -= b
+        SeichiAssist.managedBlocks -= b
       }
     }
   }

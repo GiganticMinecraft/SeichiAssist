@@ -30,7 +30,7 @@ class ExplosionTask(private val player: Player,
 
     blocks.foreach { block =>
       BreakUtil.breakBlock(player, block, droploc, tool, step)
-      SeichiAssist.allblocklist -= block
+      SeichiAssist.managedBlocks -= block
     }
   }
 }

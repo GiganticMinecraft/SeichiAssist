@@ -45,7 +45,7 @@ class MeteoTask(
 
     blocks.foreach { b =>
       BreakUtil.breakBlock(player, b, droploc, tool, stepflag)
-      SeichiAssist.allblocklist -= b
+      SeichiAssist.managedBlocks -= b
     }
   }
 

@@ -203,12 +203,12 @@ class SeichiAssist extends JavaPlugin() {
     cancelRepeatedJobs()
 
     //全てのエンティティを削除
-    SeichiAssist.entitylist.foreach {
+    SeichiAssist.managedEntities.foreach {
       _.remove()
     }
 
     //全てのスキルで破壊されるブロックを強制破壊
-    SeichiAssist.allblocklist.foreach(_.setType(Material.AIR))
+    SeichiAssist.managedBlocks.foreach(_.setType(Material.AIR))
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
@@ -274,10 +274,10 @@ object SeichiAssist {
   val ranklist_premiumeffectpoint: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   //プラグインで出すエンティティの保存
-  val entitylist: mutable.HashSet[Entity] = mutable.HashSet()
+  val managedEntities: mutable.HashSet[Entity] = mutable.HashSet()
 
   //プレイヤーがスキルで破壊するブロックリスト
-  val allblocklist: mutable.HashSet[Block] = mutable.HashSet()
+  val managedBlocks: mutable.HashSet[Block] = mutable.HashSet()
 
   var instance: SeichiAssist = _
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)

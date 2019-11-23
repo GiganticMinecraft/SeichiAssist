@@ -41,9 +41,9 @@ class MagicTask(private val player: Player,
 
   override def secondAction(): Unit = {
     //2回目のrun
-    if (SeichiAssist.entitylist.isEmpty) {
+    if (SeichiAssist.managedEntities.isEmpty) {
       val e = player.getWorld.spawnEntity(centerBreak, EntityType.CHICKEN).asInstanceOf[Chicken]
-      SeichiAssist.entitylist += e
+      SeichiAssist.managedEntities += e
       e.playEffect(EntityEffect.WITCH_MAGIC)
       e.setInvulnerable(true)
       new AsyncEntityRemover(e).runTaskLater(SeichiAssist.instance, 100)
@@ -53,7 +53,7 @@ class MagicTask(private val player: Player,
     blocks.foreach { b =>
       b.setType(Material.AIR)
       b.getWorld.spawnParticle(Particle.NOTE, b.getLocation.add(0.5, 0.5, 0.5), 1)
-      SeichiAssist.allblocklist -= b
+      SeichiAssist.managedBlocks -= b
     }
     cancel()
   }
