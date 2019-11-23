@@ -6,16 +6,15 @@ import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
-import com.github.unchama.seichiassist.task.{AsyncEntityRemover, CoolDownTask}
+import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.{Arrow, Player, ThrownExpBottle}
+import org.bukkit.entity.ThrownExpBottle
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
-import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener extends Listener {
