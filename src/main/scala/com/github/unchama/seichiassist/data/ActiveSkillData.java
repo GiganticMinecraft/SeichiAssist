@@ -1,13 +1,11 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.ActiveSkillEffect;
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.*;
 import com.github.unchama.seichiassist.task.AssaultTask;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashSet;
@@ -199,13 +197,27 @@ public class ActiveSkillData {
         if (assaulttype == 0) {
             return;
         }
-        //スキルフラグがオンの時の処理
         if (mineflagnum != 0) {
+            //スキルフラグがオンの時の処理
             this.assaultarea = new BreakArea(player, type, skilllevel, mineflagnum, true);
             this.assaultflag = true;
-            this.assaulttask = new AssaultTask(player).runTaskTimer(plugin, 10, 10);
-        }//オフの時の処理
-        else {
+
+            // オフハンドを取得
+            ItemStack offHandItem = player.getInventory().getItemInOffHand();
+
+            //場合分け
+            if (!MaterialSets.breakMaterials().contains(offHandItem.getType())) {
+                // サブハンドにツールを持っていないとき
+                player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
+            } else if (offHandItem.getDurability() > offHandItem.getType().getMaxDurability() &&
+                    !offHandItem.getItemMeta().isUnbreakable()) {
+                //耐久値がマイナスかつ耐久無限ツールでない時
+                player.sendMessage(ChatColor.GREEN + "不正な耐久値です。");
+            } else {
+                this.assaulttask = new AssaultTask(player, offHandItem).runTaskTimer(plugin, 10, 10);
+            }
+        } else {
+            //オフの時の処理
             this.assaultflag = false;
         }
     }
