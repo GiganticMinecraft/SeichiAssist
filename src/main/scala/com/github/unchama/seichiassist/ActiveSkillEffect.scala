@@ -34,7 +34,7 @@ sealed abstract class ActiveSkillEffect(val num: Int,
     this match {
       case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start, end, standard).runTask(plugin)
       case Blizzard =>
-        val effect = new BlizzardTask(player, skillData, tool, breakList, start, end, standard)
+        val effect = new BlizzardTask(player, skillData, tool, breakList, standard)
 
         if (skillId < 3) {
           effect.runTaskLater(plugin, 1)

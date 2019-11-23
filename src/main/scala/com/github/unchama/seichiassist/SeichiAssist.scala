@@ -272,10 +272,13 @@ object SeichiAssist {
   val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   //プレミアムエフェクトポイント表示用データリスト
   val ranklist_premiumeffectpoint: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
+
   //プラグインで出すエンティティの保存
-  val entitylist: mutable.ArrayBuffer[Entity] = mutable.ArrayBuffer()
+  val entitylist: mutable.HashSet[Entity] = mutable.HashSet()
+
   //プレイヤーがスキルで破壊するブロックリスト
-  val allblocklist: mutable.ArrayBuffer[Block] = mutable.ArrayBuffer()
+  val allblocklist: mutable.HashSet[Block] = mutable.HashSet()
+
   var instance: SeichiAssist = _
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
   var DEBUG = false
