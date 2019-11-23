@@ -4,17 +4,17 @@ import cats.effect.IO
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.GachaPrize
+import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
-import com.github.unchama.seichiassist.task.{AsyncEntityRemover, CoolDownTask}
+import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.{Arrow, Player, ThrownExpBottle}
+import org.bukkit.entity.ThrownExpBottle
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
-import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener extends Listener {
@@ -43,133 +43,68 @@ class PlayerClickListener extends Listener {
     //プレイヤーデータを取得
     val playerdata = playerMap.getOrElse(uuid, return)
 
-    //playerdataがない場合はreturn
-    if (equipmentslot == null) {
-      return
-    }
-    //オフハンドから実行された時処理を終了
-    if (equipmentslot == EquipmentSlot.OFF_HAND) {
-      return
-    }
+    if (equipmentslot == null) return
 
-    if (player.isSneaking) {
-      return
-    }
+    //オフハンドから実行された時処理を終了
+    if (equipmentslot == EquipmentSlot.OFF_HAND) return
+
+    if (player.isSneaking) return
+
     //サバイバルでない時　または　フライ中の時終了
-    if (player.getGameMode != GameMode.SURVIVAL || player.isFlying) {
-      return
-    }
+    if (player.getGameMode != GameMode.SURVIVAL || player.isFlying) return
+
     //アクティブスキルフラグがオフの時処理を終了
-    if (playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0) {
-      return
-    }
+    if (playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0) return
 
     //スキル発動条件がそろってなければ終了
-    if (!Util.isSkillEnable(player)) {
+    if (!Util.isSkillEnable(player)) return
+
+    action match {
+      case Action.LEFT_CLICK_BLOCK | Action.LEFT_CLICK_AIR =>
+        //アサルトアーマーをどっちも使用していない時終了
+        if (playerdata.activeskilldata.assaulttype == 0) return
+      case Action.RIGHT_CLICK_BLOCK | Action.RIGHT_CLICK_AIR =>
+        //アサルトアーマー使用中の時は終了左クリックで判定
+        if (playerdata.activeskilldata.assaulttype != 0) return
+      case Action.PHYSICAL =>
+        // クリック以外のInteractEventを無視する
+        return
+    }
+
+    //クールダウンタイム中は処理を終了
+    if (!playerdata.activeskilldata.skillcanbreakflag) {
+      //SEを再生
+      player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5.toFloat, 1f)
       return
     }
 
-
-    if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-      //アサルトアーマー使用中の時は終了左クリックで判定
-      if (playerdata.activeskilldata.assaulttype != 0) {
-        return
-      }
-      //クールダウンタイム中は処理を終了
-      if (!playerdata.activeskilldata.skillcanbreakflag) {
-        //SEを再生
-        player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5.toFloat, 1f)
-        return
-      }
-
-
-      if (MaterialSets.breakMaterials.contains(event.getMaterial)) {
-        if (playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()) {
-          //クールダウン処理
-          val cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum)
-          if (cooldown > 5) {
-            new CoolDownTask(player, false, true, false).runTaskLater(plugin, cooldown)
-          } else {
-            new CoolDownTask(player, false, false, false).runTaskLater(plugin, cooldown)
-          }
-          //エフェクトが指定されていないときの処理
-          if (playerdata.activeskilldata.effectnum == 0) {
-            runArrowSkill(player, classOf[Arrow])
-          } else if (playerdata.activeskilldata.effectnum <= 100) {
-            val skilleffect = ActiveSkillEffect.values
-            skilleffect(playerdata.activeskilldata.effectnum - 1).runArrowEffect(player)
-          } else if (playerdata.activeskilldata.effectnum > 100) {
-            val premiumeffect = ActiveSkillPremiumEffect.values
-            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).runArrowEffect(player)
-          } //エフェクトが指定されているときの処理
+    if (MaterialSets.breakMaterials.contains(event.getMaterial)) {
+      if (playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()) {
+        //クールダウン処理
+        val cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum)
+        if (cooldown > 5) {
+          new CoolDownTask(player, false, true, false).runTaskLater(plugin, cooldown)
+        } else {
+          new CoolDownTask(player, false, false, false).runTaskLater(plugin, cooldown)
         }
-      }
-    } else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-      //アサルトアーマーをどっちも使用していない時終了
-      if (playerdata.activeskilldata.assaulttype == 0) {
-        return
-      }
 
-      //クールダウンタイム中は処理を終了
-      if (!playerdata.activeskilldata.skillcanbreakflag) {
-        //SEを再生
-        player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5.toFloat, 1f)
-        return
-      }
-
-
-      if (MaterialSets.breakMaterials.contains(event.getMaterial)) {
-        if (playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()) {
-          //クールダウン処理
-          val cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum)
-          if (cooldown > 5) {
-            new CoolDownTask(player, false, true, false).runTaskLater(plugin, cooldown)
-          } else {
-            new CoolDownTask(player, false, false, false).runTaskLater(plugin, cooldown)
-          }
-          //エフェクトが指定されていないときの処理
+        val projectArrowEffect =
           if (playerdata.activeskilldata.effectnum == 0) {
-            runArrowSkill(player, classOf[Arrow])
+            // エフェクトが指定されていないとき
+            ArrowEffects.normalArrowEffect
           } else if (playerdata.activeskilldata.effectnum <= 100) {
+            // 通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
             val skilleffect = ActiveSkillEffect.values
-            skilleffect(playerdata.activeskilldata.effectnum - 1).runArrowEffect(player)
-          } else if (playerdata.activeskilldata.effectnum > 100) {
+            skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect(player)
+          } else {
+            // スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
             val premiumeffect = ActiveSkillPremiumEffect.values
-            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).runArrowEffect(player)
-          } //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-          //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
+            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).arrowEffect(player)
+          }
 
-        }
+        seichiassist.unsafe.runAsyncTargetedEffect(player)(projectArrowEffect, "ArrowEffectを非同期で実行する")
       }
     }
-  }
-
-  private def runArrowSkill[T <: org.bukkit.entity.Projectile](player: Player, clazz: Class[T]): Unit = {
-    //プレイヤーの位置を取得
-    val ploc = player.getLocation
-
-    //発射する音を再生する.
-    player.playSound(ploc, Sound.ENTITY_ARROW_SHOOT, 1f, 1f)
-
-    //スキルを実行する処理
-    val loc = player.getLocation
-    loc.add(loc.getDirection).add(0.0, 1.6, 0.0)
-    val vec = loc.getDirection
-    val proj = player.getWorld.spawn(loc, clazz)
-    proj.setShooter(player)
-    proj.setGravity(false)
-
-    //読み込み方法
-    /*
-		 * Projectile proj = event.getEntity();
-			if ( proj instanceof Arrow && proj.hasMetadata("ArrowSkill") ) {
-			}
-		 */
-    proj.setMetadata("ArrowSkill", new FixedMetadataValue(plugin, true))
-    proj.setVelocity(vec)
-
-    //矢を消去する処理
-    new AsyncEntityRemover(proj).runTaskLater(plugin, 100)
   }
 
 
@@ -179,7 +114,6 @@ class PlayerClickListener extends Listener {
     val player = event.getPlayer
     val uuid = player.getUniqueId
     val playerData = playerMap.getOrElse(uuid, return)
-    val name = playerData.lowercaseName
 
     //もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return

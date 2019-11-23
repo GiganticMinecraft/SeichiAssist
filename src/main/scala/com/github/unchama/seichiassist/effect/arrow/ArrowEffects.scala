@@ -23,6 +23,15 @@ object ArrowEffects {
   import com.github.unchama.util.syntax._
 
   implicit val plugin: JavaPlugin = SeichiAssist.instance
+
+  val normalArrowEffect: TargetedEffect[Player] = arrowEffect[Arrow](
+    ProjectileSpawnConfiguration(
+      1.0,
+      (0.0, 1.6, 0.0)
+    ),
+    Some(Sound.ENTITY_ARROW_SHOOT)
+  )
+
   val singleArrowBlizzardEffect: TargetedEffect[Player] = arrowEffect[Snowball](
     ProjectileSpawnConfiguration(
       1.0,

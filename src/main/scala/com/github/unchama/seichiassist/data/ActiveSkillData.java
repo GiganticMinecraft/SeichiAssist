@@ -57,7 +57,7 @@ public class ActiveSkillData {
     //スペシャルエフェクトを使用するフラグ
     public boolean specialflag;
     //選択されているアクティブスキルの番号を格納
-    public int effectnum;
+    public int effectnum; // TODO 100以下ならプレミアムスキル、という判定ロジックを隠すべき
     //通常スキルで破壊されるエリア
     public BreakArea area;
     //アサルトスキルで破壊されるエリア
