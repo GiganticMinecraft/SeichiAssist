@@ -19,9 +19,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.scheduler.BukkitRunnable
+
 import scala.Some
 import scala.collection.mutable
 import java.util.UUID
+
+import com.github.unchama.seichiassist.effect.XYZTuple.AxisAlignedCuboid
 
 class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnable {
   private val playerdata: PlayerData = SeichiAssist.playermap(player.getUniqueId)
@@ -137,27 +140,23 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
     val start = assaultArea.getStartList.get(0)
     val end = assaultArea.getEndList.get(0)
 
-    (end.y to start.y).foreach { y =>
-      (start.x to end.x).foreach { x =>
-        (start.z to end.z).foreach { z =>
-          val targetBlock = block.getRelative(x, y, z)
-          val isLava = targetBlock.getType match {
-            case Material.STATIONARY_LAVA | Material.LAVA => true
-            case _ => false
-          }
-          val isWater = targetBlock.getType match {
-            case Material.STATIONARY_WATER | Material.WATER => true
-            case _ => false
-          }
-
-          if (playerLocY < targetBlock.getLocation.getBlockY || player.isSneaking || targetBlock == block || !shouldBreakAllBlocks)
-            if (MaterialSets.materials.contains(targetBlock.getType) || isLava || isWater)
-              if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
-                if (isLava) foundLavas.add(targetBlock)
-                else if (isWater) foundWaters.add(targetBlock)
-                else foundBlocks.add(targetBlock)
-        }
+    AxisAlignedCuboid(start, end).forEachGridPoint { case XYZTuple(x, y, z) =>
+      val targetBlock = block.getRelative(x, y, z)
+      val isLava = targetBlock.getType match {
+        case Material.STATIONARY_LAVA | Material.LAVA => true
+        case _ => false
       }
+      val isWater = targetBlock.getType match {
+        case Material.STATIONARY_WATER | Material.WATER => true
+        case _ => false
+      }
+
+      if (MaterialSets.materials.contains(targetBlock.getType) || isLava || isWater)
+        if (playerLocY < targetBlock.getLocation.getBlockY || player.isSneaking || targetBlock == block || !shouldBreakAllBlocks)
+          if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
+            if (isLava) foundLavas.add(targetBlock)
+            else if (isWater) foundWaters.add(targetBlock)
+            else foundBlocks.add(targetBlock)
     }
 
     // 実際に破壊するブロック数の計算
