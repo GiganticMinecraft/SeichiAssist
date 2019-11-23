@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.util
 import java.util.Random
 import java.util.stream.IntStream
 
+import cats.effect.IO
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
@@ -79,51 +80,65 @@ object BreakUtil {
   }
 
   //ブロックを破壊する処理、ドロップも含む、統計増加も含む
-  def breakBlock(player: Player, breakblock: Block, centerofblock: Location, tool: ItemStack, stepflag: Boolean): Unit = {
-    var material = breakblock.getType
-    if (!MaterialSets.materials.contains(material)) {
-      return
-    }
+  def breakBlock(player: Player,
+                 targetBlock: Block,
+                 dropLocation: Location,
+                 tool: ItemStack,
+                 shouldPlayBreakSound: Boolean): Unit =
+    massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
 
-    var itemStackOption = dropItemOnTool(breakblock, tool)
+  def massBreakBlock(player: Player,
+                     targetBlocks: Iterable[Block],
+                     dropLocation: Location,
+                     miningTool: ItemStack,
+                     shouldPlayBreakSound: Boolean,
+                     toMaterial: Material = Material.AIR): Unit = {
+    val materialFilteredBlocks = targetBlocks.filter(b => MaterialSets.materials.contains(b.getType)).toList
 
-    //農地か草の道の場合土をドロップ
-    if (material == Material.GRASS_PATH || material == Material.SOIL) {
-      // DIRT, amount = 1
-      itemStackOption = Some(new ItemStack(Material.DIRT))
-    }
+    val dropItems =
+      materialFilteredBlocks.map(block =>
+        block.getType match {
+          case Material.GRASS_PATH | Material.SOIL => Some(new ItemStack(Material.DIRT))
+          case Material.MOB_SPAWNER => None
+          case _ => dropItemOnTool(block, miningTool)
+        }
+      )
 
-    if (material == Material.MOB_SPAWNER) {
-      itemStackOption = None
-    }
+    val normalizedMaterials =
+      materialFilteredBlocks.map { block =>
+        block.getType match {
+          case Material.GLOWING_REDSTONE_ORE => Material.REDSTONE_ORE
+          case others@_ => others
+        }
+      }
 
-    if (material == Material.GLOWING_REDSTONE_ORE) {
-      material = Material.REDSTONE_ORE
-    }
+    // ブロックをすべて[[toMaterial]]に変える
+    materialFilteredBlocks.foreach(_.setType(toMaterial))
 
-    if (material == Material.AIR) return
-
-    itemStackOption.map { itemStack =>
-      //アイテムをドロップさせる
-      if (!addItemToMineStack(player, itemStack)) {
-        breakblock.getWorld.dropItemNaturally(centerofblock, itemStack)
+    // 壊した時の音を再生させる
+    if (shouldPlayBreakSound) {
+      materialFilteredBlocks.foreach { block =>
+        dropLocation.getWorld.playEffect(block.getLocation, Effect.STEP_SOUND, block.getType)
       }
     }
 
-    //ブロックを空気に変える
-    breakblock.setType(Material.AIR)
+    com.github.unchama.seichiassist.unsafe.runIOAsync(
+      "ブロックの大量破壊のデータを反映する",
+      IO {
+        dropItems.flatten.map { itemStack =>
+          //アイテムをドロップさせる
+          if (!addItemToMineStack(player, itemStack)) {
+            dropLocation.getWorld.dropItemNaturally(dropLocation, itemStack)
+          }
+        }
 
-    if (stepflag) {
-      //あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
-      breakblock.getWorld.playEffect(breakblock.getLocation, Effect.STEP_SOUND, material)
-    }
-
-    //プレイヤーの統計を１増やす
-    material match {
-      case Material.GRASS_PATH | Material.SOIL | Material.MOB_SPAWNER =>
-      case _ =>
-        player.incrementStatistic(Statistic.MINE_BLOCK, material)
-    }
+        //プレイヤーの統計を増やす
+        normalizedMaterials.foreach {
+          case Material.GRASS_PATH | Material.SOIL | Material.MOB_SPAWNER =>
+          case material@_ => player.incrementStatistic(Statistic.MINE_BLOCK, material)
+        }
+      }
+    )
   }
 
   def addItemToMineStack(player: Player, itemstack: ItemStack): Boolean = {

@@ -191,8 +191,6 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
       return
     }
 
-    SeichiAssist.managedBlocks ++= foundBlocks
-
     // 経験値を減らす
     playerMana.decrease(useMana, player, playerdata.level)
 
@@ -202,17 +200,11 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
     // ブロックを書き換える
     if (shouldBreakAllBlocks) {
       (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
-
-      foundBlocks.foreach { b =>
-        BreakUtil.breakBlock(player, b, player.getLocation, tool, stepflag = false)
-        SeichiAssist.managedBlocks.$minus$eq(b)
-      }
+      BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, tool, shouldPlayBreakSound = false)
     } else {
       if (shouldCondenseWater) foundWaters.foreach(_.setType(Material.PACKED_ICE))
       if (shouldCondenseLava) foundLavas.foreach(_.setType(Material.MAGMA))
     }
-
-    SeichiAssist.managedBlocks.$minus$minus$eq(foundBlocks)
   }
 
   private def isCanceled =

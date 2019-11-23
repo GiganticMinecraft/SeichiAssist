@@ -26,15 +26,14 @@ class MagicTask(private val player: Player,
   override def firstAction(): Unit = {
     //1回目のrun
     val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
-    val rd = new Random().nextInt(colors.length)
+    val randomColor = colors(Random.nextInt(colors.length))
 
+    BreakUtil.massBreakBlock(player, blocks, skillCenter, tool, shouldPlayBreakSound = false, Material.WOOL)
     blocks.foreach { b =>
-      BreakUtil.breakBlock(player, b, skillCenter, tool, stepflag = false)
-
-      b.setType(Material.WOOL)
       val state = b.getState
-      val woolBlock = state.getData.asInstanceOf[Wool]
-      woolBlock.setColor(colors(rd))
+      state
+        .getData.asInstanceOf[Wool]
+        .setColor(randomColor)
       state.update()
     }
   }

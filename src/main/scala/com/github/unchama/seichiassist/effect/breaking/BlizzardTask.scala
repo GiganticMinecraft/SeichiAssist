@@ -15,27 +15,15 @@ class BlizzardTask(private val player: Player,
                    private val tool: ItemStack,
                    private val blocks: Set[Block],
                    private val droploc: Location) extends RoundedTask() {
-  //音の聞こえる距離
-  private var soundRadius: Int = 0
-  private var setRadius: Boolean = false
-
   //1回目のrun
   override def firstAction(): Unit = {
     if (skillData.skillnum > 2) {
-      blocks.foreach { block =>
-        BreakUtil.breakBlock(player, block, droploc, tool, stepflag = false)
-        block.setType(Material.PACKED_ICE)
-      }
+      BreakUtil.massBreakBlock(player, blocks, droploc, tool, shouldPlayBreakSound = false, Material.PACKED_ICE)
     } else {
-      blocks.foreach { block =>
-        BreakUtil.breakBlock(player, block, droploc, tool, stepflag = true)
-        SeichiAssist.managedBlocks -= block
-      }
+      BreakUtil.massBreakBlock(player, blocks, droploc, tool, shouldPlayBreakSound = true)
+      SeichiAssist.managedBlocks --= blocks
       cancel()
     }
-
-    soundRadius = 5
-    setRadius = skillData.skilltype == ActiveSkill.BREAK.gettypenum()
   }
 
   //2回目のrun
@@ -48,8 +36,8 @@ class BlizzardTask(private val player: Player,
       blocks.foreach { b =>
         b.setType(Material.AIR)
 
-        if (setRadius)
-          b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE, soundRadius)
+        if (skillData.skilltype == ActiveSkill.BREAK.gettypenum())
+          b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE, 5)
         else
           b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE)
 

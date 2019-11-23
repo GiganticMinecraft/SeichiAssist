@@ -65,13 +65,11 @@ public class MultiBreakTask extends BukkitRunnable {
 
             final XYZTuple startPoint = startlist.get(count);
             final XYZTuple endPoint = endlist.get(count);
+
             //エフェクトが選択されていない時の通常処理
             if (playerdata.activeskilldata().effectnum == 0) {
-                //ブロックを破壊する処理
-                for (Block b : multibreaklist.get(count)) {
-                    BreakUtil.breakBlock(player, b, droploc, tool, false);
-                    SeichiAssist.managedBlocks().$minus$eq(b);
-                }
+                BreakUtil.massBreakBlock(player, converted,droploc, tool, false, Material.AIR);
+                SeichiAssist.managedBlocks().$minus$minus$eq(converted);
             }
 
             //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）

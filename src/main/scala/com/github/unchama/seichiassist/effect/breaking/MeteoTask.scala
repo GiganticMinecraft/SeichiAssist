@@ -41,12 +41,8 @@ class MeteoTask(
     val vol = new Random().nextFloat() * 0.4f + 0.8f
     player.getWorld.playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol)
 
-    val stepflag = skillData.skillnum <= 2
-
-    blocks.foreach { b =>
-      BreakUtil.breakBlock(player, b, droploc, tool, stepflag)
-      SeichiAssist.managedBlocks -= b
-    }
+    BreakUtil.massBreakBlock(player, blocks, droploc, tool, skillData.skillnum <= 2)
+    SeichiAssist.managedBlocks --= blocks
   }
 
   private def relativeAverage(i1: Int, i2: Int): Double = ((i1 + i2) / 2).toDouble

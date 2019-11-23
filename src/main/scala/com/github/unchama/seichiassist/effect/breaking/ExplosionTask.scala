@@ -28,9 +28,12 @@ class ExplosionTask(private val player: Player,
       }
     }
 
-    blocks.foreach { block =>
-      BreakUtil.breakBlock(player, block, droploc, tool, step)
-      SeichiAssist.managedBlocks -= block
+    {
+      val st = System.nanoTime()
+      BreakUtil.massBreakBlock(player, blocks, droploc, tool, step)
+      SeichiAssist.managedBlocks --= blocks
+      val en = System.nanoTime()
+      println(s"${(en - st) / 1000} us required")
     }
   }
 }
