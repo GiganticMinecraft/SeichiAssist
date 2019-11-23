@@ -122,7 +122,7 @@ public class PlayerBlockBreakListener implements Listener {
 
 
         //スキルで破壊されるブロックの時処理を終了
-        if (SeichiAssist.allblocklist().contains(block)) {
+        if (SeichiAssist.managedBlocks().contains(block)) {
             event.setCancelled(true);
             if (SeichiAssist.DEBUG()) {
                 player.sendMessage("スキルで使用中のブロックです。");
@@ -255,7 +255,7 @@ public class PlayerBlockBreakListener implements Listener {
                                                 lavalist.add(breakblock);
                                             } else {
                                                 breaklist.$plus$eq(breakblock);
-                                                SeichiAssist.allblocklist().$plus$eq(breakblock);
+                                                SeichiAssist.managedBlocks().$plus$eq(breakblock);
                                             }
                                         }
                                     }
@@ -276,7 +276,7 @@ public class PlayerBlockBreakListener implements Listener {
                                             lavalist.add(breakblock);
                                         } else {
                                             breaklist.$plus$eq(breakblock);
-                                            SeichiAssist.allblocklist().$plus$eq(breakblock);
+                                            SeichiAssist.managedBlocks().$plus$eq(breakblock);
                                         }
                                     }
                                 }
@@ -304,7 +304,7 @@ public class PlayerBlockBreakListener implements Listener {
             //重力値の判定
             if (gravity > 15) {
                 player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-                SeichiAssist.allblocklist().$minus$minus$eq(breaklist);
+                SeichiAssist.managedBlocks().$minus$minus$eq(breaklist);
                 break;
             }
             //実際に経験値を減らせるか判定
@@ -314,7 +314,7 @@ public class PlayerBlockBreakListener implements Listener {
                     player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
                 }
 
-                SeichiAssist.allblocklist().$minus$minus$eq(breaklist);
+                SeichiAssist.managedBlocks().$minus$minus$eq(breaklist);
 
                 break;
             }
@@ -324,7 +324,7 @@ public class PlayerBlockBreakListener implements Listener {
                 if (SeichiAssist.DEBUG()) {
                     player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
                 }
-                SeichiAssist.allblocklist().$minus$minus$eq(breaklist);
+                SeichiAssist.managedBlocks().$minus$minus$eq(breaklist);
 
                 break;
             }
@@ -343,7 +343,7 @@ public class PlayerBlockBreakListener implements Listener {
         }//スキルの処理
         else {
             multibreaklist.get(0).add(block);
-            SeichiAssist.allblocklist().$plus$eq(block);
+            SeichiAssist.managedBlocks().$plus$eq(block);
             new MultiBreakTask(player, block, tool, multibreaklist, multilavalist, startlist, endlist).runTaskTimer(plugin, 0, 4);
         }
 
@@ -416,7 +416,7 @@ public class PlayerBlockBreakListener implements Listener {
                                             lavalist.add(breakblock);
                                         } else {
                                             breaklist.add(breakblock);
-                                            SeichiAssist.allblocklist().$plus$eq(breakblock);
+                                            SeichiAssist.managedBlocks().$plus$eq(breakblock);
                                         }
                                     }
                                 }
@@ -437,7 +437,7 @@ public class PlayerBlockBreakListener implements Listener {
                                         lavalist.add(breakblock);
                                     } else {
                                         breaklist.add(breakblock);
-                                        SeichiAssist.allblocklist().$plus$eq(breakblock);
+                                        SeichiAssist.managedBlocks().$plus$eq(breakblock);
                                     }
                                 }
                             }
@@ -474,7 +474,7 @@ public class PlayerBlockBreakListener implements Listener {
         //重力値の判定
         if (gravity > 15) {
             player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-            SeichiAssist.allblocklist().$plus$plus$eq(breaklist);
+            SeichiAssist.managedBlocks().$plus$plus$eq(breaklist);
             return;
         }
 
@@ -485,7 +485,7 @@ public class PlayerBlockBreakListener implements Listener {
             if (SeichiAssist.DEBUG()) {
                 player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
             }
-            SeichiAssist.allblocklist().$plus$plus$eq(breaklist);
+            SeichiAssist.managedBlocks().$plus$plus$eq(breaklist);
             return;
         }
         if (SeichiAssist.DEBUG()) {
@@ -498,7 +498,7 @@ public class PlayerBlockBreakListener implements Listener {
             if (SeichiAssist.DEBUG()) {
                 player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
             }
-            SeichiAssist.allblocklist().$plus$plus$eq(breaklist);
+            SeichiAssist.managedBlocks().$plus$plus$eq(breaklist);
             return;
         }
 
@@ -519,10 +519,10 @@ public class PlayerBlockBreakListener implements Listener {
         }//エフェクトが指定されていないときの処理
         else if (playerdata.activeskilldata().effectnum == 0) {
             breaklist.add(block);
-            SeichiAssist.allblocklist().$plus$eq(block);
+            SeichiAssist.managedBlocks().$plus$eq(block);
             breaklist.foreach(b -> {
                 BreakUtil.breakBlock(player, b, centerofblock, tool, false);
-                SeichiAssist.allblocklist().$minus$eq(b);
+                SeichiAssist.managedBlocks().$minus$eq(b);
 
                 return 0;
             });
@@ -530,7 +530,7 @@ public class PlayerBlockBreakListener implements Listener {
         //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
         else if (playerdata.activeskilldata().effectnum <= 100) {
             breaklist.add(block);
-            SeichiAssist.allblocklist().$plus$eq(block);
+            SeichiAssist.managedBlocks().$plus$eq(block);
             ActiveSkillEffect[] skilleffect = ActiveSkillEffect.arrayValues();
             skilleffect[playerdata.activeskilldata().effectnum - 1].runBreakEffect(player, playerdata.activeskilldata(), tool, breaklist.toSet(), start, end, centerofblock);
         }
@@ -538,7 +538,7 @@ public class PlayerBlockBreakListener implements Listener {
         //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
         else if (playerdata.activeskilldata().effectnum > 100) {
             breaklist.add(block);
-            SeichiAssist.allblocklist().$plus$eq(block);
+            SeichiAssist.managedBlocks().$plus$eq(block);
             ActiveSkillPremiumEffect[] premiumeffect = ActiveSkillPremiumEffect.arrayValues();
             premiumeffect[playerdata.activeskilldata().effectnum - 1 - 100].runBreakEffect(player, tool, breaklist.toSet(), start, end, centerofblock);
         }

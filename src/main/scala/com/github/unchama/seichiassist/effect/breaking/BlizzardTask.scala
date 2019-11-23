@@ -10,18 +10,17 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Effect, Location, Material}
 
-class BlizzardTask(private val player: Player, private val skillData: ActiveSkillData,
+class BlizzardTask(private val player: Player,
+                   private val skillData: ActiveSkillData,
                    private val tool: ItemStack,
                    private val blocks: Set[Block],
-                   private val start: XYZTuple,
-                   private val end: XYZTuple,
                    private val droploc: Location) extends RoundedTask() {
   //音の聞こえる距離
   private var soundRadius: Int = 0
   private var setRadius: Boolean = false
 
+  //1回目のrun
   override def firstAction(): Unit = {
-    //1回目のrun
     if (skillData.skillnum > 2) {
       blocks.foreach { block =>
         BreakUtil.breakBlock(player, block, droploc, tool, stepflag = false)
@@ -30,7 +29,7 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
     } else {
       blocks.foreach { block =>
         BreakUtil.breakBlock(player, block, droploc, tool, stepflag = true)
-        SeichiAssist.allblocklist -= block
+        SeichiAssist.managedBlocks -= block
       }
       cancel()
     }
@@ -39,26 +38,22 @@ class BlizzardTask(private val player: Player, private val skillData: ActiveSkil
     setRadius = skillData.skilltype == ActiveSkill.BREAK.gettypenum()
   }
 
+  //2回目のrun
   override def secondAction(): Unit = {
-    //2回目のrun
-    AxisAlignedCuboid(start, end)
-      .forEachGridPoint() { xyzTuple: XYZTuple =>
-        //逐一更新が必要な位置
-        val effectloc = droploc.clone().add(xyzTuple.x.toDouble, xyzTuple.y.toDouble, xyzTuple.z.toDouble)
-        if (blocks.contains(effectloc.getBlock)) {
-          player.getWorld.playEffect(effectloc, Effect.SNOWBALL_BREAK, 1)
-        }
-      }
+    blocks
+      .map(_.getLocation)
+      .foreach(location => player.getWorld.playEffect(location, Effect.SNOWBALL_BREAK, 1))
 
     if (skillData.skillnum > 2) {
       blocks.foreach { b =>
         b.setType(Material.AIR)
-        if (setRadius) {
+
+        if (setRadius)
           b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE, soundRadius)
-        } else {
+        else
           b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE)
-        }
-        SeichiAssist.allblocklist -= b
+
+        SeichiAssist.managedBlocks -= b
       }
     }
   }

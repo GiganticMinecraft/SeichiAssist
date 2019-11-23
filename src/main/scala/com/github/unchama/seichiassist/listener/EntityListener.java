@@ -128,7 +128,7 @@ public class EntityListener implements Listener {
             return;
         }
         //スキルで破壊されるブロックの時処理を終了
-        if (SeichiAssist.allblocklist().contains(block)) {
+        if (SeichiAssist.managedBlocks().contains(block)) {
             if (SeichiAssist.DEBUG()) {
                 player.sendMessage("スキルで使用中のブロックです。");
             }
@@ -137,7 +137,7 @@ public class EntityListener implements Listener {
 
         runArrowSkillofHitBlock(player, proj, block, tool);
 
-        SeichiAssist.entitylist().$minus$eq(proj);
+        SeichiAssist.managedEntities().$minus$eq(proj);
         proj.remove();
     }
 
@@ -194,7 +194,7 @@ public class EntityListener implements Listener {
                                         lavas.add(breakblock);
                                     } else {
                                         breakBlock.add(breakblock);
-                                        SeichiAssist.allblocklist().$plus$eq(breakblock);
+                                        SeichiAssist.managedBlocks().$plus$eq(breakblock);
                                     }
                                 }
                             }
@@ -214,7 +214,7 @@ public class EntityListener implements Listener {
                                     lavas.add(breakblock);
                                 } else {
                                     breakBlock.add(breakblock);
-                                    SeichiAssist.allblocklist().$plus$eq(breakblock);
+                                    SeichiAssist.managedBlocks().$plus$eq(breakblock);
                                 }
                             }
                         }
@@ -249,7 +249,7 @@ public class EntityListener implements Listener {
         //重力値の判定
         if (gravity > 15) {
             player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。");
-            SeichiAssist.allblocklist().$minus$minus$eq(breakBlock);
+            SeichiAssist.managedBlocks().$minus$minus$eq(breakBlock);
             return;
         }
 
@@ -259,7 +259,7 @@ public class EntityListener implements Listener {
             if (SeichiAssist.DEBUG()) {
                 player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません");
             }
-            SeichiAssist.allblocklist().$minus$minus$eq(breakBlock);
+            SeichiAssist.managedBlocks().$minus$minus$eq(breakBlock);
             return;
         }
         if (SeichiAssist.DEBUG()) {
@@ -271,7 +271,7 @@ public class EntityListener implements Listener {
             if (SeichiAssist.DEBUG()) {
                 player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません");
             }
-            SeichiAssist.allblocklist().$minus$minus$eq(breakBlock);
+            SeichiAssist.managedBlocks().$minus$minus$eq(breakBlock);
             return;
         }
 
@@ -300,7 +300,7 @@ public class EntityListener implements Listener {
         if (playerdata.activeskilldata().effectnum == 0) {
             breakBlock.foreach(b -> {
                 BreakUtil.breakBlock(player, b, player.getLocation(), tool, false);
-                SeichiAssist.allblocklist().$minus$eq(b);
+                SeichiAssist.managedBlocks().$minus$eq(b);
 
                 return 0;
             });

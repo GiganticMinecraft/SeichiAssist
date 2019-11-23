@@ -110,11 +110,11 @@ object ArrowEffects {
           }
           // TODO abstract away the release of resource
           _ <- IO {
-            SeichiAssist.entitylist += projectile
+            SeichiAssist.managedEntities += projectile
           }
           _ <- IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
           _ <- IO {
-            projectile.remove(); SeichiAssist.entitylist -= projectile
+            projectile.remove(); SeichiAssist.managedEntities -= projectile
           }
         } yield ()
       )
