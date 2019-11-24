@@ -19,9 +19,9 @@ object AchievementCategoryMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import eu.timepit.refined.auto._
 
-  type AchievementGroupRepr = (AchievementGroup, Material)
+  type AchievementGroupRepr[+Parent <: AchievementCategory] = (AchievementGroup[Parent], Material)
 
-  def groupsLayoutFor(achievementCategory: AchievementCategory): Map[Int, AchievementGroupRepr] =
+  def groupsLayoutFor[Parent <: AchievementCategory](achievementCategory: Parent): Map[Int, AchievementGroupRepr[Parent]] =
     achievementCategory match {
       case BrokenBlock =>
         Map(
@@ -50,7 +50,7 @@ object AchievementCategoryMenu {
         )
     }
 
-  def buttonFor(achievementGroupRepr: AchievementGroupRepr): Button =
+  def buttonFor[A <: AchievementCategory](achievementGroupRepr: AchievementGroupRepr[A]): Button =
     achievementGroupRepr match {
       case (group, material) =>
         val partialBuilder =

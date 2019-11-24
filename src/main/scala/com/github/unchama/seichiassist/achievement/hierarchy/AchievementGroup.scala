@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.achievement.hierarchy
 
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
 
-sealed abstract class AchievementGroup(val name: String, val parent: AchievementCategory)
+sealed abstract class AchievementGroup[+Parent <: AchievementCategory](val name: String, val parent: Parent)
 
 object AchievementGroup {
   case object BrokenBlockAmount

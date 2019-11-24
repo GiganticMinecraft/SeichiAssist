@@ -5,7 +5,7 @@ import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerRef
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
+import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
@@ -15,7 +15,7 @@ object AchievementGroupMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import eu.timepit.refined.auto._
 
-  def sequentialEntriesIn(group: AchievementGroup): List[GroupMenuEntry] =
+  def sequentialEntriesIn(group: AchievementGroup[AchievementCategory]): List[GroupMenuEntry] =
     group match {
       case BrokenBlockAmount =>
         AchievementEntry.within(3001 to 3019)
@@ -53,7 +53,7 @@ object AchievementGroupMenu {
         AchievementEntry.within(8001 to 8003)
     }
 
-  def apply(group: AchievementGroup, pageNumber: Int = 1): Menu = {
+  def apply(group: AchievementGroup[AchievementCategory], pageNumber: Int = 1): Menu = {
     val groupEntries = sequentialEntriesIn(group)
     val entriesToDisplay = {
       import com.github.unchama.menuinventory.syntax._
