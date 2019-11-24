@@ -211,6 +211,7 @@ object BreakUtil {
     blockMaterial match {
       case Material.GRASS_PATH | Material.SOIL => return Some(new ItemStack(Material.DIRT))
       case Material.MOB_SPAWNER => return None
+      case _ =>
     }
 
     val rand = Math.random()
