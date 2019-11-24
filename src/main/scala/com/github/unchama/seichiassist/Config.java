@@ -1,5 +1,8 @@
 package com.github.unchama.seichiassist;
 
+import com.github.unchama.seichiassist.achievement.NicknameParts;
+import com.github.unchama.seichiassist.achievement.Nicknames;
+import com.github.unchama.seichiassist.achievement.Undefined;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;

@@ -7,8 +7,8 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement.{AutoUnlocked, Hidden, ManuallyUnlocked, Normal}
-import com.github.unchama.seichiassist.achievement.TitleMapping.TitleCombination
-import com.github.unchama.seichiassist.achievement.{AchievementConditions, SeichiAchievement, TitleMapping}
+import com.github.unchama.seichiassist.achievement.NicknameMapping.NicknameCombination
+import com.github.unchama.seichiassist.achievement.{AchievementConditions, SeichiAchievement, NicknameMapping}
 import com.github.unchama.seichiassist.menus.ColorScheme
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -21,7 +21,7 @@ object AchievementGroupMenuButtons {
       val material = if (hasUnlocked) Material.DIAMOND_BLOCK else Material.BEDROCK
       val title = {
         val displayTitleName =
-          TitleMapping.getTitleFor(achievement.id)
+          NicknameMapping.getTitleFor(achievement.id)
             .filter(_ => hasUnlocked)
             .getOrElse("???")
 
@@ -88,8 +88,8 @@ object AchievementGroupMenuButtons {
       val effect =
         if (hasUnlocked) {
           def setNickname(player: Player): Unit = {
-            val TitleCombination(firstId, secondId, thirdId) =
-              TitleMapping.mapping.get(achievement.id) match {
+            val NicknameCombination(firstId, secondId, thirdId) =
+              NicknameMapping.mapping.get(achievement.id) match {
                 case Some(value) => value
                 case None =>
                   player.sendMessage(s"${RED}二つ名の設定に失敗しました。")
@@ -99,7 +99,7 @@ object AchievementGroupMenuButtons {
             SeichiAssist
               .playermap(player.getUniqueId)
               .updateNickname(firstId.getOrElse(0), secondId.getOrElse(0), thirdId.getOrElse(0))
-            player.sendMessage(s"二つ名「${TitleMapping.getTitleFor(achievement.id).get}」が設定されました。")
+            player.sendMessage(s"二つ名「${NicknameMapping.getTitleFor(achievement.id).get}」が設定されました。")
           }
 
           delay(setNickname)
