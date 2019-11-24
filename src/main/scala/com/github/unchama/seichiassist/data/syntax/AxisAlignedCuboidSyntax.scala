@@ -17,7 +17,7 @@ trait AxisAlignedCuboidSyntax {
       val yRange = Range.inclusive(ySmall, yLarge, gridWidth)
       val zRange = Range.inclusive(zSmall, zLarge, gridWidth)
 
-      xRange.zip(yRange).zip(zRange).map { case ((x, y), z) => XYZTuple(x, y, z) }
+      for { x <- xRange; y <- yRange; z <- zRange } yield XYZTuple(x, y, z)
     }
   }
 }
