@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.ActiveSkillEffect;
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
-import com.github.unchama.seichiassist.effect.XYZTuple;
+import com.github.unchama.seichiassist.data.XYZTuple;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;

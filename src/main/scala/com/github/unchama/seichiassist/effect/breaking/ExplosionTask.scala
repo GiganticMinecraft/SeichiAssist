@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.effect.XYZTuple.AxisAlignedCuboid
-import com.github.unchama.seichiassist.effect.{PositionSearching, XYZTuple}
+import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.effect.PositionSearching
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.Location
 import org.bukkit.block.Block
@@ -26,7 +26,7 @@ class ExplosionTask(private val player: Player,
     val blockPositions = blocks.map(_.getLocation).map(XYZTuple.of)
     val world = player.getWorld
 
-    import com.github.unchama.seichiassist.effect.XYZTupleSyntax._
+    import com.github.unchama.seichiassist.data.syntax._
     AxisAlignedCuboid(start, end).gridPoints(2).foreach { gridPoint =>
       val explosionLocation = XYZTuple.of(dropLoc) + gridPoint
 

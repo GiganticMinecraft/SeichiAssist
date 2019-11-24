@@ -1,30 +1,17 @@
 package com.github.unchama.seichiassist.task
 
-import com.github.unchama.seichiassist.ActiveSkill
-import com.github.unchama.seichiassist.MaterialSets
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.BreakArea
-import com.github.unchama.seichiassist.data.Mana
+import com.github.unchama.seichiassist.{ActiveSkill, MaterialSets, SeichiAssist}
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.effect.XYZTuple
-import com.github.unchama.seichiassist.util.BreakUtil
-import com.github.unchama.seichiassist.util.Util
-import org.bukkit.ChatColor
-import org.bukkit.GameMode
-import org.bukkit.Location
-import org.bukkit.Material
+import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, Mana, XYZTuple}
+import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import org.bukkit.{ChatColor, GameMode, Material}
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.PlayerInventory
 import org.bukkit.scheduler.BukkitRunnable
 
-import scala.Some
 import scala.collection.mutable
-import java.util.UUID
-
-import com.github.unchama.seichiassist.effect.XYZTuple.AxisAlignedCuboid
 
 class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnable {
   private val playerdata: PlayerData = SeichiAssist.playermap(player.getUniqueId)
@@ -140,6 +127,7 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
     val start = assaultArea.getStartList.get(0)
     val end = assaultArea.getEndList.get(0)
 
+    import com.github.unchama.seichiassist.data.syntax._
     AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
       val targetBlock = block.getRelative(x, y, z)
       val isLava = targetBlock.getType match {

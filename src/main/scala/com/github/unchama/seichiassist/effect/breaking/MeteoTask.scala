@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.ActiveSkillData
-import com.github.unchama.seichiassist.effect.XYZTuple.AxisAlignedCuboid
-import com.github.unchama.seichiassist.effect.{PositionSearching, XYZTuple}
+import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.effect.PositionSearching
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -30,8 +29,8 @@ class MeteoTask(
     val blockPositions = blocks.map(_.getLocation).map(XYZTuple.of)
     val world = player.getWorld
 
+    import com.github.unchama.seichiassist.data.syntax._
     AxisAlignedCuboid(start, end).gridPoints(2).foreach { xyzTuple =>
-      import com.github.unchama.seichiassist.effect.XYZTupleSyntax._
       val effectloc = XYZTuple.of(droploc).+(xyzTuple)
 
       if (PositionSearching.containsOneOfPositionsAround(effectloc, 1, blockPositions)) {

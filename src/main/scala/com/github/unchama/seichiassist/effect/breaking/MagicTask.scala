@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit._

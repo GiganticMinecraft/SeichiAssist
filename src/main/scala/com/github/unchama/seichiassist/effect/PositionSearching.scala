@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.effect
 
-import com.github.unchama.seichiassist.effect.XYZTuple.AxisAlignedCuboid
+import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 import org.bukkit.Location
 import org.bukkit.block.Block
 
@@ -10,7 +10,7 @@ object PositionSearching {
    * [matchAgainst]の[[XYZTuple]]が一つでも含まれているかを返す。
    */
   def containsOneOfPositionsAround(center: XYZTuple, distance: Int, matchAgainst: Set[XYZTuple]): Boolean = {
-    import XYZTupleSyntax._
+    import com.github.unchama.seichiassist.data.syntax._
 
     val sphereVertex = XYZTuple(distance, distance, distance)
     val cuboidToLookFor = AxisAlignedCuboid(sphereVertex.negative, sphereVertex)

@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.ActiveSkillEffect.{Blizzard, Explosion, Meteo}
-import com.github.unchama.seichiassist.data.ActiveSkillData
-import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.data.{ActiveSkillData, XYZTuple}
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
 import com.github.unchama.targetedeffect.TargetedEffect

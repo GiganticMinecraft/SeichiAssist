@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.BreakArea;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.player.PlayerData;
-import com.github.unchama.seichiassist.effect.XYZTuple;
+import com.github.unchama.seichiassist.data.XYZTuple;
 import com.github.unchama.seichiassist.task.CoolDownTask;
 import com.github.unchama.seichiassist.task.MultiBreakTask;
 import com.github.unchama.seichiassist.util.BreakUtil;
