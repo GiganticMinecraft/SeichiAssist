@@ -15,9 +15,9 @@ object PositionSearching {
     val sphereVertex = XYZTuple(distance, distance, distance)
     val cuboidToLookFor = AxisAlignedCuboid(sphereVertex.negative, sphereVertex)
 
-    cuboidToLookFor.forEachGridPoint() { vector =>
-      if (matchAgainst.contains(center + vector)) return true
-    }
+    cuboidToLookFor.gridPoints()
+      .map(center + _)
+      .exists(matchAgainst.contains)
 
     false
   }

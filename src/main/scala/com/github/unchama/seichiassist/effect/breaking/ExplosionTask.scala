@@ -27,7 +27,7 @@ class ExplosionTask(private val player: Player,
     val world = player.getWorld
 
     import com.github.unchama.seichiassist.effect.XYZTupleSyntax._
-    AxisAlignedCuboid(start, end).forEachGridPoint(2) { gridPoint =>
+    AxisAlignedCuboid(start, end).gridPoints(2).foreach { gridPoint =>
       val explosionLocation = XYZTuple.of(dropLoc) + gridPoint
 
       if (PositionSearching.containsOneOfPositionsAround(XYZTuple.of(dropLoc) + gridPoint, 1, blockPositions)) {

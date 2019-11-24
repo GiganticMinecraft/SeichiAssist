@@ -30,7 +30,7 @@ class MeteoTask(
     val blockPositions = blocks.map(_.getLocation).map(XYZTuple.of)
     val world = player.getWorld
 
-    AxisAlignedCuboid(start, end).forEachGridPoint(2) { xyzTuple =>
+    AxisAlignedCuboid(start, end).gridPoints(2).foreach { xyzTuple =>
       import com.github.unchama.seichiassist.effect.XYZTupleSyntax._
       val effectloc = XYZTuple.of(droploc).+(xyzTuple)
 

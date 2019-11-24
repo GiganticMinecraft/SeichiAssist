@@ -140,7 +140,7 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
     val start = assaultArea.getStartList.get(0)
     val end = assaultArea.getEndList.get(0)
 
-    AxisAlignedCuboid(start, end).forEachGridPoint() { case XYZTuple(x, y, z) =>
+    AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
       val targetBlock = block.getRelative(x, y, z)
       val isLava = targetBlock.getType match {
         case Material.STATIONARY_LAVA | Material.LAVA => true
