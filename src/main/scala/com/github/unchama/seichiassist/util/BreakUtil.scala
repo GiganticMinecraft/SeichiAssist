@@ -101,17 +101,17 @@ object BreakUtil {
     // ブロックをすべて[[toMaterial]]に変える
     materialFilteredBlocks.foreach(_.setType(toMaterial))
 
-    // 壊した時の音を再生させる
-    if (shouldPlayBreakSound) {
-      materialFilteredBlocks.foreach { block =>
-        dropLocation.getWorld.playEffect(block.getLocation, Effect.STEP_SOUND, block.getType)
-      }
-    }
-
     com.github.unchama.seichiassist.unsafe.runIOAsync(
-      "ブロックの大量破壊のデータを反映する",
+      "ブロックの大量破壊の結果を反映する",
       IO {
-        //アイテムをドロップさせる
+        // 壊した時の音を再生する
+        if (shouldPlayBreakSound) {
+          targetBlocksInformation.foreach { case (location, material, _) =>
+            dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
+          }
+        }
+
+        //アイテムをドロップする
         targetBlocksInformation
           .flatMap(dropItemOnTool(miningTool))
           .map { itemStack =>
