@@ -1,8 +1,6 @@
 package com.github.unchama.seichiassist.effect
 
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
-import org.bukkit.Location
-import org.bukkit.block.Block
 
 object PositionSearching {
   /**
