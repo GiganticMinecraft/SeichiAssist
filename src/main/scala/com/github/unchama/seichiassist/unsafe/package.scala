@@ -1,9 +1,16 @@
 package com.github.unchama.seichiassist
 
-import cats.effect.IO
+import cats.effect.{ContextShift, IO}
 import com.github.unchama.targetedeffect.TargetedEffect
 
 package object unsafe {
+  import cats.implicits._
+
+  def fireShiftAndRunAsync(context: String, program: IO[Any])
+                          (implicit cs: ContextShift[IO]): Unit = {
+    runIOAsync(context, cs.shift *> program)
+  }
+
   def runIOAsync(context: String, program: IO[Any]): Unit = {
     program.unsafeRunAsync {
       case Left(error) =>

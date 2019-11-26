@@ -1,5 +1,6 @@
 package com.github.unchama.menuinventory
 
+import cats.effect.{ContextShift, IO}
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
 import org.bukkit.entity.Player
@@ -12,7 +13,7 @@ case class MenuSlotLayout(private[menuinventory] val layoutMap: Map[Int, Slot]) 
   /**
    * @return クリックされた枠に対応した[Slot]が[InventoryClickEvent]に基づいて引き起こす作用
    */
-  def effectOn(event: InventoryClickEvent): TargetedEffect[Player] =
+  def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): TargetedEffect[Player] =
     layoutMap.get(event.getSlot) match {
       case Some(slot) => slot.effectOn(event)
       case None => emptyEffect
