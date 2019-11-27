@@ -4,9 +4,12 @@ import java.text.SimpleDateFormat
 import java.util.stream.IntStream
 import java.util.{Calendar, Random}
 
+import cats.data
 import cats.effect.IO
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor._
@@ -89,19 +92,34 @@ object Util {
    *
    * @param player    付与する対象プレイヤー
    * @param itemStack 付与するアイテム
+   * @deprecated use [[grantItemStackEffect]]
    */
-  def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    import scala.jdk.CollectionConverters._
-
-    if (itemStack.getType == Material.AIR)
-      Bukkit.getLogger.warning("adding Material.AIR to player inventory")
-
-    player.getInventory
-      .addItem(itemStack)
-      .values().asScala
-      .filter(_.getType != Material.AIR)
-      .foreach(dropItem(player, _))
+  @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
+    com.github.unchama.seichiassist.unsafe.runIOAsync(
+      "アイテムスタックを付与する",
+      grantItemStackEffect(itemStack).run(player)
+    )
   }
+
+  /**
+   * プレイヤーにアイテムを付与します。インベントリに入り切らなかったアイテムはプレーヤーの立ち位置にドロップされます。
+   *
+   * @param itemStack 付与するアイテム
+   */
+  def grantItemStackEffect(itemStack: ItemStack): TargetedEffect[Player] = data.Kleisli(player =>
+    for {
+      _ <- PluginExecutionContexts.syncShift.shift
+      _ <- IO {
+        if (itemStack.getType == Material.AIR) Bukkit.getLogger.warning("adding Material.AIR to player inventory")
+
+        player.getInventory
+          .addItem(itemStack)
+          .values().asScala
+          .filter(_.getType != Material.AIR)
+          .foreach(dropItem(player, _))
+      }
+    } yield ()
+  )
 
   //プレイヤーのインベントリがフルかどうか確認
   def isPlayerInventoryFull(player: Player): Boolean = player.getInventory.firstEmpty() == -1

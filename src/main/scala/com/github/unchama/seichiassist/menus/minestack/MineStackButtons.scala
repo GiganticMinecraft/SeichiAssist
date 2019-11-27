@@ -1,12 +1,10 @@
 package com.github.unchama.seichiassist.menus.minestack
 
-import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect
@@ -115,9 +113,8 @@ private[minestack] case class MineStackButtons(player: Player) {
 
       sequentialEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
-        Kleisli.liftF(PluginExecutionContexts.syncShift.shift),
+        Util.grantItemStackEffect(grantItemStack),
         targetedeffect.UnfocusedEffect {
-          Util.addItemToPlayerSafely(player, grantItemStack)
           playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
         }
       )
