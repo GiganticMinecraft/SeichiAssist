@@ -18,6 +18,8 @@ object PluginExecutionContexts {
 
   implicit val sync: BukkitSyncExecutionContext = new BukkitSyncExecutionContext()
 
+  val syncShift: ContextShift[IO] = IO.contextShift(sync)
+
   val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 
   implicit val asyncShift: ContextShift[IO] = IO.contextShift(cachedThreadPool)

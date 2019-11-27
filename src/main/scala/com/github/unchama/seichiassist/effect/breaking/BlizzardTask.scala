@@ -16,9 +16,15 @@ class BlizzardTask(private val player: Player,
   //1回目のrun
   override def firstAction(): Unit = {
     if (skillData.skillnum > 2) {
-      BreakUtil.massBreakBlock(player, blocks, droploc, tool, shouldPlayBreakSound = false, Material.PACKED_ICE)
+      com.github.unchama.seichiassist.unsafe.runIOAsync(
+        "ブロックを大量破壊する",
+        BreakUtil.massBreakBlock(player, blocks, droploc, tool, shouldPlayBreakSound = false, Material.PACKED_ICE)
+      )
     } else {
-      BreakUtil.massBreakBlock(player, blocks, droploc, tool, shouldPlayBreakSound = true)
+      com.github.unchama.seichiassist.unsafe.runIOAsync(
+        "ブロックを大量破壊する",
+        BreakUtil.massBreakBlock(player, blocks, droploc, tool, shouldPlayBreakSound = true)
+      )
       SeichiAssist.managedBlocks --= blocks
       cancel()
     }

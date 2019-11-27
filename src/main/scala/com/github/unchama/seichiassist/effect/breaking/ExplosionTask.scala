@@ -21,13 +21,16 @@ class ExplosionTask(private val player: Player,
   override def run(): Unit = {
     SeichiAssist.managedBlocks --= blocks
 
-    BreakUtil.massBreakBlock(player, blocks, dropLoc, tool, step)
+    com.github.unchama.seichiassist.unsafe.runIOAsync(
+      "ブロックを大量破壊する",
+      BreakUtil.massBreakBlock(player, blocks, dropLoc, tool, step)
+    )
 
     val blockPositions = blocks.map(_.getLocation).map(XYZTuple.of)
     val world = player.getWorld
 
-    import com.github.unchama.seichiassist.data.syntax._
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+    import com.github.unchama.seichiassist.data.syntax._
 
     com.github.unchama.seichiassist.unsafe.fireShiftAndRunAsync(
       "爆発エフェクトを再生する",
