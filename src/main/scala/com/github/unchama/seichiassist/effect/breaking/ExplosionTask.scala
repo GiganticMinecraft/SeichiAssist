@@ -21,28 +21,32 @@ class ExplosionTask(private val player: Player,
   override def run(): Unit = {
     SeichiAssist.managedBlocks --= blocks
 
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
-      "ブロックを大量破壊する",
-      BreakUtil.massBreakBlock(player, blocks, dropLoc, tool, step)
-    )
-
     val blockPositions = blocks.map(_.getLocation).map(XYZTuple.of)
     val world = player.getWorld
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     import com.github.unchama.seichiassist.data.syntax._
 
-    com.github.unchama.seichiassist.unsafe.fireShiftAndRunAsync(
-      "爆発エフェクトを再生する",
-      IO {
-        AxisAlignedCuboid(start, end).gridPoints(2).foreach { gridPoint =>
-          val explosionLocation = XYZTuple.of(dropLoc) + gridPoint
+    com.github.unchama.seichiassist.unsafe.runIOAsync(
+      "エクスプロージョンの効果を発生させる",
+      for {
+        _ <- asyncShift.shift
 
-          if (PositionSearching.containsOneOfPositionsAround(XYZTuple.of(dropLoc) + gridPoint, 1, blockPositions)) {
-            world.createExplosion(explosionLocation.toLocation(world), 0f, false)
-          }
+        explosionLocations <- IO {
+          AxisAlignedCuboid(start, end)
+            .gridPoints(2)
+            .map(XYZTuple.of(dropLoc) + _)
+            .filter(PositionSearching.containsOneOfPositionsAround(_, 1, blockPositions))
         }
-      }
+
+        _ <- BreakUtil.massBreakBlock(player, blocks, dropLoc, tool, step)
+
+        _ <- IO {
+          explosionLocations.foreach(coordinates =>
+            world.createExplosion(coordinates.toLocation(world), 0f, false)
+          )
+        }
+      } yield ()
     )
   }
 }
