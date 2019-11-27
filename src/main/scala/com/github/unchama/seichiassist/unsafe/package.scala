@@ -4,7 +4,6 @@ import cats.effect.{ContextShift, IO}
 import com.github.unchama.targetedeffect.TargetedEffect
 
 package object unsafe {
-  import cats.implicits._
 
   /**
    * `cs`に実行をシフトしてから、シフト後のコンテキストで`program`を実行する。
@@ -16,7 +15,7 @@ package object unsafe {
    */
   def fireShiftAndRunAsync(context: String, program: IO[Any])
                           (implicit cs: ContextShift[IO]): Unit = {
-    runIOAsync(context, cs.shift *> program)
+    runIOAsync(context, cs.shift.flatMap(_ => program))
   }
 
   /**
