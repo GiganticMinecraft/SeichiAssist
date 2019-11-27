@@ -16,7 +16,5 @@ object PositionSearching {
     cuboidToLookFor.gridPoints()
       .map(center + _)
       .exists(matchAgainst.contains)
-
-    false
   }
 }
