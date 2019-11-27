@@ -18,39 +18,28 @@ class ExplosionTask(private val player: Player,
                     private val start: XYZTuple,
                     private val end: XYZTuple,
                     private val dropLoc: Location) extends BukkitRunnable() {
-
-  def time[R](context: String)(thunk: => R): R = {
-    val st = System.nanoTime()
-    val res = thunk
-    val en = System.nanoTime()
-
-    println(s"$context: ${en - st} ns")
-    res
-  }
-
   override def run(): Unit = {
-    time("explosion effect") {
-      SeichiAssist.managedBlocks --= blocks
+    SeichiAssist.managedBlocks --= blocks
 
-      BreakUtil.massBreakBlock(player, blocks, dropLoc, tool, step)
+    BreakUtil.massBreakBlock(player, blocks, dropLoc, tool, step)
 
-      val blockPositions = blocks.map(_.getLocation).map(XYZTuple.of)
-      val world = player.getWorld
+    val blockPositions = blocks.map(_.getLocation).map(XYZTuple.of)
+    val world = player.getWorld
 
-      import com.github.unchama.seichiassist.data.syntax._
-      import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
-      com.github.unchama.seichiassist.unsafe.fireShiftAndRunAsync(
-        "爆発エフェクトを再生する",
-        IO {
-          AxisAlignedCuboid(start, end).gridPoints(2).foreach { gridPoint =>
-            val explosionLocation = XYZTuple.of(dropLoc) + gridPoint
+    import com.github.unchama.seichiassist.data.syntax._
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
 
-            if (PositionSearching.containsOneOfPositionsAround(XYZTuple.of(dropLoc) + gridPoint, 1, blockPositions)) {
-              world.createExplosion(explosionLocation.toLocation(world), 0f, false)
-            }
+    com.github.unchama.seichiassist.unsafe.fireShiftAndRunAsync(
+      "爆発エフェクトを再生する",
+      IO {
+        AxisAlignedCuboid(start, end).gridPoints(2).foreach { gridPoint =>
+          val explosionLocation = XYZTuple.of(dropLoc) + gridPoint
+
+          if (PositionSearching.containsOneOfPositionsAround(XYZTuple.of(dropLoc) + gridPoint, 1, blockPositions)) {
+            world.createExplosion(explosionLocation.toLocation(world), 0f, false)
           }
         }
-      )
-    }
+      }
+    )
   }
 }
