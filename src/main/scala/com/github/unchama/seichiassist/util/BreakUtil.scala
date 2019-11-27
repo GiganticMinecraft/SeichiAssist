@@ -142,15 +142,14 @@ object BreakUtil {
           .foreach(player.incrementStatistic(Statistic.MINE_BLOCK, _))
       }
       itemsToBeDropped <- IO {
-        // アイテムのマインスタック搬入を試みる
-        // アイテムドロップは非同期スレッドで行ってはならない
+        // アイテムのマインスタック自動格納を試みる
         targetBlocksInformation
           .flatMap(dropItemOnTool(miningTool))
           .flatMap { itemStack =>
             if (!addItemToMineStack(player, itemStack)) {
-              None
-            } else {
               Some(itemStack)
+            } else {
+              None
             }
           }
       }
@@ -158,6 +157,7 @@ object BreakUtil {
       _ <- PluginExecutionContexts.syncShift.shift
 
       _ <- IO {
+        // アイテムドロップは非同期スレッドで行ってはならない
         itemsToBeDropped.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
       }
     } yield ()
