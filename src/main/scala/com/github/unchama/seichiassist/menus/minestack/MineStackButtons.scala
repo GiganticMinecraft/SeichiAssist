@@ -115,7 +115,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
       sequentialEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
-        Kleisli.pure(PluginExecutionContexts.syncShift.shift),
+        Kleisli.liftF(PluginExecutionContexts.syncShift.shift),
         targetedeffect.UnfocusedEffect {
           Util.addItemToPlayerSafely(player, grantItemStack)
           playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
