@@ -15,8 +15,7 @@ import org.bukkit.entity.Player
 object MineStackMainMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
@@ -57,7 +56,7 @@ object MineStackMainMenu extends Menu {
     } yield {
       MenuSlotLayout(
         ChestSlotRef(0, 0) -> autoMineStackToggleButton,
-        ChestSlotRef(0, 5) -> CommonButtons.openStickMenu
+        ChestSlotRef(5, 0) -> CommonButtons.openStickMenu
       )
         .merge(categoryButtonLayout)
         .merge(historicalMineStackSection)
