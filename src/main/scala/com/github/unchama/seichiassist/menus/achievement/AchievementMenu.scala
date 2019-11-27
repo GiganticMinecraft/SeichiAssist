@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.menus.achievement
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
@@ -91,6 +93,7 @@ object AchievementMenu extends Menu {
         .build(),
       action.LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
+        Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
         delay { player =>
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         }
