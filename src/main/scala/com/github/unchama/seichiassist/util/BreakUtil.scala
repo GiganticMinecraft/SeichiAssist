@@ -106,15 +106,16 @@ object BreakUtil {
     for {
       _ <- PluginExecutionContexts.syncShift.shift
 
+      materialFilteredBlocks <- IO { targetBlocks.filter(b => MaterialSets.materials.contains(b.getType)).toList }
+
+      // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- IO {
-        val materialFilteredBlocks = targetBlocks.filter(b => MaterialSets.materials.contains(b.getType)).toList
+        materialFilteredBlocks.map(block => (block.getLocation.clone(), block.getType, block.getData))
+      }
 
-        // ブロックをすべて[[toMaterial]]に変える
+      // ブロックをすべて[[toMaterial]]に変える
+      _ <- IO {
         materialFilteredBlocks.foreach(_.setType(toMaterial))
-
-        // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
-        materialFilteredBlocks
-          .map(block => (block.getLocation.clone(), block.getType, block.getData))
       }
 
       _ <- PluginExecutionContexts.asyncShift.shift
