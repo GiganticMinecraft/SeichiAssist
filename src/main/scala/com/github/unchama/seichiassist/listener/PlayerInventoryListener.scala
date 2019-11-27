@@ -28,6 +28,8 @@ class PlayerInventoryListener extends Listener {
   import com.github.unchama.util.InventoryUtil._
   import com.github.unchama.util.syntax._
 
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
+
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
@@ -781,6 +783,7 @@ class PlayerInventoryListener extends Listener {
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
               sequentialEffect(
@@ -860,6 +863,7 @@ class PlayerInventoryListener extends Listener {
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
               sequentialEffect(

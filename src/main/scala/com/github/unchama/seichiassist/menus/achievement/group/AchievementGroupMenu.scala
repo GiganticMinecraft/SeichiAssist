@@ -13,6 +13,7 @@ import org.bukkit.entity.Player
 
 object AchievementGroupMenu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
   import eu.timepit.refined.auto._
 
   def sequentialEntriesIn(group: AchievementGroup): List[GroupMenuEntry] =

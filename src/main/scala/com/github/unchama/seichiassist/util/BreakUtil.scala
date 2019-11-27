@@ -101,7 +101,8 @@ object BreakUtil {
     // ブロックをすべて[[toMaterial]]に変える
     materialFilteredBlocks.foreach(_.setType(toMaterial))
 
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+    com.github.unchama.seichiassist.unsafe.fireShiftAndRunAsync(
       "ブロックの大量破壊の結果を反映する",
       IO {
         // 壊した時の音を再生する

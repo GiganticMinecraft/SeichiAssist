@@ -32,6 +32,7 @@ object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
   import com.github.unchama.targetedeffect.syntax._
   import eu.timepit.refined.auto._
 

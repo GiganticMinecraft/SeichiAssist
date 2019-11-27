@@ -16,7 +16,7 @@ object PluginExecutionContexts {
 
   implicit val pluginInstance: JavaPlugin = SeichiAssist.instance
 
-  val sync: ExecutionContext = new BukkitSyncExecutionContext()
+  implicit val sync: BukkitSyncExecutionContext = new BukkitSyncExecutionContext()
 
   val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 

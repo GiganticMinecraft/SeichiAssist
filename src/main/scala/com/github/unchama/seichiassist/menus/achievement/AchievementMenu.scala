@@ -19,6 +19,7 @@ import org.bukkit.{Material, Sound}
 object AchievementMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")

@@ -16,6 +16,7 @@ object MineStackMainMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
