@@ -113,7 +113,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
       sequentialEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
-        Util.grantItemStackEffect(grantItemStack),
+        Util.grantItemStacksEffect(grantItemStack),
         targetedeffect.UnfocusedEffect {
           playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
         }

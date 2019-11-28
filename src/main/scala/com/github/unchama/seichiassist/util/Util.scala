@@ -92,34 +92,39 @@ object Util {
    *
    * @param player    付与する対象プレイヤー
    * @param itemStack 付与するアイテム
-   * @deprecated use [[grantItemStackEffect]]
+   * @deprecated use [[grantItemStacksEffect]]
    */
   @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
     com.github.unchama.seichiassist.unsafe.runIOAsync(
       "アイテムスタックを付与する",
-      grantItemStackEffect(itemStack).run(player)
+      grantItemStacksEffect(itemStack).run(player)
     )
   }
 
   /**
-   * プレイヤーにアイテムを付与します。インベントリに入り切らなかったアイテムはプレーヤーの立ち位置にドロップされます。
+   * プレイヤーに複数のアイテムを一度に付与する。
+   * インベントリに入り切らなかったアイテムはプレーヤーの立ち位置にドロップされる。
    *
-   * @param itemStack 付与するアイテム
+   * @param itemStacks 付与するアイテム
    */
-  def grantItemStackEffect(itemStack: ItemStack): TargetedEffect[Player] = data.Kleisli(player =>
+  def grantItemStacksEffect(itemStacks: ItemStack*): TargetedEffect[Player] = data.Kleisli { player =>
+    val toGive: Seq[ItemStack] = itemStacks.filter(_.getType != Material.AIR)
+
     for {
+      _ <- IO {
+        if (toGive.size != itemStacks.size)
+          Bukkit.getLogger.warning("attempt to add Material.AIR to player inventory")
+      }
       _ <- PluginExecutionContexts.syncShift.shift
       _ <- IO {
-        if (itemStack.getType == Material.AIR) Bukkit.getLogger.warning("adding Material.AIR to player inventory")
-
         player.getInventory
-          .addItem(itemStack)
+          .addItem(itemStacks: _*)
           .values().asScala
           .filter(_.getType != Material.AIR)
           .foreach(dropItem(player, _))
       }
     } yield ()
-  )
+  }
 
   //プレイヤーのインベントリがフルかどうか確認
   def isPlayerInventoryFull(player: Player): Boolean = player.getInventory.firstEmpty() == -1

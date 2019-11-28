@@ -107,12 +107,8 @@ object SecondPage extends Menu {
             }
 
             sequentialEffect(
-              UnfocusedEffect {
-                expManager.changeExp(-10000)
-              },
-              targetedeffect.UnfocusedEffect {
-                Util.addItemToPlayerSafely(player, skullToGive)
-              },
+              Util.grantItemStacksEffect(skullToGive),
+              UnfocusedEffect { expManager.changeExp(-10000) },
               s"${GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
             )
