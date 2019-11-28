@@ -283,7 +283,7 @@ case class HeadMiddle(private val _head: String, private val _middle: String) ex
 }
 
 case class Undefined(private val id: Int) extends NicknameParts {
-  val head = Some(s"[?H$id]")
-  val middle = Some(s"[?M$id]")
-  val tail = Some(s"[?T$id]")
+  val head = Some("")
+  val middle = Some("")
+  val tail = Some("")
 }
