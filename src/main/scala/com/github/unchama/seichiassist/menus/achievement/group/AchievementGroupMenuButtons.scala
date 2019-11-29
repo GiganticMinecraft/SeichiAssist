@@ -6,9 +6,9 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.achievement.SeichiAchievement.{AutoUnlocked, Hidden, ManuallyUnlocked, Normal}
 import com.github.unchama.seichiassist.achievement.NicknameMapping.NicknameCombination
-import com.github.unchama.seichiassist.achievement.{AchievementConditions, SeichiAchievement, NicknameMapping}
+import com.github.unchama.seichiassist.achievement.SeichiAchievement.{AutoUnlocked, Hidden, ManuallyUnlocked, Normal}
+import com.github.unchama.seichiassist.achievement.{AchievementConditions, NicknameMapping, SeichiAchievement}
 import com.github.unchama.seichiassist.menus.ColorScheme
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -21,9 +21,7 @@ object AchievementGroupMenuButtons {
       val material = if (hasUnlocked) Material.DIAMOND_BLOCK else Material.BEDROCK
       val title = {
         val displayTitleName =
-          NicknameMapping.getTitleFor(achievement.id)
-            .filter(_ => hasUnlocked)
-            .getOrElse("???")
+          if (hasUnlocked) NicknameMapping.getTitleFor(achievement) else "???"
 
         s"$YELLOW$UNDERLINE${BOLD}No${achievement.id}「$displayTitleName」"
       }
@@ -40,8 +38,8 @@ object AchievementGroupMenuButtons {
                 else
                   hidden.condition.maskedDescription
               List(description)
-            case SeichiAchievement.GrantedByConsole(_, condition, explanation) =>
-              List(condition) ++ explanation.getOrElse(Nil)
+            case g: SeichiAchievement.GrantedByConsole =>
+              List(g.condition) ++ g.explanation.getOrElse(Nil)
           }
 
         val unlockSchemeDescription =
@@ -89,17 +87,12 @@ object AchievementGroupMenuButtons {
         if (hasUnlocked) {
           def setNickname(player: Player): Unit = {
             val NicknameCombination(firstId, secondId, thirdId) =
-              NicknameMapping.mapping.get(achievement.id) match {
-                case Some(value) => value
-                case None =>
-                  player.sendMessage(s"${RED}二つ名の設定に失敗しました。")
-                  return
-              }
+              NicknameMapping.getNicknameCombinationFor(achievement)
 
             SeichiAssist
               .playermap(player.getUniqueId)
               .updateNickname(firstId.getOrElse(0), secondId.getOrElse(0), thirdId.getOrElse(0))
-            player.sendMessage(s"二つ名「${NicknameMapping.getTitleFor(achievement.id).get}」が設定されました。")
+            player.sendMessage(s"二つ名「${NicknameMapping.getTitleFor(achievement)}」が設定されました。")
           }
 
           delay(setNickname)
