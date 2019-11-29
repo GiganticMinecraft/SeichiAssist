@@ -952,7 +952,7 @@ public class MenuInventoryData {
                             checkInv++;
                         }
                     }
-                } else if (Nicknames.getMiddlePartFor(checkTitle2).nonEmpty()) {
+                } else if (maybeMiddlePart.nonEmpty()) {
                     itemstack = new ItemStack(Material.MILK_BUCKET, 1);
                     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
                     itemmeta.setDisplayName(String.valueOf(checkTitle2));
