@@ -312,7 +312,7 @@ class PlayerData(
 
   //表示される名前に整地レベルor二つ名を追加
   def setDisplayName(): Unit = {
-    var displayName = player.getName
+    val playerName = player.getName
 
     //放置時に色を変える
     val idleColor: String =
@@ -320,23 +320,28 @@ class PlayerData(
       else if (idleMinute >= 3) s"$GRAY"
       else ""
 
-    displayName = idleColor + {
-      val nickname = settings.nickname
-      val hasNothingSet = Seq(nickname.id1, nickname.id2, nickname.id3).forall(_ == 0)
+    val newDisplayName = idleColor + {
+      val nicknameSettings = settings.nickname
+      val currentNickname =
+        Option.unless(nicknameSettings.style == NicknameStyle.Level)(
+          Nicknames.getCombinedNicknameFor(nicknameSettings.id1, nicknameSettings.id2, nicknameSettings.id3)
+        ).flatten
 
-      if (hasNothingSet || (nickname.style == NicknameStyle.Level)) {
-        if (totalStarLevel <= 0)
-          s"[ Lv$level ]$displayName$WHITE"
-        else
-          s"[Lv$level☆$totalStarLevel]$displayName$WHITE"
-      } else {
-        val playerTitle = Nicknames.getTitleFor(nickname.id1, nickname.id2, nickname.id3)
-        s"[$playerTitle]$displayName$WHITE"
+      currentNickname.fold {
+        val levelPart =
+          if (totalStarLevel <= 0)
+            s"[ Lv$level ]"
+          else
+            s"[Lv$level☆$totalStarLevel]"
+
+        s"$levelPart$playerName$WHITE"
+      } { nickname =>
+        s"[$nickname]$playerName$WHITE"
       }
     }
 
-    player.setDisplayName(displayName)
-    player.setPlayerListName(displayName)
+    player.setDisplayName(newDisplayName)
+    player.setPlayerListName(newDisplayName)
   }
 
   /**

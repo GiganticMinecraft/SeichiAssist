@@ -180,7 +180,7 @@ object NicknameMapping {
     8003 -> NicknameCombination(Some(8003), None, Some(8003)),
   )
 
-  def getTitleFor(id: AchievementId): Option[Title] =
+  def getTitleFor(id: AchievementId): Option[Nickname] =
     mapping.get(id).map { case NicknameCombination(first, second, third) =>
       first.flatMap(Nicknames.getHeadPartFor).getOrElse("") +
         second.flatMap(Nicknames.getMiddlePartFor).getOrElse("") +

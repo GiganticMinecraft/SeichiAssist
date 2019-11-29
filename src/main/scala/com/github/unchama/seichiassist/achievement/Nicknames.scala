@@ -251,10 +251,26 @@ object Nicknames {
 
   def getTailPartFor(achievementId: AchievementId): Option[PartialNickname] = getNicknameFor(achievementId).flatMap(_.tail())
 
-  def getTitleFor(headAchievementId: AchievementId, middleAchievementId: AchievementId, tailAchievementId: AchievementId): String = {
+  /**
+   * @deprecated use [[getCombinedNicknameFor]] where possible
+   */
+  @deprecated def getTitleFor(headAchievementId: AchievementId, middleAchievementId: AchievementId, tailAchievementId: AchievementId): String = {
     getHeadPartFor(headAchievementId).getOrElse("") +
       getMiddlePartFor(middleAchievementId).getOrElse("") +
       getTailPartFor(tailAchievementId).getOrElse("")
+  }
+
+  def getCombinedNicknameFor(head: AchievementId, middle: AchievementId, tail: AchievementId): Option[Nickname] = {
+    val definedParts = List(
+      getHeadPartFor(head),
+      getMiddlePartFor(middle),
+      getTailPartFor(tail)
+    ).flatten
+
+    definedParts match {
+      case nonEmptyParts@ ::(_, _) => Some(nonEmptyParts.mkString(""))
+      case Nil => None
+    }
   }
 }
 
