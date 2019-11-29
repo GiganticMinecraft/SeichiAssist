@@ -1,8 +1,5 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.achievement.NicknameParts;
-import com.github.unchama.seichiassist.achievement.Nicknames;
-import com.github.unchama.seichiassist.achievement.Undefined;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -136,23 +133,6 @@ public class Config {
 
     public String getLvMessage(int i) {
         return config.getString("lv" + i + "message", "");
-    }
-
-    private NicknameParts getNickname(final int i) {
-        // もしも存在しないIDであれば二つ名の代わりにエラーメッセージを返す
-        return Nicknames.map().get(i).getOrElse(() -> (NicknameParts) new Undefined(i));
-    }
-
-    public String getTitle1(int i) {
-        return getNickname(i).head().get();
-    }
-
-    public String getTitle2(int i) {
-        return getNickname(i).middle().get();
-    }
-
-    public String getTitle3(int i) {
-        return getNickname(i).tail().get();
     }
 
     //サーバー番号取得

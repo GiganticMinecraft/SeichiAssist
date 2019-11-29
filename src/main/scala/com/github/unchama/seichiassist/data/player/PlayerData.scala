@@ -6,6 +6,7 @@ import java.util.{GregorianCalendar, UUID}
 import cats.effect.IO
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -311,7 +312,7 @@ class PlayerData(
 
   //表示される名前に整地レベルor二つ名を追加
   def setDisplayName(): Unit = {
-    var displayName = player.getName
+    val playerName = player.getName
 
     //放置時に色を変える
     val idleColor: String =
@@ -319,27 +320,28 @@ class PlayerData(
       else if (idleMinute >= 3) s"$GRAY"
       else ""
 
-    displayName = idleColor + {
-      val nickname = settings.nickname
-      val hasNothingSet = Seq(nickname.id1, nickname.id2, nickname.id3).forall(_ == 0)
+    val newDisplayName = idleColor + {
+      val nicknameSettings = settings.nickname
+      val currentNickname =
+        Option.unless(nicknameSettings.style == NicknameStyle.Level)(
+          Nicknames.getCombinedNicknameFor(nicknameSettings.id1, nicknameSettings.id2, nicknameSettings.id3)
+        ).flatten
 
-      if (hasNothingSet || (nickname.style == NicknameStyle.Level)) {
-        if (totalStarLevel <= 0)
-          s"[ Lv$level ]$displayName$WHITE"
-        else
-          s"[Lv$level☆$totalStarLevel]$displayName$WHITE"
-      } else {
-        val config = SeichiAssist.seichiAssistConfig
-        val displayTitle1 = config.getTitle1(nickname.id1)
-        val displayTitle2 = config.getTitle2(nickname.id2)
-        val displayTitle3 = config.getTitle3(nickname.id3)
+      currentNickname.fold {
+        val levelPart =
+          if (totalStarLevel <= 0)
+            s"[ Lv$level ]"
+          else
+            s"[Lv$level☆$totalStarLevel]"
 
-        s"[$displayTitle1$displayTitle2$displayTitle3]$displayName$WHITE"
+        s"$levelPart$playerName$WHITE"
+      } { nickname =>
+        s"[$nickname]$playerName$WHITE"
       }
     }
 
-    player.setDisplayName(displayName)
-    player.setPlayerListName(displayName)
+    player.setDisplayName(newDisplayName)
+    player.setPlayerListName(newDisplayName)
   }
 
   /**
@@ -469,7 +471,7 @@ class PlayerData(
   def updateNickname(id1: Int = settings.nickname.id1,
                      id2: Int = settings.nickname.id2,
                      id3: Int = settings.nickname.id3,
-                     style: NicknameStyle = settings.nickname.style): Unit = {
+                     style: NicknameStyle = NicknameStyle.TitleCombination): Unit = {
     settings.nickname = settings.nickname.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
   }
 
