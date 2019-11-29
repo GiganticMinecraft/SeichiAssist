@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder;
 import com.github.unchama.seichiassist.*;
-import com.github.unchama.seichiassist.achievement.NicknameParts;
 import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.data.player.PlayerNickname;
@@ -23,7 +22,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import scala.Function0;
 import scala.Option;
 import scala.collection.mutable.HashMap;
 

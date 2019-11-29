@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.achievement
 
-import com.github.unchama.seichiassist.SeichiAssist
-
 object NicknameMapping {
 
   case class NicknameCombination(first: Option[AchievementId],
