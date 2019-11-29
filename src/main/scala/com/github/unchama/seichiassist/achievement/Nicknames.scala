@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.achievement
 
+import org.bukkit.Bukkit
+
 object Nicknames {
   val map: Map[Int, NicknameParts] = Map(
     // 前後パーツ(購入用)
@@ -242,6 +244,20 @@ object Nicknames {
     9035 -> HeadTail(s"無尽蔵", s"気力"),
     9036 -> HeadTail(s"猛毒", s"直撃"),
   )
+
+  def getNicknameFor(achievementId: AchievementId): Option[NicknameParts] = Nicknames.map.get(achievementId)
+
+  def getHeadPartFor(achievementId: AchievementId): Option[NicknamePart] = getNicknameFor(achievementId).flatMap(_.head())
+
+  def getMiddlePartFor(achievementId: AchievementId): Option[NicknamePart] = getNicknameFor(achievementId).flatMap(_.middle())
+
+  def getTailPartFor(achievementId: AchievementId): Option[NicknamePart] = getNicknameFor(achievementId).flatMap(_.tail())
+
+  def getTitleFor(headAchievementId: AchievementId, middleAchievementId: AchievementId, tailAchievementId: AchievementId): String = {
+    getHeadPartFor(headAchievementId).getOrElse("") +
+      getMiddlePartFor(middleAchievementId).getOrElse("") +
+      getTailPartFor(tailAchievementId).getOrElse("")
+  }
 }
 
 sealed trait NicknameParts {
@@ -280,10 +296,4 @@ case class HeadMiddle(private val _head: String, private val _middle: String) ex
   val head = Some(_head)
   val middle = Some(_middle)
   val tail = None
-}
-
-case class Undefined(private val id: Int) extends NicknameParts {
-  val head = Some("")
-  val middle = Some("")
-  val tail = Some("")
 }

@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.achievement
 import com.github.unchama.seichiassist.SeichiAssist
 
 object NicknameMapping {
+
   case class NicknameCombination(first: Option[AchievementId],
                                  second: Option[AchievementId] = None,
                                  third: Option[AchievementId] = None)
@@ -181,12 +182,10 @@ object NicknameMapping {
     8003 -> NicknameCombination(Some(8003), None, Some(8003)),
   )
 
-  def getTitleFor(id: AchievementId): Option[String] =
+  def getTitleFor(id: AchievementId): Option[Title] =
     mapping.get(id).map { case NicknameCombination(first, second, third) =>
-      val config = SeichiAssist.seichiAssistConfig
-
-      first.map(config.getTitle1).getOrElse("") +
-        second.map(config.getTitle2).getOrElse("") +
-        third.map(config.getTitle3).getOrElse("")
+      first.flatMap(Nicknames.getHeadPartFor).getOrElse("") +
+        second.flatMap(Nicknames.getMiddlePartFor).getOrElse("") +
+        third.flatMap(Nicknames.getTailPartFor).getOrElse("")
     }
 }
