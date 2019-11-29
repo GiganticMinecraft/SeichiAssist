@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.achievement
 
 object Nicknames {
-  val map: Map[Int, NicknameParts] = Map(
+  val map: Map[Int, TitleNicknames] = Map(
     // 前後パーツ(購入用)
     9801 -> HeadTail(s"お兄さん", s"お兄さん"),
     9802 -> HeadTail(s"戦隊", s"戦隊"),
@@ -242,48 +242,76 @@ object Nicknames {
     9035 -> HeadTail(s"無尽蔵", s"気力"),
     9036 -> HeadTail(s"猛毒", s"直撃"),
   )
+
+  def getNicknameFor(achievementId: AchievementId): Option[TitleNicknames] = Nicknames.map.get(achievementId)
+
+  def getHeadPartFor(achievementId: AchievementId): Option[PartialNickname] = getNicknameFor(achievementId).flatMap(_.head())
+
+  def getMiddlePartFor(achievementId: AchievementId): Option[PartialNickname] = getNicknameFor(achievementId).flatMap(_.middle())
+
+  def getTailPartFor(achievementId: AchievementId): Option[PartialNickname] = getNicknameFor(achievementId).flatMap(_.tail())
+
+  /**
+   * @deprecated use [[getCombinedNicknameFor]] where possible
+   */
+  @deprecated def getTitleFor(headAchievementId: AchievementId, middleAchievementId: AchievementId, tailAchievementId: AchievementId): String = {
+    getHeadPartFor(headAchievementId).getOrElse("") +
+      getMiddlePartFor(middleAchievementId).getOrElse("") +
+      getTailPartFor(tailAchievementId).getOrElse("")
+  }
+
+  def getCombinedNicknameFor(head: AchievementId, middle: AchievementId, tail: AchievementId): Option[Nickname] = {
+    val definedParts = List(
+      getHeadPartFor(head),
+      getMiddlePartFor(middle),
+      getTailPartFor(tail)
+    ).flatten
+
+    definedParts match {
+      case nonEmptyParts@ ::(_, _) => Some(nonEmptyParts.mkString(""))
+      case Nil => None
+    }
+  }
 }
 
-sealed trait NicknameParts {
+/**
+ * この構造で持たれる二つ名は、対応する実績を解除、または対応する二つ名を購入していれば、
+ * 二つ名組み合わせ設定で使用できるようになる。
+ */
+sealed trait TitleNicknames {
   def head(): Option[String]
-  
+
   def middle(): Option[String]
-  
+
   def tail(): Option[String]
 }
 
-case class HeadTail(private val _head: String, private val _tail: String) extends NicknameParts {
+case class HeadTail(private val _head: String, private val _tail: String) extends TitleNicknames {
   val head = Some(_head)
   val middle = None
   val tail = Some(_tail)
 }
 
-case class MiddleOnly(private val _middle: String) extends NicknameParts {
+case class MiddleOnly(private val _middle: String) extends TitleNicknames {
   val head = None
   val middle = Some(_middle)
   val tail = None
 }
 
-case class HeadOnly(private val _head: String) extends NicknameParts {
+case class HeadOnly(private val _head: String) extends TitleNicknames {
   val head = Some(_head)
   val middle = None
   val tail = None
 }
 
-case class FullSet(private val _head: String, private val _middle: String, private val _tail: String) extends NicknameParts {
+case class FullSet(private val _head: String, private val _middle: String, private val _tail: String) extends TitleNicknames {
   val head = Some(_head)
   val middle = Some(_middle)
   val tail = Some(_tail)
 }
 
-case class HeadMiddle(private val _head: String, private val _middle: String) extends NicknameParts {
+case class HeadMiddle(private val _head: String, private val _middle: String) extends TitleNicknames {
   val head = Some(_head)
   val middle = Some(_middle)
   val tail = None
-}
-
-case class Undefined(private val id: Int) extends NicknameParts {
-  val head = Some(s"[?H$id]")
-  val middle = Some(s"[?M$id]")
-  val tail = Some(s"[?T$id]")
 }

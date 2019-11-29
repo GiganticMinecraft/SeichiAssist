@@ -2,7 +2,9 @@ package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder;
 import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.data.player.PlayerNickname;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
@@ -20,6 +22,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import scala.Option;
 import scala.collection.mutable.HashMap;
 
 import java.util.ArrayList;
@@ -744,8 +747,9 @@ public class MenuInventoryData {
         itemstack = new ItemStack(Material.BOOK, 1);
         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK);
         itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "「" + SeichiAssist.seichiAssistConfig().getTitle1(playerdata.settings().nickname().id1())
-                + SeichiAssist.seichiAssistConfig().getTitle2(playerdata.settings().nickname().id2()) + SeichiAssist.seichiAssistConfig().getTitle3(playerdata.settings().nickname().id3()) + "」");
+        PlayerNickname nickname = playerdata.settings().nickname();
+        String playerTitle = Nicknames.getTitleFor(nickname.id1(), nickname.id2(), nickname.id3());
+        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "「" + playerTitle + "」");
         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemmeta.setLore(lore);
         itemstack.setItemMeta(itemmeta);
@@ -837,12 +841,12 @@ public class MenuInventoryData {
         for (; checkTitle1 < 9900; ) {
             if (checkInv < 27) {
                 if (playerdata.TitleFlags().contains(checkTitle1)) {
-                    if (SeichiAssist.seichiAssistConfig().getTitle1(checkTitle1) == null || SeichiAssist.seichiAssistConfig().getTitle1(checkTitle1).equals("")) {
-                    } else {
+                    Option<String> maybeHeadPart = Nicknames.getHeadPartFor(checkTitle1);
+                    if (maybeHeadPart.nonEmpty()) {
                         itemstack = new ItemStack(Material.WATER_BUCKET, 1);
                         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
                         itemmeta.setDisplayName(String.valueOf(checkTitle1));
-                        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "前パーツ「" + SeichiAssist.seichiAssistConfig().getTitle1(checkTitle1) + "」");
+                        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "前パーツ「" + maybeHeadPart.get() + "」");
                         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                         itemmeta.setLore(lore);
                         itemstack.setItemMeta(itemmeta);
@@ -929,15 +933,15 @@ public class MenuInventoryData {
         int checkInv = 0;
         for (; checkTitle2 < 9999; ) {
             if (checkInv < 27) {
+                Option<String> maybeMiddlePart = Nicknames.getMiddlePartFor(checkTitle2);
                 //一部の「隠し中パーツ」は取得しているかの確認
                 if (9911 <= checkTitle2  /*&& checkTitle2 <= 9927*/) {
                     if (playerdata.TitleFlags().contains(checkTitle2)) {
-                        if (SeichiAssist.seichiAssistConfig().getTitle2(checkTitle2) == null || SeichiAssist.seichiAssistConfig().getTitle2(checkTitle2).equals("")) {
-                        } else {
+                        if (maybeMiddlePart.nonEmpty()) {
                             itemstack = new ItemStack(Material.MILK_BUCKET, 1);
                             itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
                             itemmeta.setDisplayName(String.valueOf(checkTitle2));
-                            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + SeichiAssist.seichiAssistConfig().getTitle2(checkTitle2) + "」");
+                            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + maybeMiddlePart.get() + "」");
                             itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                             itemmeta.setLore(lore);
                             itemstack.setItemMeta(itemmeta);
@@ -946,12 +950,11 @@ public class MenuInventoryData {
                             checkInv++;
                         }
                     }
-                } else if (SeichiAssist.seichiAssistConfig().getTitle2(checkTitle2) == null || SeichiAssist.seichiAssistConfig().getTitle2(checkTitle2).equals("")) {
-                } else {
+                } else if (maybeMiddlePart.nonEmpty()) {
                     itemstack = new ItemStack(Material.MILK_BUCKET, 1);
                     itemmeta = Bukkit.getItemFactory().getItemMeta(Material.MILK_BUCKET);
                     itemmeta.setDisplayName(String.valueOf(checkTitle2));
-                    lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + SeichiAssist.seichiAssistConfig().getTitle2(checkTitle2) + "」");
+                    lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + maybeMiddlePart.get() + "」");
                     itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                     itemmeta.setLore(lore);
                     itemstack.setItemMeta(itemmeta);
@@ -1035,12 +1038,12 @@ public class MenuInventoryData {
         for (; checkTitle3 < 9900; ) {
             if (checkInv < 27) {
                 if (playerdata.TitleFlags().contains(checkTitle3)) {
-                    if (SeichiAssist.seichiAssistConfig().getTitle3(checkTitle3) == null || SeichiAssist.seichiAssistConfig().getTitle3(checkTitle3).equals("")) {
-                    } else {
+                    Option<String> maybeTailPart = Nicknames.getTailPartFor(checkTitle3);
+                    if (maybeTailPart.nonEmpty()) {
                         itemstack = new ItemStack(Material.LAVA_BUCKET, 1);
                         itemmeta = Bukkit.getItemFactory().getItemMeta(Material.LAVA_BUCKET);
                         itemmeta.setDisplayName(String.valueOf(checkTitle3));
-                        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "後パーツ「" + SeichiAssist.seichiAssistConfig().getTitle3(checkTitle3) + "」");
+                        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "後パーツ「" + maybeTailPart.get() + "」");
                         itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                         itemmeta.setLore(lore);
                         itemstack.setItemMeta(itemmeta);
@@ -1144,7 +1147,7 @@ public class MenuInventoryData {
                     itemstack = new ItemStack(Material.BEDROCK, 1);
                     itemmeta = ItemMetaFactory.BEDROCK.getValue();
                     itemmeta.setDisplayName(String.valueOf(checkTitleS));
-                    lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "前・後パーツ「" + SeichiAssist.seichiAssistConfig().getTitle1(checkTitleS) + "」"
+                    lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "前・後パーツ「" + Nicknames.getHeadPartFor(checkTitleS).getOrElse(() -> "") + "」"
                             , ChatColor.RESET + "" + ChatColor.GREEN + "必要ポイント：20"
                             , ChatColor.RESET + "" + ChatColor.AQUA + "クリックで購入できます");
                     itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -1181,7 +1184,7 @@ public class MenuInventoryData {
                     itemstack = new ItemStack(Material.BEDROCK, 1);
                     itemmeta = ItemMetaFactory.BEDROCK.getValue();
                     itemmeta.setDisplayName(String.valueOf(checkTitleS));
-                    lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + SeichiAssist.seichiAssistConfig().getTitle2(checkTitleS) + "」"
+                    lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + Nicknames.getMiddlePartFor(checkTitleS).getOrElse(() -> "") + "」"
                             , ChatColor.RESET + "" + ChatColor.GREEN + "必要ポイント：35"
                             , ChatColor.RESET + "" + ChatColor.AQUA + "クリックで購入できます");
                     itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
