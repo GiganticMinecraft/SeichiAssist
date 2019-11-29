@@ -96,8 +96,17 @@ tasks.withType(JavaCompile::class.java).all {
 }
 
 tasks.withType(ScalaCompile::class.java).all {
-    this.options.encoding = "UTF-8"
+    this.scalaCompileOptions.additionalParameters = listOf(
+        "-Ypatmat-exhaust-depth", "40"
+    )
     this.scalaCompileOptions.forkOptions.jvmArgs = listOf("-Xss64m")
+    this.options.encoding = "UTF-8"
+
+    val compilerArgument = listOf(
+        "-Xlint:unchecked",
+        "-Xlint:deprecation"
+    )
+    this.options.compilerArgs.addAll(compilerArgument)
 }
 
 tasks.jar {
@@ -106,8 +115,3 @@ tasks.jar {
 
     from(embedConfiguration.map { if (it.isDirectory) it else zipTree(it) })
 }
-
-val compilerArgument = listOf("-Xlint:unchecked", "-Xlint:deprecation")
-
-val compileScala: ScalaCompile by tasks
-compileScala.options.compilerArgs.addAll(compilerArgument)
