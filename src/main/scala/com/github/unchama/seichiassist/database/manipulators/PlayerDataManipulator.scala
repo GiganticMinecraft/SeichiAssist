@@ -180,7 +180,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val readLastVote = gateway.executeQuery(s"SELECT lastvote FROM $tableReference WHERE name = '$name'")
         .recordIteration { lrs =>
           lrs.getString("lastvote")
-        }.getOrElse(return false)
+        }.headOption.getOrElse(return false)
 
       lastVote =
         if (readLastVote == null || readLastVote == "")
@@ -221,8 +221,10 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             playerData.ChainVote = count
           }
 
-          gateway.executeUpdate(s"UPDATE $tableReference SET chainvote = $count WHERE name = '$name'")
+          (count, name)
         }
+        .map { case (count, name) => s"UPDATE $tableReference SET chainvote = $count WHERE name = '$name'" }
+        .foreach(gateway.executeUpdate)
     } catch {
       case e: SQLException =>
         Bukkit.getLogger.warning(Util.getName(name) + " sql failed. => chainvote")
@@ -330,7 +332,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     val loadInventoryData: IO[Either[Nothing, String]] = EitherT.right(IO {
       val command = s"SELECT shareinv FROM $tableReference WHERE uuid = '${player.getUniqueId}'"
 
-      gateway.executeQuery(command).recordIteration(_.getString("shareinv")).get
+      gateway.executeQuery(command).recordIteration(_.getString("shareinv")).headOption.get
     }).value
 
     for {
@@ -551,7 +553,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     val executeQuery = IO {
       gateway.executeQuery(command).recordIteration { lrs =>
         BukkitSerialization.fromBase64(lrs.getString("inventory"))
-      }.get
+      }.head
     }
 
     catchingDatabaseErrors(uuid.toString, EitherT.right(executeQuery).value)
@@ -563,7 +565,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
       gateway.executeQuery(command)
         .recordIteration(_.getString("lastquit"))
-        .get
+        .head
     }).value
 
     catchingDatabaseErrors(playerName, fetchLastQuitData).map {
@@ -599,7 +601,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     val count = {
       val command = s"select count(*) as count from $db.$table where uuid = '$stringUuid'"
 
-      stmt.executeQuery(command).recordIteration(_.getInt("count"))
+      stmt.executeQuery(command).recordIteration(_.getInt("count")).headOption
     }
 
     count match {
