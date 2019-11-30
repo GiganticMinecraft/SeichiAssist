@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender
 
 class FastDiggingEffectSuppression {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
+  import com.github.unchama.targetedeffect.syntax._
 
   private var internalValue = 0
 

@@ -1,11 +1,10 @@
 package com.github.unchama.seichiassist
 
-import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillPremiumEffect.plugin
-import com.github.unchama.seichiassist.data.Coordinate
-import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.MagicTask
+import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
@@ -22,13 +21,6 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
   @Deprecated
   def getsqlName: String = this.sql_name
 
-  @Deprecated
-  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: Coordinate, end: Coordinate, standard: Location): Unit = {
-    import XYZTuple.CoordinateOps
-
-    runBreakEffect(player, tool, breaklist, start.toXYZTuple, end.toXYZTuple, standard)
-  }
-
   def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: XYZTuple, end: XYZTuple, standard: Location): Unit = {
     this match {
       case ActiveSkillPremiumEffect.MAGIC => if (SeichiAssist.DEBUG) {
@@ -40,17 +32,10 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
   }
 
   //エフェクトの実行処理分岐
-  def runArrowEffect(player: Player): Unit = {
-    val effect = this match {
+  def arrowEffect(player: Player): TargetedEffect[Player] =
+    this match {
       case ActiveSkillPremiumEffect.MAGIC => ArrowEffects.singleArrowMagicEffect
     }
-
-    // TODO take this outside
-    seichiassist.unsafe.runAsyncTargetedEffect(player)(
-      effect,
-      "ArrowEffectを非同期で実行する"
-    )
-  }
 }
 
 case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {

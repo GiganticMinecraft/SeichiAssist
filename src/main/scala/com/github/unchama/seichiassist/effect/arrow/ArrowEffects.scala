@@ -23,6 +23,15 @@ object ArrowEffects {
   import com.github.unchama.util.syntax._
 
   implicit val plugin: JavaPlugin = SeichiAssist.instance
+
+  val normalArrowEffect: TargetedEffect[Player] = arrowEffect[Arrow](
+    ProjectileSpawnConfiguration(
+      1.0,
+      (0.0, 1.6, 0.0)
+    ),
+    Some(Sound.ENTITY_ARROW_SHOOT)
+  )
+
   val singleArrowBlizzardEffect: TargetedEffect[Player] = arrowEffect[Snowball](
     ProjectileSpawnConfiguration(
       1.0,
@@ -101,11 +110,11 @@ object ArrowEffects {
           }
           // TODO abstract away the release of resource
           _ <- IO {
-            SeichiAssist.entitylist += projectile
+            SeichiAssist.managedEntities += projectile
           }
           _ <- IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
           _ <- IO {
-            projectile.remove(); SeichiAssist.entitylist -= projectile
+            projectile.remove(); SeichiAssist.managedEntities -= projectile
           }
         } yield ()
       )

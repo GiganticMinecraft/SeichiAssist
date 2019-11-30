@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.effect.XYZTuple
+import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit._
@@ -26,24 +26,23 @@ class MagicTask(private val player: Player,
   override def firstAction(): Unit = {
     //1回目のrun
     val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
-    val rd = new Random().nextInt(colors.length)
+    val randomColor = colors(Random.nextInt(colors.length))
 
+    BreakUtil.massBreakBlock(player, blocks, skillCenter, tool, shouldPlayBreakSound = false, Material.WOOL)
     blocks.foreach { b =>
-      BreakUtil.breakBlock(player, b, skillCenter, tool, stepflag = false)
-
-      b.setType(Material.WOOL)
       val state = b.getState
-      val woolBlock = state.getData.asInstanceOf[Wool]
-      woolBlock.setColor(colors(rd))
+      state
+        .getData.asInstanceOf[Wool]
+        .setColor(randomColor)
       state.update()
     }
   }
 
   override def secondAction(): Unit = {
     //2回目のrun
-    if (SeichiAssist.entitylist.isEmpty) {
+    if (SeichiAssist.managedEntities.isEmpty) {
       val e = player.getWorld.spawnEntity(centerBreak, EntityType.CHICKEN).asInstanceOf[Chicken]
-      SeichiAssist.entitylist += e
+      SeichiAssist.managedEntities += e
       e.playEffect(EntityEffect.WITCH_MAGIC)
       e.setInvulnerable(true)
       new AsyncEntityRemover(e).runTaskLater(SeichiAssist.instance, 100)
@@ -53,7 +52,7 @@ class MagicTask(private val player: Player,
     blocks.foreach { b =>
       b.setType(Material.AIR)
       b.getWorld.spawnParticle(Particle.NOTE, b.getLocation.add(0.5, 0.5, 0.5), 1)
-      SeichiAssist.allblocklist -= b
+      SeichiAssist.managedBlocks -= b
     }
     cancel()
   }

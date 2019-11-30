@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "click.seichi"
-version = "1.2.2"
+version = "1.2.3"
 description = """ギガンティック☆整地鯖の独自要素を司るプラグイン"""
 
 project.sourceSets {
@@ -63,6 +63,8 @@ dependencies {
     embed("org.typelevel:cats-core_2.13:2.0.0")
     embed("org.typelevel:cats-effect_2.13:2.0.0")
 
+    embed("eu.timepit:refined_2.13:0.9.10")
+
     embed("com.beachape:enumeratum_2.13:1.5.13")
 }
 
@@ -94,8 +96,17 @@ tasks.withType(JavaCompile::class.java).all {
 }
 
 tasks.withType(ScalaCompile::class.java).all {
-    this.options.encoding = "UTF-8"
+    this.scalaCompileOptions.additionalParameters = listOf(
+        "-Ypatmat-exhaust-depth", "40"
+    )
     this.scalaCompileOptions.forkOptions.jvmArgs = listOf("-Xss64m")
+    this.options.encoding = "UTF-8"
+
+    val compilerArgument = listOf(
+        "-Xlint:unchecked",
+        "-Xlint:deprecation"
+    )
+    this.options.compilerArgs.addAll(compilerArgument)
 }
 
 tasks.jar {
@@ -104,8 +115,3 @@ tasks.jar {
 
     from(embedConfiguration.map { if (it.isDirectory) it else zipTree(it) })
 }
-
-val compilerArgument = listOf("-Xlint:unchecked", "-Xlint:deprecation")
-
-val compileScala: ScalaCompile by tasks
-compileScala.options.compilerArgs.addAll(compilerArgument)

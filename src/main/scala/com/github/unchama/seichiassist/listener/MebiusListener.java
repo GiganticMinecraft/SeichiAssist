@@ -98,16 +98,20 @@ public class MebiusListener implements Listener {
             new Enchant(Enchantment.DURABILITY, 2, 10, "耐久力"));
     private static final String UNBREAK = ChatColor.RESET + "" + ChatColor.AQUA + "耐久無限";
     private static final List<String> ROMAN = Arrays.asList("", "", " II", " III", " IV", " V", " VI", " VII", " VIII", " IX", " X", " XI", " XII", " XIII", " XIV", " XV", " XVI", " XVII", " XVIII", " XIX", " XX");
-    // Mebius Tips
-    private static final List<String> MTIPS = Arrays.asList(
+    // Tipsリスト
+    private static final List<String> tips = Arrays.asList(
             "僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
             "僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！",
             "僕たち兄弟のステータスはみんなバラバラなんだよー！",
-            "僕たちはこの世界のどこかに埋まってるんだー。整地して僕の兄弟も見つけて欲しいな！");
+            "僕たちはこの世界のどこかに埋まってるんだー。整地して僕の兄弟も見つけて欲しいな！",
+            "困ったときはwikiを見ようね！",
+            "1日1回投票をすると、ガチャ券とピッケルが貰えるよ！",
+            "第2整地ワールドは自分で保護を掛けたところしか整地出来ないみたい。誰にも邪魔されずに黙々と掘りたい人に好都合だね。",
+            "エリトラ装備中は上を向きながらダッシュすると空を飛べるんだって！",
+            "公共施設サーバからデパートに行ってみようよ！修繕の本やダイヤのツールが買えるんだってー！",
+            "余った鉱石は公共施設サーバの交換所で交換券に出来るって知ってた？交換券で強いピッケルやスコップが手に入るらしいよ！");
     // Instanceアクセス用
     public static MebiusListener me;
-    // Tipsリスト
-    private static List<String> tips = new ArrayList<>();
     // デバッグフラグ
     private static boolean DEBUGENABLE = false;
     private static boolean debugFlg = false;
@@ -122,15 +126,6 @@ public class MebiusListener implements Listener {
             // debugmode=0の時はトグル不可能
             Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "メビウス帽子のdebugモードトグル機能：無効");
         }
-        // Tipsリストを読み込む
-        loadTips();
-    }
-
-    // リロード
-    // TODO ここはListenerクラスですよ
-    public static void reload() {
-        tips.clear();
-        loadTips();
     }
 
     // デバッグ
@@ -468,39 +463,6 @@ public class MebiusListener implements Listener {
                 }
             }
         }
-    }
-
-    // webからTipsリスト読み込み
-    private static void loadTips() {
-        try {
-            // HTTP通信でJSONデータを取得
-            URL url = new URL("https://seichi.click/wiki/Tips");
-            URLConnection urlCon = url.openConnection();
-            // 403回避のためユーザーエージェントを登録
-            urlCon.setRequestProperty("User-Agent", "Mebius");
-            InputStream in = urlCon.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "EUC-JP"));
-            String line;
-            // Tips先頭まで読み込み
-            while ((line = reader.readLine()) != null) {
-                if (line.contains("<ul id=\"content_block_2\" class=\"list-1\">")) {
-                    break;
-                }
-            }
-            // Tipsを読み込み
-            while ((line = reader.readLine()) != null) {
-                if (line.contains("</ul>")) {
-                    break;
-                } else {
-                    tips.add(line.replace("<li> ", "").replace("</li>", ""));
-                }
-            }
-            reader.close();
-            in.close();
-        } catch (Exception e) {
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Tipsの読み込みに失敗");
-        }
-        tips.addAll(MTIPS);
     }
 
     // メッセージリストからランダムに取り出し、タグを置換する

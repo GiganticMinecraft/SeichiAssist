@@ -21,8 +21,6 @@ object ResultSetSyntax {
           result = Some(operation(resultSet))
         }
         result
-      } catch {
-        case e: Exception => e.printStackTrace(); None
       } finally {
         resultSet.close()
       }

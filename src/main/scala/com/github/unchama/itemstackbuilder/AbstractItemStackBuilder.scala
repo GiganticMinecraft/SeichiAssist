@@ -11,7 +11,7 @@ import org.bukkit.inventory.{ItemFlag, ItemStack}
  * @tparam M 派生クラスが生成する[ItemStack]が持つべきであろう[ItemMeta]の型.
  * @author karayuu
  */
-abstract class AbstractItemStackBuilder[M <: ItemMeta] protected
+abstract class AbstractItemStackBuilder[-M <: ItemMeta] protected
 (material: Material, durability: Short) extends ItemStackBuilder {
 
   private val component: IconComponent = new IconComponent(material, durability)

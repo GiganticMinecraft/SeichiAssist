@@ -4,8 +4,9 @@ import java.text.SimpleDateFormat
 import java.util.{GregorianCalendar, UUID}
 
 import cats.effect.IO
-import com.github.unchama.menuinventory.InventoryRowSize
+import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -36,9 +37,9 @@ class PlayerData(
                   val name: String
                 ) {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
+  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.InventoryUtil._
 
   lazy val mebius: MebiusTask = new MebiusTask(uuid)
@@ -222,7 +223,7 @@ class PlayerData(
   //region calculated
   // TODO many properties here may be inlined and deleted
   //拡張インベントリ
-  private var _pocketInventory: Inventory = createInventory(None, Left(InventoryRowSize(1)), Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
+  private var _pocketInventory: Inventory = createInventory(None, 1.chestRows, Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
   //グリッド式保護関連
   private var claimUnit = ClaimUnit(0, 0, 0, 0)
 
@@ -311,7 +312,7 @@ class PlayerData(
 
   //表示される名前に整地レベルor二つ名を追加
   def setDisplayName(): Unit = {
-    var displayName = player.getName
+    val playerName = player.getName
 
     //放置時に色を変える
     val idleColor: String =
@@ -319,25 +320,28 @@ class PlayerData(
       else if (idleMinute >= 3) s"$GRAY"
       else ""
 
-    displayName = idleColor.+(
-      if (settings.nickName.id1 == 0 && settings.nickName.id2 == 0 && settings.nickName.id3 == 0) {
-        if (totalStarLevel <= 0) {
-          s"[ Lv$level ]$displayName$WHITE"
-        } else {
-          s"[Lv$level☆$totalStarLevel]$displayName$WHITE"
-        }
-      } else {
-        val config = SeichiAssist.seichiAssistConfig
-        val displayTitle1 = config.getTitle1(settings.nickName.id1)
-        val displayTitle2 = config.getTitle2(settings.nickName.id2)
-        val displayTitle3 = config.getTitle3(settings.nickName.id3)
+    val newDisplayName = idleColor + {
+      val nicknameSettings = settings.nickname
+      val currentNickname =
+        Option.unless(nicknameSettings.style == NicknameStyle.Level)(
+          Nicknames.getCombinedNicknameFor(nicknameSettings.id1, nicknameSettings.id2, nicknameSettings.id3)
+        ).flatten
 
-        s"[$displayTitle1$displayTitle2$displayTitle3]$displayName$WHITE"
+      currentNickname.fold {
+        val levelPart =
+          if (totalStarLevel <= 0)
+            s"[ Lv$level ]"
+          else
+            s"[Lv$level☆$totalStarLevel]"
+
+        s"$levelPart$playerName$WHITE"
+      } { nickname =>
+        s"[$nickname]$playerName$WHITE"
       }
-    )
+    }
 
-    player.setDisplayName(displayName)
-    player.setPlayerListName(displayName)
+    player.setDisplayName(newDisplayName)
+    player.setPlayerListName(newDisplayName)
   }
 
   /**
@@ -464,11 +468,11 @@ class PlayerData(
     voteFairyPeriod = new ClosedRange(voteFairyPeriod.start, value)
   }
 
-  def updateNickname(id1: Int = settings.nickName.id1,
-                     id2: Int = settings.nickName.id2,
-                     id3: Int = settings.nickName.id3,
-                     style: Style = settings.nickName.style): Unit = {
-    settings.nickName = settings.nickName.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
+  def updateNickname(id1: Int = settings.nickname.id1,
+                     id2: Int = settings.nickname.id2,
+                     id3: Int = settings.nickname.id3,
+                     style: NicknameStyle = NicknameStyle.TitleCombination): Unit = {
+    settings.nickname = settings.nickname.copy(id1 = id1, id2 = id2, id3 = id3, style = style)
   }
 
   //quit時とondisable時、プレイヤーデータを最新の状態に更新

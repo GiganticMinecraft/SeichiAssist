@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.menuinventory.{InventoryRowSize, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -23,14 +23,15 @@ import org.bukkit.{Material, Sound}
  */
 object SecondPage extends Menu {
 
-  import com.github.unchama.targetedeffect.MessageEffects._
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.CommandEffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects._
+  import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.InventoryUtil._
+  import eu.timepit.refined.auto._
+  import menuinventory.syntax._
 
   override val frame: MenuFrame =
-    MenuFrame(Left(InventoryRowSize(4)), s"${LIGHT_PURPLE}木の棒メニュー")
+    MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
 
   override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
     import ConstantButtons._
@@ -38,25 +39,25 @@ object SecondPage extends Menu {
     import computations._
 
     val constantPart = Map(
-      0 -> officialWikiNavigationButton,
-      1 -> rulesPageNavigationButton,
-      2 -> serverMapNavigationButton,
-      3 -> JMSNavigationButton,
-      8 -> hubCommandButton,
-      27 -> CommonButtons.openStickMenu,
-      30 -> recycleBinButton,
-      34 -> titanConversionButton,
-      35 -> appleConversionButton
+      ChestSlotRef(0, 0) -> officialWikiNavigationButton,
+      ChestSlotRef(0, 1) -> rulesPageNavigationButton,
+      ChestSlotRef(0, 2) -> serverMapNavigationButton,
+      ChestSlotRef(0, 3) -> JMSNavigationButton,
+      ChestSlotRef(0, 8) -> hubCommandButton,
+      ChestSlotRef(3, 0) -> CommonButtons.openStickMenu,
+      ChestSlotRef(3, 3) -> recycleBinButton,
+      ChestSlotRef(3, 7) -> titanConversionButton,
+      ChestSlotRef(3, 8) -> appleConversionButton
     )
 
     import cats.implicits._
 
     val dynamicPartComputation = Map(
-      6 -> computeShareInventoryButton,
-      12 -> computeHeadSummoningButton,
-      13 -> computeBroadcastMessageToggleButton,
-      14 -> computeDeathMessageToggleButton,
-      15 -> computeWorldGuardMessageToggleButton
+      ChestSlotRef(0, 6) -> computeShareInventoryButton,
+      ChestSlotRef(1, 3) -> computeHeadSummoningButton,
+      ChestSlotRef(1, 4) -> computeBroadcastMessageToggleButton,
+      ChestSlotRef(1, 5) -> computeDeathMessageToggleButton,
+      ChestSlotRef(1, 6) -> computeWorldGuardMessageToggleButton
     ).toList.map(_.sequence).sequence
 
     for {
@@ -427,7 +428,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = Left(InventoryRowSize(4)),
+                  size = 4.chestRows,
                   title = Some(s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ")
                 )
               )
@@ -463,7 +464,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = Left(InventoryRowSize(4)),
+                  size = 4.chestRows,
                   title = Some(s"$GOLD${BOLD}修繕したい限定タイタンを入れてネ")
                 )
               )
@@ -492,7 +493,7 @@ object SecondPage extends Menu {
               // TODO メニューインベントリに差し替える
               player.openInventory(
                 createInventory(
-                  size = Left(InventoryRowSize(4)),
+                  size = 4.chestRows,
                   title = Some(s"$RED${BOLD}ゴミ箱(取扱注意)")
                 )
               )

@@ -5,6 +5,7 @@ import cats.effect.IO
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect, _}
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
@@ -50,4 +51,6 @@ case object Button {
    * [effects]をひとつずつ作用として発生させる [Slot] を構築します.
    */
   def apply(itemStack: ItemStack, effects: ButtonEffect*): Button = Button(itemStack, effects.toList)
+
+  val empty: Button = apply(new ItemStack(Material.AIR))
 }

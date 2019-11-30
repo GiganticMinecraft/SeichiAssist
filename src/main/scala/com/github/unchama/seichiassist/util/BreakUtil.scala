@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.util
 import java.util.Random
 import java.util.stream.IntStream
 
+import cats.effect.IO
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
@@ -79,51 +80,59 @@ object BreakUtil {
   }
 
   //ブロックを破壊する処理、ドロップも含む、統計増加も含む
-  def breakBlock(player: Player, breakblock: Block, centerofblock: Location, tool: ItemStack, stepflag: Boolean): Unit = {
-    var material = breakblock.getType
-    if (!MaterialSets.materials.contains(material)) {
-      return
-    }
+  def breakBlock(player: Player,
+                 targetBlock: Block,
+                 dropLocation: Location,
+                 tool: ItemStack,
+                 shouldPlayBreakSound: Boolean): Unit =
+    massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
 
-    var itemStackOption = dropItemOnTool(breakblock, tool)
+  def massBreakBlock(player: Player,
+                     targetBlocks: Iterable[Block],
+                     dropLocation: Location,
+                     miningTool: ItemStack,
+                     shouldPlayBreakSound: Boolean,
+                     toMaterial: Material = Material.AIR): Unit = {
+    val materialFilteredBlocks = targetBlocks.filter(b => MaterialSets.materials.contains(b.getType)).toList
 
-    //農地か草の道の場合土をドロップ
-    if (material == Material.GRASS_PATH || material == Material.SOIL) {
-      // DIRT, amount = 1
-      itemStackOption = Some(new ItemStack(Material.DIRT))
-    }
+    val targetBlocksInformation = materialFilteredBlocks
+      .map(block => (block.getLocation.clone(), block.getType, block.getData))
 
-    if (material == Material.MOB_SPAWNER) {
-      itemStackOption = None
-    }
+    // ブロックをすべて[[toMaterial]]に変える
+    materialFilteredBlocks.foreach(_.setType(toMaterial))
 
-    if (material == Material.GLOWING_REDSTONE_ORE) {
-      material = Material.REDSTONE_ORE
-    }
+    com.github.unchama.seichiassist.unsafe.runIOAsync(
+      "ブロックの大量破壊の結果を反映する",
+      IO {
+        // 壊した時の音を再生する
+        if (shouldPlayBreakSound) {
+          targetBlocksInformation.foreach { case (location, material, _) =>
+            dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
+          }
+        }
 
-    if (material == Material.AIR) return
+        //アイテムをドロップする
+        targetBlocksInformation
+          .flatMap(dropItemOnTool(miningTool))
+          .map { itemStack =>
+            if (!addItemToMineStack(player, itemStack)) {
+              dropLocation.getWorld.dropItemNaturally(dropLocation, itemStack)
+            }
+          }
 
-    itemStackOption.map { itemStack =>
-      //アイテムをドロップさせる
-      if (!addItemToMineStack(player, itemStack)) {
-        breakblock.getWorld.dropItemNaturally(centerofblock, itemStack)
+        //プレイヤーの統計を増やす
+        targetBlocksInformation.map { case (_, m, _) => m }
+          .map {
+            case Material.GLOWING_REDSTONE_ORE => Material.REDSTONE_ORE
+            case others@_ => others
+          }
+          .filter {
+            case Material.GRASS_PATH | Material.SOIL | Material.MOB_SPAWNER => false
+            case _ => true
+          }
+          .foreach(player.incrementStatistic(Statistic.MINE_BLOCK, _))
       }
-    }
-
-    //ブロックを空気に変える
-    breakblock.setType(Material.AIR)
-
-    if (stepflag) {
-      //あたかもプレイヤーが壊したかのようなエフェクトを表示させる、壊した時の音を再生させる
-      breakblock.getWorld.playEffect(breakblock.getLocation, Effect.STEP_SOUND, material)
-    }
-
-    //プレイヤーの統計を１増やす
-    material match {
-      case Material.GRASS_PATH | Material.SOIL | Material.MOB_SPAWNER =>
-      case _ =>
-        player.incrementStatistic(Statistic.MINE_BLOCK, material)
-    }
+    )
   }
 
   def addItemToMineStack(player: Player, itemstack: ItemStack): Boolean = {
@@ -194,33 +203,40 @@ object BreakUtil {
     false
   }
 
-  def dropItemOnTool(breakblock: Block, tool: ItemStack): Option[ItemStack] = {
-    val breakmaterial = breakblock.getType
-    val fortunelevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
+  private def dropItemOnTool(tool: ItemStack)(blockInformation: (Location, Material, Byte)): Option[ItemStack] = {
+    val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
+
+    val (blockLocation, blockMaterial, blockData) = blockInformation
+
+    blockMaterial match {
+      case Material.GRASS_PATH | Material.SOIL => return Some(new ItemStack(Material.DIRT))
+      case Material.MOB_SPAWNER => return None
+      case _ =>
+    }
+
     val rand = Math.random()
-    val bonus = Math.max(1, rand * (fortunelevel + 2) - 1).toInt
-    var b = breakblock.getData
-    var b_tree = b
-    b_tree = (b_tree & 0x03).toByte
-    b = (b & 0x0F).toByte
+    val bonus = Math.max(1, rand * (fortuneLevel + 2) - 1).toInt
 
-    val silktouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
+    val blockDataLeast4Bits = (blockData & 0x0F).toByte
+    val b_tree = (blockData & 0x03).toByte
 
-    if (silktouch > 0) {
+    val silkTouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
+
+    if (silkTouch > 0) {
       //シルクタッチの処理
-      breakmaterial match {
+      blockMaterial match {
         case Material.GLOWING_REDSTONE_ORE =>
           Some(new ItemStack(Material.REDSTONE_ORE))
         case Material.LOG | Material.LOG_2 | Material.LEAVES | Material.LEAVES_2 =>
-          Some(new ItemStack(breakmaterial, 1, b_tree.toShort))
+          Some(new ItemStack(blockMaterial, 1, b_tree.toShort))
         case Material.MONSTER_EGGS =>
           Some(new ItemStack(Material.STONE))
         case _ =>
-          Some(new ItemStack(breakmaterial, 1, b.toShort))
+          Some(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
       }
-    } else if (fortunelevel > 0 && MaterialSets.luckMaterials.contains(breakmaterial)) {
+    } else if (fortuneLevel > 0 && MaterialSets.luckMaterials.contains(blockMaterial)) {
       //幸運の処理
-      breakmaterial match {
+      blockMaterial match {
         case Material.COAL_ORE =>
           Some(new ItemStack(Material.COAL, bonus))
         case Material.DIAMOND_ORE =>
@@ -240,11 +256,11 @@ object BreakUtil {
           Some(new ItemStack(Material.QUARTZ, bonus))
         case _ =>
           // TODO this section is unreachable
-          Some(new ItemStack(breakmaterial, bonus))
+          Some(new ItemStack(blockMaterial, bonus))
       }
     } else {
       //シルク幸運なしの処理
-      breakmaterial match {
+      blockMaterial match {
         case Material.COAL_ORE =>
           Some(new ItemStack(Material.COAL))
         case Material.DIAMOND_ORE =>
@@ -260,16 +276,16 @@ object BreakUtil {
         case Material.QUARTZ_ORE => Some(new ItemStack(Material.QUARTZ))
         case Material.STONE =>
           //Material.STONEの処理
-          if (breakblock.getData.toInt == 0x00) {
+          if (blockData.toInt == 0x00) {
             //焼き石の処理
             Some(new ItemStack(Material.COBBLESTONE))
           } else {
             //他の石の処理
-            Some(new ItemStack(breakmaterial, 1, b.toShort))
+            Some(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
           }
         case Material.GRASS => Some(new ItemStack(Material.DIRT))
         case Material.GRAVEL =>
-          val p = fortunelevel match {
+          val p = fortuneLevel match {
             case 1 => 0.14
             case 2 => 0.25
             case 3 => 1.00
@@ -281,12 +297,12 @@ object BreakUtil {
         case Material.LEAVES | Material.LEAVES_2 => None
         case Material.CLAY => Some(new ItemStack(Material.CLAY_BALL, 4))
         case Material.MONSTER_EGGS =>
-          breakblock.getWorld.spawnEntity(breakblock.getLocation, EntityType.SILVERFISH)
+          blockLocation.getWorld.spawnEntity(blockLocation, EntityType.SILVERFISH)
           None
-        case Material.LOG | Material.LOG_2 => Some(new ItemStack(breakmaterial, 1, b_tree.toShort))
+        case Material.LOG | Material.LOG_2 => Some(new ItemStack(blockMaterial, 1, b_tree.toShort))
         case _ =>
           //breakblcokのままのアイテムスタックを保存
-          Some(new ItemStack(breakmaterial, 1, b.toShort))
+          Some(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
       }
     }
   }

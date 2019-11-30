@@ -21,7 +21,7 @@ public class LimitedLoginEvent {
     PlayerData playerdata;
     String lastcheckdate;
 
-    public void getLastcheck(String s) {
+    public void setLastCheckDate(String s) {
         lastcheckdate = s;
     }
 
@@ -33,6 +33,8 @@ public class LimitedLoginEvent {
         ItemStack skull = Util.getskull(player.getName());
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
+        if (lastcheckdate == null) return;
 
         if (!(lastcheckdate.equals(""))) {
             try {

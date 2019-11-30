@@ -5,11 +5,11 @@ package com.github.unchama.seichiassist.data.player.settings
  */
 object BroadcastMutingSettings {
 
-  def fromBooleanSettings(displayMessages: Boolean, playSounds: Boolean): BroadcastMutingSettings = {
-    (displayMessages, playSounds) match {
-      case (true, true) => ReceiveMessageAndSound
-      case (true, _) => ReceiveMessageOnly
-      case _ => MuteMessageAndSound
+  def fromBooleanSettings(shouldMuteMessage: Boolean, shouldMuteSounds: Boolean): BroadcastMutingSettings = {
+    (shouldMuteMessage, shouldMuteSounds) match {
+      case (true, true) => MuteMessageAndSound
+      case (_, true) => ReceiveMessageOnly
+      case _ => ReceiveMessageAndSound
     }
   }
 

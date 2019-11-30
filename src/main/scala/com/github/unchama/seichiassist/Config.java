@@ -135,18 +135,6 @@ public class Config {
         return config.getString("lv" + i + "message", "");
     }
 
-    public String getTitle1(int i) {
-        return config.getString("AchvA" + i, "");
-    }
-
-    public String getTitle2(int i) {
-        return config.getString("AchvB" + i, "");
-    }
-
-    public String getTitle3(int i) {
-        return config.getString("AchvC" + i, "");
-    }
-
     //サーバー番号取得
     public int getServerNum() {
         return TypeConverter.toInt(config.getString("servernum"));

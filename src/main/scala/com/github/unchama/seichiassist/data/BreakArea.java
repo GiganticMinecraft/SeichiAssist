@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.data;
 
 
 import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.data.XYZTuple;
 import com.github.unchama.seichiassist.util.BreakUtil;
 import org.bukkit.entity.Player;
 
@@ -16,17 +17,17 @@ public class BreakArea {
     //フラグ
     int mineflagnum;
     //南向きを基準として破壊の範囲座標
-    Coordinate breaklength;
+    XYZTuple breaklength;
     //破壊回数
     int breaknum;
     //向いている方角
     String dir;
     //破壊範囲を示す相対座標リスト
-    List<Coordinate> startlist, endlist;
+    List<XYZTuple> startlist, endlist;
     //アサルトスキルの時true
     boolean assaultflag;
     //変数として利用する相対座標
-    private Coordinate start, end;
+    private XYZTuple start, end;
 
 
     public BreakArea(Player player, int type, int skilllevel, int mineflagnum, boolean assaultflag) {
@@ -46,11 +47,11 @@ public class BreakArea {
         makeArea();
     }
 
-    public List<Coordinate> getStartList() {
+    public List<XYZTuple> getStartList() {
         return startlist;
     }
 
-    public List<Coordinate> getEndList() {
+    public List<XYZTuple> getEndList() {
         return endlist;
     }
 
@@ -67,37 +68,37 @@ public class BreakArea {
         startlist.clear();
         endlist.clear();
         //中心座標(0,0,0)のスタートとエンドを仮取得
-        start = new Coordinate(-(breaklength.x - 1) / 2, -(breaklength.y - 1) / 2, -(breaklength.z - 1) / 2);
-        end = new Coordinate((breaklength.x - 1) / 2, (breaklength.y - 1) / 2, (breaklength.z - 1) / 2);
+        start = new XYZTuple(-(breaklength.x() - 1) / 2, -(breaklength.y() - 1) / 2, -(breaklength.z() - 1) / 2);
+        end = new XYZTuple((breaklength.x() - 1) / 2, (breaklength.y() - 1) / 2, (breaklength.z() - 1) / 2);
         //アサルトスキルの時
         if (assaultflag) {
             if (type == 6 && level == 10) {
-                shift(0, (breaklength.y - 1) / 2 - 1, 0);
+                shift(0, (breaklength.y() - 1) / 2 - 1, 0);
             }
         }
         //上向きまたは下向きの時
         else if (dir.equals("U") || dir.equals("D")) {
             if (!assaultflag && level < 3) {
             } else {
-                shift(0, (breaklength.y - 1) / 2, 0);
+                shift(0, (breaklength.y() - 1) / 2, 0);
             }
         }
         //それ以外の範囲
         else {
-            shift(0, (breaklength.y - 1) / 2 - 1, (breaklength.z - 1) / 2);
+            shift(0, (breaklength.y() - 1) / 2 - 1, (breaklength.z() - 1) / 2);
 
         }
 
         if (type == ActiveSkill.BREAK.gettypenum() && level < 3) {
-            end.add(0, 1, 0);
+            end = new XYZTuple(end.x(), end.y() + 1, end.z());
         }
         if (type == ActiveSkill.BREAK.gettypenum() && level < 3 && mineflagnum == 1) {
             shift(0, 1, 0);
         }
 
         //スタートリストに追加
-        startlist.add(new Coordinate(start));
-        endlist.add(new Coordinate(end));
+        startlist.add(start);
+        endlist.add(end);
 
         //破壊回数だけリストに追加
 
@@ -107,19 +108,19 @@ public class BreakArea {
                 case "E":
                 case "S":
                 case "W":
-                    shift(0, 0, breaklength.z);
+                    shift(0, 0, breaklength.z());
                     break;
                 case "U":
                 case "D":
                     if (!assaultflag && level < 3) {
                     } else {
-                        shift(0, breaklength.y, 0);
+                        shift(0, breaklength.y(), 0);
                     }
                     break;
 
             }
-            startlist.add(new Coordinate(start));
-            endlist.add(new Coordinate(end));
+            startlist.add(start);
+            endlist.add(end);
         }
 
 
@@ -145,41 +146,39 @@ public class BreakArea {
 
     private void multiply_Y(int i) {
         for (int count = 0; count < breaknum; count++) {
-            Coordinate start = startlist.get(count);
-            Coordinate end = endlist.get(count);
-            Coordinate tmpstart = new Coordinate(startlist.get(count));
+            XYZTuple start = startlist.get(count);
+            XYZTuple end = endlist.get(count);
             if (i >= 0) {
-                start.setXYZ(start.x, start.y * i, start.z);
-                end.setXYZ(end.x, end.y * i, end.z);
+                startlist.set(count, new XYZTuple(start.x(), start.y() * i, start.z()));
+                endlist.set(count, new XYZTuple(end.x(), end.y() * i, end.z()));
             } else {
-                start.setXYZ(start.x, end.y * i, start.z);
-                end.setXYZ(end.x, tmpstart.y * i, end.z);
+                startlist.set(count, new XYZTuple(start.x(), end.y() * i, start.z()));
+                endlist.set(count, new XYZTuple(end.x(), start.y() * i, end.z()));
             }
         }
     }
 
     private void shift(int x, int y, int z) {
-        start.add(x, y, z);
-        end.add(x, y, z);
+        start = new XYZTuple(start.x() + x, start.y() + y, start.z() + z);
+        end = new XYZTuple(end.x() + x,  end.y() + y, end.z() + z);
     }
 
     private void rotateXZ(int d) {
         for (int count = 0; count < breaknum; count++) {
-            Coordinate start = startlist.get(count);
-            Coordinate end = endlist.get(count);
-            Coordinate tmpstart = new Coordinate(startlist.get(count));
+            XYZTuple start = startlist.get(count);
+            XYZTuple end = endlist.get(count);
             switch (d) {
                 case 90:
-                    start.setXYZ(-end.z, start.y, start.x);
-                    end.setXYZ(-tmpstart.z, end.y, end.x);
+                    startlist.set(count, new XYZTuple(-end.z(), start.y(), start.x()));
+                    endlist.set(count, new XYZTuple(-start.z(), end.y(), end.x()));
                     break;
                 case 180:
-                    start.setZ(-end.z);
-                    end.setZ(-tmpstart.z);
+                    startlist.set(count, new XYZTuple(start.x(), start.y(), -end.z()));
+                    endlist.set(count, new XYZTuple(end.x(), end.y(), -start.z()));
                     break;
                 case 270:
-                    start.setXYZ(start.z, start.y, start.x);
-                    end.setXYZ(end.z, end.y, end.x);
+                    startlist.set(count, new XYZTuple(start.z(), start.y(), start.x()));
+                    endlist.set(count, new XYZTuple(end.z(), end.y(), end.x()));
                     break;
                 case 360:
                     break;
@@ -187,7 +186,7 @@ public class BreakArea {
         }
     }
 
-    public Coordinate getBreakLength() {
+    public XYZTuple getBreakLength() {
         return breaklength;
     }
 

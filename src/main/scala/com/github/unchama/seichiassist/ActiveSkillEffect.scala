@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist
 
-import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.ActiveSkillEffect.{Blizzard, Explosion, Meteo}
-import com.github.unchama.seichiassist.data.{ActiveSkillData, Coordinate}
+import com.github.unchama.seichiassist.data.{ActiveSkillData, XYZTuple}
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
+import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
@@ -20,22 +20,20 @@ sealed abstract class ActiveSkillEffect(val num: Int,
                                         val usePoint: Int,
                                         val material: Material) extends EnumEntry {
 
-  import com.github.unchama.seichiassist.effect.XYZTuple._
-
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
                      breakList: Set[Block],
-                     start: Coordinate,
-                     end: Coordinate,
+                     start: XYZTuple,
+                     end: XYZTuple,
                      standard: Location): BukkitTask = {
     val plugin = SeichiAssist.instance
     val skillId = skillData.skillnum
 
     this match {
-      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start.toXYZTuple, end.toXYZTuple, standard).runTask(plugin)
+      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start, end, standard).runTask(plugin)
       case Blizzard =>
-        val effect = new BlizzardTask(player, skillData, tool, breakList, start, end, standard)
+        val effect = new BlizzardTask(player, skillData, tool, breakList, standard)
 
         if (skillId < 3) {
           effect.runTaskLater(plugin, 1)
@@ -51,18 +49,12 @@ sealed abstract class ActiveSkillEffect(val num: Int,
   }
 
   //エフェクトの実行処理分岐
-  def runArrowEffect(player: Player): Unit = {
-    val effect = this match {
+  def arrowEffect(player: Player): TargetedEffect[Player] =
+    this match {
       case Explosion => ArrowEffects.singleArrowExplosionEffect
       case Blizzard => ArrowEffects.singleArrowBlizzardEffect
       case Meteo => ArrowEffects.singleArrowMeteoEffect
     }
-
-    seichiassist.unsafe.runAsyncTargetedEffect(player)(
-      effect,
-      "ArrowEffectを非同期で実行する"
-    )
-  }
 }
 
 object ActiveSkillEffect extends Enum[ActiveSkillEffect] {

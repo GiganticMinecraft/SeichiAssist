@@ -6,7 +6,7 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.listener.MebiusListener
-import com.github.unchama.targetedeffect.MessageEffects._
+import com.github.unchama.targetedeffect.syntax._
 import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
 import com.github.unchama.util.syntax.Nullability._
 import org.bukkit.ChatColor._
@@ -20,9 +20,8 @@ object MebiusCommand {
     BranchedExecutor(
       Map(
         "get" -> getExecutor,
-        "reload" -> reloadExecutor,
         "debug" -> debugExecutor,
-        "nickname" -> ChildExecutors.NickNameCommand.executor,
+        "nickname" -> ChildExecutors.NicknameCommand.executor,
         "naming" -> namingExecutor
       ), whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
@@ -64,17 +63,6 @@ object MebiusCommand {
       }
       .build()
 
-    val reloadExecutor: ContextualExecutor = playerCommandBuilder
-      .execution { context =>
-        if (!context.sender.isOp) {
-          IO(Messages.permissionWarning)
-        } else {
-          MebiusListener.reload()
-          IO(emptyEffect)
-        }
-      }
-      .build()
-
     val debugExecutor: ContextualExecutor = playerCommandBuilder
       .execution { context =>
         if (!context.sender.isOp) {
@@ -96,8 +84,8 @@ object MebiusCommand {
       }
       .build()
 
-    object NickNameCommand {
-      private val checkNickNameExecutor = playerCommandBuilder
+    object NicknameCommand {
+      private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
           val message = MebiusListener.getNickname(context.sender)
             .ifNotNull(name => s"${GREEN}現在のメビウスからの呼び名 : $name")
@@ -107,7 +95,7 @@ object MebiusCommand {
         }
         .build()
 
-      private val resetNickNameExecutor = playerCommandBuilder
+      private val resetNicknameExecutor = playerCommandBuilder
         .execution { context =>
           val message = if (MebiusListener.setNickname(context.sender, context.sender.getName)) {
             s"${GREEN}メビウスからの呼び名を${context.sender.getName}にリセットしました."
@@ -119,7 +107,7 @@ object MebiusCommand {
         }
         .build()
 
-      private val setNickNameExecutor = playerCommandBuilder
+      private val setNicknameExecutor = playerCommandBuilder
         .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
         .execution { context =>
           val newName = s"${context.args.parsed(0).asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
@@ -134,9 +122,9 @@ object MebiusCommand {
         .build()
 
       val executor = BranchedExecutor(Map(
-        "reset" -> resetNickNameExecutor,
-        "set" -> setNickNameExecutor
-      ), whenArgInsufficient = Some(checkNickNameExecutor), whenBranchNotFound = Some(checkNickNameExecutor))
+        "reset" -> resetNicknameExecutor,
+        "set" -> setNicknameExecutor
+      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
     }
   }
 }

@@ -98,14 +98,14 @@ object PlayerDataLoading {
         import lrs._
         val objectName = getString("object_name")
         val objectAmount = getLong("amount")
-        val mineStackObj = nameObjectMappings(objectName)
 
-        if (mineStackObj != null) {
-          objectAmounts(mineStackObj) = objectAmount
-        } else {
-          Bukkit
-            .getLogger
-            .warning(s"プレーヤー $playerName のMineStackオブジェクト $objectName は収納可能リストに見つかりませんでした。")
+        nameObjectMappings.get(objectName) match {
+          case Some(mineStackObj) =>
+            objectAmounts(mineStackObj) = objectAmount
+          case None =>
+            Bukkit
+              .getLogger
+              .warning(s"プレーヤー $playerName のMineStackオブジェクト $objectName は収納可能リストに見つかりませんでした。")
         }
       }
 
@@ -228,8 +228,8 @@ object PlayerDataLoading {
         playerData.selectHomeNum = 0
 
         //実績、二つ名の情報
-        playerData.settings.nickName = PlayerNickName(
-          PlayerNickName.Style.marshal(rs.getBoolean("displayTypeLv")),
+        playerData.settings.nickname = PlayerNickname(
+          NicknameStyle.marshal(rs.getBoolean("displayTypeLv")),
           rs.getInt("displayTitle1No"),
           rs.getInt("displayTitle2No"),
           rs.getInt("displayTitle3No")
