@@ -1,15 +1,15 @@
 package com.github.unchama.seichiassist.task
 
-import com.github.unchama.seichiassist.{ActiveSkill, MaterialSets, SeichiAssist}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, Mana, XYZTuple}
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
-import org.bukkit.{ChatColor, GameMode, Material}
+import com.github.unchama.seichiassist.{ActiveSkill, MaterialSets, SeichiAssist}
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.{ChatColor, GameMode, Material}
 
 import scala.collection.mutable
 
@@ -188,7 +188,10 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
     // ブロックを書き換える
     if (shouldBreakAllBlocks) {
       (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
-      BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, tool, shouldPlayBreakSound = false)
+      com.github.unchama.seichiassist.unsafe.runIOAsync(
+        "ブロックを大量破壊する",
+        BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, tool, shouldPlayBreakSound = false)
+      )
     } else {
       if (shouldCondenseWater) foundWaters.foreach(_.setType(Material.PACKED_ICE))
       if (shouldCondenseLava) foundLavas.foreach(_.setType(Material.MAGMA))

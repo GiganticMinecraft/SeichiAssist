@@ -30,6 +30,7 @@ object PlayerLeftClickListener extends Listener {
     }
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
 
     seichiassist.unsafe.runAsyncTargetedEffect(player)(
       sequentialEffect(
