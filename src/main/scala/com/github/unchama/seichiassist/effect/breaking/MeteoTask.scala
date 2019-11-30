@@ -43,10 +43,7 @@ class MeteoTask(
     val vol = new Random().nextFloat() * 0.4f + 0.8f
     world.playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol)
 
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
-      "ブロックを大量破壊する",
-      BreakUtil.massBreakBlock(player, blocks, droploc, tool, skillData.skillnum <= 2)
-    )
+    BreakUtil.massBreakBlock(player, blocks, droploc, tool, skillData.skillnum <= 2)
     SeichiAssist.managedBlocks --= blocks
   }
 

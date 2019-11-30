@@ -76,7 +76,7 @@ object NicknameMapping {
     case No_5007 => NicknameCombination(Some(5007))
     case No_5008 => NicknameCombination(Some(5008), Some(9905))
 
-    case No_5101 => NicknameCombination(Some(5101), None, Some(5101))
+    case No_5101 => NicknameCombination(Some(5101), None, Some(5010))
     case No_5102 => NicknameCombination(Some(5102), Some(9907), Some(5102))
     case No_5103 => NicknameCombination(Some(5103), Some(9905), None)
     case No_5104 => NicknameCombination(Some(5104), Some(9905), Some(5104))

@@ -19,8 +19,6 @@ import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener extends Listener {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
-
   import com.github.unchama.seichiassist.util.ops.ItemStackOps._
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._

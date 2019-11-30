@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.menus
 
-import com.github.unchama.concurrent.BukkitSyncExecutionContext
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
@@ -20,7 +19,7 @@ object CommonButtons {
                      transferDescription: String,
                      target: Menu,
                      actionDescription: String = "クリックで移動")
-                    (implicit layoutPreparationContext: LayoutPreparationContext, syncCtx: BukkitSyncExecutionContext): Button =
+                    (implicit layoutPreparationContext: LayoutPreparationContext): Button =
     Button(
       partialBuilder
         .title(navigation(transferDescription))
@@ -36,7 +35,6 @@ object CommonButtons {
 
   val openStickMenu: Button = {
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
 
     transferButton(new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft), "木の棒メニューホームへ", StickMenu.firstPage)
   }

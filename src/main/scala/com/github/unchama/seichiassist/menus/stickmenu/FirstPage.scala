@@ -1,13 +1,11 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
@@ -33,7 +31,7 @@ import org.bukkit.{Material, Sound}
 object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.syntax._
   import eu.timepit.refined.auto._
 
@@ -267,7 +265,6 @@ object FirstPage extends Menu {
             if (playerData.level >= minimumRequiredLevel)
               sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
-                Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
                 targetedeffect.delay { player: Player =>
                   player.openInventory(playerData.pocketInventory)
                 }
@@ -303,7 +300,6 @@ object FirstPage extends Menu {
             if (playerData.level >= minimumRequiredLevel) {
               sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
-                Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
                 targetedeffect.delay { player: Player =>
                   player.openInventory(player.getEnderChest)
                 }
@@ -352,11 +348,12 @@ object FirstPage extends Menu {
 
           if (numberOfItemsToGive != 0) {
             val itemToGive = Util.getForBugskull(player.getName)
-            val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
             sequentialEffect(
-              Util.grantItemStacksEffect(itemStacksToGive: _*),
-              UnfocusedEffect { playerData.unclaimedApologyItems -= numberOfItemsToGive },
+              UnfocusedEffect {
+                (1 to numberOfItemsToGive).foreach { _ => Util.addItemToPlayerSafely(player, itemToGive) }
+                playerData.unclaimedApologyItems -= numberOfItemsToGive
+              },
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
               s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
             )
@@ -412,7 +409,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           UnfocusedEffect {
             player.openInventory(ActiveSkillInventoryData.getActiveSkillMenuData(player))
@@ -458,9 +454,11 @@ object FirstPage extends Menu {
 
             if (gachaTicketsToGive > 0) {
               sequentialEffect(
-                Util.grantItemStacksEffect(Seq.fill(gachaTicketsToGive)(itemStackToGive): _*),
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
+                  (1 to gachaTicketsToGive).foreach { _ =>
+                    Util.addItemToPlayerSafely(player, itemStackToGive)
+                  }
                 },
                 s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー".asMessageEffect(),
                 FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
@@ -576,7 +574,6 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f),
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getServerSwitchMenu(player))
@@ -642,7 +639,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getRankingList(0))
@@ -664,7 +660,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getRankingList_playtick(0))
@@ -687,7 +682,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getRankingList_p_vote(0))
@@ -723,7 +717,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           targetedeffect.delay { player =>
             player.openInventory(
               InventoryUtil.createInventory(
@@ -750,7 +743,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getHomeMenuData(player))
@@ -818,7 +810,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getPassiveSkillMenuData(player))
@@ -847,7 +838,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           targetedeffect.delay { player =>
             player.openInventory(
@@ -873,7 +863,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
           // TODO メニューに置き換える
           targetedeffect.delay { player =>
             player.openInventory(MenuInventoryData.getVotingMenuData(player))

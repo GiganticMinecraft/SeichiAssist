@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.effect.breaking
 
-import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
@@ -29,21 +28,14 @@ class MagicTask(private val player: Player,
     val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
     val randomColor = colors(Random.nextInt(colors.length))
 
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
-      "マジックエフェクトの一回目を再生する",
-      for {
-        _ <- BreakUtil.massBreakBlock(player, blocks, skillCenter, tool, shouldPlayBreakSound = false, Material.WOOL)
-        _ <- IO {
-          blocks.foreach { b =>
-            val state = b.getState
-            state
-              .getData.asInstanceOf[Wool]
-              .setColor(randomColor)
-            state.update()
-          }
-        }
-      } yield ()
-    )
+    BreakUtil.massBreakBlock(player, blocks, skillCenter, tool, shouldPlayBreakSound = false, Material.WOOL)
+    blocks.foreach { b =>
+      val state = b.getState
+      state
+        .getData.asInstanceOf[Wool]
+        .setColor(randomColor)
+      state.update()
+    }
   }
 
   override def secondAction(): Unit = {
