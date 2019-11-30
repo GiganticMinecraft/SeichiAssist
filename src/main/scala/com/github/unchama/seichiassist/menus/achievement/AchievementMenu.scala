@@ -72,7 +72,7 @@ object AchievementMenu extends Menu {
     import com.github.unchama.targetedeffect._
     val toggleTitleToPlayerLevelButton = Button(
       new IconItemStackBuilder(Material.REDSTONE_TORCH_ON)
-        .title("整地レベルを表示")
+        .title(ColorScheme.navigation("整地レベルを表示"))
         .lore(List(
           s"${RED}このボタンをクリックすると、",
           s"$RED「整地LV」に表示を切り替えます。",
