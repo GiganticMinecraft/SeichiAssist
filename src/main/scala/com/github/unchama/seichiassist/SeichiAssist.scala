@@ -180,12 +180,19 @@ class SeichiAssist extends JavaPlugin() {
   private def startRepeatedJobs(): Unit = {
     val startTask = {
       import cats.implicits._
-
-      val programs: List[Timer[IO] => RepeatingTask] = List(
-        HalfHourRankingRoutine(SeichiAssist.Concurrency.asyncExecutionContext),
-        PlayerDataPeriodicRecalculation(SeichiAssist.Concurrency.syncExecutionContext),
-        PlayerDataBackupTask(SeichiAssist.Concurrency.asyncExecutionContext)
-      )
+      // 公共鯖なら整地量のランキングを表示する必要はない
+      val programs: List[Timer[IO] => RepeatingTask] = if (SeichiAssist.seichiAssistConfig.getServerNum == 7) {
+        List(
+          PlayerDataPeriodicRecalculation(SeichiAssist.Concurrency.syncExecutionContext),
+          PlayerDataBackupTask(SeichiAssist.Concurrency.asyncExecutionContext)
+        )
+      } else {
+        List(
+          HalfHourRankingRoutine(SeichiAssist.Concurrency.asyncExecutionContext),
+          PlayerDataPeriodicRecalculation(SeichiAssist.Concurrency.syncExecutionContext),
+          PlayerDataBackupTask(SeichiAssist.Concurrency.asyncExecutionContext)
+        )
+      }
 
       val sleepTimer: Timer[IO] = IO.timer(SeichiAssist.Concurrency.cachedThreadPool)
 
