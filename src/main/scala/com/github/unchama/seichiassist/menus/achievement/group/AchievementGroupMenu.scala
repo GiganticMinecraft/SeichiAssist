@@ -77,7 +77,7 @@ object AchievementGroupMenu {
     } else {
       val menuFrame = {
         import com.github.unchama.menuinventory.syntax._
-        MenuFrame(4.chestRows, ColorScheme.navigation(s"実績「${group.name}」"))
+        MenuFrame(4.chestRows, ColorScheme.purpleBold(s"実績「${group.name}」"))
       }
 
       def buttonToTransferTo(newPageNumber: Int, skullOwnerReference: SkullOwnerReference): Button =
