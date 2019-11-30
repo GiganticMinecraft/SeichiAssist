@@ -20,7 +20,6 @@ class PlayerInventoryListener extends Listener {
 
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
 
   //ブロックを並べるスキル（仮）設定画面
   @EventHandler
@@ -66,7 +65,6 @@ class PlayerInventoryListener extends Listener {
       if (itemstackcurrent.getType == Material.SKULL_ITEM) {
         //ホームメニューへ帰還
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(
           sequentialEffect(
