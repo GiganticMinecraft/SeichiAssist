@@ -56,7 +56,7 @@ object MineStackMainMenu extends Menu {
     } yield {
       MenuSlotLayout(
         ChestSlotRef(0, 0) -> autoMineStackToggleButton,
-        ChestSlotRef(0, 5) -> CommonButtons.openStickMenu
+        ChestSlotRef(5, 0) -> CommonButtons.openStickMenu
       )
         .merge(categoryButtonLayout)
         .merge(historicalMineStackSection)
