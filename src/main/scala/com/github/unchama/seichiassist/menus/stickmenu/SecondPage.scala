@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
@@ -105,12 +107,8 @@ object SecondPage extends Menu {
             }
 
             sequentialEffect(
-              UnfocusedEffect {
-                expManager.changeExp(-10000)
-              },
-              targetedeffect.UnfocusedEffect {
-                Util.addItemToPlayerSafely(player, skullToGive)
-              },
+              Util.grantItemStacksEffect(skullToGive),
+              UnfocusedEffect { expManager.changeExp(-10000) },
               s"${GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
             )
@@ -424,6 +422,7 @@ object SecondPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
             targetedeffect.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
@@ -460,6 +459,7 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
             targetedeffect.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
@@ -489,6 +489,7 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
+            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
             targetedeffect.delay { player =>
               // TODO メニューインベントリに差し替える
               player.openInventory(
