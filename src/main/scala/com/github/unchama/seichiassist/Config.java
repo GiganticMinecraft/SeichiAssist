@@ -297,6 +297,6 @@ public class Config {
      * @return 該当URL.ただし, typeNameが誤っていた場合は""を返します.
      */
     public String getUrl(String typeName) {
-        return config.getString("Url." + typeName);
+        return config.getString("Url." + typeName, "");
     }
 }
