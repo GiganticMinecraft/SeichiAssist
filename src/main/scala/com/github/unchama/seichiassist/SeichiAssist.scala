@@ -48,7 +48,7 @@ class SeichiAssist extends JavaPlugin() {
 
 
     //コンフィグ系の設定は全てConfig.javaに移動
-    SeichiAssist.seichiAssistConfig = new Config(this)
+    SeichiAssist.seichiAssistConfig = new Config()
     SeichiAssist.seichiAssistConfig.loadConfig()
 
     if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
