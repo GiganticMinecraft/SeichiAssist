@@ -11,21 +11,22 @@ import java.util.List;
 
 public class BreakArea {
     //スキルタイプ番号
-    int type;
+    private int type;
     //スキルレベル
-    int level;
+    private int level;
     //フラグ
-    int mineflagnum;
+    private int mineflagnum;
     //南向きを基準として破壊の範囲座標
-    XYZTuple breaklength;
+    private XYZTuple breaklength;
     //破壊回数
-    int breaknum;
+    private int breaknum;
     //向いている方角
-    String dir;
+    private String dir;
     //破壊範囲を示す相対座標リスト
-    List<XYZTuple> startlist, endlist;
+    private List<XYZTuple> startlist;
+    private List<XYZTuple> endlist;
     //アサルトスキルの時true
-    boolean assaultflag;
+    private boolean assaultflag;
     //変数として利用する相対座標
     private XYZTuple start, end;
 

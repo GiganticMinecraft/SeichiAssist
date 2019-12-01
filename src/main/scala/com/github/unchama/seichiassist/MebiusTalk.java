@@ -9,11 +9,11 @@ public final class MebiusTalk {
         this.playerMessage = playerMessage;
     }
 
-    public String getPlayerMessage() {
+    private String getPlayerMessage() {
         return playerMessage;
     }
 
-    public String getMebiusMessage() {
+    private String getMebiusMessage() {
         return mebiusMessage;
     }
 

@@ -43,7 +43,7 @@ public class ActiveSkillData {
     //採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
     public int mineflagnum;
     //アサルトスキル.コンデンススキルのtask
-    public BukkitTask assaulttask;
+    private BukkitTask assaulttask;
     //自然マナ回復のtask
     public BukkitTask manaregenetask;
     //アサルトスキルのフラグ
@@ -53,7 +53,7 @@ public class ActiveSkillData {
     //スペシャルエフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
     public HashSet<ActiveSkillPremiumEffect> obtainedSkillPremiumEffects = new HashSet<>();
     //スペシャルエフェクトを使用するフラグ
-    public boolean specialflag;
+    private boolean specialflag;
     //選択されているアクティブスキルの番号を格納
     public int effectnum; // TODO 100以下ならプレミアムスキル、という判定ロジックを隠すべき
     //通常スキルで破壊されるエリア
@@ -62,7 +62,7 @@ public class ActiveSkillData {
     public BreakArea assaultarea;
     //マナクラス
     public Mana mana;
-    SeichiAssist plugin = SeichiAssist.instance();
+    private SeichiAssist plugin = SeichiAssist.instance();
 
     public ActiveSkillData() {
         mineflagnum = 0;
@@ -223,7 +223,7 @@ public class ActiveSkillData {
     }
 
     //スキル使用中の場合Taskを実行する
-    public void runTask(Player player) {
+    private void runTask(Player player) {
 
         //アサルトスキルの実行
         if (this.assaultflag && this.assaulttype != 0) {

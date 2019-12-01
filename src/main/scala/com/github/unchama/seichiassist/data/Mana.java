@@ -209,7 +209,7 @@ public class Mana {
         return max;
     }
 
-    public void setMax(double max) {
+    private void setMax(double max) {
         this.max = max;
     }
 }

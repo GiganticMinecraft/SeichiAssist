@@ -10,17 +10,17 @@ import scala.collection.mutable.HashMap;
 import java.util.UUID;
 
 public class CoolDownTask extends BukkitRunnable {
-    public static final String VOTE = "VOTE";
-    public static final String SOUND = "SOUND";
-    public static final String GACHA = "GACHA";
+    private static final String VOTE = "VOTE";
+    private static final String SOUND = "SOUND";
+    private static final String GACHA = "GACHA";
     public static final String SHAREINV = "SHAREINV";
-    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
-    UUID uuid;
-    PlayerData playerdata;
-    boolean voteflag = false;
-    boolean soundflag = false;
-    boolean gachaflag = false;
-    boolean shareinvflag = false;
+    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private UUID uuid;
+    private PlayerData playerdata;
+    private boolean voteflag = false;
+    private boolean soundflag = false;
+    private boolean gachaflag = false;
+    private boolean shareinvflag = false;
     private Player player;
 
     //newインスタンスが立ち上がる際に変数を初期化したり代入したりする処理

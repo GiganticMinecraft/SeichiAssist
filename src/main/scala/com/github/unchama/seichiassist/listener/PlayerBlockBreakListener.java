@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class PlayerBlockBreakListener implements Listener {
-    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
     private SeichiAssist plugin = SeichiAssist.instance();
 
     //アクティブスキルの実行
