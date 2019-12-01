@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task.repeating
 
-import cats.effect.{IO, Timer}
+import cats.effect.IO
 import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
@@ -10,8 +10,7 @@ import org.bukkit.ChatColor._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-case class HalfHourRankingRoutine(override val taskExecutionContext: ExecutionContext)
-                                 (override val sleepTimer: Timer[IO]) extends RepeatingTask() {
+case class HalfHourRankingRoutine(override val context: ExecutionContext) extends RepeatingTask() {
 
   override val getRepeatInterval: IO[FiniteDuration] = IO {
     import scala.concurrent.duration._

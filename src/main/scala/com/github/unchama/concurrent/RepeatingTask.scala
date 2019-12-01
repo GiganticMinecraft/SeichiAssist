@@ -1,6 +1,6 @@
 package com.github.unchama.concurrent
 
-import cats.effect.{IO, Timer}
+import cats.effect.IO
 import com.github.unchama.util.effect.IOUtils._
 
 import scala.concurrent.ExecutionContext
@@ -13,43 +13,41 @@ abstract class RepeatingTask {
    * [[runRoutine]]が例外を吐こうと実行が終了することはない.
    */
   lazy val launch: IO[Nothing] = {
-    val sleep = for {
+    val sleep: IO[Unit] = for {
       interval <- getRepeatInterval
-      _ <- sleepTimer.sleep(interval)
+      _ <- IO.timer(context).sleep(interval)
     } yield ()
 
-    val routineExecution = for {
-      result <- runRoutine.attempt
-      _ <- result match {
-        case Left(error) => IO {
-          println("Caught an exception while executing repeating task")
-          error.printStackTrace()
-        }
-        case Right(value) => IO.pure(value)
+    val fireRoutine: IO[Unit] = {
+      for {
+        _ <- IO.shift(context)
+        _ <- runRoutine
+      } yield ()
+    }.runAsync {
+      case Left(error) => IO {
+        println("定期実行タスクの実行中にエラーが発生しました。")
+        error.printStackTrace()
       }
-    } yield ()
+      case Right(value) => IO.pure(value)
+    }.toIO
 
-    for {
-      loop <- forever {
-        for {
-          _ <- sleep
-          _ <- IO.shift(taskExecutionContext)
-          _ <- routineExecution
-        } yield ()
-      }
-    } yield loop
+    forever {
+      for {
+        _ <- sleep
+        _ <- fireRoutine
+      } yield ()
+    }
   }
+
   /**
-   * [[runRoutine]]が実行される[[ExecutionContext]].
+   * [[runRoutine]]の実行、及びスリープ処理に使用される[[ExecutionContext]].
    *
-   * [[runRoutine]]の中で更にコンテキストを切り替えても問題ないが,
-   * 殆どの場合外部から実行コンテキストを指定するほうがわかりやすいため[[RepeatingTask]]に組み込んでいる.
+   * サーバーメインスレッドでの実行コンテキストは渡してはならず、
+   * [[runRoutine]]の実行がサーバーメインスレッドで行われてほしければ、
+   * [[runRoutine]]内でコンテキストをシフトすべきである。
    */
-  val taskExecutionContext: ExecutionContext
-  /**
-   * 待機処理を担当する[[Timer]].
-   */
-  val sleepTimer: Timer[IO]
+  val context: ExecutionContext
+
   protected val getRepeatInterval: IO[FiniteDuration]
   protected val runRoutine: IO[Any]
 }

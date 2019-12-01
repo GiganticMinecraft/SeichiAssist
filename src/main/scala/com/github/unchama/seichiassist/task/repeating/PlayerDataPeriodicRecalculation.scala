@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.task.repeating
 
-import cats.effect.{IO, Timer}
-import com.github.unchama.concurrent.RepeatingTask
+import cats.effect.IO
+import com.github.unchama.concurrent.{BukkitSyncExecutionContext, RepeatingTask}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
@@ -14,8 +14,8 @@ import org.bukkit.{Bukkit, Sound}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: ExecutionContext)
-                                          (override val sleepTimer: Timer[IO]) extends RepeatingTask() {
+case class PlayerDataPeriodicRecalculation(override val context: ExecutionContext)
+                                          (implicit val syncContext: BukkitSyncExecutionContext) extends RepeatingTask() {
 
   override val getRepeatInterval: IO[FiniteDuration] = IO {
     import scala.concurrent.duration._
@@ -23,7 +23,7 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
     if (SeichiAssist.DEBUG) 10.seconds else 1.minute
   }
 
-  override val runRoutine: IO[Unit] = IO {
+  val routineOnMainThread = IO {
     import scala.jdk.CollectionConverters._
 
     val config = SeichiAssist.seichiAssistConfig
@@ -186,4 +186,9 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
 
     }
   }
+
+  override val runRoutine: IO[Unit] = for {
+    _ <- IO.shift(syncContext)
+    _ <- routineOnMainThread
+  } yield ()
 }
