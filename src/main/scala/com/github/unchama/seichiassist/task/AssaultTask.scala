@@ -188,10 +188,7 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
     // ブロックを書き換える
     if (shouldBreakAllBlocks) {
       (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
-      com.github.unchama.seichiassist.unsafe.runIOAsync(
-        "ブロックを大量破壊する",
-        BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, tool, shouldPlayBreakSound = false)
-      )
+      BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, tool, shouldPlayBreakSound = false)
     } else {
       if (shouldCondenseWater) foundWaters.foreach(_.setType(Material.PACKED_ICE))
       if (shouldCondenseLava) foundLavas.foreach(_.setType(Material.MAGMA))

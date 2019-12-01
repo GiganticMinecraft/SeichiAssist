@@ -7,7 +7,6 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
@@ -24,7 +23,6 @@ import org.bukkit.{Material, Sound}
  */
 object SecondPage extends Menu {
 
-  import PluginExecutionContexts.sync
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._
@@ -107,8 +105,12 @@ object SecondPage extends Menu {
             }
 
             sequentialEffect(
-              Util.grantItemStacksEffect(skullToGive),
-              UnfocusedEffect { expManager.changeExp(-10000) },
+              UnfocusedEffect {
+                expManager.changeExp(-10000)
+              },
+              targetedeffect.UnfocusedEffect {
+                Util.addItemToPlayerSafely(player, skullToGive)
+              },
               s"${GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
             )

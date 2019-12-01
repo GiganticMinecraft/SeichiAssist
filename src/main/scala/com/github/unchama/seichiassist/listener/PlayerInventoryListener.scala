@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.ActionStatus
 import com.google.common.io.ByteStreams
 import org.bukkit.ChatColor._
@@ -25,7 +24,6 @@ import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener extends Listener {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.InventoryUtil._
   import com.github.unchama.util.syntax._
@@ -782,7 +780,7 @@ class PlayerInventoryListener extends Listener {
         val skullMeta = itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
               sequentialEffect(
@@ -861,7 +859,7 @@ class PlayerInventoryListener extends Listener {
         val name = skullMeta.getDisplayName
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
               sequentialEffect(
@@ -1128,18 +1126,13 @@ class PlayerInventoryListener extends Listener {
       }
     }
 
-    val ticketsToGive = Seq.fill(ticketAmount)(exchangeTicket)
+    (1 to ticketAmount).foreach { _ =>
+      Util.addItemToPlayerSafely(player, exchangeTicket)
+    }
 
-    import syntax._
-    if (ticketsToGive.nonEmpty) {
-      unsafe.runAsyncTargetedEffect(player)(
-        sequentialEffect(
-          Util.grantItemStacksEffect(ticketsToGive: _*),
-          FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-          s"${GREEN}交換券の付与が終わりました".asMessageEffect()
-        ),
-        "交換券を付与する"
-      )
+    if (ticketAmount > 0) {
+      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
+      player.sendMessage(s"${GREEN}交換券の付与が終わりました")
     }
 
     /*
@@ -1157,10 +1150,9 @@ class PlayerInventoryListener extends Listener {
         }.++(rejectedItems)
 
     //返却処理
-    unsafe.runAsyncTargetedEffect(player)(
-      Util.grantItemStacksEffect(itemStacksToReturn: _*),
-      "鉱石交換でのアイテム返却を行う"
-    )
+    itemStacksToReturn.foreach { itemStack =>
+      Util.addItemToPlayerSafely(player, itemStack)
+    }
   }
 
   //ギガンティック→椎名林檎交換システム

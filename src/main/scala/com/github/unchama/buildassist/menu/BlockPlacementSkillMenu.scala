@@ -16,7 +16,6 @@ import org.bukkit.{Material, Sound}
 object BlockPlacementSkillMenu extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.syntax._
   import menuinventory.syntax._

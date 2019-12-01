@@ -31,7 +31,7 @@ import org.bukkit.{Material, Sound}
 object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._
   import eu.timepit.refined.auto._
@@ -345,11 +345,12 @@ object FirstPage extends Menu {
 
           if (numberOfItemsToGive != 0) {
             val itemToGive = Util.getForBugskull(player.getName)
-            val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
             sequentialEffect(
-              Util.grantItemStacksEffect(itemStacksToGive: _*),
-              UnfocusedEffect { playerData.unclaimedApologyItems -= numberOfItemsToGive },
+              UnfocusedEffect {
+                (1 to numberOfItemsToGive).foreach { _ => Util.addItemToPlayerSafely(player, itemToGive) }
+                playerData.unclaimedApologyItems -= numberOfItemsToGive
+              },
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
               s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
             )
@@ -448,9 +449,11 @@ object FirstPage extends Menu {
 
             if (gachaTicketsToGive > 0) {
               sequentialEffect(
-                Util.grantItemStacksEffect(Seq.fill(gachaTicketsToGive)(itemStackToGive): _*),
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
+                  (1 to gachaTicketsToGive).foreach { _ =>
+                    Util.addItemToPlayerSafely(player, itemStackToGive)
+                  }
                 },
                 s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー".asMessageEffect(),
                 FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
