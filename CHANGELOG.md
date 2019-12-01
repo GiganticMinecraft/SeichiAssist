@@ -1,6 +1,28 @@
-## [Unreleased]
-## [1.1.2] - 2019-09-10
-
+**参照:** [masterへのマージ履歴](https://github.com/GiganticMinecraft/SeichiAssist/pulls?utf8=✓&q=is%3Apr+sort%3Aupdated-desc+is%3Aclosed+base%3Amaster)
+## \[Unreleased\]
+- KotlinファイルをScalaにマイグレーション
+## ~~\[1.2.4\] - 2019-11-30 \([#362](https://github.com/GiganticMinecraft/SeichiAssist/pull/362)\)~~
+**\([#364](https://github.com/GiganticMinecraft/SeichiAssist/pull/364)で取り消し済み\)**
+- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
+## \[1.2.3\] - 2019-11-30 \([#354](https://github.com/GiganticMinecraft/SeichiAssist/pull/354)\)
+### 修正 / Fixed
+- 実績システムほぼ書き直し (#327)
+- 内部のパッケージングを改善 (#338 等)
+- 各種ブロック破壊スキルのロジックを大幅に最適化 (#347)
+- #350
+## \[1.2.2\] - 2019-11-06 \([#330](https://github.com/GiganticMinecraft/SeichiAssist/pull/330)\)
+- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
+## \[1.2.1\] - 2019-11-05 \([#328](https://github.com/GiganticMinecraft/SeichiAssist/pull/328)\)
+- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
+## \[1.2.0\] - 2019-11-04 \([#324](https://github.com/GiganticMinecraft/SeichiAssist/pull/324)\)
+- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
+## \[1.1.5\] - 2019-09-22 \([#295](https://github.com/GiganticMinecraft/SeichiAssist/pull/295)\)
+### 修正 / Fixed
+- スキルポイントのバグ修正
+- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
+## \[1.1.4\] - 2019-09-19 \([#284](https://github.com/GiganticMinecraft/SeichiAssist/pull/284)\)
+- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
+## \[1.1.2\] - 2019-09-16 \([#255](https://github.com/GiganticMinecraft/SeichiAssist/pull/255)\)
 ### 修正 / Fixed
 - メビウスの説明文を修正
 - ガチャ品の引き出しをMineStackの引き出しをヒストリーに残さないようにする
@@ -74,3 +96,9 @@
 
 ### 機能削除 / Removed
 - levelコマンドを削除
+
+## \[1.1.1\] - 2019-05-20 \([#143](https://github.com/GiganticMinecraft/SeichiAssist/pull/143)\)
+- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
+
+## \[1.1.0\] - 2019-05-17 \([#134](https://github.com/GiganticMinecraft/SeichiAssist/pull/134)\)
+- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
