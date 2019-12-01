@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.event.player.PlayerQuitEvent
@@ -25,6 +27,15 @@ class PlayerQuitListener extends Listener {
 
     IO {
       PlayerDataSaveTask.savePlayerData(playerData)
+      val uuid = player.getUniqueId
+      val pd = BuildAssist.playermap.get(uuid)
+      if (pd.nonEmpty) {
+        val data = pd.get
+        if (data.flyflag) {
+          val min = data.flytime
+          SeichiAssist.databaseGateway.executeUpdate(s"INSERT INTO flying VALUES ('$uuid', $min)")
+        }
+      }
     }.unsafeRunAsync {
       case Left(error) => error.printStackTrace()
       case Right(_) =>

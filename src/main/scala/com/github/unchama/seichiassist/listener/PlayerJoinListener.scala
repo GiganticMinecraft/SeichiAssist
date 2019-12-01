@@ -123,7 +123,7 @@ class PlayerJoinListener extends Listener {
     }
 
     val uuid = player.getUniqueId
-    val flyMinutes = SeichiAssist.databaseGateway.executeQuery(s"SELECT minutes FROM flying WHERE uuid = $uuid").getInt(1)
+    val flyMinutes = SeichiAssist.databaseGateway.executeQuery(s"SELECT minutes FROM flying WHERE uuid = '$uuid'").getInt(1)
     val pd = BuildAssist.playermap.get(uuid)
     if (flyMinutes != 0 && pd.nonEmpty) {
       val data = pd.get
@@ -136,6 +136,7 @@ class PlayerJoinListener extends Listener {
       player.sendMessage(s"Fly機能は${status}です。")
       // 念のために明示的に更新
       BuildAssist.playermap.put(uuid, data)
+      SeichiAssist.databaseGateway.executeUpdate(s"DELETE FROM flying WHERE uuid = '$uuid'")
     }
   }
 
