@@ -587,9 +587,7 @@ object FirstPage extends Menu {
           .lore(buttonLore)
           .build(),
         LeftClickButtonEffect(
-          targetedeffect.delay { player =>
-            player.closeInventory()
-          },
+          closeInventoryEffect,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           "spawn".asCommandEffect()
         )
