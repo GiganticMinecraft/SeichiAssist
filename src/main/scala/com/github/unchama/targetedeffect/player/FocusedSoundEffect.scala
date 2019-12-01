@@ -11,6 +11,7 @@ import org.bukkit.entity.Player
 object FocusedSoundEffect {
   def apply(sound: Sound, volume: Float, pitch: Float): TargetedEffect[Player] =
     targetedeffect.delay { player =>
+      // 音を鳴らすのは非同期スレッドでも問題ない(Spigot 1.12.2)
       player.playSound(player.getLocation, sound, volume, pitch)
     }
 }
