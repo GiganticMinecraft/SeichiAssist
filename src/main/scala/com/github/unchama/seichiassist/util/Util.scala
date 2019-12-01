@@ -4,9 +4,12 @@ import java.text.SimpleDateFormat
 import java.util.stream.IntStream
 import java.util.{Calendar, Random}
 
+import cats.data
 import cats.effect.IO
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor._
@@ -89,18 +92,38 @@ object Util {
    *
    * @param player    付与する対象プレイヤー
    * @param itemStack 付与するアイテム
+   * @deprecated use [[grantItemStacksEffect]]
    */
-  def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    import scala.jdk.CollectionConverters._
+  @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
+    com.github.unchama.seichiassist.unsafe.runIOAsync(
+      "アイテムスタックを付与する",
+      grantItemStacksEffect(itemStack).run(player)
+    )
+  }
 
-    if (itemStack.getType == Material.AIR)
-      Bukkit.getLogger.warning("adding Material.AIR to player inventory")
+  /**
+   * プレイヤーに複数のアイテムを一度に付与する。
+   * インベントリに入り切らなかったアイテムはプレーヤーの立ち位置にドロップされる。
+   *
+   * @param itemStacks 付与するアイテム
+   */
+  def grantItemStacksEffect(itemStacks: ItemStack*): TargetedEffect[Player] = data.Kleisli { player =>
+    val toGive: Seq[ItemStack] = itemStacks.filter(_.getType != Material.AIR)
 
-    player.getInventory
-      .addItem(itemStack)
-      .values().asScala
-      .filter(_.getType != Material.AIR)
-      .foreach(dropItem(player, _))
+    for {
+      _ <- IO {
+        if (toGive.size != itemStacks.size)
+          Bukkit.getLogger.warning("attempt to add Material.AIR to player inventory")
+      }
+      _ <- PluginExecutionContexts.syncShift.shift
+      _ <- IO {
+        player.getInventory
+          .addItem(itemStacks: _*)
+          .values().asScala
+          .filter(_.getType != Material.AIR)
+          .foreach(dropItem(player, _))
+      }
+    } yield ()
   }
 
   //プレイヤーのインベントリがフルかどうか確認

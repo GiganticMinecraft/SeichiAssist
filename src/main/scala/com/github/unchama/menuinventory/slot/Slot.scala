@@ -1,5 +1,6 @@
 package com.github.unchama.menuinventory.slot
 
+import cats.effect.{ContextShift, IO}
 import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -26,7 +27,7 @@ trait Slot {
    * @param event [InventoryClickEvent]
    * @return クリックした[Player]へ及ぼすべき作用
    */
-  def effectOn(event: InventoryClickEvent): TargetedEffect[Player]
+  def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): TargetedEffect[Player]
 }
 
 object Slot {
@@ -37,6 +38,7 @@ object Slot {
   def plainSlotWith(itemStack: ItemStack): Slot = new Slot {
     override val itemStack: ItemStack = itemStack
 
-    override def effectOn(event: InventoryClickEvent): emptyEffect.type = emptyEffect
+    override def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): emptyEffect.type =
+      emptyEffect
   }
 }

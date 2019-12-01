@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
 import org.bukkit.entity.Player
 
 object AchievementGroupMenu {
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
   import eu.timepit.refined.auto._
 
   val sequentialEntriesIn: AchievementGroup => List[GroupMenuEntry] = CachedFunction {
@@ -28,10 +28,10 @@ object AchievementGroupMenu {
         Achievement8003UnlockEntry
 
     case TotalLogins =>
-      AchievementEntry.within(5001 to 5008)
+      AchievementEntry.within(5101 to 5120)
 
     case ConsecutiveLogins =>
-      AchievementEntry.within(5101 to 5120)
+      AchievementEntry.within(5001 to 5008)
 
     case Anniversaries =>
       AchievementEntry.within(9001 to 9036)
@@ -76,7 +76,7 @@ object AchievementGroupMenu {
     } else {
       val menuFrame = {
         import com.github.unchama.menuinventory.syntax._
-        MenuFrame(4.chestRows, ColorScheme.navigation(s"実績「${group.name}」"))
+        MenuFrame(4.chestRows, ColorScheme.purpleBold(s"実績「${group.name}」"))
       }
 
       def buttonToTransferTo(newPageNumber: Int, skullOwnerReference: SkullOwnerReference): Button =

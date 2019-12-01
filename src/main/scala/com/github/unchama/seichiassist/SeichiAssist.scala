@@ -127,6 +127,7 @@ class SeichiAssist extends JavaPlugin() {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
 
+    import PluginExecutionContexts.asyncShift
     //リスナーの登録
     List(
       new PlayerJoinListener(),
@@ -142,7 +143,7 @@ class SeichiAssist extends JavaPlugin() {
       new RegionInventoryListener(),
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
-      MenuHandler
+      new MenuHandler()
     ).foreach {
       getServer.getPluginManager.registerEvents(_, this)
     }

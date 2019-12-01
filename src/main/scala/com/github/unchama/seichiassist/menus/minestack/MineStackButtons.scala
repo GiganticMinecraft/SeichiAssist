@@ -112,11 +112,11 @@ private[minestack] case class MineStackButtons(player: Player) {
       val grantItemStack = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
       sequentialEffect(
+        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
+        Util.grantItemStacksEffect(grantItemStack),
         targetedeffect.UnfocusedEffect {
-          Util.addItemToPlayerSafely(player, grantItemStack)
           playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
-        },
-        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch)
+        }
       )
     }
   }

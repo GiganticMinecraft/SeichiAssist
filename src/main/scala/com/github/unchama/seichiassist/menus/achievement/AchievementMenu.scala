@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.menus.achievement
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory._
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
@@ -18,7 +20,7 @@ import org.bukkit.{Material, Sound}
 
 object AchievementMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")
@@ -69,7 +71,7 @@ object AchievementMenu extends Menu {
     import com.github.unchama.targetedeffect._
     val toggleTitleToPlayerLevelButton = Button(
       new IconItemStackBuilder(Material.REDSTONE_TORCH_ON)
-        .title("整地レベルを表示")
+        .title(ColorScheme.navigation("整地レベルを表示"))
         .lore(List(
           s"${RED}このボタンをクリックすると、",
           s"$RED「整地LV」に表示を切り替えます。",
@@ -90,6 +92,7 @@ object AchievementMenu extends Menu {
         .build(),
       action.LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
+        Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
         delay { player =>
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         }

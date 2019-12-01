@@ -17,7 +17,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 
 object AchievementCategoryMenu {
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
   import eu.timepit.refined.auto._
 
   type AchievementGroupRepr = (AchievementGroup, Material)

@@ -5,7 +5,6 @@ import java.util.UUID
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -18,6 +17,7 @@ import scala.collection.mutable
 class PlayerInventoryListener extends Listener {
   val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
 
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -64,7 +64,7 @@ class PlayerInventoryListener extends Listener {
 			 */
       if (itemstackcurrent.getType == Material.SKULL_ITEM) {
         //ホームメニューへ帰還
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(
           sequentialEffect(
