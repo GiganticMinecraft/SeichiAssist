@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu}
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.external.{ExternalPlugins, WorldGuard}
+import com.github.unchama.seichiassist.util.external.{ExternalPlugins, WorldGuardWrapper}
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -165,7 +165,7 @@ object FirstPage extends Menu {
         val worldGuardPlugin = ExternalPlugins.getWorldGuard
         val regionManager = worldGuardPlugin.getRegionManager(getWorld)
 
-        val maxRegionCount = WorldGuard.getMaxRegionCount(player, getWorld)
+        val maxRegionCount = WorldGuardWrapper.getMaxRegionCount(player, getWorld)
         val currentPlayerRegionCount =
           regionManager.getRegionCountOfPlayer(worldGuardPlugin.wrapPlayer(player))
 
