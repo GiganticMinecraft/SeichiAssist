@@ -7,7 +7,7 @@ object Execution {
    * 与えられた`IO`をサーバーメインスレッドで実行するように予約する。
    * @return
    */
-  def synchronously(program: IO[Any])(implicit context: BukkitSyncExecutionContext): IO[Unit] = {
+  def onServerMainThread(program: IO[Any])(implicit context: BukkitSyncExecutionContext): IO[Unit] = {
     val asyncProgram = for {
       _ <- IO.shift(context)
       _ <- program

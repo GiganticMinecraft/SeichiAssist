@@ -15,7 +15,7 @@ object PlayerEffects {
                          (implicit context: BukkitSyncExecutionContext): TargetedEffect[Player] =
     Kleisli { player =>
       // インベントリを開く操作はサーバースレッドでなければならない(Spigot 1.12.2)
-      Execution.synchronously(IO {
+      Execution.onServerMainThread(IO {
         player.openInventory(inventory)
       })
     }
