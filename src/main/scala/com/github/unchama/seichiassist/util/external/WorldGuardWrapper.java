@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author karayuu
  */
-public class WorldGuard {
+public class WorldGuardWrapper {
     /**
      * ワールドガードのインスタンス
      */
@@ -27,5 +27,15 @@ public class WorldGuard {
     public static int getMaxRegionCount(@NotNull Player player, @NotNull World world) {
         final WorldConfiguration worldConfiguration = plugin.getGlobalStateManager().get(world);
         return worldConfiguration.getMaxRegionCount(player);
+    }
+
+    /**
+     * 現在{@link Player}が{@link World}でオーナーになっている保護の数を返す。
+     * @param who 誰か
+     * @param where どのワールドか
+     * @return オーナーになっている保護の数。どこのオーナーでもない場合は0
+     */
+    public static int getNumberOfRegions(@NotNull Player who, @NotNull World where) {
+        return WorldGuardPlugin.inst().getRegionContainer().get(where).getRegionCountOfPlayer(WorldGuardPlugin.inst().wrapPlayer(who));
     }
 }
