@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import java.util.UUID
 
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.util.Util
@@ -121,6 +122,21 @@ class PlayerJoinListener extends Listener {
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
 
+    val uuid = player.getUniqueId
+    val flyMinutes = SeichiAssist.databaseGateway.executeQuery(s"SELECT minutes FROM flying WHERE uuid = $uuid").getInt(1)
+    val pd = BuildAssist.playermap.get(uuid)
+    if (flyMinutes != 0 && pd.nonEmpty) {
+      val data = pd.get
+      data.flyflag = true
+      data.endlessfly = flyMinutes == 0
+      data.flytime = flyMinutes
+      player.setFlying(true)
+      player.setAllowFlight(true)
+      val status = if (data.endlessfly) "無期限でON" else s"残り${data.flytime}分"
+      player.sendMessage(s"Fly機能は${status}です。")
+      // 念のために明示的に更新
+      BuildAssist.playermap.put(uuid, data)
+    }
   }
 
   // プレイヤーがワールドを移動したとき
