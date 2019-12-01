@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
@@ -14,7 +14,6 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
@@ -25,8 +24,9 @@ import org.bukkit.{Material, Sound}
  */
 object SecondPage extends Menu {
 
+  import PluginExecutionContexts.sync
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+  import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.InventoryUtil._
   import eu.timepit.refined.auto._
@@ -422,16 +422,10 @@ object SecondPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
-            targetedeffect.delay { player =>
-              // TODO メニューインベントリに差し替える
-              player.openInventory(
-                createInventory(
-                  size = 4.chestRows,
-                  title = Some(s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ")
-                )
-              )
-            }
+            // TODO メニューインベントリに差し替える
+            openInventoryEffect(
+              createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
+            )
           )
         }
       )
@@ -459,16 +453,10 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
-            targetedeffect.delay { player =>
-              // TODO メニューインベントリに差し替える
-              player.openInventory(
-                createInventory(
-                  size = 4.chestRows,
-                  title = Some(s"$GOLD${BOLD}修繕したい限定タイタンを入れてネ")
-                )
-              )
-            }
+            // TODO メニューインベントリに差し替える
+            openInventoryEffect(
+              createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
+            )
           )
         }
       )
@@ -489,16 +477,10 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
-            targetedeffect.delay { player =>
-              // TODO メニューインベントリに差し替える
-              player.openInventory(
-                createInventory(
-                  size = 4.chestRows,
-                  title = Some(s"$RED${BOLD}ゴミ箱(取扱注意)")
-                )
-              )
-            }
+            // クローズ時に何も処理されないインベントリを開くことでアイテムを虚空に飛ばす
+            openInventoryEffect(
+              createInventory(size = 4.chestRows, title = Some(s"$RED${BOLD}ゴミ箱(取扱注意)"))
+            )
           )
         }
       )

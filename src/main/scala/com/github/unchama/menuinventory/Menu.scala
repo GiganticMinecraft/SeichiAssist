@@ -31,8 +31,7 @@ trait Menu {
   def open(implicit ctx: LayoutPreparationContext, syncCtx: BukkitSyncExecutionContext): TargetedEffect[Player] = data.Kleisli { player =>
     for {
       session <- frame.createNewSession()
-      _ <- IO.shift(syncCtx)
-      _ <- session.openInventory(player) // メインスレッド以外からパケットを送るとコケる
+      _ <- session.openInventory.run(player)
       layout <- computeMenuLayout(player)
       _ <- session.overwriteViewWith(layout)
     } yield ()

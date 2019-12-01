@@ -1,6 +1,5 @@
 package com.github.unchama.buildassist.menu
 
-import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
@@ -9,7 +8,6 @@ import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, Fi
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -21,7 +19,7 @@ object BuildMainMenu extends Menu {
   import com.github.unchama.menuinventory.slot.button.RecomputedButton
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+  import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._
   import menuinventory.syntax._
 
@@ -222,10 +220,7 @@ object BuildMainMenu extends Menu {
         FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
-            UnfocusedEffect {
-              player.openInventory(MenuInventoryData.getBlockLineUpData(player))
-            }
+            computedEffect(p => openInventoryEffect(MenuInventoryData.getBlockLineUpData(p)))
           )
         }
       )
@@ -241,10 +236,7 @@ object BuildMainMenu extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
-            UnfocusedEffect {
-              player.openInventory(MenuInventoryData.getBlockCraftData(player))
-            }
+            computedEffect(p => openInventoryEffect(MenuInventoryData.getBlockCraftData(p)))
           )
         }
       )
