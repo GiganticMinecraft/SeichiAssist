@@ -23,7 +23,7 @@ trait StringTargetedEffectSyntax {
       Kleisli { p =>
         // 非同期スレッドからchatを呼ぶとコマンドがそのスレッドで実行される(Spigot 1.12.2)。
         // コマンドの実行は基本的に同期スレッドで行ってほしいのでメインスレッドまで処理を飛ばす。
-        Execution.synchronously(IO { p.chat(s"/$string") })
+        Execution.onServerMainThread(IO { p.chat(s"/$string") })
       }
   }
 
