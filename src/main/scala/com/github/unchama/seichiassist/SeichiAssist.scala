@@ -184,11 +184,14 @@ class SeichiAssist extends JavaPlugin() {
       // 公共鯖なら整地量のランキングを表示する必要はない
       val programs: List[Timer[IO] => RepeatingTask] =
         List(
-          PlayerDataPeriodicRecalculation(SeichiAssist.Concurrency.syncExecutionContext),
-          PlayerDataBackupTask(SeichiAssist.Concurrency.asyncExecutionContext)
+          PlayerDataPeriodicRecalculation(SeichiAssist.Concurrency.syncExecutionContext)(_),
+          PlayerDataBackupTask(SeichiAssist.Concurrency.asyncExecutionContext)(_)
         ) ++
-          Option.unless(SeichiAssist.seichiAssistConfig.getServerNum == 7)(HalfHourRankingRoutine(SeichiAssist.Concurrency.asyncExecutionContext))
-                .toList
+          Option.unless(
+            SeichiAssist.seichiAssistConfig.getServerNum == 7
+          )(
+            HalfHourRankingRoutine(SeichiAssist.Concurrency.asyncExecutionContext)(_)
+          ).toList
 
       val sleepTimer: Timer[IO] = IO.timer(SeichiAssist.Concurrency.cachedThreadPool)
 
