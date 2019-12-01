@@ -33,12 +33,12 @@ public class Config {
     }
 
     //config.ymlがない時にDefaultのファイルを生成
-    public void saveDefaultConfig() {
+    private void saveDefaultConfig() {
         plugin.saveDefaultConfig();
     }
 
     //config.ymlファイルからの読み込み
-    public FileConfiguration getConfig() {
+    private FileConfiguration getConfig() {
         return plugin.getConfig();
     }
 

@@ -5,7 +5,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class AsyncEntityRemover extends BukkitRunnable {
-    Entity e;
+    private Entity e;
 
     public AsyncEntityRemover(Entity e) {
         this.e = e;

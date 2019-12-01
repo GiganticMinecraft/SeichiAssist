@@ -140,7 +140,7 @@ public class MenuInventoryData {
     }
 
     //投票特典受け取りボタン
-    public static List<String> VoteGetButtonLore(PlayerData playerdata) {
+    private static List<String> VoteGetButtonLore(PlayerData playerdata) {
         List<String> lore = new ArrayList<>();
         lore.addAll(Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "投票特典を受け取るには"
                 , ChatColor.RESET + "" + ChatColor.GRAY + "投票ページで投票した後"
@@ -181,7 +181,7 @@ public class MenuInventoryData {
     }
 
     // GiganticBerserk Meta
-    public static ItemMeta GiganticBerserkMeta(PlayerData playerdata, ItemMeta itemmeta) {
+    private static ItemMeta GiganticBerserkMeta(PlayerData playerdata, ItemMeta itemmeta) {
         List<String> lore = new ArrayList<>();
 
         int n = (playerdata.giganticBerserk().stage() * 10) + playerdata.giganticBerserk().level();
@@ -219,7 +219,7 @@ public class MenuInventoryData {
         return itemmeta;
     }
 
-    public static ItemMeta ChestBreakToggleMeta(PlayerData playerdata, ItemMeta itemmeta) {
+    private static ItemMeta ChestBreakToggleMeta(PlayerData playerdata, ItemMeta itemmeta) {
         List<String> lore = new ArrayList<>();
 
         lore.add(ChatColor.GREEN + "スキルでチェストを破壊するスキル");
@@ -1448,7 +1448,7 @@ public class MenuInventoryData {
 
     }
 
-    public static ItemMeta VFSoundToggleMeta(boolean bln) {
+    private static ItemMeta VFSoundToggleMeta(boolean bln) {
         ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.JUKEBOX);
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精の音トグル");
         if (bln) {
@@ -1470,7 +1470,7 @@ public class MenuInventoryData {
         return itemmeta;
     }
 
-    public static ItemMeta VFPromiseMeta(PlayerData playerdata) {
+    private static ItemMeta VFPromiseMeta(PlayerData playerdata) {
 
         ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精とのお約束");

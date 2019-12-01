@@ -62,7 +62,7 @@ public final class StaticGachaPrizeFactory {
     }
 
     //椎名林檎の説明を取得
-    public static List<String> getMaxRingoLore(String name) {
+    private static List<String> getMaxRingoLore(String name) {
         return Arrays.asList(
                 ChatColor.RESET + "" + ChatColor.GRAY + "使用するとマナが全回復します",
                 ChatColor.RESET + "" + ChatColor.AQUA + "マナ完全回復",

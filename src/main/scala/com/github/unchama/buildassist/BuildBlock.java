@@ -7,10 +7,10 @@ import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 
-public class BuildBlock {
+class BuildBlock {
     private final int after;
     private final int before;
-    public int increase;
+    private int increase;
 
     BuildBlock() {
         this.after = 0;

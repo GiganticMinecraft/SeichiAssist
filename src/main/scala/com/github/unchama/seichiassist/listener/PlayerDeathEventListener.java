@@ -16,8 +16,8 @@ import scala.collection.mutable.HashMap;
 import java.util.UUID;
 
 public class PlayerDeathEventListener implements Listener {
-    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
-    SeichiAssist plugin = SeichiAssist.instance();
+    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private SeichiAssist plugin = SeichiAssist.instance();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent event) {

@@ -14,9 +14,9 @@ import java.util.Random;
 import java.util.UUID;
 
 public class GiganticBerserkTask {
-    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
-    Player player;
-    PlayerData playerdata;
+    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private Player player;
+    private PlayerData playerdata;
 
     public void PlayerKillEnemy(Player p) {
         player = p;
@@ -84,7 +84,7 @@ public class GiganticBerserkTask {
     }
 
 
-    public double getRecoveryValue(PlayerData playerdata) {
+    private double getRecoveryValue(PlayerData playerdata) {
         double i;
         final double l;
         Random rnd = new Random();

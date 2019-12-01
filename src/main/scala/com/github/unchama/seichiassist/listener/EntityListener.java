@@ -29,7 +29,7 @@ import scala.collection.mutable.HashSet;
 import java.util.UUID;
 
 public class EntityListener implements Listener {
-    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 
     @EventHandler
     public void onPlayerActiveSkillEvent(ProjectileHitEvent event) {

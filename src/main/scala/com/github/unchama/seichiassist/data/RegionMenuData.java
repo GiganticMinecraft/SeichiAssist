@@ -33,8 +33,8 @@ import java.util.Map;
 public class RegionMenuData {
     static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
     static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
-    static Config config = SeichiAssist.seichiAssistConfig();
-    static NumberFormat nfNum = NumberFormat.getNumberInstance();
+    private static Config config = SeichiAssist.seichiAssistConfig();
+    private static NumberFormat nfNum = NumberFormat.getNumberInstance();
 
     /**
      * グリッド式保護メニュを開きます。
@@ -244,7 +244,7 @@ public class RegionMenuData {
      *
      * @return グリッド式保護テンプレート保存メニューの縦の数
      */
-    public static int getAisleAmount() {
+    private static int getAisleAmount() {
         return config.getTemplateKeepAmount() / 9 + 1;
     }
 
