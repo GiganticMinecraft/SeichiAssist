@@ -3,7 +3,6 @@ package com.github.unchama.concurrent
 import cats.effect.IO
 import com.github.unchama.util.effect.IOUtils._
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
 abstract class RepeatingTask {
@@ -40,13 +39,13 @@ abstract class RepeatingTask {
   }
 
   /**
-   * [[runRoutine]]の実行、及びスリープ処理に使用される[[ExecutionContext]].
+   * [[runRoutine]]の実行、及びスリープ処理に使用される[[RepeatingTaskContext]].
    *
    * サーバーメインスレッドでの実行コンテキストは渡してはならず、
    * [[runRoutine]]の実行がサーバーメインスレッドで行われてほしければ、
    * [[runRoutine]]内でコンテキストをシフトすべきである。
    */
-  val context: ExecutionContext
+  val context: RepeatingTaskContext
 
   protected val getRepeatInterval: IO[FiniteDuration]
   protected val runRoutine: IO[Any]

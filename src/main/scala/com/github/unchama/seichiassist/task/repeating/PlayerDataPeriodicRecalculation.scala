@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.task.repeating
 
 import cats.effect.IO
-import com.github.unchama.concurrent.{BukkitSyncExecutionContext, RepeatingTask}
+import com.github.unchama.concurrent.{BukkitSyncExecutionContext, RepeatingTask, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
@@ -11,11 +11,10 @@ import org.bukkit.ChatColor._
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-case class PlayerDataPeriodicRecalculation(override val context: ExecutionContext)
-                                          (implicit val syncContext: BukkitSyncExecutionContext) extends RepeatingTask() {
+class PlayerDataPeriodicRecalculation(implicit val syncContext: BukkitSyncExecutionContext,
+                                      override val context: RepeatingTaskContext) extends RepeatingTask() {
 
   override val getRepeatInterval: IO[FiniteDuration] = IO {
     import scala.concurrent.duration._

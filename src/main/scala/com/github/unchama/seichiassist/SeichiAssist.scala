@@ -181,18 +181,16 @@ class SeichiAssist extends JavaPlugin() {
       import PluginExecutionContexts._
       import cats.implicits._
 
-      val contextForSleepAndRoutine = PluginExecutionContexts.cachedThreadPool
-
       // 公共鯖なら整地量のランキングを表示する必要はない
       val programs: List[RepeatingTask] =
         List(
-          PlayerDataPeriodicRecalculation(contextForSleepAndRoutine),
-          PlayerDataBackupTask(contextForSleepAndRoutine)
+          new PlayerDataPeriodicRecalculation,
+          new PlayerDataBackupTask
         ) ++
           Option.unless(
             SeichiAssist.seichiAssistConfig.getServerNum == 7
           )(
-            HalfHourRankingRoutine(contextForSleepAndRoutine)
+            new HalfHourRankingRoutine
           ).toList
 
       programs.map(_.launch).parSequence.start
