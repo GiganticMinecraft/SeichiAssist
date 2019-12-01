@@ -39,7 +39,7 @@ class ExpBarSynchronization {
       // BarをMAXにして総整地量を表示
       val stars = playerData.starLevels.fromBreakAmount
       val starText = if (stars > 0) {
-        "☆${playerData.starLevels.fromBreakAmount}"
+        s"☆$stars"
       } else {
         ""
       }
