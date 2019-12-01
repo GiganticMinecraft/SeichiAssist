@@ -52,7 +52,7 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
 
       //プレイヤー名を取得
       val name = player.getName
-      //総整地量を更新(返り血で重み分け済みの1分間のブロック破壊量が返ってくる)
+      //総整地量を更新(返り値で重み分け済みの1分間のブロック破壊量が返ってくる)
       val increase = playerData.updateAndCalcMinedBlockAmount()
       //Levelを設定(必ず総整地量更新後に実施！)
       playerData.updateLevel()
