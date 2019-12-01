@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import scala.Int;
 import scala.jdk.CollectionConverters;
 
 import java.text.NumberFormat;
@@ -136,7 +135,7 @@ public class RegionMenuData {
         gridInv.setItem(7, menuicon7);
 
         //8マス目
-        if (!config.isGridProtectEnable(player)) {
+        if (!config.isGridProtectionEnabled(player)) {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "このワールドでは保護を作成できません");
             ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
