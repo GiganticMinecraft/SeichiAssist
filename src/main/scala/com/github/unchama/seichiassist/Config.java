@@ -10,9 +10,7 @@ public class Config {
     private static FileConfiguration config;
     private SeichiAssist plugin;
 
-    //コンストラクタ
-    Config(SeichiAssist _plugin) {
-        plugin = _plugin;
+    Config() {
         saveDefaultConfig();
     }
 
