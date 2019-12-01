@@ -1,17 +1,15 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.RegionMenuData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -19,8 +17,9 @@ import org.bukkit.{Material, Sound}
 
 object RegionMenu extends Menu {
 
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+  import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, _}
   import com.github.unchama.targetedeffect.syntax._
 
   override val frame: MenuFrame =
@@ -232,10 +231,8 @@ object RegionMenu extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-            Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
-            targetedeffect.delay { player =>
-              player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
-            }
+            // TODO メニューに置き換える
+            computedEffect(p => openInventoryEffect(RegionMenuData.getGridWorldGuardMenu(p)))
           )
         )
       )
