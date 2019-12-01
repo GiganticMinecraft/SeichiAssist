@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.util.external.WorldGuard
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.syntax._
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
@@ -42,8 +43,11 @@ object RegionOwnerTransferCommand {
 
   private def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): IO[TargetedEffect[Player]] = IO {
     val owners = region.getOwners
-
-    if (!owners.contains(donner.getUniqueId)) {
+    val limit = WorldGuard.getMaxRegionCount(recipient, recipient.getWorld)
+    val having = WorldGuardPlugin.inst().getRegionContainer.get(donner.getWorld).getRegionCountOfPlayer(WorldGuardPlugin.inst().wrapPlayer(recipient))
+    if (limit <= having) {
+      s"相手が保護を上限 ($limit)まで所持しているため権限を譲渡できません。".asMessageEffect()
+    } else if (!owners.contains(donner.getUniqueId)) {
       "オーナーではないため権限を譲渡できません。".asMessageEffect()
     } else if (owners.size() != 1) {
       "オーナーが複数人いるため権限を譲渡できません。".asMessageEffect()
