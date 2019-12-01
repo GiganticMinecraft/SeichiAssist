@@ -38,11 +38,7 @@ class ExpBarSynchronization {
     if (playerLevel >= LevelThresholds.levelExpThresholds.size) {
       // BarをMAXにして総整地量を表示
       val stars = playerData.starLevels.fromBreakAmount
-      val starText = if (stars > 0) {
-        s"☆$stars"
-      } else {
-        ""
-      }
+      val starText = if (stars > 0) s"☆$stars" else ""
       val text = s"$GOLD${BOLD}Lv $playerLevel$starText (総整地量: ${String.format("%,d", playerData.totalbreaknum)})"
       val progress = 1.0
 
