@@ -99,6 +99,6 @@ permissions:
   multiseichiplugin.event:
     default: op
   multiseichiplugin.shareinv:
-    default: notop
+    default: not op
   multiseichiplugin.mebius:
-    default: notop
+    default: not op
