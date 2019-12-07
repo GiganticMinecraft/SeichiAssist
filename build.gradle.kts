@@ -23,6 +23,7 @@ project.sourceSets {
 repositories {
     maven { url = URI("https://jitpack.io") }
     maven { url = URI("http://maven.sk89q.com/repo/") }
+    maven { url = URI("http://maven.playpro.com") }
     maven { url = URI("http://repo.spring.io/plugins-release/") }
     maven { url = URI("https://repo.spongepowered.org/maven") }
     maven { url = URI("https://repo.maven.apache.org/maven2") }
@@ -48,6 +49,7 @@ dependencies {
     implementation("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
 
     implementation("com.sk89q.worldguard:worldguard-legacy:6.2")
+    implementation("net.coreprotect:coreprotect:2.14.2")
 
     implementation("org.apache.commons:commons-lang3:3.9")
 
