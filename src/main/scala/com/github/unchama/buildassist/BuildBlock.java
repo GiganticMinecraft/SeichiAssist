@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 
-import com.github.unchama.seichiassist.PackagePrivate
+import com.github.unchama.seichiassist.PackagePrivate;
 
 @PackagePrivate
 class BuildBlock {
