@@ -25,8 +25,6 @@
 ## ビルド
 // TODO maven -> gradle へ移行済みの為、書き換えが必要。
 
-前提プラグインのjarを`${プロジェクトディレクトリ}/localDependencies`にコピーしてください。
-
 Gradleがコマンドラインで使える状態で`gradle build`を実行すると、`target`フォルダにjarが出力されます。
 
 // TODO Eclipse
