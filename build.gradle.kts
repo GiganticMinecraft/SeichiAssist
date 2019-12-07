@@ -47,6 +47,8 @@ dependencies {
 
     implementation("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
 
+    implementation("com.sk89q.worldguard:worldguard-legacy:6.2")
+
     implementation("org.apache.commons:commons-lang3:3.9")
 
     implementation("commons-codec:commons-codec:1.12")
