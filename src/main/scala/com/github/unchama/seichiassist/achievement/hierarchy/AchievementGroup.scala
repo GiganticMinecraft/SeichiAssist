@@ -11,6 +11,9 @@ object AchievementGroup {
   case object BrokenBlockRanking
     extends AchievementGroup("整地神ランキング", BrokenBlock)
 
+  case object PlacedBlockAmount
+    extends AchievementGroup("建築量", Building)
+
 
   case object PlayTime
     extends AchievementGroup("参加時間", Login)

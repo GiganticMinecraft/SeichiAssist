@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.achievement
 
 import com.github.unchama.generic.CachedFunction
 import com.github.unchama.seichiassist.achievement.SeichiAchievement._
+import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup.PlacedBlockAmount
 
 object NicknameMapping {
 
@@ -22,6 +23,22 @@ object NicknameMapping {
     case No_1010 => NicknameCombination(Some(1010))
     case No_1011 => NicknameCombination(Some(1011), Some(9904), Some(1011))
     case No_1012 => NicknameCombination(Some(1012), Some(9901), Some(1012))
+
+    case No_2001 => NicknameCombination(Some(2001), Some(9905), Some(2001))
+    case No_2002 => NicknameCombination(Some(2002), Some(9905), Some(2002))
+    case No_2003 => NicknameCombination(Some(2003), Some(9909), Some(2003))
+    case No_2004 => NicknameCombination(Some(2004), None, Some(2004))
+    case No_2005 => NicknameCombination(Some(2005), None, Some(2005))
+    case No_2006 => NicknameCombination(Some(2006), Some(9909), Some(2006))
+    case No_2007 => NicknameCombination(Some(2007), None, Some(2007))
+    case No_2008 => NicknameCombination(Some(2008), Some(9901), Some(2008))
+    case No_2009 => NicknameCombination(Some(2009), None, Some(2009))
+    case No_2010 => NicknameCombination(Some(2010), None, Some(2010))
+    case No_2011 => NicknameCombination(Some(2011), None, Some(2011))
+    case No_2012 => NicknameCombination(Some(2012), Some(9905), Some(2012))
+    case No_2013 => NicknameCombination(Some(2013), Some(9905), Some(2013))
+    case No_2014 => NicknameCombination(Some(2014), None, Some(2014))
+
 
     case No_3001 => NicknameCombination(Some(3001))
     case No_3002 => NicknameCombination(Some(3002), Some(9905), Some(3002))
