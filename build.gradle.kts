@@ -38,7 +38,6 @@ repositories {
 }
 
 val embed: Configuration by configurations.creating
-val scalacPlugin: Configuration by configurations.creating
 
 configurations.implementation { extendsFrom(embed) }
 
@@ -74,9 +73,6 @@ dependencies {
     embed("eu.timepit:refined_${scalaVersion}:0.9.10")
 
     embed("com.beachape:enumeratum_${scalaVersion}:1.5.13")
-
-    // compiler plugins
-    scalacPlugin(group = "org.typelevel", name = "kind-projector_${scalaVersionFull}", version = "0.11.0")
 }
 
 task("repl", JavaExec::class) {
@@ -109,8 +105,7 @@ tasks.withType(JavaCompile::class.java).all {
 tasks.withType(ScalaCompile::class.java).all {
     this.scalaCompileOptions.additionalParameters = listOf(
         "-Ypatmat-exhaust-depth", "40"
-    ).plus(scalacPlugin.copy().flatMap { listOf("-Xplugin", it.path) })
-
+    )
     this.scalaCompileOptions.forkOptions.jvmArgs = listOf("-Xss64m")
     this.options.encoding = "UTF-8"
 
