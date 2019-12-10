@@ -31,7 +31,7 @@ object NicknameMapping {
     case No_2005 => NicknameCombination(Some(2005), None, Some(2005))
     case No_2006 => NicknameCombination(Some(2006), Some(9909), Some(2006))
     case No_2007 => NicknameCombination(Some(2007), None, Some(2007))
-    case No_2008 => NicknameCombination(Some(2008), Some(9901), Some(2008))
+    case No_2008 => NicknameCombination(Some(2008), Some(9911), Some(2008))
     case No_2009 => NicknameCombination(Some(2009), None, Some(2009))
     case No_2010 => NicknameCombination(Some(2010), None, Some(2010))
     case No_2011 => NicknameCombination(Some(2011), None, Some(2011))
