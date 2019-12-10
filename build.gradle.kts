@@ -41,6 +41,9 @@ val embed: Configuration by configurations.creating
 
 configurations.implementation { extendsFrom(embed) }
 
+val scalaVersion = "2.13"
+val scalaVersionFull = "2.13.1"
+
 dependencies {
     implementation(fileTree(mapOf("dir" to "localDependencies", "include" to arrayOf("*.jar"))))
 
@@ -61,15 +64,15 @@ dependencies {
 
     embed("org.flywaydb:flyway-core:5.2.4")
 
-    embed("org.scala-lang:scala-library:2.13.1")
+    embed("org.scala-lang:scala-library:${scalaVersionFull}")
 
     // cats依存
-    embed("org.typelevel:cats-core_2.13:2.0.0")
-    embed("org.typelevel:cats-effect_2.13:2.0.0")
+    embed("org.typelevel:cats-core_${scalaVersion}:2.0.0")
+    embed("org.typelevel:cats-effect_${scalaVersion}:2.0.0")
 
-    embed("eu.timepit:refined_2.13:0.9.10")
+    embed("eu.timepit:refined_${scalaVersion}:0.9.10")
 
-    embed("com.beachape:enumeratum_2.13:1.5.13")
+    embed("com.beachape:enumeratum_${scalaVersion}:1.5.13")
 }
 
 task("repl", JavaExec::class) {
