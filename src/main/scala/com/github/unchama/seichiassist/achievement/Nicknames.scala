@@ -23,7 +23,7 @@ object Nicknames {
     2005 -> HeadTail(s"磨く", s"感性"),
     2006 -> HeadTail(s"リアル", s"再現"),
     2007 -> HeadTail(s"まだ", s"未完成"),
-    2008 -> HeadTail(s"置いて", s"壊す"),
+    2008 -> HeadTail(s"独創", s"親衛隊"),
     2009 -> HeadTail(s"楽しい", s"創作"),
     2010 -> HeadTail(s"駆け出し", s"ビルダー"),
     2011 -> HeadTail(s"転生", s"儀式"),
