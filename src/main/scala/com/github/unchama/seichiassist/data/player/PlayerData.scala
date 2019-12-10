@@ -122,6 +122,14 @@ class PlayerData(
   private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
   //チェスト破壊トグル
   var chestflag = true
+
+  /**
+   * チェスト破壊のON/OFFを切り替える[UnfocusedEffect]
+   */
+  val toggleChestBreakFlag: TargetedEffect[Player] = UnfocusedEffect {
+    chestflag = !chestflag
+  }
+
   var canCreateRegion = true
   var unitPerClick = 1
   //今回の採掘速度上昇レベルを格納

@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
+import com.github.unchama.seichiassist.menus.skill.PassiveSkillMenu
 import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu}
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
@@ -788,8 +789,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
-          // TODO メニューに置き換える
-          computedEffect(p => openInventoryEffect(MenuInventoryData.getPassiveSkillMenuData(p))),
+          PassiveSkillMenu.open
         )
       )
     }
