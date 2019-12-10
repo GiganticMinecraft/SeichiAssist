@@ -64,4 +64,11 @@ class PlayerSettings {
 
     responseMessage.asMessageEffect()
   })
+
+  /**
+   * 複数ブロック同時破壊のON/OFFを切り替える[UnforcedEffect]
+   */
+  val toggleMultipleIdBreakFlag: TargetedEffect[Player] = UnfocusedEffect {
+    multipleidbreakflag = !multipleidbreakflag
+  }
 }
