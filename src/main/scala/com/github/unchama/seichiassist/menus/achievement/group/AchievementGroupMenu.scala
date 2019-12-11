@@ -17,11 +17,15 @@ object AchievementGroupMenu {
   import eu.timepit.refined.auto._
 
   val sequentialEntriesIn: AchievementGroup => List[GroupMenuEntry] = CachedFunction {
-    case BrokenBlockAmount =>
-      AchievementEntry.within(3001 to 3019)
 
     case BrokenBlockRanking =>
       AchievementEntry.within(1001 to 1012)
+
+    case PlacedBlockAmount =>
+      AchievementEntry.within(2001 to 2014)
+
+    case BrokenBlockAmount =>
+      AchievementEntry.within(3001 to 3019)
 
     case PlayTime =>
       AchievementEntry.within(4001 to 4023) :+
@@ -33,6 +37,16 @@ object AchievementGroupMenu {
     case ConsecutiveLogins =>
       AchievementEntry.within(5001 to 5008)
 
+    case VoteCounts =>
+      AchievementEntry.within(6001 to 6008)
+
+    case OfficialEvent =>
+      AchievementEntry.within(7001 to 7027) ++
+        AchievementEntry.within(7901 to 7906)
+
+    case Secrets =>
+      AchievementEntry.within(8001 to 8003)
+
     case Anniversaries =>
       AchievementEntry.within(9001 to 9036)
 
@@ -41,16 +55,6 @@ object AchievementGroupMenu {
 
     case StarLevel =>
       AchievementEntry.within(0 until 0)
-
-    case OfficialEvent =>
-      AchievementEntry.within(7001 to 7027) ++
-        AchievementEntry.within(7901 to 7906)
-
-    case VoteCounts =>
-      AchievementEntry.within(6001 to 6008)
-
-    case Secrets =>
-      AchievementEntry.within(8001 to 8003)
   }
 
   private val apply_ : ((AchievementGroup, Int)) => Menu = CachedFunction { case (group, pageNumber) =>

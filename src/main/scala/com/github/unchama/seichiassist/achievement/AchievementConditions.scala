@@ -29,6 +29,16 @@ object AchievementConditions {
     AchievementCondition(predicate, "「整地神ランキング」" + _ + "位達成", n)
   }
 
+  def placedBlockAmount_>=(amount: BigDecimal, localizedAmount: String): AchievementCondition[String] = {
+    val predicate = playerDataPredicate(d => IO {
+      val playerBuildCount: BigDecimal = d.buildCount.count
+
+      playerBuildCount >= amount
+    })
+
+    AchievementCondition(predicate, "建築量が " + _ + "を超える", localizedAmount)
+  }
+
   def brokenBlockAmount_>=(amount: Long, localizedAmount: String): AchievementCondition[String] = {
     val predicate = playerDataPredicate(d => IO { d.totalbreaknum >= amount })
 

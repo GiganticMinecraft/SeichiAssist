@@ -47,6 +47,22 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_1011 extends NormalAuto(1011, brokenBlockRankingPosition_<=(250))
   case object No_1012 extends NormalAuto(1012, brokenBlockRankingPosition_<=(500))
 
+  // 建築量
+  case object No_2001 extends NormalAuto(2001, placedBlockAmount_>=(1000000,"100万"))
+  case object No_2002 extends NormalAuto(2002, placedBlockAmount_>=(800000,"80万"))
+  case object No_2003 extends NormalAuto(2003, placedBlockAmount_>=(650000,"65万"))
+  case object No_2004 extends NormalAuto(2004, placedBlockAmount_>=(500000,"50万"))
+  case object No_2005 extends NormalAuto(2005, placedBlockAmount_>=(400000,"40万"))
+  case object No_2006 extends NormalAuto(2006, placedBlockAmount_>=(300000,"30万"))
+  case object No_2007 extends NormalAuto(2007, placedBlockAmount_>=(200000,"20万"))
+  case object No_2008 extends NormalAuto(2008, placedBlockAmount_>=(100000,"10万"))
+  case object No_2009 extends NormalAuto(2009, placedBlockAmount_>=(50000,"5万"))
+  case object No_2010 extends NormalAuto(2010, placedBlockAmount_>=(10000,"1万"))
+  case object No_2011 extends HiddenAuto(2011, dependsOn(2001,placedBlockAmount_>=(2000000,"200万")))
+  case object No_2012 extends HiddenAuto(2012, dependsOn(2011,placedBlockAmount_>=(3000000,"300万")))
+  case object No_2013 extends HiddenAuto(2013, dependsOn(2012,placedBlockAmount_>=(4000000,"400万")))
+  case object No_2014 extends HiddenAuto(2014, dependsOn(2013,placedBlockAmount_>=(5000000,"500万")))
+
   // 整地量
   case object No_3001 extends HiddenAuto(3001, dependsOn(3002, brokenBlockAmount_>=(2147483646L, "int型の壁")))
   case object No_3002 extends NormalAuto(3002, brokenBlockAmount_>=(1000000000L, "10億"))
