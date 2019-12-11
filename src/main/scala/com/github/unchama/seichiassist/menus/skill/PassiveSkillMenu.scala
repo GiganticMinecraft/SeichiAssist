@@ -5,8 +5,8 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -14,7 +14,7 @@ import com.github.unchama.targetedeffect.player.PlayerEffects._
 import com.github.unchama.targetedeffect.syntax._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
-import org.bukkit.{Bukkit, Material, Sound}
+import org.bukkit.{Material, Sound}
 
 /**
  * パッシブスキル選択メニュー
