@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInven
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.skill.PassiveSkillMenu
-import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu}
+import com.github.unchama.seichiassist.menus.{CommonButtons, RegionMenu, ServerSwitchMenu}
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.external.{ExternalPlugins, WorldGuardWrapper}
@@ -567,8 +567,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f),
-          // TODO メニューに置き換える
-          computedEffect(p => openInventoryEffect(MenuInventoryData.getServerSwitchMenu(p))),
+          ServerSwitchMenu.open
         )
       )
     }

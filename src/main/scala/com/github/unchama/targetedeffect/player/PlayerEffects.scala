@@ -3,6 +3,7 @@ package com.github.unchama.targetedeffect.player
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.concurrent.{BukkitSyncExecutionContext, Execution}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
@@ -18,6 +19,19 @@ object PlayerEffects {
       Execution.onServerMainThread(IO {
         player.openInventory(inventory)
       })
+    }
+
+  def connectToServerEffect(serverIdentifier: String): TargetedEffect[Player] =
+    targetedeffect.delay { player =>
+      IO {
+        import com.google.common.io.ByteStreams
+
+        val byteArrayDataOutput = ByteStreams.newDataOutput()
+        import byteArrayDataOutput._
+        writeUTF("Connect")
+        writeUTF(serverIdentifier)
+        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord", byteArrayDataOutput.toByteArray)
+      }
     }
 
 }
