@@ -34,62 +34,6 @@ class PlayerInventoryListener extends Listener {
   private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
 
-  //サーバー選択メニュー
-  @EventHandler
-  def onPlayerClickServerSwitchMenuEvent(event: InventoryClickEvent): Unit = {
-    //外枠のクリック処理なら終了
-    if (event.getClickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.getCurrentItem
-    val view = event.getView
-    val he = view.getPlayer
-    //インベントリを開けたのがプレイヤーではない時終了
-    if (he.getType != EntityType.PLAYER) {
-      return
-    }
-
-    val topinventory = view.getTopInventory.ifNull {
-      return
-    }
-    //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.row != 2) {
-      return
-    }
-    val player = he.asInstanceOf[Player]
-
-    //インベントリ名が以下の時処理
-    if (topinventory.getTitle == s"$DARK_RED${BOLD}サーバーを選択してください") {
-      event.setCancelled(true)
-
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) return
-
-      val meta = itemstackcurrent.getItemMeta
-
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-      val byteArrayDataOutput = ByteStreams.newDataOutput()
-
-      //ページ変更処理
-      val displayName = meta.getDisplayName
-      val targetServerName =
-        if (displayName.contains("アルカディアサーバー")) "s1"
-        else if (displayName.contains("エデンサーバー")) "s2"
-        else if (displayName.contains("ヴァルハラサーバー")) "s3"
-        else if (displayName.contains("建築サーバー")) "s8"
-        else if (displayName.contains("公共施設サーバー")) "s7"
-        else throw new IllegalStateException("Reached unreachable segment.")
-
-      byteArrayDataOutput.writeUTF("Connect")
-      byteArrayDataOutput.writeUTF(targetServerName)
-      player.sendPluginMessage(SeichiAssist.instance, "BungeeCord", byteArrayDataOutput.toByteArray)
-    }
-  }
-
   //スキルメニューの処理
   @EventHandler
   def onPlayerClickActiveSkillSellectEvent(event: InventoryClickEvent): Unit = {
