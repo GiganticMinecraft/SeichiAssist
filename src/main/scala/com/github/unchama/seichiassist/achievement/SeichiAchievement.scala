@@ -49,8 +49,8 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
 
   // 建築量
   case object No_2001 extends NormalAuto(2001, PlacedBlockAmount_>=(1000000,"100万"))
-  case object No_2002 extends NormalAuto(2002, PlacedBlockAmount_>=(800000,"85万"))
-  case object No_2003 extends NormalAuto(2003, PlacedBlockAmount_>=(650000,"60万"))
+  case object No_2002 extends NormalAuto(2002, PlacedBlockAmount_>=(800000,"80万"))
+  case object No_2003 extends NormalAuto(2003, PlacedBlockAmount_>=(650000,"65万"))
   case object No_2004 extends NormalAuto(2004, PlacedBlockAmount_>=(500000,"50万"))
   case object No_2005 extends NormalAuto(2005, PlacedBlockAmount_>=(400000,"40万"))
   case object No_2006 extends NormalAuto(2006, PlacedBlockAmount_>=(300000,"30万"))
