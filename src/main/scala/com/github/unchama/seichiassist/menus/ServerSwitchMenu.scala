@@ -78,15 +78,15 @@ sealed abstract class Server(val uiLabel: String, val identifier: String,
 case object Server extends Enum[Server] {
   val values: IndexedSeq[Server] = findValues
 
-  case object ARCADIA extends Server(s"${YELLOW}アルカディア", "s1", ChestSlotRef(0, 0), Material.DIAMOND_PICKAXE)
+  case object ARCADIA extends Server(s"$YELLOW${BOLD}アルカディア", "s1", ChestSlotRef(0, 0), Material.DIAMOND_PICKAXE)
 
-  case object EDEN extends Server(s"${YELLOW}エデン", "s2", ChestSlotRef(0, 1), Material.DIAMOND_SPADE)
+  case object EDEN extends Server(s"$YELLOW${BOLD}エデン", "s2", ChestSlotRef(0, 1), Material.DIAMOND_SPADE)
 
-  case object VALHALLA extends Server(s"${YELLOW}ヴァルハラ", "s3", ChestSlotRef(0, 2), Material.DIAMOND_AXE)
+  case object VALHALLA extends Server(s"$YELLOW${BOLD}ヴァルハラ", "s3", ChestSlotRef(0, 2), Material.DIAMOND_AXE)
 
-  case object ARCHITECTURE extends Server(s"${GREEN}建築", "s8", ChestSlotRef(0, 7), Material.BRICK)
+  case object ARCHITECTURE extends Server(s"$GREEN${BOLD}建築", "s8", ChestSlotRef(0, 7), Material.BRICK)
 
-  case object PUBLIC extends Server(s"${GREEN}公共施設", "s7", ChestSlotRef(0, 8), Material.DIAMOND)
+  case object PUBLIC extends Server(s"$GREEN${BOLD}公共施設", "s7", ChestSlotRef(0, 8), Material.DIAMOND)
 
 }
 
