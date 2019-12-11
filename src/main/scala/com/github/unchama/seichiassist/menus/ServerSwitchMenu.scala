@@ -76,17 +76,12 @@ object ServerSwitchMenu extends Menu {
     MenuSlotLayout(layoutMap)
   }
 
+  val buttonLayout: MenuSlotLayout =
+    MenuSlotLayout(ChestSlotRef(1, 0) -> CommonButtons.openStickMenu)
+      .merge(serverButtonLayout)
+
   /**
    * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
-    import eu.timepit.refined.auto._
-
-    IO {
-      MenuSlotLayout(
-        ChestSlotRef(1, 0) -> CommonButtons.openStickMenu
-      )
-        .merge(serverButtonLayout)
-    }
-  }
+  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = IO.pure(buttonLayout)
 }
