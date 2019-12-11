@@ -18,6 +18,36 @@ import org.bukkit.entity.Player
  */
 object ServerSwitchMenu extends Menu {
 
+  import enumeratum._
+  import eu.timepit.refined.auto._
+
+  /**
+   * UI上のサーバを表すオブジェクト.
+   *
+   * @param uiLabel      UI上で表示される際のサーバ名
+   * @param identifier   /server を使って移動する際に指定するサーバの識別子
+   * @param chestSlotRef UI上でのButtonの表示位置
+   * @param material     UI上でのButtonのMaterial
+   */
+  sealed abstract class Server(val uiLabel: String, val identifier: String,
+                               val chestSlotRef: Int, val material: Material) extends EnumEntry
+
+  case object Server extends Enum[Server] {
+
+    case object ARCADIA extends Server(s"$YELLOW${BOLD}アルカディア", "s1", ChestSlotRef(0, 0), Material.DIAMOND_PICKAXE)
+
+    case object EDEN extends Server(s"$YELLOW${BOLD}エデン", "s2", ChestSlotRef(0, 1), Material.DIAMOND_SPADE)
+
+    case object VALHALLA extends Server(s"$YELLOW${BOLD}ヴァルハラ", "s3", ChestSlotRef(0, 2), Material.DIAMOND_AXE)
+
+    case object ARCHITECTURE extends Server(s"$GREEN${BOLD}建築", "s8", ChestSlotRef(0, 7), Material.BRICK)
+
+    case object PUBLIC extends Server(s"$GREEN${BOLD}公共施設", "s7", ChestSlotRef(0, 8), Material.DIAMOND)
+
+    val values: IndexedSeq[Server] = findValues
+
+  }
+
   import com.github.unchama.menuinventory.syntax._
 
   /**
@@ -60,33 +90,3 @@ object ServerSwitchMenu extends Menu {
     }
   }
 }
-
-import enumeratum._
-import eu.timepit.refined.auto._
-
-/**
- * UI上のサーバを表すオブジェクト.
- *
- * @param uiLabel      UI上で表示される際のサーバ名
- * @param identifier   /server を使って移動する際に指定するサーバの識別子
- * @param chestSlotRef UI上でのButtonの表示位置
- * @param material     UI上でのButtonのMaterial
- */
-sealed abstract class Server(val uiLabel: String, val identifier: String,
-                             val chestSlotRef: Int, val material: Material) extends EnumEntry
-
-case object Server extends Enum[Server] {
-  val values: IndexedSeq[Server] = findValues
-
-  case object ARCADIA extends Server(s"$YELLOW${BOLD}アルカディア", "s1", ChestSlotRef(0, 0), Material.DIAMOND_PICKAXE)
-
-  case object EDEN extends Server(s"$YELLOW${BOLD}エデン", "s2", ChestSlotRef(0, 1), Material.DIAMOND_SPADE)
-
-  case object VALHALLA extends Server(s"$YELLOW${BOLD}ヴァルハラ", "s3", ChestSlotRef(0, 2), Material.DIAMOND_AXE)
-
-  case object ARCHITECTURE extends Server(s"$GREEN${BOLD}建築", "s8", ChestSlotRef(0, 7), Material.BRICK)
-
-  case object PUBLIC extends Server(s"$GREEN${BOLD}公共施設", "s7", ChestSlotRef(0, 8), Material.DIAMOND)
-
-}
-
