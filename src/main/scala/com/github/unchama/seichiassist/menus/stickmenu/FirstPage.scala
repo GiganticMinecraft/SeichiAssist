@@ -567,7 +567,6 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f),
-          // TODO メニューに置き換える
           ServerSwitchMenu.open
         )
       )
