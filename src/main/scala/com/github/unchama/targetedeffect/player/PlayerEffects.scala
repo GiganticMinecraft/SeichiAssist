@@ -21,9 +21,12 @@ object PlayerEffects {
       })
     }
 
-  def connectToServerEffect(serverIdentifier: String): TargetedEffect[Player] =
-    targetedeffect.delay { player =>
-      IO {
+  def connectToServerEffect(serverIdentifier: String)
+                           (implicit context: BukkitSyncExecutionContext): TargetedEffect[Player] =
+    Kleisli { player =>
+      // BungeeCordのサーバ移動はサーバスレッドでなければならない(Spigot 1.12.2)
+      Execution.onServerMainThread(IO {
+
         import com.google.common.io.ByteStreams
 
         val byteArrayDataOutput = ByteStreams.newDataOutput()
@@ -31,7 +34,7 @@ object PlayerEffects {
         writeUTF("Connect")
         writeUTF(serverIdentifier)
         player.sendPluginMessage(SeichiAssist.instance, "BungeeCord", byteArrayDataOutput.toByteArray)
-      }
+      })
     }
 
 }
