@@ -878,6 +878,7 @@ object PlayerData {
   val exclude: Set[Material] = Set(
     Material.GRASS_PATH,
     Material.SOIL, Material.MOB_SPAWNER,
-    Material.CAULDRON, Material.ENDER_CHEST
+    Material.CAULDRON, Material.ENDER_CHEST,
+    Material.ENDER_PORTAL_FRAME,Material.ENDER_PORTAL
   )
 }
