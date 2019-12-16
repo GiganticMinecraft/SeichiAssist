@@ -120,12 +120,10 @@ class EntityListener extends Listener {
         if ((targetBlock.getType ne Material.AIR) && (targetBlock.getType ne Material.BEDROCK))
           if ((targetBlock.getType eq Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(targetBlock))
             if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
-              if (targetBlock.getType eq Material.STATIONARY_LAVA) {
+              if (targetBlock.getType eq Material.STATIONARY_LAVA)
                 lavas.add(targetBlock)
-              } else {
+              else
                 breakBlocks.add(targetBlock)
-                SeichiAssist.managedBlocks.$plus$eq(targetBlock)
-              }
       } else {
         //条件を満たしていない
         //もし壊されるブロックがもともとのブロックと同じ種類だった場合
@@ -140,11 +138,10 @@ class EntityListener extends Listener {
             (targetBlock.getType eq Material.GLOWING_REDSTONE_ORE)) ||
           (targetBlock.getType eq Material.STATIONARY_LAVA))
           if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
-            if (targetBlock.getType eq Material.STATIONARY_LAVA) lavas.add(targetBlock)
-            else {
+            if (targetBlock.getType eq Material.STATIONARY_LAVA)
+              lavas.add(targetBlock)
+            else
               breakBlocks.add(targetBlock)
-              SeichiAssist.managedBlocks.$plus$eq(targetBlock)
-            }
       }
     }
 
@@ -157,36 +154,29 @@ class EntityListener extends Listener {
       breakBlocks.size.toDouble *
         (gravity + 1) *
         ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) / ifallbreaknum
-    if (SeichiAssist.DEBUG) {
-      player.sendMessage(ChatColor.RED + "必要経験値：" + ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum))
-      player.sendMessage(ChatColor.RED + "全ての破壊数：" + ifallbreaknum)
-      player.sendMessage(ChatColor.RED + "実際の破壊数：" + breakBlocks.size)
-      player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナ：" + useMana)
-    }
+
     //減る耐久値の計算
     //１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
     val durability =
       (tool.getDurability +
         BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), breakBlocks.size) +
         BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), 10 * lavas.size)).toShort
+
     //重力値の判定
     if (gravity > 15) {
       player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。")
-      SeichiAssist.managedBlocks.$minus$minus$eq(breakBlocks)
       return
     }
 
     //実際に経験値を減らせるか判定
     if (!mana.has(useMana)) {
       if (SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません")
-      SeichiAssist.managedBlocks.$minus$minus$eq(breakBlocks)
       return
     }
 
     //実際に耐久値を減らせるか判定
     if (tool.getType.getMaxDurability <= durability && !tool.getItemMeta.spigot.isUnbreakable) {
       if (SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません")
-      SeichiAssist.managedBlocks.$minus$minus$eq(breakBlocks)
       return
     }
 
@@ -203,11 +193,15 @@ class EntityListener extends Listener {
     //元ブロックの真ん中の位置
     val centerofblock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
 
+    SeichiAssist.managedBlocks ++= breakBlocks
+
     //選択されたブロックを破壊する処理
     //エフェクトが指定されていないときの処理
-    if (playerdata.activeskilldata.effectnum == 0) breakBlocks.foreach { b =>
-      BreakUtil.breakBlock(player, b, player.getLocation, tool, shouldPlayBreakSound = false)
-      SeichiAssist.managedBlocks.$minus$eq(b)
+    if (playerdata.activeskilldata.effectnum == 0) {
+      breakBlocks.foreach { b =>
+        BreakUtil.breakBlock(player, b, player.getLocation, tool, shouldPlayBreakSound = false)
+      }
+      SeichiAssist.managedBlocks --= breakBlocks
     } else if (playerdata.activeskilldata.effectnum <= 100) {
       //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
       val skilleffect = ActiveSkillEffect.values(playerdata.activeskilldata.effectnum - 1)
