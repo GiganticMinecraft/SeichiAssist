@@ -18,33 +18,25 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener extends Listener {
-  private val playermap = SeichiAssist.playermap
   private val plugin = SeichiAssist.instance
 
   //アクティブスキルの実行
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
   def onPlayerActiveSkillEvent(event: BlockBreakEvent): Unit = {
-    //実行したプレイヤーを取得
     val player = event.getPlayer
-
-    //壊されるブロックを取得
     val block = event.getBlock
 
     //他人の保護がかかっている場合は処理を終了
     if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) return
 
-    //ブロックのタイプを取得
     val material = block.getType
 
-    //UUIDを取得
-    val uuid = player.getUniqueId
-
     //UUIDを基にプレイヤーデータ取得
-    val playerdata = SeichiAssist.playermap.apply(uuid)
+    val playerdata = SeichiAssist.playermap(player.getUniqueId)
 
     //重力値によるキャンセル判定(スキル判定より先に判定させること)
     if (!MaterialSets.gravityMaterials.contains(block.getType) && !MaterialSets.cancelledMaterials.contains(block.getType))
-      if (BreakUtil.getGravity(player, block, false) > 15) {
+      if (BreakUtil.getGravity(player, block, isAssault = false) > 15) {
         player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。")
         event.setCancelled(true)
         return
@@ -52,81 +44,77 @@ class PlayerBlockBreakListener extends Listener {
 
     // 保護と重力値に問題無く、ブロックタイプがmateriallistに登録されていたらMebiusListenerを呼び出す
     if (MaterialSets.materials.contains(material)) MebiusListener.onBlockBreak(event)
+
     //スキル発動条件がそろってなければ終了
     if (!Util.isSkillEnable(player)) return
-    //プレイヤーインベントリを取得
-    val inventory = player.getInventory
+
     //メインハンドとオフハンドを取得
-    val mainhanditem = inventory.getItemInMainHand
-    val offhanditem = inventory.getItemInOffHand
-    //メインハンドにツールがあるか
-    val mainhandtoolflag = MaterialSets.breakMaterials.contains(mainhanditem.getType)
-    //オフハンドにツールがあるか
-    val offhandtoolflag = MaterialSets.breakMaterials.contains(offhanditem.getType)
-    if (!Util.isSkillEnable(player)) return
-    //場合分け
+    val mainhanditem = player.getInventory.getItemInMainHand
 
     //実際に使用するツールを格納する
-    val tool = if (mainhandtoolflag) { //メインハンドの時
-      mainhanditem
-    } else if (offhandtoolflag) { //サブハンドの時
-      return
-    } else { //どちらにももっていない時処理を終了
-      return
-    }
+    val tool = if (MaterialSets.breakMaterials.contains(mainhanditem.getType)) mainhanditem else return
 
     //耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.spigot.isUnbreakable) return
+    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable) return
+
     //スキルで破壊されるブロックの時処理を終了
     if (SeichiAssist.managedBlocks.contains(block)) {
       event.setCancelled(true)
       if (SeichiAssist.DEBUG) player.sendMessage("スキルで使用中のブロックです。")
       return
     }
+
     //ブロックタイプがmateriallistに登録されていなければ処理終了
     if (!MaterialSets.materials.contains(material)) {
       if (SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "破壊対象でない")
       return
     }
+
     //もしサバイバルでなければ処理を終了
     //もしフライ中なら終了
     if ((player.getGameMode ne GameMode.SURVIVAL) || player.isFlying) {
       if (SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "fly中の破壊")
       return
     }
+
     //クールダウンタイム中は処理を終了
     if (!playerdata.activeskilldata.skillcanbreakflag) { //SEを再生
       if (SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "クールタイムの破壊")
       player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1)
       return
     }
+
     //これ以前の終了処理はマナは回復しません
     //追加マナ獲得
     playerdata.activeskilldata.mana.increase(BreakUtil.calcManaDrop(playerdata), player, playerdata.level)
+
     //これ以降の終了処理はマナが回復します
     //アクティブスキルフラグがオフの時処理を終了
-    if (playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0 || playerdata.activeskilldata.skilltype == 0 || playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum) {
+    if (playerdata.activeskilldata.mineflagnum == 0 ||
+      playerdata.activeskilldata.skillnum == 0 ||
+      playerdata.activeskilldata.skilltype == 0 ||
+      playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum) {
       if (SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "スキルオフ時の破壊")
       return
     }
-    if (playerdata.activeskilldata.skilltype == ActiveSkill.MULTI.gettypenum) runMultiSkill(player, block, tool)
-    else if (playerdata.activeskilldata.skilltype == ActiveSkill.BREAK.gettypenum) runBreakSkill(player, block, tool)
+
+    playerdata.activeskilldata.skilltype match {
+      case ActiveSkill.MULTI.gettypenum => runMultiSkill(player, block, tool)
+      case ActiveSkill.BREAK.gettypenum => runBreakSkill(player, block, tool)
+    }
   }
 
   //複数範囲破壊
   private def runMultiSkill(player: Player, block: Block, tool: ItemStack): Unit = {
-    val uuid = player.getUniqueId
     //playerdataを取得
-    val playerdata = playermap.apply(uuid)
-    //レベルを取得
-    //int skilllevel = playerdata.activeskilldata.skillnum;
-    //マナを取得
+    val playerdata = SeichiAssist.playermap(player.getUniqueId)
+
     val mana = playerdata.activeskilldata.mana
+
     //プレイヤーの足のy座標を取得
     val playerlocy = player.getLocation.getBlockY - 1
-    //元ブロックのマテリアルを取得
+
     val material = block.getType
-    //元ブロックの真ん中の位置を取得
     val centerofblock = block.getLocation.add(0.5, 0.5, 0.5)
 
     val area = playerdata.activeskilldata.area
@@ -172,10 +160,12 @@ class PlayerBlockBreakListener extends Listener {
 
         val start = startList(i)
         val end = endList(i)
+        import ManagedWorld._
         import com.github.unchama.seichiassist.data.syntax._
         AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
           val targetBlock = block.getRelative(x, y, z)
-          if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel && playerdata.settings.multipleidbreakflag) {
+          if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
+            (player.getWorld.isSeichi || playerdata.settings.multipleidbreakflag)) {
             if ((targetBlock.getType ne Material.AIR) && (targetBlock.getType ne Material.BEDROCK))
               if ((targetBlock.getType eq Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(targetBlock))
                 if (playerlocy < targetBlock.getLocation.getBlockY || player.isSneaking || targetBlock == block)
@@ -264,8 +254,7 @@ class PlayerBlockBreakListener extends Listener {
 
   //範囲破壊実行処理
   private def runBreakSkill(player: Player, block: Block, tool: ItemStack): Unit = {
-    val uuid = player.getUniqueId
-    val playerdata = playermap.apply(uuid)
+    val playerdata = SeichiAssist.playermap(player.getUniqueId)
     val mana = playerdata.activeskilldata.mana
     val playerlocy = player.getLocation.getBlockY - 1
     val material = block.getType
@@ -285,12 +274,13 @@ class PlayerBlockBreakListener extends Listener {
     val lavas = new mutable.HashSet[Block]
 
     //範囲内の破壊されるブロックを取得
+    import ManagedWorld._
     import com.github.unchama.seichiassist.data.syntax._
     AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
       val breakblock = block.getRelative(x, y, z)
 
       if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-        (Util.isSeichiWorld(player) || playerdata.settings.multipleidbreakflag)) {
+        (player.getWorld.isSeichi || playerdata.settings.multipleidbreakflag)) {
         if ((breakblock.getType ne Material.AIR) && (breakblock.getType ne Material.BEDROCK))
           if ((breakblock.getType eq Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock))
             if (playerlocy < breakblock.getLocation.getBlockY || player.isSneaking || breakblock == block)
@@ -316,12 +306,12 @@ class PlayerBlockBreakListener extends Listener {
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
 
     //減るマナ計算
-    val breaklength = area.getBreakLength
-    val ifallbreaknum = breaklength.x * breaklength.y * breaklength.z
+    val breakLength = area.getBreakLength
+    val totalBreakRangeVolume = breakLength.x * breakLength.y * breakLength.z
     val useMana =
       (breakBlocks.size + 1).toDouble *
         (gravity + 1) *
-        ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) / ifallbreaknum
+        ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) / totalBreakRangeVolume
 
     val durability =
       tool.getDurability +
@@ -376,7 +366,7 @@ class PlayerBlockBreakListener extends Listener {
       // 耐久値を減らす
       if (!tool.getItemMeta.isUnbreakable) tool.setDurability(durability.toShort)
 
-      val coolDownTime = ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breakBlocks.size / ifallbreaknum
+      val coolDownTime = ActiveSkill.BREAK.getCoolDown(playerdata.activeskilldata.skillnum) * breakBlocks.size / totalBreakRangeVolume
       if (coolDownTime >= 5) new CoolDownTask(player, false, true, false).runTaskLater(plugin, coolDownTime)
     }
   }

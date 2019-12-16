@@ -112,11 +112,12 @@ class EntityListener extends Listener {
     val breakBlocks = new mutable.HashSet[Block]
     val lavas = new mutable.HashSet[Block]
 
+    import ManagedWorld._
     import com.github.unchama.seichiassist.data.syntax._
     AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
       val targetBlock = hitBlock.getRelative(x, y, z)
-      if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel && playerdata.settings.multipleidbreakflag) {
-        //追加テスト(複数種類一括破壊スキル)
+      if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
+        (player.getWorld.isSeichi || playerdata.settings.multipleidbreakflag)) {
         if ((targetBlock.getType ne Material.AIR) && (targetBlock.getType ne Material.BEDROCK))
           if ((targetBlock.getType eq Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(targetBlock))
             if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
@@ -124,25 +125,17 @@ class EntityListener extends Listener {
                 lavas.add(targetBlock)
               else
                 breakBlocks.add(targetBlock)
-      } else {
-        //条件を満たしていない
-        //もし壊されるブロックがもともとのブロックと同じ種類だった場合
-        if ((targetBlock.getType eq material) ||
-          ((hitBlock.getType eq Material.DIRT) &&
-            (targetBlock.getType eq Material.GRASS)) ||
-          ((hitBlock.getType eq Material.GRASS) &&
-            (targetBlock.getType eq Material.DIRT)) ||
-          ((hitBlock.getType eq Material.GLOWING_REDSTONE_ORE) &&
-            (targetBlock.getType eq Material.REDSTONE_ORE)) ||
-          ((hitBlock.getType eq Material.REDSTONE_ORE) &&
-            (targetBlock.getType eq Material.GLOWING_REDSTONE_ORE)) ||
+      } else if ((targetBlock.getType eq material) ||
+          ((hitBlock.getType eq Material.DIRT) && (targetBlock.getType eq Material.GRASS)) ||
+          ((hitBlock.getType eq Material.GRASS) && (targetBlock.getType eq Material.DIRT)) ||
+          ((hitBlock.getType eq Material.GLOWING_REDSTONE_ORE) && (targetBlock.getType eq Material.REDSTONE_ORE)) ||
+          ((hitBlock.getType eq Material.REDSTONE_ORE) && (targetBlock.getType eq Material.GLOWING_REDSTONE_ORE)) ||
           (targetBlock.getType eq Material.STATIONARY_LAVA))
           if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
             if (targetBlock.getType eq Material.STATIONARY_LAVA)
               lavas.add(targetBlock)
             else
               breakBlocks.add(targetBlock)
-      }
     }
 
     //重力値計算
