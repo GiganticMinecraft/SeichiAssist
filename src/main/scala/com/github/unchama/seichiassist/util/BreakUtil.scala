@@ -237,9 +237,7 @@ object BreakUtil {
 
     blockMaterial match {
       case Material.GRASS_PATH | Material.SOIL => return Some(new ItemStack(Material.DIRT))
-      case Material.MOB_SPAWNER  => return None
-      case Material.ENDER_PORTAL_FRAME => return None
-      case Material.ENDER_PORTAL => return None
+      case Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME | Material.ENDER_PORTAL => return None
       case _ =>
     }
 
