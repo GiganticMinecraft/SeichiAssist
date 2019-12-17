@@ -24,15 +24,15 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
-                     breakList: Set[Block],
+                     breakBlocks: Set[Block],
                      start: XYZTuple,
                      end: XYZTuple,
                      standard: Location): Unit = {
     this match {
       case ActiveSkillPremiumEffect.MAGIC => if (SeichiAssist.DEBUG) {
-        new MagicTask(player, tool, breakList, start, end, standard).runTaskTimer(SeichiAssist.instance, 0, 100)
+        new MagicTask(player, tool, breakBlocks, start, end, standard).runTaskTimer(SeichiAssist.instance, 0, 100)
       } else {
-        new MagicTask(player, tool, breakList, start, end, standard).runTaskTimer(SeichiAssist.instance, 0, 10)
+        new MagicTask(player, tool, breakBlocks, start, end, standard).runTaskTimer(SeichiAssist.instance, 0, 10)
       }
     }
   }

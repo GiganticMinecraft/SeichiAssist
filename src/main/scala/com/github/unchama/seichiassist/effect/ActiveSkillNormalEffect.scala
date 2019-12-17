@@ -21,19 +21,19 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
                                               val material: Material) extends EnumEntry with ActiveSkillEffect {
 
   override def runBreakEffect(player: Player,
-                     skillData: ActiveSkillData,
-                     tool: ItemStack,
-                     breakList: Set[Block],
-                     start: XYZTuple,
-                     end: XYZTuple,
-                     standard: Location): Unit = {
+                              skillData: ActiveSkillData,
+                              tool: ItemStack,
+                              breakBlocks: Set[Block],
+                              start: XYZTuple,
+                              end: XYZTuple,
+                              standard: Location): Unit = {
     val plugin = SeichiAssist.instance
     val skillId = skillData.skillnum
 
     this match {
-      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakList, start, end, standard).runTask(plugin)
+      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakBlocks, start, end, standard).runTask(plugin)
       case Blizzard =>
-        val effect = new BlizzardTask(player, skillData, tool, breakList, standard)
+        val effect = new BlizzardTask(player, skillData, tool, breakBlocks, standard)
 
         if (skillId < 3) {
           effect.runTaskLater(plugin, 1)
@@ -44,7 +44,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
       case Meteo =>
         val delay = if (skillId < 3) 1L else 10L
 
-        new MeteoTask(player, skillData, tool, breakList, start, end, standard).runTaskLater(plugin, delay)
+        new MeteoTask(player, skillData, tool, breakBlocks, start, end, standard).runTaskLater(plugin, delay)
     }
   }
 
