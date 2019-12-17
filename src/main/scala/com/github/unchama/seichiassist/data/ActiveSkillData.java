@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.MaterialSets;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.effect.ActiveSkillNormalEffect;
+import com.github.unchama.seichiassist.effect.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.task.AssaultTask;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
@@ -49,7 +53,7 @@ public class ActiveSkillData {
     //アサルトスキルのフラグ
     public boolean assaultflag;
     //エフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
-    public HashSet<ActiveSkillEffect> obtainedSkillEffects = new HashSet<>();
+    public HashSet<ActiveSkillNormalEffect> obtainedSkillEffects = new HashSet<>();
     //スペシャルエフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
     public HashSet<ActiveSkillPremiumEffect> obtainedSkillPremiumEffects = new HashSet<>();
     //スペシャルエフェクトを使用するフラグ

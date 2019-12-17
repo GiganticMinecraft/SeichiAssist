@@ -8,9 +8,10 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
+import com.github.unchama.seichiassist.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.BukkitSerialization
-import com.github.unchama.seichiassist.{ActiveSkillEffect, ActiveSkillPremiumEffect, MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.ChatColor._
 import org.bukkit.{Bukkit, Location}
@@ -147,7 +148,7 @@ object PlayerDataLoading {
       stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
         val effectName = resultSet.getString("effect_name")
 
-        val effect = ActiveSkillEffect.fromSqlName(effectName).get
+        val effect = ActiveSkillNormalEffect.fromSqlName(effectName).get
         playerData.activeskilldata.obtainedSkillEffects.add(effect)
       }
     }

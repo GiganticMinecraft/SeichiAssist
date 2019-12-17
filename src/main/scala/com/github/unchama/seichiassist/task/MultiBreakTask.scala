@@ -1,8 +1,9 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.XYZTuple
+import com.github.unchama.seichiassist.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.util.BreakUtil
-import com.github.unchama.seichiassist.{ActiveSkillEffect, ActiveSkillPremiumEffect, SeichiAssist}
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -66,7 +67,7 @@ class MultiBreakTask(var player: Player,
       } else {
         if (playerdata.activeskilldata.effectnum <= 100) {
           //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-          val skilleffect = ActiveSkillEffect.values
+          val skilleffect = ActiveSkillNormalEffect.values
           skilleffect
             .apply(playerdata.activeskilldata.effectnum - 1)
             .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, startPoint, endPoint, droploc)

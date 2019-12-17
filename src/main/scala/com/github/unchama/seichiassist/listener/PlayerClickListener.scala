@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
+import com.github.unchama.seichiassist.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -95,7 +96,7 @@ class PlayerClickListener extends Listener {
             ArrowEffects.normalArrowEffect
           } else if (playerdata.activeskilldata.effectnum <= 100) {
             // 通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-            val skilleffect = ActiveSkillEffect.values
+            val skilleffect = ActiveSkillNormalEffect.values
             skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect(player)
           } else {
             // スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）

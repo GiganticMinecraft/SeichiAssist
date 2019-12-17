@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.task.{CoolDownTask, MultiBreakTask}
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -352,7 +353,7 @@ class PlayerBlockBreakListener extends Listener {
         SeichiAssist.managedBlocks --= breakBlocks
       } else if (playerdata.activeskilldata.effectnum <= 100) {
         //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-        val skilleffect = ActiveSkillEffect.values(playerdata.activeskilldata.effectnum - 1)
+        val skilleffect = ActiveSkillNormalEffect.values(playerdata.activeskilldata.effectnum - 1)
         skilleffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
       } else if (playerdata.activeskilldata.effectnum > 100) {
         //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
