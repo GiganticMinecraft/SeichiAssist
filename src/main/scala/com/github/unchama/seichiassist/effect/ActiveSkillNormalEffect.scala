@@ -11,7 +11,6 @@ import org.bukkit.ChatColor._
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Location, Material}
 
 sealed abstract class ActiveSkillNormalEffect(val num: Int,
@@ -19,15 +18,15 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
                                               val nameOnUI: String,
                                               val explanation: String,
                                               val usePoint: Int,
-                                              val material: Material) extends EnumEntry {
+                                              val material: Material) extends EnumEntry with ActiveSkillEffect {
 
-  def runBreakEffect(player: Player,
+  override def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
                      breakList: Set[Block],
                      start: XYZTuple,
                      end: XYZTuple,
-                     standard: Location): BukkitTask = {
+                     standard: Location): Unit = {
     val plugin = SeichiAssist.instance
     val skillId = skillData.skillnum
 

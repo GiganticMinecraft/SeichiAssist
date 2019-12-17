@@ -358,7 +358,7 @@ class PlayerBlockBreakListener extends Listener {
       } else if (playerdata.activeskilldata.effectnum > 100) {
         //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
         val premiumeffect = ActiveSkillPremiumEffect.values(playerdata.activeskilldata.effectnum - 1 - 100)
-        premiumeffect.runBreakEffect(player, tool, breakBlocks.toSet, start, end, centerofblock)
+        premiumeffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
       }
 
       // 経験値を減らす

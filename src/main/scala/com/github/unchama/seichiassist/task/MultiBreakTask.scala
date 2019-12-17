@@ -64,23 +64,16 @@ class MultiBreakTask(var player: Player,
           BreakUtil.massBreakBlock(player, breakBlocks, droploc, tool, shouldPlayBreakSound = false, Material.AIR)
         )
         SeichiAssist.managedBlocks --= breakBlocks
-      } else {
-        if (playerdata.activeskilldata.effectnum <= 100) {
-          //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-          val skilleffect = ActiveSkillNormalEffect.values
-          skilleffect
-            .apply(playerdata.activeskilldata.effectnum - 1)
-            .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, startPoint, endPoint, droploc)
-        } else {
-          //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-          if (playerdata.activeskilldata.effectnum > 100) {
-            val premiumeffect = ActiveSkillPremiumEffect.values
-            premiumeffect
-              .apply(playerdata.activeskilldata.effectnum - 1 - 100)
-              .runBreakEffect(player, tool, breakBlocks, startPoint, endPoint, droploc)
-          }
-        }
+      } else if (playerdata.activeskilldata.effectnum <= 100) {
+        //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
+        val skilleffect = ActiveSkillNormalEffect.values(playerdata.activeskilldata.effectnum - 1)
+        skilleffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, startPoint, endPoint, droploc)
+      } else if (playerdata.activeskilldata.effectnum > 100) {
+        //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
+        val premiumeffect = ActiveSkillPremiumEffect.values(playerdata.activeskilldata.effectnum - 1 - 100)
+        premiumeffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, startPoint, endPoint, droploc)
       }
+
       count += 1
     } else
       cancel()
