@@ -99,8 +99,8 @@ class PlayerBlockBreakListener extends Listener {
     }
 
     playerdata.activeskilldata.skilltype match {
-      case ActiveSkill.MULTI.gettypenum => runMultiSkill(player, block, tool)
-      case ActiveSkill.BREAK.gettypenum => runBreakSkill(player, block, tool)
+      case ActiveSkill.MULTI.typenum => runMultiSkill(player, block, tool)
+      case ActiveSkill.BREAK.typenum => runBreakSkill(player, block, tool)
     }
   }
 

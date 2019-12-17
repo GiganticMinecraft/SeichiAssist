@@ -13,7 +13,7 @@ public enum ActiveSkill {
     ARMOR(6, "", "", "", "", "", "", "", "", "", "アサルト・アーマー"),
     FLUIDCONDENSE(7, "", "", "", "", "", "", "", "", "", "ヴェンダー・ブリザード"),
     ;
-    private int typenum;
+    public final int typenum;
     private String lv1name;
     private String lv2name;
     private String lv3name;
@@ -207,7 +207,7 @@ public enum ActiveSkill {
         return exp;
     }
 
-    public int gettypenum() {
+    @Deprecated public int gettypenum() {
         return this.typenum;
     }
 
