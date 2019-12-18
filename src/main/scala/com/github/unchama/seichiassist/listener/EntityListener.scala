@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
-import com.github.unchama.seichiassist.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
+import com.github.unchama.seichiassist.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -189,22 +189,9 @@ class EntityListener extends Listener {
 
     SeichiAssist.managedBlocks ++= breakBlocks
 
-    //選択されたブロックを破壊する処理
-    //エフェクトが指定されていないときの処理
-    if (playerdata.activeskilldata.effectnum == 0) {
-      breakBlocks.foreach { b =>
-        BreakUtil.breakBlock(player, b, player.getLocation, tool, shouldPlayBreakSound = false)
-      }
-      SeichiAssist.managedBlocks --= breakBlocks
-    } else if (playerdata.activeskilldata.effectnum <= 100) {
-      //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-      val skilleffect = ActiveSkillNormalEffect.values(playerdata.activeskilldata.effectnum - 1)
-      skilleffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
-    } else if (playerdata.activeskilldata.effectnum > 100) {
-      //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-      val premiumeffect = ActiveSkillPremiumEffect.values(playerdata.activeskilldata.effectnum - 1 - 100)
-      premiumeffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
-    }
+    ActiveSkillEffect
+      .fromEffectNum(playerdata.activeskilldata.effectnum)
+      .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
   }
 
   @EventHandler def onEntityExplodeEvent(event: EntityExplodeEvent) = {

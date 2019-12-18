@@ -2,8 +2,7 @@ package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.XYZTuple
-import com.github.unchama.seichiassist.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
-import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.seichiassist.effect.ActiveSkillEffect
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -57,22 +56,9 @@ class MultiBreakTask(var player: Player,
       val startPoint = startlist(count)
       val endPoint = endlist(count)
 
-      //エフェクトが選択されていない時の通常処理
-      if (playerdata.activeskilldata.effectnum == 0) {
-        com.github.unchama.seichiassist.unsafe.runIOAsync(
-          "ブロックを大量破壊する",
-          BreakUtil.massBreakBlock(player, breakBlocks, droploc, tool, shouldPlayBreakSound = false, Material.AIR)
-        )
-        SeichiAssist.managedBlocks --= breakBlocks
-      } else if (playerdata.activeskilldata.effectnum <= 100) {
-        //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-        val skilleffect = ActiveSkillNormalEffect.values(playerdata.activeskilldata.effectnum - 1)
-        skilleffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, startPoint, endPoint, droploc)
-      } else if (playerdata.activeskilldata.effectnum > 100) {
-        //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-        val premiumeffect = ActiveSkillPremiumEffect.values(playerdata.activeskilldata.effectnum - 1 - 100)
-        premiumeffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, startPoint, endPoint, droploc)
-      }
+      ActiveSkillEffect
+        .fromEffectNum(playerdata.activeskilldata.effectnum)
+        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, startPoint, endPoint, droploc)
 
       count += 1
     } else

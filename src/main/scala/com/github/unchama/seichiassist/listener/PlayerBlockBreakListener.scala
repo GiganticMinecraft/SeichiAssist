@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
-import com.github.unchama.seichiassist.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
+import com.github.unchama.seichiassist.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.task.{CoolDownTask, MultiBreakTask}
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -347,19 +347,9 @@ class PlayerBlockBreakListener extends Listener {
     } else {
       SeichiAssist.managedBlocks ++= breakBlocks
 
-      if (playerdata.activeskilldata.effectnum == 0) {
-        //エフェクトが指定されていないときの処理}
-        breakBlocks.foreach { b => BreakUtil.breakBlock(player, b, centerofblock, tool, shouldPlayBreakSound = false) }
-        SeichiAssist.managedBlocks --= breakBlocks
-      } else if (playerdata.activeskilldata.effectnum <= 100) {
-        //通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-        val skilleffect = ActiveSkillNormalEffect.values(playerdata.activeskilldata.effectnum - 1)
-        skilleffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
-      } else if (playerdata.activeskilldata.effectnum > 100) {
-        //スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-        val premiumeffect = ActiveSkillPremiumEffect.values(playerdata.activeskilldata.effectnum - 1 - 100)
-        premiumeffect.runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
-      }
+      ActiveSkillEffect
+        .fromEffectNum(playerdata.activeskilldata.effectnum)
+        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
 
       // 経験値を減らす
       mana.decrease(useMana, player, playerdata.level)
