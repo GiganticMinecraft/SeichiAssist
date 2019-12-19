@@ -1,8 +1,9 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
+import com.github.unchama.seichiassist.data.AxisAlignedCuboid
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -13,8 +14,6 @@ import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
-
-import scala.collection.mutable
 
 class EntityListener extends Listener {
   private val playermap = SeichiAssist.playermap
@@ -73,23 +72,20 @@ class EntityListener extends Listener {
       return
     }
 
-    runArrowSkillofHitBlock(player, proj, block, tool)
+    runArrowSkillofHitBlock(player, block, tool)
 
     SeichiAssist.managedEntities.$minus$eq(proj)
     proj.remove()
   }
 
-  private def runArrowSkillofHitBlock(player: Player, proj: Projectile, hitBlock: Block, tool: ItemStack): Unit = {
+  private def runArrowSkillofHitBlock(player: Player, hitBlock: Block, tool: ItemStack): Unit = {
     val uuid = player.getUniqueId
-    val playerdata = playermap.apply(uuid)
+    val playerData = playermap.apply(uuid)
 
     //マナを取得
-    val mana = playerdata.activeskilldata.mana
+    val mana = playerData.activeskilldata.mana
 
-    //元ブロックのマテリアルを取得
-    val material = hitBlock.getType
-
-    val area = playerdata.activeskilldata.area
+    val area = playerData.activeskilldata.area
 
     //現在のプレイヤーの向いている方向
     val dir = BreakUtil.getCardinalDirection(player)
@@ -110,34 +106,26 @@ class EntityListener extends Listener {
     //１回の全て破壊したときのブロック数
     val ifallbreaknum = breaklength.x * breaklength.y * breaklength.z
 
-    val breakBlocks = new mutable.HashSet[Block]
-    val lavas = new mutable.HashSet[Block]
+    val isMultiTypeBreakingSkillEnabled = {
+      val playerData = SeichiAssist.playermap(playerData)
 
-    import ManagedWorld._
-    import com.github.unchama.seichiassist.data.syntax._
-    AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
-      val targetBlock = hitBlock.getRelative(x, y, z)
-      if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-        (player.getWorld.isSeichi || playerdata.settings.multipleidbreakflag)) {
-        if ((targetBlock.getType ne Material.AIR) && (targetBlock.getType ne Material.BEDROCK))
-          if ((targetBlock.getType eq Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(targetBlock))
-            if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
-              if (targetBlock.getType eq Material.STATIONARY_LAVA)
-                lavas.add(targetBlock)
-              else
-                breakBlocks.add(targetBlock)
-      } else if ((targetBlock.getType eq material) ||
-          ((hitBlock.getType eq Material.DIRT) && (targetBlock.getType eq Material.GRASS)) ||
-          ((hitBlock.getType eq Material.GRASS) && (targetBlock.getType eq Material.DIRT)) ||
-          ((hitBlock.getType eq Material.GLOWING_REDSTONE_ORE) && (targetBlock.getType eq Material.REDSTONE_ORE)) ||
-          ((hitBlock.getType eq Material.REDSTONE_ORE) && (targetBlock.getType eq Material.GLOWING_REDSTONE_ORE)) ||
-          (targetBlock.getType eq Material.STATIONARY_LAVA))
-          if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
-            if (targetBlock.getType eq Material.STATIONARY_LAVA)
-              lavas.add(targetBlock)
-            else
-              breakBlocks.add(targetBlock)
+      import ManagedWorld._
+      playerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
+        (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
     }
+
+    import com.github.unchama.seichiassist.data.syntax._
+
+    val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
+      BlockSearching
+        .searchForBreakableBlocks(player, AxisAlignedCuboid(start, end).gridPoints(), hitBlock)
+        .unsafeRunSync()
+        .mapSolids(
+          if (isMultiTypeBreakingSkillEnabled)
+            identity
+          else
+            _.filter(BlockSearching.multiTypeBreakingFilterPredicate(hitBlock))
+        )
 
     //重力値計算
     val gravity = BreakUtil.getGravity(player, hitBlock, isAssault = false)
@@ -147,14 +135,14 @@ class EntityListener extends Listener {
     val useMana =
       breakBlocks.size.toDouble *
         (gravity + 1) *
-        ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) / ifallbreaknum
+        ActiveSkill.getActiveSkillUseExp(playerData.activeskilldata.skilltype, playerData.activeskilldata.skillnum) / ifallbreaknum
 
     //減る耐久値の計算
     //１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
     val durability =
       (tool.getDurability +
         BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), breakBlocks.size) +
-        BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), 10 * lavas.size)).toShort
+        BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), 10 * lavaBlocks.size)).toShort
 
     //重力値の判定
     if (gravity > 15) {
@@ -175,23 +163,23 @@ class EntityListener extends Listener {
     }
 
     //経験値を減らす
-    mana.decrease(useMana, player, playerdata.level)
+    mana.decrease(useMana, player, playerData.level)
 
     //耐久値を減らす
     if (!tool.getItemMeta.spigot.isUnbreakable) tool.setDurability(durability)
 
     //以降破壊する処理
     //溶岩を破壊する処理
-    lavas.foreach(_.setType(Material.AIR))
+    lavaBlocks.foreach(_.setType(Material.AIR))
 
     //元ブロックの真ん中の位置
-    val centerofblock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
+    val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
 
     SeichiAssist.managedBlocks ++= breakBlocks
 
     ActiveSkillEffect
-      .fromEffectNum(playerdata.activeskilldata.effectnum)
-      .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
+      .fromEffectNum(playerData.activeskilldata.effectnum)
+      .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, start, end, centerOfBlock)
   }
 
   @EventHandler def onEntityExplodeEvent(event: EntityExplodeEvent) = {
