@@ -4,7 +4,6 @@ import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.concurrent.BukkitSyncExecutionContext
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.activeskill.effect.FixedMetadataValues
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.entity._
 import org.bukkit.inventory.ItemStack

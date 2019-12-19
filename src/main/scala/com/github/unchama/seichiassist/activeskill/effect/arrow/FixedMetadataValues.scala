@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.activeskill.effect
+package com.github.unchama.seichiassist.activeskill.effect.arrow
 
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.metadata.FixedMetadataValue
