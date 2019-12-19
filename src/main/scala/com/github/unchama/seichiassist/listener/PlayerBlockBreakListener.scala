@@ -152,7 +152,7 @@ class PlayerBlockBreakListener extends Listener {
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
 
     val isMultiTypeBreakingSkillEnabled = {
-      val playerData = SeichiAssist.playermap(playerData)
+      val playerData = SeichiAssist.playermap(player.getUniqueId)
 
       import ManagedWorld._
       playerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
@@ -266,7 +266,7 @@ class PlayerBlockBreakListener extends Listener {
 
     import com.github.unchama.seichiassist.data.syntax._
     val isMultiTypeBreakingSkillEnabled = {
-      val playerData = SeichiAssist.playermap(playerData)
+      val playerData = SeichiAssist.playermap(player.getUniqueId)
 
       import ManagedWorld._
       playerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&

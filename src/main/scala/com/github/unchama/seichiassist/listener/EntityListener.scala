@@ -107,7 +107,7 @@ class EntityListener extends Listener {
     val ifallbreaknum = breaklength.x * breaklength.y * breaklength.z
 
     val isMultiTypeBreakingSkillEnabled = {
-      val playerData = SeichiAssist.playermap(playerData)
+      val playerData = SeichiAssist.playermap(player.getUniqueId)
 
       import ManagedWorld._
       playerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
