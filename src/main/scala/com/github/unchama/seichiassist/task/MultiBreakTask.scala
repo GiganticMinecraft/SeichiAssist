@@ -47,10 +47,7 @@ class MultiBreakTask(var player: Player,
     if (count < breaknum) {
       if (SeichiAssist.DEBUG) player.sendMessage("" + count)
 
-      //溶岩の破壊する処理
-      (0 until multilavalist(count).size).foreach { lavanum =>
-        multilavalist(count)(lavanum).setType(Material.AIR)
-      }
+      multilavalist(count).foreach(_.setType(Material.AIR))
 
       val breakBlocks = multibreaklist(count).toSet
       val startPoint = startlist(count)
