@@ -723,8 +723,6 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-          // TODO メニューに置き換える
-          //computedEffect(p => openInventoryEffect(MenuInventoryData.getHomeMenuData(p)))
           HomeMenu.open
         )
       )
