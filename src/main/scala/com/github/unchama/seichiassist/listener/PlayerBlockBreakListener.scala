@@ -1,8 +1,9 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
+import com.github.unchama.seichiassist.data.AxisAlignedCuboid
 import com.github.unchama.seichiassist.task.{CoolDownTask, MultiBreakTask}
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -14,7 +15,6 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
 
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
@@ -113,10 +113,9 @@ class PlayerBlockBreakListener extends Listener {
     val mana = playerdata.activeskilldata.mana
 
     //プレイヤーの足のy座標を取得
-    val playerlocy = player.getLocation.getBlockY - 1
+    val playerLocY = player.getLocation.getBlockY - 1
 
-    val material = block.getType
-    val centerofblock = block.getLocation.add(0.5, 0.5, 0.5)
+    val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
 
     val area = playerdata.activeskilldata.area
     //現在のプレイヤーの向いている方向
@@ -133,9 +132,9 @@ class PlayerBlockBreakListener extends Listener {
     val endList = area.getEndList.asScala.toList
 
     //エフェクト用に壊されるブロック全てのリストデータ
-    val multiBreakList = new ArrayBuffer[ArrayBuffer[Block]]
+    val multiBreakList = new ArrayBuffer[List[Block]]
     //壊される溶岩の全てのリストデータ
-    val multiLavaList = new ArrayBuffer[ArrayBuffer[Block]]
+    val multiLavaList = new ArrayBuffer[List[Block]]
 
     // 繰り返す回数
     val breakNum = area.getBreakNum
@@ -152,55 +151,50 @@ class PlayerBlockBreakListener extends Listener {
     // 重力値計算
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
 
+    val isMultiTypeBreakingSkillEnabled = {
+      val playerData = SeichiAssist.playermap(playerData)
+
+      import ManagedWorld._
+      playerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
+        (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
+    }
+
     //繰り返し回数だけ繰り返す
     val b = new Breaks
     b.breakable {
       (0 until breakNum).foreach { i =>
-        val breakBlockList = new ArrayBuffer[Block]
-        val lavaList = new ArrayBuffer[Block]
+        import com.github.unchama.seichiassist.data.syntax._
 
         val start = startList(i)
         val end = endList(i)
-        import ManagedWorld._
-        import com.github.unchama.seichiassist.data.syntax._
-        AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
-          val targetBlock = block.getRelative(x, y, z)
-          if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-            (player.getWorld.isSeichi || playerdata.settings.multipleidbreakflag)) {
-            if ((targetBlock.getType ne Material.AIR) && (targetBlock.getType ne Material.BEDROCK))
-              if ((targetBlock.getType eq Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(targetBlock))
-                if (playerlocy < targetBlock.getLocation.getBlockY || player.isSneaking || targetBlock == block)
-                  if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
-                    if (targetBlock.getType eq Material.STATIONARY_LAVA)
-                      lavaList.addOne(targetBlock)
-                    else
-                      breakBlockList.addOne(targetBlock)
-          } else if ((targetBlock.getType eq material) ||
-            ((block.getType eq Material.DIRT) && (targetBlock.getType eq Material.GRASS)) ||
-            ((block.getType eq Material.GRASS) && (targetBlock.getType eq Material.DIRT)) ||
-            ((block.getType eq Material.GLOWING_REDSTONE_ORE) && (targetBlock.getType eq Material.REDSTONE_ORE)) ||
-            ((block.getType eq Material.REDSTONE_ORE) && (targetBlock.getType eq Material.GLOWING_REDSTONE_ORE)) ||
-            (targetBlock.getType eq Material.STATIONARY_LAVA))
-            if (playerlocy < targetBlock.getLocation.getBlockY || player.isSneaking || targetBlock == block)
-              if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
-                if (targetBlock.getType eq Material.STATIONARY_LAVA)
-                  lavaList.addOne(targetBlock)
-                else
-                  breakBlockList.addOne(targetBlock)
-        }
+        val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
+          BlockSearching
+            .searchForBreakableBlocks(player, AxisAlignedCuboid(start, end).gridPoints(), block)
+            .unsafeRunSync()
+            .mapSolids(
+              if (isMultiTypeBreakingSkillEnabled) identity
+              else _.filter(BlockSearching.multiTypeBreakingFilterPredicate(block))
+            )
+            .mapAll(
+              if (player.isSneaking) identity
+              else
+                _.filter { targetBlock =>
+                  targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
+                }
+            )
 
         //減る経験値計算
         //実際に破壊するブロック数  * 全てのブロックを破壊したときの消費経験値÷すべての破壊するブロック数 * 重力
         manaConsumption +=
-          (breakBlockList.size + 1).toDouble *
+          (breakBlocks.size + 1).toDouble *
             (gravity + 1) *
             ActiveSkill.getActiveSkillUseExp(playerdata.activeskilldata.skilltype, playerdata.activeskilldata.skillnum) / totalBreakRangeVolume
 
         //減る耐久値の計算
-        toolDamageToSet += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), breakBlockList.size)
+        toolDamageToSet += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), breakBlocks.size)
 
         //１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
-        toolDamageToSet += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), 10 * lavaList.size)
+        toolDamageToSet += BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), 10 * lavaBlocks.size)
 
         //重力値の判定
         if (gravity > 15) {
@@ -221,14 +215,14 @@ class PlayerBlockBreakListener extends Listener {
         }
 
         //選択されたブロックを破壊せずに保存する処理
-        multiBreakList.addOne(breakBlockList)
-        multiLavaList.addOne(lavaList)
+        multiBreakList.addOne(breakBlocks)
+        multiLavaList.addOne(lavaBlocks)
       }
     }
 
     if (multiBreakList.size == 1) {
       // 破壊するブロックがプレーヤーが最初に破壊を試みたブロックだけの場合
-      BreakUtil.breakBlock(player, block, centerofblock, tool, shouldPlayBreakSound = true)
+      BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
     } else {
       // スキルの処理
       SeichiAssist.managedBlocks ++= multiBreakList.flatten
@@ -257,9 +251,8 @@ class PlayerBlockBreakListener extends Listener {
   private def runBreakSkill(player: Player, block: Block, tool: ItemStack): Unit = {
     val playerdata = SeichiAssist.playermap(player.getUniqueId)
     val mana = playerdata.activeskilldata.mana
-    val playerlocy = player.getLocation.getBlockY - 1
-    val material = block.getType
-    val centerofblock = block.getLocation.add(0.5, 0.5, 0.5)
+    val playerLocY = player.getLocation.getBlockY - 1
+    val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
 
     //壊される範囲を設定
     val area = playerdata.activeskilldata.area
@@ -271,38 +264,30 @@ class PlayerBlockBreakListener extends Listener {
     val start = area.getStartList.get(0)
     val end = area.getEndList.get(0)
 
-    val breakBlocks = new mutable.HashSet[Block]
-    val lavas = new mutable.HashSet[Block]
-
-    //範囲内の破壊されるブロックを取得
-    import ManagedWorld._
     import com.github.unchama.seichiassist.data.syntax._
-    AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
-      val breakblock = block.getRelative(x, y, z)
+    val isMultiTypeBreakingSkillEnabled = {
+      val playerData = SeichiAssist.playermap(playerData)
 
-      if (playerdata.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-        (player.getWorld.isSeichi || playerdata.settings.multipleidbreakflag)) {
-        if ((breakblock.getType ne Material.AIR) && (breakblock.getType ne Material.BEDROCK))
-          if ((breakblock.getType eq Material.STATIONARY_LAVA) || BreakUtil.BlockEqualsMaterialList(breakblock))
-            if (playerlocy < breakblock.getLocation.getBlockY || player.isSneaking || breakblock == block)
-              if (BreakUtil.canBreak(player, Some.apply(breakblock)))
-                if (breakblock.getType eq Material.STATIONARY_LAVA)
-                  lavas.add(breakblock)
-                else
-                  breakBlocks.add(breakblock)
-      } else if ((breakblock.getType eq material) ||
-        ((block.getType eq Material.DIRT) && (breakblock.getType eq Material.GRASS)) ||
-        ((block.getType eq Material.GRASS) && (breakblock.getType eq Material.DIRT)) ||
-        ((block.getType eq Material.GLOWING_REDSTONE_ORE) && (breakblock.getType eq Material.REDSTONE_ORE)) ||
-        ((block.getType eq Material.REDSTONE_ORE) && (breakblock.getType eq Material.GLOWING_REDSTONE_ORE)) ||
-        (breakblock.getType eq Material.STATIONARY_LAVA))
-          if (playerlocy < breakblock.getLocation.getBlockY || player.isSneaking || breakblock == block)
-            if (BreakUtil.canBreak(player, Some.apply(breakblock)))
-              if (breakblock.getType eq Material.STATIONARY_LAVA)
-                lavas.add(breakblock)
-              else
-                breakBlocks.add(breakblock)
+      import ManagedWorld._
+      playerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
+        (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
     }
+
+    val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
+      BlockSearching
+        .searchForBreakableBlocks(player, AxisAlignedCuboid(start, end).gridPoints(), block)
+        .unsafeRunSync()
+        .mapSolids(
+          if (isMultiTypeBreakingSkillEnabled) identity
+          else _.filter(BlockSearching.multiTypeBreakingFilterPredicate(block))
+        )
+        .mapAll(
+          if (player.isSneaking) identity
+          else
+            _.filter { targetBlock =>
+              targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
+            }
+        )
 
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
 
@@ -317,7 +302,7 @@ class PlayerBlockBreakListener extends Listener {
     val durability =
       tool.getDurability +
         BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), breakBlocks.size) +
-        BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), 10 * lavas.size)
+        BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), 10 * lavaBlocks.size)
 
     if (gravity > 15) {
       player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。")
@@ -338,18 +323,18 @@ class PlayerBlockBreakListener extends Listener {
 
     // 破壊する処理
     // 溶岩の破壊する処理
-    lavas.foreach(_.setType(Material.AIR))
+    lavaBlocks.foreach(_.setType(Material.AIR))
 
     // ブロックを破壊する処理
     if (breakBlocks.size == 1) {
       // 破壊するブロックがプレーヤーが最初に破壊を試みたブロックだけの場合
-      BreakUtil.breakBlock(player, block, centerofblock, tool, shouldPlayBreakSound = true)
+      BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
     } else {
       SeichiAssist.managedBlocks ++= breakBlocks
 
       ActiveSkillEffect
         .fromEffectNum(playerdata.activeskilldata.effectnum)
-        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerofblock)
+        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerOfBlock)
 
       // 経験値を減らす
       mana.decrease(useMana, player, playerdata.level)

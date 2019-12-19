@@ -15,6 +15,8 @@ object BlockSearching {
 
     def mapSolids(f: List[Block] => List[Block]): Result = copy(solids = f(solids))
 
+    def mapAll(f: List[Block] => List[Block]): Result = copy(solids = f(solids), waters = f(waters), lavas = f(lavas))
+
   }
 
   def searchForBreakableBlocks(player: Player, relativeVectors: Seq[XYZTuple], referencePoint: Block): SyncIO[Result] = SyncIO {
