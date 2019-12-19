@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
-import com.github.unchama.seichiassist.effect.ActiveSkillEffect
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}

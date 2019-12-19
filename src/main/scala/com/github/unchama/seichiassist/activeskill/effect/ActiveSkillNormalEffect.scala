@@ -1,10 +1,10 @@
-package com.github.unchama.seichiassist.effect
+package com.github.unchama.seichiassist.activeskill.effect
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.{ActiveSkillData, XYZTuple}
-import com.github.unchama.seichiassist.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
-import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
-import com.github.unchama.seichiassist.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
+import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
+import com.github.unchama.seichiassist.activeskill.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
 import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import org.bukkit.ChatColor._

@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.effect.breaking
+package com.github.unchama.seichiassist.activeskill.effect.breaking
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
-import com.github.unchama.seichiassist.effect.PositionSearching
+import com.github.unchama.seichiassist.activeskill.effect.PositionSearching
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.Location
 import org.bukkit.block.Block

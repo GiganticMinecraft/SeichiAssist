@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.XYZTuple
-import com.github.unchama.seichiassist.effect.ActiveSkillEffect
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player

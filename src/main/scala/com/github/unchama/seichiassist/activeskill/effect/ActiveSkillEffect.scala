@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.effect
+package com.github.unchama.seichiassist.activeskill.effect
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.{ActiveSkillData, XYZTuple}
