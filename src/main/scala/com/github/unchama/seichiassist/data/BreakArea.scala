@@ -17,8 +17,6 @@ class BreakArea(val `type`: Int,
                 val level: Int,
                 val mineflagnum: Int,
                 val assaultflag: Boolean) {
-  import syntax._
-
   private val skill: ActiveSkill = ActiveSkill.values.apply(`type` - 1)
 
   //南向きを基準として破壊の範囲座標
@@ -26,9 +24,9 @@ class BreakArea(val `type`: Int,
   //破壊回数
   val breakNum: Int = skill.getRepeatTimes(level)
 
-  def makeBreakArea(player: Player): IO[List[AxisAlignedCuboid]] = IO {
-    // TODO 副作用はここだけ。切り出しても良さそう
-    val dir = BreakUtil.getCardinalDirection(player)
+  private def breakAreaListFromDirection(dir: String): List[AxisAlignedCuboid] = {
+    import BreakArea.CoordinateManipulation._
+    import syntax._
 
     val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
       if (assaultflag && `type` == 6 && level == 10) {
@@ -73,9 +71,8 @@ class BreakArea(val `type`: Int,
         case "S" | "U" | _ => identity
       }
 
-
     val firstArea = {
-      //中心座標(0,0,0)の領域をシフトしていく
+      //中心が(0,0,0)である領域をシフトしていく
       val end = (breakLength - XYZTuple(1, 1, 1)) / 2.0
       val start = end.negative
 
@@ -89,32 +86,43 @@ class BreakArea(val `type`: Int,
       .toList
   }
 
-  private val incrementYOfEnd: AxisAlignedCuboid => AxisAlignedCuboid = {
-    case area@AxisAlignedCuboid(_, end@XYZTuple(_, y, _)) =>
-      area.copy(end = end.copy(y = y + 1))
-  }
+  def makeBreakArea(player: Player): IO[List[AxisAlignedCuboid]] =
+    BreakArea.getCardinalDirection(player).map(breakAreaListFromDirection)
+}
 
-  private val invertY: AxisAlignedCuboid => AxisAlignedCuboid = { case AxisAlignedCuboid(begin, end) =>
-    def invertYOfVector(vector: XYZTuple): XYZTuple = XYZTuple(vector.x, -vector.y, vector.z)
+object BreakArea {
+  private val getCardinalDirection: Player => IO[String] = { player => IO { BreakUtil.getCardinalDirection(player) } }
 
-    AxisAlignedCuboid(invertYOfVector(begin), invertYOfVector(end))
-  }
+  object CoordinateManipulation {
+    import syntax._
 
-  private def shiftArea(vector: XYZTuple): AxisAlignedCuboid => AxisAlignedCuboid = {
-    case AxisAlignedCuboid(begin, end) =>
-      AxisAlignedCuboid(begin + vector, end + vector)
-  }
+    val incrementYOfEnd: AxisAlignedCuboid => AxisAlignedCuboid = {
+      case area@AxisAlignedCuboid(_, end@XYZTuple(_, y, _)) =>
+        area.copy(end = end.copy(y = y + 1))
+    }
 
-  private def rotateXZ(d: Int): AxisAlignedCuboid => AxisAlignedCuboid = { case AxisAlignedCuboid(begin, end) =>
-    d match {
-      case 90 =>
-        AxisAlignedCuboid(XYZTuple(-end.z, begin.y, begin.x), XYZTuple(-begin.z, end.y, end.x))
-      case 180 =>
-        AxisAlignedCuboid(XYZTuple(begin.x, begin.y, -end.z), XYZTuple(end.x, end.y, -begin.z))
-      case 270 =>
-        AxisAlignedCuboid(XYZTuple(begin.z, begin.y, begin.x), XYZTuple(end.z, end.y, end.x))
-      case 360 =>
-        AxisAlignedCuboid(begin, end)
+    val invertY: AxisAlignedCuboid => AxisAlignedCuboid = { case AxisAlignedCuboid(begin, end) =>
+      def invertYOfVector(vector: XYZTuple): XYZTuple = XYZTuple(vector.x, -vector.y, vector.z)
+
+      AxisAlignedCuboid(invertYOfVector(begin), invertYOfVector(end))
+    }
+
+    def shiftArea(vector: XYZTuple): AxisAlignedCuboid => AxisAlignedCuboid = {
+      case AxisAlignedCuboid(begin, end) =>
+        AxisAlignedCuboid(begin + vector, end + vector)
+    }
+
+    def rotateXZ(d: Int): AxisAlignedCuboid => AxisAlignedCuboid = { case AxisAlignedCuboid(begin, end) =>
+      d match {
+        case 90 =>
+          AxisAlignedCuboid(XYZTuple(-end.z, begin.y, begin.x), XYZTuple(-begin.z, end.y, end.x))
+        case 180 =>
+          AxisAlignedCuboid(XYZTuple(begin.x, begin.y, -end.z), XYZTuple(end.x, end.y, -begin.z))
+        case 270 =>
+          AxisAlignedCuboid(XYZTuple(begin.z, begin.y, begin.x), XYZTuple(end.z, end.y, end.x))
+        case 360 =>
+          AxisAlignedCuboid(begin, end)
+      }
     }
   }
 }
