@@ -1,143 +1,120 @@
 package com.github.unchama.seichiassist.data
 
-import java.util
-
+import cats.effect.IO
 import com.github.unchama.seichiassist.ActiveSkill
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.entity.Player
 
-class BreakArea(val player: Player,
-                //スキルタイプ番号
-                var `type`: Int,
-                //スキルレベル
-                var level: Int,
-                //フラグ
-                var mineflagnum: Int,
-                //アサルトスキルの時true
-                var assaultflag: Boolean) {
+/**
+ * 与えられたアクティブスキルの情報に基づいて、
+ * プレーヤーがスキルで破壊する範囲を計算するデータオブジェクト
+ * @param `type` スキルタイプ番号
+ * @param level スキルレベル
+ * @param mineflagnum フラグ
+ * @param assaultflag アサルトスキルの時true
+ */
+class BreakArea(val `type`: Int,
+                val level: Int,
+                val mineflagnum: Int,
+                val assaultflag: Boolean) {
+  import syntax._
+
   private val skill: ActiveSkill = ActiveSkill.values.apply(`type` - 1)
 
-  //初期範囲設定
-  makeArea()
-
   //南向きを基準として破壊の範囲座標
-  private val breakLength = skill.getBreakLength(level)
+  val breakLength: XYZTuple = skill.getBreakLength(level)
   //破壊回数
-  private val breakNum = skill.getRepeatTimes(level)
+  val breakNum: Int = skill.getRepeatTimes(level)
 
-  //向いている方角
-  private var dir = BreakUtil.getCardinalDirection(player)
+  def makeBreakArea(player: Player): IO[List[AxisAlignedCuboid]] = IO {
+    // TODO 副作用はここだけ。切り出しても良さそう
+    val dir = BreakUtil.getCardinalDirection(player)
 
-  //破壊範囲を示す相対座標リスト
-  private val startList = new util.ArrayList[XYZTuple]
-  private val endList = new util.ArrayList[XYZTuple]
+    val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
+      if (assaultflag && `type` == 6 && level == 10) {
+        //アサルトスキルの時
+        shiftArea(XYZTuple(0, (breakLength.y - 1) / 2 - 1, 0))
+      } else if (dir == "U" || dir == "D" && (assaultflag || level >= 3)) {
+        //上向きまたは下向きの時
+        shiftArea(XYZTuple(0, (breakLength.y - 1) / 2, 0))
+      } else {
+        //それ以外の範囲
+        shiftArea(XYZTuple(0, (breakLength.y - 1) / 2 - 1, (breakLength.z - 1) / 2))
+      }
 
-  //変数として利用する相対座標
-  private var start: XYZTuple = null
-  private var end: XYZTuple = null
+    val secondShift: AxisAlignedCuboid => AxisAlignedCuboid =
+      if (`type` == ActiveSkill.BREAK.gettypenum && level < 3)
+        incrementYOfEnd
+      else
+        identity
 
-  def getStartList: util.ArrayList[XYZTuple] = startList
+    val thirdShift: AxisAlignedCuboid => AxisAlignedCuboid =
+      if (`type` == ActiveSkill.BREAK.gettypenum && level < 3 && mineflagnum == 1)
+        shiftArea(XYZTuple(0, 1, 0))
+      else
+        identity
 
-  def getEndList: util.ArrayList[XYZTuple] = endList
-
-  def getDir: String = dir
-
-  def setDir(dir: String): Unit = this.dir = dir
-
-  //破壊範囲の設定
-  def makeArea(): Unit = {
-    import syntax._
-
-    startList.clear()
-    endList.clear()
-
-    //中心座標(0,0,0)のスタートとエンドを仮取得
-    end = (breakLength - XYZTuple(1, 1, 1)) / 2.0
-    start = end.negative
-
-    if (assaultflag && `type` == 6 && level == 10) {
-      //アサルトスキルの時
-      shift(0, (breakLength.y - 1) / 2 - 1, 0)
-    } else if (dir == "U" || dir == "D" && (assaultflag || level >= 3)) {
-      //上向きまたは下向きの時
-      shift(0, (breakLength.y - 1) / 2, 0)
-    } else {
-      //それ以外の範囲
-      shift(0, (breakLength.y - 1) / 2 - 1, (breakLength.z - 1) / 2)
-    }
-
-    if (`type` == ActiveSkill.BREAK.gettypenum && level < 3)
-      end = new XYZTuple(end.x, end.y + 1, end.z)
-    if (`type` == ActiveSkill.BREAK.gettypenum && level < 3 && mineflagnum == 1)
-      shift(0, 1, 0)
-
-    //スタートリストに追加
-    startList.add(start)
-    endList.add(end)
-
-    //破壊回数だけリストに追加
-    (1 until breakNum).foreach { _ =>
+    val directionalShift: AxisAlignedCuboid => AxisAlignedCuboid =
       dir match {
         case "N" | "E" | "S" | "W" =>
-          shift(0, 0, breakLength.z)
+          shiftArea(XYZTuple(0, 0, breakLength.z))
         case "U" | "D" if assaultflag || level >= 3 =>
-          shift(0, breakLength.y, 0)
+          shiftArea(XYZTuple(0, breakLength.y, 0))
       }
-      startList.add(start)
-      endList.add(end)
-    }
 
-    dir match {
-      case "N" => rotateXZ(180)
-      case "E" => rotateXZ(270)
-      case "S" =>
-      case "W" => rotateXZ(90)
-      case "U" =>
-      case "D" if !assaultflag => multiply_Y(-1)
-    }
-  }
-
-  private def multiply_Y(i: Int): Unit = {
-    (1 to breakNum).foreach { count =>
-      val start = startList.get(count)
-      val end = endList.get(count)
-
-      val (newS, newE) =
-        if (i >= 0)
-          (XYZTuple(start.x, start.y * i, start.z), XYZTuple(end.x, end.y * i, end.z))
-        else
-          (XYZTuple(start.x, end.y * i, start.z), XYZTuple(end.x, start.y * i, end.z))
-
-      startList.set(count, newS)
-      endList.set(count, newE)
-    }
-  }
-
-  private def shift(x: Int, y: Int, z: Int): Unit = {
-    start = new XYZTuple(start.x + x, start.y + y, start.z + z)
-    end = new XYZTuple(end.x + x, end.y + y, end.z + z)
-  }
-
-  private def rotateXZ(d: Int): Unit = {
-    (0 until breakNum).foreach { count =>
-      val start = startList.get(count)
-      val end = endList.get(count)
-      d match {
-        case 90 =>
-          startList.set(count, new XYZTuple(-end.z, start.y, start.x))
-          endList.set(count, new XYZTuple(-start.z, end.y, end.x))
-        case 180 =>
-          startList.set(count, new XYZTuple(start.x, start.y, -end.z))
-          endList.set(count, new XYZTuple(end.x, end.y, -start.z))
-        case 270 =>
-          startList.set(count, new XYZTuple(start.z, start.y, start.x))
-          endList.set(count, new XYZTuple(end.z, end.y, end.x))
-        case 360 =>
+    val rotation: AxisAlignedCuboid => AxisAlignedCuboid =
+      dir match {
+        case "N" => rotateXZ(180)
+        case "E" => rotateXZ(270)
+        case "W" => rotateXZ(90)
+        case "D" if !assaultflag => invertY
+        // 横向きのスキル発動の場合Sが基準となり、
+        // 縦向きの場合Uが基準となっているため回転しないで良い
+        case "S" | "U" | _ => identity
       }
+
+
+    val firstArea = {
+      //中心座標(0,0,0)の領域をシフトしていく
+      val end = (breakLength - XYZTuple(1, 1, 1)) / 2.0
+      val start = end.negative
+
+      firstShift.andThen(secondShift).andThen(thirdShift)(AxisAlignedCuboid(end, start))
     }
+
+    LazyList
+      .iterate(firstArea)(directionalShift)
+      .map(rotation)
+      .take(breakNum)
+      .toList
   }
 
-  def getBreakLength: XYZTuple = breakLength
+  private val incrementYOfEnd: AxisAlignedCuboid => AxisAlignedCuboid = {
+    case area@AxisAlignedCuboid(_, end@XYZTuple(_, y, _)) =>
+      area.copy(end = end.copy(y = y + 1))
+  }
 
-  def getBreakNum: Int = breakNum
+  private val invertY: AxisAlignedCuboid => AxisAlignedCuboid = { case AxisAlignedCuboid(begin, end) =>
+    def invertYOfVector(vector: XYZTuple): XYZTuple = XYZTuple(vector.x, -vector.y, vector.z)
+
+    AxisAlignedCuboid(invertYOfVector(begin), invertYOfVector(end))
+  }
+
+  private def shiftArea(vector: XYZTuple): AxisAlignedCuboid => AxisAlignedCuboid = {
+    case AxisAlignedCuboid(begin, end) =>
+      AxisAlignedCuboid(begin + vector, end + vector)
+  }
+
+  private def rotateXZ(d: Int): AxisAlignedCuboid => AxisAlignedCuboid = { case AxisAlignedCuboid(begin, end) =>
+    d match {
+      case 90 =>
+        AxisAlignedCuboid(XYZTuple(-end.z, begin.y, begin.x), XYZTuple(-begin.z, end.y, end.x))
+      case 180 =>
+        AxisAlignedCuboid(XYZTuple(begin.x, begin.y, -end.z), XYZTuple(end.x, end.y, -begin.z))
+      case 270 =>
+        AxisAlignedCuboid(XYZTuple(begin.z, begin.y, begin.x), XYZTuple(end.z, end.y, end.x))
+      case 360 =>
+        AxisAlignedCuboid(begin, end)
+    }
+  }
 }

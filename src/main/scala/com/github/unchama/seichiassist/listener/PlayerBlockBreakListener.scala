@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
-import com.github.unchama.seichiassist.data.AxisAlignedCuboid
 import com.github.unchama.seichiassist.task.{CoolDownTask, MultiBreakTask}
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -117,19 +116,8 @@ class PlayerBlockBreakListener extends Listener {
 
     val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
 
-    val area = playerdata.activeskilldata.area
-    //現在のプレイヤーの向いている方向
-    val dir = BreakUtil.getCardinalDirection(player)
-    //もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
-    if (!(dir == area.getDir)) {
-      area.setDir(dir)
-      area.makeArea()
-    }
-
-    import scala.jdk.CollectionConverters._
-
-    val startList = area.getStartList.asScala.toList
-    val endList = area.getEndList.asScala.toList
+    val skillArea = playerdata.activeskilldata.area
+    val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
 
     //エフェクト用に壊されるブロック全てのリストデータ
     val multiBreakList = new ArrayBuffer[List[Block]]
@@ -137,9 +125,9 @@ class PlayerBlockBreakListener extends Listener {
     val multiLavaList = new ArrayBuffer[List[Block]]
 
     // 繰り返す回数
-    val breakNum = area.getBreakNum
+    val breakNum = skillArea.breakNum
     // 一回の破壊の範囲
-    val breakLength = area.getBreakLength
+    val breakLength = skillArea.breakLength
     // 全て破壊したときのブロック数
     val totalBreakRangeVolume = breakLength.x * breakLength.y * breakLength.z * breakNum
 
@@ -162,14 +150,12 @@ class PlayerBlockBreakListener extends Listener {
     //繰り返し回数だけ繰り返す
     val b = new Breaks
     b.breakable {
-      (0 until breakNum).foreach { i =>
+      breakAreaList.foreach { breakArea =>
         import com.github.unchama.seichiassist.data.syntax._
 
-        val start = startList(i)
-        val end = endList(i)
         val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
           BlockSearching
-            .searchForBreakableBlocks(player, AxisAlignedCuboid(start, end).gridPoints(), block)
+            .searchForBreakableBlocks(player, breakArea.gridPoints(), block)
             .unsafeRunSync()
             .mapSolids(
               if (isMultiTypeBreakingSkillEnabled) identity
@@ -231,7 +217,7 @@ class PlayerBlockBreakListener extends Listener {
         player, block, tool,
         multiBreakList.map(_.toList).toList,
         multiLavaList.map(_.toList).toList,
-        startList, endList)
+        breakAreaList)
         .runTaskTimer(plugin, 0, 4)
 
       //経験値を減らす
@@ -255,16 +241,9 @@ class PlayerBlockBreakListener extends Listener {
     val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
 
     //壊される範囲を設定
-    val area = playerdata.activeskilldata.area
-    val dir = BreakUtil.getCardinalDirection(player)
-    if (!(dir == area.getDir)) {
-      area.setDir(dir)
-      area.makeArea()
-    }
-    val start = area.getStartList.get(0)
-    val end = area.getEndList.get(0)
+    val skillArea = playerdata.activeskilldata.area
+    val breakArea = skillArea.makeBreakArea(player).unsafeRunSync()(0)
 
-    import com.github.unchama.seichiassist.data.syntax._
     val isMultiTypeBreakingSkillEnabled = {
       val playerData = SeichiAssist.playermap(player.getUniqueId)
 
@@ -273,9 +252,10 @@ class PlayerBlockBreakListener extends Listener {
         (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
     }
 
+    import com.github.unchama.seichiassist.data.syntax._
     val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
       BlockSearching
-        .searchForBreakableBlocks(player, AxisAlignedCuboid(start, end).gridPoints(), block)
+        .searchForBreakableBlocks(player, breakArea.gridPoints(), block)
         .unsafeRunSync()
         .mapSolids(
           if (isMultiTypeBreakingSkillEnabled) identity
@@ -292,7 +272,7 @@ class PlayerBlockBreakListener extends Listener {
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
 
     //減るマナ計算
-    val breakLength = area.getBreakLength
+    val breakLength = skillArea.breakLength
     val totalBreakRangeVolume = breakLength.x * breakLength.y * breakLength.z
     val useMana =
       (breakBlocks.size + 1).toDouble *
@@ -334,7 +314,7 @@ class PlayerBlockBreakListener extends Listener {
 
       ActiveSkillEffect
         .fromEffectNum(playerdata.activeskilldata.effectnum)
-        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, start, end, centerOfBlock)
+        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, breakArea.begin, breakArea.end, centerOfBlock)
 
       // 経験値を減らす
       mana.decrease(useMana, player, playerdata.level)

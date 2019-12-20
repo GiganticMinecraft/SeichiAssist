@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, ItemData, MenuInventoryData}
-import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.listener.invlistener.{OnActiveSkillUnselect, OnClickTitleMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -92,7 +92,7 @@ class PlayerInventoryListener extends Listener {
                 playerdata.activeskilldata.skilltype = 0
                 playerdata.activeskilldata.skillnum = 0
               } else {
-                playerdata.activeskilldata.updateSkill(player, typeNum, skilllevel, 1)
+                playerdata.activeskilldata.updateSkill(typeNum, skilllevel, 1)
                 player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
                 player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat)
               }
@@ -113,7 +113,7 @@ class PlayerInventoryListener extends Listener {
               playerdata.activeskilldata.skilltype = 0
               playerdata.activeskilldata.skillnum = 0
             } else {
-              playerdata.activeskilldata.updateSkill(player, typeNum, skilllevel, 1)
+              playerdata.activeskilldata.updateSkill(typeNum, skilllevel, 1)
               player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
               player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat)
             }
@@ -133,7 +133,7 @@ class PlayerInventoryListener extends Listener {
               playerdata.activeskilldata.skilltype = 0
               playerdata.activeskilldata.skillnum = 0
             } else {
-              playerdata.activeskilldata.updateSkill(player, typeNum, skilllevel, 1)
+              playerdata.activeskilldata.updateSkill(typeNum, skilllevel, 1)
               player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
               player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat)
             }

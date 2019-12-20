@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
-import com.github.unchama.seichiassist.data.AxisAlignedCuboid
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -85,26 +84,14 @@ class EntityListener extends Listener {
     //マナを取得
     val mana = playerData.activeskilldata.mana
 
-    val area = playerData.activeskilldata.area
-
-    //現在のプレイヤーの向いている方向
-    val dir = BreakUtil.getCardinalDirection(player)
-
-    //もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
-    if (!(dir == area.getDir)) {
-      area.setDir(dir)
-      area.makeArea()
-    }
-
-    val start = area.getStartList.get(0)
-    val end = area.getEndList.get(0)
+    val area = playerData.activeskilldata.area.makeBreakArea(player).unsafeRunSync()(0)
 
     //エフェクト用に壊されるブロック全てのリストデータ
     //一回の破壊の範囲
-    val breaklength = area.getBreakLength
+    val breakLength = playerData.activeskilldata.area.breakLength
 
     //１回の全て破壊したときのブロック数
-    val ifallbreaknum = breaklength.x * breaklength.y * breaklength.z
+    val ifAllBreakNum = breakLength.x * breakLength.y * breakLength.z
 
     val isMultiTypeBreakingSkillEnabled = {
       val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -115,10 +102,9 @@ class EntityListener extends Listener {
     }
 
     import com.github.unchama.seichiassist.data.syntax._
-
     val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
       BlockSearching
-        .searchForBreakableBlocks(player, AxisAlignedCuboid(start, end).gridPoints(), hitBlock)
+        .searchForBreakableBlocks(player, area.gridPoints(), hitBlock)
         .unsafeRunSync()
         .mapSolids(
           if (isMultiTypeBreakingSkillEnabled)
@@ -135,7 +121,7 @@ class EntityListener extends Listener {
     val useMana =
       breakBlocks.size.toDouble *
         (gravity + 1) *
-        ActiveSkill.getActiveSkillUseExp(playerData.activeskilldata.skilltype, playerData.activeskilldata.skillnum) / ifallbreaknum
+        ActiveSkill.getActiveSkillUseExp(playerData.activeskilldata.skilltype, playerData.activeskilldata.skillnum) / ifAllBreakNum
 
     //減る耐久値の計算
     //１マス溶岩を破壊するのにはブロック１０個分の耐久が必要
@@ -179,7 +165,7 @@ class EntityListener extends Listener {
 
     ActiveSkillEffect
       .fromEffectNum(playerData.activeskilldata.effectnum)
-      .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, start, end, centerOfBlock)
+      .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, area.begin, area.end, centerOfBlock)
   }
 
   @EventHandler def onEntityExplodeEvent(event: EntityExplodeEvent) = {

@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.listener
 import cats.effect.IO
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
+import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -328,7 +328,7 @@ class PlayerClickListener extends Listener {
             case _ => throw new RuntimeException("This branch should not be reached")
           }
           player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
-          playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
+          playerdata.activeskilldata.updateSkill(skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         } else if (skillTypeId > 0 && skillNumber > 0
           && skillTypeId < 4) {
@@ -337,7 +337,7 @@ class PlayerClickListener extends Listener {
             case 0 => player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
             case 1 => player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + ":ON")
           }
-          playerdata.activeskilldata.updateSkill(player, skillTypeId, skillNumber, activemineflagnum)
+          playerdata.activeskilldata.updateSkill(skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         }
       }

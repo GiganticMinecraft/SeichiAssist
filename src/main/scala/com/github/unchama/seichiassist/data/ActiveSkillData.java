@@ -56,8 +56,6 @@ public class ActiveSkillData {
     public HashSet<ActiveSkillNormalEffect> obtainedSkillEffects = new HashSet<>();
     //スペシャルエフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
     public HashSet<ActiveSkillPremiumEffect> obtainedSkillPremiumEffects = new HashSet<>();
-    //スペシャルエフェクトを使用するフラグ
-    private boolean specialflag;
     //選択されているアクティブスキルの番号を格納
     public int effectnum; // TODO 100以下ならプレミアムスキル、という判定ロジックを隠すべき
     //通常スキルで破壊されるエリア
@@ -72,7 +70,6 @@ public class ActiveSkillData {
         mineflagnum = 0;
         assaultflag = false;
         assaulttask = null;
-        specialflag = false;
         skilltype = 0;
         skillnum = 0;
         skillcanbreakflag = true;
@@ -173,7 +170,7 @@ public class ActiveSkillData {
         }
     }
 
-    public void updateSkill(Player player, int type, int skilllevel, int mineflagnum) {
+    public void updateSkill(int type, int skilllevel, int mineflagnum) {
         this.skilltype = type;
         this.skillnum = skilllevel;
         this.mineflagnum = mineflagnum;
@@ -183,7 +180,7 @@ public class ActiveSkillData {
         }
         //スキルフラグがオンの時の処理
         if (mineflagnum != 0) {
-            this.area = new BreakArea(player, type, skilllevel, mineflagnum, false);
+            this.area = new BreakArea(type, skilllevel, mineflagnum, false);
         }
 
     }
@@ -203,7 +200,7 @@ public class ActiveSkillData {
         }
         if (mineflagnum != 0) {
             //スキルフラグがオンの時の処理
-            this.assaultarea = new BreakArea(player, type, skilllevel, mineflagnum, true);
+            this.assaultarea = new BreakArea(type, skilllevel, mineflagnum, true);
             this.assaultflag = true;
 
             // オフハンドを取得
@@ -239,7 +236,7 @@ public class ActiveSkillData {
 
         //通常スキルの実行
         if (this.skilltype != 0) {
-            this.updateSkill(player, this.skilltype, this.skillnum, this.mineflagnum);
+            this.updateSkill(this.skilltype, this.skillnum, this.mineflagnum);
             String name = ActiveSkill.getActiveSkillName(this.skilltype, this.skillnum);
             player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  を選択しています。");
             player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
