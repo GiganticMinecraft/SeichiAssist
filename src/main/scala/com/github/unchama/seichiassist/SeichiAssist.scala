@@ -127,7 +127,7 @@ class SeichiAssist extends JavaPlugin() {
 
     import PluginExecutionContexts.asyncShift
     //リスナーの登録
-    List(
+    Set(
       new PlayerJoinListener(),
       new PlayerQuitListener(),
       new PlayerClickListener(),
