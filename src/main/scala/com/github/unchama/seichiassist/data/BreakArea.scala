@@ -58,6 +58,7 @@ class BreakArea(val `type`: Int,
           shiftArea(XYZTuple(0, 0, breakLength.z))
         case "U" | "D" if assaultflag || level >= 3 =>
           shiftArea(XYZTuple(0, breakLength.y, 0))
+        case _ => identity
       }
 
     val rotation: AxisAlignedCuboid => AxisAlignedCuboid =
