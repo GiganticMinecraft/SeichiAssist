@@ -31,13 +31,13 @@ class BreakArea(val `type`: Int,
     val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
       if (assaultflag && `type` == 6 && level == 10) {
         //アサルトスキルの時
-        shiftArea(XYZTuple(0, (breakLength.y - 1) / 2 - 1, 0))
+        areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, 0))
       } else if (dir == "U" || dir == "D" && (assaultflag || level >= 3)) {
         //上向きまたは下向きの時
-        shiftArea(XYZTuple(0, (breakLength.y - 1) / 2, 0))
+        areaShift(XYZTuple(0, (breakLength.y - 1) / 2, 0))
       } else {
         //それ以外の範囲
-        shiftArea(XYZTuple(0, (breakLength.y - 1) / 2 - 1, (breakLength.z - 1) / 2))
+        areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, (breakLength.z - 1) / 2))
       }
 
     val secondShift: AxisAlignedCuboid => AxisAlignedCuboid =
@@ -48,16 +48,16 @@ class BreakArea(val `type`: Int,
 
     val thirdShift: AxisAlignedCuboid => AxisAlignedCuboid =
       if (`type` == ActiveSkill.BREAK.gettypenum && level < 3 && mineflagnum == 1)
-        shiftArea(XYZTuple(0, 1, 0))
+        areaShift(XYZTuple(0, 1, 0))
       else
         identity
 
     val directionalShift: AxisAlignedCuboid => AxisAlignedCuboid =
       dir match {
         case "N" | "E" | "S" | "W" =>
-          shiftArea(XYZTuple(0, 0, breakLength.z))
+          areaShift(XYZTuple(0, 0, breakLength.z))
         case "U" | "D" if assaultflag || level >= 3 =>
-          shiftArea(XYZTuple(0, breakLength.y, 0))
+          areaShift(XYZTuple(0, breakLength.y, 0))
         case _ => identity
       }
 
@@ -73,11 +73,16 @@ class BreakArea(val `type`: Int,
       }
 
     val firstArea = {
-      //中心が(0,0,0)である領域をシフトしていく
+      // 中心が(0,0,0)である領域(start = -end)を変形していく。
       val end = (breakLength - XYZTuple(1, 1, 1)) / 2.0
       val start = end.negative
 
-      firstShift.andThen(secondShift).andThen(thirdShift)(AxisAlignedCuboid(end, start))
+      import scala.util.chaining._
+
+      AxisAlignedCuboid(end, start)
+        .pipe(firstShift)
+        .pipe(secondShift)
+        .pipe(thirdShift)
     }
 
     LazyList
@@ -108,7 +113,7 @@ object BreakArea {
       AxisAlignedCuboid(invertYOfVector(begin), invertYOfVector(end))
     }
 
-    def shiftArea(vector: XYZTuple): AxisAlignedCuboid => AxisAlignedCuboid = {
+    def areaShift(vector: XYZTuple): AxisAlignedCuboid => AxisAlignedCuboid = {
       case AxisAlignedCuboid(begin, end) =>
         AxisAlignedCuboid(begin + vector, end + vector)
     }
