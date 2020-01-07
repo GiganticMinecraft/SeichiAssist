@@ -378,10 +378,6 @@ object BreakUtil {
       .count().toShort
   }
 
-  def BlockEqualsMaterialList(block: Block): Boolean = {
-    MaterialSets.materials.contains(block.getType)
-  }
-
   /**
    * @param player    破壊プレイヤー
    * @param block     手動破壊対象またはアサルト/遠距離の指定座標

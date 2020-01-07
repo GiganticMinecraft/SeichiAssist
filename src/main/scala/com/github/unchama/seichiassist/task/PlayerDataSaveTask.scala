@@ -3,8 +3,9 @@ package com.github.unchama.seichiassist.task
 import java.sql.{SQLException, Statement}
 
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
+import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
-import com.github.unchama.seichiassist.{ActiveSkillEffect, ActiveSkillPremiumEffect, MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 
@@ -89,7 +90,7 @@ object PlayerDataSaveTask {
 
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
-      val activeSkillEffects = ActiveSkillEffect.values
+      val activeSkillEffects = ActiveSkillNormalEffect.values
       val obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects
 
       val removeCommand = ("delete from "

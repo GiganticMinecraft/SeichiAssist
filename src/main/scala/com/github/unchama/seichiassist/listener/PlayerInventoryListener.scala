@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.listener.invlistener.{OnActiveSkillUnselect, OnClickTitleMenu}
@@ -11,7 +12,6 @@ import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.ActionStatus
-import com.google.common.io.ByteStreams
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{EntityType, Player}
@@ -92,7 +92,7 @@ class PlayerInventoryListener extends Listener {
                 playerdata.activeskilldata.skilltype = 0
                 playerdata.activeskilldata.skillnum = 0
               } else {
-                playerdata.activeskilldata.updateSkill(player, typeNum, skilllevel, 1)
+                playerdata.activeskilldata.updateSkill(typeNum, skilllevel, 1)
                 player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
                 player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat)
               }
@@ -113,7 +113,7 @@ class PlayerInventoryListener extends Listener {
               playerdata.activeskilldata.skilltype = 0
               playerdata.activeskilldata.skillnum = 0
             } else {
-              playerdata.activeskilldata.updateSkill(player, typeNum, skilllevel, 1)
+              playerdata.activeskilldata.updateSkill(typeNum, skilllevel, 1)
               player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
               player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat)
             }
@@ -133,7 +133,7 @@ class PlayerInventoryListener extends Listener {
               playerdata.activeskilldata.skilltype = 0
               playerdata.activeskilldata.skillnum = 0
             } else {
-              playerdata.activeskilldata.updateSkill(player, typeNum, skilllevel, 1)
+              playerdata.activeskilldata.updateSkill(typeNum, skilllevel, 1)
               player.sendMessage(s"${GREEN}アクティブスキル:$name  が選択されました")
               player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1.toFloat)
             }
@@ -339,7 +339,7 @@ class PlayerInventoryListener extends Listener {
         player.openInventory(MenuInventoryData.getBuyRecordMenuData(player))
         return
       } else {
-        val skilleffect = ActiveSkillEffect.values
+        val skilleffect = ActiveSkillNormalEffect.values
         skilleffect.foreach { activeSkillEffect =>
           if (currentType == activeSkillEffect.material) {
             if (playerdata.activeskilldata.effectnum == activeSkillEffect.num) {
@@ -370,7 +370,7 @@ class PlayerInventoryListener extends Listener {
       //ここからエフェクト開放の処理
       if (currentType == Material.BEDROCK) {
         val itemmeta = itemstackcurrent.getItemMeta
-        val skilleffect = ActiveSkillEffect.values
+        val skilleffect = ActiveSkillNormalEffect.values
         skilleffect.foreach { activeSkillEffect =>
           if (itemmeta.getDisplayName.contains(activeSkillEffect.nameOnUI)) {
             if (playerdata.activeskilldata.effectpoint < activeSkillEffect.usePoint) {

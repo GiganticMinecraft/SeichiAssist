@@ -1,11 +1,15 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.itemstackbuilder.IconItemStackBuilder;
-import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.LevelThresholds;
+import com.github.unchama.seichiassist.ManagedWorld;
+import com.github.unchama.seichiassist.ManagedWorld$;
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.data.player.PlayerNickname;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect;
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
@@ -377,7 +381,7 @@ public class MenuInventoryData {
         itemstack.setDurability((short) 3);
         skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
         skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.lowercaseName() + "のスキルエフェクトデータ");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillEffect.getNameByNum(playerdata.activeskilldata().effectnum)
+        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillNormalEffect.getNameByNum(playerdata.activeskilldata().effectnum)
                 , ChatColor.RESET + "" + ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata().effectpoint
                 , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※投票すると獲得出来ます"
                 , ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "使えるプレミアムポイント：" + playerdata.activeskilldata().premiumeffectpoint
@@ -409,7 +413,7 @@ public class MenuInventoryData {
         inventory.setItem(1, itemstack);
 
 
-        ActiveSkillEffect[] skilleffect = ActiveSkillEffect.arrayValues();
+        ActiveSkillNormalEffect[] skilleffect = ActiveSkillNormalEffect.arrayValues();
 
         for (int i = 0; i < skilleffect.length; i++) {
             //プレイヤーがそのスキルを取得している場合の処理

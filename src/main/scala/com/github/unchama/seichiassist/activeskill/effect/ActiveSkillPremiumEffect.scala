@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist
+package com.github.unchama.seichiassist.activeskill.effect
 
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect.plugin
-import com.github.unchama.seichiassist.data.XYZTuple
-import com.github.unchama.seichiassist.effect.arrow.ArrowEffects
-import com.github.unchama.seichiassist.effect.breaking.MagicTask
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.{ActiveSkillData, XYZTuple}
+import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
+import com.github.unchama.seichiassist.activeskill.effect.breaking.MagicTask
 import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import org.bukkit.ChatColor._
@@ -17,16 +17,22 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
                                                val desc: String,
                                                val explain: String,
                                                val usePoint: Int,
-                                               val material: Material) extends EnumEntry {
+                                               val material: Material) extends EnumEntry with ActiveSkillEffect {
   @Deprecated
   def getsqlName: String = this.sql_name
 
-  def runBreakEffect(player: Player, tool: ItemStack, breaklist: Set[Block], start: XYZTuple, end: XYZTuple, standard: Location): Unit = {
+  def runBreakEffect(player: Player,
+                     skillData: ActiveSkillData,
+                     tool: ItemStack,
+                     breakBlocks: Set[Block],
+                     start: XYZTuple,
+                     end: XYZTuple,
+                     standard: Location): Unit = {
     this match {
       case ActiveSkillPremiumEffect.MAGIC => if (SeichiAssist.DEBUG) {
-        new MagicTask(player, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 100)
+        new MagicTask(player, tool, breakBlocks, start, end, standard).runTaskTimer(SeichiAssist.instance, 0, 100)
       } else {
-        new MagicTask(player, tool, breaklist, start, end, standard).runTaskTimer(plugin, 0, 10)
+        new MagicTask(player, tool, breakBlocks, start, end, standard).runTaskTimer(SeichiAssist.instance, 0, 10)
       }
     }
   }
@@ -46,7 +52,6 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
    */
   @Deprecated()
   val arrayValues: Array[ActiveSkillPremiumEffect] = values.toArray
-  private val plugin = SeichiAssist.instance
 
   def fromSqlName(sqlName: String): Option[ActiveSkillPremiumEffect] = values.find(sqlName == _.sql_name)
 

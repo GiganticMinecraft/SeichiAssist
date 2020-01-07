@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.effect.breaking
+package com.github.unchama.seichiassist.activeskill.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid, XYZTuple}
-import com.github.unchama.seichiassist.effect.PositionSearching
+import com.github.unchama.seichiassist.activeskill.effect.PositionSearching
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
 import org.bukkit.entity.Player

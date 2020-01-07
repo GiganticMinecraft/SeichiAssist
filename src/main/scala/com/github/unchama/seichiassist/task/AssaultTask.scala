@@ -1,17 +1,15 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.seichiassist.activeskill.BlockSearching
+import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, Mana, XYZTuple}
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
-import com.github.unchama.seichiassist.{ActiveSkill, MaterialSets, SeichiAssist}
-import org.bukkit.block.Block
+import com.github.unchama.seichiassist.{ActiveSkill, SeichiAssist}
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{ChatColor, GameMode, Material}
-
-import scala.collection.mutable
 
 class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnable {
   private val playerdata: PlayerData = SeichiAssist.playermap(player.getUniqueId)
@@ -73,10 +71,6 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
       idletime = 0
     }
 
-    val foundBlocks = new mutable.HashSet[Block]
-    val foundLavas = new mutable.HashSet[Block]
-    val foundWaters = new mutable.HashSet[Block]
-
     //プレイヤーの足のy座標を取得
     val playerLocY = player.getLocation.getBlockY - 1
 
@@ -90,32 +84,20 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
       return
     }
 
-    //一回の破壊の範囲
-    val assaultArea = playerdata.activeskilldata.assaultarea
-    val breakLength = assaultArea.getBreakLength
+    val skillArea = playerdata.activeskilldata.assaultarea
+    val breakArea = skillArea.makeBreakArea(player).unsafeRunSync()(0)
+
+    val breakLength = skillArea.breakLength
+    val areaTotalBlockCount = breakLength.x * breakLength.y * breakLength.z
 
     //壊すフラグを指定
     val shouldBreakAllBlocks = playerdata.activeskilldata.assaulttype == ActiveSkill.ARMOR.gettypenum
-
     val shouldCondenseFluids = playerdata.activeskilldata.assaulttype == ActiveSkill.FLUIDCONDENSE.gettypenum || shouldBreakAllBlocks
-
     val shouldCondenseWater = playerdata.activeskilldata.assaulttype == ActiveSkill.WATERCONDENSE.gettypenum || shouldCondenseFluids
     val shouldCondenseLava = playerdata.activeskilldata.assaulttype == ActiveSkill.LAVACONDENSE.gettypenum || shouldCondenseFluids
 
-    val areaTotalBlockCount = breakLength.x * breakLength.y * breakLength.z
-
-    //壊されるエリアの設定
-    //現在のプレイヤーの向いている方向
-    val dir = BreakUtil.getCardinalDirection(player)
-
-    //もし前回とプレイヤーの向いている方向が違ったら範囲を取り直す
-    if (!(dir == assaultArea.getDir)) {
-      assaultArea.setDir(dir)
-      assaultArea.makeArea()
-    }
-
     //重力値計算
-    val gravity = BreakUtil.getGravity(player, block, true)
+    val gravity = BreakUtil.getGravity(player, block, isAssault = true)
 
     //重力値の判定
     if (gravity > 15) {
@@ -124,28 +106,18 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
       return
     }
 
-    val start = assaultArea.getStartList.get(0)
-    val end = assaultArea.getEndList.get(0)
-
     import com.github.unchama.seichiassist.data.syntax._
-    AxisAlignedCuboid(start, end).gridPoints().foreach { case XYZTuple(x, y, z) =>
-      val targetBlock = block.getRelative(x, y, z)
-      val isLava = targetBlock.getType match {
-        case Material.STATIONARY_LAVA | Material.LAVA => true
-        case _ => false
-      }
-      val isWater = targetBlock.getType match {
-        case Material.STATIONARY_WATER | Material.WATER => true
-        case _ => false
-      }
-
-      if (MaterialSets.materials.contains(targetBlock.getType) || isLava || isWater)
-        if (playerLocY < targetBlock.getLocation.getBlockY || player.isSneaking || targetBlock == block || !shouldBreakAllBlocks)
-          if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
-            if (isLava) foundLavas.add(targetBlock)
-            else if (isWater) foundWaters.add(targetBlock)
-            else foundBlocks.add(targetBlock)
-    }
+    val BlockSearching.Result(foundBlocks, foundWaters, foundLavas) =
+      BlockSearching.searchForBreakableBlocks(player, breakArea.gridPoints(), block)
+          .unsafeRunSync()
+          .mapAll(
+            if (player.isSneaking || !shouldBreakAllBlocks)
+              identity
+            else
+              _.filter { targetBlock =>
+                targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
+              }
+          )
 
     // 実際に破壊するブロック数の計算
     val breakTargets =

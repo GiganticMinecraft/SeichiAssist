@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.effect.breaking
+package com.github.unchama.seichiassist.activeskill.effect.breaking
 
 import com.github.unchama.seichiassist.data.ActiveSkillData
 import com.github.unchama.seichiassist.util.BreakUtil
