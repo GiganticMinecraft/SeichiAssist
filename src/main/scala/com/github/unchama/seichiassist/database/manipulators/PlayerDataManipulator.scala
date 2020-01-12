@@ -554,7 +554,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
    * @return [ActionStatus]
    */
   def changeGachaAmountOf(playerName: String, amount: Int): ActionStatus = {
-    val command = s"update $tableReference set gachapoint = $amount where name = '$playerName'"
+    val command = s"update $tableReference set gachapoint = ${1000 * amount} where name = '$playerName'"
     gateway.executeUpdate(command)
   }
 
