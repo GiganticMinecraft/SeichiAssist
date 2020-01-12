@@ -65,6 +65,8 @@ public class GachaCommand implements CommandExecutor {
             sender.sendMessage("メンテモードのON,OFF切り替え。ONだとガチャが引けなくなる");
             sender.sendMessage(ChatColor.RED + "/gacha give <all/プレイヤー名> <個数>");
             sender.sendMessage("ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)");
+            sender.sendMessage(ChatColor.RED + "/gacha set <プレイヤー名> <個数>");
+            sender.sendMessage("ガチャ券の枚数設定コマンドです。指定したプレイヤーのガチャ券を指定した枚数に設定します。");
             sender.sendMessage(ChatColor.RED + "/gacha vote <プレイヤー名>");
             sender.sendMessage("投票特典配布用コマンドです(マルチ鯖対応済)");
             sender.sendMessage(ChatColor.RED + "/gacha donate <プレイヤー名> <ポイント数>");
@@ -156,6 +158,21 @@ public class GachaCommand implements CommandExecutor {
             }
 
 
+        } else if (args[0].equalsIgnoreCase("set")) {
+            if (args.length != 3) {
+                sender.sendMessage(ChatColor.RED + "/gacha set <プレイヤー名> <個数>");
+                sender.sendMessage("ガチャ券の枚数設定コマンドです。指定したプレイヤーのガチャ券を指定した枚数に設定します。");
+            }
+
+            String name = args[1].toLowerCase();
+            int amount = TypeConverter.toInt(args[2]);
+
+            sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券の枚数設定処理開始...");
+            if (databaseGateway.playerDataManipulator.changeGachaAmountOf(name, amount) == Fail) {
+                sender.sendMessage(ChatColor.RED + "失敗");
+            } else {
+                sender.sendMessage(ChatColor.GREEN + "成功");
+            }
         } else if (args[0].equalsIgnoreCase("vote")) {
             if (args.length != 2) {
                 //引数が2つでない時の処理

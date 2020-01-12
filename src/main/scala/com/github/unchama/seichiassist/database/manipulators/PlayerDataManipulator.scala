@@ -547,6 +547,17 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     gateway.executeUpdate(command)
   }
 
+  /**
+   * プレイヤーのガチャ券枚数を変更します
+   * @param playerName プレイヤーの名前
+   * @param amount 変更するガチャ券の個数
+   * @return [ActionStatus]
+   */
+  def changeGachaAmountOf(playerName: String, amount: Int): ActionStatus = {
+    val command = s"update $tableReference set gachapoint = $amount where name = '$playerName'"
+    gateway.executeUpdate(command)
+  }
+
   def selectPocketInventoryOf(uuid: UUID): IO[ResponseEffectOrResult[CommandSender, Inventory]] = {
     val command = s"select inventory from $tableReference where uuid = '$uuid'"
 
