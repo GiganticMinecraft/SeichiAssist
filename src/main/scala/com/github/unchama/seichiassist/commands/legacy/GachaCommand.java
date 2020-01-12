@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands.legacy;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.TypeConverter;
@@ -15,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import scala.Option;
 import scala.jdk.CollectionConverters;
 
 import java.util.UUID;
@@ -172,6 +174,17 @@ public class GachaCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "失敗");
             } else {
                 sender.sendMessage(ChatColor.GREEN + "成功");
+
+                Player player = Bukkit.getPlayer(name);
+                if (player == null) {
+                    return true;
+                }
+                Option<PlayerData> maybePlayerData = SeichiAssist.playermap().get(player.getUniqueId());
+                if (maybePlayerData.isEmpty()) {
+                    return true;
+                }
+                maybePlayerData.get().gachapoint_$eq(amount * 1000);
+                player.sendMessage(ChatColor.GREEN + "運営チームによりガチャ券が" + amount + "枚に設定されました。");
             }
         } else if (args[0].equalsIgnoreCase("vote")) {
             if (args.length != 2) {
