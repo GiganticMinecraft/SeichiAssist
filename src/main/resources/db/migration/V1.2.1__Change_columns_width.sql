@@ -18,3 +18,5 @@ alter table grid_template alter column designer_uuid char(36);
 alter table unlocked_active_skill_effect alter column player_uuid char(36);
 
 alter table unlocked_active_skill_premium_effect alter column player_uuid char(36);
+
+alter table playerdata alter column gachapoint bigint default 0;
