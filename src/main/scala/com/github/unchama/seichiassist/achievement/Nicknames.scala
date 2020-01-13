@@ -106,6 +106,11 @@ object Nicknames {
     5118 -> HeadTail(s"昇給", s"まだですか"),
     5119 -> HeadTail(s"歴史", s"生き証人"),
     5120 -> FullSet(s"石の上", s"にも", s"三年"),
+    5121 -> HeadTail(s"いつも",s"ログイン"),
+    5122 -> HeadTail(s"長老",s"風格"),
+    5123 -> FullSet(s"めぐ",s"り",s"巡る"),
+    5124 -> FullSet(s"仙人",s"すら",s"凌ぐ"),
+    5125 -> HeadTail(s"四つ葉",s"クローバー"),//の
     // 投票数実績
     6001 -> HeadTail(s"狂信者", s"狂信者"),
     6002 -> HeadTail(s"全身", s"全霊"),
@@ -257,6 +262,9 @@ object Nicknames {
     9930 -> MiddleOnly(s"！"),
     9931 -> MiddleOnly(s"？"),
     9932 -> MiddleOnly(s"＃"),
+    9933 -> MiddleOnly(s"や"),
+    9934 -> MiddleOnly(s"ちゃま"),
+    9935 -> MiddleOnly(s"草")
   )
 
   val getNicknameFor: AchievementId => Option[NicknamesToBeUnlocked] = Nicknames.map.get
