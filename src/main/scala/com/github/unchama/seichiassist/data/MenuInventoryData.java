@@ -799,6 +799,8 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(skullmeta);
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
+                nextpageflag2 = true;
+
                 break;
             }
             checkTitle2++;
@@ -1001,7 +1003,7 @@ public class MenuInventoryData {
         if (checkTitleS < 9911) {
             checkTitleS = 9911;
         }
-        for (; checkTitleS <= 9932; ) {
+        for (; checkTitleS <= 9935; ) {
             if (setInv < 27) {
                 if (!playerdata.TitleFlags().contains(checkTitleS)) {
                     itemstack = new ItemStack(Material.BEDROCK, 1);

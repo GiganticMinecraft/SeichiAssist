@@ -32,7 +32,7 @@ object AchievementGroupMenu {
         Achievement8003UnlockEntry
 
     case TotalLogins =>
-      AchievementEntry.within(5101 to 5120)
+      AchievementEntry.within(5101 to 5125)
 
     case ConsecutiveLogins =>
       AchievementEntry.within(5001 to 5008)
