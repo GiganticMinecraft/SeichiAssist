@@ -39,15 +39,15 @@ public class MenuInventoryData {
     private static DatabaseGateway databaseGateway = SeichiAssist.databaseGateway();
 
     //二つ名組合せシステム用
-    private static boolean nextpageflag1 = false;
-    private static boolean nextpageflag2 = false;
-    private static boolean nextpageflag3 = false;
-    private static boolean nextpageflagS = false;
-    private static int checkTitle1 = 0;
-    private static int checkTitle2 = 0;
-    private static int checkTitle3 = 0;
-    private static int checkTitleS = 0;
-    private static int NoKeep = 0;
+    private static boolean nextpageflag1;
+    private static boolean nextpageflag2;
+    private static boolean nextpageflag3;
+    private static boolean nextpageflagS;
+    private static int checkTitle1;
+    private static int checkTitle2;
+    private static int checkTitle3;
+    private static int checkTitleS;
+    private static int NoKeep;
     private static final short PLAYER_SKULL = 3;
 
     //投票特典受け取りボタン
