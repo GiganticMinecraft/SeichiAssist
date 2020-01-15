@@ -1,6 +1,7 @@
 import java.io._
 
-import scala.io.Source
+import ResourceFilter.filterResources
+import sbt.Keys.baseDirectory
 
 ThisBuild / scalaVersion     := "2.13.1"
 ThisBuild / version          := "1.2.4"
@@ -60,38 +61,15 @@ tokenReplacementMap := Map(
   "version" -> version.value
 )
 
-def replaceTokens(out: File, file: File, map: Map[String, String]): File = {
-  out.getParentFile.mkdirs()
-
-  val input = new FileInputStream(file)
-  val output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out))))
-
-  Source.fromInputStream(input).getLines().foreach { line =>
-    val replaced =
-      map.foldLeft(line) { case (acc, (key, value)) =>
-        acc.replaceAll(s"@$key@", value)
-      }
-
-    output.println(replaced)
-  }
-
-  output.flush()
-  output.close()
-
-  out
-}
-
-val filesToBeReplaced = Seq("plugin.yml")
+val filesToBeReplaced = Seq("src/main/resources/plugin.yml")
 
 val filteredResourceGenerator = taskKey[Seq[File]]("Resource generator to filter resources")
 
 filteredResourceGenerator in Compile :=
-  filesToBeReplaced
-    .map { relativeToResourceDir =>
-      val outFile = (resourceManaged in Compile).value / relativeToResourceDir
-      val file = (resourceDirectory in Compile).value / relativeToResourceDir
-      replaceTokens(outFile, file, tokenReplacementMap.value)
-    }
+  filterResources(
+    filesToBeReplaced, tokenReplacementMap.value,
+    baseDirectory.value, (resourceDirectory in Compile).value
+  )
 
 resourceGenerators in Compile += (filteredResourceGenerator in Compile)
 
