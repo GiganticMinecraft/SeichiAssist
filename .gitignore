@@ -2,6 +2,9 @@
 /out/
 /target/
 
+/project/target
+/project/project
+
 # Eclipse
 .classpath
 *.prefs
@@ -11,6 +14,8 @@
 *.iml
 /bins/
 /test/
+
+
 
 # Gradle
 .gradle
