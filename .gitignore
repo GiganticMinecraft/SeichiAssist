@@ -1,10 +1,3 @@
-/bin/
-/out/
-/target/
-
-/project/target
-/project/project
-
 # Eclipse
 .classpath
 *.prefs
@@ -15,11 +8,10 @@
 /bins/
 /test/
 
-
-
-# Gradle
-.gradle
-build
+# SBT
+/project/target
+/project/project
+/target
 
 # Local files
 deployLocal.sh
