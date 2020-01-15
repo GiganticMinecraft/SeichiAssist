@@ -56,14 +56,14 @@ workflows:
       - build_and_test
       - deploy_production:
           requires:
-            - build
+            - build_and_test
           filters:
             branches:
               only:
                 - master
       - deploy_debug:
           requires:
-            - build
+            - build_and_test
           filters:
             branches:
               only:
