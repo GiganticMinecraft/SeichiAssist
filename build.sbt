@@ -104,7 +104,7 @@ excludeFilter in unmanagedResources :=
 lazy val root = (project in file("."))
   .settings(
     name := "SeichiAssist",
-    assemblyJarName in assembly := s"SeichiAssist-${version.value}.jar",
+    assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist-${version.value}.jar",
     libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
     unmanagedBase := baseDirectory.value / "localDependencies",
     scalacOptions ++= Seq(
