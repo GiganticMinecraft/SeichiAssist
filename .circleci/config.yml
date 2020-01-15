@@ -2,7 +2,7 @@ version: 2.1
 
 anchors:
   docker:
-    gradle_docker: &gradle_docker
+    gradle_docker: &sbt_docker
       docker:
         - image: circleci/openjdk:8u181-jdk
   workspace:
@@ -17,31 +17,32 @@ anchors:
 
 jobs:
   build:
-    <<: *gradle_docker
+    <<: *sbt_docker
     working_directory: ~/repo
     steps:
       - checkout
       - restore_cache:
           keys:
-            - gradle-repo-v2-{{ .Branch }}-{{ checksum "dependencies.lock" }}
-            - gradle-repo-v2-{{ .Branch }}-
-            - gradle-repo-v2-
-      - run: ./gradlew install
+            - sbt-repo-v2-{{ .Branch }}-{{ checksum "build.sbt" }}
+            - sbt-repo-v2-{{ .Branch }}-
+            - sbt-repo-v2-
+      - run: sbt assembly
       - save_cache:
           paths:
-            - ~/.gradle
-            - ~/.m2 # Maven dependencies
-          key: gradle-repo-v2-{{ .Branch }}-{{ checksum "dependencies.lock" }}
-      - run: mkdir -p workspace/builds && cp build/libs/**.jar workspace/builds
+            - ~/.ivy2/cache
+            - ~/.m2
+            - ~/.cache/coursier/v1
+          key: sbt-repo-v2-{{ .Branch }}-{{ checksum "build.sbt" }}
+      - run: mkdir -p workspace/builds && cp target/build/**.jar workspace/builds
       - *save_workspace
   deploy_debug:
-    <<: *gradle_docker
+    <<: *sbt_docker
     working_directory: ~/repo
     steps:
       - *load_workspace
       - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
   deploy_production:
-    <<: *gradle_docker
+    <<: *sbt_docker
     working_directory: ~/repo
     steps:
       - *load_workspace
