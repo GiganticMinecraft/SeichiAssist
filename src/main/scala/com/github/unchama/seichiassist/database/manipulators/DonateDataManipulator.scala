@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.database.manipulators
 
 import java.sql.SQLException
 
-import com.github.unchama.seichiassist.ActiveSkillPremiumEffect
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillPremiumEffect
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.{Inventory, ItemStack}

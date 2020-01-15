@@ -19,7 +19,7 @@ import scala.jdk.CollectionConverters;
 import java.util.UUID;
 
 public class GachaItemListener implements Listener {
-    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 
     //private SeichiAssist instance = SeichiAssist.instance;
     @EventHandler

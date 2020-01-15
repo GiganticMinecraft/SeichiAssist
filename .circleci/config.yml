@@ -2,7 +2,7 @@ version: 2.1
 
 anchors:
   docker:
-    gradle_docker: &gradle_docker
+    gradle_docker: &sbt_docker
       docker:
         - image: circleci/openjdk:8u181-jdk
   workspace:
@@ -16,36 +16,34 @@ anchors:
         at: '/tmp/workspace'
 
 jobs:
-  build:
-    <<: *gradle_docker
+  build_and_test:
+    <<: *sbt_docker
     working_directory: ~/repo
     steps:
       - checkout
-      - run: |
-          scp -oStrictHostKeyChecking=no -P $HOST_PORT -r $DEPENDENCY_REPOSITORY_HOST . > /dev/null 2>&1
-          mv dependencies localDependencies
-          ls -al localDependencies
       - restore_cache:
           keys:
-            - gradle-repo-v2-{{ .Branch }}-{{ checksum "dependencies.lock" }}
-            - gradle-repo-v2-{{ .Branch }}-
-            - gradle-repo-v2-
-      - run: ./gradlew install
+            - sbt-repo-v2-{{ .Branch }}-{{ checksum "build.sbt" }}
+            - sbt-repo-v2-{{ .Branch }}-
+            - sbt-repo-v2-
+      - run: sbt test
+      - run: sbt assembly
       - save_cache:
           paths:
-            - ~/.gradle
-            - ~/.m2 # Maven dependencies
-          key: gradle-repo-v2-{{ .Branch }}-{{ checksum "dependencies.lock" }}
-      - run: mkdir -p workspace/builds && cp build/libs/**.jar workspace/builds
+            - ~/.ivy2/cache
+            - ~/.m2
+            - ~/.cache/coursier/v1
+          key: sbt-repo-v2-{{ .Branch }}-{{ checksum "build.sbt" }}
+      - run: mkdir -p workspace/builds && cp target/build/**.jar workspace/builds
       - *save_workspace
   deploy_debug:
-    <<: *gradle_docker
+    <<: *sbt_docker
     working_directory: ~/repo
     steps:
       - *load_workspace
       - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
   deploy_production:
-    <<: *gradle_docker
+    <<: *sbt_docker
     working_directory: ~/repo
     steps:
       - *load_workspace
@@ -55,22 +53,17 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - master
-                - develop
+      - build_and_test
       - deploy_production:
           requires:
-            - build
+            - build_and_test
           filters:
             branches:
               only:
                 - master
       - deploy_debug:
           requires:
-            - build
+            - build_and_test
           filters:
             branches:
               only:

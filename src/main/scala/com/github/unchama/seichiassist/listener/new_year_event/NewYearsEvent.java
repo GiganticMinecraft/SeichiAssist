@@ -77,7 +77,7 @@ public class NewYearsEvent implements Listener {
      * @param endDay   終了日
      * @return startDayからendDayの範囲内にあるか(startDay, endDayを含む)
      */
-    public static boolean isHeld(Date nowDay, Date startDay, Date endDay) {
+    private static boolean isHeld(Date nowDay, Date startDay, Date endDay) {
 		/*
 		//a.compareTo(b) -> aとb同じ(0) aが後(>0) aが前(<0)
 		//nowDayが後の時>0

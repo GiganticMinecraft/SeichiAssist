@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import scala.Int;
 import scala.jdk.CollectionConverters;
 
 import java.text.NumberFormat;
@@ -33,8 +32,8 @@ import java.util.Map;
 public class RegionMenuData {
     static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
     static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
-    static Config config = SeichiAssist.seichiAssistConfig();
-    static NumberFormat nfNum = NumberFormat.getNumberInstance();
+    private static Config config = SeichiAssist.seichiAssistConfig();
+    private static NumberFormat nfNum = NumberFormat.getNumberInstance();
 
     /**
      * グリッド式保護メニュを開きます。
@@ -136,7 +135,7 @@ public class RegionMenuData {
         gridInv.setItem(7, menuicon7);
 
         //8マス目
-        if (!config.isGridProtectEnable(player)) {
+        if (!config.isGridProtectionEnabled(player)) {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "このワールドでは保護を作成できません");
             ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",
@@ -244,7 +243,7 @@ public class RegionMenuData {
      *
      * @return グリッド式保護テンプレート保存メニューの縦の数
      */
-    public static int getAisleAmount() {
+    private static int getAisleAmount() {
         return config.getTemplateKeepAmount() / 9 + 1;
     }
 

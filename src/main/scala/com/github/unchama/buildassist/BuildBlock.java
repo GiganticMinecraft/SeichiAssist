@@ -1,4 +1,3 @@
-/*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package com.github.unchama.buildassist;
 
 import org.bukkit.Material;
@@ -7,17 +6,22 @@ import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 
-public class BuildBlock {
+import com.github.unchama.seichiassist.PackagePrivate;
+
+@PackagePrivate
+class BuildBlock {
     private final int after;
     private final int before;
-    public int increase;
-
+    private int increase;
+    
+    @PackagePrivate
     BuildBlock() {
         this.after = 0;
         this.before = 0;
         this.increase = 0;
     }
 
+    @PackagePrivate
     static BigDecimal calcBuildBlock(final Player player) {
         BigDecimal sum = BigDecimal.ZERO;
         for (final Material m : BuildAssist.materiallist()) {

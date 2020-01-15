@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.task.repeating
 
-import cats.effect.{IO, Timer}
-import com.github.unchama.concurrent.RepeatingTask
+import cats.effect.IO
+import com.github.unchama.concurrent.{BukkitSyncExecutionContext, RepeatingTask, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
@@ -11,11 +11,10 @@ import org.bukkit.ChatColor._
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: ExecutionContext)
-                                          (override val sleepTimer: Timer[IO]) extends RepeatingTask() {
+class PlayerDataPeriodicRecalculation(implicit val syncContext: BukkitSyncExecutionContext,
+                                      override val context: RepeatingTaskContext) extends RepeatingTask() {
 
   override val getRepeatInterval: IO[FiniteDuration] = IO {
     import scala.concurrent.duration._
@@ -23,7 +22,7 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
     if (SeichiAssist.DEBUG) 10.seconds else 1.minute
   }
 
-  override val runRoutine: IO[Unit] = IO {
+  val routineOnMainThread = IO {
     import scala.jdk.CollectionConverters._
 
     val config = SeichiAssist.seichiAssistConfig
@@ -52,7 +51,7 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
 
       //プレイヤー名を取得
       val name = player.getName
-      //総整地量を更新(返り血で重み分け済みの1分間のブロック破壊量が返ってくる)
+      //総整地量を更新(返り値で重み分け済みの1分間のブロック破壊量が返ってくる)
       val increase = playerData.updateAndCalcMinedBlockAmount()
       //Levelを設定(必ず総整地量更新後に実施！)
       playerData.updateLevel()
@@ -186,4 +185,9 @@ case class PlayerDataPeriodicRecalculation(override val taskExecutionContext: Ex
 
     }
   }
+
+  override val runRoutine: IO[Unit] = for {
+    _ <- IO.shift(syncContext)
+    _ <- routineOnMainThread
+  } yield ()
 }

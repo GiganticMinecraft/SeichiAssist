@@ -17,9 +17,9 @@ import org.bukkit.{Material, Sound}
 object BuildMainMenu extends Menu {
 
   import com.github.unchama.menuinventory.slot.button.RecomputedButton
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+  import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._
   import menuinventory.syntax._
 
@@ -220,9 +220,7 @@ object BuildMainMenu extends Menu {
         FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            UnfocusedEffect {
-              player.openInventory(MenuInventoryData.getBlockLineUpData(player))
-            }
+            computedEffect(p => openInventoryEffect(MenuInventoryData.getBlockLineUpData(p)))
           )
         }
       )
@@ -238,9 +236,7 @@ object BuildMainMenu extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            UnfocusedEffect {
-              player.openInventory(MenuInventoryData.getBlockCraftData(player))
-            }
+            computedEffect(p => openInventoryEffect(MenuInventoryData.getBlockCraftData(p)))
           )
         }
       )

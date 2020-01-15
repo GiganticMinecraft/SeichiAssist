@@ -2,67 +2,103 @@ name: @name@
 main: com.github.unchama.seichiassist.SeichiAssist
 version: @version@
 
+default-permission-message: &denied You don't have <permission>
 commands:
   gacha:
     permission: multiseichiplugin.seichi
-    permission-message: You don't have <permission>
+    permission-message: *denied
   seichihaste:
     permission: multiseichiplugin.seichihaste
-    permission-message: You don't have <permission>
+    permission-message: *denied
   seichiassist:
     permission: multiseichiplugin.seichiassist
-    permission-message: You don't have <permission>
+    permission-message: *denied
   openpocket:
     permission: multiseichiplugin.openpocket
-    permission-message: You don't have <permission>
+    permission-message: *denied
   ef:
     permission: multiseichiplugin.ef
-    permission-message: You don't have <permission>
+    permission-message: *denied
+    aliases:
+      - effect
   lastquit:
     permission: multiseichiplugin.lastquit
-    permission-message: You don't have <permission>
+    permission-message: *denied
   rmp:
     permission: multiseichiplugin.rmp
-    permission-message: You don't have <permission>
+    permission-message: *denied
   map:
+    permission: multiseichiplugin.map
+    permission-message: *denied
 
   stick:
     permission: multiseichiplugin.stick
-    permission-message: You don't have <permission>
+    permission-message: *denied
   shareinv:
-    default-permission: NOT_OP
-    permission-message: You don't have <permission>
+    permission: multiseichiplugin.shareinv
+    permission-message: *denied
   mebius:
-    default-permission: NOT_OP
-    permission-message: You don't have <permission>
+    permission: multiseichiplugin.mebius
+    permission-message: *denied
   achievement:
     usage: /<command> <操作> <実績No> <スコープ指定子>
     permission: multiseichiplugin.achievement
-    permission-message: You don't have <permission>
+    permission-message: *denied
   halfguard:
     permission: multiseichiplugin.halfguard
-    permission-message: You don't have <permission>
+    permission-message: *denied
   event:
     permission: multiseichiplugin.event
-    default-permission: OP
+    permission-message: *denied
   contribute:
     permission: multiseichiplugin.contribute
-    permission-message: You don't have <permission>
+    permission-message: *denied
   subhome:
     permission: multiseichiplugin.subhome
-    permission-message: You don't have <permission>
+    permission-message: *denied
   gtfever:
     permission: multiseichiplugin.gtfever
-    permission-message: You don't have <permission>
+    permission-message: *denied
   minehead:
     permission: multiseichiplugin.minehead
-    permission-message: You don't have <permission>
+    permission-message: *denied
   x-transfer:
     usage: /<command> [region name] [new owner name]
     permission: multiseichiplugin.x-transfer
-    permission-message: You don't have <permission>
+    permission-message: *denied
   fly:
     description: This is a fly command.
     usage: /<command> <finish/amount/endless>
-    permission-message: You don't have <permission>
+    permission-message: *denied
     permission: multibuildplugin.build
+
+permissions:
+  multiseichiplugin.*:
+    default: false
+    children:
+      - multiseichiplugin.seichi
+      - multiseichiplugin.seichihaste
+      - multiseichiplugin.seichiassist
+      - multiseichiplugin.openpocket
+      - multiseichiplugin.ef
+      - multiseichiplugin.lastquit
+      - multiseichiplugin.rmp
+      - multiseichiplugin.map
+      - multiseichiplugin.stick
+      - multiseichiplugin.shareinv
+      - multiseichiplugin.mebius
+      - multiseichiplugin.achievenemt
+      - multiseichiplugin.halfguard
+      - multiseichiplugin.event
+      - multiseichiplugin.contribute
+      - multiseichiplugin.subhome
+      - multiseichiplugin.gtfever
+      - multiseichiplugin.minehead
+      - multiseichiplugin.x-transfer
+      - multibuildplugin.build
+  multiseichiplugin.event:
+    default: op
+  multiseichiplugin.shareinv:
+    default: not op
+  multiseichiplugin.mebius:
+    default: not op

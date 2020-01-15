@@ -1,6 +1,9 @@
 package com.github.unchama.targetedeffect.syntax
 
+import cats.data.Kleisli
+import cats.effect.IO
 import cats.kernel.Monoid
+import com.github.unchama.concurrent.{BukkitSyncExecutionContext, Execution}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.CommandSender
@@ -16,9 +19,11 @@ trait TargetedEffectCombineAll {
 
 trait StringTargetedEffectSyntax {
   implicit class StringToCommandEffect(val string: String) {
-    def asCommandEffect(): TargetedEffect[Player] =
-      targetedeffect.delay { p =>
-        p.chat(s"/$string")
+    def asCommandEffect()(implicit context: BukkitSyncExecutionContext): TargetedEffect[Player] =
+      Kleisli { p =>
+        // 非同期スレッドからchatを呼ぶとコマンドがそのスレッドで実行される(Spigot 1.12.2)。
+        // コマンドの実行は基本的に同期スレッドで行ってほしいのでメインスレッドまで処理を飛ばす。
+        Execution.onServerMainThread(IO { p.chat(s"/$string") })
       }
   }
 

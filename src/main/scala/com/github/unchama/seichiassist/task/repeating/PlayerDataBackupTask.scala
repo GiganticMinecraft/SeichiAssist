@@ -1,18 +1,16 @@
 package com.github.unchama.seichiassist.task.repeating
 
-import cats.effect.{IO, Timer}
-import com.github.unchama.concurrent.RepeatingTask
+import cats.effect.IO
+import com.github.unchama.concurrent.{RepeatingTask, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-case class PlayerDataBackupTask(override val taskExecutionContext: ExecutionContext)
-                               (override val sleepTimer: Timer[IO]) extends RepeatingTask() {
+class PlayerDataBackupTask(implicit override val context: RepeatingTaskContext) extends RepeatingTask() {
 
   override val getRepeatInterval: IO[FiniteDuration] = IO {
     import scala.concurrent.duration._
@@ -46,7 +44,6 @@ case class PlayerDataBackupTask(override val taskExecutionContext: ExecutionCont
     }
 
     for {
-      _ <- IO.shift(ExecutionContext.global)
       _ <- save
       _ <- updateRankingData
     } yield ()

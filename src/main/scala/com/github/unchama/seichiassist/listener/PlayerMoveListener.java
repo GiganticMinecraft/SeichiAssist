@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 // マナ自動回復用リスナー
 // 現在リスナー停止により無効化中
-public class PlayerMoveListener implements Listener {
+class PlayerMoveListener implements Listener {
     // プレイヤーがworld変更した際から自動回復タスクを開始
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {

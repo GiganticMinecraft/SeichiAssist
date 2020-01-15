@@ -3,10 +3,11 @@ package com.github.unchama.menuinventory
 import cats.Eq
 import cats.effect.concurrent.Ref
 import cats.effect.{ContextShift, IO}
+import com.github.unchama.concurrent.BukkitSyncExecutionContext
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.player.PlayerEffects
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}
@@ -21,12 +22,10 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
   private val sessionInventory = frame.createConfiguredInventory(this)
 
   /**
-   * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.
+   * このセッションが持つ共有インベントリを同期スレッドで開く[TargetedEffect]を返します.
    */
-  val openInventory: TargetedEffect[Player] =
-    targetedeffect.delay { player =>
-      player.openInventory(sessionInventory)
-    }
+  def openInventory(implicit context: BukkitSyncExecutionContext): TargetedEffect[Player] =
+    PlayerEffects.openInventoryEffect(sessionInventory)
 
   def overwriteViewWith(newLayout: MenuSlotLayout)(implicit ctx: LayoutPreparationContext): IO[Unit] = {
     type LayoutDiff = Map[Int, Option[Slot]]

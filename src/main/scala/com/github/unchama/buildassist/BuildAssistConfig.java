@@ -31,12 +31,12 @@ public class BuildAssistConfig {
     }
 
     //plugin.ymlがない時にDefaultのファイルを生成
-    public void saveDefaultConfig() {
+    private void saveDefaultConfig() {
         plugin.saveDefaultConfig();
     }
 
     //plugin.ymlファイルからの読み込み
-    public FileConfiguration getConfig() {
+    private FileConfiguration getConfig() {
         return plugin.getConfig();
     }
 

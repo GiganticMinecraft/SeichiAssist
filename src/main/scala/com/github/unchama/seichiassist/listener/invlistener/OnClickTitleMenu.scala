@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener.invlistener
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
 import com.github.unchama.targetedeffect.sequentialEffect
@@ -16,6 +15,7 @@ import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
 object OnClickTitleMenu extends Listener {
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了

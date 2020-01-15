@@ -5,6 +5,7 @@ import java.util.stream.IntStream
 
 import cats.effect.IO
 import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
@@ -85,41 +86,49 @@ object BreakUtil {
                  dropLocation: Location,
                  tool: ItemStack,
                  shouldPlayBreakSound: Boolean): Unit =
-    massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
+    unsafe.runIOAsync(
+      "単一ブロックを破壊する",
+      massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
+    )
 
+  /**
+   * ブロックの書き換えを行い、ドロップ処理と統計増加の処理を行う`IO`を返す。
+   *
+   * 返される`IO`は、終了時点で同期スレッドで実行を行っている。
+   * @return
+   */
   def massBreakBlock(player: Player,
                      targetBlocks: Iterable[Block],
                      dropLocation: Location,
                      miningTool: ItemStack,
                      shouldPlayBreakSound: Boolean,
-                     toMaterial: Material = Material.AIR): Unit = {
-    val materialFilteredBlocks = targetBlocks.filter(b => MaterialSets.materials.contains(b.getType)).toList
+                     toMaterial: Material = Material.AIR): IO[Unit] =
+    for {
+      _ <- PluginExecutionContexts.syncShift.shift
 
-    val targetBlocksInformation = materialFilteredBlocks
-      .map(block => (block.getLocation.clone(), block.getType, block.getData))
+      materialFilteredBlocks <- IO { targetBlocks.filter(b => MaterialSets.materials.contains(b.getType)).toList }
 
-    // ブロックをすべて[[toMaterial]]に変える
-    materialFilteredBlocks.foreach(_.setType(toMaterial))
+      // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
+      targetBlocksInformation <- IO {
+        materialFilteredBlocks.map(block => (block.getLocation.clone(), block.getType, block.getData))
+      }
 
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
-      "ブロックの大量破壊の結果を反映する",
-      IO {
+      // ブロックをすべて[[toMaterial]]に変える
+      _ <- IO {
+        materialFilteredBlocks.foreach(_.setType(toMaterial))
+      }
+
+      _ <- PluginExecutionContexts.asyncShift.shift
+
+      _ <- IO {
         // 壊した時の音を再生する
         if (shouldPlayBreakSound) {
           targetBlocksInformation.foreach { case (location, material, _) =>
             dropLocation.getWorld.playEffect(location, Effect.STEP_SOUND, material)
           }
         }
-
-        //アイテムをドロップする
-        targetBlocksInformation
-          .flatMap(dropItemOnTool(miningTool))
-          .map { itemStack =>
-            if (!addItemToMineStack(player, itemStack)) {
-              dropLocation.getWorld.dropItemNaturally(dropLocation, itemStack)
-            }
-          }
-
+      }
+      _ <- IO {
         //プレイヤーの統計を増やす
         targetBlocksInformation.map { case (_, m, _) => m }
           .map {
@@ -127,13 +136,31 @@ object BreakUtil {
             case others@_ => others
           }
           .filter {
-            case Material.GRASS_PATH | Material.SOIL | Material.MOB_SPAWNER => false
+            case Material.GRASS_PATH | Material.SOIL | Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME | Material.ENDER_PORTAL => false
             case _ => true
           }
           .foreach(player.incrementStatistic(Statistic.MINE_BLOCK, _))
       }
-    )
-  }
+      itemsToBeDropped <- IO {
+        // アイテムのマインスタック自動格納を試みる
+        targetBlocksInformation
+          .flatMap(dropItemOnTool(miningTool))
+          .flatMap { itemStack =>
+            if (!addItemToMineStack(player, itemStack)) {
+              Some(itemStack)
+            } else {
+              None
+            }
+          }
+      }
+
+      _ <- PluginExecutionContexts.syncShift.shift
+
+      _ <- IO {
+        // アイテムドロップは非同期スレッドで行ってはならない
+        itemsToBeDropped.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
+      }
+    } yield ()
 
   def addItemToMineStack(player: Player, itemstack: ItemStack): Boolean = {
     //もしサバイバルでなければ処理を終了
@@ -210,7 +237,7 @@ object BreakUtil {
 
     blockMaterial match {
       case Material.GRASS_PATH | Material.SOIL => return Some(new ItemStack(Material.DIRT))
-      case Material.MOB_SPAWNER => return None
+      case Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME | Material.ENDER_PORTAL => return None
       case _ =>
     }
 
@@ -349,10 +376,6 @@ object BreakUtil {
     IntStream.range(0, num)
       .filter { _ => probability > rand.nextDouble() }
       .count().toShort
-  }
-
-  def BlockEqualsMaterialList(block: Block): Boolean = {
-    MaterialSets.materials.contains(block.getType)
   }
 
   /**

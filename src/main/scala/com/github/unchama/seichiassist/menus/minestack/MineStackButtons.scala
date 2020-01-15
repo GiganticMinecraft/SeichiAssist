@@ -112,11 +112,11 @@ private[minestack] case class MineStackButtons(player: Player) {
       val grantItemStack = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
       sequentialEffect(
+        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
+        Util.grantItemStacksEffect(grantItemStack),
         targetedeffect.UnfocusedEffect {
-          Util.addItemToPlayerSafely(player, grantItemStack)
           playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
-        },
-        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch)
+        }
       )
     }
   }
@@ -127,7 +127,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     val iconItemStack = {
       val baseBuilder =
         new IconItemStackBuilder(Material.IRON_PICKAXE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}対象ブロック自動スタック機能")
+          .title(s"$YELLOW$UNDERLINE${BOLD}対象アイテム自動スタック機能")
 
       if (playerData.settings.autoMineStack) {
         baseBuilder
@@ -151,9 +151,9 @@ private[minestack] case class MineStackButtons(player: Player) {
         deferredEffect(IO {
           val (message, soundPitch) =
             if (playerData.settings.autoMineStack) {
-              (s"${GREEN}対象ブロック自動スタック機能:ON", 1.0f)
+              (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
             } else {
-              (s"${RED}対象ブロック自動スタック機能:OFF", 0.5f)
+              (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
             }
 
           sequentialEffect(

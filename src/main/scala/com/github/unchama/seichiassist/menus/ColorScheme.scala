@@ -7,5 +7,7 @@ object ColorScheme {
 
   val navigation: Scheme = s"$RESET$YELLOW$UNDERLINE$BOLD" + _
 
+  val purpleBold: Scheme = s"$RESET$DARK_PURPLE$BOLD" + _
+
   val clickResultDescription: Scheme = s"$RESET$DARK_RED$UNDERLINE" + _
 }

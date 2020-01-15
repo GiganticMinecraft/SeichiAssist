@@ -17,7 +17,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 
 object AchievementCategoryMenu {
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
   import eu.timepit.refined.auto._
 
   type AchievementGroupRepr = (AchievementGroup, Material)
@@ -29,7 +29,9 @@ object AchievementCategoryMenu {
         ChestSlotRef(1, 5) -> (BrokenBlockRanking, Material.DIAMOND_PICKAXE)
       )
     case Building =>
-      Map()
+      Map(
+        ChestSlotRef(1, 4) -> (PlacedBlockAmount, Material.BIRCH_WOOD_STAIRS)
+      )
     case Login =>
       Map(
         ChestSlotRef(1, 1) -> (PlayTime, Material.COMPASS),

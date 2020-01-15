@@ -111,7 +111,7 @@ public class MebiusListener implements Listener {
             "公共施設サーバからデパートに行ってみようよ！修繕の本やダイヤのツールが買えるんだってー！",
             "余った鉱石は公共施設サーバの交換所で交換券に出来るって知ってた？交換券で強いピッケルやスコップが手に入るらしいよ！");
     // Instanceアクセス用
-    public static MebiusListener me;
+    private static MebiusListener me;
     // デバッグフラグ
     private static boolean DEBUGENABLE = false;
     private static boolean debugFlg = false;
@@ -640,21 +640,21 @@ public class MebiusListener implements Listener {
         /**
          * エンチャント実体
          */
-        public final Enchantment ench;
+        final Enchantment ench;
         /**
          * 解放アイテムレベル
          */
-        public final int open;
+        final int open;
         /**
          * 最大エンチャントレベル
          */
-        public final int max;
+        final int max;
         /**
          * エンチャント名
          */
-        public final String name;
+        final String name;
 
-        public Enchant(Enchantment ench, int open, int max, String name) {
+        Enchant(Enchantment ench, int open, int max, String name) {
             this.ench = ench;
             this.open = open;
             this.max = max;

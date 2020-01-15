@@ -13,7 +13,7 @@ public enum ActiveSkill {
     ARMOR(6, "", "", "", "", "", "", "", "", "", "アサルト・アーマー"),
     FLUIDCONDENSE(7, "", "", "", "", "", "", "", "", "", "ヴェンダー・ブリザード"),
     ;
-    private int typenum;
+    public final int typenum;
     private String lv1name;
     private String lv2name;
     private String lv3name;
@@ -207,47 +207,47 @@ public enum ActiveSkill {
         return exp;
     }
 
-    public int gettypenum() {
+    @Deprecated public int gettypenum() {
         return this.typenum;
     }
 
-    public String getLv1Name() {
+    private String getLv1Name() {
         return this.lv1name;
     }
 
-    public String getLv2Name() {
+    private String getLv2Name() {
         return this.lv2name;
     }
 
-    public String getLv3Name() {
+    private String getLv3Name() {
         return this.lv3name;
     }
 
-    public String getLv4Name() {
+    private String getLv4Name() {
         return this.lv4name;
     }
 
-    public String getLv5Name() {
+    private String getLv5Name() {
         return this.lv5name;
     }
 
-    public String getLv6Name() {
+    private String getLv6Name() {
         return this.lv6name;
     }
 
-    public String getLv7Name() {
+    private String getLv7Name() {
         return this.lv7name;
     }
 
-    public String getLv8Name() {
+    private String getLv8Name() {
         return this.lv8name;
     }
 
-    public String getLv9Name() {
+    private String getLv9Name() {
         return this.lv9name;
     }
 
-    public String getLv10Name() {
+    private String getLv10Name() {
         return this.lv10name;
     }
 

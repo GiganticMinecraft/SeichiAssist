@@ -1,44 +1,38 @@
 package com.github.unchama.seichiassist;
 
 import com.github.unchama.seichiassist.util.TypeConverter;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class Config {
+public final class Config {
     private static FileConfiguration config;
-    private SeichiAssist plugin;
+    private final SeichiAssist plugin = SeichiAssist.instance();
 
-    //コンストラクタ
-    Config(SeichiAssist _plugin) {
-        plugin = _plugin;
+    Config() {
         saveDefaultConfig();
     }
 
-    //コンフィグのロード
     public void loadConfig() {
         config = getConfig();
     }
 
-    //コンフィグのリロード
     public void reloadConfig() {
         plugin.reloadConfig();
         config = getConfig();
     }
 
-    //コンフィグのセーブ
     public void saveConfig() {
         plugin.saveConfig();
     }
 
     //config.ymlがない時にDefaultのファイルを生成
-    public void saveDefaultConfig() {
+    private void saveDefaultConfig() {
         plugin.saveDefaultConfig();
     }
 
     //config.ymlファイルからの読み込み
-    public FileConfiguration getConfig() {
+    private FileConfiguration getConfig() {
         return plugin.getConfig();
     }
 
@@ -90,7 +84,7 @@ public class Config {
         return TypeConverter.toInt(config.getString("multipleidblockbreaklevel"));
     }
 
-    public double getDropExplevel(int i) {
+    public double getDropExplevel(final int i) {
         return TypeConverter.toDouble(config.getString("dropexplevel" + i, ""));
     }
 
@@ -102,7 +96,7 @@ public class Config {
         return TypeConverter.toInt(config.getString("dokodemoenderlevel"));
     }
 
-    public int getMineStacklevel(int i) {
+    public int getMineStacklevel(final int i) {
         return TypeConverter.toInt(config.getString("minestacklevel" + i, ""));
     }
 
@@ -131,7 +125,7 @@ public class Config {
         return url;
     }
 
-    public String getLvMessage(int i) {
+    public String getLvMessage(final int i) {
         return config.getString("lv" + i + "message", "");
     }
 
@@ -159,15 +153,24 @@ public class Config {
 
     /**
      * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
-     *
+     * @deprecated 判定の対象はWorldなので意味論的におかしい
      * @param player
-     * @return
+     * @return 許可されているならtrue、許可されていないならfalse
      */
-    public boolean isGridProtectEnable(Player player) {
-        List<String> worldlist = config.getStringList("GridProtectEnableWorld");
+    @Deprecated
+    public boolean isGridProtectionEnabled(final Player player) {
+        return isGridProtectionEnabled(player.getWorld());
+    }
 
-        return worldlist.stream()
-                .anyMatch(name -> player.getWorld().getName().equalsIgnoreCase(name));
+    /**
+     * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
+     * @param world 対象のワールド
+     * @return 許可されているならtrue、許可されていないならfalse
+     */
+    public boolean isGridProtectionEnabled(final World world) {
+        return config.getStringList("GridProtectEnableWorld")
+                .parallelStream()
+                .anyMatch(name -> world.getName().equalsIgnoreCase(name));
     }
 
     /**
@@ -176,7 +179,7 @@ public class Config {
      * @param world
      * @return
      */
-    public int getGridLimitPerWorld(String world) {
+    public int getGridLimitPerWorld(final String world) {
         return TypeConverter.toInt(config.getString("GridLimitPerWorld." + world, config.getString("GridLimitDefault")));
     }
 
@@ -216,24 +219,24 @@ public class Config {
         return config.getString("LimitedLoginEvent.EventEnd");
     }
 
-    public String getLimitedLoginEventItem(int i) {
-        String forreturn;
-        if (config.getString("LimitedLoginEvent.DAY" + i + "_Item", "").equals("")) {
-            forreturn = "0";
+    public String getLimitedLoginEventItem(final int i) {
+        final String ret;
+        if (config.getString("LimitedLoginEvent.DAY" + i + "_Item", "").isEmpty()) {
+            ret = "0";
         } else {
-            forreturn = config.getString("LimitedLoginEvent.DAY" + i + "_Item", "");
+            ret = config.getString("LimitedLoginEvent.DAY" + i + "_Item", "");
         }
-        return forreturn;
+        return ret;
     }
 
-    public String getLimitedLoginEventAmount(int i) {
-        String forreturn;
-        if (config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "").equals("")) {
-            forreturn = "0";
+    public String getLimitedLoginEventAmount(final int i) {
+        final String ret;
+        if (config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "").isEmpty()) {
+            ret = "0";
         } else {
-            forreturn = config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "");
+            ret = config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "");
         }
-        return forreturn;
+        return ret;
     }
 
 
@@ -278,10 +281,10 @@ public class Config {
     }
 
     public String getGiganticFeverDisplayTime() {
-        int minute = getGiganticFeverMinutes();
+        final int minute = getGiganticFeverMinutes();
 
-        int hours = minute / 60;
-        int minutes = minute - 60 * hours;
+        final int hours = minute / 60;
+        final int minutes = minute - 60 * hours;
 
         return hours + "時間" + minutes + "分";
     }
@@ -296,7 +299,7 @@ public class Config {
      * @param typeName Url以下の項目名
      * @return 該当URL.ただし, typeNameが誤っていた場合は""を返します.
      */
-    public String getUrl(String typeName) {
-        return config.getString("Url." + typeName);
+    public String getUrl(final String typeName) {
+        return config.getString("Url." + typeName, "");
     }
 }

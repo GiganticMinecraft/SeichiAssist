@@ -1,11 +1,15 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.itemstackbuilder.IconItemStackBuilder;
-import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.LevelThresholds;
+import com.github.unchama.seichiassist.ManagedWorld;
+import com.github.unchama.seichiassist.ManagedWorld$;
+import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.data.player.PlayerNickname;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect;
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
@@ -45,102 +49,8 @@ public class MenuInventoryData {
     private static int checkTitleS = 0;
     private static int NoKeep = 0;
 
-    //パッシブスキルメニュー
-    public static Inventory getPassiveSkillMenuData(Player p) {
-
-        Inventory inventory = Bukkit.getServer().createInventory(null, 4 * 9, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキル切り替え");
-        ItemStack itemstack;
-        ItemMeta itemmeta;
-        SkullMeta skullmeta;
-        List<String> lore;
-
-        //プレイヤーを取得
-        Player player = p.getPlayer();
-
-        //UUID取得
-        UUID uuid = player.getUniqueId();
-        //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-
-        // 1ページ目を開く
-        itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-        skullmeta = ItemMetaFactory.SKULL.getValue();
-        itemstack.setDurability((short) 3);
-        skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-        skullmeta.setLore(lore);
-        skullmeta.setOwner("MHF_ArrowLeft");
-        itemstack.setItemMeta(skullmeta);
-        AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
-
-        //複数種類同時破壊スキルのトグルボタン
-        itemstack = new ItemStack(Material.DIAMOND_PICKAXE, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_PICKAXE);
-        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "複数種類同時破壊スキル切替");
-        //itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(MultipleIDBlockBreakToggleMeta(playerdata, itemmeta));
-        inventory.setItem(0, itemstack);
-
-        //Chest破壊
-        if (playerdata.chestflag()) {
-            itemstack = new ItemStack(Material.DIAMOND_AXE, 1);
-            itemmeta = Bukkit.getItemFactory().getItemMeta(Material.DIAMOND_AXE);
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        } else {
-            itemstack = new ItemStack(Material.CHEST, 1);
-            itemmeta = Bukkit.getItemFactory().getItemMeta(Material.CHEST);
-        }
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "チェスト破壊スキル切替");
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(ChestBreakToggleMeta(playerdata, itemmeta));
-        inventory.setItem(1, itemstack);
-
-        //GiganticBerserk
-        //10レベ未満のプレイヤーはスキル未解放
-        if (playerdata.level() < 10) {
-            itemstack = new ItemStack(Material.STICK, 1);
-            itemmeta = Bukkit.getItemFactory().getItemMeta(Material.STICK);
-        } else {
-            final Material m;
-            switch (playerdata.giganticBerserk().stage()) {
-                case 0:
-                    m = Material.WOOD_SWORD;
-                    break;
-                case 1:
-                    m = Material.STONE_SWORD;
-                    break;
-                case 2:
-                    m = Material.GOLD_SWORD;
-                    break;
-                case 3:
-                    m = Material.IRON_SWORD;
-                    break;
-                case 4:
-                    m = Material.DIAMOND_SWORD;
-                    break;
-                default:
-                    m = Material.STICK;
-            }
-            itemstack = new ItemStack(m, 1);
-            itemmeta = Bukkit.getItemFactory().getItemMeta(m);
-        }
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Gigantic" + ChatColor.RED + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "Berserk");
-
-        if (playerdata.giganticBerserk().canEvolve() || playerdata.giganticBerserk().reachedLimit()) {
-            itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        }
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(GiganticBerserkMeta(playerdata, itemmeta));
-        inventory.setItem(9, itemstack);
-
-        return inventory;
-    }
-
     //投票特典受け取りボタン
-    public static List<String> VoteGetButtonLore(PlayerData playerdata) {
+    private static List<String> VoteGetButtonLore(PlayerData playerdata) {
         List<String> lore = new ArrayList<>();
         lore.addAll(Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "投票特典を受け取るには"
                 , ChatColor.RESET + "" + ChatColor.GRAY + "投票ページで投票した後"
@@ -148,93 +58,6 @@ public class MenuInventoryData {
         lore.add(ChatColor.RESET + "" + ChatColor.AQUA + "特典受取済投票回数：" + playerdata.p_givenvote());
         lore.add(ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.activeskilldata().effectpoint);
         return lore;
-    }
-
-    // 複数種類ブロック同時破壊トグルボタン(追加)
-    public static ItemMeta MultipleIDBlockBreakToggleMeta(PlayerData playerdata, ItemMeta itemmeta) {
-        List<String> lore = new ArrayList<>();
-        if (playerdata.settings().multipleidbreakflag()) {
-            itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-            lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "複数種類ブロック同時破壊");
-            lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
-            lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
-            lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
-            lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "ON");
-            lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでOFF");
-            if (SeichiAssist.DEBUG()) {
-                lore.add(ChatColor.RESET + "" + ChatColor.RED + "ON");
-            }
-        } else {
-            itemmeta.removeEnchant(Enchantment.DIG_SPEED);
-            lore.add(ChatColor.RESET + "" + ChatColor.GREEN + "複数種類ブロック同時破壊");
-            lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "ブロックに対応するツールを無視してスキルで");
-            lore.add(ChatColor.RESET + "" + ChatColor.GRAY + "破壊可能な全種類のブロックを同時に破壊します");
-            lore.add(ChatColor.RESET + "" + ChatColor.DARK_RED + "整地ワールドではON/OFFに関わらず同時破壊されます");
-            lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
-            lore.add(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックでON");
-            if (SeichiAssist.DEBUG()) {
-                lore.add(ChatColor.RESET + "" + ChatColor.RED + "OFF");
-            }
-        }
-        itemmeta.setLore(lore);
-        return itemmeta;
-    }
-
-    // GiganticBerserk Meta
-    public static ItemMeta GiganticBerserkMeta(PlayerData playerdata, ItemMeta itemmeta) {
-        List<String> lore = new ArrayList<>();
-
-        int n = (playerdata.giganticBerserk().stage() * 10) + playerdata.giganticBerserk().level();
-
-        if (playerdata.level() < 10) {
-            lore.add(ChatColor.WHITE + "このパッシブスキルは");
-            lore.add(ChatColor.WHITE + "整地レベルが10以上になると解放されます");
-        } else {
-            lore.add(ChatColor.RED + "敵MOBを倒した時");
-            lore.add(ChatColor.RED + "その魂を吸収しマナへと変換するスキル");
-            lore.add(ChatColor.DARK_GRAY + "※成功率は高くなく");
-            lore.add(ChatColor.DARK_GRAY + "整地中でなければその効果を発揮しない");
-            lore.add("");
-            lore.add(ChatColor.DARK_GRAY + "実装は試験的であり、変更される場合があります");
-            if (playerdata.giganticBerserk().reachedLimit()) {
-                lore.add(ChatColor.GRAY + "MOBの魂を極限まで吸収し最大限の力を発揮する");
-            } else {
-                lore.add(ChatColor.GRAY + "MOBの魂を" + LevelThresholds.giganticBerserkLevelList().apply(n) + "回吸収すると更なる力が得られる");
-                //exp
-                lore.add(ChatColor.GRAY + "" + playerdata.giganticBerserk().exp() + "/" + LevelThresholds.giganticBerserkLevelList().apply(n));
-            }
-            //level
-            lore.add(ChatColor.GRAY + "現在" + (playerdata.giganticBerserk().level() + 1) + "レベル,回復率 " + (100 * playerdata.giganticBerserk().manaRegenerationProbability()) + "%");
-
-            if (playerdata.giganticBerserk().canEvolve()) {
-                lore.add("");
-                lore.add(ChatColor.DARK_RED + "沢山の魂を吸収したことで");
-                lore.add(ChatColor.DARK_RED + "スキルの秘めたる力を解放できそうだ…！");
-                lore.add(ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで解放する");
-            }
-
-        }
-
-        itemmeta.setLore(lore);
-        return itemmeta;
-    }
-
-    public static ItemMeta ChestBreakToggleMeta(PlayerData playerdata, ItemMeta itemmeta) {
-        List<String> lore = new ArrayList<>();
-
-        lore.add(ChatColor.GREEN + "スキルでチェストを破壊するスキル");
-
-        if (playerdata.chestflag()) {
-            lore.add(ChatColor.RED + "整地ワールドでのみ発動中(デフォルト)");
-            lore.add("");
-            lore.add(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで切り替え");
-        } else {
-            lore.add(ChatColor.RED + "発動しません");
-            lore.add("");
-            lore.add(ChatColor.DARK_GREEN + "" + ChatColor.UNDERLINE + "クリックで切り替え");
-        }
-        itemmeta.setLore(lore);
-        return itemmeta;
     }
 
     //ランキングリスト
@@ -558,7 +381,7 @@ public class MenuInventoryData {
         itemstack.setDurability((short) 3);
         skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
         skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.lowercaseName() + "のスキルエフェクトデータ");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillEffect.getNameByNum(playerdata.activeskilldata().effectnum)
+        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillNormalEffect.getNameByNum(playerdata.activeskilldata().effectnum)
                 , ChatColor.RESET + "" + ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata().effectpoint
                 , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※投票すると獲得出来ます"
                 , ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "使えるプレミアムポイント：" + playerdata.activeskilldata().premiumeffectpoint
@@ -590,7 +413,7 @@ public class MenuInventoryData {
         inventory.setItem(1, itemstack);
 
 
-        ActiveSkillEffect[] skilleffect = ActiveSkillEffect.arrayValues();
+        ActiveSkillNormalEffect[] skilleffect = ActiveSkillNormalEffect.arrayValues();
 
         for (int i = 0; i < skilleffect.length; i++) {
             //プレイヤーがそのスキルを取得している場合の処理
@@ -976,6 +799,8 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(skullmeta);
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
+                nextpageflag2 = true;
+
                 break;
             }
             checkTitle2++;
@@ -1178,7 +1003,7 @@ public class MenuInventoryData {
         if (checkTitleS < 9911) {
             checkTitleS = 9911;
         }
-        for (; checkTitleS <= 9932; ) {
+        for (; checkTitleS <= 9935; ) {
             if (setInv < 27) {
                 if (!playerdata.TitleFlags().contains(checkTitleS)) {
                     itemstack = new ItemStack(Material.BEDROCK, 1);
@@ -1223,71 +1048,6 @@ public class MenuInventoryData {
         itemmeta.setLore(lore);
         itemstack.setItemMeta(itemmeta);
         inventory.setItem(27, itemstack);
-
-        return inventory;
-    }
-
-
-    public static Inventory getServerSwitchMenu(Player p) {
-        //UUID取得
-        UUID uuid = p.getUniqueId();
-        //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (sendWarningToLogger(p, playerdata)) return null;
-        Inventory inventory = Bukkit.getServer().createInventory(null, 2 * 9, ChatColor.DARK_RED + "" + ChatColor.BOLD + "サーバーを選択してください");
-        ItemStack itemstack;
-        ItemMeta itemmeta;
-        SkullMeta skullmeta;
-
-        itemstack = new ItemStack(Material.DIAMOND_PICKAXE);
-        itemmeta = itemstack.getItemMeta();
-        itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "アルカディアサーバー");
-        List<String> lore1 = new ArrayList<>();
-        lore1.add(ChatColor.GRAY + "旧第一サバイバルサーバー");
-        itemmeta.setLore(lore1);
-        itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-        itemstack.setItemMeta(itemmeta);
-
-        inventory.setItem(0, itemstack);
-
-        itemstack = new ItemStack(Material.DIAMOND_SPADE);
-        itemmeta = itemstack.getItemMeta();
-        itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "エデンサーバー");
-        List<String> lore2 = new ArrayList<>();
-        lore2.add(ChatColor.GRAY + "旧第二サバイバルサーバー");
-        itemmeta.setLore(lore2);
-        itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-        itemstack.setItemMeta(itemmeta);
-
-        inventory.setItem(1, itemstack);
-
-        itemstack = new ItemStack(Material.DIAMOND_AXE);
-        itemmeta = itemstack.getItemMeta();
-        itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.YELLOW + "ヴァルハラサーバー");
-        List<String> lore3 = new ArrayList<>();
-        lore3.add(ChatColor.GRAY + "旧第三サバイバルサーバー");
-        itemmeta.setLore(lore3);
-        itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-        itemstack.setItemMeta(itemmeta);
-
-        inventory.setItem(2, itemstack);
-
-        inventory.setItem(
-                7,
-                new IconItemStackBuilder(Material.BRICK, (short) 0)
-                        .title(ChatColor.BOLD + ChatColor.GREEN.toString() + "建築サーバー")
-                        .enchanted()
-                        .build()
-        );
-
-        itemstack = new ItemStack(Material.DIAMOND);
-        itemmeta = itemstack.getItemMeta();
-        itemmeta.setDisplayName(ChatColor.BOLD + "" + ChatColor.GREEN + "公共施設サーバー");
-        itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-        itemstack.setItemMeta(itemmeta);
-
-        inventory.setItem(8, itemstack);
 
         return inventory;
     }
@@ -1448,7 +1208,7 @@ public class MenuInventoryData {
 
     }
 
-    public static ItemMeta VFSoundToggleMeta(boolean bln) {
+    private static ItemMeta VFSoundToggleMeta(boolean bln) {
         ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.JUKEBOX);
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精の音トグル");
         if (bln) {
@@ -1470,7 +1230,7 @@ public class MenuInventoryData {
         return itemmeta;
     }
 
-    public static ItemMeta VFPromiseMeta(PlayerData playerdata) {
+    private static ItemMeta VFPromiseMeta(PlayerData playerdata) {
 
         ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精とのお約束");
@@ -1502,145 +1262,6 @@ public class MenuInventoryData {
             ));
         }
         return itemmeta;
-    }
-
-    public static Inventory getHomeMenuData(Player p) {
-        //UUID取得
-        UUID uuid = p.getUniqueId();
-        //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (sendWarningToLogger(p, playerdata)) return null;
-        Inventory inventory = Bukkit.getServer().createInventory(null, 3 * 9, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ホームメニュー");
-        ItemStack itemstack;
-        ItemMeta itemmeta;
-        List<String> lore;
-
-        // ver0.3.2 homeコマンド
-        itemstack = new ItemStack(Material.COMPASS, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントにワープ");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "あらかじめ設定した"
-                , ChatColor.RESET + "" + ChatColor.GRAY + "ホームポイントにワープします"
-                , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
-                , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
-                , ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
-                , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/home]"
-        );
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(0, itemstack);
-
-        itemstack = new ItemStack(Material.BED, 1);
-        itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
-        itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームポイントを設定");
-        lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "現在位置をホームポイント"
-                , ChatColor.RESET + "" + ChatColor.GRAY + "として設定します"
-                , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※確認メニューが開きます"
-                , ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定"
-                , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/sethome]"
-        );
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(18, itemstack);
-
-        for (int x = 0; x < SeichiAssist.seichiAssistConfig().getSubHomeMax(); x++) {
-            //サブホームに移動ボタン
-            itemstack = new ItemStack(Material.COMPASS, 1);
-            itemmeta = Bukkit.getItemFactory().getItemMeta(Material.COMPASS);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x + 1) + "にワープ");
-            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "あらかじめ設定した"
-                    , ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x + 1) + "にワープします"
-                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "うまく機能しない時は"
-                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "再接続してみてください"
-                    , ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでワープ"
-                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome warp " + (x + 1) + "]"
-            );
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
-            inventory.setItem(2 + x, itemstack);
-
-            itemstack = new ItemStack(Material.PAPER);
-            itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x + 1) + "の情報");
-            Location l = playerdata.getSubHomeLocation(x).getOrElse(() -> null);
-            final List<String> subHomeLore;
-            if (l != null) {
-                final ManagedWorld world = ManagedWorld$.MODULE$.fromBukkitWorld(l.getWorld()).getOrElse(() -> null);
-                final String worldName = world != null ? world.japaneseName() : l.getWorld().getName();
-
-                subHomeLore = Arrays.asList(
-                        ChatColor.RESET + "" + ChatColor.GRAY + "サブホームポイント" + (x + 1) + "は",
-                        ChatColor.RESET + "" + ChatColor.GRAY + playerdata.getSubHomeName(x),
-                        ChatColor.RESET + "" + ChatColor.GRAY + "と名付けられています",
-                        ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで名称変更",
-                        ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome name " + (x + 1) + "]",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "" + worldName + " x:" + (int) l.getX() + " y:" + (int) l.getY() + " z:" + (int) l.getZ()
-                );
-            } else {
-                subHomeLore = Arrays.asList(ChatColor.GRAY + "サブホームポイント" + (x + 1), ChatColor.GRAY + "ポイント未設定");
-            }
-            itemmeta.setLore(subHomeLore);
-            itemstack.setItemMeta(itemmeta);
-            inventory.setItem(11 + x, itemstack);
-
-            //サブホーム設定ボタン
-            itemstack = new ItemStack(Material.BED, 1);
-            itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BED);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "サブホームポイント" + (x + 1) + "を設定");
-            lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "現在位置をサブホームポイント" + (x + 1)
-                    , ChatColor.RESET + "" + ChatColor.GRAY + "として設定します"
-                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※確認メニューが開きます"
-                    , ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで設定"
-                    , ChatColor.RESET + "" + ChatColor.DARK_GRAY + "command->[/subhome set " + (x + 1) + "]"
-            );
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
-            inventory.setItem(20 + x, itemstack);
-        }
-
-        return inventory;
-    }
-
-    public static Inventory getCheckSetHomeMenuData(Player p) {
-        //UUID取得
-        UUID uuid = p.getUniqueId();
-        //プレイヤーデータ
-        PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        int n = playerdata.selectHomeNum();
-        //念のためエラー分岐
-        if (sendWarningToLogger(p, playerdata)) return null;
-        Inventory inventory = Bukkit.getServer().createInventory(null, 3 * 9, ChatColor.RED + "" + ChatColor.BOLD + "ホームポイントを変更しますか?");
-        ItemStack itemstack;
-        ItemMeta itemmeta;
-        List<String> lore;
-
-        if (n >= 1) {
-            itemstack = new ItemStack(Material.PAPER);
-            itemmeta = itemstack.getItemMeta();
-            itemmeta.setDisplayName(ChatColor.GREEN + "設定するサブホームポイントの情報");
-            lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GRAY + "No." + n,
-                    ChatColor.RESET + "" + ChatColor.GRAY + "名称：" + playerdata.getSubHomeName(n - 1)
-            );
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
-            inventory.setItem(4, itemstack);
-        }
-
-        itemstack = new ItemStack(Material.WOOL, 1, (byte) 5);
-        itemmeta = itemstack.getItemMeta();
-        itemmeta.setDisplayName(ChatColor.GREEN + "変更する");
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(11, itemstack);
-
-        itemstack = new ItemStack(Material.WOOL, 1, (byte) 14);
-        itemmeta = itemstack.getItemMeta();
-        itemmeta.setDisplayName(ChatColor.RED + "変更しない");
-        itemstack.setItemMeta(itemmeta);
-        inventory.setItem(15, itemstack);
-
-        return inventory;
     }
 
     public static Inventory getGiganticBerserkEvolutionMenu(Player p) {

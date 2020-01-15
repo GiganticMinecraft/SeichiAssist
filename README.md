@@ -3,11 +3,13 @@
 [![CircleCI](https://circleci.com/gh/GiganticMinecraft/SeichiAssist/tree/master.svg?style=svg)](https://circleci.com/gh/GiganticMinecraft/SeichiAssist/tree/master)
 
 ## 開発環境
-- [eclipse 4.4 luna](http://mergedoc.osdn.jp/) や [Intellij IDEA 2019.2](https://www.jetbrains.com/idea/) などの統合開発環境
+- [Intellij IDEA 2019.2](https://www.jetbrains.com/idea/) などの統合開発環境
 - [JDK 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 - [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
 - [Scala 2.13](https://www.scala-lang.org/download/)
+- [sbt 1.3.6](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Windows.html)
 - Spigot 1.12
+
 ## 前提プラグイン
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
 - [item-nbt-api-plugin-1.8.2-SNAPSHOT](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
@@ -23,21 +25,11 @@
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
 ## ビルド
-// TODO maven -> gradle へ移行済みの為、書き換えが必要。
+まずは[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Windows.html)よりsbtのインストールをします。
+sbtがコマンドラインで使える状態で`sbt assembly`を実行すると、`target/build`フォルダにjarが出力されます。
 
-前提プラグインのjarを`${プロジェクトディレクトリ}/localDependencies`にコピーしてください。
-
-Gradleがコマンドラインで使える状態で`gradle build`を実行すると、`target`フォルダにjarが出力されます。
-
-// TODO Eclipse
-
-Eclipseを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
-実行(R) -> 実行(S) -> Maven Clean を実行
-そのあと、実行(R) -> 実行(S) -> Maven Install を実行
-すれば`target`フォルダにjarが出力されます。
-
-IntelliJ IDEAを開発に使用している場合、プロジェクトをgradleプロジェクトとして読み込み、
-GradleタブからTasks -> build -> jarを実行すれば`build/lib`フォルダにjarが出力されます。
+IntelliJ IDEAを開発に使用している場合、プロジェクトをsbtプロジェクトとして読み込み、
+sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`build/lib`フォルダにjarが出力されます。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
@@ -50,11 +42,11 @@ publicなメソッドについては、JavaDocsを記載するよう心がけて
 
 ## Commit Style
 1コミットあたりの情報は最小限としてください。
-コミットメッセージは英語の動詞から始めることを推奨しています。
+コミットメッセージは変更の方向性を表す英語の動詞(add, remove, clean等)から始めることを推奨しています。
 
 ## Branch Model
 [Git-flow](https://qiita.com/KosukeSone/items/514dd24828b485c69a05)を簡略化したものを使用します。
-新規に機能を開発する際は develop ブランチから feature-<任意の文字列> ブランチを作り、そこで作業してください。
+新規に機能を開発する際は develop ブランチから <任意の文字列> ブランチを作り、そこで作業してください。
 開発が終了したらdevelopブランチにマージします。
 masterブランチは本番環境に反映されます。
 本番環境を更新するタイミングでdevelopブランチをmasterブランチにマージします。

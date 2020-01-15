@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.*;
+import com.github.unchama.seichiassist.ActiveSkill;
+import com.github.unchama.seichiassist.MaterialSets;
+import com.github.unchama.seichiassist.SeichiAssist;
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect;
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.task.AssaultTask;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
@@ -43,17 +47,15 @@ public class ActiveSkillData {
     //採掘用アクティブスキルのフラグ 0:なし 1:上破壊 2:下破壊
     public int mineflagnum;
     //アサルトスキル.コンデンススキルのtask
-    public BukkitTask assaulttask;
+    private BukkitTask assaulttask;
     //自然マナ回復のtask
     public BukkitTask manaregenetask;
     //アサルトスキルのフラグ
     public boolean assaultflag;
     //エフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
-    public HashSet<ActiveSkillEffect> obtainedSkillEffects = new HashSet<>();
+    public HashSet<ActiveSkillNormalEffect> obtainedSkillEffects = new HashSet<>();
     //スペシャルエフェクトの獲得フラグリスト<エフェクト番号,エフェクト獲得フラグ>
     public HashSet<ActiveSkillPremiumEffect> obtainedSkillPremiumEffects = new HashSet<>();
-    //スペシャルエフェクトを使用するフラグ
-    public boolean specialflag;
     //選択されているアクティブスキルの番号を格納
     public int effectnum; // TODO 100以下ならプレミアムスキル、という判定ロジックを隠すべき
     //通常スキルで破壊されるエリア
@@ -62,13 +64,12 @@ public class ActiveSkillData {
     public BreakArea assaultarea;
     //マナクラス
     public Mana mana;
-    SeichiAssist plugin = SeichiAssist.instance();
+    private SeichiAssist plugin = SeichiAssist.instance();
 
     public ActiveSkillData() {
         mineflagnum = 0;
         assaultflag = false;
         assaulttask = null;
-        specialflag = false;
         skilltype = 0;
         skillnum = 0;
         skillcanbreakflag = true;
@@ -169,7 +170,7 @@ public class ActiveSkillData {
         }
     }
 
-    public void updateSkill(Player player, int type, int skilllevel, int mineflagnum) {
+    public void updateSkill(int type, int skilllevel, int mineflagnum) {
         this.skilltype = type;
         this.skillnum = skilllevel;
         this.mineflagnum = mineflagnum;
@@ -179,7 +180,7 @@ public class ActiveSkillData {
         }
         //スキルフラグがオンの時の処理
         if (mineflagnum != 0) {
-            this.area = new BreakArea(player, type, skilllevel, mineflagnum, false);
+            this.area = new BreakArea(type, skilllevel, mineflagnum, false);
         }
 
     }
@@ -199,7 +200,7 @@ public class ActiveSkillData {
         }
         if (mineflagnum != 0) {
             //スキルフラグがオンの時の処理
-            this.assaultarea = new BreakArea(player, type, skilllevel, mineflagnum, true);
+            this.assaultarea = new BreakArea(type, skilllevel, mineflagnum, true);
             this.assaultflag = true;
 
             // オフハンドを取得
@@ -223,7 +224,7 @@ public class ActiveSkillData {
     }
 
     //スキル使用中の場合Taskを実行する
-    public void runTask(Player player) {
+    private void runTask(Player player) {
 
         //アサルトスキルの実行
         if (this.assaultflag && this.assaulttype != 0) {
@@ -235,7 +236,7 @@ public class ActiveSkillData {
 
         //通常スキルの実行
         if (this.skilltype != 0) {
-            this.updateSkill(player, this.skilltype, this.skillnum, this.mineflagnum);
+            this.updateSkill(this.skilltype, this.skillnum, this.mineflagnum);
             String name = ActiveSkill.getActiveSkillName(this.skilltype, this.skillnum);
             player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  を選択しています。");
             player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);

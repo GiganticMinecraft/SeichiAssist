@@ -14,13 +14,14 @@ trait ResultSetSyntax {
 object ResultSetSyntax {
 
   implicit class ResultSetOps(resultSet: ResultSet) {
-    def recordIteration[T](operation: ResultSet => T): Option[T] = {
+    def recordIteration[T](operation: ResultSet => T): List[T] = {
       try {
-        var result: Option[T] = None
-        while (resultSet.next()) {
-          result = Some(operation(resultSet))
+        List.unfold(()) { _ =>
+          if (resultSet.next())
+            Some((operation(resultSet), ()))
+          else
+            None
         }
-        result
       } finally {
         resultSet.close()
       }
