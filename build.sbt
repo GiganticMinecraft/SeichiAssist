@@ -30,9 +30,7 @@ val providedDependencies = Seq(
 ).map(_ % "provided")
 
 val testDependencies = Seq(
-  "org.junit.jupiter" % "junit-jupiter-api" % "5.4.2",
-  "junit" % "junit" % "4.4",
-  "org.junit.jupiter" % "junit-jupiter-engine" % "5.4.2"
+  "org.scalatest" %% "scalatest" % "3.1.0"
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
