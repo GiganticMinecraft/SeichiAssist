@@ -28,11 +28,11 @@ object ResourceFilter {
 
   def filterResources(pathsRelativeToBase: Seq[String],
                       replacementMap: Map[String, String],
-                      baseDirectory: File,
+                      outDirectory: File,
                       resourceDirectory: File): Seq[File] =
     pathsRelativeToBase
       .map { relativeToBase =>
-        val outFile = baseDirectory / relativeToBase
+        val outFile = outDirectory / relativeToBase
         val file = resourceDirectory / relativeToBase
         replaceTokens(outFile, file, replacementMap)
       }

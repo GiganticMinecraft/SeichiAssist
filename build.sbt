@@ -68,7 +68,7 @@ val filteredResourceGenerator = taskKey[Seq[File]]("Resource generator to filter
 filteredResourceGenerator in Compile :=
   filterResources(
     filesToBeReplaced, tokenReplacementMap.value,
-    baseDirectory.value, (resourceDirectory in Compile).value
+    (resourceManaged in Compile).value, baseDirectory.value
   )
 
 resourceGenerators in Compile += (filteredResourceGenerator in Compile)
