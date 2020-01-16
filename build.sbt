@@ -4,7 +4,7 @@ import ResourceFilter.filterResources
 import sbt.Keys.baseDirectory
 
 ThisBuild / scalaVersion     := "2.13.1"
-ThisBuild / version          := "1.2.5"
+ThisBuild / version          := "1.2.6"
 ThisBuild / organization     := "click.seichi"
 ThisBuild / description      := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -59,14 +59,15 @@ tokenReplacementMap := Map(
   "version" -> version.value
 )
 
-val filesToBeReplaced = Seq("src/main/resources/plugin.yml")
+val filesToBeReplacedInResourceFolder = Seq("plugin.yml")
 
 val filteredResourceGenerator = taskKey[Seq[File]]("Resource generator to filter resources")
 
 filteredResourceGenerator in Compile :=
   filterResources(
-    filesToBeReplaced, tokenReplacementMap.value,
-    (resourceManaged in Compile).value, baseDirectory.value
+    filesToBeReplacedInResourceFolder,
+    tokenReplacementMap.value,
+    (resourceManaged in Compile).value, (resourceDirectory in Compile).value
   )
 
 resourceGenerators in Compile += (filteredResourceGenerator in Compile)
@@ -75,7 +76,7 @@ unmanagedResources in Compile += baseDirectory.value / "LICENSE"
 
 // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
 excludeFilter in unmanagedResources :=
-  filesToBeReplaced.foldLeft((excludeFilter in unmanagedResources).value)(_.||(_))
+  filesToBeReplacedInResourceFolder.foldLeft((excludeFilter in unmanagedResources).value)(_.||(_))
 
 lazy val root = (project in file("."))
   .settings(
@@ -87,7 +88,7 @@ lazy val root = (project in file("."))
       "-encoding", "utf8",
       "-unchecked",
       "-deprecation",
-      "-Ypatmat-exhaust-depth", "80",
+      "-Ypatmat-exhaust-depth", "320",
     ),
     javacOptions ++= Seq("-encoding", "utf8")
   )

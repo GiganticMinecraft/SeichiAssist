@@ -26,7 +26,6 @@ jobs:
             - sbt-repo-v2-{{ .Branch }}-{{ checksum "build.sbt" }}
             - sbt-repo-v2-{{ .Branch }}-
             - sbt-repo-v2-
-      - run: sbt test
       - run: sbt assembly
       - save_cache:
           paths:
