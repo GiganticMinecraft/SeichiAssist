@@ -87,7 +87,7 @@ lazy val root = (project in file("."))
       "-encoding", "utf8",
       "-unchecked",
       "-deprecation",
-      "-Ypatmat-exhaust-depth", "80",
+      "-Ypatmat-exhaust-depth", "320",
     ),
     javacOptions ++= Seq("-encoding", "utf8")
   )
