@@ -550,7 +550,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   /**
    * プレイヤーのガチャ券枚数を変更します
    * @param playerName プレイヤーの名前
-   * @param amount 変更するガチャ券の個数
+   * @param amount 変更後のプレーヤーのガチャ券の枚数
    * @return [ActionStatus]
    */
   def changeGachaAmountOf(playerName: String, amount: Int): ActionStatus = {

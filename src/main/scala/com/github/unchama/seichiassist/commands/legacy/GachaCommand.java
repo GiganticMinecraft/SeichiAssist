@@ -172,19 +172,18 @@ public class GachaCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券の枚数設定処理開始...");
             if (databaseGateway.playerDataManipulator.changeGachaAmountOf(name, amount) == Fail) {
                 sender.sendMessage(ChatColor.RED + "失敗");
+                return false;
             } else {
-                sender.sendMessage(ChatColor.GREEN + "成功");
-
                 Player player = Bukkit.getPlayer(name);
-                if (player == null) {
-                    return true;
+                // ログインしているプレーヤーの場合、変更を反映し通知する。
+                if (player != null) {
+                    PlayerData playerData = SeichiAssist.playermap().apply(player.getUniqueId());
+                    playerData.gachapoint_$eq(amount * 1000);
+                    player.sendMessage(ChatColor.GREEN + "運営チームによりガチャ券が" + amount + "枚に設定されました。");
                 }
-                Option<PlayerData> maybePlayerData = SeichiAssist.playermap().get(player.getUniqueId());
-                if (maybePlayerData.isEmpty()) {
-                    return true;
-                }
-                maybePlayerData.get().gachapoint_$eq(amount * 1000);
-                player.sendMessage(ChatColor.GREEN + "運営チームによりガチャ券が" + amount + "枚に設定されました。");
+
+                sender.sendMessage(ChatColor.GREEN + "成功");
+                return true;
             }
         } else if (args[0].equalsIgnoreCase("vote")) {
             if (args.length != 2) {
