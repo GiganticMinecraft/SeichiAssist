@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.activeskill.effect.breaking
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.XYZTuple
+import com.github.unchama.seichiassist.data.AxisAlignedCuboid
 import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit._
@@ -16,13 +16,15 @@ import scala.util.Random
 class MagicTask(private val player: Player,
                 private val tool: ItemStack, // 使用するツール
                 private val blocks: Set[Block], // 破壊するブロックリスト
-                start: XYZTuple, end: XYZTuple, _skillCenter: Location) extends RoundedTask() {
-  // スキルが発動される中心位置
-  private val skillCenter: Location = _skillCenter.clone()
+                breakArea: AxisAlignedCuboid,
+                _skillCenter: Location) extends RoundedTask() {
+  import com.github.unchama.seichiassist.data.syntax._
 
-  // 破壊するブロックの中心位置
-  private val centerBreak: Location =
-    this.skillCenter.add(relativeAverage(start.x, end.x), relativeAverage(start.y, end.y), relativeAverage(start.z, end.z))
+  // スキルが発動される中心位置
+  private val itemDropLoc: Location = _skillCenter.clone()
+
+  //破壊するブロックの中心位置
+  private val centerBreak: Location = this.itemDropLoc + ((breakArea.begin + breakArea.end) / 2)
 
   override def firstAction(): Unit = {
     //1回目のrun
@@ -32,7 +34,7 @@ class MagicTask(private val player: Player,
     com.github.unchama.seichiassist.unsafe.runIOAsync(
       "マジックエフェクトの一回目を再生する",
       for {
-        _ <- BreakUtil.massBreakBlock(player, blocks, skillCenter, tool, shouldPlayBreakSound = false, Material.WOOL)
+        _ <- BreakUtil.massBreakBlock(player, blocks, itemDropLoc, tool, shouldPlayBreakSound = false, Material.WOOL)
         _ <- IO {
           blocks.foreach { b =>
             val state = b.getState
@@ -64,6 +66,4 @@ class MagicTask(private val player: Player,
     }
     cancel()
   }
-
-  private def relativeAverage(i1: Int, i2: Int): Double = (i1 + (i2 - i1) / 2).toDouble
 }

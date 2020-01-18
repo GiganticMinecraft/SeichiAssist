@@ -30,11 +30,10 @@ class MultiBreakTask(var player: Player,
       multilavalist(count).foreach(_.setType(Material.AIR))
 
       val breakBlocks = multibreaklist(count).toSet
-      val AxisAlignedCuboid(startPoint, endPoint) = areaList(count)
 
       ActiveSkillEffect
         .fromEffectNum(playerdata.activeskilldata.effectnum)
-        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, startPoint, endPoint, droploc)
+        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, areaList(count), droploc)
 
       count += 1
     } else

@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.activeskill.effect.breaking
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.activeskill.effect.PositionSearching
+import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.Location
 import org.bukkit.block.Block
@@ -15,8 +15,7 @@ class ExplosionTask(private val player: Player,
                     private val step: Boolean,
                     private val tool: ItemStack,
                     private val blocks: Set[Block],
-                    private val start: XYZTuple,
-                    private val end: XYZTuple,
+                    breakArea: AxisAlignedCuboid,
                     private val dropLoc: Location) extends BukkitRunnable() {
   override def run(): Unit = {
     SeichiAssist.managedBlocks --= blocks
@@ -33,7 +32,7 @@ class ExplosionTask(private val player: Player,
         _ <- asyncShift.shift
 
         explosionLocations <- IO {
-          AxisAlignedCuboid(start, end)
+          breakArea
             .gridPoints(2)
             .map(XYZTuple.of(dropLoc) + _)
             .filter(PositionSearching.containsOneOfPositionsAround(_, 1, blockPositions))

@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.{ActiveSkillData, XYZTuple}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.activeskill.effect.breaking.MagicTask
+import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
 import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import org.bukkit.ChatColor._
@@ -25,14 +25,13 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
                      skillData: ActiveSkillData,
                      tool: ItemStack,
                      breakBlocks: Set[Block],
-                     start: XYZTuple,
-                     end: XYZTuple,
+                     breakArea: AxisAlignedCuboid,
                      standard: Location): Unit = {
     this match {
       case ActiveSkillPremiumEffect.MAGIC => if (SeichiAssist.DEBUG) {
-        new MagicTask(player, tool, breakBlocks, start, end, standard).runTaskTimer(SeichiAssist.instance, 0, 100)
+        new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, 100)
       } else {
-        new MagicTask(player, tool, breakBlocks, start, end, standard).runTaskTimer(SeichiAssist.instance, 0, 10)
+        new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, 10)
       }
     }
   }

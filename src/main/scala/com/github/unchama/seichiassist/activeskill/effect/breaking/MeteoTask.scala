@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.activeskill.effect.breaking
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.activeskill.effect.PositionSearching
+import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -17,39 +17,40 @@ class MeteoTask(
                  private val skillData: ActiveSkillData,
                  private val tool: ItemStack,
                  private val blocks: Set[Block],
-                 private val start: XYZTuple,
-                 private val end: XYZTuple, _droploc: Location) extends BukkitRunnable() {
+                 breakArea: AxisAlignedCuboid,
+                 _dropLoc: Location) extends BukkitRunnable() {
+
+  import com.github.unchama.seichiassist.data.syntax._
+
   //スキルが発動される中心位置
-  private val droploc: Location = _droploc.clone()
+  private val itemDropLoc: Location = _dropLoc.clone()
+
   //破壊するブロックの中心位置
-  private val centerbreakloc: Location =
-    this.droploc.add(relativeAverage(start.x, end.x), relativeAverage(start.y, end.y), relativeAverage(start.z, end.z))
+  private val centerBreakLoc: Location = this.itemDropLoc + ((breakArea.begin + breakArea.end) / 2)
 
   override def run(): Unit = {
     val blockPositions = blocks.map(_.getLocation).map(XYZTuple.of)
     val world = player.getWorld
 
     import com.github.unchama.seichiassist.data.syntax._
-    AxisAlignedCuboid(start, end).gridPoints(2).foreach { xyzTuple =>
-      val effectloc = XYZTuple.of(droploc).+(xyzTuple)
+    breakArea.gridPoints(2).foreach { xyzTuple =>
+      val effectLoc = XYZTuple.of(itemDropLoc).+(xyzTuple)
 
-      if (PositionSearching.containsOneOfPositionsAround(effectloc, 1, blockPositions)) {
+      if (PositionSearching.containsOneOfPositionsAround(effectLoc, 1, blockPositions)) {
         // TODO: Effect.EXPLOSION_HUGE => Particle.EXPLOSION_HUGE
-        world.playEffect(effectloc.toLocation(world), Effect.EXPLOSION_HUGE, 1)
+        world.playEffect(effectLoc.toLocation(world), Effect.EXPLOSION_HUGE, 1)
       }
     }
 
     // [0.8, 1.2)
     val vol = new Random().nextFloat() * 0.4f + 0.8f
-    world.playSound(centerbreakloc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol)
+    world.playSound(centerBreakLoc, Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol)
 
     com.github.unchama.seichiassist.unsafe.runIOAsync(
       "ブロックを大量破壊する",
-      BreakUtil.massBreakBlock(player, blocks, droploc, tool, skillData.skillnum <= 2)
+      BreakUtil.massBreakBlock(player, blocks, itemDropLoc, tool, skillData.skillnum <= 2)
     )
     SeichiAssist.managedBlocks --= blocks
   }
-
-  private def relativeAverage(i1: Int, i2: Int): Double = ((i1 + i2) / 2).toDouble
 }
 
