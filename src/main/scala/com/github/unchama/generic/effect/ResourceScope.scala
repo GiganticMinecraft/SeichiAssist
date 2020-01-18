@@ -36,7 +36,14 @@ trait ResourceScope[ResourceHandler, F[_]] {
 }
 
 object ResourceScope {
-  def unsafe[R, F[_]: Sync]: ResourceScope[R, F] = new TrieMapResourceScope()
+  /**
+   * 新たな資源スコープを作成する。
+   *
+   * インスタンス等価性により挙動が変わるオブジェクトを作成するのでunsafe-接頭語がつけられている。
+   * @tparam R リソースハンドラの型
+   * @tparam F リソースを扱う計算
+   */
+  def unsafeCreate[R, F[_]: Sync]: ResourceScope[R, F] = new TrieMapResourceScope()
 
   class TrieMapResourceScope[ResourceHandler, F[_]](implicit val syncF: Sync[F]) extends ResourceScope[ResourceHandler, F] {
     import scala.collection.mutable
