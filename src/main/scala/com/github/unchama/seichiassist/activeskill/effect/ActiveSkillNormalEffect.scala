@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.{ActiveSkillData, XYZTuple}
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.activeskill.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
+import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
 import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import org.bukkit.ChatColor._
@@ -24,14 +24,13 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
                               skillData: ActiveSkillData,
                               tool: ItemStack,
                               breakBlocks: Set[Block],
-                              start: XYZTuple,
-                              end: XYZTuple,
+                              breakArea: AxisAlignedCuboid,
                               standard: Location): Unit = {
     val plugin = SeichiAssist.instance
     val skillId = skillData.skillnum
 
     this match {
-      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakBlocks, start, end, standard).runTask(plugin)
+      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakBlocks, breakArea, standard).runTask(plugin)
       case Blizzard =>
         val effect = new BlizzardTask(player, skillData, tool, breakBlocks, standard)
 
@@ -44,7 +43,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
       case Meteo =>
         val delay = if (skillId < 3) 1L else 10L
 
-        new MeteoTask(player, skillData, tool, breakBlocks, start, end, standard).runTaskLater(plugin, delay)
+        new MeteoTask(player, skillData, tool, breakBlocks, breakArea, standard).runTaskLater(plugin, delay)
     }
   }
 

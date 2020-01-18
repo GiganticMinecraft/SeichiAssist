@@ -165,7 +165,7 @@ class EntityListener extends Listener {
 
     ActiveSkillEffect
       .fromEffectNum(playerData.activeskilldata.effectnum)
-      .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, area.begin, area.end, centerOfBlock)
+      .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, area, centerOfBlock)
   }
 
   @EventHandler def onEntityExplodeEvent(event: EntityExplodeEvent) = {

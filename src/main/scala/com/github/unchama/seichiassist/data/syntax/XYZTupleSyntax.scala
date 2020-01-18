@@ -20,6 +20,12 @@ trait XYZTupleSyntax {
     def toLocation(world: World): Location = new Location(world, a.x.toDouble, a.y.toDouble, a.z.toDouble)
 
     def /(k: Double): XYZTuple = mapEachComponent(c => (c / k).toInt)
+
+    def toBukkitVector = new org.bukkit.util.Vector(a.x, a.y, a.z)
+  }
+
+  implicit class RichLocation(location: Location) {
+    def +(vector: XYZTuple): Location = location.clone().add(vector.toBukkitVector)
   }
 }
 

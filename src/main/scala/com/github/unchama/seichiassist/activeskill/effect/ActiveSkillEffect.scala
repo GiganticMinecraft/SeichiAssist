@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.data.{ActiveSkillData, XYZTuple}
+import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -13,8 +13,7 @@ trait ActiveSkillEffect {
                      skillData: ActiveSkillData,
                      tool: ItemStack,
                      breakBlocks: Set[Block],
-                     start: XYZTuple,
-                     end: XYZTuple,
+                     breakArea: AxisAlignedCuboid,
                      standard: Location): Unit
 }
 
@@ -24,8 +23,7 @@ object ActiveSkillEffect {
                                 skillData: ActiveSkillData,
                                 tool: ItemStack,
                                 breakBlocks: Set[Block],
-                                start: XYZTuple,
-                                end: XYZTuple,
+                                breakArea: AxisAlignedCuboid,
                                 standard: Location): Unit = {
       com.github.unchama.seichiassist.unsafe.runIOAsync(
         "ブロックを大量破壊する",
