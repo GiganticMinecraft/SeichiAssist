@@ -211,7 +211,10 @@ class PlayerBlockBreakListener extends Listener {
       BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
     } else {
       // スキルの処理
-      SeichiAssist.managedBlocks ++= multiBreakList.flatten
+
+      val allBreakTargets = multiBreakList.flatten
+
+      SeichiAssist.managedBlocks ++= allBreakTargets
 
       new MultiBreakTask(
         player, block, tool,
@@ -227,7 +230,7 @@ class PlayerBlockBreakListener extends Listener {
       if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
 
       //壊したブロック数に応じてクールダウンを発生させる
-      val breakBlockNum = multiBreakList.size
+      val breakBlockNum = allBreakTargets.size
       val coolDownTime = ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakBlockNum / totalBreakRangeVolume
       if (coolDownTime >= 5) new CoolDownTask(player, false, true, false).runTaskLater(plugin, coolDownTime)
     }
