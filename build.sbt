@@ -87,6 +87,7 @@ lazy val root = (project in file("."))
     scalacOptions ++= Seq(
       "-encoding", "utf8",
       "-unchecked",
+      "-language:higherKinds",
       "-deprecation",
       "-Ypatmat-exhaust-depth", "320",
     ),
