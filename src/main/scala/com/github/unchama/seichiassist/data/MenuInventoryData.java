@@ -40,7 +40,6 @@ public final class MenuInventoryData {
     private static final HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
     private static final DatabaseGateway databaseGateway = SeichiAssist.databaseGateway();
 
-    //二つ名組合せシステム用
     /*
     * FIXME:
     *  実装がやばいので複数のプレイヤーが同時に開いたらぶっ壊れる。
@@ -70,8 +69,6 @@ public final class MenuInventoryData {
                 ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.activeskilldata().effectpoint
         );
     }
-
-    //ランキングリスト
 
     /**
      * 整地量
@@ -361,17 +358,10 @@ public final class MenuInventoryData {
      * @return メニュー
      */
     public static Inventory getActiveSkillEffectMenuData(final Player p) {
-        final Player player = p.getPlayer();
-        final UUID uuid = player.getUniqueId();
+        final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (playerdata == null) {
-            player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-            Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-            return null;
-        }
-
+        if (validate(p, playerdata, "整地スキルエフェクト選択")) return null;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキルエフェクト選択");
 
         // 1ページ目を開く
@@ -530,17 +520,10 @@ public final class MenuInventoryData {
      * @return メニュー
      */
     public static Inventory setFreeTitleMainData(final Player p) {
-        final Player player = p.getPlayer();
-        final UUID uuid = player.getUniqueId();
+        final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (playerdata == null) {
-            player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-            Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-            return null;
-        }
-
+        if (validate(p, playerdata, "二つ名組み合わせ")) return null;
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せシステム");
 
         //各ボタンの設定
@@ -646,19 +629,10 @@ public final class MenuInventoryData {
      * @return メニュー
      */
     public static Inventory setFreeTitle1Data(final Player p) {
-        //プレイヤーを取得
-        final Player player = p.getPlayer();
-        //UUID取得
-        final UUID uuid = player.getUniqueId();
-        //プレイヤーデータ
+        final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (playerdata == null) {
-            player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-            Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-            return null;
-        }
+        if (validate(p, playerdata, "二つ名/前パーツ")) return null;
 
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「前」");
 
@@ -733,22 +707,25 @@ public final class MenuInventoryData {
         return inventory;
     }
 
+    private static boolean validate(final Player destination, final PlayerData pd, final String operation) {
+        if (pd == null) {
+            destination.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
+            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[" + operation + "]でエラー発生");
+            Bukkit.getLogger().warning(destination + "のplayerdataがありません。開発者に報告してください");
+            return true;
+        }
+        return false;
+    }
     /**
      * 二つ名 - 中パーツ
      * @param p プレイヤー
      * @return メニュー
      */
     public static Inventory setFreeTitle2Data(final Player p) {
-        final Player player = p.getPlayer();
-        final UUID uuid = player.getUniqueId();
+        final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (playerdata == null) {
-            player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-            Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-            return null;
-        }
+        if (validate(p, playerdata, "二つ名/中パーツ")) return null;
 
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「中」");
 
@@ -828,19 +805,10 @@ public final class MenuInventoryData {
      * @return メニュー
      */
     public static Inventory setFreeTitle3Data(final Player p) {
-        //プレイヤーを取得
-        final Player player = p.getPlayer();
-        //UUID取得
-        final UUID uuid = player.getUniqueId();
-        //プレイヤーデータ
+        final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (playerdata == null) {
-            player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-            Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-            return null;
-        }
+        if (validate(p, playerdata, "二つ名/後パーツ")) return null;
 
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「後」");
 
@@ -923,19 +891,11 @@ public final class MenuInventoryData {
      */
     public static Inventory setTitleShopData(final Player p) {
         //プレイヤーを取得
-        final Player player = p.getPlayer();
-        //UUID取得
-        final UUID uuid = player.getUniqueId();
+        final UUID uuid = p.getUniqueId();
         //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (playerdata == null) {
-            player.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
-            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[木の棒メニューOPEN処理]でエラー発生");
-            Bukkit.getLogger().warning(player.getName() + "のplayerdataがありません。開発者に報告してください");
-            return null;
-        }
-
+        if (validate(p, playerdata, "実績ポイントショップ")) return null;
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績ポイントショップ");
 
         //実績ポイントの最新情報反映ボタン
@@ -958,6 +918,7 @@ public final class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
         }
+
         //おしながき
         if (playerdata.samepageflag()) {
             checkTitleS = NoKeep;
@@ -1044,7 +1005,6 @@ public final class MenuInventoryData {
             checkTitleS++;
         }
 
-
         // 二つ名組合せメインページを開く
         {
             final ItemStack itemstack = new ItemStack(Material.BARRIER, 1);
@@ -1059,16 +1019,6 @@ public final class MenuInventoryData {
         return inventory;
     }
 
-    private static boolean validate(final Player p, final PlayerData playerdata) {
-        if (playerdata == null) {
-            Util.sendPlayerDataNullMessage(p);
-            Bukkit.getLogger().warning(p.getName() + " -> PlayerData not found.");
-            Bukkit.getLogger().warning("MenuInventoryData.menuData");
-            return true;
-        }
-        return false;
-    }
-
     /**
      * 投票妖精
      * @param p プレイヤー
@@ -1080,7 +1030,7 @@ public final class MenuInventoryData {
         //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata)) return null;
+        if (validate(p, playerdata, "投票妖精")) return null;
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票ptメニュー");
 
         //投票pt受け取り
@@ -1316,7 +1266,7 @@ public final class MenuInventoryData {
         //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata)) return null;
+        if (validate(p, playerdata, "Gigantic進化前確認")) return null;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
         {
             // 色
@@ -1371,7 +1321,7 @@ public final class MenuInventoryData {
         //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata)) return null;
+        if (validate(p, playerdata, "GiganticBerserk進化後画面")) return null;
         final Inventory inventory = getEmptyInventory(6, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました");
         {
             final byte[] table = {12, 15, 4, 0, 3};
