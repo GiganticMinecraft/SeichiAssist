@@ -33,24 +33,35 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class MenuInventoryData {
+public final class MenuInventoryData {
+    private MenuInventoryData() {
+    }
+
     private static final HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
     private static final DatabaseGateway databaseGateway = SeichiAssist.databaseGateway();
 
     //二つ名組合せシステム用
-    private static boolean nextpageflag1;
-    private static boolean nextpageflag2;
-    private static boolean nextpageflag3;
-    private static boolean nextpageflagS;
+    /*
+    * FIXME:
+    *  実装がやばいので複数のプレイヤーが同時に開いたらぶっ壊れる。
+    *  しかしながら、今日に至るまでバグが報告されたことは１度もない。まじでミラクル。
+    */
+    private static boolean pageFlag1;
+    private static boolean pageFlag2;
+    private static boolean negatedPageFlag3 = true;
+    private static boolean negatedPageFlagS = true;
     private static int checkTitle1;
     private static int checkTitle2;
     private static int checkTitle3;
     private static int checkTitleS;
     private static int NoKeep;
+    /**
+     * (short) 3はダサいし、マジックコンスタントみたいだよね。
+     */
     private static final short PLAYER_SKULL = 3;
 
     //投票特典受け取りボタン
-    private static List<String> VoteGetButtonLore(final PlayerData playerdata) {
+    private static List<String> getVoteButtonLore(final PlayerData playerdata) {
         return Arrays.asList(
                 ChatColor.RESET + "" + ChatColor.GRAY + "投票特典を受け取るには",
                 ChatColor.RESET + "" + ChatColor.GRAY + "投票ページで投票した後",
@@ -61,7 +72,13 @@ public class MenuInventoryData {
     }
 
     //ランキングリスト
-    public static Inventory getRankingList(final int page) {
+
+    /**
+     * 整地量
+     * @param page ページ
+     * @return メニュー
+     */
+    public static Inventory getRankingBySeichiAmount(final int page) {
         final int pageLimit = 14;
         final int lowerBound = 100;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
@@ -141,25 +158,30 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    //ランキングリスト(ログイン時間)
-    public static Inventory getRankingList_playtick(final int page) {
+    /**
+     * ログイン時間
+     * @param page ページ
+     * @return メニュー
+     */
+    public static Inventory getRankingByPlayingTime(final int page) {
         final int pageLimit = 14;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ログイン神ランキング");
         final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
         itemstack.setDurability(PLAYER_SKULL);
-        for (int count = 10 * page, count2 = 0; count < 10 + 10 * page; count++, count2++) {
-            if (count >= SeichiAssist.ranklist_playtick().size()) {
+        final int rankStart = 10 * page;
+        for (int rank = rankStart, inventoryIndex = 0; rank < rankStart + 10; rank++, inventoryIndex++) {
+            if (rank >= SeichiAssist.ranklist_playtick().size()) {
                 break;
             }
-            final RankData rankdata = SeichiAssist.ranklist_playtick().apply(count);
+            final RankData rankdata = SeichiAssist.ranklist_playtick().apply(rank);
 
             final SkullMeta skullmeta = build(
-                ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
+                ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (rank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                 Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総ログイン時間:" + TypeConverter.toTimeString(TypeConverter.toSecond(rankdata.playtick))),
                 rankdata.name
             );
             itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, count2, itemstack.clone());
+            AsyncInventorySetter.setItemAsync(inventory, inventoryIndex, itemstack.clone());
         }
 
         if (page != pageLimit) {
@@ -194,12 +216,15 @@ public class MenuInventoryData {
             AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
         }
 
-
         return inventory;
     }
 
-    //ランキングリスト(投票回数)
-    public static Inventory getRankingList_p_vote(final int page) {
+    /**
+     * 投票回数
+     * @param page ページ
+     * @return メニュー
+     */
+    public static Inventory getRankingByVotingCount(final int page) {
         final int pageLimit = 14;
         final int lowerBound = 1;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票神ランキング");
@@ -259,8 +284,12 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    //ランキングリスト(プレミアムエフェクトポイント)
-    public static Inventory getRankingList_premiumeffectpoint(final int page) {
+    /**
+     * プレミアムエフェクトポイント
+     * @param page ページ
+     * @return メニュー
+     */
+    public static Inventory getRankingByPremiumEffectPoint(final int page) {
         final int pageLimit = 2;
         final int lowerBound = 1;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "寄付神ランキング");
@@ -323,13 +352,14 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    //エフェクト選択メニュー
+    /**
+     * エフェクト選択
+     * @param p プレイヤー
+     * @return メニュー
+     */
     public static Inventory getActiveSkillEffectMenuData(final Player p) {
-        //プレイヤーを取得
         final Player player = p.getPlayer();
-        //UUID取得
         final UUID uuid = player.getUniqueId();
-        //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
@@ -465,7 +495,11 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    //プレミア購入履歴表示
+    /**
+     * プレミア購入履歴表示
+     * @param player プレイヤー
+     * @return メニュー
+     */
     public static Inventory getBuyRecordMenuData(final Player player) {
         final PlayerData playerdata = playermap.apply(player.getUniqueId());
         final Inventory inventory = getEmptyInventory(4, ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
@@ -487,13 +521,14 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    //二つ名組合せシステム・メニュー
+    /**
+     * 二つ名組み合わせ
+     * @param p プレイヤー
+     * @return メニュー
+     */
     public static Inventory setFreeTitleMainData(final Player p) {
-        //プレイヤーを取得
         final Player player = p.getPlayer();
-        //UUID取得
         final UUID uuid = player.getUniqueId();
-        //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
@@ -506,10 +541,10 @@ public class MenuInventoryData {
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せシステム");
 
         //各ボタンの設定
-        nextpageflag1 = false;
-        nextpageflag2 = false;
-        nextpageflag3 = false;
-        nextpageflagS = false;
+        pageFlag1 = false;
+        pageFlag2 = false;
+        negatedPageFlag3 = true;
+        negatedPageFlagS = true;
         checkTitle1 = 0;
         checkTitle2 = 0;
         checkTitle3 = 0;
@@ -602,7 +637,11 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    //二つ名組合せ「前パーツ」
+    /**
+     * 二つ名 - 前パーツ
+     * @param p プレイヤー
+     * @return メニュー
+     */
     public static Inventory setFreeTitle1Data(final Player p) {
         //プレイヤーを取得
         final Player player = p.getPlayer();
@@ -620,8 +659,8 @@ public class MenuInventoryData {
 
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「前」");
 
-        if (nextpageflag1) {
-            nextpageflag1 = false;
+        if (pageFlag1) {
+            pageFlag1 = false;
         } else {
             checkTitle1 = 1000;
         }
@@ -660,7 +699,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(skullmeta);
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
-                nextpageflag1 = true;
+                pageFlag1 = true;
 
                 break;
             }
@@ -691,13 +730,14 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    //二つ名組合せ「中パーツ」
+    /**
+     * 二つ名 - 中パーツ
+     * @param p プレイヤー
+     * @return メニュー
+     */
     public static Inventory setFreeTitle2Data(final Player p) {
-        //プレイヤーを取得
         final Player player = p.getPlayer();
-        //UUID取得
         final UUID uuid = player.getUniqueId();
-        //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (playerdata == null) {
@@ -711,8 +751,8 @@ public class MenuInventoryData {
         ItemStack itemstack;
         ItemMeta itemmeta;
 
-        if (nextpageflag2) {
-            nextpageflag2 = false;
+        if (pageFlag2) {
+            pageFlag2 = false;
         } else {
             checkTitle2 = 9900;
         }
@@ -766,7 +806,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(skullmeta);
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
-                nextpageflag2 = true;
+                pageFlag2 = true;
 
                 break;
             }
@@ -798,7 +838,11 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    //二つ名組合せ「後パーツ」
+    /**
+     * 二つ名 - 後パーツ
+     * @param p プレイヤー
+     * @return メニュー
+     */
     public static Inventory setFreeTitle3Data(final Player p) {
         //プレイヤーを取得
         final Player player = p.getPlayer();
@@ -818,7 +862,7 @@ public class MenuInventoryData {
 
         final SkullMeta skullmeta;
 
-        if (!nextpageflag3) {
+        if (negatedPageFlag3) {
             checkTitle3 = 1000;
         }
 
@@ -855,7 +899,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(skullmeta);
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
-                nextpageflag3 = true;
+                negatedPageFlag3 = false;
 
                 break;
             }
@@ -888,8 +932,11 @@ public class MenuInventoryData {
         return inventory;
     }
 
-
-    //実績ポイントショップ
+    /**
+     * 実績ポイントショップ
+     * @param p プレイヤー
+     * @return メニュー
+     */
     public static Inventory setTitleShopData(final Player p) {
         //プレイヤーを取得
         final Player player = p.getPlayer();
@@ -930,17 +977,17 @@ public class MenuInventoryData {
         //おしながき
         if (playerdata.samepageflag()) {
             checkTitleS = NoKeep;
-        } else if (!nextpageflagS) {
+        } else if (negatedPageFlagS) {
             checkTitleS = 9801;
         }
         NoKeep = checkTitleS;
         playerdata.samepageflag_$eq(false);
-        int setInv = 1;
+        int inventoryIndex = 1;
         for (; checkTitleS <= 9832; checkTitleS++) {
             final List<String> lore;
             final ItemStack itemstack;
             final ItemMeta itemmeta;
-            if (setInv < 27) {
+            if (inventoryIndex < 27) {
                 if (!playerdata.TitleFlags().contains(checkTitleS)) {
                     itemstack = new ItemStack(Material.BEDROCK, 1);
                     itemmeta = ItemMetaFactory.BEDROCK.getValue();
@@ -953,9 +1000,8 @@ public class MenuInventoryData {
                     itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                     itemmeta.setLore(lore);
                     itemstack.setItemMeta(itemmeta);
-                    AsyncInventorySetter.setItemAsync(inventory, setInv,  itemstack);
-
-                    setInv++;
+                    AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
+                    inventoryIndex++;
                 }
             } else {
                 //次ページへのボタンを配置
@@ -969,15 +1015,13 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(skullmeta);
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
-                nextpageflagS = true;
+                negatedPageFlagS = false;
                 break;
             }
         }
-        if (checkTitleS < 9911) {
-            checkTitleS = 9911;
-        }
+        checkTitleS = Math.max(checkTitleS, 9911);
         for (; checkTitleS <= 9935; ) {
-            if (setInv < 27) {
+            if (inventoryIndex < 27) {
                 final List<String> lore;
                 final ItemStack itemstack;
                 final ItemMeta itemmeta;
@@ -993,9 +1037,9 @@ public class MenuInventoryData {
                     itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                     itemmeta.setLore(lore);
                     itemstack.setItemMeta(itemmeta);
-                    AsyncInventorySetter.setItemAsync(inventory, setInv,  itemstack);
+                    AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
 
-                    setInv++;
+                    inventoryIndex++;
                 }
             } else {
                 //次ページへのボタンを配置
@@ -1009,7 +1053,7 @@ public class MenuInventoryData {
                 itemstack.setItemMeta(skullmeta);
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
-                nextpageflagS = true;
+                negatedPageFlagS = false;
 
                 break;
             }
@@ -1041,7 +1085,11 @@ public class MenuInventoryData {
         return false;
     }
 
-    //投票メニュー
+    /**
+     * 投票妖精
+     * @param p プレイヤー
+     * @return メニュー
+     */
     public static Inventory getVotingMenuData(final Player p) {
         //UUID取得
         final UUID uuid = p.getUniqueId();
@@ -1056,7 +1104,7 @@ public class MenuInventoryData {
             final ItemStack itemstack = new ItemStack(Material.DIAMOND);
             final ItemMeta itemmeta = itemstack.getItemMeta();
             itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "クリックで投票特典を受け取れます");
-            itemmeta.setLore(VoteGetButtonLore(playerdata));
+            itemmeta.setLore(getVoteButtonLore(playerdata));
             itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
             itemstack.setItemMeta(itemmeta);
             AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
@@ -1119,7 +1167,7 @@ public class MenuInventoryData {
         //妖精音トグル
         {
             final ItemStack itemStack = new ItemStack(Material.JUKEBOX);
-            itemStack.setItemMeta(VFSoundToggleMeta(playerdata.toggleVFSound()));
+            itemStack.setItemMeta(getVotingFairySoundsToggleMeta(playerdata.toggleVFSound()));
             AsyncInventorySetter.setItemAsync(inventory, 20,  itemStack);
         }
 
@@ -1205,7 +1253,12 @@ public class MenuInventoryData {
 
     }
 
-    private static ItemMeta VFSoundToggleMeta(final boolean playSound) {
+    /**
+     * 投票妖精音切り替え
+     * @param playSound trueなら鳴らす
+     * @return ラベルがついたアイテム
+     */
+    private static ItemMeta getVotingFairySoundsToggleMeta(final boolean playSound) {
         final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.JUKEBOX);
         final List<String> lore;
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精の音トグル");
@@ -1228,8 +1281,12 @@ public class MenuInventoryData {
         return itemmeta;
     }
 
+    /**
+     * 投票妖精戦略
+     * @param playerdata プレイヤーの設定
+     * @return ラベルが付いたアイテム
+     */
     private static ItemMeta VFPromiseMeta(final PlayerData playerdata) {
-
         final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精とのお約束");
         // n % 4 + 1 -> 1..4
@@ -1264,7 +1321,12 @@ public class MenuInventoryData {
         return itemmeta;
     }
 
-    public static Inventory getGiganticBerserkEvolutionMenu(final Player p) {
+    /**
+     * GiganticBerserk進化設定
+     * @param p
+     * @return メニュー
+     */
+    public static Inventory getGiganticBerserkBeforeEvolutionMenu(final Player p) {
         //UUID取得
         final UUID uuid = p.getUniqueId();
         //プレイヤーデータ
@@ -1314,7 +1376,12 @@ public class MenuInventoryData {
         return inventory;
     }
 
-    public static Inventory getGiganticBerserkEvolution2Menu(final Player p) {
+    /**
+     * GiganticBerserk進化設定
+     * @param p
+     * @return メニュー
+     */
+    public static Inventory getGiganticBerserkAfterEvolutionMenu(final Player p) {
         //UUID取得
         final UUID uuid = p.getUniqueId();
         //プレイヤーデータ
