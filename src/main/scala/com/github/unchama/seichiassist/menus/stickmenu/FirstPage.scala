@@ -628,7 +628,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList(0)),
+          openInventoryEffect(MenuInventoryData.getRankingBySeichiAmount(0)),
         )
       )
     }
@@ -647,7 +647,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList_playtick(0)),
+          openInventoryEffect(MenuInventoryData.getRankingByPlayingTime(0)),
         )
       )
     }
@@ -667,7 +667,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList_p_vote(0)),
+          openInventoryEffect(MenuInventoryData.getRankingByVotingCount(0)),
         )
       )
     }
