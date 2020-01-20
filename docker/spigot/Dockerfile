@@ -10,7 +10,7 @@ RUN java -jar BuildTools.jar -o /artifact
 FROM openjdk:8-jdk as runner
 
 COPY --from=builder /artifact/ /spigot/
-ADD plugins/ plugins/
-ADD eula.txt eula.txt
-ADD server.properties server.properties
+COPY plugins/ plugins/
+COPY eula.txt eula.txt
+COPY server.properties server.properties
 CMD java -jar /spigot/*.jar nogui
