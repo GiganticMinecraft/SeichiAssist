@@ -296,19 +296,19 @@ public final class MenuInventoryData {
         final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
         itemstack.setDurability(PLAYER_SKULL);
         RankData rankdata;
-        for (int count = 50 * page, inventoryIndex = 0; count < 50 + 50 * page; count++, inventoryIndex++) {
-            if (count >= SeichiAssist.ranklist_premiumeffectpoint().size()) {
+        for (int rank = 50 * page, inventoryIndex = 0; rank < 50 + 50 * page; rank++, inventoryIndex++) {
+            if (rank >= SeichiAssist.ranklist_premiumeffectpoint().size()) {
                 break;
             }
             if (inventoryIndex == 45) {
                 inventoryIndex = 47;
             }
-            rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(count);
+            rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(rank);
             if (rankdata.premiumeffectpoint < lowerBound) { //寄付金額0
                 break;
             }
             final SkullMeta skullmeta = build(
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (rank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                 Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総寄付金額:" + rankdata.premiumeffectpoint * 100),
                 rankdata.name
             );
