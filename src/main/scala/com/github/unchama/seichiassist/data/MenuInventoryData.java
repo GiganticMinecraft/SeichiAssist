@@ -300,9 +300,6 @@ public final class MenuInventoryData {
             if (rank >= SeichiAssist.ranklist_premiumeffectpoint().size()) {
                 break;
             }
-            if (inventoryIndex == 45) {
-                inventoryIndex = 47;
-            }
             rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(rank);
             if (rankdata.premiumeffectpoint < lowerBound) { //寄付金額0
                 break;
@@ -313,7 +310,13 @@ public final class MenuInventoryData {
                 rankdata.name
             );
             itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, inventoryIndex, itemstack.clone());
+            final int finalInventoryIndex;
+            if (inventoryIndex == 45) {
+                finalInventoryIndex = 47;
+            } else {
+                finalInventoryIndex = inventoryIndex;
+            }
+            AsyncInventorySetter.setItemAsync(inventory, finalInventoryIndex, itemstack.clone());
         }
 
         if (page != pageLimit) {
