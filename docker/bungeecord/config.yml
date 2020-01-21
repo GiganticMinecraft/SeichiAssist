@@ -36,7 +36,6 @@ listeners:
   tab_size: 60
   force_default_server: false
 disabled_commands:
-- disabledcommandhere
 network_compression_threshold: 256
 groups:
   md_5:
