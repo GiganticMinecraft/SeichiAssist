@@ -58,7 +58,7 @@ class MagicTask(private val player: Player,
 
     val sleepUntilChickenDisappears = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
 
-    val chickenEffect = SeichiAssist.instance.managedBlockScope
+    val chickenEffect = SeichiAssist.instance.managedEntityScope
       .tracked(BukkitResources.vanishingEntityResource(centerBreak, classOf[Chicken]))
       .use(e => IO {
         e.playEffect(EntityEffect.WITCH_MAGIC)
