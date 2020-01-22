@@ -73,8 +73,7 @@ class EntityListener extends Listener {
 
     runArrowSkillofHitBlock(player, block, tool)
 
-    SeichiAssist.managedEntities.$minus$eq(proj)
-    proj.remove()
+    SeichiAssist.instance.managedEntityScope.release(proj).unsafeRunSync()
   }
 
   private def runArrowSkillofHitBlock(player: Player, hitBlock: Block, tool: ItemStack): Unit = {

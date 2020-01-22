@@ -19,7 +19,7 @@ object BukkitResources {
   /**
    * 確保された`Entity`が開放時に除去されるような`Resource`としての`Block`
    */
-  def vanishingInvulnerableEntityResource[E <: Entity](spawnLocation: Location, tag: Class[E]): Resource[IO, E] = {
+  def vanishingEntityResource[E <: Entity](spawnLocation: Location, tag: Class[E]): Resource[IO, E] = {
     Resource.make(
       IO(spawnLocation.getWorld.spawn(spawnLocation, tag))
     )(e =>
