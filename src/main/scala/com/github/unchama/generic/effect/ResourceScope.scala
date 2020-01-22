@@ -67,6 +67,12 @@ object ResourceScope {
     import syncF._
 
     override def tracked[R <: ResourceHandler](resource: Resource[F, R]): Resource[F, R] = {
+      /*
+       * アイデアとしては、resourceで確保したものをtrackedResourcesに開放トークンとともに格納し、
+       * 開放時に自動的にtrackedResourcesから削除されるようなリソースを定義すれば良い。
+       *
+       * 意図的にリソースハンドラの参照をこちら側へ「漏らす」ために`Resource[F, R].allocated`を使用している。
+       */
       val trackedResource =
         for {
           allocated <- resource.allocated
