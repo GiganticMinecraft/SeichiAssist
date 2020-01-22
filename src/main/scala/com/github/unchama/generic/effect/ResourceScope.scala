@@ -21,17 +21,17 @@ trait ResourceScope[ResourceHandler, F[_]] {
   def getCancelToken(handler: ResourceHandler): F[Option[CancelToken[F]]]
 
   /**
+   * 管理下にあるすべてのリソースを開放する計算
+   */
+  val releaseAll: CancelToken[F]
+
+  /**
    * 与えられたハンドラが管理下にあれば開放するような計算
    */
   def release(handler: ResourceHandler): CancelToken[F] = for {
     optionToken <- getCancelToken(handler)
     _ <- optionToken.getOrElse(syncF.unit)
   } yield ()
-
-  /**
-   * 管理下にあるすべてのリソースを開放する計算
-   */
-  val releaseAll: CancelToken[F]
 
   /**
    * とあるハンドラがこのオブジェクトの管理下にあるかどうかを判定する計算
