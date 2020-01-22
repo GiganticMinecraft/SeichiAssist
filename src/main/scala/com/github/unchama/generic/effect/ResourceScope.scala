@@ -4,6 +4,21 @@ import cats.effect.{CancelToken, Resource, Sync}
 
 import scala.collection.concurrent.TrieMap
 
+/**
+ * Spigotプラグインのようなユースケースでは、
+ * ティックをまたぐような計算において任意のタイミングでサーバーが停止する可能性がある。
+ * これにより、サーバー停止時の処理を適切に行うために
+ * プラグインインスタンス等の場所から「確保したリソースすべてに対する参照を持つ」必要性が発生するケースがある。
+ * 「あとで必ず破壊しなければいけない一時的に生成されたエンティティ」などはその最たる例である。
+ *
+ * `ResourceScope`はこのような状況に対応するためのオブジェクトのtraitである。
+ *
+ * cats-effectで提供される代数データ型である`Resource[F, R]`は、
+ * `R` 型のリソースの確保・開放の`F`による計算の組を扱いやすいようにまとめた構造である。
+ * `ResourceScope`オブジェクト`r`は、与えられたリソース `resource: Resource[F, R]` に対して、
+ * 「`resource`により確保された資源を開放されるまで`r`の管理下に置く」ような
+ * 新たな `Resource` を `tracked` により生成する。
+ */
 trait ResourceScope[ResourceHandler, F[_]] {
   implicit val syncF: Sync[F]
 
