@@ -41,6 +41,8 @@ val dependenciesToEmbed = Seq(
   "com.beachape" %% "enumeratum" % "1.5.13"
 )
 
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
+
 // localDependenciesはprovidedとして扱い、jarに埋め込まない
 assemblyExcludedJars in assembly := {
   (fullClasspath in assembly).value

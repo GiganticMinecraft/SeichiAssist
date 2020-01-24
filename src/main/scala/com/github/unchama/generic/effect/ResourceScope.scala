@@ -1,6 +1,9 @@
 package com.github.unchama.generic.effect
 
-import cats.effect.{CancelToken, Resource, Sync}
+import cats.Applicative
+import cats.data.OptionT
+import cats.effect.concurrent.{Deferred, Ref}
+import cats.effect.{CancelToken, Concurrent, Resource, Sync}
 
 import scala.collection.concurrent.TrieMap
 
@@ -110,5 +113,76 @@ object ResourceScope {
       delay { trackedResources.get(handler) }
 
     override val releaseAll: CancelToken[F] = trackedResources.values.toList.sequence.map(_ => ())
+  }
+
+  class SingleResourceScope[ResourceHandler, F[_]](implicit val concF: Concurrent[F]) extends ResourceScope[ResourceHandler, OptionT[F, *]] {
+    type OptionF[a] = OptionT[F, a]
+
+    override implicit val syncF: Concurrent[OptionF] = implicitly
+
+    private val promiseSlot: Ref[F, Option[Deferred[F, (ResourceHandler, CancelToken[OptionF])]]] =
+      Ref.unsafe(None)
+
+    import cats.implicits._
+
+    override def tracked[R <: ResourceHandler](resource: Resource[OptionF, R]): Resource[OptionF, R] = {
+      /**
+       * `failCondition` が true のとき失敗するような計算を返す。
+       */
+      def failIf[G[_]: Applicative](failCondition: Boolean): OptionT[G, Unit] =
+        OptionT.fromOption[G](Option.unless(failCondition)(()))
+
+      /**
+       * Deferredプロミスを作成し、それを `promiseReference` に格納する試行をし、
+       * 試行が成功して初めてリソースの確保を行ってから確保したリソースでプロミスを埋める。
+       */
+      val trackedResource: OptionF[(R, CancelToken[OptionF])] = for {
+        newPromise <- OptionT.liftF(Deferred[F, (ResourceHandler, CancelToken[OptionF])])
+
+        promiseAllocation <- OptionT.liftF(
+          promiseSlot.tryModify {
+            case None => (Some(newPromise), true)
+            case allocated@Some(_) => (allocated, false)
+          }
+        )
+        _ <- failIf[F](promiseAllocation.contains(true))
+
+        dismiss = OptionT.liftF(promiseSlot.set(None))
+
+        // リソースの確保自体に失敗した場合は
+        // `promiseSlot` を別のリソースの確保のために開けなければならない
+        allocated <- resource.allocated.orElse(dismiss *> OptionT.none)
+        (handler, releaseToken) = allocated
+
+        _ <- OptionT.liftF(newPromise.complete(allocated))
+      } yield (handler, dismiss *> releaseToken)
+
+      Resource(trackedResource)
+    }
+
+    override def getCancelToken(handler: ResourceHandler): OptionF[Option[CancelToken[OptionF]]] =
+      // 与えられたハンドラと同一のハンドラが管理下にある場合のみ開放するようなFを計算する
+      for {
+        internalPromise <- OptionT(promiseSlot.get)
+
+        handlerTokenPair <- OptionT.liftF(internalPromise.get)
+        (acquiredHandler, release) = handlerTokenPair
+
+        token = if (handler == acquiredHandler) Some(release) else None
+      } yield token
+
+    override val releaseAll: CancelToken[OptionF] =
+      // 解放するリソースがあれば解放し、なければ何もしないようなFを計算する
+      for {
+        internalPromise <- OptionT(promiseSlot.get)
+
+        handlerTokenPair <- OptionT.liftF(internalPromise.get)
+        (_, release) = handlerTokenPair
+
+        _ <- release
+      } yield ()
+
+    def trackedForSome[R <: ResourceHandler](resource: Resource[F, R]): Resource[OptionF, R] =
+      tracked(resource.mapK(OptionT.liftK))
   }
 }
