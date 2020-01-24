@@ -144,12 +144,16 @@ object ResourceScope {
         OptionT.fromOption[G](Option.unless(failCondition)(()))
 
       /**
-       * Deferredプロミスを作成し、それを `promiseReference` に格納する試行をし、
+       * Deferredプロミスを作成し、それを `promiseSlot` に格納する試行をし、
        * 試行が成功して初めてリソースの確保を行ってから確保したリソースでプロミスを埋める。
+       *
+       * 開放時には、`promiseSlot` を空にしてから資源をすぐに開放する。
+       * これにより、資源が確保されてから開放される間は常にこのスコープの管理下に置かれる。
        */
       val trackedResource: OptionF[(R, CancelToken[OptionF])] = for {
         newPromise <- OptionT.liftF(Deferred.uncancelable[F, (ResourceHandler, CancelToken[OptionF])])
 
+        // `newPromise` の `promiseSlot` への格納が成功した場合のみSome(true)が結果となる
         promiseAllocation <- OptionT.liftF(
           promiseSlot.tryModify {
             case None => (Some(newPromise), true)
@@ -158,15 +162,15 @@ object ResourceScope {
         )
         _ <- failIf[F](promiseAllocation.contains(true))
 
-        dismiss = OptionT.liftF(promiseSlot.set(None))
+        setSlotToNone = OptionT.liftF(promiseSlot.set(None))
 
         // リソースの確保自体に失敗した場合は
-        // `promiseSlot` を別のリソースの確保のために開けなければならない
-        allocated <- resource.allocated.orElse(dismiss *> OptionT.none)
+        // `promiseSlot` を別のリソースの確保のために開ける。
+        allocated <- resource.allocated.orElse(setSlotToNone *> OptionT.none)
         (handler, releaseToken) = allocated
 
         _ <- OptionT.liftF(newPromise.complete(allocated))
-      } yield (handler, dismiss *> releaseToken)
+      } yield (handler, setSlotToNone *> releaseToken)
 
       Resource(trackedResource)
     }
