@@ -67,7 +67,17 @@ object ResourceScope {
    */
   def unsafeCreate[R, F[_]: Sync]: ResourceScope[R, F] = new TrieMapResourceScope()
 
-  class TrieMapResourceScope[ResourceHandler, F[_]](implicit val syncF: Sync[F]) extends ResourceScope[ResourceHandler, F] {
+  /**
+   * 新たな資源スコープを作成する。
+   * 返される資源スコープ内では高々一つの資源しか確保されないことが保証される。
+   *
+   * インスタンス等価性により挙動が変わるオブジェクトを作成するのでunsafe-接頭語がつけられている。
+   * @tparam R リソースハンドラの型
+   * @tparam F リソースを扱う計算
+   */
+  def unsafeCreateSingletonScope[R, F[_]: Concurrent]: SingleResourceScope[R, F] = new SingleResourceScope()
+
+  class TrieMapResourceScope[ResourceHandler, F[_]] private[ResourceScope] (implicit val syncF: Sync[F]) extends ResourceScope[ResourceHandler, F] {
     import scala.collection.mutable
 
     /**
@@ -115,7 +125,7 @@ object ResourceScope {
     override val releaseAll: CancelToken[F] = trackedResources.values.toList.sequence.map(_ => ())
   }
 
-  class SingleResourceScope[ResourceHandler, F[_]](implicit val concF: Concurrent[F]) extends ResourceScope[ResourceHandler, OptionT[F, *]] {
+  class SingleResourceScope[ResourceHandler, F[_]] private[ResourceScope] (implicit val concF: Concurrent[F]) extends ResourceScope[ResourceHandler, OptionT[F, *]] {
     type OptionF[a] = OptionT[F, a]
 
     override implicit val syncF: Concurrent[OptionF] = implicitly
