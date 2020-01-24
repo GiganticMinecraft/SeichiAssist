@@ -75,7 +75,7 @@ object ResourceScope {
    * @tparam R リソースハンドラの型
    * @tparam F リソースを扱う計算
    */
-  def unsafeCreateSingletonScope[R, F[_]: Concurrent]: SingleResourceScope[R, F] = new SingleResourceScope()
+  def unsafeCreateSingletonScope[R, F[_]: Async]: SingleResourceScope[R, F] = new SingleResourceScope()
 
   class TrieMapResourceScope[ResourceHandler, F[_]] private[ResourceScope] (implicit val syncF: Sync[F])
     extends ResourceScope[ResourceHandler, F] {
