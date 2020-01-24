@@ -3,7 +3,7 @@ package com.github.unchama.generic.effect
 import cats.Applicative
 import cats.data.OptionT
 import cats.effect.concurrent.{Deferred, Ref}
-import cats.effect.{CancelToken, Concurrent, Resource, Sync}
+import cats.effect.{Async, CancelToken, Concurrent, Resource, Sync}
 
 import scala.collection.concurrent.TrieMap
 
@@ -77,7 +77,8 @@ object ResourceScope {
    */
   def unsafeCreateSingletonScope[R, F[_]: Concurrent]: SingleResourceScope[R, F] = new SingleResourceScope()
 
-  class TrieMapResourceScope[ResourceHandler, F[_]] private[ResourceScope] (implicit val syncF: Sync[F]) extends ResourceScope[ResourceHandler, F] {
+  class TrieMapResourceScope[ResourceHandler, F[_]] private[ResourceScope] (implicit val syncF: Sync[F])
+    extends ResourceScope[ResourceHandler, F] {
     import scala.collection.mutable
 
     /**
@@ -125,10 +126,10 @@ object ResourceScope {
     override val releaseAll: CancelToken[F] = trackedResources.values.toList.sequence.map(_ => ())
   }
 
-  class SingleResourceScope[ResourceHandler, F[_]] private[ResourceScope] (implicit val concF: Concurrent[F]) extends ResourceScope[ResourceHandler, OptionT[F, *]] {
+  class SingleResourceScope[ResourceHandler, F[_]: Async] private[ResourceScope]() extends ResourceScope[ResourceHandler, OptionT[F, *]] {
     type OptionF[a] = OptionT[F, a]
 
-    override implicit val syncF: Concurrent[OptionF] = implicitly
+    override implicit val syncF: Async[OptionF] = implicitly
 
     private val promiseSlot: Ref[F, Option[Deferred[F, (ResourceHandler, CancelToken[OptionF])]]] =
       Ref.unsafe(None)
@@ -147,7 +148,7 @@ object ResourceScope {
        * 試行が成功して初めてリソースの確保を行ってから確保したリソースでプロミスを埋める。
        */
       val trackedResource: OptionF[(R, CancelToken[OptionF])] = for {
-        newPromise <- OptionT.liftF(Deferred[F, (ResourceHandler, CancelToken[OptionF])])
+        newPromise <- OptionT.liftF(Deferred.uncancelable[F, (ResourceHandler, CancelToken[OptionF])])
 
         promiseAllocation <- OptionT.liftF(
           promiseSlot.tryModify {
