@@ -215,6 +215,7 @@ class SeichiAssist extends JavaPlugin() {
 
     // 管理下にあるエンティティを開放する
     managedEntityScope.releaseAll.unsafeRunSync()
+    magicEffectEntityScope.releaseAll.value.unsafeRunSync()
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
