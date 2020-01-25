@@ -4,7 +4,7 @@ import cats.Applicative
 import cats.data.OptionT
 import cats.effect.concurrent.{Deferred, Ref}
 import cats.effect.{Async, CancelToken, Concurrent, ExitCase, Resource, Sync}
-import com.github.unchama.generic.OptionTExtra
+import com.github.unchama.generic.{OptionTExtra, ResourceExtra}
 
 import scala.collection.concurrent.TrieMap
 
@@ -193,6 +193,6 @@ object ResourceScope {
       } yield ()
 
     def trackedForSome[R <: ResourceHandler](resource: Resource[F, R]): Resource[F, Option[R]] =
-      OptionTExtra.unwrapOptionTResource(tracked(resource.mapK(OptionT.liftK)))
+      ResourceExtra.unwrapOptionTResource(tracked(resource.mapK(OptionT.liftK)))
   }
 }
