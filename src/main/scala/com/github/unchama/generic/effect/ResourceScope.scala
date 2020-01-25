@@ -3,7 +3,8 @@ package com.github.unchama.generic.effect
 import cats.Applicative
 import cats.data.OptionT
 import cats.effect.concurrent.{Deferred, Ref}
-import cats.effect.{Async, CancelToken, Concurrent, Resource, Sync}
+import cats.effect.{Async, CancelToken, Concurrent, ExitCase, Resource, Sync}
+import com.github.unchama.generic.OptionTExtra
 
 import scala.collection.concurrent.TrieMap
 
@@ -138,12 +139,6 @@ object ResourceScope {
 
     override def tracked[R <: ResourceHandler](resource: Resource[OptionF, R]): Resource[OptionF, R] = {
       /**
-       * `failCondition` が true のとき失敗するような計算を返す。
-       */
-      def failIf[G[_]: Applicative](failCondition: Boolean): OptionT[G, Unit] =
-        OptionT.fromOption[G](Option.unless(failCondition)(()))
-
-      /**
        * Deferredプロミスを作成し、それを `promiseSlot` に格納する試行をし、
        * 試行が成功して初めてリソースの確保を行ってから確保したリソースでプロミスを埋める。
        *
@@ -160,7 +155,7 @@ object ResourceScope {
             case allocated@Some(_) => (allocated, false)
           }
         )
-        _ <- failIf[F](promiseAllocation.contains(true))
+        _ <- OptionTExtra.failIf[F](promiseAllocation.contains(true))
 
         setSlotToNone = OptionT.liftF(promiseSlot.set(None))
 
@@ -197,7 +192,7 @@ object ResourceScope {
         _ <- release
       } yield ()
 
-    def trackedForSome[R <: ResourceHandler](resource: Resource[F, R]): Resource[OptionF, R] =
-      tracked(resource.mapK(OptionT.liftK))
+    def trackedForSome[R <: ResourceHandler](resource: Resource[F, R]): Resource[F, Option[R]] =
+      OptionTExtra.unwrapOptionTResource(tracked(resource.mapK(OptionT.liftK)))
   }
 }
