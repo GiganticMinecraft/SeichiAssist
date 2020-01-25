@@ -7,6 +7,7 @@ import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.generic.effect.ResourceScope
+import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
@@ -39,6 +40,7 @@ class SeichiAssist extends JavaPlugin() {
 
   val managedEntityScope: ResourceScope[Entity, IO] = ResourceScope.unsafeCreate[Entity, IO]
   val managedBlockScope: ResourceScope[Block, IO] = ResourceScope.unsafeCreate[Block, IO]
+  val magicEffectEntityScope: SingleResourceScope[Entity, IO] = ResourceScope.unsafeCreateSingletonScope[Entity, IO]
 
   override def onEnable(): Unit = {
     val logger = getLogger
