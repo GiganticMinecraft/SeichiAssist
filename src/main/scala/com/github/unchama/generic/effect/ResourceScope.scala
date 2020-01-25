@@ -1,9 +1,8 @@
 package com.github.unchama.generic.effect
 
-import cats.Applicative
 import cats.data.OptionT
 import cats.effect.concurrent.{Deferred, Ref}
-import cats.effect.{Async, CancelToken, Concurrent, ExitCase, Resource, Sync}
+import cats.effect.{Async, CancelToken, Resource, Sync}
 import com.github.unchama.generic.{OptionTExtra, ResourceExtra}
 
 import scala.collection.concurrent.TrieMap
