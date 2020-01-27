@@ -2,11 +2,12 @@ package com.github.unchama.seichiassist.data.player
 
 import com.github.unchama.seichiassist.minestack.MineStackObj
 
-import scala.collection.mutable
+import scala.collection.immutable
+import cats.effect.concurrent.Ref
 
 class MineStack(_objectCountMap: collection.Map[MineStackObj, Long] = collection.Map.empty) {
 
-  private val objectCountMap = mutable.Map.empty ++ _objectCountMap
+  private val objectCountMap = Ref.unsafe(immutable.Map.empty ++ _objectCountMap)
 
   /**
    * 指定されたマインスタックオブジェクトのスタック数を減少させる。
@@ -20,10 +21,9 @@ class MineStack(_objectCountMap: collection.Map[MineStackObj, Long] = collection
   def addStackedAmountOf(mineStackObj: MineStackObj, by: Long): Unit =
     setStackedAmountOf(mineStackObj, getStackedAmountOf(mineStackObj) + by)
 
-  def getStackedAmountOf(mineStackObj: MineStackObj): Long = objectCountMap.getOrElse(mineStackObj, 0)
+  def getStackedAmountOf(mineStackObj: MineStackObj): Long = objectCountMap.get().getOrElse(mineStackObj, 0)
 
   private def setStackedAmountOf(mineStackObj: MineStackObj, to: Long): Unit = {
-    objectCountMap.put(mineStackObj, to)
+    objectCountMap.set(objectCountMap.get() + (mineStackObj, to))
   }
-
 }
