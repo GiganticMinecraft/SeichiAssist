@@ -228,6 +228,7 @@ object Nicknames {
     9830 -> HeadTail(s"定食", s"定食"),
     9831 -> HeadTail(s"襲来", s"襲来"),
     9832 -> HeadTail(s"撃退", s"撃退"),
+    9833 -> HeadTail(s"脚", s"脚"),
     // 中パーツ(初期開放)
     9901 -> MiddleOnly(s"は"),
     9902 -> MiddleOnly(s"な"),
@@ -264,7 +265,10 @@ object Nicknames {
     9932 -> MiddleOnly(s"＃"),
     9933 -> MiddleOnly(s"や"),
     9934 -> MiddleOnly(s"ちゃま"),
-    9935 -> MiddleOnly(s"草")
+    9935 -> MiddleOnly(s"草"),
+    9936 -> MiddleOnly(s"<"),
+    9937 -> MiddleOnly(s">"),
+    9938 -> MiddleOnly(s"か")
   )
 
   val getNicknameFor: AchievementId => Option[NicknamesToBeUnlocked] = Nicknames.map.get

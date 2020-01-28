@@ -928,7 +928,7 @@ public final class MenuInventoryData {
         NoKeep = checkTitleS;
         playerdata.samepageflag_$eq(false);
         int inventoryIndex = 1;
-        for (; checkTitleS <= 9832; checkTitleS++) {
+        for (; checkTitleS <= 9833; checkTitleS++) {
             final List<String> lore;
             final ItemStack itemstack;
             final ItemMeta itemmeta;
@@ -965,7 +965,7 @@ public final class MenuInventoryData {
             }
         }
         checkTitleS = Math.max(checkTitleS, 9911);
-        for (; checkTitleS <= 9935; ) {
+        for (; checkTitleS <= 9938; ) {
             if (inventoryIndex < 27) {
                 final List<String> lore;
                 final ItemStack itemstack;
