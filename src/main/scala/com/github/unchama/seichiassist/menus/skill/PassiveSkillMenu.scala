@@ -170,8 +170,6 @@ object PassiveSkillMenu extends Menu {
           s"${RED}その魂を吸収しマナへと変換するスキル",
           s"${DARK_GRAY}※成功率は高くなく",
           s"${DARK_GRAY}整地中でなければその効果を発揮しない",
-          "",
-          s"${DARK_GRAY}実装は試験的であり、変更される場合があります"
         )
       }
       val lengthInfoLore = if (openerData.giganticBerserk.reachedLimit()) {

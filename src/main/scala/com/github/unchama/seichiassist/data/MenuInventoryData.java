@@ -1270,7 +1270,7 @@ public final class MenuInventoryData {
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
         {
             // 色
-            final byte[] table = {12, 15, 4, 0, 12};
+            final byte[] table = {12, 15, 4, 0, 3};
             final ItemStack itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, table[playerdata.giganticBerserk().stage()]);
             final ItemMeta itemmeta = itemstack.getItemMeta();
             itemmeta.setDisplayName(" ");
@@ -1324,12 +1324,16 @@ public final class MenuInventoryData {
         if (validate(p, playerdata, "GiganticBerserk進化後画面")) return null;
         final Inventory inventory = getEmptyInventory(6, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました");
         {
-            final byte[] table = {12, 15, 4, 0, 3};
+            final byte[] table = {12, 15, 4, 0, 3, 12};
             final byte b = table[playerdata.giganticBerserk().stage()];
 
             final ItemStack itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, b);
 
             final ItemMeta itemmeta = itemstack.getItemMeta();
+            if(!((playerdata.giganticBerserk().stage()) < 5)){
+                itemmeta.addEnchant(Enchantment.DAMAGE_ALL,1,true);
+                itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
             itemmeta.setDisplayName(" ");
             itemstack.setItemMeta(itemmeta);
 
