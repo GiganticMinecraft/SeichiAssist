@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.menus.minestack
 
+import cats.data.Kleisli
 import cats.effect.IO
+import com.github.unchama.concurrent.{BukkitSyncExecutionContext, Execution}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
@@ -56,7 +58,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(mineStackObj: MineStackObj): IO[Button] = RecomputedButton(IO {
+  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncExecutionContext): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -101,24 +103,30 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect[Player] = {
-    computedEffect { player =>
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
-      val currentAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
-      val grantAmount = Math.min(mineStackObj.itemStack.getMaxStackSize.toLong, currentAmount).toInt
+  private def withDrawOneStackEffect(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncExecutionContext): TargetedEffect[Player] = {
+    Kleisli(player => Execution.onServerMainThread {
+      for {
+        playerData <- IO { SeichiAssist.playermap(player.getUniqueId) }
+        currentAmount <- IO { playerData.minestack.getStackedAmountOf(mineStackObj) }
+        grantAmount = Math.min(mineStackObj.itemStack.getMaxStackSize.toLong, currentAmount).toInt
 
-      val soundEffectPitch =
-        if (grantAmount == mineStackObj.itemStack.getMaxStackSize.toLong) 1.0f else 0.5f
-      val grantItemStack = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
+        soundEffectPitch =
+          if (grantAmount == mineStackObj.itemStack.getMaxStackSize.toLong)
+            1.0f
+          else
+            0.5f
+        grantItemStack = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
-      sequentialEffect(
-        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
-        Util.grantItemStacksEffect(grantItemStack),
-        targetedeffect.UnfocusedEffect {
-          playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
-        }
-      )
-    }
+        _ <-
+          sequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
+            Util.grantItemStacksEffect(grantItemStack),
+            targetedeffect.UnfocusedEffect {
+              playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
+            }
+          ).run(player)
+      } yield ()
+    })
   }
 
   def computeAutoMineStackToggleButton(): IO[Button] = RecomputedButton(IO {
