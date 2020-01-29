@@ -1330,7 +1330,7 @@ public final class MenuInventoryData {
             final ItemStack itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, b);
 
             final ItemMeta itemmeta = itemstack.getItemMeta();
-            if(!((playerdata.giganticBerserk().stage()) < 5)){
+            if (playerdata.giganticBerserk().stage() >= 4) {
                 itemmeta.addEnchant(Enchantment.DAMAGE_ALL,1,true);
                 itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
