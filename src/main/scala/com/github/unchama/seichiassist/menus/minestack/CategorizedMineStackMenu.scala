@@ -48,7 +48,7 @@ object CategorizedMineStackMenu {
     val categorizedItemSectionComputation =
       categoryItemList
         .slice(mineStackObjectPerPage * page, mineStackObjectPerPage * page + mineStackObjectPerPage).toList
-        .traverse(getMineStackItemButtonOf)
+        .traverse(getMineStackItemButtonOf(_))
         .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算

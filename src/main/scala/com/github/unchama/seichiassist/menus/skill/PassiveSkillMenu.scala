@@ -212,7 +212,7 @@ object PassiveSkillMenu extends Menu {
           } else if (openerData.giganticBerserk.canEvolve) {
             //TODO: メニューに置き換える
             sequentialEffect(
-              computedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkEvolutionMenu(player))),
+              computedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkBeforeEvolutionMenu(player))),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
             )
           } else {

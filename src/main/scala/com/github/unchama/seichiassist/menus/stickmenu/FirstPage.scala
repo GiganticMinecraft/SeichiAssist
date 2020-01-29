@@ -47,22 +47,24 @@ object FirstPage extends Menu {
     val computations = ButtonComputations(player)
     import computations._
 
-    val constantPart = Map(
-      ChestSlotRef(0, 7) -> teleportServerButton,
-      ChestSlotRef(0, 8) -> spawnCommandButton,
-      ChestSlotRef(1, 0) -> achievementSystemButton,
-      ChestSlotRef(1, 2) -> passiveSkillBookButton,
-      ChestSlotRef(1, 7) -> gachaPrizeExchangeButton,
-      ChestSlotRef(1, 8) -> oreExchangeButton,
-      ChestSlotRef(2, 0) -> homePointMenuButton,
-      ChestSlotRef(2, 1) -> randomTeleportButton,
-      ChestSlotRef(2, 5) -> fastCraftButton,
-      ChestSlotRef(3, 3) -> votePointMenuButton,
-      ChestSlotRef(3, 5) -> seichiGodRankingButton,
-      ChestSlotRef(3, 6) -> loginGodRankingButton,
-      ChestSlotRef(3, 7) -> voteGodRankingButton,
-      ChestSlotRef(3, 8) -> secondPageButton
-    )
+    val constantPart =
+      Map(
+        ChestSlotRef(0, 7) -> teleportServerButton,
+        ChestSlotRef(0, 8) -> spawnCommandButton,
+        ChestSlotRef(1, 0) -> achievementSystemButton,
+        ChestSlotRef(1, 2) -> passiveSkillBookButton,
+        ChestSlotRef(1, 7) -> gachaPrizeExchangeButton,
+        ChestSlotRef(1, 8) -> oreExchangeButton,
+        ChestSlotRef(2, 0) -> homePointMenuButton,
+        ChestSlotRef(2, 1) -> randomTeleportButton,
+        ChestSlotRef(2, 5) -> fastCraftButton,
+        ChestSlotRef(3, 3) -> votePointMenuButton,
+        ChestSlotRef(3, 4) -> mapCommandButton,
+        ChestSlotRef(3, 5) -> seichiGodRankingButton,
+        ChestSlotRef(3, 6) -> loginGodRankingButton,
+        ChestSlotRef(3, 7) -> voteGodRankingButton,
+        ChestSlotRef(3, 8) -> secondPageButton
+      )
 
     import cats.implicits._
 
@@ -350,7 +352,9 @@ object FirstPage extends Menu {
 
             sequentialEffect(
               Util.grantItemStacksEffect(itemStacksToGive: _*),
-              UnfocusedEffect { playerData.unclaimedApologyItems -= numberOfItemsToGive },
+              UnfocusedEffect {
+                playerData.unclaimedApologyItems -= numberOfItemsToGive
+              },
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
               s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
             )
@@ -628,7 +632,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList(0)),
+          openInventoryEffect(MenuInventoryData.getRankingBySeichiAmount(0)),
         )
       )
     }
@@ -647,7 +651,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList_playtick(0)),
+          openInventoryEffect(MenuInventoryData.getRankingByPlayingTime(0)),
         )
       )
     }
@@ -667,7 +671,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList_p_vote(0)),
+          openInventoryEffect(MenuInventoryData.getRankingByVotingCount(0)),
         )
       )
     }
@@ -840,6 +844,22 @@ object FirstPage extends Menu {
         )
       )
     }
+
+    val mapCommandButton: Button =
+      Button(
+        new IconItemStackBuilder(Material.MAP)
+          .title(s"${YELLOW}ウェブマップのURLを表示")
+          .lore(List(
+            s"$RESET${YELLOW}現在座標を示すウェブマップのURLを表示します！",
+            s"$RESET$DARK_RED${UNDERLINE}クリックでURLを表示",
+            s"${DARK_GRAY}command=>[/map]"
+          ))
+          .build(),
+        LeftClickButtonEffect(
+          closeInventoryEffect,
+          "map".asCommandEffect()
+        )
+      )
   }
 
 }

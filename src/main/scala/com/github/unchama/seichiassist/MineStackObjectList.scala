@@ -459,7 +459,7 @@ object MineStackObjectList {
     new MineStackRsObj("lever", "レバー", 1, Material.LEVER, 0),
     new MineStackRsObj("redstone_torch_on", "レッドストーントーチ", 1, Material.REDSTONE_TORCH_ON, 0),
     new MineStackRsObj("trap_door", "木のトラップドア", 1, Material.TRAP_DOOR, 0),
-    new MineStackRsObj("stone_button", "鉄のトラップドア", 1, Material.IRON_TRAPDOOR, 0),
+    new MineStackRsObj("iron_trapdoor", "鉄のトラップドア", 1, Material.IRON_TRAPDOOR, 0),
     new MineStackRsObj("gold_plate", "重量感圧版 (軽) ", 1, Material.GOLD_PLATE, 0),
     new MineStackRsObj("iron_plate", "重量感圧版 (重) ", 1, Material.IRON_PLATE, 0),
     new MineStackRsObj("wood_door", "オークのドア", 1, Material.WOOD_DOOR, 0),

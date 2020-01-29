@@ -481,7 +481,7 @@ class PlayerInventoryListener extends Listener {
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-              player.openInventory(MenuInventoryData.getRankingList(page_display - 1))
+              player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
             }
 
           case "MHF_ArrowUp" =>
@@ -491,7 +491,7 @@ class PlayerInventoryListener extends Listener {
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-              player.openInventory(MenuInventoryData.getRankingList(page_display - 1))
+              player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
             }
 
           case _ =>
@@ -557,7 +557,7 @@ class PlayerInventoryListener extends Listener {
 
           //開く音を再生
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-          player.openInventory(MenuInventoryData.getRankingList_playtick(page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingByPlayingTime(page_display - 1))
         }
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowUp") {
         val itemmeta = itemstackcurrent.getItemMeta
@@ -566,7 +566,7 @@ class PlayerInventoryListener extends Listener {
 
           //開く音を再生
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-          player.openInventory(MenuInventoryData.getRankingList_playtick(page_display - 1))
+          player.openInventory(MenuInventoryData.getRankingByPlayingTime(page_display - 1))
         }
       }
     }
@@ -633,7 +633,7 @@ class PlayerInventoryListener extends Listener {
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-              player.openInventory(MenuInventoryData.getRankingList_p_vote(page_display - 1))
+              player.openInventory(MenuInventoryData.getRankingByVotingCount(page_display - 1))
             }
 
           case "MHF_ArrowUp" =>
@@ -643,7 +643,7 @@ class PlayerInventoryListener extends Listener {
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-              player.openInventory(MenuInventoryData.getRankingList_p_vote(page_display - 1))
+              player.openInventory(MenuInventoryData.getRankingByVotingCount(page_display - 1))
             }
         }
       }
@@ -711,7 +711,7 @@ class PlayerInventoryListener extends Listener {
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-              player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(page_display - 1))
+              player.openInventory(MenuInventoryData.getRankingByPremiumEffectPoint(page_display - 1))
             }
 
           case "MHF_ArrowUp" =>
@@ -720,7 +720,7 @@ class PlayerInventoryListener extends Listener {
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
-              player.openInventory(MenuInventoryData.getRankingList_premiumeffectpoint(page_display - 1))
+              player.openInventory(MenuInventoryData.getRankingByPremiumEffectPoint(page_display - 1))
             }
         }
       }
@@ -1344,7 +1344,7 @@ class PlayerInventoryListener extends Listener {
         playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1, canEvolve = false)
         player.playSound(player.getLocation, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5.toFloat)
         player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8.toFloat)
-        player.openInventory(MenuInventoryData.getGiganticBerserkEvolution2Menu(player))
+        player.openInventory(MenuInventoryData.getGiganticBerserkAfterEvolutionMenu(player))
       }
     } else if (topinventory.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {
       event.setCancelled(true)
