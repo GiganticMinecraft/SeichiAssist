@@ -22,7 +22,7 @@ import scala.collection.concurrent.TrieMap
  * 「`resource`により確保された資源を開放されるまで`r`の管理下に置く」ような
  * 新たな `Resource` を `tracked` により生成する。
  */
-trait ResourceScope[ResourceHandler, F[_]] {
+trait ResourceScope[F[_], ResourceHandler] {
   implicit val syncF: Sync[F]
 
   import cats.implicits._
@@ -62,23 +62,23 @@ object ResourceScope {
    * 新たな資源スコープを作成する。
    *
    * インスタンス等価性により挙動が変わるオブジェクトを作成するのでunsafe-接頭語がつけられている。
-   * @tparam R リソースハンドラの型
    * @tparam F リソースを扱う計算
+   * @tparam R リソースハンドラの型
    */
-  def unsafeCreate[R, F[_]: Sync]: ResourceScope[R, F] = new TrieMapResourceScope()
+  def unsafeCreate[F[_]: Sync, R]: ResourceScope[F, R] = new TrieMapResourceScope()
 
   /**
    * 新たな資源スコープを作成する。
    * 返される資源スコープ内では高々一つの資源しか確保されないことが保証される。
    *
    * インスタンス等価性により挙動が変わるオブジェクトを作成するのでunsafe-接頭語がつけられている。
-   * @tparam R リソースハンドラの型
    * @tparam F リソースを扱う計算
+   * @tparam R リソースハンドラの型
    */
-  def unsafeCreateSingletonScope[R, F[_]: Async]: SingleResourceScope[R, F] = new SingleResourceScope()
+  def unsafeCreateSingletonScope[F[_]: Async, R]: SingleResourceScope[F, R] = new SingleResourceScope()
 
-  class TrieMapResourceScope[ResourceHandler, F[_]] private[ResourceScope] (implicit val syncF: Sync[F])
-    extends ResourceScope[ResourceHandler, F] {
+  class TrieMapResourceScope[F[_], ResourceHandler] private[ResourceScope] (implicit val syncF: Sync[F])
+    extends ResourceScope[F, ResourceHandler] {
     import scala.collection.mutable
 
     /**
@@ -126,7 +126,7 @@ object ResourceScope {
     override val releaseAll: CancelToken[F] = trackedResources.values.toList.sequence.map(_ => ())
   }
 
-  class SingleResourceScope[ResourceHandler, F[_]: Async] private[ResourceScope]() extends ResourceScope[ResourceHandler, OptionT[F, *]] {
+  class SingleResourceScope[F[_]: Async, ResourceHandler] private[ResourceScope]() extends ResourceScope[OptionT[F, *], ResourceHandler] {
     type OptionF[a] = OptionT[F, a]
 
     override implicit val syncF: Async[OptionF] = implicitly
