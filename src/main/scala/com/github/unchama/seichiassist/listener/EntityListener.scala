@@ -163,7 +163,7 @@ class EntityListener extends Listener {
     SeichiAssist.managedBlocks ++= breakBlocks
 
     ActiveSkillEffect
-      .fromEffectNum(playerData.activeskilldata.effectnum)
+      .fromEffectNum(playerData.activeskilldata.effectnum, playerData.activeskilldata.skillnum)
       .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, area, centerOfBlock)
   }
 
