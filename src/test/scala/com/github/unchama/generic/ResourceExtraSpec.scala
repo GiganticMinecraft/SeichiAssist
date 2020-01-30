@@ -12,26 +12,34 @@ class ResourceExtraSpec extends AnyWordSpec with Matchers {
   "unwrapOptionTResource" should {
     val pureValue = 42
 
-    val unwrappedSomeResource: Resource[IO, Option[Int]] =
-      unwrapOptionTResource(Resource.liftF(OptionT.some[IO](pureValue)))
+    def someFunction(x: Int): Int = x * x
 
-    val unwrappedEmptyResource: Resource[IO, Option[Int]] =
-      unwrapOptionTResource(Resource.liftF(OptionT.none[IO, Int]))
+    {
+      val unwrappedSomeResource: Resource[IO, Option[Int]] =
+        unwrapOptionTResource(Resource.liftF(OptionT.some[IO](pureValue)))
 
-    "yield succeeding resource for the resource lifted from OptionT.some" in {
-      unwrappedSomeResource.use(IO.pure).unsafeRunSync().contains(pureValue)
+      "yield succeeding resource for the resource lifted from OptionT.some" in {
+        unwrappedSomeResource.use(IO.pure).unsafeRunSync().contains(pureValue)
+      }
+
+      "yield resource causing effect on use" in {
+        unwrappedSomeResource
+          .use(_.map(x => IO.pure(someFunction(x))).sequence)
+          .unsafeRunSync() mustBe Some(someFunction(pureValue))
+      }
     }
 
-    "yield failing resource for the resource lifted from OptionT.none" in {
-      unwrappedEmptyResource.use(IO.pure).unsafeRunSync().isEmpty
-    }
+    {
+      val unwrappedEmptyResource: Resource[IO, Option[Int]] =
+        unwrapOptionTResource(Resource.liftF(OptionT.none[IO, Int]))
 
-    "yield resource causing effect on use" in {
-      unwrappedSomeResource.use(_.map(x => IO.pure(x - 1)).sequence).unsafeRunSync() mustBe Some(pureValue - 1)
-    }
+      "yield failing resource for the resource lifted from OptionT.none" in {
+        unwrappedEmptyResource.use(IO.pure).unsafeRunSync().isEmpty
+      }
 
-    "yield resource causing effect on use, even for resources failing to allocate" in {
-      unwrappedEmptyResource.use(_ => IO.pure(pureValue)).unsafeRunSync() mustBe pureValue
+      "yield resource causing effect on use, even for resources failing to allocate" in {
+        unwrappedEmptyResource.use(_ => IO.pure(pureValue)).unsafeRunSync() mustBe pureValue
+      }
     }
   }
 }
