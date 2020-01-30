@@ -848,7 +848,7 @@ object FirstPage extends Menu {
     val mapCommandButton: Button =
       Button(
         new IconItemStackBuilder(Material.MAP)
-          .title(s"${YELLOW}ウェブマップのURLを表示")
+          .title(s"${YELLOW}$UNDERLINE${BOLD}ウェブマップのURLを表示")
           .lore(List(
             s"$RESET${YELLOW}現在座標を示すウェブマップのURLを表示します！",
             s"$RESET$DARK_RED${UNDERLINE}クリックでURLを表示",
@@ -857,7 +857,8 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           closeInventoryEffect,
-          "map".asCommandEffect()
+          "map".asCommandEffect(),
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
         )
       )
   }
