@@ -8,7 +8,9 @@ object ResourceExtra {
   import cats.implicits._
 
   /**
-   * 確保の操作に失敗する可能性のある `resource` を `Resource[F, Option[R]]` として表現し直す。
+   * リソースの各操作に(`OptionT`の意味で)失敗する可能性のある `Resource[OptionT[F, *], R]` が与えられたとき、
+   * リソース使用時に限ればこれは `Option[R]` が与えられるものとみなせる。
+   * よってこれを `Resource[F, Option[R]]` として表現し直す。
    */
   def unwrapOptionTResource[F[_]: Defer: Monad, R](resource: Resource[OptionT[F, *], R]): Resource[F, Option[R]] = {
     import Resource.{Allocate, Bind, Suspend}
