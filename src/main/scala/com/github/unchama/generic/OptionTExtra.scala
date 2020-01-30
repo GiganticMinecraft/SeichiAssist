@@ -9,10 +9,4 @@ object OptionTExtra {
    */
   def failIf[F[_]: Applicative](failCondition: Boolean): OptionT[F, Unit] =
     OptionT.fromOption[F](Option.unless(failCondition)(()))
-
-  /**
-   * 任意の型Aに対して `OptionT[F, A]` を `F[Option[A]]` へunwrapするような自然変換
-   */
-  def unwrapOptionTK[F[_]]: OptionT[F, *] ~> Lambda[x => F[Option[x]]] =
-    λ[OptionT[F, *] ~> Lambda[x => F[Option[x]]]](_.value)
 }
