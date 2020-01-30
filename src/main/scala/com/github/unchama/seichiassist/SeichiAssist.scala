@@ -39,7 +39,6 @@ class SeichiAssist extends JavaPlugin() {
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
   val managedEntityScope: ResourceScope[Entity, IO] = ResourceScope.unsafeCreate[Entity, IO]
-  val managedBlockScope: ResourceScope[Block, IO] = ResourceScope.unsafeCreate[Block, IO]
   val magicEffectEntityScope: SingleResourceScope[Entity, IO] = ResourceScope.unsafeCreateSingletonScope[Entity, IO]
 
   override def onEnable(): Unit = {
@@ -211,7 +210,7 @@ class SeichiAssist extends JavaPlugin() {
     cancelRepeatedJobs()
 
     // 管理下にあるブロックを開放する
-    managedBlockScope.releaseAll.unsafeRunSync()
+    SeichiAssist.managedBlocks.foreach(_.setType(Material.AIR))
 
     // 管理下にあるエンティティを開放する
     managedEntityScope.releaseAll.unsafeRunSync()
