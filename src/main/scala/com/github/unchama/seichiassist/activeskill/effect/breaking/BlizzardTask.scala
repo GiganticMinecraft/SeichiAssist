@@ -34,8 +34,8 @@ class BlizzardTask(private val player: Player,
         b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE, 5)
       else
         b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE)
-
-      SeichiAssist.managedBlocks -= b
     }
+
+    SeichiAssist.managedBlocks --= blocks
   }
 }

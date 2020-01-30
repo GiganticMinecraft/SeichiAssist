@@ -75,9 +75,8 @@ class MagicTask(private val player: Player,
     blocks.foreach { b =>
       b.setType(Material.AIR)
       b.getWorld.spawnParticle(Particle.NOTE, b.getLocation.add(0.5, 0.5, 0.5), 1)
-      SeichiAssist.managedBlocks -= b
     }
 
-    cancel()
+    SeichiAssist.managedBlocks --= blocks
   }
 }
