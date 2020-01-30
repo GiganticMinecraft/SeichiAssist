@@ -5,7 +5,7 @@ import org.bukkit.Material
 
 case class GiganticBerserk(level: Int = 0, exp: Int = 0, stage: Int = 0, canEvolve: Boolean = false, cd: Int = 0) {
 
-  def reachedLimit(): Boolean = stage == 4 && level == 9
+  def reachedLimit(): Boolean = stage == 5 && level == 9
 
   def manaRegenerationProbability(): Double =
     if (level < 2) 0.05
@@ -22,6 +22,7 @@ case class GiganticBerserk(level: Int = 0, exp: Int = 0, stage: Int = 0, canEvol
       case 2 => Material.GOLD_SWORD
       case 3 => Material.IRON_SWORD
       case 4 => Material.DIAMOND_SWORD
+      case 5 => Material.WOOD_SWORD
       case _ => throw new RuntimeException("This branch should not be reached")
     }
   }
