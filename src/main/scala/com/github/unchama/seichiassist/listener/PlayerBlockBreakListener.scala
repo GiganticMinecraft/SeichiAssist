@@ -316,7 +316,7 @@ class PlayerBlockBreakListener extends Listener {
       SeichiAssist.managedBlocks ++= breakBlocks
 
       ActiveSkillEffect
-        .fromEffectNum(playerdata.activeskilldata.effectnum)
+        .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
         .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, breakArea, centerOfBlock)
 
       // 経験値を減らす

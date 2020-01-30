@@ -32,23 +32,18 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
     this match {
       case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakBlocks, breakArea, standard).runTask(plugin)
       case Blizzard =>
-        val effect = new BlizzardTask(player, skillData, tool, breakBlocks, standard)
-
-        if (skillId < 3) {
-          effect.runTaskLater(plugin, 1)
-        } else {
-          val period = if (SeichiAssist.DEBUG) 100L else 10L
-          effect.runTaskTimer(plugin, 0, period)
-        }
+        val period = if (SeichiAssist.DEBUG) 100L else 10L
+        new BlizzardTask(player, skillData, tool, breakBlocks, standard).runTaskTimer(plugin, 0, period)
       case Meteo =>
         val delay = if (skillId < 3) 1L else 10L
-
         new MeteoTask(player, skillData, tool, breakBlocks, breakArea, standard).runTaskLater(plugin, delay)
     }
   }
 
-  //エフェクトの実行処理分岐
-  def arrowEffect(player: Player): TargetedEffect[Player] =
+  /**
+   * エフェクト選択時の遠距離エフェクト
+   */
+  val arrowEffect: TargetedEffect[Player] =
     this match {
       case Explosion => ArrowEffects.singleArrowExplosionEffect
       case Blizzard => ArrowEffects.singleArrowBlizzardEffect

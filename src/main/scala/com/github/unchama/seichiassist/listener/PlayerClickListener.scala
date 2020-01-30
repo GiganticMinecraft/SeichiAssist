@@ -97,11 +97,11 @@ class PlayerClickListener extends Listener {
           } else if (playerdata.activeskilldata.effectnum <= 100) {
             // 通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
             val skilleffect = ActiveSkillNormalEffect.values
-            skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect(player)
+            skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect
           } else {
             // スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
             val premiumeffect = ActiveSkillPremiumEffect.values
-            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).arrowEffect(player)
+            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).arrowEffect
           }
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(projectArrowEffect, "ArrowEffectを非同期で実行する")
