@@ -105,17 +105,15 @@ object ResourceScope {
       val trackedResource =
         for {
           allocated <- resource.allocated
-          (handler, releaseToken) = allocated
+          (handler, releaseResource) = allocated
 
-          dismiss = defer { trackedResources.remove(handler).getOrElse(Sync[F].unit) }
+          dismissResource = defer { trackedResources.remove(handler).getOrElse(Sync[F].unit) }
 
-          dismissAndRelease = dismiss *> releaseToken
-
-          register = delay { trackedResources += (handler -> dismissAndRelease) }
+          registerHandler = delay { trackedResources += (handler -> (dismissResource *> releaseResource)) }
 
           // 二重確保を避けるため確保されていたリソースがあれば開放してから確保する
-          _ <- dismiss *> register
-        } yield (handler, dismissAndRelease)
+          _ <- dismissResource *> registerHandler
+        } yield (handler, dismissResource)
 
       Resource(trackedResource)
     }
