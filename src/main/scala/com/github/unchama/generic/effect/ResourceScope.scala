@@ -1,7 +1,8 @@
 package com.github.unchama.generic.effect
 
+import cats.Monad
 import cats.data.OptionT
-import cats.effect.concurrent.{Deferred, Ref}
+import cats.effect.concurrent.{Deferred, Ref, TryableDeferred}
 import cats.effect.{Async, CancelToken, Resource, Sync}
 import com.github.unchama.generic.{OptionTExtra, ResourceExtra}
 
@@ -23,7 +24,7 @@ import scala.collection.concurrent.TrieMap
  * 新たな `Resource` を `tracked` により生成する。
  */
 trait ResourceScope[F[_], ResourceHandler] {
-  implicit val syncF: Sync[F]
+  implicit val monadF: Monad[F]
 
   import cats.implicits._
 
@@ -48,7 +49,7 @@ trait ResourceScope[F[_], ResourceHandler] {
    */
   def release(handler: ResourceHandler): CancelToken[F] = for {
     optionToken <- getCancelToken(handler)
-    _ <- optionToken.getOrElse(syncF.unit)
+    _ <- optionToken.getOrElse(monadF.unit)
   } yield ()
 
   /**
@@ -77,7 +78,7 @@ object ResourceScope {
    */
   def unsafeCreateSingletonScope[F[_]: Async, R]: SingleResourceScope[F, R] = new SingleResourceScope()
 
-  class TrieMapResourceScope[F[_], ResourceHandler] private[ResourceScope] (implicit val syncF: Sync[F])
+  class TrieMapResourceScope[F[_], ResourceHandler] private[ResourceScope] (implicit val monadF: Sync[F])
     extends ResourceScope[F, ResourceHandler] {
     import scala.collection.mutable
 
@@ -93,7 +94,7 @@ object ResourceScope {
     private val trackedResources: mutable.Map[ResourceHandler, CancelToken[F]] = TrieMap()
 
     import cats.implicits._
-    import syncF._
+    import monadF._
 
     override def tracked[R <: ResourceHandler](resource: Resource[F, R]): Resource[F, R] = {
       /*
@@ -127,9 +128,9 @@ object ResourceScope {
   class SingleResourceScope[F[_]: Async, ResourceHandler] private[ResourceScope]() extends ResourceScope[OptionT[F, *], ResourceHandler] {
     type OptionF[a] = OptionT[F, a]
 
-    override implicit val syncF: Async[OptionF] = implicitly
+    override val monadF: Async[OptionF] = implicitly
 
-    private val promiseSlot: Ref[F, Option[Deferred[F, (ResourceHandler, CancelToken[OptionF])]]] =
+    private val promiseSlot: Ref[F, Option[TryableDeferred[F, (ResourceHandler, CancelToken[OptionF])]]] =
       Ref.unsafe(None)
 
     import cats.implicits._
@@ -143,7 +144,7 @@ object ResourceScope {
        * これにより、資源が確保されてから開放される間は常にこのスコープの管理下に置かれる。
        */
       val trackedResource: OptionF[(R, CancelToken[OptionF])] = for {
-        newPromise <- OptionT.liftF(Deferred.uncancelable[F, (ResourceHandler, CancelToken[OptionF])])
+        newPromise <- OptionT.liftF(Deferred.tryableUncancelable[F, (ResourceHandler, CancelToken[OptionF])])
 
         // `newPromise` の `promiseSlot` への格納が成功した場合のみSome(true)が結果となる
         promiseAllocation <- OptionT.liftF(
@@ -152,13 +153,13 @@ object ResourceScope {
             case allocated@Some(_) => (allocated, false)
           }
         )
-        _ <- OptionTExtra.failIf[F](promiseAllocation.contains(true))
+        _ <- OptionTExtra.failIf[F](promiseAllocation.contains(false))
 
         setSlotToNone = OptionT.liftF(promiseSlot.set(None))
 
         // リソースの確保自体に失敗した場合は
         // `promiseSlot` を別のリソースの確保のために開ける。
-        allocated <- resource.allocated.orElse(setSlotToNone *> OptionT.none)
+        allocated <- resource.allocated(monadF).orElse(setSlotToNone *> OptionT.none)
         (handler, releaseToken) = allocated
 
         _ <- OptionT.liftF(newPromise.complete(allocated))
@@ -168,15 +169,22 @@ object ResourceScope {
     }
 
     override def getCancelToken(handler: ResourceHandler): OptionF[Option[CancelToken[OptionF]]] =
-      // 与えられたハンドラと同一のハンドラが管理下にある場合のみ開放するようなFを計算する
-      for {
-        internalPromise <- OptionT(promiseSlot.get)
+      OptionT.liftF(getCancelTokenUnlifted(handler))
 
-        handlerTokenPair <- OptionT.liftF(internalPromise.get)
-        (acquiredHandler, release) = handlerTokenPair
+    def getCancelTokenUnlifted(handler: ResourceHandler): F[Option[CancelToken[OptionF]]] =
+    // 与えられたハンドラと同一のハンドラが管理下にある場合のみ開放するようなFを計算する
+      {
+        for {
+          internalPromise <- OptionT(promiseSlot.get)
 
-        token = if (handler == acquiredHandler) Some(release) else None
-      } yield token
+          handlerTokenPair <- OptionT(internalPromise.tryGet)
+          (acquiredHandler, release) = handlerTokenPair
+
+          token <- OptionT.pure[F](release).filter(_ => handler == acquiredHandler)
+        } yield token
+      }.value
+
+    def isTrackedUnlifted(handler: ResourceHandler): F[Boolean] = getCancelTokenUnlifted(handler).map(_.nonEmpty)
 
     override val releaseAll: CancelToken[OptionF] =
       // 解放するリソースがあれば解放し、なければ何もしないようなFを計算する
