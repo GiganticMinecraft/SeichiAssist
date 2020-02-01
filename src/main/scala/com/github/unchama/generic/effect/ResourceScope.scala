@@ -190,6 +190,6 @@ object ResourceScope {
       } yield ()
 
     def trackedForSome[R <: ResourceHandler](resource: Resource[F, R]): Resource[F, Option[R]] =
-      ResourceExtra.unwrapOptionTResource(tracked(resource.mapK(OptionT.liftK)))
+      ResourceExtra.unwrapOptionTResource(tracked(resource.mapK(OptionT.liftK[F])))
   }
 }

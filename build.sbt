@@ -36,8 +36,8 @@ val testDependencies = Seq(
 
 val dependenciesToEmbed = Seq(
   "org.flywaydb" % "flyway-core" % "5.2.4",
-  "org.typelevel" %% "cats-core" % "2.0.0",
-  "org.typelevel" %% "cats-effect" % "2.0.0",
+  "org.typelevel" %% "cats-core" % "2.1.0",
+  "org.typelevel" %% "cats-effect" % "2.1.0",
   "eu.timepit" %% "refined" % "0.9.10",
   "com.beachape" %% "enumeratum" % "1.5.13"
 )

@@ -30,14 +30,14 @@ object ResourceExtra {
             Suspend(Defer[F].defer(Monad[F].pure(unwrapOptionTResource(source)))),
             (o: Option[s]) => o match {
               case Some(v) => unwrapOptionTResource(fs(v))
-              case None => Resource.pure(None)
+              case None => Resource.pure[F, Option[R]](None)
             }
           )
       }
       case Suspend(resource) =>
         Suspend(resource.value.map {
           case Some(resource) => unwrapOptionTResource(resource)
-          case None => Resource.pure(None)
+          case None => Resource.pure[F, Option[R]](None)
         })
     }
   }
