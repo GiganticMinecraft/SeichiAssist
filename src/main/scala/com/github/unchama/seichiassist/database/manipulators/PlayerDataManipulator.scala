@@ -72,49 +72,37 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   //最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
-  def givePlayerBug(player: Player, playerdata: PlayerData): Int = {
-    val struuid = playerdata.uuid.toString
-    var numofsorryforbug = 0
+  def givePlayerBug(player: Player): Int = {
+    val uuid = player.getUniqueId.toString
+    val numberToGrant = {
+      val command = s"select numofsorryforbug from $tableReference where uuid = '$uuid'"
+      val rawMaximum =
+        try {
+          gateway.executeQuery(command)
+            .recordIteration { _.getInt("numofsorryforbug") }
+            .head
+        } catch { case e: Exception =>
+          println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
+          e.printStackTrace()
+          player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
+          return 0
+        }
 
-    var command = s"select numofsorryforbug from $tableReference where uuid = '$struuid'"
-    try {
-      gateway.executeQuery(command).recordIteration { lrs =>
-        numofsorryforbug = lrs.getInt("numofsorryforbug")
-      }
-    } catch {
-      case e: SQLException =>
-        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-        e.printStackTrace()
-        player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
-        return 0
+      Math.min(rawMaximum, 576)
     }
 
-    if (numofsorryforbug > 576) {
-      // 576より多い場合はその値を返す(同時にnumofsorryforbugから-576)
-      command = ("update " + tableReference
-        + " set numofsorryforbug = numofsorryforbug - 576"
-        + s" where uuid = '$struuid'")
-      if (gateway.executeUpdate(command) == ActionStatus.Fail) {
+    {
+      val updateCommand =
+        s"update $tableReference " +
+          s"set numofsorryforbug = numofsorryforbug - $numberToGrant where uuid = '$uuid'"
+
+      if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
         player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
         return 0
       }
-
-      return 576
-    } else if (numofsorryforbug > 0) {
-      // 0より多い場合はその値を返す(同時にnumofsorryforbug初期化)
-      command = ("update " + tableReference
-        + " set numofsorryforbug = 0"
-        + s" where uuid = '$struuid'")
-      if (gateway.executeUpdate(command) == ActionStatus.Fail) {
-        player.sendMessage(RED.toString + "ガチャ券の受け取りに失敗しました")
-        return 0
-      }
-
-      return numofsorryforbug
     }
 
-    player.sendMessage(YELLOW.toString + "ガチャ券は全て受け取り済みのようです")
-    0
+    numberToGrant
   }
 
   @inline private def ifCoolDownDoneThenGet(player: Player, playerdata: PlayerData)(supplier: => Int): Int = {
