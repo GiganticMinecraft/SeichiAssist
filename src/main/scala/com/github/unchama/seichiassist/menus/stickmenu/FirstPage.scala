@@ -341,29 +341,33 @@ object FirstPage extends Menu {
           .build()
       }
 
+      import cats.implicits._
       Button(
         iconItemStack,
-        LeftClickButtonEffect(deferredEffect(IO {
-          if (playerData.gachacooldownflag) {
-            new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
+        LeftClickButtonEffect(deferredEffect(
+          // トランザクション処理になるため同期化する必要がある
+          IO.shift(sync) *> IO {
+            if (playerData.gachacooldownflag) {
+              new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-            val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player, playerData)
+              val numberOfItemsToGive = Math.max(576, playerData.unclaimedApologyItems)
 
-            if (numberOfItemsToGive != 0) {
-              val itemToGive = Util.getForBugskull(player.getName)
-              val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
+              if (numberOfItemsToGive != 0) {
+                val itemToGive = Util.getForBugskull(player.getName)
+                val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
-              sequentialEffect(
-                Util.grantItemStacksEffect(itemStacksToGive: _*),
-                UnfocusedEffect {
-                  playerData.unclaimedApologyItems -= numberOfItemsToGive
-                },
-                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-                s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
-              )
+                sequentialEffect(
+                  Util.grantItemStacksEffect(itemStacksToGive: _*),
+                  UnfocusedEffect { playerData.unclaimedApologyItems -= numberOfItemsToGive },
+                  FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+                  s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
+                )
+              } else {
+                s"${YELLOW}ガチャ券は全て受け取り済みのようです".asMessageEffect()
+              }
             } else emptyEffect
-          } else emptyEffect
-        }))
+          }
+        ))
       )
     })
 
