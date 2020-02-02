@@ -352,7 +352,7 @@ object FirstPage extends Menu {
 
               val numberOfItemsToGive = Math.min(playerData.unclaimedApologyItems, 576)
 
-              if (numberOfItemsToGive != 0) {
+              if (numberOfItemsToGive > 0) {
                 val itemToGive = Util.getForBugskull(player.getName)
                 val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
@@ -448,29 +448,36 @@ object FirstPage extends Menu {
           .build()
       }
 
+      import cats.implicits._
       Button(
         iconItemStack,
-        LeftClickButtonEffect {
-          if (playerData.gachacooldownflag) {
-            new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
+        LeftClickButtonEffect(deferredEffect(
+          // トランザクション処理になるため同期化する必要がある
+          IO.shift(sync) *> IO {
+            if (playerData.gachacooldownflag) {
+              new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-            val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
-            val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
+              val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
+              val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
 
-            val itemStackToGive = Util.getskull(player.getName)
+              if (gachaTicketsToGive > 0) {
+                val itemToGive = Util.getskull(player.getName)
+                val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
 
-            if (gachaTicketsToGive > 0) {
-              sequentialEffect(
-                Util.grantItemStacksEffect(Seq.fill(gachaTicketsToGive)(itemStackToGive): _*),
-                targetedeffect.UnfocusedEffect {
-                  playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
-                },
-                s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
-              )
+                sequentialEffect(
+                  Util.grantItemStacksEffect(itemStacksToGive: _*),
+                  targetedeffect.UnfocusedEffect {
+                    playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
+                  },
+                  FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+                  s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー".asMessageEffect()
+                )
+              } else {
+                s"${YELLOW}ガチャ券は全て受け取り済みのようです".asMessageEffect()
+              }
             } else emptyEffect
-          } else emptyEffect
-        }
+          }
+        ))
       )
     })
 
