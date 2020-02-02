@@ -350,7 +350,7 @@ object FirstPage extends Menu {
             if (playerData.gachacooldownflag) {
               new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-              val numberOfItemsToGive = Math.max(576, playerData.unclaimedApologyItems)
+              val numberOfItemsToGive = Math.min(playerData.unclaimedApologyItems, 576)
 
               if (numberOfItemsToGive != 0) {
                 val itemToGive = Util.getForBugskull(player.getName)
