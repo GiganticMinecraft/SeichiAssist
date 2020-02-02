@@ -209,7 +209,7 @@ NewYearEvent:
 
 #GiganticBerserk
 #1分間上限
-GBLimit: 20
+GBLimit: 50
 
 #各種URL
 Url:

@@ -47,22 +47,24 @@ object FirstPage extends Menu {
     val computations = ButtonComputations(player)
     import computations._
 
-    val constantPart = Map(
-      ChestSlotRef(0, 7) -> teleportServerButton,
-      ChestSlotRef(0, 8) -> spawnCommandButton,
-      ChestSlotRef(1, 0) -> achievementSystemButton,
-      ChestSlotRef(1, 2) -> passiveSkillBookButton,
-      ChestSlotRef(1, 7) -> gachaPrizeExchangeButton,
-      ChestSlotRef(1, 8) -> oreExchangeButton,
-      ChestSlotRef(2, 0) -> homePointMenuButton,
-      ChestSlotRef(2, 1) -> randomTeleportButton,
-      ChestSlotRef(2, 5) -> fastCraftButton,
-      ChestSlotRef(3, 3) -> votePointMenuButton,
-      ChestSlotRef(3, 5) -> seichiGodRankingButton,
-      ChestSlotRef(3, 6) -> loginGodRankingButton,
-      ChestSlotRef(3, 7) -> voteGodRankingButton,
-      ChestSlotRef(3, 8) -> secondPageButton
-    )
+    val constantPart =
+      Map(
+        ChestSlotRef(0, 7) -> teleportServerButton,
+        ChestSlotRef(0, 8) -> spawnCommandButton,
+        ChestSlotRef(1, 0) -> achievementSystemButton,
+        ChestSlotRef(1, 2) -> passiveSkillBookButton,
+        ChestSlotRef(1, 7) -> gachaPrizeExchangeButton,
+        ChestSlotRef(1, 8) -> oreExchangeButton,
+        ChestSlotRef(2, 0) -> homePointMenuButton,
+        ChestSlotRef(2, 1) -> randomTeleportButton,
+        ChestSlotRef(2, 5) -> fastCraftButton,
+        ChestSlotRef(3, 3) -> votePointMenuButton,
+        ChestSlotRef(3, 4) -> mapCommandButton,
+        ChestSlotRef(3, 5) -> seichiGodRankingButton,
+        ChestSlotRef(3, 6) -> loginGodRankingButton,
+        ChestSlotRef(3, 7) -> voteGodRankingButton,
+        ChestSlotRef(3, 8) -> secondPageButton
+      )
 
     import cats.implicits._
 
@@ -342,18 +344,27 @@ object FirstPage extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect(deferredEffect(IO {
-          val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player, playerData)
+          if (playerData.gachacooldownflag) {
+            new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-          if (numberOfItemsToGive != 0) {
-            val itemToGive = Util.getForBugskull(player.getName)
-            val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
+            // NOTE: playerData.unclaimedApologyItemsは信頼できる値ではない
+            // プレーヤーがログインしている最中に配布処理が行われた場合DB上の値とメモリ上の値に差分が出る。
+            // よって配布処理はすべてバックエンドと強調しながら行わなければならない。
+            val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player)
 
-            sequentialEffect(
-              Util.grantItemStacksEffect(itemStacksToGive: _*),
-              UnfocusedEffect { playerData.unclaimedApologyItems -= numberOfItemsToGive },
-              FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-              s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
-            )
+            if (numberOfItemsToGive > 0) {
+              val itemToGive = Util.getForBugskull(player.getName)
+              val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
+
+              sequentialEffect(
+                Util.grantItemStacksEffect(itemStacksToGive: _*),
+                UnfocusedEffect {
+                  playerData.unclaimedApologyItems -= numberOfItemsToGive
+                },
+                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+                s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
+              )
+            } else emptyEffect
           } else emptyEffect
         }))
       )
@@ -445,11 +456,12 @@ object FirstPage extends Menu {
             val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
             val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
 
-            val itemStackToGive = Util.getskull(player.getName)
-
             if (gachaTicketsToGive > 0) {
+              val itemToGive = Util.getskull(player.getName)
+              val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
+
               sequentialEffect(
-                Util.grantItemStacksEffect(Seq.fill(gachaTicketsToGive)(itemStackToGive): _*),
+                Util.grantItemStacksEffect(itemStacksToGive: _*),
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                 },
@@ -628,7 +640,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList(0)),
+          openInventoryEffect(MenuInventoryData.getRankingBySeichiAmount(0)),
         )
       )
     }
@@ -647,7 +659,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList_playtick(0)),
+          openInventoryEffect(MenuInventoryData.getRankingByPlayingTime(0)),
         )
       )
     }
@@ -667,7 +679,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingList_p_vote(0)),
+          openInventoryEffect(MenuInventoryData.getRankingByVotingCount(0)),
         )
       )
     }
@@ -840,6 +852,22 @@ object FirstPage extends Menu {
         )
       )
     }
+
+    val mapCommandButton: Button =
+      Button(
+        new IconItemStackBuilder(Material.MAP)
+          .title(s"${YELLOW}ウェブマップのURLを表示")
+          .lore(List(
+            s"$RESET${YELLOW}現在座標を示すウェブマップのURLを表示します！",
+            s"$RESET$DARK_RED${UNDERLINE}クリックでURLを表示",
+            s"${DARK_GRAY}command=>[/map]"
+          ))
+          .build(),
+        LeftClickButtonEffect(
+          closeInventoryEffect,
+          "map".asCommandEffect()
+        )
+      )
   }
 
 }
