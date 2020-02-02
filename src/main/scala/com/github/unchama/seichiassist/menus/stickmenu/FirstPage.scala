@@ -344,20 +344,24 @@ object FirstPage extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect(deferredEffect(IO {
-          val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player, playerData)
+          if (playerData.gachacooldownflag) {
+            new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-          if (numberOfItemsToGive != 0) {
-            val itemToGive = Util.getForBugskull(player.getName)
-            val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
+            val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player, playerData)
 
-            sequentialEffect(
-              Util.grantItemStacksEffect(itemStacksToGive: _*),
-              UnfocusedEffect {
-                playerData.unclaimedApologyItems -= numberOfItemsToGive
-              },
-              FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-              s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
-            )
+            if (numberOfItemsToGive != 0) {
+              val itemToGive = Util.getForBugskull(player.getName)
+              val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
+
+              sequentialEffect(
+                Util.grantItemStacksEffect(itemStacksToGive: _*),
+                UnfocusedEffect {
+                  playerData.unclaimedApologyItems -= numberOfItemsToGive
+                },
+                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+                s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
+              )
+            } else emptyEffect
           } else emptyEffect
         }))
       )
@@ -848,7 +852,7 @@ object FirstPage extends Menu {
     val mapCommandButton: Button =
       Button(
         new IconItemStackBuilder(Material.MAP)
-          .title(s"${YELLOW}$UNDERLINE${BOLD}ウェブマップのURLを表示")
+          .title(s"${YELLOW}ウェブマップのURLを表示")
           .lore(List(
             s"$RESET${YELLOW}現在座標を示すウェブマップのURLを表示します！",
             s"$RESET$DARK_RED${UNDERLINE}クリックでURLを表示",
@@ -857,8 +861,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           closeInventoryEffect,
-          "map".asCommandEffect(),
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+          "map".asCommandEffect()
         )
       )
   }
