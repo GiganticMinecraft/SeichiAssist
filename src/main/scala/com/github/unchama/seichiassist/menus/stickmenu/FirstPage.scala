@@ -347,9 +347,12 @@ object FirstPage extends Menu {
           if (playerData.gachacooldownflag) {
             new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-            val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player, playerData)
+            // NOTE: playerData.unclaimedApologyItemsは信頼できる値ではない
+            // プレーヤーがログインしている最中に配布処理が行われた場合DB上の値とメモリ上の値に差分が出る。
+            // よって配布処理はすべてバックエンドと強調しながら行わなければならない。
+            val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player)
 
-            if (numberOfItemsToGive != 0) {
+            if (numberOfItemsToGive > 0) {
               val itemToGive = Util.getForBugskull(player.getName)
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
@@ -453,11 +456,12 @@ object FirstPage extends Menu {
             val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
             val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
 
-            val itemStackToGive = Util.getskull(player.getName)
-
             if (gachaTicketsToGive > 0) {
+              val itemToGive = Util.getskull(player.getName)
+              val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
+
               sequentialEffect(
-                Util.grantItemStacksEffect(Seq.fill(gachaTicketsToGive)(itemStackToGive): _*),
+                Util.grantItemStacksEffect(itemStacksToGive: _*),
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                 },
