@@ -30,7 +30,7 @@ public class LimitedLoginEvent {
         final PlayerData playerdata = playermap.getOrElse(uuid, () -> null);
         final ItemStack skull = Util.getskull(p.getName());
         final Calendar cal = Calendar.getInstance();
-        final DateFormat sdf = SimpleDateFormat.getDateInstance(); // new SimpleDateFormat("yyyy/MM/dd");
+        final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
         if (lastcheckdate == null) return;
 
