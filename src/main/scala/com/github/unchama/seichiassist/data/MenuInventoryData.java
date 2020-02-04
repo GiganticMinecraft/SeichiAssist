@@ -93,6 +93,13 @@ public final class MenuInventoryData {
 
     private static final Consumer<SkullMeta> DIG100 = (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 
+
+    private static final ItemStack toMoveNicknameMenu = build(
+            Material.BARRIER,
+            ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
+            ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+    );
+
     //投票特典受け取りボタン
     private static List<String> getVoteButtonLore(final PlayerData playerdata) {
         return Arrays.asList(
@@ -712,14 +719,10 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
             AsyncInventorySetter.setItemAsync(inventory, 31,  itemstack);
         }
-        // 二つ名組合せメインページを開く
+        // 二つ名組合せメインページボタン
         {
             // Pure Button
-            final ItemStack itemstack = build(
-                    Material.BARRIER,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
+            AsyncInventorySetter.setItemAsync(inventory, 27, toMoveNicknameMenu);
         }
         return inventory;
     }
@@ -798,11 +801,7 @@ public final class MenuInventoryData {
 
         // 二つ名組合せメインページを開くボタン
         {
-            final ItemStack itemstack = build(
-                    Material.BARRIER,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
+            AsyncInventorySetter.setItemAsync(inventory, 27, toMoveNicknameMenu);
         }
         return inventory;
     }
@@ -864,12 +863,7 @@ public final class MenuInventoryData {
 
         // 二つ名組合せメインページを開くボタン
         {
-            final ItemStack itemstack = build(
-                    Material.BARRIER,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
+            AsyncInventorySetter.setItemAsync(inventory, 27, toMoveNicknameMenu);
         }
         return inventory;
     }
@@ -988,12 +982,7 @@ public final class MenuInventoryData {
 
         // 二つ名組合せメインページを開くボタン
         {
-            final ItemStack itemstack = build(
-                    Material.BARRIER,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
+            AsyncInventorySetter.setItemAsync(inventory, 27, toMoveNicknameMenu);
         }
         return inventory;
     }
@@ -1236,20 +1225,10 @@ public final class MenuInventoryData {
             final ItemMeta itemmeta = itemstack.getItemMeta();
             itemmeta.setDisplayName(" ");
             itemstack.setItemMeta(itemmeta);
-
-            for (final int i :
-                    new int[]{6, 7, 14, 15, 16, 21, 22, 23, 24, 32, 41}) {
-                AsyncInventorySetter.setItemAsync(inventory, i,  itemstack);
-            }
+            placeGiganticBerserkGlass(inventory, itemstack);
         }
 
-        {
-            final ItemStack itemstack = build(Material.STICK, " ", (String) null);
-            for (final int i :
-                    new int[]{30, 39, 40, 47}) {
-                AsyncInventorySetter.setItemAsync(inventory, i,  itemstack);
-            }
-        }
+        placeGiganticBerserkShape(inventory);
 
         {
             // const button
@@ -1299,20 +1278,10 @@ public final class MenuInventoryData {
             itemmeta.setDisplayName(" ");
             itemstack.setItemMeta(itemmeta);
 
-            for (final int i :
-                    new int[]{6, 7, 14, 15, 16, 21, 22, 23, 24, 32, 41}) {
-                AsyncInventorySetter.setItemAsync(inventory, i,  itemstack);
-            }
+            placeGiganticBerserkGlass(inventory, itemstack);
         }
-        {
-            // const button
-            final ItemStack itemstack = build(Material.STICK, " ", (String) null);
 
-            for (final int i :
-                    new int[]{30, 39, 40, 47}) {
-                AsyncInventorySetter.setItemAsync(inventory, i,  itemstack);
-            }
-        }
+        placeGiganticBerserkShape(inventory);
 
         {
             final ItemStack itemstack = build(
@@ -1396,5 +1365,20 @@ public final class MenuInventoryData {
     
     private static <T> Consumer<T> nullConsumer() {
         return (nothing) -> {};
+    }
+
+    private static void placeGiganticBerserkShape(final Inventory inv) {
+        final ItemStack itemstack = build(Material.STICK, " ", (String) null);
+        for (final int i :
+                new int[]{30, 39, 40, 47}) {
+            AsyncInventorySetter.setItemAsync(inv, i,  itemstack);
+        }
+    }
+
+    private static void placeGiganticBerserkGlass(final Inventory inv, final ItemStack itemstack) {
+        for (final int i :
+                new int[]{6, 7, 14, 15, 16, 21, 22, 23, 24, 32, 41}) {
+            AsyncInventorySetter.setItemAsync(inv, i, itemstack);
+        }
     }
 }
