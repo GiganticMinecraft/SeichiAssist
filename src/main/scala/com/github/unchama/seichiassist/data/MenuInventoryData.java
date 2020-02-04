@@ -81,12 +81,12 @@ public final class MenuInventoryData {
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
         final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
         itemstack.setDurability(PLAYER_SKULL);
-        for (int count = 10 * page, count2 = 0; count < 10 + 10 * page; count++, count2++) {
-            if (count >= SeichiAssist.ranklist().size()) {
+        for (int rank = 10 * page, invIndex = 0; rank < 10 + 10 * page; rank++, invIndex++) {
+            if (rank >= SeichiAssist.ranklist().size()) {
                 break;
             }
 
-            final RankData rankdata = SeichiAssist.ranklist().apply(count);
+            final RankData rankdata = SeichiAssist.ranklist().apply(rank);
             if (rankdata.totalbreaknum < (Long) LevelThresholds.levelExpThresholds().apply(lowerBound - 1)) { //レベル100相当の総整地量判定に変更
                 break;
             }
@@ -97,12 +97,12 @@ public final class MenuInventoryData {
             );
 
             final SkullMeta skullmeta = build(
-                    ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
+                    ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (rank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                     lore,
                     rankdata.name
             );
             itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, count2, itemstack.clone());
+            AsyncInventorySetter.setItemAsync(inventory, invIndex, itemstack.clone());
         }
 
         if (page != pageLimit) {
@@ -125,7 +125,7 @@ public final class MenuInventoryData {
                 lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
                 ign = "MHF_ArrowLeft";
             } else {
-                // 整地神ランキング前ページ目を開く;
+                // 整地神ランキング前ページ目を開く
                 name = ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング" + page + "ページ目へ";
                 lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
                 ign = "MHF_ArrowUp";
@@ -166,7 +166,7 @@ public final class MenuInventoryData {
         final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
         itemstack.setDurability(PLAYER_SKULL);
         final int rankStart = 10 * page;
-        for (int rank = rankStart, inventoryIndex = 0; rank < rankStart + 10; rank++, inventoryIndex++) {
+        for (int rank = rankStart, invIndex = 0; rank < rankStart + 10; rank++, invIndex++) {
             if (rank >= SeichiAssist.ranklist_playtick().size()) {
                 break;
             }
@@ -178,7 +178,7 @@ public final class MenuInventoryData {
                 rankdata.name
             );
             itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, inventoryIndex, itemstack.clone());
+            AsyncInventorySetter.setItemAsync(inventory, invIndex, itemstack.clone());
         }
 
         if (page != pageLimit) {
@@ -228,23 +228,23 @@ public final class MenuInventoryData {
         final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
         itemstack.setDurability(PLAYER_SKULL);
         RankData rankdata;
-        for (int count = 10 * page, count2 = 0; count < 10 + 10 * page; count++, count2++) {
-            if (count >= SeichiAssist.ranklist_p_vote().size()) {
+        for (int voteRank = 10 * page, invIndex = 0; voteRank < 10 + 10 * page; voteRank++, invIndex++) {
+            if (voteRank >= SeichiAssist.ranklist_p_vote().size()) {
                 break;
             }
             
-            rankdata = SeichiAssist.ranklist_p_vote().apply(count);
+            rankdata = SeichiAssist.ranklist_p_vote().apply(voteRank);
             if (rankdata.p_vote < lowerBound) { //投票数0
                 break;
             }
 
             final SkullMeta skullmeta = build(
-                    ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (count + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
+                    ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (voteRank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                     Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総投票回数:" + rankdata.p_vote),
                     rankdata.name
             );
             itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, count2, itemstack.clone());
+            AsyncInventorySetter.setItemAsync(inventory, invIndex, itemstack.clone());
         }
 
         if (page != pageLimit) {
@@ -293,25 +293,25 @@ public final class MenuInventoryData {
         final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
         itemstack.setDurability(PLAYER_SKULL);
         RankData rankdata;
-        for (int rank = 50 * page, inventoryIndex = 0; rank < 50 + 50 * page; rank++, inventoryIndex++) {
-            if (rank >= SeichiAssist.ranklist_premiumeffectpoint().size()) {
+        for (int donationRank = 50 * page, invIndex = 0; donationRank < 50 + 50 * page; donationRank++, invIndex++) {
+            if (donationRank >= SeichiAssist.ranklist_premiumeffectpoint().size()) {
                 break;
             }
-            rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(rank);
+            rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(donationRank);
             if (rankdata.premiumeffectpoint < lowerBound) { //寄付金額0
                 break;
             }
             final SkullMeta skullmeta = build(
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (rank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
+        ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (donationRank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                 Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総寄付金額:" + rankdata.premiumeffectpoint * 100),
                 rankdata.name
             );
             itemstack.setItemMeta(skullmeta);
             final int finalInventoryIndex;
-            if (inventoryIndex == 45) {
+            if (invIndex == 45) {
                 finalInventoryIndex = 47;
             } else {
-                finalInventoryIndex = inventoryIndex;
+                finalInventoryIndex = invIndex;
             }
             AsyncInventorySetter.setItemAsync(inventory, finalInventoryIndex, itemstack.clone());
         }
@@ -406,6 +406,7 @@ public final class MenuInventoryData {
             itemstack.setItemMeta(itemmeta);
             AsyncInventorySetter.setItemAsync(inventory, 2,  itemstack);
         }
+
         {
             final ItemStack itemstack = new ItemStack(Material.GLASS, 1);
             final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
@@ -591,24 +592,33 @@ public final class MenuInventoryData {
             );
             AsyncInventorySetter.setItemAsync(inventory, 4,  itemStack);
         }
-        AsyncInventorySetter.setItemAsync(inventory, 11,  build(
-                Material.WATER_BUCKET,
-                ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツ選択画面",
-                ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-        ));
-        AsyncInventorySetter.setItemAsync(inventory, 13,  build(
-                Material.MILK_BUCKET,
-                ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツ選択画面",
-                ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-        ));
-        AsyncInventorySetter.setItemAsync(inventory, 15,  build(
-                Material.LAVA_BUCKET,
-                ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツ選択画面",
-                ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-        ));
+
+        {
+            final ItemStack toHeadSelection = build(
+                    Material.WATER_BUCKET,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツ選択画面",
+                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
+            );
+
+            final ItemStack toMiddleSelection = build(
+                    Material.MILK_BUCKET,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツ選択画面",
+                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
+            );
+
+            final ItemStack toTailSelection = build(
+                    Material.LAVA_BUCKET,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツ選択画面",
+                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
+            );
+            AsyncInventorySetter.setItemAsync(inventory, 11, toHeadSelection);
+            AsyncInventorySetter.setItemAsync(inventory, 13, toMiddleSelection);
+            AsyncInventorySetter.setItemAsync(inventory, 15, toTailSelection);
+        }
 
         // 1ページ目を開く
         {
+            // Pure Button
             final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
             itemstack.setDurability(PLAYER_SKULL);
             final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
