@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 object CategorizedMineStackMenu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
 
   private val mineStackObjectPerPage = 5.chestRows.slotCount

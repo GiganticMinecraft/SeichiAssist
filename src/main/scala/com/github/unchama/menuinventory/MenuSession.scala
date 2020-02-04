@@ -3,7 +3,7 @@ package com.github.unchama.menuinventory
 import cats.Eq
 import cats.effect.concurrent.Ref
 import cats.effect.{ContextShift, IO}
-import com.github.unchama.concurrent.BukkitSyncExecutionContext
+import com.github.unchama.concurrent.BukkitSyncIOShift
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -24,7 +24,7 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
   /**
    * このセッションが持つ共有インベントリを同期スレッドで開く[TargetedEffect]を返します.
    */
-  def openInventory(implicit context: BukkitSyncExecutionContext): TargetedEffect[Player] =
+  def openInventory(implicit context: BukkitSyncIOShift): TargetedEffect[Player] =
     PlayerEffects.openInventoryEffect(sessionInventory)
 
   def overwriteViewWith(newLayout: MenuSlotLayout)(implicit ctx: LayoutPreparationContext): IO[Unit] = {

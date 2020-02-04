@@ -59,7 +59,7 @@ object PassiveSkillMenu extends Menu {
 
   private case class ButtonComputations(player: Player) {
 
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
     import player._
 
     import scala.util.chaining._

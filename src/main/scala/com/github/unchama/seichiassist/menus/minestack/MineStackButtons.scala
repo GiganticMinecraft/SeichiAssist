@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.menus.minestack
 
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.concurrent.{BukkitSyncExecutionContext, Execution}
+import com.github.unchama.concurrent.{BukkitSyncIOShift, Execution}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
@@ -58,7 +58,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncExecutionContext): IO[Button] = RecomputedButton(IO {
+  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncIOShift): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -103,7 +103,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def withDrawOneStackEffect(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncExecutionContext): TargetedEffect[Player] = {
+  private def withDrawOneStackEffect(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncIOShift): TargetedEffect[Player] = {
     Kleisli(player => Execution.onServerMainThread {
       for {
         playerData <- IO { SeichiAssist.playermap(player.getUniqueId) }
