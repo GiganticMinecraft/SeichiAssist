@@ -308,7 +308,7 @@ public final class MenuInventoryData {
                         "MHF_ArrowLeft"
                 );
             } else {
-                // 投票神ランキング前ページを開く;
+                // 投票神ランキング前ページを開く
                 skullmeta = buildSkullMeta(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票神ランキング" + page + "ページ目へ",
                         Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
