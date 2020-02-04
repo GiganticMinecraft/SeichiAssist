@@ -42,17 +42,51 @@ public final class MenuInventoryData {
     private static final HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
     private static final DatabaseGateway databaseGateway = SeichiAssist.databaseGateway();
 
+    // 実際には60人も入ることは無いのでは？
+    private static final Map<UUID, Boolean> finishedHeadPageBuild = new HashMap<>(60, 0.75);
+    private static final Map<UUID, Boolean> finishedMiddlePageBuild = new HashMap<>(60, 0.75);
+    private static final Map<UUID, Boolean> finishedTailPageBuild = new HashMap<>(60, 0.75);
+    private static final Map<UUID, Boolean> finishedShopPageBuild = new HashMap<>(60, 0.75);
+
+    // 実際には60人も入ることは無いのでは？
+    private static final Map<UUID, Integer> headPartIndex = new HashMap<>(60, 0.75);
+    private static final Map<UUID, Integer> middlePartIndex = new HashMap<>(60, 0.75);
+    private static final Map<UUID, Integer> tailPartIndex = new HashMap<>(60, 0.75);
+    private static final Map<UUID, Integer> shopIndex = new HashMap<>(60, 0.75);
+    private static final Map<UUID, Integer> taihiIndex = new HashMap<>(60, 0.75);
+
+    private static final List<List<String>> loreTable = Arrays.asList(
+            Collections.emptyList(),
+            Arrays.asList(
+                    ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガンガンたべるぞ",
+                    ChatColor.RESET + "" + ChatColor.GRAY + "とにかく妖精さんにりんごを開放します。",
+                    ChatColor.RESET + "" + ChatColor.GRAY + "めっちゃ喜ばれます。"
+            ),
+            Arrays.asList(
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "バッチリたべよう",
+                    ChatColor.RESET + "" + ChatColor.GRAY + "食べ過ぎないように注意しつつ",
+                    ChatColor.RESET + "" + ChatColor.GRAY + "妖精さんにりんごを開放します。",
+                    ChatColor.RESET + "" + ChatColor.GRAY + "喜ばれます。"
+            ),
+            Arrays.asList(
+                    ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴだいじに",
+                    ChatColor.RESET + "" + ChatColor.GRAY + "少しだけ妖精さんにりんごを開放します。",
+                    ChatColor.RESET + "" + ChatColor.GRAY + "伝えると大抵落ち込みます。"
+            ),
+            Arrays.asList(
+                    ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴつかうな",
+                    ChatColor.RESET + "" + ChatColor.GRAY + "絶対にりんごを開放しません。",
+                    ChatColor.RESET + "" + ChatColor.GRAY + ""
+            )
+    );
     /*
     * FIXME:
     *  実装がやばいので複数のプレイヤーが同時に開いたらぶっ壊れる。
     *  しかしながら、今日に至るまでバグが報告されたことは１度もない。まじでミラクル。
     *  追記: ちゃんとバグが報告された。rip都市伝説。ロジックバグを直したいのは山々だがMapの扱いが多少面倒くさい。
+    *  再追記: 多分治った。ちゃんと排他制御、しよう。Rustもmutable + multi-threadは危険だって言っている。
     */
-    private static int globalHeadPartIndex;
-    private static int globalMiddlePartIndex;
-    private static int globalTailPartIndex;
-    private static int globalPartShopIndex;
-    private static int globalTaihi;
+
     /**
      * (short) 3はダサいし、マジックコンスタントみたいだよね。
      */
@@ -522,11 +556,11 @@ public final class MenuInventoryData {
         finishedMiddlePageBuild.put(uuid, false);
         finishedTailPageBuild.put(uuid, false);
         finishedShopPageBuild.put(uuid, false);
-        globalHeadPartIndex = 0;
-        globalMiddlePartIndex = 0;
-        globalTailPartIndex = 0;
-        globalPartShopIndex = 0;
-        globalTaihi = 0;
+        headPartIndex.put(uuid, 0);
+        middlePartIndex.put(uuid, 0);
+        tailPartIndex.put(uuid, 0);
+        shopIndex.put(uuid, 0);
+        taihiIndex.put(uuid, 0);
 
         //実績ポイントの最新情報反映ボタン
         {
@@ -641,20 +675,20 @@ public final class MenuInventoryData {
         if (finishedHeadPageBuild.getOrElse(uuid, () -> false)) {
             finishedHeadPageBuild.put(uuid, false);
         } else {
-            globalHeadPartIndex = 1000;
+            headPartIndex.put(uuid, 1000);
         }
 
         //各ボタンの設定
         //解禁済みの実績をチェック→前パーツがあるかをチェック→あればボタン配置
         int inventoryIndex = 0;
-        for (; globalHeadPartIndex < 9900; globalHeadPartIndex++) {
+        for (int i = headPartIndex.get(uuid).get(); i < 9900; i++) {
             if (inventoryIndex < 27) {
-                if (playerdata.TitleFlags().contains(globalHeadPartIndex)) {
-                    final Option<String> maybeHeadPart = Nicknames.getHeadPartFor(globalHeadPartIndex);
+                if (playerdata.TitleFlags().contains(i)) {
+                    final Option<String> maybeHeadPart = Nicknames.getHeadPartFor(i);
                     if (maybeHeadPart.nonEmpty()) {
                         final ItemStack itemstack = build(
                                 Material.WATER_BUCKET,
-                                Integer.toString(globalHeadPartIndex),
+                                Integer.toString(i),
                                 ChatColor.RESET + "" + ChatColor.RED + "前パーツ「" + maybeHeadPart.get() + "」"
                         );
                         final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
@@ -723,23 +757,23 @@ public final class MenuInventoryData {
         if (finishedMiddlePageBuild.getOrElse(uuid, FALSE)) {
             finishedMiddlePageBuild.put(uuid, false);
         } else {
-            globalMiddlePartIndex = 9900;
+            middlePartIndex.put(uuid, 9900);
         }
 
         //各ボタンの設定
         //パーツがあるかをチェック→あればボタン配置
         int inventoryIndex = 0;
-        for (; globalMiddlePartIndex < 9999; globalMiddlePartIndex++) {
+        for (int i = middlePartIndex.get(uuid).get(); i < 9999; i++) {
             if (inventoryIndex < 27) {
-                final Option<String> maybeMiddlePart = Nicknames.getMiddlePartFor(globalMiddlePartIndex);
+                final Option<String> maybeMiddlePart = Nicknames.getMiddlePartFor(i);
                 //一部の「隠し中パーツ」は取得しているかの確認
-                if (9911 <= globalMiddlePartIndex
-                        && playerdata.TitleFlags().contains(globalMiddlePartIndex)
+                if (9911 <= i
+                        && playerdata.TitleFlags().contains(i)
                         && maybeMiddlePart.nonEmpty()
                     || maybeMiddlePart.nonEmpty()) {
                         final ItemStack itemstack = build(
                                 Material.MILK_BUCKET,
-                                Integer.toString(globalMiddlePartIndex),
+                                Integer.toString(i),
                                 ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + maybeMiddlePart.get() + "」"
                         );
 
@@ -793,20 +827,20 @@ public final class MenuInventoryData {
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「後」");
 
         if (!finishedTailPageBuild.getOrElse(uuid, FALSE)) {
-            globalTailPartIndex = 1000;
+            tailPartIndex.put(uuid, 1000);
         }
 
         //各ボタンの設定
         //解禁済みの実績をチェック→後パーツがあるかをチェック→あればボタン配置
         int inventoryIndex = 0;
-        for (; globalTailPartIndex < 9900; globalTailPartIndex++) {
+        for (int i = tailPartIndex.get(uuid).get(); i < 9900; i++) {
             if (inventoryIndex < 27) {
-                if (playerdata.TitleFlags().contains(globalTailPartIndex)) {
-                    final Option<String> maybeTailPart = Nicknames.getTailPartFor(globalTailPartIndex);
+                if (playerdata.TitleFlags().contains(i)) {
+                    final Option<String> maybeTailPart = Nicknames.getTailPartFor(i);
                     if (maybeTailPart.nonEmpty()) {
                         final ItemStack itemstack = build(
                                 Material.LAVA_BUCKET,
-                                Integer.toString(globalTailPartIndex),
+                                Integer.toString(i),
                                 ChatColor.RESET + "" + ChatColor.RED + "後パーツ「" + maybeTailPart.get() + "」");
                         AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
                         inventoryIndex++;
@@ -881,28 +915,29 @@ public final class MenuInventoryData {
 
         //おしながき
         if (playerdata.samepageflag()) {
-            globalPartShopIndex = globalTaihi;
+            shopIndex.put(uuid, taihiIndex.get(uuid).get());
         } else if (!finishedShopPageBuild.getOrElse(uuid, FALSE)) {
-            globalPartShopIndex = 9801;
+            shopIndex.put(uuid, 9801);
         }
-        globalTaihi = globalPartShopIndex;
+
+        taihiIndex.put(uuid, shopIndex.get(uuid).get());
         playerdata.samepageflag_$eq(false);
         int inventoryIndex = 1;
-        for (; globalPartShopIndex <= 9833; globalPartShopIndex++) {
+        int forNextI = 0;
+        for (int i = shopIndex.get(uuid).get(); i <= 9833; i++) {
             final List<String> lore;
             final ItemStack itemstack;
-            final ItemMeta itemmeta;
             if (inventoryIndex < 27) {
-                if (!playerdata.TitleFlags().contains(globalPartShopIndex)) {
+                if (!playerdata.TitleFlags().contains(i)) {
                     lore = Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.RED + "前・後パーツ「" + Nicknames.getHeadPartFor(globalPartShopIndex).getOrElse(() -> "") + "」",
+                            ChatColor.RESET + "" + ChatColor.RED + "前・後パーツ「" + Nicknames.getHeadPartFor(i).getOrElse(() -> "") + "」",
                             ChatColor.RESET + "" + ChatColor.GREEN + "必要ポイント：20",
                             ChatColor.RESET + "" + ChatColor.AQUA + "クリックで購入できます"
                     );
 
                     itemstack = build(
                             Material.BEDROCK,
-                            Integer.toString(globalPartShopIndex),
+                            Integer.toString(i),
                             lore
                     );
                     AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
@@ -918,22 +953,25 @@ public final class MenuInventoryData {
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
                 finishedShopPageBuild.put(uuid, true);
+                forNextI = i;
                 break;
             }
         }
-        globalPartShopIndex = Math.max(globalPartShopIndex, 9911);
-        for (; globalPartShopIndex <= 9938; globalPartShopIndex++) {
+
+        // SAFE: putしているのでキーがないなんてことはない
+        shopIndex.put(uuid, Math.max(forNextI, 9911));
+        for (int i = shopIndex.get(uuid).get(); i <= 9938; i++) {
             if (inventoryIndex < 27) {
-                if (!playerdata.TitleFlags().contains(globalPartShopIndex)) {
+                if (!playerdata.TitleFlags().contains(i)) {
                     final List<String> lore = Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + Nicknames.getMiddlePartFor(globalPartShopIndex).getOrElse(() -> "") + "」",
+                            ChatColor.RESET + "" + ChatColor.RED + "中パーツ「" + Nicknames.getMiddlePartFor(i).getOrElse(() -> "") + "」",
                             ChatColor.RESET + "" + ChatColor.GREEN + "必要ポイント：35",
                             ChatColor.RESET + "" + ChatColor.AQUA + "クリックで購入できます"
                     );
 
                     final ItemStack itemstack = build(
                             Material.BEDROCK,
-                            Integer.toString(globalPartShopIndex),
+                            Integer.toString(i),
                             lore
                     );
 
@@ -1178,30 +1216,6 @@ public final class MenuInventoryData {
         final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精とのお約束");
         // n % 4 + 1 -> 1..4
-        final List<List<String>> loreTable = Arrays.asList(
-                Collections.emptyList(),
-                Arrays.asList(
-                        ChatColor.RED + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ガンガンたべるぞ",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "とにかく妖精さんにりんごを開放します。",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "めっちゃ喜ばれます。"
-                ),
-                Arrays.asList(
-                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "バッチリたべよう",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "食べ過ぎないように注意しつつ",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "妖精さんにりんごを開放します。",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "喜ばれます。"
-                ),
-                Arrays.asList(
-                        ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴだいじに",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "少しだけ妖精さんにりんごを開放します。",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "伝えると大抵落ち込みます。"
-                ),
-                Arrays.asList(
-                        ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "リンゴつかうな",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "絶対にりんごを開放しません。",
-                        ChatColor.RESET + "" + ChatColor.GRAY + ""
-                )
-        );
         final int strategy = playerdata.toggleGiveApple();
         final List<String> lore = loreTable.get(strategy);
 
