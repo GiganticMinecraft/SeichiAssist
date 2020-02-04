@@ -444,7 +444,7 @@ public final class MenuInventoryData {
                     Material.GLASS,
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクトを使用しない",
                     ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット",
-                    (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false)
+                    DIG100
             );
             AsyncInventorySetter.setItemAsync(inventory, 1,  itemstack);
         }
@@ -691,7 +691,6 @@ public final class MenuInventoryData {
                                 Integer.toString(i),
                                 ChatColor.RESET + "" + ChatColor.RED + "前パーツ「" + maybeHeadPart.get() + "」"
                         );
-                        final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
                         AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
 
                         inventoryIndex++;
@@ -705,6 +704,7 @@ public final class MenuInventoryData {
                         ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
                         "MHF_ArrowRight"
                 );
+                AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
                 finishedHeadPageBuild.put(uuid, true);
                 break;
             }
