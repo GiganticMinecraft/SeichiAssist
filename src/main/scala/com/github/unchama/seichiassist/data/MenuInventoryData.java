@@ -23,8 +23,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import scala.Function0;
 import scala.Option;
 import scala.collection.mutable.HashMap;
+import scala.collection.mutable.Map;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +62,9 @@ public final class MenuInventoryData {
      * ラムダをいちいち正確に打つのは退屈で疲れる作業だし、かといってメソッドでカプセル化するメリットもない。
      * 加えて、明示的に「まとめる」ことでJVMに対して最適化のヒントとしても使える。
      */
-    private static final Consumer<? extends ItemMeta> hideAttributes = (meta) -> meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+    private static final Function0<Boolean> FALSE = () -> false;
+
+    private static final Consumer<SkullMeta> DIG100 = (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 
     //投票特典受け取りボタン
     private static List<String> getVoteButtonLore(final PlayerData playerdata) {
@@ -82,9 +86,9 @@ public final class MenuInventoryData {
         final int pageLimit = 14;
         final int lowerBound = 100;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
-        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-        itemstack.setDurability(PLAYER_SKULL);
-        for (int rank = 10 * page, invIndex = 0; rank < 10 + 10 * page; rank++, invIndex++) {
+        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
+        int invIndex = 0;
+        for (int rank = 10 * page; rank < 10 + 10 * page; rank++) {
             if (rank >= SeichiAssist.ranklist().size()) {
                 break;
             }
@@ -99,18 +103,19 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum
             );
 
-            final SkullMeta skullmeta = build(
+            final SkullMeta skullmeta = buildSkullMeta(
                     ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (rank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                     lore,
                     rankdata.name
             );
             itemstack.setItemMeta(skullmeta);
             AsyncInventorySetter.setItemAsync(inventory, invIndex, itemstack.clone());
+            invIndex++;
         }
 
         if (page != pageLimit) {
             // 整地神ランキング次ページ目を開く
-            final SkullMeta skullMeta = build(
+            final SkullMeta skullMeta = buildSkullMeta(
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング" + (page + 2) + "ページ目へ",
                     Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"), "MHF_ArrowDown"
             );
@@ -133,7 +138,7 @@ public final class MenuInventoryData {
                 lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
                 ign = "MHF_ArrowUp";
             }
-            final SkullMeta skullmeta = build(name, lore, ign);
+            final SkullMeta skullmeta = buildSkullMeta(name, lore, ign);
             itemstack.setItemMeta(skullmeta);
             AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
         }
@@ -146,7 +151,7 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.AQUA + SeichiAssist.allplayerbreakblockint()
             );
 
-            final SkullMeta skullmeta = build(
+            final SkullMeta skullmeta = buildSkullMeta(
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ",
                     lore,
                     "unchama"
@@ -166,27 +171,28 @@ public final class MenuInventoryData {
     public static Inventory getRankingByPlayingTime(final int page) {
         final int pageLimit = 14;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ログイン神ランキング");
-        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-        itemstack.setDurability(PLAYER_SKULL);
+        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
         final int rankStart = 10 * page;
-        for (int rank = rankStart, invIndex = 0; rank < rankStart + 10; rank++, invIndex++) {
+        int invIndex = 0;
+        for (int rank = rankStart; rank < rankStart + 10; rank++) {
             if (rank >= SeichiAssist.ranklist_playtick().size()) {
                 break;
             }
             final RankData rankdata = SeichiAssist.ranklist_playtick().apply(rank);
 
-            final SkullMeta skullmeta = build(
+            final SkullMeta skullmeta = buildSkullMeta(
                 ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (rank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                 Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総ログイン時間:" + TypeConverter.toTimeString(TypeConverter.toSecond(rankdata.playtick))),
                 rankdata.name
             );
             itemstack.setItemMeta(skullmeta);
             AsyncInventorySetter.setItemAsync(inventory, invIndex, itemstack.clone());
+            invIndex++;
         }
 
         if (page != pageLimit) {
             // 整地神ランキング次ページ目を開く
-            final SkullMeta skullmeta = build(
+            final SkullMeta skullmeta = buildSkullMeta(
                 ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ログイン神ランキング" + (page + 2) + "ページ目へ",
                 Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                 "MHF_ArrowDown"
@@ -199,14 +205,14 @@ public final class MenuInventoryData {
         {
             final SkullMeta skullmeta;
             if (page == 0) {
-                skullmeta = build(
+                skullmeta = buildSkullMeta(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ",
                         Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                         "MHF_ArrowLeft"
                 );
             } else {
                 // 整地神ランキング前ページを開く;
-                skullmeta = build(
+                skullmeta = buildSkullMeta(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ログイン神ランキング" + page + "ページ目へ",
                         Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                         "MHF_ArrowUp"
@@ -227,20 +233,18 @@ public final class MenuInventoryData {
     public static Inventory getRankingByVotingCount(final int page) {
         final int pageLimit = 14;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票神ランキング");
-        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-        itemstack.setDurability(PLAYER_SKULL);
-        RankData rankdata;
+        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
         for (int voteRank = 10 * page, invIndex = 0; voteRank < 10 + 10 * page; voteRank++, invIndex++) {
             if (voteRank >= SeichiAssist.ranklist_p_vote().size()) {
                 break;
             }
-            
-            rankdata = SeichiAssist.ranklist_p_vote().apply(voteRank);
+
+            final RankData rankdata = SeichiAssist.ranklist_p_vote().apply(voteRank);
             if (rankdata.p_vote == 0) {
                 break;
             }
 
-            final SkullMeta skullmeta = build(
+            final SkullMeta skullmeta = buildSkullMeta(
                     ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (voteRank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                     Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総投票回数:" + rankdata.p_vote),
                     rankdata.name
@@ -251,7 +255,7 @@ public final class MenuInventoryData {
 
         if (page != pageLimit) {
             // 投票神ランキング次ページ目を開く
-            final SkullMeta skullmeta = build(
+            final SkullMeta skullmeta = buildSkullMeta(
                 ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票神ランキング" + (page + 2) + "ページ目へ",
                 Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                 "MHF_ArrowDown"
@@ -264,14 +268,14 @@ public final class MenuInventoryData {
         {
             final SkullMeta skullmeta;
             if (page == 0) {
-                skullmeta = build(
+                skullmeta = buildSkullMeta(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ",
                         Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                         "MHF_ArrowLeft"
                 );
             } else {
                 // 投票神ランキング前ページを開く;
-                skullmeta = build(
+                skullmeta = buildSkullMeta(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票神ランキング" + page + "ページ目へ",
                         Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                         "MHF_ArrowUp"
@@ -292,18 +296,16 @@ public final class MenuInventoryData {
         final int pageLimit = 2;
         final int lowerBound = 1;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "寄付神ランキング");
-        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-        itemstack.setDurability(PLAYER_SKULL);
-        RankData rankdata;
+        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
         for (int donationRank = 50 * page, invIndex = 0; donationRank < 50 + 50 * page; donationRank++, invIndex++) {
             if (donationRank >= SeichiAssist.ranklist_premiumeffectpoint().size()) {
                 break;
             }
-            rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(donationRank);
+            final RankData rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(donationRank);
             if (rankdata.premiumeffectpoint < lowerBound) { //寄付金額0
                 break;
             }
-            final SkullMeta skullmeta = build(
+            final SkullMeta skullmeta = buildSkullMeta(
         ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (donationRank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
                 Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総寄付金額:" + rankdata.premiumeffectpoint * 100),
                 rankdata.name
@@ -320,7 +322,7 @@ public final class MenuInventoryData {
 
         if (page != pageLimit) {
             // 整地神ランキング次ページ目を開く
-            final SkullMeta skullmeta = build(
+            final SkullMeta skullmeta = buildSkullMeta(
                 ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付神ランキング" + (page + 2) + "ページ目へ",
                 Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                 "MHF_ArrowDown"
@@ -333,14 +335,14 @@ public final class MenuInventoryData {
         {
             final SkullMeta skullmeta;
             if (page == 0) {
-                skullmeta = build(
+                skullmeta = buildSkullMeta(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ",
                         Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                         "MHF_ArrowLeft"
                 );
             } else {
                 // 寄付神ランキング前ページ目を開く;
-                skullmeta = build(
+                skullmeta = buildSkullMeta(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付神ランキング" + page + "ページ目へ",
                         Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
                         "MHF_ArrowUp"
@@ -368,23 +370,15 @@ public final class MenuInventoryData {
 
         // 1ページ目を開く
         {
-            final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-            final SkullMeta skullmeta = ItemMetaFactory.SKULL.getValue();
-            itemstack.setDurability(PLAYER_SKULL);
-            skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スキルメニューへ");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            skullmeta.setLore(lore);
-            skullmeta.setOwner("MHF_ArrowLeft");
-            itemstack.setItemMeta(skullmeta);
+            final ItemStack itemstack = buildPlayerSkull(
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スキルメニューへ",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
+                    "MHF_ArrowLeft"
+            );
             AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
         }
         //1行目
         {
-            final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-            final SkullMeta skullmeta = ItemMetaFactory.SKULL.getValue();
-            itemstack.setDurability(PLAYER_SKULL);
-            skullmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-            skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.lowercaseName() + "のスキルエフェクトデータ");
             final List<String> lore = Arrays.asList(
                     ChatColor.RESET + "" + ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillNormalEffect.getNameByNum(playerdata.activeskilldata().effectnum),
                     ChatColor.RESET + "" + ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata().effectpoint,
@@ -392,99 +386,97 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "使えるプレミアムポイント：" + playerdata.activeskilldata().premiumeffectpoint,
                     ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※寄付をすると獲得できます"
             );
-            skullmeta.setLore(lore);
-            // この操作は安全; メニューを開けているのにUUIDがないなんてことがないから
-            skullmeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerdata.uuid())); //.setOwner(playerdata.name);
-            itemstack.setItemMeta(skullmeta);
+            final ItemStack itemstack = buildPlayerSkull(
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.lowercaseName() + "のスキルエフェクトデータ",
+                    lore,
+                    // この操作は安全; メニューを開けているのにUUIDがないなんてことがないから
+                    Bukkit.getOfflinePlayer(playerdata.uuid()).getName(),
+                    DIG100
+            );
             AsyncInventorySetter.setItemAsync(inventory, 0, itemstack.clone());
         }
 
         {
-            final ItemStack itemstack = new ItemStack(Material.BOOK_AND_QUILL, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
-            itemmeta.setDisplayName(ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで閲覧");
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            final ItemStack itemstack = build(
+                    Material.BOOK_AND_QUILL,
+                    ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで閲覧"
+            );
             AsyncInventorySetter.setItemAsync(inventory, 2,  itemstack);
         }
 
         {
-            final ItemStack itemstack = new ItemStack(Material.GLASS, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GLASS);
-            itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクトを使用しない");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット");
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            final ItemStack itemstack = build(
+                    Material.GLASS,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクトを使用しない",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット",
+                    (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false)
+            );
             AsyncInventorySetter.setItemAsync(inventory, 1,  itemstack);
         }
+
         {
             final ActiveSkillNormalEffect[] effects = ActiveSkillNormalEffect.arrayValues();
             int i = 0;
             for (final ActiveSkillNormalEffect elem :
                     effects) {
                 final ItemStack itemstack;
-                final ItemMeta itemmeta;
-                final List<String> lore;
                 //プレイヤーがそのスキルを取得している場合の処理
                 if (playerdata.activeskilldata().obtainedSkillEffects.contains(elem)) {
-                    itemstack = new ItemStack(elem.material(), 1);
-                    itemmeta = Bukkit.getItemFactory().getItemMeta(elem.material());
-                    itemmeta.setDisplayName(elem.nameOnUI());
-                    lore = Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.GREEN + elem.explanation(),
-                            ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+                    itemstack = build(
+                            elem.material(),
+                            elem.nameOnUI(),
+                            Arrays.asList(
+                                    ChatColor.RESET + "" + ChatColor.GREEN + elem.explanation(),
+                                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+                            )
                     );
                 }
                 //プレイヤーがそのスキルをまだ取得していない場合の処理
                 else {
-                    itemstack = new ItemStack(Material.BEDROCK, 1);
-                    itemmeta = ItemMetaFactory.BEDROCK.getValue();
-                    itemmeta.setDisplayName(elem.nameOnUI());
-                    lore = Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.GREEN + elem.explanation(),
-                            ChatColor.RESET + "" + ChatColor.YELLOW + "必要エフェクトポイント：" + elem.usePoint(),
-                            ChatColor.RESET + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除"
+                    itemstack = build(
+                            Material.BEDROCK,
+                            null,
+                            Arrays.asList(
+                                    ChatColor.RESET + "" + ChatColor.GREEN + elem.explanation(),
+                                    ChatColor.RESET + "" + ChatColor.YELLOW + "必要エフェクトポイント：" + elem.usePoint(),
+                                    ChatColor.RESET + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除"
+                            )
                     );
                 }
-                itemmeta.setLore(lore);
-                itemstack.setItemMeta(itemmeta);
                 AsyncInventorySetter.setItemAsync(inventory, i + 9,  itemstack);
                 i++;
             }
         }
         {
             final ActiveSkillPremiumEffect[] effects = ActiveSkillPremiumEffect.arrayValues();
-            int i = 0;
+            int i = 27;
             for (final ActiveSkillPremiumEffect effect :
                     effects) {
                 final ItemStack itemstack;
-                final ItemMeta itemmeta;
-                final List<String> lore;
                 if (playerdata.activeskilldata().obtainedSkillPremiumEffects.contains(effect)) {
-                    itemstack = new ItemStack(effect.material(), 1);
-                    itemmeta = Bukkit.getItemFactory().getItemMeta(effect.material());
-                    itemmeta.setDisplayName(ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(effect.desc()));
-                    lore = Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.GREEN + effect.explain(),
-                            ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+                    itemstack = build(
+                            effect.material(),
+                            ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(effect.desc()),
+                            Arrays.asList(
+                                    ChatColor.RESET + "" + ChatColor.GREEN + effect.explain(),
+                                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
+                            )
                     );
                 } else {
                     //プレイヤーがそのスキルをまだ取得していない場合の処理
-                    itemstack = new ItemStack(Material.BEDROCK, 1);
-                    itemmeta = ItemMetaFactory.BEDROCK.getValue();
-                    itemmeta.setDisplayName(effect.desc());
-                    lore = Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.GREEN + effect.explain(),
-                            ChatColor.RESET + "" + ChatColor.YELLOW + "必要プレミアムポイント：" + effect.usePoint(),
-                            ChatColor.RESET + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除"
+                    itemstack = build(
+                            Material.BEDROCK,
+                            effect.desc(),
+                            Arrays.asList(
+                                    ChatColor.RESET + "" + ChatColor.GREEN + effect.explain(),
+                                    ChatColor.RESET + "" + ChatColor.YELLOW + "必要プレミアムポイント：" + effect.usePoint(),
+                                    ChatColor.RESET + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除"
+                            )
                     );
                 }
 
-                itemmeta.setLore(lore);
-                itemstack.setItemMeta(itemmeta);
-                AsyncInventorySetter.setItemAsync(inventory, i + 27,  itemstack);
+                AsyncInventorySetter.setItemAsync(inventory, i,  itemstack);
                 i++;
             }
         }
@@ -501,15 +493,11 @@ public final class MenuInventoryData {
         final Inventory inventory = getEmptyInventory(4, ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
 
         // 1ページ目を開く
-        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-        itemstack.setDurability(PLAYER_SKULL);
-        final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-        final SkullMeta skullmeta = build(
-                ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクト選択メニューへ",
-                lore,
+        final ItemStack itemstack = buildPlayerSkull(
+                null,
+                ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
                 "MHF_ArrowLeft"
         );
-        itemstack.setItemMeta(skullmeta);
         AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
 
         databaseGateway.donateDataManipulator.loadDonateData(playerdata, inventory);
@@ -543,37 +531,34 @@ public final class MenuInventoryData {
         //実績ポイントの最新情報反映ボタン
         {
             // dynamic button
-            final ItemStack itemstack = new ItemStack(Material.EMERALD_ORE, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報");
             final List<String> lore = Arrays.asList(
                     ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化",
                     ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.achievePoint().cumulativeTotal(),
                     ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.achievePoint().used(),
                     ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.achievePoint().left()
             );
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+
+            final ItemStack itemstack = build(
+                    Material.EMERALD_ORE,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報",
+                    lore
+            );
+
             AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
         }
         //パーツショップ
         {
-            final ItemStack itemstack = new ItemStack(Material.ITEM_FRAME, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.ITEM_FRAME);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイントショップ");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "クリックで開きます");
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            // const button
+            final ItemStack itemstack = build(
+                    Material.ITEM_FRAME,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイントショップ",
+                    ChatColor.RESET + "" + ChatColor.GREEN + "クリックで開きます"
+            );
             AsyncInventorySetter.setItemAsync(inventory, 9,  itemstack);
         }
         //エフェクトポイントからの変換ボタン
         {
             // dynamic button
-            final ItemStack itemstack = new ItemStack(Material.EMERALD, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ポイント変換ボタン");
             final List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "JMS投票で手に入るポイントを",
                     ChatColor.RESET + "" + ChatColor.RED + "実績ポイントに変換できます。",
                     ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt",
@@ -581,9 +566,12 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + playerdata.activeskilldata().effectpoint,
                     ChatColor.RESET + "" + ChatColor.GREEN + "所有実績pt :" + playerdata.achievePoint().left()
             );
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+
+            final ItemStack itemstack = build(
+                    Material.EMERALD,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ポイント変換ボタン",
+                    lore
+            );
             AsyncInventorySetter.setItemAsync(inventory, 1,  itemstack);
         }
 
@@ -599,18 +587,21 @@ public final class MenuInventoryData {
         }
 
         {
+            // const button
             final ItemStack toHeadSelection = build(
                     Material.WATER_BUCKET,
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツ選択画面",
                     ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
             );
 
+            // const button
             final ItemStack toMiddleSelection = build(
                     Material.MILK_BUCKET,
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツ選択画面",
                     ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
             );
 
+            // const button
             final ItemStack toTailSelection = build(
                     Material.LAVA_BUCKET,
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツ選択画面",
@@ -623,16 +614,12 @@ public final class MenuInventoryData {
 
         // 1ページ目を開く
         {
-            // Pure Button
-            final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-            itemstack.setDurability(PLAYER_SKULL);
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            final SkullMeta skullmeta = build(
+            // const Button
+            final ItemStack itemstack = buildPlayerSkull(
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ",
-                    lore,
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
                     "MHF_ArrowLeft"
             );
-            itemstack.setItemMeta(skullmeta);
             AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
         }
         return inventory;
@@ -671,11 +658,6 @@ public final class MenuInventoryData {
                                 ChatColor.RESET + "" + ChatColor.RED + "前パーツ「" + maybeHeadPart.get() + "」"
                         );
                         final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.WATER_BUCKET);
-                        itemmeta.setDisplayName(Integer.toString(headPartIndex));
-                        final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.RED + "前パーツ「" + maybeHeadPart.get() + "」");
-                        itemmeta.setLore(lore);
-                        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                        itemstack.setItemMeta(itemmeta);
                         AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
 
                         inventoryIndex++;
@@ -684,11 +666,9 @@ public final class MenuInventoryData {
 
             } else if (inventoryIndex == 27) {
                 //次ページへのボタンを配置
-                final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-                final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-                final SkullMeta skullmeta = build(
+                final ItemStack itemstack = buildPlayerSkull(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ",
-                        lore,
+                        ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
                         "MHF_ArrowRight"
                 );
                 finishedHeadPageBuild.put(uuid, true);
@@ -698,24 +678,20 @@ public final class MenuInventoryData {
 
         //パーツ未選択状態にするボタン
         {
-            final ItemStack itemstack = new ItemStack(Material.GRASS, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツを未選択状態にする");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            // Pure Button
+            final ItemStack itemstack = build(
+                    Material.GRASS,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツを未選択状態にする",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
             AsyncInventorySetter.setItemAsync(inventory, 31,  itemstack);
         }
         // 二つ名組合せメインページを開く
         {
-            final ItemStack itemstack = new ItemStack(Material.BARRIER, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            // Pure Button
+            final ItemStack itemstack = build(
+                    Material.BARRIER,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
             AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
         }
         return inventory;
@@ -772,15 +748,12 @@ public final class MenuInventoryData {
                 }
             } else if (inventoryIndex == 27) {
                 //次ページへのボタンを配置
-                final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-                itemstack.setDurability(PLAYER_SKULL);
                 final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-                final SkullMeta skullmeta = build(
+                final ItemStack itemstack = buildPlayerSkull(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ",
                         lore,
                         "MHF_ArrowRight"
                 );
-                itemstack.setItemMeta(skullmeta);
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
                 finishedMiddlePageBuild.put(uuid, true);
                 break;
@@ -789,24 +762,19 @@ public final class MenuInventoryData {
         
         //パーツ未選択状態にするボタン
         {
-            final ItemStack itemstack = new ItemStack(Material.GRASS, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツを未選択状態にする");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
-            itemmeta.setLore(lore);
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemstack.setItemMeta(itemmeta);
+            final ItemStack itemstack = build(
+                    Material.GRASS,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツを未選択状態にする",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
             AsyncInventorySetter.setItemAsync(inventory, 31,  itemstack);
         }
-        // 二つ名組合せメインページを開く
+
+        // 二つ名組合せメインページを開くボタン
         {
-            final ItemStack itemstack = new ItemStack(Material.BARRIER, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            final ItemStack itemstack = build(
+                    Material.BARRIER,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
             AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
         }
         return inventory;
@@ -822,7 +790,6 @@ public final class MenuInventoryData {
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
         if (validate(p, playerdata, "二つ名/後パーツ")) return null;
-
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「後」");
 
         if (!finishedTailPageBuild.getOrElse(uuid, FALSE)) {
@@ -842,49 +809,39 @@ public final class MenuInventoryData {
                                 Integer.toString(globalTailPartIndex),
                                 ChatColor.RESET + "" + ChatColor.RED + "後パーツ「" + maybeTailPart.get() + "」");
                         AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
-
                         inventoryIndex++;
                     }
-
                 }
             } else if (inventoryIndex == 27) {
                 //次ページへのボタンを配置
-                final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-                skullmeta = ItemMetaFactory.SKULL.getValue();
-                itemstack.setDurability(PLAYER_SKULL);
-                skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
-                final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-                skullmeta.setLore(lore);
-                skullmeta.setOwner("MHF_ArrowRight");
-                itemstack.setItemMeta(skullmeta);
+                final ItemStack itemstack = buildPlayerSkull(
+                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ",
+                        Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
+                        "MHF_ArrowRight"
+                );
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
                 finishedTailPageBuild.put(uuid, true);
                 break;
             }
-
         }
 
         //パーツ未選択状態にするボタン
         {
-            final ItemStack itemstack = new ItemStack(Material.GRASS, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.GRASS);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツを未選択状態にする");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行");
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            final ItemStack itemstack = build(
+                    Material.GRASS,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツを未選択状態にする",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで実行"
+            );
             AsyncInventorySetter.setItemAsync(inventory, 31,  itemstack);
         }
 
-        // 二つ名組合せメインページを開く
+        // 二つ名組合せメインページを開くボタン
         {
-            final ItemStack itemstack = new ItemStack(Material.BARRIER, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BARRIER);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ");
-            final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            final ItemStack itemstack = build(
+                    Material.BARRIER,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
+            );
             AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
         }
         return inventory;
@@ -906,22 +863,19 @@ public final class MenuInventoryData {
 
         //実績ポイントの最新情報反映ボタン
         {
-            final List<String> lore;
-            final ItemStack itemstack = new ItemStack(Material.EMERALD_ORE, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.EMERALD_ORE);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報");
-            {
-                final AchievementPoint ap = playerdata.achievePoint();
-                lore = Arrays.asList(
-                        ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化",
-                        ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + ap.cumulativeTotal(),
-                        ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + ap.used(),
-                        ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + ap.left()
-                );
-            }
-            itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+            final AchievementPoint ap = playerdata.achievePoint();
+            // dynamic button
+            final List<String> lore = Arrays.asList(
+                    ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化",
+                    ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + ap.cumulativeTotal(),
+                    ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + ap.used(),
+                    ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + ap.left()
+            );
+            final ItemStack itemstack = build(
+                    Material.EMERALD_ORE,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報",
+                    lore
+            );
             AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
         }
 
@@ -939,31 +893,28 @@ public final class MenuInventoryData {
             final ItemStack itemstack;
             final ItemMeta itemmeta;
             if (inventoryIndex < 27) {
-                if (!playerdata.TitleFlags().contains(partShopIndex)) {
-                    itemstack = new ItemStack(Material.BEDROCK, 1);
-                    itemmeta = ItemMetaFactory.BEDROCK.getValue();
-                    itemmeta.setDisplayName(Integer.toString(partShopIndex));
+                if (!playerdata.TitleFlags().contains(globalPartShopIndex)) {
                     lore = Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.RED + "前・後パーツ「" + Nicknames.getHeadPartFor(partShopIndex).getOrElse(() -> "") + "」",
+                            ChatColor.RESET + "" + ChatColor.RED + "前・後パーツ「" + Nicknames.getHeadPartFor(globalPartShopIndex).getOrElse(() -> "") + "」",
                             ChatColor.RESET + "" + ChatColor.GREEN + "必要ポイント：20",
                             ChatColor.RESET + "" + ChatColor.AQUA + "クリックで購入できます"
                     );
-                    itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                    itemmeta.setLore(lore);
-                    itemstack.setItemMeta(itemmeta);
+
+                    itemstack = build(
+                            Material.BEDROCK,
+                            Integer.toString(globalPartShopIndex),
+                            lore
+                    );
                     AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
                     inventoryIndex++;
                 }
             } else {
                 //次ページへのボタンを配置
-                itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-                itemstack.setDurability(PLAYER_SKULL);
-                final SkullMeta skullmeta = ItemMetaFactory.SKULL.getValue();
-                skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ");
-                lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-                skullmeta.setLore(lore);
-                skullmeta.setOwner("MHF_ArrowRight");
-                itemstack.setItemMeta(skullmeta);
+                itemstack = buildPlayerSkull(
+                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ",
+                        ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
+                        "MHF_ArrowRight"
+                );
                 AsyncInventorySetter.setItemAsync(inventory, 35, itemstack.clone());
 
                 finishedShopPageBuild.put(uuid, true);
@@ -987,12 +938,10 @@ public final class MenuInventoryData {
                     );
 
                     AsyncInventorySetter.setItemAsync(inventory, inventoryIndex,  itemstack);
-
                     inventoryIndex++;
                 }
             } else {
                 //次ページへ遷移するボタン
-                final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
                 // const button
                 final ItemStack itemstack = buildPlayerSkull(
                         ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "次ページへ",
@@ -1011,8 +960,7 @@ public final class MenuInventoryData {
             final ItemStack itemstack = build(
                     Material.BARRIER,
                     ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "二つ名組合せメインメニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
-                    hideAttributes
+                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"
             );
             AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
         }
@@ -1035,22 +983,19 @@ public final class MenuInventoryData {
 
         //投票pt受け取り
         {
-            // const button
-            final ItemStack itemstack = new ItemStack(Material.DIAMOND);
-            final ItemMeta itemmeta = itemstack.getItemMeta();
-            itemmeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "クリックで投票特典を受け取れます");
-            itemmeta.setLore(getVoteButtonLore(playerdata));
-            itemmeta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-            itemstack.setItemMeta(itemmeta);
+            // dynamic button
+            final ItemStack itemstack = build(
+                    Material.DIAMOND,
+                    ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "クリックで投票特典を受け取れます",
+                    getVoteButtonLore(playerdata),
+                    DIG100
+            );
             AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
         }
 
         // ver0.3.2 投票ページ表示
+        // const button
         {
-            // const button
-            final ItemStack itemstack = new ItemStack(Material.BOOK_AND_QUILL, 1);
-            final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.BOOK_AND_QUILL);
-            itemmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ページにアクセス");
             final List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GREEN + "投票すると様々な特典が！",
                     ChatColor.RESET + "" + ChatColor.GREEN + "1日1回投票出来ます",
                     ChatColor.RESET + "" + ChatColor.DARK_GRAY + "クリックするとチャット欄に",
@@ -1058,32 +1003,26 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.DARK_GRAY + "Tキーを押してから",
                     ChatColor.RESET + "" + ChatColor.DARK_GRAY + "そのURLをクリックしてください"
             );
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+
+            final ItemStack itemstack = build(
+                    Material.BOOK_AND_QUILL,
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票ページにアクセス",
+                    lore
+            );
             AsyncInventorySetter.setItemAsync(inventory, 9,  itemstack);
         }
 
         //棒メニューに戻る
         {
             // const button
-            final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1);
-            itemstack.setDurability(PLAYER_SKULL);
             final List<String> lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
-            final SkullMeta skullmeta = build(
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ",
-                    lore,
-                    "MHF_ArrowLeft"
-            );
-            itemstack.setItemMeta(skullmeta);
+            final ItemStack itemstack = buildPlayerSkull(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ", lore, "MHF_ArrowLeft");
             AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
         }
 
         //妖精召喚時間設定トグルボタン
         {
             // const button
-            final ItemStack itemStack = new ItemStack(Material.WATCH);
-            final ItemMeta meta = Bukkit.getItemFactory().getItemMeta(Material.WATCH);
-            meta.setDisplayName(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 時間設定");
             final List<String> list = Arrays.asList(
                     ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "" + VotingFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy()),
                     "",
@@ -1092,15 +1031,20 @@ public final class MenuInventoryData {
                     "",
                     ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで切替"
             );
-            meta.setLore(list);
-            itemStack.setItemMeta(meta);
+
+            final ItemStack itemStack = build(
+                    Material.WATCH,
+                    ChatColor.AQUA + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 時間設定",
+                    list
+            );
+
             AsyncInventorySetter.setItemAsync(inventory, 2,  itemStack);
         }
 
         //妖精契約設定トグル
         {
             final ItemStack itemStack = new ItemStack(Material.PAPER);
-            itemStack.setItemMeta(VFPromiseMeta(playerdata));
+            itemStack.setItemMeta(getVotingFairyContractMeta(playerdata));
             AsyncInventorySetter.setItemAsync(inventory, 11,  itemStack);
         }
         //妖精音トグル
@@ -1112,19 +1056,21 @@ public final class MenuInventoryData {
 
         //妖精召喚
         {
-            // const button
-            final ItemStack itemStack = new ItemStack(Material.GHAST_TEAR);
-            final ItemMeta meta = itemStack.getItemMeta();
-            meta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 召喚");
-            final List<String> list = Arrays.asList(
+            final List<String> lore = Arrays.asList(
                     ChatColor.RESET + "" + ChatColor.GRAY + "" + playerdata.toggleVotingFairy() * 2 + "投票ptを消費して",
                     ChatColor.RESET + "" + ChatColor.GRAY + "マナ妖精を呼びます",
                     ChatColor.RESET + "" + ChatColor.GRAY + "時間 : " + VotingFairyTask.dispToggleVFTime(playerdata.toggleVotingFairy()),
                     ChatColor.RESET + "" + ChatColor.DARK_RED + "Lv.10以上で解放"
             );
-            meta.setLore(list);
-            meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-            itemStack.setItemMeta(meta);
+
+            // dynamic button
+            final ItemStack itemStack = build(
+                    Material.GHAST_TEAR,
+                    ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精 召喚",
+                    lore,
+                    DIG100
+            );
+
             AsyncInventorySetter.setItemAsync(inventory, 4,  itemStack);
         }
 
@@ -1133,29 +1079,28 @@ public final class MenuInventoryData {
             //妖精 時間確認
             {
                 // const button
-                final ItemStack itemStack = new ItemStack(Material.COMPASS);
-                final ItemMeta meta = itemStack.getItemMeta();
-                meta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精に時間を聞く");
-                final List<String> list = Arrays.asList(
+                final List<String> lore = Arrays.asList(
                         ChatColor.RESET + "" + ChatColor.GRAY + "妖精さんはいそがしい。",
                         ChatColor.GRAY + "帰っちゃう時間を教えてくれる"
                 );
-                meta.setLore(list);
-                meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-                itemStack.setItemMeta(meta);
+
+                final ItemStack itemStack = build(
+                        Material.COMPASS,
+                        ChatColor.LIGHT_PURPLE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "マナ妖精に時間を聞く",
+                        lore,
+                        DIG100
+                );
+
                 AsyncInventorySetter.setItemAsync(inventory, 13,  itemStack);
             }
 
             {
                 // dynamic button
-                final int prank = playerdata.calcPlayerApple();
-                final ItemStack itemStack = new ItemStack(Material.GOLDEN_APPLE);
-                final ItemMeta meta = itemStack.getItemMeta();
-                meta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "㊙ がちゃりんご情報 ㊙");
-                final List<String> lores = new ArrayList<>(6 + 4 * 2 + 5);
+                final int yourRank = playerdata.calcPlayerApple();
+                final List<String> lore = new ArrayList<>(6 + 2 * 4 + 5);
 
                 // 6
-                lores.addAll(Arrays.asList(
+                lore.addAll(Arrays.asList(
                         ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "※ﾆﾝｹﾞﾝに見られないように気を付けること！",
                         ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "  毎日大妖精からデータを更新すること！",
                         "",
@@ -1163,29 +1108,32 @@ public final class MenuInventoryData {
                         ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.BOLD + "たくさんくれたﾆﾝｹﾞﾝたち",
                         ChatColor.RESET + "" + ChatColor.DARK_GRAY + "召喚されたらラッキーだよ！"
                 ));
-                for (int count = 0; count < 4; count++) {
-                    if (count >= SeichiAssist.ranklist_p_apple().size()) {
+                for (int rank = 0; rank <= 3; rank++) {
+                    if (rank >= SeichiAssist.ranklist_p_apple().size()) {
                         break;
                     }
-                    final RankData rankdata = SeichiAssist.ranklist_p_apple().apply(count);
+                    final RankData rankdata = SeichiAssist.ranklist_p_apple().apply(rank);
                     if (rankdata.p_apple == 0) {
                         break;
                     }
-                    // 4 x 2 = 8
-                    lores.add(ChatColor.GRAY + "たくさんくれたﾆﾝｹﾞﾝ第" + (count + 1) + "位！");
-                    lores.add(ChatColor.GRAY + "なまえ：" + rankdata.name + " りんご：" + rankdata.p_apple + "個");
+                    // 2 x 4 = 8
+                    lore.add(ChatColor.GRAY + "たくさんくれたﾆﾝｹﾞﾝ第" + (rank + 1) + "位！");
+                    lore.add(ChatColor.GRAY + "なまえ：" + rankdata.name + " りんご：" + rankdata.p_apple + "個");
                 }
 
                 // 5
-                lores.add(ChatColor.AQUA + "ぜーんぶで" + SeichiAssist.allplayergiveapplelong() + "個もらえた！");
-                lores.add("");
-                lores.add(ChatColor.GREEN + "↓呼び出したﾆﾝｹﾞﾝの情報↓");
-                lores.add(ChatColor.GREEN + "今までに" + playerdata.p_apple() + "個もらった");
-                lores.add(ChatColor.GREEN + "ﾆﾝｹﾞﾝの中では" + prank + "番目にたくさんくれる！");
+                lore.add(ChatColor.AQUA + "ぜーんぶで" + SeichiAssist.allplayergiveapplelong() + "個もらえた！");
+                lore.add("");
+                lore.add(ChatColor.GREEN + "↓呼び出したﾆﾝｹﾞﾝの情報↓");
+                lore.add(ChatColor.GREEN + "今までに" + playerdata.p_apple() + "個もらった");
+                lore.add(ChatColor.GREEN + "ﾆﾝｹﾞﾝの中では" + yourRank + "番目にたくさんくれる！");
 
-                meta.setLore(lores);
-                meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
-                itemStack.setItemMeta(meta);
+                final ItemStack itemStack = build(
+                        Material.GOLDEN_APPLE,
+                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "㊙ がちゃりんご情報 ㊙",
+                        lore,
+                        DIG100
+                );
                 AsyncInventorySetter.setItemAsync(inventory, 6,  itemStack);
             }
         }
@@ -1226,7 +1174,7 @@ public final class MenuInventoryData {
      * @param playerdata プレイヤーの設定
      * @return ラベルが付いたアイテム
      */
-    private static ItemMeta VFPromiseMeta(final PlayerData playerdata) {
+    private static ItemMeta getVotingFairyContractMeta(final PlayerData playerdata) {
         final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(Material.PAPER);
         itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "妖精とのお約束");
         // n % 4 + 1 -> 1..4
@@ -1289,11 +1237,7 @@ public final class MenuInventoryData {
         }
 
         {
-            final ItemStack itemstack = new ItemStack(Material.STICK, 1);
-            final ItemMeta itemmeta = itemstack.getItemMeta();
-            itemmeta.setDisplayName(" ");
-            itemstack.setItemMeta(itemmeta);
-
+            final ItemStack itemstack = build(Material.STICK, " ", (String) null);
             for (final int i :
                     new int[]{30, 39, 40, 47}) {
                 AsyncInventorySetter.setItemAsync(inventory, i,  itemstack);
@@ -1302,9 +1246,6 @@ public final class MenuInventoryData {
 
         {
             // const button
-            final ItemStack itemstack = new ItemStack(Material.NETHER_STAR, 1);
-            final ItemMeta itemmeta = itemstack.getItemMeta();
-            itemmeta.setDisplayName(ChatColor.WHITE + "スキルを進化させる");
             final List<String> lore = Arrays.asList(
                     ChatColor.RESET + "" + ChatColor.GREEN + "進化することにより、スキルの秘めたる力を解放できますが",
                     ChatColor.RESET + "" + ChatColor.GREEN + "スキルは更に大量の魂を求めるようになり",
@@ -1312,8 +1253,13 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.RED + "本当に進化させますか?",
                     ChatColor.RESET + "" + ChatColor.DARK_RED + ChatColor.UNDERLINE + "クリックで進化させる"
             );
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
+
+            final ItemStack itemstack = build(
+                    Material.NETHER_STAR,
+                    ChatColor.WHITE + "スキルを進化させる",
+                    lore
+            );
+
             AsyncInventorySetter.setItemAsync(inventory, 31,  itemstack);
         }
         return inventory;
@@ -1352,10 +1298,8 @@ public final class MenuInventoryData {
             }
         }
         {
-            final ItemStack itemstack = new ItemStack(Material.STICK, 1);
-            final ItemMeta itemmeta = itemstack.getItemMeta();
-            itemmeta.setDisplayName(" ");
-            itemstack.setItemMeta(itemmeta);
+            // const button
+            final ItemStack itemstack = build(Material.STICK, " ", (String) null);
 
             for (final int i :
                     new int[]{30, 39, 40, 47}) {
@@ -1364,15 +1308,14 @@ public final class MenuInventoryData {
         }
 
         {
-            final ItemStack itemstack = new ItemStack(Material.NETHER_STAR, 1);
-            final ItemMeta itemmeta = itemstack.getItemMeta();
-            itemmeta.setDisplayName(ChatColor.WHITE + "スキルを進化させました！");
-            final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "スキルの秘めたる力を解放することで、マナ回復量が増加し",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "スキルはより魂を求めるようになりました"
+            final ItemStack itemstack = build(
+                    Material.NETHER_STAR,
+                    ChatColor.WHITE + "スキルを進化させました！",
+                    Arrays.asList(
+                            ChatColor.RESET + "" + ChatColor.GREEN + "スキルの秘めたる力を解放することで、マナ回復量が増加し",
+                            ChatColor.RESET + "" + ChatColor.DARK_RED + "スキルはより魂を求めるようになりました"
+                    )
             );
-            itemmeta.setLore(lore);
-            itemstack.setItemMeta(itemmeta);
             AsyncInventorySetter.setItemAsync(inventory, 31,  itemstack);
         }
         return inventory;
@@ -1382,7 +1325,7 @@ public final class MenuInventoryData {
         return Bukkit.getServer().createInventory(null, rows * 9, title);
     }
 
-    private static SkullMeta build(final String name, final List<String> lore, final String owner) {
+    private static SkullMeta buildSkullMeta(final String name, final List<String> lore, final String owner) {
         final SkullMeta ret = ItemMetaFactory.SKULL.getValue();
         ret.setDisplayName(name);
         ret.setOwner(owner);
@@ -1391,13 +1334,60 @@ public final class MenuInventoryData {
     }
 
     private static ItemStack build(final Material mat, final String name, final String singleLore) {
-        final ItemStack itemstack = new ItemStack(mat, 1);
-        final ItemMeta itemmeta = Bukkit.getItemFactory().getItemMeta(mat);
-        itemmeta.setDisplayName(name);
-        final List<String> lore = Collections.singletonList(singleLore);
-        itemmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        itemmeta.setLore(lore);
-        itemstack.setItemMeta(itemmeta);
-        return itemstack;
+        return build(mat, name, singleLore, nullConsumer());
+    }
+
+    private static <T extends ItemMeta> ItemStack build(final Material mat, final String name, final String singleLineLore, final Consumer<T> modify) {
+        return build(mat, name, Collections.singletonList(singleLineLore), modify);
+    }
+
+    private static ItemStack build(final Material mat, final String name, final List<String> lore) {
+        return build(mat, name, lore, nullConsumer());
+    }
+
+    private static <T extends ItemMeta> ItemStack build(final Material mat, final String name, final List<String> lore, final Consumer<T> modify) {
+        final ItemStack temp = new ItemStack(mat);
+        // 自己責任。
+        @SuppressWarnings("unchecked")
+        final T meta = (T) temp.getItemMeta();
+        if (name != null) {
+            meta.setDisplayName(name);
+        }
+
+        if (lore != null) {
+            meta.setLore(lore);
+        }
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        modify.accept(meta);
+        temp.setItemMeta(meta);
+        return temp;
+    }
+
+    private static ItemStack buildPlayerSkull(final String name, final String lore, final String owner) {
+        return buildPlayerSkull(name, Collections.singletonList(lore), owner);
+    }
+
+    private static ItemStack buildPlayerSkull(final String name, final List<String> lore, final String owner) {
+        return buildPlayerSkull(name, lore, owner, nullConsumer());
+    }
+
+    private static ItemStack buildPlayerSkull(final String name, final List<String> lore, final String owner, final Consumer<SkullMeta> modify) {
+        final ItemStack ret = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
+        final SkullMeta sm = ItemMetaFactory.SKULL.getValue();
+        if (name != null) {
+            sm.setDisplayName(name);
+        }
+
+        if (lore != null) {
+            sm.setLore(lore);
+        }
+        sm.setOwner(owner);
+        modify.accept(sm);
+        ret.setItemMeta(sm);
+        return ret;
+    }
+    
+    private static <T> Consumer<T> nullConsumer() {
+        return (nothing) -> {};
     }
 }
