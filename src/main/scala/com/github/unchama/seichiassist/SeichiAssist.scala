@@ -38,8 +38,14 @@ class SeichiAssist extends JavaPlugin() {
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
-  val managedEntityScope: ResourceScope[IO, Entity] = ResourceScope.unsafeCreate
-  val magicEffectEntityScope: SingleResourceScope[IO, Entity] = ResourceScope.unsafeCreateSingletonScope
+  val managedEntityScope: ResourceScope[IO, Entity] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreate
+  }
+  val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreateSingletonScope
+  }
 
   override def onEnable(): Unit = {
     val logger = getLogger

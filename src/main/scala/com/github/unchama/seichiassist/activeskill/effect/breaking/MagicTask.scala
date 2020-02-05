@@ -59,13 +59,11 @@ class MagicTask(private val player: Player,
     val sleepUntilChickenDisappears = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
 
     val chickenEffect = SeichiAssist.instance.magicEffectEntityScope
-      .trackedForSome(BukkitResources.vanishingEntityResource(centerBreak, classOf[Chicken]))
-      .use {
-        case Some(e) => IO {
+      .useTrackedForSome(BukkitResources.vanishingEntityResource(centerBreak, classOf[Chicken])) { e =>
+        IO {
           e.playEffect(EntityEffect.WITCH_MAGIC)
           e.setInvulnerable(true)
         } *> sleepUntilChickenDisappears
-        case None => IO.unit
       }
 
     val soundEffect = FocusedSoundEffect(Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f).run(player)

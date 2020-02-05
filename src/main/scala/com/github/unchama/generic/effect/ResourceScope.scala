@@ -3,8 +3,8 @@ package com.github.unchama.generic.effect
 import cats.Monad
 import cats.data.OptionT
 import cats.effect.concurrent.{Deferred, Ref, TryableDeferred}
-import cats.effect.{Async, CancelToken, Resource, Sync}
-import com.github.unchama.generic.{OptionTExtra, ResourceExtra}
+import cats.effect.{CancelToken, Concurrent, Resource, Sync}
+import com.github.unchama.generic.OptionTExtra
 
 import scala.collection.concurrent.TrieMap
 
@@ -29,10 +29,10 @@ trait ResourceScope[F[_], ResourceHandler] {
   import cats.implicits._
 
   /**
-   * 与えられた`resource`に対して、確保時にこのスコープの管理下に置き、
-   * 開放前に管理下から外してから開放するような新たなリソースを作成する。
+   * 与えられた`resource`とそれを使用する関数`f`に対して、
+   * 確保した資源の`f`による使用中にこのスコープ下に資源を置くような計算を返す。
    */
-  def tracked[R <: ResourceHandler](resource: Resource[F, R]): Resource[F, R]
+  def useTracked[R <: ResourceHandler, A](resource: Resource[F, R])(f: R => F[A]): F[A]
 
   /**
    * 与えられたハンドラがこのスコープの管理下にあるならば開放する計算を返し、そうでなければ空の値を返す計算
@@ -66,7 +66,7 @@ object ResourceScope {
    * @tparam F リソースを扱う計算
    * @tparam R リソースハンドラの型
    */
-  def unsafeCreate[F[_]: Sync, R]: ResourceScope[F, R] = new TrieMapResourceScope()
+  def unsafeCreate[F[_]: Concurrent, R]: ResourceScope[F, R] = new TrieMapResourceScope()
 
   /**
    * 新たな資源スコープを作成する。
@@ -76,66 +76,64 @@ object ResourceScope {
    * @tparam F リソースを扱う計算
    * @tparam R リソースハンドラの型
    */
-  def unsafeCreateSingletonScope[F[_]: Async, R]: SingleResourceScope[F, R] = new SingleResourceScope()
+  def unsafeCreateSingletonScope[F[_]: Concurrent, R]: SingleResourceScope[F, R] = new SingleResourceScope()
 
-  class TrieMapResourceScope[F[_], ResourceHandler] private[ResourceScope] (implicit val monadF: Sync[F])
+  class TrieMapResourceScope[F[_], ResourceHandler] private[ResourceScope] (implicit val monadF: Concurrent[F])
     extends ResourceScope[F, ResourceHandler] {
     import scala.collection.mutable
 
     /**
-     * リソースへのハンドラから`F[Unit]`の値への`Map`。
+     * この`Map`の終域にある`CancelToken[F]`は、
+     *  - ハンドラを管理下から外し
+     *  - ハンドラをリソースとして開放する
+     * 計算である。
      *
-     * この`Map`の終域にある`F[Unit]`は、原像のハンドラが指し示すリソースに対し
-     * ・このオブジェクトの管理下から外す
-     * ・リソースの意味で開放する
-     * の順で処理をする計算である。
-     * ここで、このオブジェクトの管理下から外すというのは、単にこの`Map`からハンドラを取り除く処理である。
+     * ここで、管理下から外すというのは、単にこの`Map`からハンドラを取り除く処理である。
      */
-    private val trackedResources: mutable.Map[ResourceHandler, CancelToken[F]] = TrieMap()
+    private val usageCancellationMap: mutable.Map[ResourceHandler, CancelToken[F]] = TrieMap()
 
     import cats.implicits._
     import monadF._
 
-    override def tracked[R <: ResourceHandler](resource: Resource[F, R]): Resource[F, R] = {
-      /*
-       * アイデアとしては、resourceで確保したものをtrackedResourcesに開放トークンとともに格納し、
-       * 開放時に自動的にtrackedResourcesから削除されるようなリソースを定義すれば良い。
-       *
-       * 意図的にリソースハンドラの参照をこちら側へ「漏らす」ために`Resource[F, R].allocated`を使用している。
-       */
-      val trackedResource =
-        for {
-          allocated <- resource.allocated
-          (handler, releaseResource) = allocated
+    override def useTracked[R <: ResourceHandler, A](resource: Resource[F, R])(use: R => F[A]): F[A] = {
+      for {
+        allocationFiber <- start(resource.allocated)
 
-          dismissResource = defer { trackedResources.remove(handler).getOrElse(Sync[F].unit) }
+        cancelAllocation = allocationFiber.cancel
 
-          registerHandler = delay { trackedResources += (handler -> (dismissResource *> releaseResource)) }
+        allocated <- allocationFiber.join
+        (handler, releaseResource) = allocated
 
-          // 二重確保を避けるため確保されていたリソースがあれば開放してから確保する
-          _ <- dismissResource *> registerHandler
-        } yield (handler, dismissResource)
+        cancelUsage = defer { usageCancellationMap.remove(handler).getOrElse(Sync[F].unit) }
 
-      Resource(trackedResource)
+        forgetUsage = delay { usageCancellationMap.remove(handler); () }
+        registerHandler = delay { usageCancellationMap += (handler -> (forgetUsage *> cancelAllocation)) }
+
+        // 二重確保を避けるため確保されていたリソースがあれば開放してから確保する
+        // キャンセルされた際も管理下から外す
+        a <- guarantee(cancelUsage *> registerHandler *> use(handler))(forgetUsage)
+        _ <- releaseResource
+      } yield a
     }
 
     override def getCancelToken(handler: ResourceHandler): F[Option[CancelToken[F]]] =
-      delay { trackedResources.get(handler) }
+      delay { usageCancellationMap.get(handler) }
 
-    override val releaseAll: CancelToken[F] = trackedResources.values.toList.sequence.map(_ => ())
+    override val releaseAll: CancelToken[F] = usageCancellationMap.values.toList.sequence.as(())
   }
 
-  class SingleResourceScope[F[_]: Async, ResourceHandler] private[ResourceScope]() extends ResourceScope[OptionT[F, *], ResourceHandler] {
+  class SingleResourceScope[F[_]: Concurrent, ResourceHandler] private[ResourceScope]() extends ResourceScope[OptionT[F, *], ResourceHandler] {
     type OptionF[a] = OptionT[F, a]
 
-    override val monadF: Async[OptionF] = implicitly
+    override val monadF: Concurrent[OptionF] = implicitly
+    val concF: Concurrent[F] = implicitly
 
     private val promiseSlot: Ref[F, Option[TryableDeferred[F, (ResourceHandler, CancelToken[OptionF])]]] =
       Ref.unsafe(None)
 
     import cats.implicits._
 
-    override def tracked[R <: ResourceHandler](resource: Resource[OptionF, R]): Resource[OptionF, R] = {
+    override def useTracked[R <: ResourceHandler, A](resource: Resource[OptionF, R])(use: R => OptionF[A]): OptionF[A] = {
       /**
        * Deferredプロミスを作成し、それを `promiseSlot` に格納する試行をし、
        * 試行が成功して初めてリソースの確保を行ってから確保したリソースでプロミスを埋める。
@@ -143,7 +141,7 @@ object ResourceScope {
        * 開放時には、`promiseSlot` を空にしてから資源をすぐに開放する。
        * これにより、資源が確保されてから開放される間は常にこのスコープの管理下に置かれる。
        */
-      val trackedResource: OptionF[(R, CancelToken[OptionF])] = for {
+      for {
         newPromise <- OptionT.liftF(Deferred.tryableUncancelable[F, (ResourceHandler, CancelToken[OptionF])])
 
         // `newPromise` の `promiseSlot` への格納が成功した場合のみSome(true)が結果となる
@@ -155,17 +153,23 @@ object ResourceScope {
         )
         _ <- OptionTExtra.failIf[F](promiseAllocation.contains(false))
 
-        setSlotToNone = OptionT.liftF(promiseSlot.set(None))
+        forgetUsage = OptionT.liftF(promiseSlot.set(None))
 
         // リソースの確保自体に失敗した場合は
         // `promiseSlot` を別のリソースの確保のために開ける。
-        allocated <- resource.allocated(monadF).orElse(setSlotToNone *> OptionT.none)
-        (handler, releaseToken) = allocated
+        allocationFiber <- monadF.start(resource.allocated(monadF).orElse(forgetUsage *> OptionT.none))
+        cancelAllocation = allocationFiber.cancel
 
-        _ <- OptionT.liftF(newPromise.complete(allocated))
-      } yield (handler, setSlotToNone *> releaseToken)
+        allocated <- allocationFiber.join
+        (handler, releaseResource) = allocated
 
-      Resource(trackedResource)
+        cancelToken = forgetUsage *> cancelAllocation
+        registerHandler = OptionT.liftF(newPromise.complete((handler, cancelToken)))
+
+        // キャンセルされた際には管理下から外す
+        a <- monadF.guarantee(registerHandler *> use(handler))(forgetUsage)
+        _ <- releaseResource
+      } yield a
     }
 
     override def getCancelToken(handler: ResourceHandler): OptionF[Option[CancelToken[OptionF]]] =
@@ -197,7 +201,7 @@ object ResourceScope {
         _ <- release
       } yield ()
 
-    def trackedForSome[R <: ResourceHandler](resource: Resource[F, R]): Resource[F, Option[R]] =
-      ResourceExtra.unwrapOptionTResource(tracked(resource.mapK(OptionT.liftK[F])))
+    def useTrackedForSome[R <: ResourceHandler, A](resource: Resource[F, R])(f: R => F[A]): F[Option[A]] =
+      useTracked(resource.mapK(OptionT.liftK[F]))(f.andThen(OptionT.liftF(_))).value
   }
 }

@@ -115,8 +115,9 @@ object ArrowEffects {
            * サーバーが停止したときにも開放するためである。
            */
           _ <- SeichiAssist.instance.managedEntityScope
-            .tracked(BukkitResources.vanishingEntityResource(spawnLocation, runtimeClass))
-            .use(projectile => modifyProjectile(projectile) *> waitForCollision)
+            .useTracked(BukkitResources.vanishingEntityResource(spawnLocation, runtimeClass)) { projectile =>
+              modifyProjectile(projectile) *> waitForCollision
+            }
         } yield ()
       )
     )
