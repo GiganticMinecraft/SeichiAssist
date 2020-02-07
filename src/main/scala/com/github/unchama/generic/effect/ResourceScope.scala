@@ -38,13 +38,13 @@ trait ResourceScope[F[_], ResourceHandler] {
   import cats.implicits._
 
   /**
-   * 与えられた`resource`とそれを使用する関数`f`に対して、
-   * 確保した資源の`f`による使用中にこのスコープ下に資源を置くような計算を返す。
+   * 与えられた`resource`とそれを使用する関数`f`を引数に取る。
+   * 確保した資源が`use`によって使われている最中にこのスコープ下に置くような計算を返す。
    */
-  def useTracked[R <: ResourceHandler, A](resource: Resource[F, R])(f: R => F[A]): F[A]
+  def useTracked[R <: ResourceHandler, A](resource: Resource[F, R])(use: R => F[A]): F[A]
 
   /**
-   * 与えられたハンドラがこのスコープの管理下にあるならば解放する計算を返し、そうでなければ空の値を返す計算
+   * 「与えられたハンドラがこのスコープの管理下にあるならば解放し、そうでなければ空の値を返す」計算を返す。
    */
   def getCancelToken(handler: ResourceHandler): F[Option[CancelToken[F]]]
 
@@ -62,7 +62,7 @@ trait ResourceScope[F[_], ResourceHandler] {
   } yield ()
 
   /**
-   * とあるハンドラがこのオブジェクトの管理下にあるかどうかを判定する計算
+   * 与えられたハンドラがこのスコープの管理下にあるかどうかを判定する計算
    */
   def isTracked(handler: ResourceHandler): F[Boolean] = getCancelToken(handler).map(_.nonEmpty)
 }
@@ -71,7 +71,8 @@ object ResourceScope {
   /**
    * 新たな資源スコープを作成する。
    *
-   * インスタンス等価性により挙動が変わるオブジェクトを作成するのでunsafe-接頭語がつけられている。
+   * 参照透明性が無いためunsafe-接頭語がつけられている。
+   * 実際、`unsafeCreate` を二回呼んだ時には異なるスコープが作成される。
    * @tparam F リソースを扱う計算
    * @tparam R リソースハンドラの型
    */
@@ -81,12 +82,24 @@ object ResourceScope {
    * 新たな資源スコープを作成する。
    * 返される資源スコープ内では高々一つの資源しか確保されないことが保証される。
    *
-   * インスタンス等価性により挙動が変わるオブジェクトを作成するのでunsafe-接頭語がつけられている。
+   * 参照透明性が無いためunsafe-接頭語がつけられている。
+   * 実際、`unsafeCreateSingletonScope` を二回呼んだ時には異なるスコープが作成される。
    * @tparam F リソースを扱う計算
    * @tparam R リソースハンドラの型
    */
   def unsafeCreateSingletonScope[F[_]: Concurrent, R]: SingleResourceScope[F, R] = new SingleResourceScope()
 
+  /**
+   * `ResourceScope` の標準的な実装。
+   *
+   * `TrieMap` を使用しているものの、
+   * 並行に同一の資源を多数 `useTracked` を通して確保しようとした場合には
+   * 動作が保証されない。
+   *
+   * 具体的には、`useTracked` は `release` と `register` の間で
+   * Mapの要素が(並行に)変更されたかどうかを検査していない。
+   * もしここで同タイミングでの確保が行われた場合資源が漏洩する可能性がある。
+   */
   class TrieMapResourceScope[F[_], ResourceHandler] private[ResourceScope] (implicit val monadF: Concurrent[F])
     extends ResourceScope[F, ResourceHandler] {
     import scala.collection.mutable
@@ -106,16 +119,47 @@ object ResourceScope {
 
     override def useTracked[R <: ResourceHandler, A](resource: Resource[F, R])(use: R => F[A]): F[A] = {
       for {
+        // この計算は大まかに以下のような流れを取る：
+        //
+        //     [start]
+        //        |
+        //    [allocate]
+        //        |
+        // [create promise]
+        //        |
+        //    [release]
+        //        |
+        //  [start `use`]----------
+        //        |               |
+        // [fill promise]         |
+        //        |------>[await promise completion]
+        //        |               |
+        //        |           [register]
+        //        |               |
+        //        |       [`use` yielding a]
+        //        |               |
+        //        |          [unregister]
+        //        |               |
+        //        |           [release]
+        //        |               |
+        // [await completion]<-----
+        //        |
+        //   a <---
+        //
+        // ここで、promiseに入れているのは右(use実行)側全体のキャンセルトークンであり、
+        // registerにてスコープの内部Mapにこれを登録する。
+        // `use`がキャンセルまたは失敗した場合にもunregisterとreleaseは必ず実行されることが保証される。
+
         allocated <- resource.allocated
         (handler, releaseResource) = allocated
 
         forgetUsage = delay { usageCancellationMap.remove(handler) }
 
-        // こちら側からuse実行側でregisterHandlerする際、キャンセルトークンを共有する必要がある
+        // use実行側でregisterHandlerする際、start側からuseをキャンセルする方法を共有する必要がある
         cancelTokenPromise <- Deferred[F, CancelToken[F]]
 
         registerHandler = for {
-          // こちら側からのcompleteでFiberのキャンセルトークンが埋め込まれるまでawaitする
+          // start側からのcompleteでFiberのキャンセルトークンが埋め込まれるまでawaitする
           cancelToken <- cancelTokenPromise.get
           _ <- delay { usageCancellationMap += (handler -> cancelToken) }
         } yield ()
@@ -124,10 +168,10 @@ object ResourceScope {
         _ <- release(handler)
 
         usageFiber <- start(
-          // 途中でキャンセルされても管理下から外しリソースの解放は行う
+          // 途中で`use`がキャンセルされても、リソースは必ず管理下から外し解放を行う
           guarantee(registerHandler >> use(handler))(forgetUsage >> releaseResource)
         )
-        // completeすることでusageFiberが動き出す
+        // completeすることでuse側が動き出す
         _ <- cancelTokenPromise.complete(usageFiber.cancel)
         a <- usageFiber.join
       } yield a
@@ -173,7 +217,7 @@ object ResourceScope {
 
         forgetUsage = OptionT.liftF(promiseSlot.set(None))
 
-        // こちら側からuse実行側でregisterHandlerする際、キャンセルトークンを共有する必要がある
+        // start側からuse実行側でregisterHandlerする際、キャンセルトークンを共有する必要がある
         cancelTokenPromise <- Deferred[OptionF, CancelToken[OptionF]]
 
         // リソースの確保自体に失敗した場合は
@@ -182,15 +226,16 @@ object ResourceScope {
         (handler, releaseResource) = allocated
 
         registerHandler = for {
-          // こちら側からのcompleteでFiberのキャンセルトークンが埋め込まれるまでawaitする
+          // start側からのcompleteでFiberのキャンセルトークンが埋め込まれるまでawaitする
           cancelToken <- cancelTokenPromise.get
           _ <- OptionT.liftF(newPromise.complete((handler, cancelToken)))
         } yield ()
 
         usageFiber <- monadF.start(
-          // 途中でキャンセルされても管理下から外しリソースの解放は行う
+          // 途中で`use`がキャンセルされても、リソースは必ず管理下から外し解放を行う
           monadF.guarantee(registerHandler >> use(handler))(forgetUsage >> releaseResource)
         )
+        // completeすることでuse側が動き出す
         _ <- cancelTokenPromise.complete(usageFiber.cancel)
         a <- usageFiber.join
       } yield a
