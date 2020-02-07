@@ -18,14 +18,14 @@ import scala.collection.concurrent.TrieMap
  * `ResourceScope`はこのような状況に対応するためのオブジェクトのtraitである。
  *
  * cats-effectで提供される代数データ型である`Resource[F, R]`は、
- * `R` 型のリソースの確保・開放の`F`による計算の組を扱いやすいようにまとめた構造である。
+ * `R` 型のリソースの確保・解放の`F`による計算の組を扱いやすいようにまとめた構造である。
  * `ResourceScope`オブジェクト`r`は、与えられたリソース `resource: Resource[F, R]` に対して、
- * 「`resource`により確保された資源を開放されるまで`r`の管理下に置く」ような
+ * 「`resource`により確保された資源を解放されるまで`r`の管理下に置く」ような
  * 新たな `Resource` を `tracked` により生成する。
  *
- * `release` によりスコープ内で使用している資源を強制的に開放することができる。
+ * `release` によりスコープ内で使用している資源を強制的に解放することができる。
  * `release`は、資源を使用している `Fiber` に対してキャンセルのシグナルを送り、
- * 資源が開放されるのを待ち続ける。これにより、スコープ内の資源が開放されるのを待つことができる。
+ * 資源が解放されるのを待ち続ける。これにより、スコープ内の資源が解放されるのを待つことができる。
  *
  * `use` に渡した計算の中で `release` をした際の動作は未定義となる。
  * 実際、解放処理は資源の解放をawaitする、かつ資源を使用しているプログラムが
@@ -44,17 +44,17 @@ trait ResourceScope[F[_], ResourceHandler] {
   def useTracked[R <: ResourceHandler, A](resource: Resource[F, R])(f: R => F[A]): F[A]
 
   /**
-   * 与えられたハンドラがこのスコープの管理下にあるならば開放する計算を返し、そうでなければ空の値を返す計算
+   * 与えられたハンドラがこのスコープの管理下にあるならば解放する計算を返し、そうでなければ空の値を返す計算
    */
   def getCancelToken(handler: ResourceHandler): F[Option[CancelToken[F]]]
 
   /**
-   * 管理下にあるすべてのリソースを開放する計算
+   * 管理下にあるすべてのリソースを解放する計算
    */
   val releaseAll: CancelToken[F]
 
   /**
-   * 与えられたハンドラが管理下にあれば開放するような計算
+   * 与えられたハンドラが管理下にあれば解放するような計算
    */
   def release(handler: ResourceHandler): CancelToken[F] = for {
     optionToken <- getCancelToken(handler)
@@ -94,7 +94,7 @@ object ResourceScope {
     /**
      * この`Map`の終域にある`CancelToken[F]`は、
      *  - ハンドラを管理下から外し
-     *  - ハンドラをリソースとして開放する
+     *  - ハンドラをリソースとして解放する
      * 計算である。
      *
      * ここで、管理下から外すというのは、単にこの`Map`からハンドラを取り除く処理である。
@@ -120,7 +120,7 @@ object ResourceScope {
           _ <- delay { usageCancellationMap += (handler -> cancelToken) }
         } yield ()
 
-        // 二重確保を避けるため確保されていたリソースがあれば開放してから確保する
+        // 二重確保を避けるため確保されていたリソースがあれば解放してから確保する
         _ <- release(handler)
 
         usageFiber <- start(
@@ -156,8 +156,8 @@ object ResourceScope {
        * Deferredプロミスを作成し、それを `promiseSlot` に格納する試行をし、
        * 試行が成功して初めてリソースの確保を行ってから確保したリソースでプロミスを埋める。
        *
-       * 開放時には、`promiseSlot` を空にしてから資源をすぐに開放する。
-       * これにより、資源が確保されてから開放される間は常にこのスコープの管理下に置かれる。
+       * 解放時には、`promiseSlot` を空にしてから資源をすぐに解放する。
+       * これにより、資源が確保されてから解放される間は常にこのスコープの管理下に置かれる。
        */
       for {
         newPromise <- OptionT.liftF(Deferred.tryableUncancelable[F, (ResourceHandler, CancelToken[OptionF])])
@@ -200,7 +200,7 @@ object ResourceScope {
       OptionT.liftF(getCancelTokenUnlifted(handler))
 
     def getCancelTokenUnlifted(handler: ResourceHandler): F[Option[CancelToken[OptionF]]] =
-    // 与えられたハンドラと同一のハンドラが管理下にある場合のみ開放するようなFを計算する
+    // 与えられたハンドラと同一のハンドラが管理下にある場合のみ解放するようなFを計算する
       {
         for {
           internalPromise <- OptionT(promiseSlot.get)
