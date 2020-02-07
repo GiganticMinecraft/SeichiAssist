@@ -133,7 +133,8 @@ object ResourceScope {
     override def getCancelToken(handler: ResourceHandler): F[Option[CancelToken[F]]] =
       delay { usageCancellationMap.get(handler) }
 
-    override val releaseAll: CancelToken[F] = usageCancellationMap.values.toList.sequence.as(())
+    override val releaseAll: CancelToken[F] =
+      defer { usageCancellationMap.values.toList.sequence.as(()) }
   }
 
   class SingleResourceScope[F[_]: Concurrent, ResourceHandler] private[ResourceScope]() extends ResourceScope[OptionT[F, *], ResourceHandler] {
