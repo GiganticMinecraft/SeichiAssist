@@ -119,61 +119,19 @@ object ResourceScope {
 
     override def useTracked[R <: ResourceHandler, A](resource: Resource[F, R])(use: R => F[A]): F[A] = {
       for {
-        // この計算は大まかに以下のような流れを取る：
-        //
-        //     [start]
-        //        |
-        //    [allocate]
-        //        |
-        // [create promise]
-        //        |
-        //    [release]
-        //        |
-        //  [start `use`]----------
-        //        |               |
-        // [fill promise]         |
-        //        |------>[await promise completion]
-        //        |               |
-        //        |           [register]
-        //        |               |
-        //        |       [`use` yielding a]
-        //        |               |
-        //        |          [unregister]
-        //        |               |
-        //        |           [release]
-        //        |               |
-        // [await completion]<-----
-        //        |
-        //   a <---
-        //
-        // ここで、promiseに入れているのは右(use実行)側全体のキャンセルトークンであり、
-        // registerにてスコープの内部Mapにこれを登録する。
-        // `use`がキャンセルまたは失敗した場合にもunregisterとreleaseは必ず実行されることが保証される。
-
         allocated <- resource.allocated
         (handler, releaseResource) = allocated
-
-        forgetUsage = delay { usageCancellationMap.remove(handler) }
-
-        // use実行側でregisterHandlerする際、start側からuseをキャンセルする方法を共有する必要がある
-        cancelTokenPromise <- Deferred[F, CancelToken[F]]
-
-        registerHandler = for {
-          // start側からのcompleteでFiberのキャンセルトークンが埋め込まれるまでawaitする
-          cancelToken <- cancelTokenPromise.get
-          _ <- delay { usageCancellationMap += (handler -> cancelToken) }
-        } yield ()
 
         // 二重確保を避けるため確保されていたリソースがあれば解放してから確保する
         _ <- release(handler)
 
-        usageFiber <- start(
-          // 途中で`use`がキャンセルされても、リソースは必ず管理下から外し解放を行う
+        // use中に解放命令が入った時、useをキャンセルしforgetUsage >> releaseResourceを行うように
+        a <- ConcurrentExtra.withSelfCancellation[F, A] { cancelToken =>
+          val registerHandler = delay { usageCancellationMap += (handler -> cancelToken) }
+          val forgetUsage = delay { usageCancellationMap.remove(handler) }
+
           guarantee(registerHandler >> use(handler))(forgetUsage >> releaseResource)
-        )
-        // completeすることでuse側が動き出す
-        _ <- cancelTokenPromise.complete(usageFiber.cancel)
-        a <- usageFiber.join
+        }
       } yield a
     }
 
@@ -217,27 +175,17 @@ object ResourceScope {
 
         forgetUsage = OptionT.liftF(promiseSlot.set(None))
 
-        // start側からuse実行側でregisterHandlerする際、キャンセルトークンを共有する必要がある
-        cancelTokenPromise <- Deferred[OptionF, CancelToken[OptionF]]
-
         // リソースの確保自体に失敗した場合は
         // `promiseSlot` を別のリソースの確保のために開ける。
         allocated <- resource.allocated(monadF).orElse(forgetUsage *> OptionT.none)
         (handler, releaseResource) = allocated
 
-        registerHandler = for {
-          // start側からのcompleteでFiberのキャンセルトークンが埋め込まれるまでawaitする
-          cancelToken <- cancelTokenPromise.get
-          _ <- OptionT.liftF(newPromise.complete((handler, cancelToken)))
-        } yield ()
+        // use中に解放命令が入った時、useをキャンセルしforgetUsage >> releaseResourceを行うように
+        a <- ConcurrentExtra.withSelfCancellation[OptionF, A] { cancelToken =>
+          val registerHandler = OptionT.liftF(newPromise.complete((handler, cancelToken)))
 
-        usageFiber <- monadF.start(
-          // 途中で`use`がキャンセルされても、リソースは必ず管理下から外し解放を行う
           monadF.guarantee(registerHandler >> use(handler))(forgetUsage >> releaseResource)
-        )
-        // completeすることでuse側が動き出す
-        _ <- cancelTokenPromise.complete(usageFiber.cancel)
-        a <- usageFiber.join
+        }
       } yield a
     }
 

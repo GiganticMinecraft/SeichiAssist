@@ -5,7 +5,7 @@ import cats.data.OptionT
 import cats.effect.IO
 import org.scalatest.wordspec.AnyWordSpec
 
-class OptionTExtraSpec extends AnyWordSpec{
+class OptionTExtraSpec extends AnyWordSpec {
   "failIf" should {
     "produce failing OptionT[Id, *] on true" in {
       assert(OptionTExtra.failIf[Id](failCondition = true) == OptionT.none)
