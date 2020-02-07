@@ -1,6 +1,6 @@
 package com.github.unchama.generic.effect
 
-import cats.effect.{ContextShift, IO, Resource}
+import cats.effect.{ContextShift, IO, Resource, Timer}
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers
@@ -14,15 +14,16 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
   "Default implementation of ResourceScope" should {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+    implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
     val firstResourceScope: ResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreate
     val secondResourceScope: ResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreate
 
     def useTracked[A](scope: ResourceScope[IO, NumberedObject],
-                           obj: NumberedObject,
-                           impureFinalizer: NumberedObject => Unit = _ => ())
-                          (use: NumberedObject => IO[A]): IO[A] = {
-      val resource = Resource.make(IO.pure(obj))(o => IO { impureFinalizer(o) })
+                      obj: NumberedObject,
+                      impureFinalizer: NumberedObject => Unit = _ => ())
+                     (use: NumberedObject => IO[A]): IO[A] = {
+      val resource = Resource.make(IO.pure(obj))(o => IO(impureFinalizer(o)))
 
       scope.useTracked(resource)(use)
     }
@@ -48,8 +49,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       resourceEffect.expects(NumberedObject(0)).once()
 
-      useTracked(firstResourceScope, NumberedObject(0)) { o => IO { resourceEffect(o) } }
-        .unsafeRunSync()
+      useTracked(firstResourceScope, NumberedObject(0)) { o => IO { resourceEffect(o) } }.unsafeRunSync()
     }
 
     "call finalizer of the resource exactly once on release" in {
@@ -61,36 +61,70 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
         .unsafeRunSync()
     }
 
-    "be coherent with self cancellation" in {
+    "be coherent with external cancellation by explicit release" in {
       val impureFunction = mockFunction[NumberedObject, Unit]
       val finalizer = mockFunction[NumberedObject, Unit]
+      val impureFunction2 = mockFunction[Unit, Unit]
 
       inSequence {
         impureFunction.expects(NumberedObject(0)).once()
         finalizer.expects(NumberedObject(0)).once()
-        impureFunction.expects(NumberedObject(0)).noMoreThanOnce()
+        impureFunction2.expects(()).once()
       }
 
-      useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
-        for {
-          _ <- IO { impureFunction(o) }
-          _ <- firstResourceScope.releaseAll
-          _ <- IO { impureFunction(o) }
-        } yield ()
-      }.unsafeRunSync()
+      import cats.implicits._
+      import scala.concurrent.duration._
+
+      val program = for {
+        _ <-
+          useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
+            IO { impureFunction(o) } >> IO.never
+          }.start
+        _ <- IO.sleep(1.second) >> firstResourceScope.release(NumberedObject(0))
+        _ <- IO(impureFunction2(()))
+      } yield ()
+
+      program.unsafeRunSync()
+    }
+
+    "be coherent with external cancellation by releaseAll" in {
+      val impureFunction = mockFunction[NumberedObject, Unit]
+      val finalizer = mockFunction[NumberedObject, Unit]
+      val impureFunction2 = mockFunction[Unit, Unit]
+
+      inSequence {
+        impureFunction.expects(NumberedObject(0)).once()
+        finalizer.expects(NumberedObject(0)).once()
+        impureFunction2.expects(()).once()
+      }
+
+      import cats.implicits._
+      import scala.concurrent.duration._
+
+      val program = for {
+        _ <-
+          useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
+            IO { impureFunction(o) } >> IO.never
+          }.start
+        _ <- IO.sleep(1.second) >> firstResourceScope.releaseAll
+        _ <- IO(impureFunction2(()))
+      } yield ()
+
+      program.unsafeRunSync()
     }
   }
 
   "Singleton resource scope" should {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+    implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
     val firstResourceScope: SingleResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreateSingletonScope
     val secondResourceScope: SingleResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreateSingletonScope
 
     def useTrackedForSome[A](scope: SingleResourceScope[IO, NumberedObject],
-                           obj: NumberedObject,
-                           impureFinalizer: NumberedObject => Unit = _ => ())
-                          (use: NumberedObject => IO[A]): IO[Option[A]] = {
+                             obj: NumberedObject,
+                             impureFinalizer: NumberedObject => Unit = _ => ())
+                            (use: NumberedObject => IO[A]): IO[Option[A]] = {
       val resource = Resource.make(IO.pure(obj))(o => IO { impureFinalizer(o) })
 
       scope.useTrackedForSome(resource)(use)
@@ -149,20 +183,56 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }.unsafeRunSync()
     }
 
-    "be coherent with self cancellation" in {
+    "be coherent with external cancellation by explicit release" in {
       val impureFunction = mockFunction[NumberedObject, Unit]
       val finalizer = mockFunction[NumberedObject, Unit]
+      val impureFunction2 = mockFunction[Unit, Unit]
 
-      finalizer.expects(NumberedObject(0)).once()
-      impureFunction.expects(NumberedObject(0)).once()
+      inSequence {
+        impureFunction.expects(NumberedObject(0)).once()
+        finalizer.expects(NumberedObject(0)).once()
+        impureFunction2.expects(()).once()
+      }
 
-      useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
-        for {
-          _ <- IO { impureFunction(o) }
-          _ <- firstResourceScope.releaseAll.value
-          _ <- IO { impureFunction(o) }
-        } yield ()
-      }.unsafeRunSync()
+      import cats.implicits._
+      import scala.concurrent.duration._
+
+      val program = for {
+        _ <-
+          useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
+            IO { impureFunction(o) } >> IO.never
+          }.start
+        _ <- IO.sleep(1.second) >> firstResourceScope.releaseSome(NumberedObject(0))
+        _ <- IO(impureFunction2(()))
+      } yield ()
+
+      program.unsafeRunSync()
+    }
+
+    "be coherent with external cancellation by releaseAll" in {
+      val impureFunction = mockFunction[NumberedObject, Unit]
+      val finalizer = mockFunction[NumberedObject, Unit]
+      val impureFunction2 = mockFunction[Unit, Unit]
+
+      inSequence {
+        impureFunction.expects(NumberedObject(0)).once()
+        finalizer.expects(NumberedObject(0)).once()
+        impureFunction2.expects(()).once()
+      }
+
+      import cats.implicits._
+      import scala.concurrent.duration._
+
+      val program = for {
+        _ <-
+          useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
+            IO { impureFunction(o) } >> IO.never
+          }.start
+        _ <- IO.sleep(1.second) >> firstResourceScope.releaseAll.value
+        _ <- IO(impureFunction2(()))
+      } yield ()
+
+      program.unsafeRunSync()
     }
   }
 }

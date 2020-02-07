@@ -3,7 +3,7 @@ package com.github.unchama.generic.effect
 import cats.Monad
 import cats.data.OptionT
 import cats.effect.concurrent.{Deferred, Ref, TryableDeferred}
-import cats.effect.{CancelToken, Concurrent, Resource, Sync}
+import cats.effect.{CancelToken, Concurrent, Resource}
 import com.github.unchama.generic.OptionTExtra
 
 import scala.collection.concurrent.TrieMap
@@ -22,6 +22,12 @@ import scala.collection.concurrent.TrieMap
  * `ResourceScope`オブジェクト`r`は、与えられたリソース `resource: Resource[F, R]` に対して、
  * 「`resource`により確保された資源を開放されるまで`r`の管理下に置く」ような
  * 新たな `Resource` を `tracked` により生成する。
+ *
+ * `release` によりスコープ内で使用している資源を強制的に開放することができる。
+ * `release`は、資源を使用している `Fiber` に対してキャンセルのシグナルを送り、
+ * 資源が開放されるのを待ち続ける。これにより、スコープ内の資源が開放されるのを待つことができる。
+ *
+ * `use` に渡した計算の中で `release` をした際の動作は未定義となる。
  */
 trait ResourceScope[F[_], ResourceHandler] {
   implicit val monadF: Monad[F]
@@ -97,22 +103,30 @@ object ResourceScope {
 
     override def useTracked[R <: ResourceHandler, A](resource: Resource[F, R])(use: R => F[A]): F[A] = {
       for {
-        allocationFiber <- start(resource.allocated)
-
-        cancelAllocation = allocationFiber.cancel
-
-        allocated <- allocationFiber.join
+        allocated <- resource.allocated
         (handler, releaseResource) = allocated
 
-        cancelUsage = defer { usageCancellationMap.remove(handler).getOrElse(Sync[F].unit) }
+        forgetUsage = delay { usageCancellationMap.remove(handler) }
 
-        forgetUsage = delay { usageCancellationMap.remove(handler); () }
-        registerHandler = delay { usageCancellationMap += (handler -> (forgetUsage *> cancelAllocation)) }
+        // こちら側からuse実行側でregisterHandlerする際、キャンセルトークンを共有する必要がある
+        cancelTokenPromise <- Deferred[F, CancelToken[F]]
+
+        registerHandler = for {
+          // こちら側からのcompleteでFiberのキャンセルトークンが埋め込まれるまでawaitする
+          cancelToken <- cancelTokenPromise.get
+          _ <- delay { usageCancellationMap += (handler -> cancelToken) }
+        } yield ()
 
         // 二重確保を避けるため確保されていたリソースがあれば開放してから確保する
-        // キャンセルされた際も管理下から外す
-        a <- guarantee(cancelUsage *> registerHandler *> use(handler))(forgetUsage)
-        _ <- releaseResource
+        _ <- release(handler)
+
+        usageFiber <- start(
+          // 途中でキャンセルされても管理下から外しリソースの解放は行う
+          guarantee(registerHandler >> use(handler))(forgetUsage >> releaseResource)
+        )
+        // completeすることでusageFiberが動き出す
+        _ <- cancelTokenPromise.complete(usageFiber.cancel)
+        a <- usageFiber.join
       } yield a
     }
 
@@ -155,20 +169,26 @@ object ResourceScope {
 
         forgetUsage = OptionT.liftF(promiseSlot.set(None))
 
+        // こちら側からuse実行側でregisterHandlerする際、キャンセルトークンを共有する必要がある
+        cancelTokenPromise <- Deferred[OptionF, CancelToken[OptionF]]
+
         // リソースの確保自体に失敗した場合は
         // `promiseSlot` を別のリソースの確保のために開ける。
-        allocationFiber <- monadF.start(resource.allocated(monadF).orElse(forgetUsage *> OptionT.none))
-        cancelAllocation = allocationFiber.cancel
-
-        allocated <- allocationFiber.join
+        allocated <- resource.allocated(monadF).orElse(forgetUsage *> OptionT.none)
         (handler, releaseResource) = allocated
 
-        cancelToken = forgetUsage *> cancelAllocation
-        registerHandler = OptionT.liftF(newPromise.complete((handler, cancelToken)))
+        registerHandler = for {
+          // こちら側からのcompleteでFiberのキャンセルトークンが埋め込まれるまでawaitする
+          cancelToken <- cancelTokenPromise.get
+          _ <- OptionT.liftF(newPromise.complete((handler, cancelToken)))
+        } yield ()
 
-        // キャンセルされた際には管理下から外す
-        a <- monadF.guarantee(registerHandler *> use(handler))(forgetUsage)
-        _ <- releaseResource
+        usageFiber <- monadF.start(
+          // 途中でキャンセルされても管理下から外しリソースの解放は行う
+          monadF.guarantee(registerHandler >> use(handler))(forgetUsage >> releaseResource)
+        )
+        _ <- cancelTokenPromise.complete(usageFiber.cancel)
+        a <- usageFiber.join
       } yield a
     }
 
@@ -189,6 +209,8 @@ object ResourceScope {
       }.value
 
     def isTrackedUnlifted(handler: ResourceHandler): F[Boolean] = getCancelTokenUnlifted(handler).map(_.nonEmpty)
+
+    def releaseSome(handler: ResourceHandler): CancelToken[F] = release(handler).value.as(())
 
     override val releaseAll: CancelToken[OptionF] =
       // 解放するリソースがあれば解放し、なければ何もしないようなFを計算する
