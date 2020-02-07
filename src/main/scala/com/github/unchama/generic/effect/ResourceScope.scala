@@ -28,6 +28,9 @@ import scala.collection.concurrent.TrieMap
  * 資源が開放されるのを待ち続ける。これにより、スコープ内の資源が開放されるのを待つことができる。
  *
  * `use` に渡した計算の中で `release` をした際の動作は未定義となる。
+ * 実際、解放処理は資源の解放をawaitする、かつ資源を使用しているプログラムが
+ * 解放処理を要求すると、解放に必要なキャンセル処理を受け付けなくなるため、
+ * ハングすることが想定される。
  */
 trait ResourceScope[F[_], ResourceHandler] {
   implicit val monadF: Monad[F]
