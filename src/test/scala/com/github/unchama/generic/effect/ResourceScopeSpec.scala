@@ -85,6 +85,8 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       } yield ()
 
       program.unsafeRunSync()
+
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
     }
 
     "be coherent with external cancellation by releaseAll" in {
@@ -111,6 +113,8 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       } yield ()
 
       program.unsafeRunSync()
+
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
     }
   }
 
@@ -207,6 +211,8 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       } yield ()
 
       program.unsafeRunSync()
+
+      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
     }
 
     "be coherent with external cancellation by releaseAll" in {
@@ -233,6 +239,8 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       } yield ()
 
       program.unsafeRunSync()
+
+      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
     }
   }
 }
