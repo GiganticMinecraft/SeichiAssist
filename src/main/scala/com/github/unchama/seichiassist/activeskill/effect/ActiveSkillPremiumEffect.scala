@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.activeskill.effect.breaking.MagicTask
@@ -26,11 +27,13 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
                      tool: ItemStack,
                      breakBlocks: Set[Block],
                      breakArea: AxisAlignedCuboid,
-                     standard: Location): Unit = {
+                     standard: Location): IO[Unit] = {
     this match {
       case ActiveSkillPremiumEffect.MAGIC =>
-        val period = if (SeichiAssist.DEBUG) 100 else 10
-        new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, period)
+        IO {
+          val period = if (SeichiAssist.DEBUG) 100 else 10
+          new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, period)
+        }
     }
   }
 

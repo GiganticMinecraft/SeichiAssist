@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.Blizzard
 import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
@@ -15,7 +16,7 @@ trait ActiveSkillEffect {
                      tool: ItemStack,
                      breakBlocks: Set[Block],
                      breakArea: AxisAlignedCuboid,
-                     standard: Location): Unit
+                     standard: Location): IO[Unit]
 }
 
 object ActiveSkillEffect {
@@ -25,13 +26,11 @@ object ActiveSkillEffect {
                                 tool: ItemStack,
                                 breakBlocks: Set[Block],
                                 breakArea: AxisAlignedCuboid,
-                                standard: Location): Unit = {
-      com.github.unchama.seichiassist.unsafe.runIOAsync(
-        "ブロックを大量破壊する",
-        BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
-      )
-      SeichiAssist.managedBlocks --= breakBlocks
-    }
+                                standard: Location): IO[Unit] =
+      for {
+        _ <- BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
+        _ <- IO { SeichiAssist.managedBlocks --= breakBlocks }
+      } yield ()
   }
 
   // できるならActiveSkillDataにActiveSkillEffectを直接持たせたい

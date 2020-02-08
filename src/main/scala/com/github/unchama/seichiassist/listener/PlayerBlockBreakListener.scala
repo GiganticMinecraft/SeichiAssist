@@ -315,9 +315,12 @@ class PlayerBlockBreakListener extends Listener {
     } else {
       SeichiAssist.managedBlocks ++= breakBlocks
 
-      ActiveSkillEffect
-        .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
-        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, breakArea, centerOfBlock)
+      com.github.unchama.seichiassist.unsafe.runIOAsync(
+        "破壊エフェクトを再生する",
+        ActiveSkillEffect
+          .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
+          .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, breakArea, centerOfBlock)
+      )
 
       // 経験値を減らす
       mana.decrease(useMana, player, playerdata.level)

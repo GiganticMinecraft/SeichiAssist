@@ -162,9 +162,12 @@ class EntityListener extends Listener {
 
     SeichiAssist.managedBlocks ++= breakBlocks
 
-    ActiveSkillEffect
-      .fromEffectNum(playerData.activeskilldata.effectnum, playerData.activeskilldata.skillnum)
-      .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, area, centerOfBlock)
+    com.github.unchama.seichiassist.unsafe.runIOAsync(
+      "破壊エフェクトを再生する",
+      ActiveSkillEffect
+        .fromEffectNum(playerData.activeskilldata.effectnum, playerData.activeskilldata.skillnum)
+        .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, area, centerOfBlock)
+    )
   }
 
   @EventHandler def onEntityExplodeEvent(event: EntityExplodeEvent) = {

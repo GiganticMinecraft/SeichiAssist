@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
@@ -25,18 +26,25 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
                               tool: ItemStack,
                               breakBlocks: Set[Block],
                               breakArea: AxisAlignedCuboid,
-                              standard: Location): Unit = {
+                              standard: Location): IO[Unit] = {
     val plugin = SeichiAssist.instance
     val skillId = skillData.skillnum
 
     this match {
-      case Explosion => new ExplosionTask(player, skillId <= 2, tool, breakBlocks, breakArea, standard).runTask(plugin)
+      case Explosion =>
+        IO {
+          new ExplosionTask(player, skillId <= 2, tool, breakBlocks, breakArea, standard).runTask(plugin)
+        }
       case Blizzard =>
-        val period = if (SeichiAssist.DEBUG) 100L else 10L
-        new BlizzardTask(player, skillData, tool, breakBlocks, standard).runTaskTimer(plugin, 0, period)
+        IO {
+          val period = if (SeichiAssist.DEBUG) 100L else 10L
+          new BlizzardTask(player, skillData, tool, breakBlocks, standard).runTaskTimer(plugin, 0, period)
+        }
       case Meteo =>
-        val delay = if (skillId < 3) 1L else 10L
-        new MeteoTask(player, skillData, tool, breakBlocks, breakArea, standard).runTaskLater(plugin, delay)
+        IO {
+          val delay = if (skillId < 3) 1L else 10L
+          new MeteoTask(player, skillData, tool, breakBlocks, breakArea, standard).runTaskLater(plugin, delay)
+        }
     }
   }
 
