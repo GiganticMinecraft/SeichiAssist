@@ -27,10 +27,7 @@ object ActiveSkillEffect {
                                 breakBlocks: Set[Block],
                                 breakArea: AxisAlignedCuboid,
                                 standard: Location): IO[Unit] =
-      for {
-        _ <- BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
-        _ <- IO { SeichiAssist.managedBlocks --= breakBlocks }
-      } yield ()
+      BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
   }
 
   // できるならActiveSkillDataにActiveSkillEffectを直接持たせたい

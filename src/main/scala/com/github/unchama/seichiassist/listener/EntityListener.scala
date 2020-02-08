@@ -66,7 +66,7 @@ class EntityListener extends Listener {
     if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.spigot.isUnbreakable) return
 
     //スキルで破壊されるブロックの時処理を終了
-    if (SeichiAssist.managedBlocks.contains(block)) {
+    if (SeichiAssist.instance.managedBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
       if (SeichiAssist.DEBUG) player.sendMessage("スキルで使用中のブロックです。")
       return
     }
@@ -74,6 +74,8 @@ class EntityListener extends Listener {
     runArrowSkillofHitBlock(player, block, tool)
 
     SeichiAssist.instance.managedEntityScope.release(proj).unsafeRunSync()
+
+    // TODO setCancelled
   }
 
   private def runArrowSkillofHitBlock(player: Player, hitBlock: Block, tool: ItemStack): Unit = {
@@ -159,8 +161,6 @@ class EntityListener extends Listener {
 
     //元ブロックの真ん中の位置
     val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
-
-    SeichiAssist.managedBlocks ++= breakBlocks
 
     com.github.unchama.seichiassist.unsafe.runIOAsync(
       "破壊エフェクトを再生する",

@@ -46,6 +46,10 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
+  val managedBlockChunkScope: ResourceScope[IO, Set[Block]] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreate
+  }
 
   override def onEnable(): Unit = {
     val logger = getLogger
@@ -216,7 +220,7 @@ class SeichiAssist extends JavaPlugin() {
     cancelRepeatedJobs()
 
     // 管理下にあるブロックを開放する
-    SeichiAssist.managedBlocks.foreach(_.setType(Material.AIR))
+    managedBlockChunkScope.releaseAll.unsafeRunSync()
 
     // 管理下にあるエンティティを開放する
     managedEntityScope.releaseAll.unsafeRunSync()
@@ -284,9 +288,6 @@ object SeichiAssist {
   val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   //プレミアムエフェクトポイント表示用データリスト
   val ranklist_premiumeffectpoint: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-
-  //プレイヤーがスキルで破壊するブロックリスト
-  val managedBlocks: mutable.HashSet[Block] = mutable.HashSet()
 
   var instance: SeichiAssist = _
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)

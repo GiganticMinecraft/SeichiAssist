@@ -1,18 +1,22 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
-import cats.effect.IO
-import com.github.unchama.seichiassist.SeichiAssist
+import cats.effect.{IO, Timer}
+import com.github.unchama.seichiassist.ActiveSkill
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
-import com.github.unchama.seichiassist.activeskill.effect.breaking.{BlizzardTask, ExplosionTask, MeteoTask}
-import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
+import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.{Location, Material}
+import org.bukkit.{Effect, Location, Material, Sound}
+
+import scala.util.Random
 
 sealed abstract class ActiveSkillNormalEffect(val num: Int,
                                               val nameOnDatabase: String,
@@ -27,26 +31,89 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
                               breakBlocks: Set[Block],
                               breakArea: AxisAlignedCuboid,
                               standard: Location): IO[Unit] = {
-    val plugin = SeichiAssist.instance
+    import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
+    import com.github.unchama.concurrent.syntax._
+    import com.github.unchama.seichiassist.data.syntax._
+
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
     val skillId = skillData.skillnum
 
     this match {
       case Explosion =>
-        IO {
-          new ExplosionTask(player, skillId <= 2, tool, breakBlocks, breakArea, standard).runTask(plugin)
-        }
+        val blockPositions = breakBlocks.map(_.getLocation).map(XYZTuple.of)
+        val world = player.getWorld
+
+        for {
+          _ <- asyncShift.shift
+
+          explosionLocations <- IO {
+            breakArea
+              .gridPoints(2)
+              .map(XYZTuple.of(standard) + _)
+              .filter(PositionSearching.containsOneOfPositionsAround(_, 1, blockPositions))
+          }
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, skillId <= 2)
+          _ <- IO {
+            explosionLocations.foreach(coordinates =>
+              world.createExplosion(coordinates.toLocation(world), 0f, false)
+            )
+          }
+        } yield ()
+
       case Blizzard =>
-        IO {
-          val period = if (SeichiAssist.DEBUG) 100L else 10L
-          new BlizzardTask(player, skillData, tool, breakBlocks, standard).runTaskTimer(plugin, 0, period)
-        }
+        for {
+          _ <-
+            BreakUtil.massBreakBlock(
+              player, breakBlocks, standard, tool,
+              shouldPlayBreakSound = false, Material.PACKED_ICE
+            )
+          _ <- IO.sleep(10.ticks)
+          _ <- syncShift.shift
+          _ <- IO {
+            breakBlocks
+              .map(_.getLocation)
+              .foreach(location => player.getWorld.playEffect(location, Effect.SNOWBALL_BREAK, 1))
+
+            breakBlocks.foreach { b =>
+              b.setType(Material.AIR)
+
+              if (skillData.skilltype == ActiveSkill.BREAK.gettypenum())
+                b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE, 5)
+              else
+                b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE)
+            }
+          }
+        } yield ()
+
       case Meteo =>
-        IO {
-          val delay = if (skillId < 3) 1L else 10L
-          new MeteoTask(player, skillData, tool, breakBlocks, breakArea, standard).runTaskLater(plugin, delay)
-        }
+        val delay = if (skillId < 3) 1L else 10L
+
+        import com.github.unchama.seichiassist.data.syntax._
+
+        val blockPositions = breakBlocks.map(_.getLocation).map(XYZTuple.of)
+        val world = player.getWorld
+
+        for {
+          _ <- IO.sleep(delay.ticks)
+          _ <- syncShift.shift
+          _ <- IO {
+            breakArea.gridPoints(2).foreach { xyzTuple =>
+              val effectLoc = XYZTuple.of(standard) + xyzTuple
+
+              if (PositionSearching.containsOneOfPositionsAround(effectLoc, 1, blockPositions)) {
+                // TODO: Effect.EXPLOSION_HUGE => Particle.EXPLOSION_HUGE
+                world.playEffect(effectLoc.toLocation(world), Effect.EXPLOSION_HUGE, 1)
+              }
+            }
+          }
+          // [0.8, 1.2)
+          vol <- IO { new Random().nextFloat() * 0.4f + 0.8f }
+          _ <- FocusedSoundEffect(Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol).run(player)
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, skillData.skillnum <= 2)
+        } yield ()
+      }
     }
-  }
 
   /**
    * エフェクト選択時の遠距離エフェクト
