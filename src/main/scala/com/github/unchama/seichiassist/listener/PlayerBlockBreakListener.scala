@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.IO
+import cats.effect.{Fiber, IO}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
@@ -240,7 +240,7 @@ class PlayerBlockBreakListener extends Listener {
 
       com.github.unchama.seichiassist.unsafe.runIOAsync(
         "複数破壊エフェクトを実行する",
-        effectPrograms.toList.sequence
+        effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
       )
 
       //経験値を減らす
