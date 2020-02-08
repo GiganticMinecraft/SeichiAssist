@@ -91,7 +91,7 @@ public final class MenuInventoryData {
      */
     private static final Function0<Boolean> FALSE = () -> false;
 
-    private static final Consumer<SkullMeta> DIG100 = (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+    private static final Consumer<ItemMeta> DIG100 = (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 
 
     private static final ItemStack toMoveNicknameMenu = build(
