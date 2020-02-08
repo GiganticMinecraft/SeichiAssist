@@ -169,7 +169,7 @@ object ResourceScope {
          */
         newPromise <- OptionT.liftF(Deferred.tryableUncancelable[F, (ResourceHandler, CancelToken[OptionF])])
 
-        // `newPromise` の `promiseSlot` への格納が成功した場合のみSome(true)が結果となる
+        // `promiseSlot` が空で`newPromise` の格納が成功した場合のみSome(true)が結果となる
         promiseAllocation <- OptionT.liftF(
           promiseSlot.tryModify {
             case None => (Some(newPromise), true)
