@@ -118,7 +118,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
   /**
    * エフェクト選択時の遠距離エフェクト
    */
-  val arrowEffect: TargetedEffect[Player] =
+  lazy val arrowEffect: TargetedEffect[Player] =
     this match {
       case Explosion => ArrowEffects.singleArrowExplosionEffect
       case Blizzard => ArrowEffects.singleArrowBlizzardEffect
