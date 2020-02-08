@@ -17,7 +17,7 @@ import org.bukkit.{Material, Sound}
 
 object RegionMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, _}
   import com.github.unchama.targetedeffect.syntax._

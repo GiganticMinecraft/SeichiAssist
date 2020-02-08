@@ -25,7 +25,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener extends Listener {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.InventoryUtil._
   import com.github.unchama.util.syntax._
@@ -616,7 +616,7 @@ class PlayerInventoryListener extends Listener {
         val skullMeta = itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
               sequentialEffect(
@@ -695,7 +695,7 @@ class PlayerInventoryListener extends Listener {
         val name = skullMeta.getDisplayName
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
               sequentialEffect(

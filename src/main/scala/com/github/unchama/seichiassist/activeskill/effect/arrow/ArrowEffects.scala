@@ -2,9 +2,10 @@ package com.github.unchama.seichiassist.activeskill.effect.arrow
 
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.concurrent.BukkitSyncExecutionContext
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.effect.BukkitResources
 import org.bukkit.entity._
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.PotionMeta
@@ -17,6 +18,7 @@ import scala.reflect.ClassTag
 
 object ArrowEffects {
 
+  import cats.implicits._
   import com.github.unchama.concurrent.syntax._
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
@@ -77,44 +79,45 @@ object ArrowEffects {
       Some(Sound.ENTITY_GHAST_SHOOT)
     )
 
-  def arrowEffect[P <: Projectile : ClassTag](
-                                               spawnConfiguration: ProjectileSpawnConfiguration,
-                                               sound: Option[Sound] = None,
-                                               projectileModifier: P => Unit = (_: P) => ()
-                                             ): TargetedEffect[Player] = {
+  def arrowEffect[P <: Projectile : ClassTag](spawnConfiguration: ProjectileSpawnConfiguration,
+                                              sound: Option[Sound] = None,
+                                              projectileModifier: P => Unit = (_: P) => ()): TargetedEffect[Player] = {
+
     val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
+
     val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(emptyEffect)
+
+    val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
 
     sequentialEffect(
       soundEffect,
       Kleisli(player =>
         for {
-          _ <- IO.shift(new BukkitSyncExecutionContext())
-          playerLocation <- IO {
-            player.getLocation.clone()
-          }
+          _ <- PluginExecutionContexts.syncShift.shift
+          playerLocation <- IO { player.getLocation.clone() }
           spawnLocation = playerLocation.clone()
             .add(playerLocation.getDirection)
             .add(spawnConfiguration.offset)
-          projectile <- IO {
-            playerLocation.getWorld.spawn(spawnLocation, runtimeClass)
-              .modify { entity =>
-                import entity._
-                setShooter(player)
-                setGravity(spawnConfiguration.gravity)
-                setMetadata("ArrowSkill", FixedMetadataValues.TRUE)
-                setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))
-              }
-              .modify(projectileModifier)
+
+          modifyProjectile = (projectile: P) => IO {
+            projectile.modify { p => import p._
+              setShooter(player)
+              setGravity(spawnConfiguration.gravity)
+              setMetadata("ArrowSkill", FixedMetadataValues.TRUE)
+              setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))
+            }
           }
-          // TODO abstract away the release of resource
-          _ <- IO {
-            SeichiAssist.managedEntities += projectile
-          }
-          _ <- IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
-          _ <- IO {
-            projectile.remove(); SeichiAssist.managedEntities -= projectile
-          }
+
+          /**
+           * 100ティック衝突を待ってから開放する。
+           *
+           * 飛翔体をスコープ内でのリソースとしているのは、
+           * サーバーが停止したときにも開放するためである。
+           */
+          _ <- SeichiAssist.instance.managedEntityScope
+            .useTracked(BukkitResources.vanishingEntityResource(spawnLocation, runtimeClass)) { projectile =>
+              modifyProjectile(projectile) *> waitForCollision
+            }
         } yield ()
       )
     )

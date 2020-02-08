@@ -28,16 +28,16 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
                      breakArea: AxisAlignedCuboid,
                      standard: Location): Unit = {
     this match {
-      case ActiveSkillPremiumEffect.MAGIC => if (SeichiAssist.DEBUG) {
-        new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, 100)
-      } else {
-        new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, 10)
-      }
+      case ActiveSkillPremiumEffect.MAGIC =>
+        val period = if (SeichiAssist.DEBUG) 100 else 10
+        new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, period)
     }
   }
 
-  //エフェクトの実行処理分岐
-  def arrowEffect(player: Player): TargetedEffect[Player] =
+  /**
+   * エフェクト選択時の遠距離エフェクト
+   */
+  val arrowEffect: TargetedEffect[Player] =
     this match {
       case ActiveSkillPremiumEffect.MAGIC => ArrowEffects.singleArrowMagicEffect
     }

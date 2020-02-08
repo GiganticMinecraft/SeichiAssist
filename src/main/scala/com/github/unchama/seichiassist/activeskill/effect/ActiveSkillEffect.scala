@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.Blizzard
 import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
@@ -34,12 +35,14 @@ object ActiveSkillEffect {
   }
 
   // できるならActiveSkillDataにActiveSkillEffectを直接持たせたい
-  def fromEffectNum(effectNum: Int): ActiveSkillEffect = {
+  def fromEffectNum(effectNum: Int, skillNum: Int): ActiveSkillEffect = {
     if (effectNum == 0) {
       NoEffect
     } else if (effectNum <= 100) {
       //通常エフェクトが指定されているときの処理(100以下の番号に割り振る)
-      ActiveSkillNormalEffect.values(effectNum - 1)
+      val e = ActiveSkillNormalEffect.values(effectNum - 1)
+
+      if (e == Blizzard && skillNum < 3) NoEffect else Blizzard
     } else {
       //プレミアムエフェクトが指定されているときの処理(100超の番号に割り振る)
       ActiveSkillPremiumEffect.values(effectNum - 100 - 1)

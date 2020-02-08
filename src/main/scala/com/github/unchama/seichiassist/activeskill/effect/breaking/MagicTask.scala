@@ -3,14 +3,16 @@ package com.github.unchama.seichiassist.activeskill.effect.breaking
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.AxisAlignedCuboid
-import com.github.unchama.seichiassist.task.AsyncEntityRemover
 import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.effect.BukkitResources
 import org.bukkit._
 import org.bukkit.block.Block
-import org.bukkit.entity.{Chicken, EntityType, Player}
+import org.bukkit.entity.{Chicken, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Wool
 
+import scala.concurrent.ExecutionContext
 import scala.util.Random
 
 class MagicTask(private val player: Player,
@@ -50,20 +52,29 @@ class MagicTask(private val player: Player,
 
   override def secondAction(): Unit = {
     //2回目のrun
-    if (SeichiAssist.managedEntities.isEmpty) {
-      val e = player.getWorld.spawnEntity(centerBreak, EntityType.CHICKEN).asInstanceOf[Chicken]
-      SeichiAssist.managedEntities += e
-      e.playEffect(EntityEffect.WITCH_MAGIC)
-      e.setInvulnerable(true)
-      new AsyncEntityRemover(e).runTaskLater(SeichiAssist.instance, 100)
-      player.getWorld.playSound(player.getLocation, Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f)
-    }
+
+    import cats.implicits._
+    import com.github.unchama.concurrent.syntax._
+
+    val sleepUntilChickenDisappears = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
+
+    val chickenEffect = SeichiAssist.instance.magicEffectEntityScope
+      .useTrackedForSome(BukkitResources.vanishingEntityResource(centerBreak, classOf[Chicken])) { e =>
+        IO {
+          e.playEffect(EntityEffect.WITCH_MAGIC)
+          e.setInvulnerable(true)
+        } *> sleepUntilChickenDisappears
+      }
+
+    val soundEffect = FocusedSoundEffect(Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f).run(player)
+
+    (soundEffect *> chickenEffect).unsafeRunSync()
 
     blocks.foreach { b =>
       b.setType(Material.AIR)
       b.getWorld.spawnParticle(Particle.NOTE, b.getLocation.add(0.5, 0.5, 0.5), 1)
-      SeichiAssist.managedBlocks -= b
     }
-    cancel()
+
+    SeichiAssist.managedBlocks --= blocks
   }
 }

@@ -30,16 +30,19 @@ val providedDependencies = Seq(
 ).map(_ % "provided")
 
 val testDependencies = Seq(
-  "org.scalatest" %% "scalatest" % "3.1.0"
+  "org.scalamock" %% "scalamock" % "4.4.0",
+  "org.scalatest" %% "scalatest" % "3.1.0",
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
   "org.flywaydb" % "flyway-core" % "5.2.4",
-  "org.typelevel" %% "cats-core" % "2.0.0",
-  "org.typelevel" %% "cats-effect" % "2.0.0",
+  "org.typelevel" %% "cats-core" % "2.1.0",
+  "org.typelevel" %% "cats-effect" % "2.1.0",
   "eu.timepit" %% "refined" % "0.9.10",
   "com.beachape" %% "enumeratum" % "1.5.13"
 )
+
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
 
 // localDependenciesはprovidedとして扱い、jarに埋め込まない
 assemblyExcludedJars in assembly := {
@@ -87,6 +90,7 @@ lazy val root = (project in file("."))
     scalacOptions ++= Seq(
       "-encoding", "utf8",
       "-unchecked",
+      "-language:higherKinds",
       "-deprecation",
       "-Ypatmat-exhaust-depth", "320",
     ),

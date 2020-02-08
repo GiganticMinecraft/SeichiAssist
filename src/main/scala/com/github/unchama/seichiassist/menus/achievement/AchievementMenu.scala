@@ -20,7 +20,7 @@ import org.bukkit.{Material, Sound}
 
 object AchievementMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")
@@ -92,7 +92,7 @@ object AchievementMenu extends Menu {
         .build(),
       action.LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        Kleisli.liftF(IO.shift(PluginExecutionContexts.sync)),
+        Kleisli.liftF(PluginExecutionContexts.syncShift.shift),
         delay { player =>
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         }

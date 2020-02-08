@@ -1,13 +1,14 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
-import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
+import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.skill.PassiveSkillMenu
@@ -32,7 +33,7 @@ import org.bukkit.{Material, Sound}
 object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._
   import eu.timepit.refined.auto._

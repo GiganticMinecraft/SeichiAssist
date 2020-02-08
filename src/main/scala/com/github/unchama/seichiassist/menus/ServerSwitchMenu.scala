@@ -49,7 +49,7 @@ object ServerSwitchMenu extends Menu {
   }
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
   /**
    * メニューのサイズとタイトルに関する情報

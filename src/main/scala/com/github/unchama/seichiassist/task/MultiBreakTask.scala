@@ -32,7 +32,7 @@ class MultiBreakTask(var player: Player,
       val breakBlocks = multibreaklist(count).toSet
 
       ActiveSkillEffect
-        .fromEffectNum(playerdata.activeskilldata.effectnum)
+        .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
         .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks, areaList(count), droploc)
 
       count += 1

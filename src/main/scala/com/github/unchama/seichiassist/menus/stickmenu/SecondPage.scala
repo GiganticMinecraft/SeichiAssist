@@ -24,7 +24,7 @@ import org.bukkit.{Material, Sound}
  */
 object SecondPage extends Menu {
 
-  import PluginExecutionContexts.sync
+  import PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._

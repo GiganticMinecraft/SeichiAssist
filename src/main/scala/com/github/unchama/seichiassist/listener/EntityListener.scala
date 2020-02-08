@@ -73,8 +73,7 @@ class EntityListener extends Listener {
 
     runArrowSkillofHitBlock(player, block, tool)
 
-    SeichiAssist.managedEntities.$minus$eq(proj)
-    proj.remove()
+    SeichiAssist.instance.managedEntityScope.release(proj).unsafeRunSync()
   }
 
   private def runArrowSkillofHitBlock(player: Player, hitBlock: Block, tool: ItemStack): Unit = {
@@ -164,7 +163,7 @@ class EntityListener extends Listener {
     SeichiAssist.managedBlocks ++= breakBlocks
 
     ActiveSkillEffect
-      .fromEffectNum(playerData.activeskilldata.effectnum)
+      .fromEffectNum(playerData.activeskilldata.effectnum, playerData.activeskilldata.skillnum)
       .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, area, centerOfBlock)
   }
 
