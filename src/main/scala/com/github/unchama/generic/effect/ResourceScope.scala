@@ -49,9 +49,14 @@ trait ResourceScope[F[_], ResourceHandler] {
   def getCancelToken(handler: ResourceHandler): F[Option[CancelToken[F]]]
 
   /**
+   * 確保されている資源の集合の計算
+   */
+  val trackedHandlers: F[Set[ResourceHandler]]
+
+  /**
    * 管理下にあるすべてのリソースを解放する計算
    */
-  val releaseAll: CancelToken[F]
+  lazy val releaseAll: CancelToken[F] = trackedHandlers.flatMap(_.toList.map(release).sequence) >> monadF.pure(())
 
   /**
    * 与えられたハンドラが管理下にあれば解放するような計算
@@ -64,7 +69,7 @@ trait ResourceScope[F[_], ResourceHandler] {
   /**
    * 与えられたハンドラがこのスコープの管理下にあるかどうかを判定する計算
    */
-  def isTracked(handler: ResourceHandler): F[Boolean] = getCancelToken(handler).map(_.nonEmpty)
+  def isTracked(handler: ResourceHandler): F[Boolean] = trackedHandlers.map(_.contains(handler))
 }
 
 object ResourceScope {
@@ -138,7 +143,10 @@ object ResourceScope {
     override def getCancelToken(handler: ResourceHandler): F[Option[CancelToken[F]]] =
       delay { usageCancellationMap.get(handler) }
 
-    override val releaseAll: CancelToken[F] =
+    override val trackedHandlers: F[Set[ResourceHandler]] =
+      delay { usageCancellationMap.keySet.toSet }
+
+    override lazy val releaseAll: CancelToken[F] =
       defer { usageCancellationMap.values.toList.sequence.as(()) }
   }
 
@@ -154,14 +162,11 @@ object ResourceScope {
     import cats.implicits._
 
     override def useTracked[R <: ResourceHandler, A](resource: Resource[OptionF, R])(use: R => OptionF[A]): OptionF[A] = {
-      /**
-       * Deferredプロミスを作成し、それを `promiseSlot` に格納する試行をし、
-       * 試行が成功して初めてリソースの確保を行ってから確保したリソースでプロミスを埋める。
-       *
-       * 解放時には、`promiseSlot` を空にしてから資源をすぐに解放する。
-       * これにより、資源が確保されてから解放される間は常にこのスコープの管理下に置かれる。
-       */
       for {
+        /**
+         * Deferredプロミスを作成し、それを `promiseSlot` に格納する試行をする。
+         * 試行が成功して初めてリソースの確保を行ってから、確保したリソースでプロミスを埋める。
+         */
         newPromise <- OptionT.liftF(Deferred.tryableUncancelable[F, (ResourceHandler, CancelToken[OptionF])])
 
         // `newPromise` の `promiseSlot` への格納が成功した場合のみSome(true)が結果となる
@@ -189,9 +194,6 @@ object ResourceScope {
       } yield a
     }
 
-    override def getCancelToken(handler: ResourceHandler): OptionF[Option[CancelToken[OptionF]]] =
-      OptionT.liftF(getCancelTokenUnlifted(handler))
-
     def getCancelTokenUnlifted(handler: ResourceHandler): F[Option[CancelToken[OptionF]]] =
     // 与えられたハンドラと同一のハンドラが管理下にある場合のみ解放するようなFを計算する
       {
@@ -209,7 +211,20 @@ object ResourceScope {
 
     def releaseSome(handler: ResourceHandler): CancelToken[F] = release(handler).value.as(())
 
-    override val releaseAll: CancelToken[OptionF] =
+    val trackedHandlersUnlifted: F[Set[ResourceHandler]] = for {
+      promiseOption <- promiseSlot.get
+      tracked <- promiseOption match {
+        case Some(promise) => promise.get.map(p => Set(p._1))
+        case None => Monad[F].pure(Set[ResourceHandler]())
+      }
+    } yield tracked
+
+    def useTrackedForSome[R <: ResourceHandler, A](resource: Resource[F, R])(f: R => F[A]): F[Option[A]] =
+      useTracked(resource.mapK(OptionT.liftK[F]))(f.andThen(OptionT.liftF(_))).value
+
+    override val trackedHandlers: OptionT[F, Set[ResourceHandler]] = OptionT.liftF(trackedHandlersUnlifted)
+
+    override lazy val releaseAll: CancelToken[OptionF] =
       // 解放するリソースがあれば解放し、なければ何もしないようなFを計算する
       for {
         internalPromise <- OptionT(promiseSlot.get)
@@ -220,7 +235,7 @@ object ResourceScope {
         _ <- release
       } yield ()
 
-    def useTrackedForSome[R <: ResourceHandler, A](resource: Resource[F, R])(f: R => F[A]): F[Option[A]] =
-      useTracked(resource.mapK(OptionT.liftK[F]))(f.andThen(OptionT.liftF(_))).value
+    override def getCancelToken(handler: ResourceHandler): OptionF[Option[CancelToken[OptionF]]] =
+      OptionT.liftF(getCancelTokenUnlifted(handler))
   }
 }

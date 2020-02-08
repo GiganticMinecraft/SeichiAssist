@@ -32,13 +32,21 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
 
       useTracked(firstResourceScope, NumberedObject(0)) { _ =>
-        IO {
-          firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe true
-
-          firstResourceScope.isTracked(NumberedObject(1)).unsafeRunSync() mustBe false
-
-          secondResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
-        }
+        for {
+          _ <- IO { firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0)) }
+          _ <- IO { secondResourceScope.trackedHandlers.unsafeRunSync() mustBe Set() }
+          _ <- useTracked(firstResourceScope, NumberedObject(1)) { _ =>
+            for {
+              _ <- IO {
+                firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0), NumberedObject(1))
+              }
+              _ <- IO {
+                secondResourceScope.trackedHandlers.unsafeRunSync() mustBe Set()
+              }
+            } yield ()
+          }
+          _ <- IO { firstResourceScope.trackedHandlers.unsafeRunSync() mustBe Set(NumberedObject(0)) }
+        } yield ()
       }.unsafeRunSync()
 
       firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
