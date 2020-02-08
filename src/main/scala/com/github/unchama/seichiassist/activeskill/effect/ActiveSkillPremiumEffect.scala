@@ -90,7 +90,7 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
   /**
    * エフェクト選択時の遠距離エフェクト
    */
-  val arrowEffect: TargetedEffect[Player] =
+  lazy val arrowEffect: TargetedEffect[Player] =
     this match {
       case ActiveSkillPremiumEffect.MAGIC => ArrowEffects.singleArrowMagicEffect
     }
