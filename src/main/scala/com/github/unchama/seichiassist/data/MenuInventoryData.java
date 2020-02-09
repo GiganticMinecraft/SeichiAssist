@@ -91,7 +91,7 @@ public final class MenuInventoryData {
      */
     private static final Function0<Boolean> FALSE = () -> false;
 
-    private static final Consumer<SkullMeta> DIG100 = (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+    private static final Consumer<ItemMeta> DIG100 = (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 
 
     private static final ItemStack toMoveNicknameMenu = build(
@@ -1313,7 +1313,7 @@ public final class MenuInventoryData {
         return build(mat, name, singleLore, nullConsumer());
     }
 
-    private static <T extends ItemMeta> ItemStack build(final Material mat, final String name, final String singleLineLore, final Consumer<T> modify) {
+    private static <T extends ItemMeta> ItemStack build(final Material mat, final String name, final String singleLineLore, final Consumer<? super T> modify) {
         return build(mat, name, Collections.singletonList(singleLineLore), modify);
     }
 
@@ -1321,7 +1321,7 @@ public final class MenuInventoryData {
         return build(mat, name, lore, nullConsumer());
     }
 
-    private static <T extends ItemMeta> ItemStack build(final Material mat, final String name, final List<String> lore, final Consumer<T> modify) {
+    private static <T extends ItemMeta> ItemStack build(final Material mat, final String name, final List<String> lore, final Consumer<? super T> modify) {
         final ItemStack temp = new ItemStack(mat);
         // 自己責任。
         @SuppressWarnings("unchecked")
@@ -1347,7 +1347,7 @@ public final class MenuInventoryData {
         return buildPlayerSkull(name, lore, owner, nullConsumer());
     }
 
-    private static ItemStack buildPlayerSkull(final String name, final List<String> lore, final String owner, final Consumer<SkullMeta> modify) {
+    private static ItemStack buildPlayerSkull(final String name, final List<String> lore, final String owner, final Consumer<? super SkullMeta> modify) {
         final ItemStack ret = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
         final SkullMeta sm = ItemMetaFactory.SKULL.getValue();
         if (name != null) {
