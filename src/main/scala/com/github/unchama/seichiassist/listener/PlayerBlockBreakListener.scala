@@ -100,6 +100,8 @@ class PlayerBlockBreakListener extends Listener {
       return
     }
 
+    event.setCancelled(true)
+
     playerdata.activeskilldata.skilltype match {
       case ActiveSkill.MULTI.typenum => runMultiSkill(player, block, tool)
       case ActiveSkill.BREAK.typenum => runBreakSkill(player, block, tool)
