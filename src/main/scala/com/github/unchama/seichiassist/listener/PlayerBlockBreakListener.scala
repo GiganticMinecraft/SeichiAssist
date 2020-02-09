@@ -335,11 +335,15 @@ class PlayerBlockBreakListener extends Listener {
       // 破壊するブロックがプレーヤーが最初に破壊を試みたブロックだけの場合
       BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
     } else {
+      val blockChunk = BukkitResources.vanishingBlockSetResource(breakBlocks.toSet)
+
       com.github.unchama.seichiassist.unsafe.runIOAsync(
-        "破壊エフェクトを再生する",
-        ActiveSkillEffect
-          .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
-          .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, breakArea, centerOfBlock)
+        "単爆破壊エフェクトを再生する",
+        SeichiAssist.instance.managedBlockChunkScope.useTracked(blockChunk) { blocks =>
+          ActiveSkillEffect
+            .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
+            .runBreakEffect(player, playerdata.activeskilldata, tool, blocks, breakArea, centerOfBlock)
+        }
       )
 
       // 経験値を減らす
