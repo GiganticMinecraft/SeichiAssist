@@ -103,7 +103,6 @@ object ArrowEffects {
             projectile.modify { p => import p._
               setShooter(player)
               setGravity(spawnConfiguration.gravity)
-              setMetadata("ArrowSkill", FixedMetadataValues.TRUE)
               setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))
             }
           }
@@ -114,7 +113,7 @@ object ArrowEffects {
            * 飛翔体をスコープ内でのリソースとしているのは、
            * サーバーが停止したときにも開放するためである。
            */
-          _ <- SeichiAssist.instance.managedEntityScope
+          _ <- SeichiAssist.instance.arrowSkillProjectileScope
             .useTracked(BukkitResources.vanishingEntityResource(spawnLocation, runtimeClass)) { projectile =>
               modifyProjectile(projectile) *> waitForCollision
             }

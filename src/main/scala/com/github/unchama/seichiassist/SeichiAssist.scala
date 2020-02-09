@@ -38,7 +38,7 @@ class SeichiAssist extends JavaPlugin() {
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
-  val managedEntityScope: ResourceScope[IO, Entity] = {
+  val arrowSkillProjectileScope: ResourceScope[IO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
@@ -223,7 +223,7 @@ class SeichiAssist extends JavaPlugin() {
     managedBlockChunkScope.releaseAll.unsafeRunSync()
 
     // 管理下にあるエンティティを開放する
-    managedEntityScope.releaseAll.unsafeRunSync()
+    arrowSkillProjectileScope.releaseAll.unsafeRunSync()
     magicEffectEntityScope.releaseAll.value.unsafeRunSync()
 
     //sqlコネクションチェック

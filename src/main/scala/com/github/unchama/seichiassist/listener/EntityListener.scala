@@ -18,19 +18,23 @@ class EntityListener extends Listener {
   private val playermap = SeichiAssist.playermap
 
   @EventHandler def onPlayerActiveSkillEvent(event: ProjectileHitEvent): Unit = { //矢を取得する
-    val e = event.getEntity
-    if (!e.hasMetadata("ArrowSkill")) return
-    val proj = e
-    val projsource = proj.getShooter
-    if (!projsource.isInstanceOf[Player]) return
-    val player = projsource.asInstanceOf[Player]
+    val projectile = event.getEntity
+
+    if (!SeichiAssist.instance.arrowSkillProjectileScope.isTracked(projectile).unsafeRunSync()) return
+
+    SeichiAssist.instance.arrowSkillProjectileScope.release(projectile).unsafeRunSync()
+
+    val player = projectile.getShooter match {
+      case p: Player => p
+      case _ => return
+    }
 
     //もしサバイバルでなければ処理を終了
     //もしフライ中なら終了
     if ((player.getGameMode ne GameMode.SURVIVAL) || player.isFlying) return
 
     //壊されるブロックを取得
-    val block = player.getWorld.getBlockAt(proj.getLocation.add(proj.getVelocity.normalize))
+    val block = player.getWorld.getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize))
 
     //他人の保護がかかっている場合は処理を終了
     if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) return
@@ -72,10 +76,6 @@ class EntityListener extends Listener {
     }
 
     runArrowSkillofHitBlock(player, block, tool)
-
-    SeichiAssist.instance.managedEntityScope.release(proj).unsafeRunSync()
-
-    // TODO setCancelled
   }
 
   private def runArrowSkillofHitBlock(player: Player, hitBlock: Block, tool: ItemStack): Unit = {
@@ -171,18 +171,30 @@ class EntityListener extends Listener {
   }
 
   @EventHandler def onEntityExplodeEvent(event: EntityExplodeEvent) = {
-    val e = event.getEntity
-    if (e.isInstanceOf[Projectile]) if (e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")) event.setCancelled(true)
+    event.getEntity match {
+      case e: Projectile =>
+        if (SeichiAssist.instance.arrowSkillProjectileScope.isTracked(e).unsafeRunSync())
+          event.setCancelled(true)
+      case _ =>
+    }
   }
 
   @EventHandler def onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) = {
-    val e = event.getDamager
-    if (e.isInstanceOf[Projectile]) if (e.hasMetadata("ArrowSkill") || e.hasMetadata("Effect")) event.setCancelled(true)
+    event.getDamager match {
+      case e: Projectile =>
+        if (SeichiAssist.instance.arrowSkillProjectileScope.isTracked(e).unsafeRunSync())
+          event.setCancelled(true)
+      case _ =>
+    }
   }
 
   @EventHandler def onPotionSplashEvent(event: PotionSplashEvent) = {
-    val thrown = event.getPotion
-    if (thrown != null) if (thrown.hasMetadata("ArrowSkill") || thrown.hasMetadata("Effect")) event.setCancelled(true)
+    event.getPotion match {
+      case e if e != null =>
+        if (SeichiAssist.instance.arrowSkillProjectileScope.isTracked(e).unsafeRunSync())
+          event.setCancelled(true)
+      case _ =>
+    }
   }
 
   @EventHandler def onDeath(event: EntityDeathEvent): Unit = {
