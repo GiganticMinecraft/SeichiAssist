@@ -36,9 +36,10 @@ object ActiveSkillEffect {
       NoEffect
     } else if (effectNum <= 100) {
       //通常エフェクトが指定されているときの処理(100以下の番号に割り振る)
-      val e = ActiveSkillNormalEffect.values(effectNum - 1)
-
-      if (e == Blizzard && skillNum < 3) NoEffect else Blizzard
+      ActiveSkillNormalEffect.values(effectNum - 1) match {
+        case Blizzard if skillNum < 3 => NoEffect
+        case e => e
+      }
     } else {
       //プレミアムエフェクトが指定されているときの処理(100超の番号に割り振る)
       ActiveSkillPremiumEffect.values(effectNum - 100 - 1)
