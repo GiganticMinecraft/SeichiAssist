@@ -219,10 +219,12 @@ class SeichiAssist extends JavaPlugin() {
 
     cancelRepeatedJobs()
 
-    // 管理下にあるブロックを開放する
-    managedBlockChunkScope.releaseAll.unsafeRunSync()
+    // 管理下にある資源を開放する
 
-    // 管理下にあるエンティティを開放する
+    // ファイナライザはunsafeRunSyncによってこのスレッドで同期的に実行されるため
+    // onDisable内で呼び出して問題はない。
+    // https://scastie.scala-lang.org/NqT4BFw0TiyfjycWvzRIuQ
+    managedBlockChunkScope.releaseAll.unsafeRunSync()
     arrowSkillProjectileScope.releaseAll.unsafeRunSync()
     magicEffectEntityScope.releaseAll.value.unsafeRunSync()
 
