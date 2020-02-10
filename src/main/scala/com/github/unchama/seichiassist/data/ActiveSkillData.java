@@ -100,7 +100,7 @@ public class ActiveSkillData {
         // 11..20 -> 2pt/each
         // ...
         // 10n-9..10n -> npt/each
-        int point = IntStream.rangeClosed(1, level).map(i -> Math.ceil(i / 10)).sum();
+        int point = IntStream.rangeClosed(1, level).map(i -> (int) Math.ceil(i / 10)).sum();
         //レベルに応じたスキルポイント量を取得
         if (SeichiAssist.DEBUG()) {
             player.sendMessage("あなたのレベルでの獲得アクティブスキルポイント：" + point);
