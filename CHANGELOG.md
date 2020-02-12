@@ -1,15 +1,43 @@
 **参照:** [masterへのマージ履歴](https://github.com/GiganticMinecraft/SeichiAssist/pulls?utf8=✓&q=is%3Apr+sort%3Aupdated-desc+is%3Aclosed+base%3Amaster)
-## \[Unreleased\]
-- KotlinファイルをScalaにマイグレーション
+## \[Head\]
+
+## \[1.2.8\] - 2020-01-29 \([#422](https://github.com/GiganticMinecraft/SeichiAssist/pull/422)\)
+### 追加 / Added
+- メニューに `/map` コマンドのボタンを追加 \([8b7517f](https://github.com/GiganticMinecraft/SeichiAssist/commit/8b7517ffbf5b6cfbaaeb8ffd98125ae027cfce3b)\)
+
+### 修正 / Fixed
+- 石のボタンと鉄のトラップドアの個数が共有されていた動作を修正\([0f3a228](https://github.com/GiganticMinecraft/SeichiAssist/commit/0f3a2281caf877915df33a1d8c027c510516e936)\)
+
+### 内部的変更 / Refactor
+- 忌々しいMenuInventoryDataの整理 \([#403](https://github.com/GiganticMinecraft/SeichiAssist/pull/403)\)
+
+## \[1.2.7\] - 2020-01-18 \([#408](https://github.com/GiganticMinecraft/SeichiAssist/pull/410)\)
+### 修正 / Fixed
+- 複数回破壊スキルのクールダウンの計算方法を修正
+
+## \[1.2.6\] - 2020-01-17 \([#408](https://github.com/GiganticMinecraft/SeichiAssist/pull/408)\)
+### 追加 / Added
+- `/gacha set`
+
+### 修正 / Fixed
+- ビルドスクリプト
+
+## \[1.2.5\] - 2020-01-16 \([#405](https://github.com/GiganticMinecraft/SeichiAssist/pull/405)\)
+### 追加 / Added
+- いくつかの実績
+
+### 改善 / Improve
+- ビルドプロセス
+- スキルの非同期化
 ## ~~\[1.2.4\] - 2019-11-30 \([#362](https://github.com/GiganticMinecraft/SeichiAssist/pull/362)\)~~
 **\([#364](https://github.com/GiganticMinecraft/SeichiAssist/pull/364)で取り消し済み\)**
-- ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
 ## \[1.2.3\] - 2019-11-30 \([#354](https://github.com/GiganticMinecraft/SeichiAssist/pull/354)\)
 ### 修正 / Fixed
 - 実績システムほぼ書き直し (#327)
 - 内部のパッケージングを改善 (#338 等)
 - 各種ブロック破壊スキルのロジックを大幅に最適化 (#347)
 - #350
+
 ## \[1.2.2\] - 2019-11-06 \([#330](https://github.com/GiganticMinecraft/SeichiAssist/pull/330)\)
 - ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
 ## \[1.2.1\] - 2019-11-05 \([#328](https://github.com/GiganticMinecraft/SeichiAssist/pull/328)\)
@@ -19,13 +47,17 @@
 ## \[1.1.5\] - 2019-09-22 \([#295](https://github.com/GiganticMinecraft/SeichiAssist/pull/295)\)
 ### 修正 / Fixed
 - スキルポイントのバグ修正
+
+### 内部的変更 / Refactor
+- Kotlin+JavaをScala+Javaに移行 \([#285](https://github.com/GiganticMinecraft/SeichiAssist/pull/285)\)
+
 - ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
 ## \[1.1.4\] - 2019-09-19 \([#284](https://github.com/GiganticMinecraft/SeichiAssist/pull/284)\)
 - ***TODO: [執筆者募集中～](https://github.com/GiganticMinecraft/SeichiAssist/edit/develop/CHANGELOG.md)***
 ## \[1.1.2\] - 2019-09-16 \([#255](https://github.com/GiganticMinecraft/SeichiAssist/pull/255)\)
 ### 修正 / Fixed
 - メビウスの説明文を修正
-- ガチャ品の引き出しをMineStackの引き出しをヒストリーに残さないようにする
+- ガチャ品の引き出しをMineStackの引き出しのヒストリーに残さないようにする
 - SeichiAssistのログイン時のゲーム内ロードをゼロタイムにする
 - MineStack内の`水色`を`青緑色`に置換
 - 実績#3011の定義を修正
@@ -90,11 +122,11 @@
 
 - MebiusTaskを遅延して行わせる
 
-### 機能追加 / Added
+### 追加 / Added
 - 建築鯖への移動ボタンをサーバー一覧に加える
 - 整地スキルの対応ブロックを追加
 
-### 機能削除 / Removed
+### 削除 / Removed
 - levelコマンドを削除
 
 ## \[1.1.1\] - 2019-05-20 \([#143](https://github.com/GiganticMinecraft/SeichiAssist/pull/143)\)
