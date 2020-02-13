@@ -29,16 +29,3 @@ trait Slot {
    */
   def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): TargetedEffect[Player]
 }
-
-object Slot {
-  /**
-   * クリックしたときにイベントをキャンセルすることもせず
-   * 何も追加の作用を発生させない, [itemStack]が入っただけの[Slot]を作成する.
-   */
-  def plainSlotWith(itemStack: ItemStack): Slot = new Slot {
-    override val itemStack: ItemStack = itemStack
-
-    override def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): emptyEffect.type =
-      emptyEffect
-  }
-}
