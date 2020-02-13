@@ -14,7 +14,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.{Effect, Location, Material, Sound}
+import org.bukkit.{Effect, Location, Material, Particle, Sound}
 
 import scala.util.Random
 
@@ -73,7 +73,8 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
           _ <- IO {
             breakBlocks
               .map(_.getLocation)
-              .foreach(location => player.getWorld.playEffect(location, Effect.SNOWBALL_BREAK, 1))
+              .foreach(location =>
+                player.getWorld.spawnParticle(Particle.SNOWBALL, location, 1))
 
             breakBlocks.foreach { b =>
               b.setType(Material.AIR)
@@ -99,11 +100,11 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
           _ <- syncShift.shift
           _ <- IO {
             breakArea.gridPoints(2).foreach { xyzTuple =>
-              val effectLoc = XYZTuple.of(standard) + xyzTuple
+              val effectCoordinate = XYZTuple.of(standard) + xyzTuple
+              val effectLocation = effectCoordinate.toLocation(world)
 
-              if (PositionSearching.containsOneOfPositionsAround(effectLoc, 1, blockPositions)) {
-                // TODO: Effect.EXPLOSION_HUGE => Particle.EXPLOSION_HUGE
-                world.playEffect(effectLoc.toLocation(world), Effect.EXPLOSION_HUGE, 1)
+              if (PositionSearching.containsOneOfPositionsAround(effectCoordinate, 1, blockPositions)) {
+                world.spawnParticle(Particle.EXPLOSION_HUGE, effectLocation, 1)
               }
             }
           }
