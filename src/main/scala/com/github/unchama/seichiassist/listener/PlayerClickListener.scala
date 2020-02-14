@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
 import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.data.GachaPrize
@@ -184,8 +184,14 @@ class PlayerClickListener extends Listener {
           Util.addItem(player, givenItem)
           ""
         } else {
-          Util.dropItem(player, givenItem)
-          s"${AQUA}プレゼントがドロップしました。"
+          //アイテムがスタックできなかった場合、及び整地レベルがマインスタックの開放レベルに足りていなかったとき
+          if(!BreakUtil.addItemToMineStack(player, present.itemStack) || SeichiAssist.playermap(player.getUniqueId).level < SeichiAssist.seichiAssistConfig.getMineStacklevel(1)){
+            Util.dropItem(player, givenItem)
+            s"${AQUA}プレゼントがドロップしました。"
+          } else {
+            BreakUtil.addItemToMineStack(player, present.itemStack)
+            s"${AQUA}プレゼントをマインスタックに収納しました。"
+          }
         }
 
       //確率に応じてメッセージを送信
