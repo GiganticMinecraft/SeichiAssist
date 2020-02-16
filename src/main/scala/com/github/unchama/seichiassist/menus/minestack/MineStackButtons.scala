@@ -104,23 +104,21 @@ private[minestack] case class MineStackButtons(player: Player) {
   })
 
   private def withDrawOneStackEffect(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncIOShift): TargetedEffect[Player] = {
+    val maxStackSize = mineStackObj.itemStack.getMaxStackSize.toLong
+
     Kleisli(player => Execution.onServerMainThread {
       for {
         playerData <- IO { SeichiAssist.playermap(player.getUniqueId) }
         currentAmount <- IO { playerData.minestack.getStackedAmountOf(mineStackObj) }
-        grantAmount = Math.min(mineStackObj.itemStack.getMaxStackSize.toLong, currentAmount).toInt
+        grantAmount = Math.min(maxStackSize, currentAmount).toInt
 
-        soundEffectPitch =
-          if (grantAmount == mineStackObj.itemStack.getMaxStackSize.toLong)
-            1.0f
-          else
-            0.5f
-        grantItemStack = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
+        soundEffectPitch = if (grantAmount == maxStackSize) 1.0f else 0.5f
+        itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
         _ <-
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
-            Util.grantItemStacksEffect(grantItemStack),
+            Util.grantItemStacksEffect(itemStackToGrant),
             targetedeffect.UnfocusedEffect {
               playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
             }
