@@ -26,7 +26,7 @@ services:
         cp -f /conf/config.yml /spigot/plugins/SeichiAssist/config.yml &&
         sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
         sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
-        java -jar /spigot/*.jar nogui"
+        java -jar /spigot/spigot*.jar nogui"
   spigotb:
     build: ./docker/spigot
     image: spigot
