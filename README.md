@@ -34,6 +34,7 @@ sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行す
 ## デバッグ用docker環境
 
 docker および docker-compose が実行可能な環境では、`./prepare-docker.sh`を実行するとデバッグ用のBungeecord+Spigot環境を構築可能です。
+spigot環境の起動には、 Minecraft EULA に同意する必要があります。同意する場合、`./docker/spigot/eula.txt`を参照し、 `eula=false` を `eula=true`に書き換えてください。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
