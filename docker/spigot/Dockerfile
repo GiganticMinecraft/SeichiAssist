@@ -12,6 +12,7 @@ COPY eula.txt /spigot/eula.txt
 COPY server.properties /spigot/server.properties
 COPY bukkit.yml /spigot/bukkit.yml
 COPY spigot.yml /spigot/spigot.yml
+COPY permissions.yml /spigot/permissions.yml
 
 WORKDIR /spigot
 CMD java -jar /spigot/spigot*.jar nogui
