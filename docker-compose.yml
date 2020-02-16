@@ -11,7 +11,7 @@ services:
     networks:
       - seichi
     ports:
-      - "25565"
+      - "25566:25565"
     depends_on:
       - db
     volumes:
@@ -33,7 +33,7 @@ services:
     networks:
       - seichi
     ports:
-      - "25565"
+      - "25567:25565"
     depends_on:
       - db
     volumes:
