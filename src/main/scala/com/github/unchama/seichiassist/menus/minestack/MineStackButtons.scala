@@ -118,10 +118,12 @@ private[minestack] case class MineStackButtons(player: Player) {
         _ <-
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
-            Util.grantItemStacksEffect(itemStackToGrant),
             targetedeffect.UnfocusedEffect {
               playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
-            }
+            },
+            // アイテム付与はアトミックな操作ではない(コンテキストシフトを含む)ので、
+            // subtractが終わってから行わなければならない
+            Util.grantItemStacksEffect(itemStackToGrant)
           ).run(player)
       } yield ()
     })
