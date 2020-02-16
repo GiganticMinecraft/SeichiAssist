@@ -11,6 +11,8 @@ cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
 ## dockerイメージのビルド（初回は数十分かかります）
 docker-compose build -m 2g
 
+docker-compose down
+
 ## デバッグに必要なdockerコンテナを起動
 ## (起動後はCtrl+Cで停止できます)
 docker-compose up
