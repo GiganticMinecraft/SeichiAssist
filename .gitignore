@@ -17,6 +17,6 @@
 deployLocal.sh
 
 # Docker
-docker/spigot/plugins/
+docker/spigot/serverfiles/eula.txt
 
 .env
