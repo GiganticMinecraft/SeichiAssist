@@ -4,6 +4,11 @@ networks:
   seichi:
     external: false
 
+volumes:
+  spigot_a:
+  spigot_b:
+  db-data:
+
 services:
   spigota:
     build:
@@ -78,5 +83,7 @@ services:
     ]
     networks:
       - seichi
+    volumes:
+      - db-data:/var/lib/mysql
     ports:
       - "3306:3306"
