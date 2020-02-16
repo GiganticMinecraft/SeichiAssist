@@ -35,6 +35,7 @@ val testDependencies = Seq(
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
+  "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1",
   "org.flywaydb" % "flyway-core" % "5.2.4",
   "org.typelevel" %% "cats-core" % "2.1.0",
   "org.typelevel" %% "cats-effect" % "2.1.0",

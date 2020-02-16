@@ -6,7 +6,7 @@ import cats.effect.concurrent.{Deferred, Ref, TryableDeferred}
 import cats.effect.{CancelToken, Concurrent, Resource}
 import com.github.unchama.generic.OptionTExtra
 
-import scala.collection.concurrent.TrieMap
+import scala.collection.immutable
 
 /**
  * Spigotプラグインのようなユースケースでは、
@@ -96,18 +96,9 @@ object ResourceScope {
 
   /**
    * `ResourceScope` の標準的な実装。
-   *
-   * `TrieMap` を使用しているものの、
-   * 並行に同一の資源を多数 `useTracked` を通して確保しようとした場合には
-   * 動作が保証されない。
-   *
-   * 具体的には、`useTracked` は `release` と `register` の間で
-   * Mapの要素が(並行に)変更されたかどうかを検査していない。
-   * もしここで同タイミングでの確保が行われた場合資源が漏洩する可能性がある。
    */
   class TrieMapResourceScope[F[_], ResourceHandler] private[ResourceScope] (implicit val monadF: Concurrent[F])
     extends ResourceScope[F, ResourceHandler] {
-    import scala.collection.mutable
 
     /**
      * この`Map`の終域にある`CancelToken[F]`は、
@@ -117,7 +108,8 @@ object ResourceScope {
      *
      * ここで、管理下から外すというのは、単にこの`Map`からハンドラを取り除く処理である。
      */
-    private val usageCancellationMap: mutable.Map[ResourceHandler, CancelToken[F]] = TrieMap()
+    private val handlerToCancelTokens: Ref[F, immutable.MultiDict[ResourceHandler, CancelToken[F]]] =
+      Ref.unsafe(immutable.MultiDict.empty[ResourceHandler, CancelToken[F]])
 
     import cats.implicits._
     import monadF._
@@ -127,27 +119,30 @@ object ResourceScope {
         allocated <- resource.allocated
         (handler, releaseResource) = allocated
 
-        // 二重確保を避けるため確保されていたリソースがあれば解放してから確保する
-        _ <- release(handler)
-
         // use中に解放命令が入った時、useをキャンセルしforgetUsage >> releaseResourceを行うように
         a <- ConcurrentExtra.withSelfCancellation[F, A] { cancelToken =>
-          val registerHandler = delay { usageCancellationMap += (handler -> cancelToken) }
-          val forgetUsage = delay { usageCancellationMap.remove(handler) }
+          val registerHandler = handlerToCancelTokens.update(_.add(handler, cancelToken))
+          val forgetUsage = handlerToCancelTokens.update(_.remove(handler, cancelToken))
 
           guarantee(registerHandler >> use(handler))(forgetUsage >> releaseResource)
         }
       } yield a
     }
 
+    private def sequenceCancelToken(tokens: Iterable[CancelToken[F]]): CancelToken[F] = {
+      tokens.toList.sequence.as(())
+    }
+
     override def getCancelToken(handler: ResourceHandler): F[Option[CancelToken[F]]] =
-      delay { usageCancellationMap.get(handler) }
+      handlerToCancelTokens.get.map(dict =>
+        dict.sets.get(handler).map(sequenceCancelToken)
+      )
 
     override val trackedHandlers: F[Set[ResourceHandler]] =
-      delay { usageCancellationMap.keySet.toSet }
+      handlerToCancelTokens.get.map(_.keySet.toSet)
 
     override lazy val releaseAll: CancelToken[F] =
-      defer { usageCancellationMap.values.toList.sequence.as(()) }
+      handlerToCancelTokens.get.flatMap(dict => sequenceCancelToken(dict.values))
   }
 
   class SingleResourceScope[F[_]: Concurrent, ResourceHandler] private[ResourceScope]() extends ResourceScope[OptionT[F, *], ResourceHandler] {
