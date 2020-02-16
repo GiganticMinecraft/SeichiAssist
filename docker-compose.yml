@@ -1,18 +1,90 @@
 version: '3.7'
+
+networks:
+  seichi:
+    external: false
+
 services:
-  spigot_a:
+  spigota:
     build: ./docker/spigot
     image: spigot
-  spigot_b:
+    networks:
+      - seichi
+    ports:
+      - "25565"
+    depends_on:
+      - db
+    volumes:
+      - ./localDependencies/:/localDependencies/:ro
+      - ./target/build/:/build/:ro
+      - ./src/main/resources/config.yml:/conf/config.yml:ro
+    command: >
+      bash -c "mkdir -p /spigot/plugins/ &&
+        cp -f /localDependencies/*.jar /spigot/plugins/ &&
+        cp -f /build/*.jar /spigot/plugins/ &&
+        mkdir -p /spigot/plugins/SeichiAssist/ &&
+        cp -f /conf/config.yml /spigot/plugins/SeichiAssist/config.yml &&
+        sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
+        sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
+        java -jar /spigot/*.jar nogui"
+  spigotb:
     build: ./docker/spigot
     image: spigot
+    networks:
+      - seichi
+    ports:
+      - "25565"
+    depends_on:
+      - db
+    volumes:
+      - ./localDependencies/:/localDependencies/:ro
+      - ./target/build/:/build/:ro
+      - ./src/main/resources/config.yml:/conf/config.yml:ro
+    command: >
+      bash -c "mkdir -p /spigot/plugins/ &&
+        cp -f /localDependencies/*.jar /spigot/plugins/ &&
+        cp -f /build/*.jar /spigot/plugins/ &&
+        mkdir -p /spigot/plugins/SeichiAssist/ &&
+        cp -f /conf/config.yml /spigot/plugins/SeichiAssist/config.yml &&
+        sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
+        sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
+        java -jar /spigot/spigot*.jar nogui"
   bungeecord:
     build: ./docker/bungeecord
     ports:
-      - 25565:25565
+      - 25565:25577
+    networks:
+      - seichi
+    depends_on:
+      - spigota
+      - spigotb
 
-volumes:
-  elasticsearch-data:
-    driver: local
 
-
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.8.5
+    environment:
+      - TZ=Asia/Tokyo
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=unchamaisgod
+    networks:
+      - seichi
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+  db:
+    image: mariadb:10.1.38-bionic
+    environment:
+      - TZ=Asia/Tokyo
+      - MYSQL_ROOT_PASSWORD=unchamaisgod
+    command: [
+      '--wait_timeout=86400',
+      '--character-set-server=utf8',
+    ]
+    networks:
+      - seichi
+    ports:
+      - "3306:3306"
