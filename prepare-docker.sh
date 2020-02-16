@@ -1,5 +1,7 @@
 #!/bin/sh
 
+rm -r target/build
+
 ## ソースコードからSeichiAssist.jarをビルド
 sbt assembly
 

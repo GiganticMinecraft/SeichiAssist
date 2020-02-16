@@ -1,3 +1,5 @@
+call rd /s /q target\build
+
 call sbt assembly
 
 REM https://stackoverflow.com/a/23812179
