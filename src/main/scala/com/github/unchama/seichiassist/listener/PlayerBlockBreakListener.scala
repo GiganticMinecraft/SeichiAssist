@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.listener
 
+import cats.effect.{Fiber, IO}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
-import com.github.unchama.seichiassist.task.{CoolDownTask, MultiBreakTask}
+import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.util.effect.BukkitResources
 import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
@@ -58,7 +60,7 @@ class PlayerBlockBreakListener extends Listener {
     if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable) return
 
     //スキルで破壊されるブロックの時処理を終了
-    if (SeichiAssist.managedBlocks.contains(block)) {
+    if (SeichiAssist.instance.managedBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
       event.setCancelled(true)
       if (SeichiAssist.DEBUG) player.sendMessage("スキルで使用中のブロックです。")
       return
@@ -98,6 +100,8 @@ class PlayerBlockBreakListener extends Listener {
       return
     }
 
+    event.setCancelled(true)
+
     playerdata.activeskilldata.skilltype match {
       case ActiveSkill.MULTI.typenum => runMultiSkill(player, block, tool)
       case ActiveSkill.BREAK.typenum => runBreakSkill(player, block, tool)
@@ -120,9 +124,9 @@ class PlayerBlockBreakListener extends Listener {
     val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
 
     //エフェクト用に壊されるブロック全てのリストデータ
-    val multiBreakList = new ArrayBuffer[List[Block]]
+    val multiBreakList = new ArrayBuffer[Set[Block]]
     //壊される溶岩の全てのリストデータ
-    val multiLavaList = new ArrayBuffer[List[Block]]
+    val multiLavaList = new ArrayBuffer[Set[Block]]
 
     // 繰り返す回数
     val breakNum = skillArea.breakNum
@@ -201,8 +205,8 @@ class PlayerBlockBreakListener extends Listener {
         }
 
         //選択されたブロックを破壊せずに保存する処理
-        multiBreakList.addOne(breakBlocks)
-        multiLavaList.addOne(lavaBlocks)
+        multiBreakList.addOne(breakBlocks.toSet)
+        multiLavaList.addOne(lavaBlocks.toSet)
       }
     }
 
@@ -212,16 +216,34 @@ class PlayerBlockBreakListener extends Listener {
     } else {
       // スキルの処理
 
-      val allBreakTargets = multiBreakList.flatten
+      val skill = ActiveSkillEffect.fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
 
-      SeichiAssist.managedBlocks ++= allBreakTargets
+      import cats.implicits._
+      import com.github.unchama.concurrent.syntax._
+      import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
 
-      new MultiBreakTask(
-        player, block, tool,
-        multiBreakList.map(_.toList).toList,
-        multiLavaList.map(_.toList).toList,
-        breakAreaList)
-        .runTaskTimer(plugin, 0, 4)
+      val effectPrograms = for {
+        ((blocks, lavas), chunkIndex) <- multiBreakList.zip(multiLavaList).zipWithIndex
+        blockChunk = BukkitResources.vanishingBlockSetResource(blocks)
+      } yield {
+        SeichiAssist.instance.managedBlockChunkScope.useTracked(blockChunk) { blocks =>
+          for {
+            _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
+            _ <- syncShift.shift
+            _ <- IO { lavas.foreach(_.setType(Material.AIR)) }
+            _ <-
+              skill.runBreakEffect(
+                player, playerdata.activeskilldata, tool, blocks,
+                breakAreaList(chunkIndex), block.getLocation.add(0.5, 0.5, 0.5)
+              )
+          } yield ()
+        }.start(asyncShift)
+      }
+
+      com.github.unchama.seichiassist.unsafe.runIOAsync(
+        "複数破壊エフェクトを実行する",
+        effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
+      )
 
       //経験値を減らす
       mana.decrease(manaConsumption, player, playerdata.level)
@@ -230,7 +252,7 @@ class PlayerBlockBreakListener extends Listener {
       if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
 
       //壊したブロック数に応じてクールダウンを発生させる
-      val breakBlockNum = allBreakTargets.size
+      val breakBlockNum = multiBreakList.map(_.size).sum
       val coolDownTime = ActiveSkill.MULTI.getCoolDown(playerdata.activeskilldata.skillnum) * breakBlockNum / totalBreakRangeVolume
       if (coolDownTime >= 5) new CoolDownTask(player, false, true, false).runTaskLater(plugin, coolDownTime)
     }
@@ -313,11 +335,16 @@ class PlayerBlockBreakListener extends Listener {
       // 破壊するブロックがプレーヤーが最初に破壊を試みたブロックだけの場合
       BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
     } else {
-      SeichiAssist.managedBlocks ++= breakBlocks
+      val blockChunk = BukkitResources.vanishingBlockSetResource(breakBlocks.toSet)
 
-      ActiveSkillEffect
-        .fromEffectNum(playerdata.activeskilldata.effectnum)
-        .runBreakEffect(player, playerdata.activeskilldata, tool, breakBlocks.toSet, breakArea, centerOfBlock)
+      com.github.unchama.seichiassist.unsafe.runIOAsync(
+        "単爆破壊エフェクトを再生する",
+        SeichiAssist.instance.managedBlockChunkScope.useTracked(blockChunk) { blocks =>
+          ActiveSkillEffect
+            .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
+            .runBreakEffect(player, playerdata.activeskilldata, tool, blocks, breakArea, centerOfBlock)
+        }
+      )
 
       // 経験値を減らす
       mana.decrease(useMana, player, playerdata.level)

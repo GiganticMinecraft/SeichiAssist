@@ -1,16 +1,23 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
+import cats.effect.{IO, Timer}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
-import com.github.unchama.seichiassist.activeskill.effect.breaking.MagicTask
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
+import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.effect.BukkitResources
 import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit.block.Block
-import org.bukkit.entity.Player
+import org.bukkit.entity.{Chicken, Player}
 import org.bukkit.inventory.ItemStack
-import org.bukkit.{Location, Material}
+import org.bukkit.material.Wool
+import org.bukkit._
+
+import scala.util.Random
 
 sealed abstract class ActiveSkillPremiumEffect(val num: Int,
                                                val sql_name: String,
@@ -26,18 +33,64 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
                      tool: ItemStack,
                      breakBlocks: Set[Block],
                      breakArea: AxisAlignedCuboid,
-                     standard: Location): Unit = {
+                     standard: Location): IO[Unit] = {
+    import PluginExecutionContexts.{cachedThreadPool, syncShift}
+    import com.github.unchama.concurrent.syntax._
+    import com.github.unchama.seichiassist.data.syntax._
+
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
     this match {
-      case ActiveSkillPremiumEffect.MAGIC => if (SeichiAssist.DEBUG) {
-        new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, 100)
-      } else {
-        new MagicTask(player, tool, breakBlocks, breakArea, standard).runTaskTimer(SeichiAssist.instance, 0, 10)
-      }
+      case ActiveSkillPremiumEffect.MAGIC =>
+        val colors = Array(DyeColor.RED, DyeColor.BLUE, DyeColor.YELLOW, DyeColor.GREEN)
+
+        //破壊するブロックの中心位置
+        val centerBreak: Location = standard + ((breakArea.begin + breakArea.end) / 2)
+
+        for {
+          randomColor <- IO { colors(Random.nextInt(colors.length)) }
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, shouldPlayBreakSound = false, Material.WOOL)
+          _ <- IO {
+            breakBlocks.foreach { b =>
+              val state = b.getState
+              state
+                .getData.asInstanceOf[Wool]
+                .setColor(randomColor)
+              state.update()
+            }
+          }
+
+          period <- IO { if (SeichiAssist.DEBUG) 100 else 10 }
+          _ <- IO.sleep(period.ticks)
+
+          _ <- syncShift.shift
+
+          _ <- SeichiAssist.instance.magicEffectEntityScope
+            .useTrackedForSome(BukkitResources.vanishingEntityResource(centerBreak, classOf[Chicken])) { e =>
+              for {
+                _ <- IO {
+                  e.playEffect(EntityEffect.WITCH_MAGIC)
+                  e.setInvulnerable(true)
+                }
+                _ <- IO.sleep(100.ticks)
+                _ <- FocusedSoundEffect(Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f).run(player)
+              } yield ()
+            }
+            .start(syncShift)
+
+          _ <- IO {
+            breakBlocks.foreach { b =>
+              b.getWorld.spawnParticle(Particle.NOTE, b.getLocation.add(0.5, 0.5, 0.5), 1)
+            }
+          }
+        } yield ()
     }
   }
 
-  //エフェクトの実行処理分岐
-  def arrowEffect(player: Player): TargetedEffect[Player] =
+  /**
+   * エフェクト選択時の遠距離エフェクト
+   */
+  lazy val arrowEffect: TargetedEffect[Player] =
     this match {
       case ActiveSkillPremiumEffect.MAGIC => ArrowEffects.singleArrowMagicEffect
     }

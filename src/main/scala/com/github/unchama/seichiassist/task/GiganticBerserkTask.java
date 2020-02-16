@@ -74,8 +74,8 @@ public class GiganticBerserkTask {
                     Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.lowercaseName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
                 }
             }
-            //レベルが10かつ段階がダイヤ未満の場合は進化待機状態へ
-            else if (playerdata.giganticBerserk().stage() <= 3) {
+            //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ
+            else if (playerdata.giganticBerserk().stage() <= 4) {
                 player.sendMessage(ChatColor.GREEN + "パッシブスキルメニューより" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GREEN + "スキルが進化可能です。");
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f);
                 playerdata.isGBStageUp_$eq(true);
@@ -271,6 +271,43 @@ public class GiganticBerserkTask {
                         break;
                     case 9:
                         l = 20000;
+                        break;
+                    default:
+                        l = 0;
+                }
+                break;
+            case 5:
+                i = 160000;
+                switch (level) {
+                    case 0:
+                        l = 25000;
+                        break;
+                    case 1:
+                        l = 27500;
+                        break;
+                    case 2:
+                        l = 30000;
+                        break;
+                    case 3:
+                        l = 32500;
+                        break;
+                    case 4:
+                        l = 35000;
+                        break;
+                    case 5:
+                        l = 37500;
+                        break;
+                    case 6:
+                        l = 40000;
+                        break;
+                    case 7:
+                        l = 43000;
+                        break;
+                    case 8:
+                        l = 46000;
+                        break;
+                    case 9:
+                        l = 50000;
                         break;
                     default:
                         l = 0;

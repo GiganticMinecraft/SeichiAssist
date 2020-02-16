@@ -22,7 +22,7 @@ import org.bukkit.{Material, Sound}
 object HomeMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
 
   /**
@@ -153,7 +153,7 @@ object HomeMenu extends Menu {
 
   private case class ButtonComputations(player: Player) {
 
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
     import player._
 
     def setSubHomeNameButton(subHomeNumber: Int): IO[Button] = IO {

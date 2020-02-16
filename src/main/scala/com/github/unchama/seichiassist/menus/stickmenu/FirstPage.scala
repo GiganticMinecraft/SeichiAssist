@@ -1,13 +1,14 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
-import com.github.unchama.seichiassist.data.{ActiveSkillInventoryData, MenuInventoryData}
+import com.github.unchama.seichiassist.data.ActiveSkillInventoryData
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.skill.PassiveSkillMenu
@@ -32,7 +33,7 @@ import org.bukkit.{Material, Sound}
 object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._
   import eu.timepit.refined.auto._
@@ -344,20 +345,27 @@ object FirstPage extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect(deferredEffect(IO {
-          val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player, playerData)
+          if (playerData.gachacooldownflag) {
+            new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
 
-          if (numberOfItemsToGive != 0) {
-            val itemToGive = Util.getForBugskull(player.getName)
-            val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
+            // NOTE: playerData.unclaimedApologyItemsは信頼できる値ではない
+            // プレーヤーがログインしている最中に配布処理が行われた場合DB上の値とメモリ上の値に差分が出る。
+            // よって配布処理はすべてバックエンドと強調しながら行わなければならない。
+            val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player)
 
-            sequentialEffect(
-              Util.grantItemStacksEffect(itemStacksToGive: _*),
-              UnfocusedEffect {
-                playerData.unclaimedApologyItems -= numberOfItemsToGive
-              },
-              FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-              s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
-            )
+            if (numberOfItemsToGive > 0) {
+              val itemToGive = Util.getForBugskull(player.getName)
+              val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
+
+              sequentialEffect(
+                Util.grantItemStacksEffect(itemStacksToGive: _*),
+                UnfocusedEffect {
+                  playerData.unclaimedApologyItems -= numberOfItemsToGive
+                },
+                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+                s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
+              )
+            } else emptyEffect
           } else emptyEffect
         }))
       )
@@ -449,11 +457,12 @@ object FirstPage extends Menu {
             val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
             val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
 
-            val itemStackToGive = Util.getskull(player.getName)
-
             if (gachaTicketsToGive > 0) {
+              val itemToGive = Util.getskull(player.getName)
+              val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
+
               sequentialEffect(
-                Util.grantItemStacksEffect(Seq.fill(gachaTicketsToGive)(itemStackToGive): _*),
+                Util.grantItemStacksEffect(itemStacksToGive: _*),
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                 },

@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, PlayerEffects}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
@@ -24,7 +24,7 @@ import org.bukkit.{Material, Sound}
  */
 object SecondPage extends Menu {
 
-  import PluginExecutionContexts.sync
+  import PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.targetedeffect.syntax._
@@ -501,7 +501,7 @@ object SecondPage extends Menu {
           sequentialEffect(
             closeInventoryEffect,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-            "hub".asCommandEffect()
+            PlayerEffects.connectToServerEffect("lobby")
           )
         }
       )

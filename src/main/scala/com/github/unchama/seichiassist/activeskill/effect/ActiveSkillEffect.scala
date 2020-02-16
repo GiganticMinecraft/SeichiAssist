@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.Blizzard
 import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.block.Block
@@ -14,7 +16,7 @@ trait ActiveSkillEffect {
                      tool: ItemStack,
                      breakBlocks: Set[Block],
                      breakArea: AxisAlignedCuboid,
-                     standard: Location): Unit
+                     standard: Location): IO[Unit]
 }
 
 object ActiveSkillEffect {
@@ -24,22 +26,20 @@ object ActiveSkillEffect {
                                 tool: ItemStack,
                                 breakBlocks: Set[Block],
                                 breakArea: AxisAlignedCuboid,
-                                standard: Location): Unit = {
-      com.github.unchama.seichiassist.unsafe.runIOAsync(
-        "ブロックを大量破壊する",
-        BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
-      )
-      SeichiAssist.managedBlocks --= breakBlocks
-    }
+                                standard: Location): IO[Unit] =
+      BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
   }
 
   // できるならActiveSkillDataにActiveSkillEffectを直接持たせたい
-  def fromEffectNum(effectNum: Int): ActiveSkillEffect = {
+  def fromEffectNum(effectNum: Int, skillNum: Int): ActiveSkillEffect = {
     if (effectNum == 0) {
       NoEffect
     } else if (effectNum <= 100) {
       //通常エフェクトが指定されているときの処理(100以下の番号に割り振る)
-      ActiveSkillNormalEffect.values(effectNum - 1)
+      ActiveSkillNormalEffect.values(effectNum - 1) match {
+        case Blizzard if skillNum < 3 => NoEffect
+        case e => e
+      }
     } else {
       //プレミアムエフェクトが指定されているときの処理(100超の番号に割り振る)
       ActiveSkillPremiumEffect.values(effectNum - 100 - 1)

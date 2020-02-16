@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
 import org.bukkit.entity.Player
 
 object AchievementGroupMenu {
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
 
   val sequentialEntriesIn: AchievementGroup => List[GroupMenuEntry] = CachedFunction {

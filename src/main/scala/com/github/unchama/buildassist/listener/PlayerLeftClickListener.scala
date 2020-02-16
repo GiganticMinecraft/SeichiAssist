@@ -29,7 +29,7 @@ object PlayerLeftClickListener extends Listener {
       if (!hasStickOnMainHand || !actionWasOnMainHand) return
     }
 
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
     seichiassist.unsafe.runAsyncTargetedEffect(player)(
       sequentialEffect(

@@ -2,7 +2,7 @@ package com.github.unchama.targetedeffect.player
 
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.concurrent.{BukkitSyncExecutionContext, Execution}
+import com.github.unchama.concurrent.{BukkitSyncIOShift, Execution}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -13,7 +13,7 @@ object PlayerEffects {
   val closeInventoryEffect: TargetedEffect[Player] = targetedeffect.delay(_.closeInventory())
 
   def openInventoryEffect(inventory: => Inventory)
-                         (implicit context: BukkitSyncExecutionContext): TargetedEffect[Player] =
+                         (implicit ctx: BukkitSyncIOShift): TargetedEffect[Player] =
     Kleisli { player =>
       // インベントリを開く操作はサーバースレッドでなければならない(Spigot 1.12.2)
       Execution.onServerMainThread(IO {
@@ -22,7 +22,7 @@ object PlayerEffects {
     }
 
   def connectToServerEffect(serverIdentifier: String)
-                           (implicit context: BukkitSyncExecutionContext): TargetedEffect[Player] =
+                           (implicit ctx: BukkitSyncIOShift): TargetedEffect[Player] =
     Kleisli { player =>
       // BungeeCordのサーバ移動はサーバスレッドでなければならない(Spigot 1.12.2)
       Execution.onServerMainThread(IO {

@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.concurrent
 import java.util.concurrent.Executors
 
 import cats.effect.{ContextShift, IO}
-import com.github.unchama.concurrent.{BukkitSyncExecutionContext, RepeatingTaskContext, RepeatingTaskContextTag}
+import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingTaskContext, RepeatingTaskContextTag}
 import com.github.unchama.generic
 import com.github.unchama.menuinventory.Tags.LayoutPreparationContextTag
 import com.github.unchama.menuinventory.Types.LayoutPreparationContext
@@ -16,9 +16,7 @@ object PluginExecutionContexts {
 
   implicit val pluginInstance: JavaPlugin = SeichiAssist.instance
 
-  implicit val sync: BukkitSyncExecutionContext = new BukkitSyncExecutionContext()
-
-  val syncShift: ContextShift[IO] = IO.contextShift(sync)
+  implicit val syncShift: BukkitSyncIOShift = BukkitSyncIOShift()
 
   val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 

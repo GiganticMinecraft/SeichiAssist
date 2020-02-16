@@ -6,6 +6,8 @@ import cats.effect.{Fiber, IO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingTask
+import com.github.unchama.generic.effect.ResourceScope
+import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
@@ -35,6 +37,19 @@ class SeichiAssist extends JavaPlugin() {
 
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
+
+  val arrowSkillProjectileScope: ResourceScope[IO, Entity] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreate
+  }
+  val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreateSingletonScope
+  }
+  val managedBlockChunkScope: ResourceScope[IO, Set[Block]] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreate
+  }
 
   override def onEnable(): Unit = {
     val logger = getLogger
@@ -204,13 +219,14 @@ class SeichiAssist extends JavaPlugin() {
 
     cancelRepeatedJobs()
 
-    //全てのエンティティを削除
-    SeichiAssist.managedEntities.foreach {
-      _.remove()
-    }
+    // 管理下にある資源を開放する
 
-    //全てのスキルで破壊されるブロックを強制破壊
-    SeichiAssist.managedBlocks.foreach(_.setType(Material.AIR))
+    // ファイナライザはunsafeRunSyncによってこのスレッドで同期的に実行されるため
+    // onDisable内で呼び出して問題はない。
+    // https://scastie.scala-lang.org/NqT4BFw0TiyfjycWvzRIuQ
+    managedBlockChunkScope.releaseAll.unsafeRunSync()
+    arrowSkillProjectileScope.releaseAll.unsafeRunSync()
+    magicEffectEntityScope.releaseAll.value.unsafeRunSync()
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
@@ -274,12 +290,6 @@ object SeichiAssist {
   val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   //プレミアムエフェクトポイント表示用データリスト
   val ranklist_premiumeffectpoint: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-
-  //プラグインで出すエンティティの保存
-  val managedEntities: mutable.HashSet[Entity] = mutable.HashSet()
-
-  //プレイヤーがスキルで破壊するブロックリスト
-  val managedBlocks: mutable.HashSet[Block] = mutable.HashSet()
 
   var instance: SeichiAssist = _
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)

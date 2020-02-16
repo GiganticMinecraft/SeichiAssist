@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
 import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.data.GachaPrize
@@ -20,7 +20,7 @@ import org.bukkit.{GameMode, Material, Sound}
 
 class PlayerClickListener extends Listener {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import com.github.unchama.seichiassist.util.ops.ItemStackOps._
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
@@ -97,11 +97,11 @@ class PlayerClickListener extends Listener {
           } else if (playerdata.activeskilldata.effectnum <= 100) {
             // 通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
             val skilleffect = ActiveSkillNormalEffect.values
-            skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect(player)
+            skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect
           } else {
             // スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
             val premiumeffect = ActiveSkillPremiumEffect.values
-            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).arrowEffect(player)
+            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).arrowEffect
           }
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(projectArrowEffect, "ArrowEffectを非同期で実行する")
@@ -184,8 +184,14 @@ class PlayerClickListener extends Listener {
           Util.addItem(player, givenItem)
           ""
         } else {
-          Util.dropItem(player, givenItem)
-          s"${AQUA}プレゼントがドロップしました。"
+          //アイテムがスタックできなかった場合、及び整地レベルがマインスタックの開放レベルに足りていなかったとき
+          if(!BreakUtil.addItemToMineStack(player, present.itemStack) || SeichiAssist.playermap(player.getUniqueId).level < SeichiAssist.seichiAssistConfig.getMineStacklevel(1)){
+            Util.dropItem(player, givenItem)
+            s"${AQUA}プレゼントがドロップしました。"
+          } else {
+            BreakUtil.addItemToMineStack(player, present.itemStack)
+            s"${AQUA}プレゼントをマインスタックに収納しました。"
+          }
         }
 
       //確率に応じてメッセージを送信

@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
 object OnClickTitleMenu extends Listener {
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sync
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
