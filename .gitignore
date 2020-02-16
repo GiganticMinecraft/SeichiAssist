@@ -18,3 +18,5 @@ deployLocal.sh
 
 # Docker
 docker/spigot/plugins/
+
+.env
