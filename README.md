@@ -31,6 +31,10 @@ sbtがコマンドラインで使える状態で`sbt assembly`を実行すると
 IntelliJ IDEAを開発に使用している場合、プロジェクトをsbtプロジェクトとして読み込み、
 sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`build/lib`フォルダにjarが出力されます。
 
+## デバッグ用docker環境
+
+dockerが実行可能な環境では、`./prepare-docker.sh`を実行するとデバッグ用のBungeecord+Spigot環境を構築可能です。
+
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
 - [gachadata.sql](https://red.minecraftserver.jp/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
