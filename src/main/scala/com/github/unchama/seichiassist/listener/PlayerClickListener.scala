@@ -185,9 +185,8 @@ class PlayerClickListener extends Listener {
           ""
         } else {
           //アイテムがスタックでき、かつ整地レベルがマインスタックの開放レベルに足りているとき...
-          if (BreakUtil.addItemToMineStack(player, present.itemStack) && SeichiAssist.playermap(player.getUniqueId).level >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)) {
-            // ...格納を試みる
-            BreakUtil.addItemToMineStack(player, present.itemStack)
+          if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack) && SeichiAssist.playermap(player.getUniqueId).level >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)) {
+            // ...格納した！
             s"${AQUA}プレゼントをマインスタックに収納しました。"
           } else {
             // スタックできないか、整地レベルがマインスタックの開放レベルに足りていないとき...
