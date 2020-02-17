@@ -5,8 +5,12 @@ networks:
     external: false
 
 volumes:
-  spigot_a:
-  spigot_b:
+  spigot_a_world:
+  spigot_a_world_nether:
+  spigot_a_world_the_end:
+  spigot_b_world:
+  spigot_b_world_nether:
+  spigot_b_world_the_end:
   db-data:
 
 services:
@@ -17,6 +21,10 @@ services:
     image: spigot
     networks:
       - seichi
+    volumes:
+      - spigot_a_world:/spigot/world
+      - spigot_a_world_nether:/spigot/world_nether
+      - spigot_a_world_the_end:/spigot/world_the_end
     ports:
       - "25566:25565"
     depends_on:
@@ -35,6 +43,10 @@ services:
     image: spigot
     networks:
       - seichi
+    volumes:
+      - spigot_b_world:/spigot/world
+      - spigot_b_world_nether:/spigot/world_nether
+      - spigot_b_world_the_end:/spigot/world_the_end
     ports:
       - "25567:25565"
     depends_on:
