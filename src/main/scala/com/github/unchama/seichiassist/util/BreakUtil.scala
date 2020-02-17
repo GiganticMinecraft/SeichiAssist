@@ -127,7 +127,7 @@ object BreakUtil {
         // アイテムのマインスタック自動格納を試みる
         // 格納できなかったらドロップするアイテムとしてリストに入れる
         dropItems.flatMap { itemStack =>
-          if (!addItemToMineStack(player, itemStack))
+          if (!tryAddItemIntoMineStack(player, itemStack))
             Some(itemStack)
           else
             None
@@ -166,7 +166,7 @@ object BreakUtil {
       }
     } yield ()
 
-  def addItemToMineStack(player: Player, itemstack: ItemStack): Boolean = {
+  def tryAddItemIntoMineStack(player: Player, itemstack: ItemStack): Boolean = {
     //もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return false
 
