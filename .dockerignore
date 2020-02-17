@@ -1,0 +1,11 @@
+.circleci
+.idea
+.settings
+
+src/main/scala
+src/test
+
+project
+
+target*
+!target/build

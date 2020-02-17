@@ -9,3 +9,8 @@ target
 
 # Local files
 deployLocal.sh
+
+# Docker
+docker/spigot/serverfiles/eula.txt
+
+.env

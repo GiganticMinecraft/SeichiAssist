@@ -32,7 +32,7 @@ class PlayerPickupItemListener extends Listener {
       player.sendMessage(RED.toString + "pickDurability:" + itemstack.getDurability)
     }
 
-    if (BreakUtil.addItemToMineStack(player, itemstack)) {
+    if (BreakUtil.tryAddItemIntoMineStack(player, itemstack)) {
       event.setCancelled(true)
       player.playSound(player.getLocation, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
       item.remove()
