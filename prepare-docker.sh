@@ -15,7 +15,7 @@ docker-compose down
 
 ## デバッグに必要なdockerコンテナを起動
 ## (起動後はCtrl+Cで停止できます)
-docker-compose up
+docker-compose up --abort-on-container-exit
 
 
 
