@@ -5,7 +5,7 @@ set -e
 rm -r target/build || true
 
 ## ソースコードからSeichiAssist.jarをビルド
-sbt assembly
+./sbt assembly
 
 ## 実際にサーバーに送る用のeula.txtを生成する
 cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
