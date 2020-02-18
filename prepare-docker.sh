@@ -2,18 +2,21 @@
 
 set -e
 
-rm -r target/build || true
+build_image() {
+  rm -r target/build || true
 
-## ソースコードからSeichiAssist.jarをビルド
-./sbt assembly
+  ## ソースコードからSeichiAssist.jarをビルド
+  ./sbt assembly
 
-## 実際にサーバーに送る用のeula.txtを生成する
-cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
+  ## 実際にサーバーに送る用のeula.txtを生成する
+  cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
 
-## dockerイメージのビルド（初回は数十分かかります）
-docker-compose build -m 2g
+  ## dockerイメージのビルド（初回は数十分かかります）
+  docker-compose build -m 2g
+}
 
-docker-compose down
+## 既存のサービスを落とし、ビルド完了を待つ
+docker-compose down & build_image & wait
 
 ## デバッグに必要なdockerコンテナを起動
 ## (起動後はCtrl+Cで停止できます)
