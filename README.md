@@ -24,17 +24,29 @@
 - RegenWorld_1.0 [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
-## ビルド
+## ビルド・デバッグ
+
+### Windows
 まずは[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Windows.html)よりsbtのインストールをします。
 sbtがコマンドラインで使える状態で`sbt assembly`を実行すると、`target/build`フォルダにjarが出力されます。
 
 IntelliJ IDEAを開発に使用している場合、プロジェクトをsbtプロジェクトとして読み込み、
 sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`build/lib`フォルダにjarが出力されます。
 
-## デバッグ用docker環境
+### Linux等
+プロジェクトディレクトリで `./sbt assembly` を実行してください。
 
-docker および docker-compose が実行可能な環境では、`./prepare-docker.sh`を実行するとデバッグ用のBungeecord+Spigot環境を構築可能です。
-spigot環境の起動には、 Minecraft EULA に同意する必要があります。同意する場合、`./docker/spigot/eula.txt`を参照し、 `eula=false` を `eula=true`に書き換えてください。
+### デバッグ用docker環境
+
+docker および docker-compose が実行可能なLinux環境では、`./prepare-docker.sh`
+を実行することでデバッグ用のBungeecord+Spigot環境を構築できます。
+Windowsでは、docker+docker-composeとsbtがインストールされている状態で`prepare-docker.bat`を実行してください。
+
+初回起動時にはSpigotのビルドに時間がかかります。
+さらに、[Minecraft EULA](https://account.mojang.com/documents/minecraft_eula)に同意する必要があるため実行が中断されます。
+
+EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles/eula.txt`を参照し、
+`eula=false` を `eula=true` に書き換えてください。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
