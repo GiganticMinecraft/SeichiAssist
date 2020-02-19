@@ -36,6 +36,7 @@ services:
         sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
         sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
         java -jar /spigot/spigot*.jar nogui"
+    stdin_open: true
   spigotb:
     build:
       context: .
@@ -58,6 +59,7 @@ services:
         sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
         sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
         java -jar /spigot/spigot*.jar nogui"
+    stdin_open: true
   bungeecord:
     build: ./docker/bungeecord
     ports:
@@ -67,6 +69,7 @@ services:
     depends_on:
       - spigota
       - spigotb
+    stdin_open: true
 
 
   phpmyadmin:
