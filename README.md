@@ -24,7 +24,7 @@
 - RegenWorld_1.0 [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
-## ビルド・デバッグ
+## ビルド
 
 ### Windows
 まずは[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Windows.html)よりsbtのインストールをします。
@@ -36,7 +36,7 @@ sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行す
 ### Linux等
 プロジェクトディレクトリで `./sbt assembly` を実行してください。
 
-### デバッグ用docker環境
+## デバッグ用docker環境
 
 docker および docker-compose が実行可能なLinux環境では、`./prepare-docker.sh`
 を実行することでデバッグ用のBungeecord+Spigot環境を構築できます。
@@ -47,7 +47,12 @@ Windowsでは、docker+docker-composeとsbtがインストールされている�
 EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles/eula.txt`を参照し、
 `eula=false` を `eula=true` に書き換えてください。
 
-サーバーが起動したら、DockerマシンのIPアドレスへとMinecraftを接続できます。
+### Minecraftを接続する
+
+DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とします。
+
+`docker`により各サービスが起動したら、`DOCKER_IP`へとMinecraftを接続することができます。
+また、`DOCKER_IP:8080`へとWebブラウザでアクセスすることで、phpMyAdminを介してデータベースを操作することができます。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
