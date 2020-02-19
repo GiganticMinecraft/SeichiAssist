@@ -44,9 +44,10 @@ Windowsでは、docker+docker-composeとsbtがインストールされている�
 
 初回起動時にはSpigotのビルドに時間がかかります。
 さらに、[Minecraft EULA](https://account.mojang.com/documents/minecraft_eula)に同意する必要があるため実行が中断されます。
-
 EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles/eula.txt`を参照し、
 `eula=false` を `eula=true` に書き換えてください。
+
+サーバーが起動したら、DockerマシンのIPアドレスへとMinecraftを接続できます。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
