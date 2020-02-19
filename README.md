@@ -25,21 +25,22 @@
 
 ## ビルド
 
-### Windows
-まずは[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Windows.html)よりsbtのインストールをします。
+最初に、Java Development Kit (JDK) 8をインストールする必要があります。
+[AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot) のインストールを推奨します。
+
+[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Setup.html)に従ってsbtのインストールをします。
 sbtがコマンドラインで使える状態で`sbt assembly`を実行すると、`target/build`フォルダにjarが出力されます。
+
+### IntelliJ IDEAの画面からビルドする
 
 IntelliJ IDEAを開発に使用している場合、プロジェクトをsbtプロジェクトとして読み込み、
 sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`build/lib`フォルダにjarが出力されます。
 
-### Linux等
-プロジェクトディレクトリで `./sbt assembly` を実行してください。
-
 ## デバッグ用docker環境
 
-docker および docker-compose が実行可能なLinux環境では、`./prepare-docker.sh`
-を実行することでデバッグ用のBungeecord+Spigot環境を構築できます。
-Windowsでは、docker+docker-composeとsbtがインストールされている状態で`prepare-docker.bat`を実行してください。
+`docker`、`docker-compose`及び`sbt`が実行可能であるとします。
+Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
+デバッグ用のBungeecord + Spigot環境を構築することができます。
 
 初回起動時にはSpigotのビルドに時間がかかります。
 さらに、[Minecraft EULA](https://account.mojang.com/documents/minecraft_eula)に同意する必要があるため実行が中断されます。
