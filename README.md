@@ -47,12 +47,19 @@ Windowsでは、docker+docker-composeとsbtがインストールされている�
 EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles/eula.txt`を参照し、
 `eula=false` を `eula=true` に書き換えてください。
 
-### Minecraftを接続する
+サーバーやDB等を停止する場合、 `docker-compose down` を実行してください。
+
+### デバッグ用環境への接続
 
 DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とします。
 
 `docker`により各サービスが起動したら、`DOCKER_IP`へとMinecraftを接続することができます。
 また、`DOCKER_IP:8080`へとWebブラウザでアクセスすることで、phpMyAdminを介してデータベースを操作することができます。
+
+`op`やコマンド実行等などでSpigotのコンソールにアクセスする必要がある場合、
+`spigota`または`spigotb`へのコンテナ名とともに `docker attach [CONTAINER_NAME]` を実行してください。
+コンテナ名は `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
+コンソールからは `Ctrl+C` で抜けることができます(サーバーは停止されません)。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
