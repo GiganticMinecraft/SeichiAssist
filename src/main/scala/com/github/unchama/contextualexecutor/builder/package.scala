@@ -1,11 +1,10 @@
-package com.github.unchama.contextualexecutor.builder
+package com.github.unchama.contextualexecutor
 
 import cats.effect.IO
-import com.github.unchama.contextualexecutor.{ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.CommandSender
 
-object TypeAliases {
+package object builder {
   type Result[+Error, +Success] = Either[Error, Success]
 
   type ResponseEffectOrResult[-CS, +T] = Result[TargetedEffect[CS], T]
