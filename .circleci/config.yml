@@ -30,6 +30,8 @@ jobs:
           keys:
             - build-cache-v2-{{ .Branch }}-
             - build-cache-v2-
+      - run: du -h --max-depth=1 ~
+      - run: du -h --max-depth=1 target
       - run: ./sbt assembly
       - save_cache:
           paths:
