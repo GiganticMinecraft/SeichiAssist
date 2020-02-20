@@ -26,6 +26,11 @@ jobs:
             - sbt-repo-v2-{{ .Branch }}-{{ checksum "build.sbt" }}
             - sbt-repo-v2-{{ .Branch }}-
             - sbt-repo-v2-
+      - restore_cache:
+          keys:
+            - build-cache-v1-{{ .Branch }}-{{ checksum "build.sbt" }}
+            - build-cache-v1-{{ .Branch }}-
+            - build-cache-v1-
       - run: sbt assembly
       - save_cache:
           paths:
@@ -33,6 +38,11 @@ jobs:
             - ~/.m2
             - ~/.cache/coursier/v1
           key: sbt-repo-v2-{{ .Branch }}-{{ checksum "build.sbt" }}
+      - save_cache:
+          paths:
+            - ~/repo/target
+            - ~/repo/project/target
+          key: build-cache-v1-{{ .Branch }}-{{ checksum "build.sbt" }}
       - run: mkdir -p workspace/builds && cp target/build/**.jar workspace/builds
       - *save_workspace
   deploy_debug:
