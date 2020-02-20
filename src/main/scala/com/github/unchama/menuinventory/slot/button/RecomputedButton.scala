@@ -2,7 +2,7 @@ package com.github.unchama.menuinventory.slot.button
 
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.menuinventory.Types.LayoutPreparationContext
+import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 
 object RecomputedButton {
