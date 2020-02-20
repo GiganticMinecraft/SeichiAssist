@@ -29,12 +29,20 @@ class BreakArea(val `type`: Int,
     import syntax._
 
     val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      if (assaultflag && `type` == 6 && level == 10) {
+      if (assaultflag) {
         //アサルトスキルの時
-        areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, 0))
-      } else if (dir == "U" || dir == "D" && (assaultflag || level >= 3)) {
+        if (`type` == 6 && level == 10) {
+          areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, 0))
+        } else {
+          identity
+        }
+      } else if (dir == "U" || dir == "D") {
         //上向きまたは下向きの時
-        areaShift(XYZTuple(0, (breakLength.y - 1) / 2, 0))
+        if (assaultflag || level >= 3) {
+          areaShift(XYZTuple(0, (breakLength.y - 1) / 2, 0))
+        } else {
+          identity
+        }
       } else {
         //それ以外の範囲
         areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, (breakLength.z - 1) / 2))
