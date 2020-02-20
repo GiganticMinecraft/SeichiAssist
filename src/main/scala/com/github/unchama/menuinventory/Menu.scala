@@ -3,7 +3,7 @@ package com.github.unchama.menuinventory
 import cats.data
 import cats.effect.IO
 import com.github.unchama.concurrent.BukkitSyncIOShift
-import com.github.unchama.menuinventory.Types.LayoutPreparationContext
+import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 

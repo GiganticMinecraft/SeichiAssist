@@ -1,8 +1,5 @@
 package com.github.unchama.chatinterceptor
 
-import java.util.UUID
-
-import com.github.unchama.chatinterceptor.ChatInterceptor.ChatInterceptionScope
 import org.bukkit.event.player.{AsyncPlayerChatEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
@@ -30,8 +27,4 @@ class ChatInterceptor(val scopes: List[ChatInterceptionScope]) extends Listener 
       case None =>
     }
   }
-}
-
-object ChatInterceptor {
-  type ChatInterceptionScope = InterceptionScope[UUID, String]
 }

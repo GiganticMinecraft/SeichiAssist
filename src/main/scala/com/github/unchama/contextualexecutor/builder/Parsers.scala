@@ -1,6 +1,5 @@
 package com.github.unchama.contextualexecutor.builder
 
-import com.github.unchama.contextualexecutor.builder.TypeAliases.SingleArgumentParser
 import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
 import org.bukkit.command.CommandSender
 

@@ -2,7 +2,6 @@ package com.github.unchama.contextualexecutor.builder
 
 import cats.data.OptionT
 import cats.effect.IO
-import com.github.unchama.contextualexecutor.builder.TypeAliases.{CommandArgumentsParser, ScopedContextualExecution, SenderTypeValidation, SingleArgumentParser}
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
 import com.github.unchama.targetedeffect

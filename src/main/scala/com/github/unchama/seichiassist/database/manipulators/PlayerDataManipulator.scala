@@ -6,7 +6,7 @@ import java.util.{Calendar, UUID}
 
 import cats.data.EitherT
 import cats.effect.IO
-import com.github.unchama.contextualexecutor.builder.TypeAliases.ResponseEffectOrResult
+import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
