@@ -37,6 +37,7 @@ jobs:
             - ~/.ivy2/cache
             - ~/.m2
             - ~/.cache/coursier/v1
+            - ~/.sbt
           key: sbt-repo-v2-{{ .Branch }}-{{ checksum "build.sbt" }}
       - save_cache:
           paths:
