@@ -1,12 +1,13 @@
 package com.github.unchama.seichiassist.activeskill
 
+import enumeratum.EnumEntry.Snakecase
 import enumeratum._
 
 sealed abstract class SeichiSkill(val name: String,
                                   val range: SkillRange,
                                   val coolDownSeconds: Option[Double],
                                   val manaCost: Int,
-                                  val requiredActiveSkillPoint: Int) extends EnumEntry
+                                  val requiredActiveSkillPoint: Int) extends Snakecase
 
 sealed abstract class ActiveSkill(name: String,
                                   range: SkillRange,
@@ -24,6 +25,12 @@ sealed abstract class AssaultSkill(name: String,
 object SeichiSkill extends Enum[SeichiSkill] {
   import ActiveSkillRange._
   import AssaultSkillRange._
+
+  /**
+   * Enumeratumの機能により、
+   * 各Enum名(をスネークケースにしたもの)がDB上での識別子となる。
+   * DBの内部を変更しないままここのobject名を変えないこと。
+   */
 
   case object DualBreak extends ActiveSkill("デュアル・ブレイク", singleArea(1, 2, 1), None, 1, 10)
   case object TrialBreak extends ActiveSkill("トリアル・ブレイク", singleArea(3, 2, 1), None, 3, 20)
