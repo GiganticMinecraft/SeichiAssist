@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.HashSet;
 import java.util.stream.IntStream;
 
-public class ActiveSkillData {
+public class ActiveSkillData_Legacy {
     //アクティブスキルポイント
     public int skillpoint;
     //アクティブスキルエフェクトポイント
@@ -66,7 +66,7 @@ public class ActiveSkillData {
     public Mana mana;
     private SeichiAssist plugin = SeichiAssist.instance();
 
-    public ActiveSkillData() {
+    public ActiveSkillData_Legacy() {
         mineflagnum = 0;
         assaultflag = false;
         assaulttask = null;
@@ -109,23 +109,23 @@ public class ActiveSkillData {
         //遠距離スキル
         // arrowskill -> 4は(arrowskill-4).repeatと同じ
         point -= IntStream.rangeClosed(4, arrowskill)
-                .map(ActiveSkillData::decreasePoint)
+                .map(ActiveSkillData_Legacy::decreasePoint)
                 .sum();
         //マルチ破壊スキル
         point -= IntStream.rangeClosed(4, multiskill)
-                .map(ActiveSkillData::decreasePoint)
+                .map(ActiveSkillData_Legacy::decreasePoint)
                 .sum();
         //破壊スキル
         point -= IntStream.rangeClosed(1, breakskill)
-                .map(ActiveSkillData::decreasePoint)
+                .map(ActiveSkillData_Legacy::decreasePoint)
                 .sum();
         //水凝固スキル
         point -= IntStream.rangeClosed(7, watercondenskill)
-                .map(ActiveSkillData::decreasePoint)
+                .map(ActiveSkillData_Legacy::decreasePoint)
                 .sum();
         //熔岩凝固スキル
         point -= IntStream.rangeClosed(7, lavacondenskill)
-                .map(ActiveSkillData::decreasePoint)
+                .map(ActiveSkillData_Legacy::decreasePoint)
                 .sum();
         if (fluidcondenskill == 10) {
             point -= 110;

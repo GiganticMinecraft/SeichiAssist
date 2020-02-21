@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.ActiveSkill
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -26,7 +26,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
                                               val material: Material) extends EnumEntry with ActiveSkillEffect {
 
   override def runBreakEffect(player: Player,
-                              skillData: ActiveSkillData,
+                              skillData: ActiveSkillData_Legacy,
                               tool: ItemStack,
                               breakBlocks: Set[Block],
                               breakArea: AxisAlignedCuboid,

@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{ActiveSkillData, GridTemplate, Mana}
+import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, GridTemplate, Mana}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
@@ -191,7 +191,7 @@ class PlayerData(
   var LimitedLoginCount = 0
   var ChainVote = 0
   //アクティブスキル関連データ
-  val activeskilldata: ActiveSkillData = new ActiveSkillData()
+  val activeskilldata: ActiveSkillData_Legacy = new ActiveSkillData_Legacy()
   //二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 

@@ -4,7 +4,7 @@ import cats.effect.{IO, Timer}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.data.{ActiveSkillData, AxisAlignedCuboid}
+import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, AxisAlignedCuboid}
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -29,7 +29,7 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
   def getsqlName: String = this.sql_name
 
   def runBreakEffect(player: Player,
-                     skillData: ActiveSkillData,
+                     skillData: ActiveSkillData_Legacy,
                      tool: ItemStack,
                      breakBlocks: Set[Block],
                      breakArea: AxisAlignedCuboid,
