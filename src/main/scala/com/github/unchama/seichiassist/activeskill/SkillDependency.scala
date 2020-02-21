@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.activeskill
 
-object SkillUnlockCost {
+object SkillDependency {
   import SeichiSkill._
   
   type Dependency = (SeichiSkill, SeichiSkill)
