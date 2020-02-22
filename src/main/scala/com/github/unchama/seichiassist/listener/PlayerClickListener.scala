@@ -80,7 +80,7 @@ class PlayerClickListener extends Listener {
       return
     }
 
-    if (MaterialSets.breakMaterials.contains(event.getMaterial)) {
+    if (MaterialSets.breakToolMaterials.contains(event.getMaterial)) {
       if (playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()) {
         //クールダウン処理
         val cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum)
@@ -297,8 +297,8 @@ class PlayerClickListener extends Listener {
 
     if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
 
-      val mainhandflag = MaterialSets.breakMaterials.contains(currentItem)
-      val offhandflag = MaterialSets.breakMaterials.contains(player.getInventory.getItemInOffHand.getType)
+      val mainhandflag = MaterialSets.breakToolMaterials.contains(currentItem)
+      val offhandflag = MaterialSets.breakToolMaterials.contains(player.getInventory.getItemInOffHand.getType)
 
       var activemineflagnum = playerdata.activeskilldata.mineflagnum
       //どちらにも対応したアイテムを持っていない場合終了
@@ -350,7 +350,7 @@ class PlayerClickListener extends Listener {
         }
       }
 
-      if (MaterialSets.breakMaterials(player.getInventory.getItemInOffHand.getType) && equipmentslot == EquipmentSlot.OFF_HAND) {
+      if (MaterialSets.breakToolMaterials(player.getInventory.getItemInOffHand.getType) && equipmentslot == EquipmentSlot.OFF_HAND) {
         //オフハンドで指定ツールを持っていた時の処理
 
         //設置をキャンセル
