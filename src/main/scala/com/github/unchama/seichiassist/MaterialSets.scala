@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.generic.tag.tag
+import com.github.unchama.generic.tag.tag.@@
 import org.bukkit.Material
+import org.bukkit.block.Block
+import org.bukkit.inventory.ItemStack
 
 object MaterialSets {
   // このMaterialは整地スキルに対応するブロック群を示しています。
@@ -27,17 +31,24 @@ object MaterialSets {
     Material.DOUBLE_STEP,Material.ENDER_PORTAL_FRAME,Material.ENDER_PORTAL
   )
 
-  val luckMaterials: Set[Material] = Set(
-    Material.COAL_ORE, Material.DIAMOND_ORE, Material.LAPIS_ORE, Material.EMERALD_ORE,
-    Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE, Material.QUARTZ_ORE
+  /**
+   * これらのマテリアルを用いてブロックの破壊試行を行う。
+   *
+   * 整地スキル使用時のブロックから取れるアイテムは、
+   * プレーヤーの使用ツールのマテリアルをこれらに張り替えた時のドロップのmaxとして計算される。
+   *
+   * 例えば石をシャベルで掘った時にも、ツールのエンチャントを保ったままダイヤツルハシで掘ったものとして計算し、
+   * 結果得られるスタック数が最大のものが結果として採用される。
+   */
+  val breakTestToolMaterials: Seq[Material] = Seq(
+    Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SPADE
   )
 
-  val breakMaterials: Set[Material] = Set(
-    Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SPADE,
+  val breakToolMaterials: Set[Material] = Set(
     Material.WOOD_PICKAXE, Material.WOOD_SPADE,
     Material.IRON_PICKAXE, Material.IRON_AXE, Material.IRON_SPADE,
     Material.GOLD_PICKAXE, Material.GOLD_AXE, Material.GOLD_SPADE
-  )
+  ) ++ breakTestToolMaterials
 
   val cancelledMaterials: Set[Material] = Set(
     Material.CHEST, Material.ENDER_CHEST, Material.TRAPPED_CHEST, Material.ANVIL, Material.ARMOR_STAND,
@@ -52,4 +63,24 @@ object MaterialSets {
   val gravityMaterials: Set[Material] = Set(
     Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2
   )
+
+  trait MaterialOf[S <: Set[Material]]
+
+  type ItemStackOf[S <: Set[Material]] = ItemStack @@ MaterialOf[S]
+  type BlockOf[S <: Set[Material]] = Block @@ MaterialOf[S]
+
+  type BreakTool = ItemStackOf[breakToolMaterials.type]
+  type BlockBreakableBySkill = BlockOf[materials.type]
+
+  def refineItemStack(stack: ItemStack, set: collection.immutable.Set[Material]): Option[ItemStackOf[set.type]] =
+    if (set.contains(stack.getType))
+      Some(tag.apply[MaterialOf[set.type]](stack))
+    else
+      None
+
+  def refineBlock(block: Block, set: collection.immutable.Set[Material]): Option[BlockOf[set.type]] =
+    if (set.contains(block.getType))
+      Some(tag.apply[MaterialOf[set.type]](block))
+    else
+      None
 }
