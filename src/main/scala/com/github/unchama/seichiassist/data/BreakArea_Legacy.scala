@@ -13,10 +13,10 @@ import org.bukkit.entity.Player
  * @param mineflagnum フラグ
  * @param assaultflag アサルトスキルの時true
  */
-class BreakArea(val `type`: Int,
-                val level: Int,
-                val mineflagnum: Int,
-                val assaultflag: Boolean) {
+class BreakArea_Legacy(val `type`: Int,
+                       val level: Int,
+                       val mineflagnum: Int,
+                       val assaultflag: Boolean) {
   private val skill: ActiveSkill = ActiveSkill.values.apply(`type` - 1)
 
   //南向きを基準として破壊の範囲座標
@@ -25,7 +25,7 @@ class BreakArea(val `type`: Int,
   val breakNum: Int = skill.getRepeatTimes(level)
 
   private def breakAreaListFromDirection(dir: String): List[AxisAlignedCuboid] = {
-    import BreakArea.CoordinateManipulation._
+    import BreakArea_Legacy.CoordinateManipulation._
     import syntax._
 
     val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
@@ -101,10 +101,10 @@ class BreakArea(val `type`: Int,
   }
 
   def makeBreakArea(player: Player): IO[List[AxisAlignedCuboid]] =
-    BreakArea.getCardinalDirection(player).map(breakAreaListFromDirection)
+    BreakArea_Legacy.getCardinalDirection(player).map(breakAreaListFromDirection)
 }
 
-object BreakArea {
+object BreakArea_Legacy {
   private val getCardinalDirection: Player => IO[String] = { player => IO { BreakUtil.getCardinalDirection(player) } }
 
   object CoordinateManipulation {

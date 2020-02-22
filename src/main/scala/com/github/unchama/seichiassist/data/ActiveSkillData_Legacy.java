@@ -59,9 +59,9 @@ public class ActiveSkillData_Legacy {
     //選択されているアクティブスキルの番号を格納
     public int effectnum; // TODO 100以下ならプレミアムスキル、という判定ロジックを隠すべき
     //通常スキルで破壊されるエリア
-    public BreakArea area;
+    public BreakArea_Legacy area;
     //アサルトスキルで破壊されるエリア
-    public BreakArea assaultarea;
+    public BreakArea_Legacy assaultarea;
     //マナクラス
     public Mana mana;
     private SeichiAssist plugin = SeichiAssist.instance();
@@ -184,7 +184,7 @@ public class ActiveSkillData_Legacy {
         }
         //スキルフラグがオンの時の処理
         if (mineflagnum != 0) {
-            this.area = new BreakArea(type, skilllevel, mineflagnum, false);
+            this.area = new BreakArea_Legacy(type, skilllevel, mineflagnum, false);
         }
 
     }
@@ -204,7 +204,7 @@ public class ActiveSkillData_Legacy {
         }
         if (mineflagnum != 0) {
             //スキルフラグがオンの時の処理
-            this.assaultarea = new BreakArea(type, skilllevel, mineflagnum, true);
+            this.assaultarea = new BreakArea_Legacy(type, skilllevel, mineflagnum, true);
             this.assaultflag = true;
 
             // オフハンドを取得
