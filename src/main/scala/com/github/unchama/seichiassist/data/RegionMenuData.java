@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
-import com.github.unchama.seichiassist.util.external.ExternalPlugins;
+import com.github.unchama.util.external.ExternalPlugins;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Bukkit;

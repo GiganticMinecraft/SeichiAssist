@@ -4,8 +4,8 @@ import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
-import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
