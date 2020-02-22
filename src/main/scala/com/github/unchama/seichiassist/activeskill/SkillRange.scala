@@ -3,12 +3,14 @@ package com.github.unchama.seichiassist.activeskill
 import com.github.unchama.seichiassist.data.XYZTuple
 import org.bukkit.Material
 
-sealed trait SkillRange
+sealed trait SkillRange {
+  val effectChunkSize: XYZTuple
+}
 
 sealed trait ActiveSkillRange extends SkillRange
 
 object ActiveSkillRange {
-  case class MultiArea(size: XYZTuple, areaCount: Int) extends ActiveSkillRange
+  case class MultiArea(effectChunkSize: XYZTuple, areaCount: Int) extends ActiveSkillRange
 
   object MultiArea {
     def apply(width: Int, height: Int, depth: Int)(count: Int): MultiArea =
@@ -17,7 +19,7 @@ object ActiveSkillRange {
 
   def singleArea(width: Int, height: Int, depth: Int): MultiArea = MultiArea(width, height, depth)(1)
 
-  case class RemoteArea(size: XYZTuple) extends ActiveSkillRange
+  case class RemoteArea(effectChunkSize: XYZTuple) extends ActiveSkillRange
 
   object RemoteArea {
     def apply(width: Int, height: Int, depth: Int): RemoteArea = RemoteArea(XYZTuple(width, height, depth))
@@ -25,7 +27,6 @@ object ActiveSkillRange {
 }
 
 trait AssaultSkillRange extends SkillRange {
-  val range: XYZTuple
   val blockMaterialConversion: Material => Material
 }
 
@@ -46,7 +47,7 @@ object AssaultSkillRange {
 
   private def withConversion(f: Material => Material): AssaultRangeBuilder = {
     case (width, height, depth) => new AssaultSkillRange {
-      override val range: XYZTuple = XYZTuple(width, height, depth)
+      override val effectChunkSize: XYZTuple = XYZTuple(width, height, depth)
       override val blockMaterialConversion: Material => Material = f
     }
   }
