@@ -74,13 +74,13 @@ object MaterialSets {
 
   def refineItemStack(stack: ItemStack, set: collection.immutable.Set[Material]): Option[ItemStackOf[set.type]] =
     if (set.contains(stack.getType))
-      Some(tag.apply[MaterialOf[set.type]](stack))
+      Some(tag.apply[MaterialOf[set.type]][ItemStack](stack))
     else
       None
 
   def refineBlock(block: Block, set: collection.immutable.Set[Material]): Option[BlockOf[set.type]] =
     if (set.contains(block.getType))
-      Some(tag.apply[MaterialOf[set.type]](block))
+      Some(tag.apply[MaterialOf[set.type]][Block](block))
     else
       None
 }

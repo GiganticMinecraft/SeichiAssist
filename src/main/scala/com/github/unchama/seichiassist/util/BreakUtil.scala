@@ -4,6 +4,7 @@ import java.util.Random
 import java.util.stream.IntStream
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
@@ -84,7 +85,7 @@ object BreakUtil {
   def breakBlock(player: Player,
                  targetBlock: Block,
                  dropLocation: Location,
-                 tool: ItemStack,
+                 tool: BreakTool,
                  shouldPlayBreakSound: Boolean): Unit =
     unsafe.runIOAsync(
       "単一ブロックを破壊する",
@@ -100,7 +101,7 @@ object BreakUtil {
   def massBreakBlock(player: Player,
                      targetBlocks: Iterable[Block],
                      dropLocation: Location,
-                     miningTool: ItemStack,
+                     miningTool: BreakTool,
                      shouldPlayBreakSound: Boolean,
                      toMaterial: Material = Material.AIR): IO[Unit] =
     for {
@@ -115,7 +116,7 @@ object BreakUtil {
 
       dropItems <- IO {
         import scala.jdk.CollectionConverters._
-        materialFilteredBlocks.flatMap(_.getDrops(miningTool).asScala)
+        materialFilteredBlocks.flatMap(b => b.getDrops(miningTool).asScala)
       }
 
       // ブロックをすべて[[toMaterial]]に変える

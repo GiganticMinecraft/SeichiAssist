@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
 import cats.effect.{IO, Timer}
+import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -11,11 +12,10 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
 import enumeratum._
 import org.bukkit.ChatColor._
+import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.entity.{Chicken, Player}
-import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Wool
-import org.bukkit._
 
 import scala.util.Random
 
@@ -30,7 +30,7 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
 
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
-                     tool: ItemStack,
+                     tool: BreakTool,
                      breakBlocks: Set[Block],
                      breakArea: AxisAlignedCuboid,
                      standard: Location): IO[Unit] = {
