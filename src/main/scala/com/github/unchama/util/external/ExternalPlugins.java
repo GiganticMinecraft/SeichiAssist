@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.util.external;
+package com.github.unchama.util.external;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -51,7 +51,7 @@ public final class ExternalPlugins {
 
         // WorldGuard may not be loaded
         if (!(plugin instanceof WorldGuardPlugin)) {
-            throw new NullPointerException("WorldGuardPluginが見つかりませんでした。");
+            throw new IllegalStateException("WorldGuardPluginが見つかりませんでした。");
         }
 
         return (WorldGuardPlugin) plugin;
