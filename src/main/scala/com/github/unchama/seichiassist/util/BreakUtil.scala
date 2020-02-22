@@ -4,7 +4,7 @@ import java.util.Random
 import java.util.stream.IntStream
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.MaterialSets.BreakTool
+import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
@@ -83,7 +83,7 @@ object BreakUtil {
 
   //ブロックを破壊する処理、ドロップも含む、統計増加も含む
   def breakBlock(player: Player,
-                 targetBlock: Block,
+                 targetBlock: BlockBreakableBySkill,
                  dropLocation: Location,
                  tool: BreakTool,
                  shouldPlayBreakSound: Boolean): Unit =
@@ -99,7 +99,7 @@ object BreakUtil {
    * @return
    */
   def massBreakBlock(player: Player,
-                     targetBlocks: Iterable[Block],
+                     targetBlocks: Iterable[BlockBreakableBySkill],
                      dropLocation: Location,
                      miningTool: BreakTool,
                      shouldPlayBreakSound: Boolean,

@@ -110,13 +110,9 @@ class AssaultTask(val player: Player, val tool: BreakTool) extends BukkitRunnabl
     val BlockSearching.Result(foundBlocks, foundWaters, foundLavas) =
       BlockSearching.searchForBreakableBlocks(player, breakArea.gridPoints(), block)
           .unsafeRunSync()
-          .mapAll(
-            if (player.isSneaking || !shouldBreakAllBlocks)
-              identity
-            else
-              _.filter { targetBlock =>
-                targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
-              }
+          .filterAll(targetBlock =>
+            player.isSneaking || !shouldBreakAllBlocks ||
+              targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
           )
 
     // 実際に破壊するブロック数の計算

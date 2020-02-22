@@ -61,7 +61,7 @@ class EntityListener extends Listener {
     if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.spigot.isUnbreakable) return
 
     //スキルで破壊されるブロックの時処理を終了
-    if (SeichiAssist.instance.managedBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
+    if (SeichiAssist.instance.brokenBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
       if (SeichiAssist.DEBUG) player.sendMessage("スキルで使用中のブロックです。")
       return
     }
@@ -98,11 +98,8 @@ class EntityListener extends Listener {
       BlockSearching
         .searchForBreakableBlocks(player, area.gridPoints(), hitBlock)
         .unsafeRunSync()
-        .mapSolids(
-          if (isMultiTypeBreakingSkillEnabled)
-            identity
-          else
-            _.filter(BlockSearching.multiTypeBreakingFilterPredicate(hitBlock))
+        .filterSolids(targetBlock =>
+          isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(hitBlock)(targetBlock)
         )
 
     //重力値計算

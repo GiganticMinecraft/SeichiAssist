@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
 import cats.effect.{IO, Timer}
-import com.github.unchama.seichiassist.MaterialSets.BreakTool
+import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -31,7 +31,7 @@ sealed abstract class ActiveSkillPremiumEffect(val num: Int,
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData,
                      tool: BreakTool,
-                     breakBlocks: Set[Block],
+                     breakBlocks: Set[BlockBreakableBySkill],
                      breakArea: AxisAlignedCuboid,
                      standard: Location): IO[Unit] = {
     import PluginExecutionContexts.{cachedThreadPool, syncShift}

@@ -69,7 +69,7 @@ class PlayerBlockBreakListener extends Listener {
     if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable) return
 
     //スキルで破壊されるブロックの時処理を終了
-    if (SeichiAssist.instance.managedBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
+    if (SeichiAssist.instance.brokenBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
       event.setCancelled(true)
       if (SeichiAssist.DEBUG) player.sendMessage("スキルで使用中のブロックです。")
       return
@@ -127,7 +127,7 @@ class PlayerBlockBreakListener extends Listener {
     val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
 
     //エフェクト用に壊されるブロック全てのリストデータ
-    val multiBreakList = new ArrayBuffer[Set[Block]]
+    val multiBreakList = new ArrayBuffer[Set[BlockBreakableBySkill]]
     //壊される溶岩の全てのリストデータ
     val multiLavaList = new ArrayBuffer[Set[Block]]
 
@@ -164,16 +164,11 @@ class PlayerBlockBreakListener extends Listener {
           BlockSearching
             .searchForBreakableBlocks(player, breakArea.gridPoints(), block)
             .unsafeRunSync()
-            .mapSolids(
-              if (isMultiTypeBreakingSkillEnabled) identity
-              else _.filter(BlockSearching.multiTypeBreakingFilterPredicate(block))
+            .filterSolids(targetBlock =>
+              isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(block)(targetBlock)
             )
-            .mapAll(
-              if (player.isSneaking) identity
-              else
-                _.filter { targetBlock =>
-                  targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
-                }
+            .filterAll(targetBlock =>
+              player.isSneaking || targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
             )
 
         //減る経験値計算
@@ -229,7 +224,7 @@ class PlayerBlockBreakListener extends Listener {
         ((blocks, lavas), chunkIndex) <- multiBreakList.zip(multiLavaList).zipWithIndex
         blockChunk = BukkitResources.vanishingBlockSetResource(blocks)
       } yield {
-        SeichiAssist.instance.managedBlockChunkScope.useTracked(blockChunk) { blocks =>
+        SeichiAssist.instance.brokenBlockChunkScope.useTracked(blockChunk) { blocks =>
           for {
             _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
             _ <- syncShift.shift
@@ -285,16 +280,11 @@ class PlayerBlockBreakListener extends Listener {
       BlockSearching
         .searchForBreakableBlocks(player, breakArea.gridPoints(), block)
         .unsafeRunSync()
-        .mapSolids(
-          if (isMultiTypeBreakingSkillEnabled) identity
-          else _.filter(BlockSearching.multiTypeBreakingFilterPredicate(block))
+        .filterSolids(targetBlock =>
+          isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(block)(targetBlock)
         )
-        .mapAll(
-          if (player.isSneaking) identity
-          else
-            _.filter { targetBlock =>
-              targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
-            }
+        .filterAll(targetBlock =>
+          player.isSneaking || targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
         )
 
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
@@ -342,7 +332,7 @@ class PlayerBlockBreakListener extends Listener {
 
       com.github.unchama.seichiassist.unsafe.runIOAsync(
         "単爆破壊エフェクトを再生する",
-        SeichiAssist.instance.managedBlockChunkScope.useTracked(blockChunk) { blocks =>
+        SeichiAssist.instance.brokenBlockChunkScope.useTracked(blockChunk) { blocks =>
           ActiveSkillEffect
             .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
             .runBreakEffect(player, playerdata.activeskilldata, tool, blocks, breakArea, centerOfBlock)
