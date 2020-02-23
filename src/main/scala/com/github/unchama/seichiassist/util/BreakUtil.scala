@@ -219,7 +219,7 @@ object BreakUtil {
 
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- IO {
-       targetBlocks.map(block => (block.getLocation.clone(), block.getType, block.getData))
+       targetBlocks.toSeq.map(block => (block.getLocation.clone(), block.getType, block.getData))
       }
 
       // ブロックをすべて[[toMaterial]]に変える
