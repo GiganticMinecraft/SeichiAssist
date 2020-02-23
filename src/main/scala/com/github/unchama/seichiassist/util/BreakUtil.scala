@@ -93,6 +93,116 @@ object BreakUtil {
     )
 
   /**
+   * ブロックをツールで破壊した時のドロップを計算する
+   *
+   * Bukkit/Spigotが提供するBlock.getDropsは信頼できる値を返さない。
+   * 本来はNMSのメソッドを呼ぶのが確実らしいが、一時的な実装として使用している。
+   * 参考: https://www.spigotmc.org/threads/getdrops-on-crops-not-functioning-as-expected.167751/#post-1779788
+   */
+  private def dropItemOnTool(tool: BreakTool)(blockInformation: (Location, Material, Byte)): Option[ItemStack] = {
+    val fortuneLevel = tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)
+
+    val (blockLocation, blockMaterial, blockData) = blockInformation
+
+    blockMaterial match {
+      case Material.GRASS_PATH | Material.SOIL => return Some(new ItemStack(Material.DIRT))
+      case Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME | Material.ENDER_PORTAL => return None
+      case _ =>
+    }
+
+    val rand = Math.random()
+    val bonus = Math.max(1, rand * (fortuneLevel + 2) - 1).toInt
+
+    val blockDataLeast4Bits = (blockData & 0x0F).toByte
+    val b_tree = (blockData & 0x03).toByte
+
+    val silkTouch = tool.getEnchantmentLevel(Enchantment.SILK_TOUCH)
+
+    if (silkTouch > 0) {
+      //シルクタッチの処理
+      blockMaterial match {
+        case Material.GLOWING_REDSTONE_ORE =>
+          Some(new ItemStack(Material.REDSTONE_ORE))
+        case Material.LOG | Material.LOG_2 | Material.LEAVES | Material.LEAVES_2 =>
+          Some(new ItemStack(blockMaterial, 1, b_tree.toShort))
+        case Material.MONSTER_EGGS =>
+          Some(new ItemStack(Material.STONE))
+        case _ =>
+          Some(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
+      }
+    } else if (fortuneLevel > 0 && MaterialSets.fortuneMaterials.contains(blockMaterial)) {
+      //幸運の処理
+      blockMaterial match {
+        case Material.COAL_ORE =>
+          Some(new ItemStack(Material.COAL, bonus))
+        case Material.DIAMOND_ORE =>
+          Some(new ItemStack(Material.DIAMOND, bonus))
+        case Material.LAPIS_ORE =>
+          val dye = new Dye()
+          dye.setColor(DyeColor.BLUE)
+
+          val withBonus = bonus * (rand * 4 + 4).toInt
+          Some(dye.toItemStack(withBonus))
+        case Material.EMERALD_ORE =>
+          Some(new ItemStack(Material.EMERALD, bonus))
+        case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
+          val withBonus = bonus * (rand + 4).toInt
+          Some(new ItemStack(Material.REDSTONE, withBonus))
+        case Material.QUARTZ_ORE =>
+          Some(new ItemStack(Material.QUARTZ, bonus))
+        case _ =>
+          // unreachable
+          Some(new ItemStack(blockMaterial, bonus))
+      }
+    } else {
+      //シルク幸運なしの処理
+      blockMaterial match {
+        case Material.COAL_ORE =>
+          Some(new ItemStack(Material.COAL))
+        case Material.DIAMOND_ORE =>
+          Some(new ItemStack(Material.DIAMOND))
+        case Material.LAPIS_ORE =>
+          val dye = new Dye()
+          dye.setColor(DyeColor.BLUE)
+          Some(dye.toItemStack((rand * 4 + 4).toInt))
+        case Material.EMERALD_ORE =>
+          Some(new ItemStack(Material.EMERALD))
+        case Material.REDSTONE_ORE | Material.GLOWING_REDSTONE_ORE =>
+          Some(new ItemStack(Material.REDSTONE, (rand + 4).toInt))
+        case Material.QUARTZ_ORE => Some(new ItemStack(Material.QUARTZ))
+        case Material.STONE =>
+          //Material.STONEの処理
+          if (blockData.toInt == 0x00) {
+            //焼き石の処理
+            Some(new ItemStack(Material.COBBLESTONE))
+          } else {
+            //他の石の処理
+            Some(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
+          }
+        case Material.GRASS => Some(new ItemStack(Material.DIRT))
+        case Material.GRAVEL =>
+          val p = fortuneLevel match {
+            case 1 => 0.14
+            case 2 => 0.25
+            case 3 => 1.00
+            case _ => 0.1
+          }
+          val dropMaterial = if (p > rand) Material.FLINT else Material.GRAVEL
+
+          Some(new ItemStack(dropMaterial, bonus))
+        case Material.LEAVES | Material.LEAVES_2 => None
+        case Material.CLAY => Some(new ItemStack(Material.CLAY_BALL, 4))
+        case Material.MONSTER_EGGS =>
+          blockLocation.getWorld.spawnEntity(blockLocation, EntityType.SILVERFISH)
+          None
+        case Material.LOG | Material.LOG_2 => Some(new ItemStack(blockMaterial, 1, b_tree.toShort))
+        case _ =>
+          Some(new ItemStack(blockMaterial, 1, blockDataLeast4Bits.toShort))
+      }
+    }
+  }
+
+  /**
    * ブロックの書き換えを行い、ドロップ処理と統計増加の処理を行う`IO`を返す。
    *
    * 返される`IO`は、終了時点で同期スレッドで実行を行っている。
@@ -107,22 +217,17 @@ object BreakUtil {
     for {
       _ <- PluginExecutionContexts.syncShift.shift
 
-      materialFilteredBlocks <- IO { targetBlocks.filter(b => MaterialSets.materials.contains(b.getType)).toList }
-
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- IO {
-        materialFilteredBlocks.map(block => (block.getLocation.clone(), block.getType, block.getData))
-      }
-
-      dropItems <- IO {
-        import scala.jdk.CollectionConverters._
-        materialFilteredBlocks.flatMap(b => b.getDrops(miningTool).asScala)
+       targetBlocks.map(block => (block.getLocation.clone(), block.getType, block.getData))
       }
 
       // ブロックをすべて[[toMaterial]]に変える
-      _ <- IO { materialFilteredBlocks.foreach(_.setType(toMaterial)) }
+      _ <- IO { targetBlocks.foreach(_.setType(toMaterial)) }
 
       _ <- PluginExecutionContexts.asyncShift.shift
+
+      dropItems <- IO { targetBlocksInformation.flatMap(dropItemOnTool(miningTool)) }
 
       itemsToBeDropped <- IO {
         // アイテムのマインスタック自動格納を試みる

@@ -7,12 +7,18 @@ import org.bukkit.block.Block
 import org.bukkit.inventory.ItemStack
 
 object MaterialSets {
+  val fortuneMaterials: Set[Material] = Set(
+    Material.COAL_ORE, Material.DIAMOND_ORE,
+    Material.LAPIS_ORE, Material.EMERALD_ORE,
+    Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE,
+    Material.QUARTZ_ORE
+  )
+
   // このMaterialは整地スキルに対応するブロック群を示しています。
   val materials: Set[Material] = Set(
     Material.STONE, Material.NETHERRACK, Material.NETHER_BRICK, Material.DIRT, Material.GRAVEL, Material.LOG,
-    Material.LOG_2, Material.GRASS, Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.DIAMOND_ORE,
-    Material.LAPIS_ORE, Material.EMERALD_ORE, Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE, Material.SAND,
-    Material.SANDSTONE, Material.QUARTZ_ORE, Material.END_BRICKS, Material.ENDER_STONE, Material.ICE,
+    Material.LOG_2, Material.GRASS, Material.IRON_ORE, Material.GOLD_ORE, Material.SAND,
+    Material.SANDSTONE, Material.END_BRICKS, Material.ENDER_STONE, Material.ICE,
     Material.PACKED_ICE, Material.OBSIDIAN, Material.MAGMA, Material.SOUL_SAND, Material.LEAVES, Material.LEAVES_2,
     Material.CLAY, Material.STAINED_CLAY, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE, Material.HARD_CLAY,
     Material.MONSTER_EGGS, Material.WEB, Material.WOOD, Material.FENCE, Material.DARK_OAK_FENCE, Material.RAILS,
@@ -29,7 +35,7 @@ object MaterialSets {
     Material.TRAPPED_CHEST, Material.NETHER_FENCE, Material.NETHER_BRICK_STAIRS, Material.CAULDRON, Material.END_ROD,
     Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST, Material.PURPUR_SLAB, Material.STEP,
     Material.DOUBLE_STEP,Material.ENDER_PORTAL_FRAME,Material.ENDER_PORTAL
-  )
+  ) ++ fortuneMaterials
 
   /**
    * これらのマテリアルを用いてブロックの破壊試行を行う。
