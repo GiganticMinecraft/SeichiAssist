@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.activeskill
 
 import cats.effect.SyncIO
 import com.github.unchama.seichiassist.MaterialSets
+import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.Material
@@ -11,16 +12,14 @@ import org.bukkit.entity.Player
 import scala.collection.{Set, mutable}
 
 object BlockSearching {
-  case class Result(solids: List[Block], waters: List[Block], lavas: List[Block]) {
+  case class Result(solids: List[BlockBreakableBySkill], waters: List[Block], lavas: List[Block]) {
+    def filterSolids(f: Block => Boolean): Result = copy(solids = solids.filter(f))
 
-    def mapSolids(f: List[Block] => List[Block]): Result = copy(solids = f(solids))
-
-    def mapAll(f: List[Block] => List[Block]): Result = copy(solids = f(solids), waters = f(waters), lavas = f(lavas))
-
+    def filterAll(f: Block => Boolean): Result = copy(solids = solids.filter(f), waters = waters.filter(f), lavas = lavas.filter(f))
   }
 
   def searchForBreakableBlocks(player: Player, relativeVectors: Seq[XYZTuple], referencePoint: Block): SyncIO[Result] = SyncIO {
-    val solidBlocks = new mutable.HashSet[Block]
+    val solidBlocks = new mutable.HashSet[BlockBreakableBySkill]
     val waterBlocks = new mutable.HashSet[Block]
     val lavaBlocks  = new mutable.HashSet[Block]
 
@@ -33,9 +32,9 @@ object BlockSearching {
             lavaBlocks.add(targetBlock)
           case Material.STATIONARY_WATER | Material.WATER =>
             waterBlocks.add(targetBlock)
-          case material if MaterialSets.materials.contains(material) =>
-            solidBlocks.add(targetBlock)
           case _ =>
+            MaterialSets.refineBlock(targetBlock, MaterialSets.materials)
+              .foreach(b => solidBlocks.add(b))
         }
     }
 

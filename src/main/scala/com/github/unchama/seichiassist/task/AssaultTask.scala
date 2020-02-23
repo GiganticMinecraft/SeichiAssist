@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.data.player.PlayerData
@@ -7,11 +8,10 @@ import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{ActiveSkill, SeichiAssist}
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{ChatColor, GameMode, Material}
 
-class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnable {
+class AssaultTask(val player: Player, val tool: BreakTool) extends BukkitRunnable {
   private val playerdata: PlayerData = SeichiAssist.playermap(player.getUniqueId)
 
   //放置判定用位置データ
@@ -110,13 +110,9 @@ class AssaultTask(val player: Player, val tool: ItemStack) extends BukkitRunnabl
     val BlockSearching.Result(foundBlocks, foundWaters, foundLavas) =
       BlockSearching.searchForBreakableBlocks(player, breakArea.gridPoints(), block)
           .unsafeRunSync()
-          .mapAll(
-            if (player.isSneaking || !shouldBreakAllBlocks)
-              identity
-            else
-              _.filter { targetBlock =>
-                targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
-              }
+          .filterAll(targetBlock =>
+            player.isSneaking || !shouldBreakAllBlocks ||
+              targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
           )
 
     // 実際に破壊するブロック数の計算

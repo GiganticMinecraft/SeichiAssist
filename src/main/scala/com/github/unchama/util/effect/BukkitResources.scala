@@ -9,7 +9,7 @@ object BukkitResources {
   /**
    * 参照された`Block`達が開放時に空気ブロックに書き換えられるような`Resource`としての`Block`
    */
-  def vanishingBlockSetResource(reference: Set[Block]): Resource[IO, Set[Block]] =
+  def vanishingBlockSetResource[B <: Block](reference: Set[B]): Resource[IO, Set[B]] =
     Resource.make(
       IO(reference)
     )(block =>

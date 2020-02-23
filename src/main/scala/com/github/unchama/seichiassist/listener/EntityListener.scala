@@ -1,18 +1,17 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
-import com.github.unchama.seichiassist.util.external.ExternalPlugins
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit._
-import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.ItemStack
 
 class EntityListener extends Listener {
   private val playermap = SeichiAssist.playermap
@@ -34,16 +33,14 @@ class EntityListener extends Listener {
     if ((player.getGameMode ne GameMode.SURVIVAL) || player.isFlying) return
 
     //壊されるブロックを取得
-    val block = player.getWorld.getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize))
+    val block =
+      MaterialSets.refineBlock(
+        player.getWorld.getBlockAt(projectile.getLocation.add(projectile.getVelocity.normalize)),
+        MaterialSets.materials
+      ).getOrElse(return)
 
     //他人の保護がかかっている場合は処理を終了
     if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) return
-
-    //ブロックのタイプを取得
-    val material = block.getType
-
-    //ブロックタイプがmateriallistに登録されていなければ処理終了
-    if (!MaterialSets.materials.contains(material)) return
 
     //整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
@@ -54,31 +51,25 @@ class EntityListener extends Listener {
     //スキル発動条件がそろってなければ終了
     if (!Util.isSkillEnable(player)) return
 
-    //プレイヤーインベントリを取得
-    val inventory = player.getInventory
-
-    //メインハンドとオフハンドを取得
-    val mainhanditem = inventory.getItemInMainHand
-
-    //メインハンドにツールがあるか
-    val mainhandtoolflag = MaterialSets.breakMaterials.contains(mainhanditem.getType)
-
     //実際に使用するツール
-    val tool = if (mainhandtoolflag) mainhanditem else return
+    val tool = MaterialSets.refineItemStack(
+      player.getInventory.getItemInMainHand,
+      MaterialSets.breakToolMaterials
+    ).getOrElse(return)
 
     //耐久値がマイナスかつ耐久無限ツールでない時処理を終了
     if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.spigot.isUnbreakable) return
 
     //スキルで破壊されるブロックの時処理を終了
-    if (SeichiAssist.instance.managedBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
+    if (SeichiAssist.instance.brokenBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
       if (SeichiAssist.DEBUG) player.sendMessage("スキルで使用中のブロックです。")
       return
     }
 
-    runArrowSkillofHitBlock(player, block, tool)
+    runArrowSkillOfHitBlock(player, block, tool)
   }
 
-  private def runArrowSkillofHitBlock(player: Player, hitBlock: Block, tool: ItemStack): Unit = {
+  private def runArrowSkillOfHitBlock(player: Player, hitBlock: BlockBreakableBySkill, tool: BreakTool): Unit = {
     val uuid = player.getUniqueId
     val playerData = playermap.apply(uuid)
 
@@ -107,11 +98,8 @@ class EntityListener extends Listener {
       BlockSearching
         .searchForBreakableBlocks(player, area.gridPoints(), hitBlock)
         .unsafeRunSync()
-        .mapSolids(
-          if (isMultiTypeBreakingSkillEnabled)
-            identity
-          else
-            _.filter(BlockSearching.multiTypeBreakingFilterPredicate(hitBlock))
+        .filterSolids(targetBlock =>
+          isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(hitBlock)(targetBlock)
         )
 
     //重力値計算

@@ -9,6 +9,7 @@ import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
@@ -46,7 +47,7 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
-  val managedBlockChunkScope: ResourceScope[IO, Set[Block]] = {
+  val brokenBlockChunkScope: ResourceScope[IO, Set[BlockBreakableBySkill]] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
@@ -224,7 +225,7 @@ class SeichiAssist extends JavaPlugin() {
     // ファイナライザはunsafeRunSyncによってこのスレッドで同期的に実行されるため
     // onDisable内で呼び出して問題はない。
     // https://scastie.scala-lang.org/NqT4BFw0TiyfjycWvzRIuQ
-    managedBlockChunkScope.releaseAll.unsafeRunSync()
+    brokenBlockChunkScope.releaseAll.unsafeRunSync()
     arrowSkillProjectileScope.releaseAll.unsafeRunSync()
     magicEffectEntityScope.releaseAll.value.unsafeRunSync()
 

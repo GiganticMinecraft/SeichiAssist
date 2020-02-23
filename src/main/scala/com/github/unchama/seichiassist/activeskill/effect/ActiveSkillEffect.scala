@@ -1,20 +1,18 @@
 package com.github.unchama.seichiassist.activeskill.effect
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.Blizzard
 import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, AxisAlignedCuboid}
 import com.github.unchama.seichiassist.util.BreakUtil
-import org.bukkit.block.Block
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.{Location, Material}
 
 trait ActiveSkillEffect {
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData_Legacy,
-                     tool: ItemStack,
-                     breakBlocks: Set[Block],
+                     tool: BreakTool,
+                     breakBlocks: Set[BlockBreakableBySkill],
                      breakArea: AxisAlignedCuboid,
                      standard: Location): IO[Unit]
 }
@@ -23,8 +21,8 @@ object ActiveSkillEffect {
   object NoEffect extends ActiveSkillEffect {
     override def runBreakEffect(player: Player,
                                 skillData: ActiveSkillData_Legacy,
-                                tool: ItemStack,
-                                breakBlocks: Set[Block],
+                                tool: BreakTool,
+                                breakBlocks: Set[BlockBreakableBySkill],
                                 breakArea: AxisAlignedCuboid,
                                 standard: Location): IO[Unit] =
       BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
