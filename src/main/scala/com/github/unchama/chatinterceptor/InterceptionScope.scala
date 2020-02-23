@@ -20,8 +20,6 @@ object InterceptorResponse {
 }
 
 class InterceptionScope[K, R](implicit val cs: ContextShift[IO]) {
-  import InterceptionScope._
-
   private val map: mutable.Map[K, Deferred[IO, InterceptionResult[R]]] = mutable.HashMap()
 
   def cancelAnyInterception(key: K, reason: CancellationReason): IO[Unit] =
@@ -45,8 +43,4 @@ class InterceptionScope[K, R](implicit val cs: ContextShift[IO]) {
       } yield Intercepted
       case None => IO.pure(Ignored)
     }
-}
-
-object InterceptionScope {
-  type InterceptionResult[R] = Either[R, CancellationReason]
 }

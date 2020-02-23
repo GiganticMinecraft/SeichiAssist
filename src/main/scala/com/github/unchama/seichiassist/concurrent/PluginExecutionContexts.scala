@@ -6,7 +6,7 @@ import cats.effect.{ContextShift, IO}
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingTaskContext, RepeatingTaskContextTag}
 import com.github.unchama.generic
 import com.github.unchama.menuinventory.Tags.LayoutPreparationContextTag
-import com.github.unchama.menuinventory.Types.LayoutPreparationContext
+import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.plugin.java.JavaPlugin
 

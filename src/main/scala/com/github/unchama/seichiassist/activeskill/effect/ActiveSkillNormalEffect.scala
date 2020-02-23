@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.activeskill.effect
 
 import cats.effect.{IO, Timer}
 import com.github.unchama.seichiassist.ActiveSkill
+import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -11,10 +12,8 @@ import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import enumeratum._
 import org.bukkit.ChatColor._
-import org.bukkit.block.Block
+import org.bukkit._
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.{Effect, Location, Material, Particle, Sound}
 
 import scala.util.Random
 
@@ -27,8 +26,8 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
 
   override def runBreakEffect(player: Player,
                               skillData: ActiveSkillData,
-                              tool: ItemStack,
-                              breakBlocks: Set[Block],
+                              tool: BreakTool,
+                              breakBlocks: Set[BlockBreakableBySkill],
                               breakArea: AxisAlignedCuboid,
                               standard: Location): IO[Unit] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}

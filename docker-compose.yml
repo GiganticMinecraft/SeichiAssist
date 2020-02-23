@@ -17,17 +17,19 @@ services:
     image: spigot
     networks:
       - seichi
+    volumes:
+      - spigot_a:/spigot/
     ports:
       - "25566:25565"
     depends_on:
       - db
     command: >
-      bash -c "cp -f /build/*.jar /spigot/plugins/ &&
-        mkdir -p /spigot/plugins/SeichiAssist/ &&
-        cp -f /conf/config.yml /spigot/plugins/SeichiAssist/config.yml &&
+      bash -c "mkdir -p /spigot/plugins/SeichiAssist/ &&
+        cp -Rf /spigot-files/* /spigot/ &&
         sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
         sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
-        java -jar /spigot/spigot*.jar nogui"
+        cd /spigot/ && java -jar /spigot/spigot*.jar nogui"
+    stdin_open: true
   spigotb:
     build:
       context: .
@@ -35,17 +37,19 @@ services:
     image: spigot
     networks:
       - seichi
+    volumes:
+      - spigot_b:/spigot/
     ports:
       - "25567:25565"
     depends_on:
       - db
     command: >
-      bash -c "cp -f /build/*.jar /spigot/plugins/ &&
-        mkdir -p /spigot/plugins/SeichiAssist/ &&
-        cp -f /conf/config.yml /spigot/plugins/SeichiAssist/config.yml &&
+      bash -c "mkdir -p /spigot/plugins/SeichiAssist/ &&
+        cp -Rf /spigot-files/* /spigot/ &&
         sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
         sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
-        java -jar /spigot/spigot*.jar nogui"
+        cd /spigot/ && java -jar /spigot/spigot*.jar nogui"
+    stdin_open: true
   bungeecord:
     build: ./docker/bungeecord
     ports:
@@ -55,6 +59,7 @@ services:
     depends_on:
       - spigota
       - spigotb
+    stdin_open: true
 
 
   phpmyadmin:

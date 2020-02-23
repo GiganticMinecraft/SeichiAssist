@@ -17,6 +17,7 @@ import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.seichiassist.util.{ClosedRange, Util}
+import com.github.unchama.targetedeffect.player.ForcedPotionEffect
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.command.CommandSender

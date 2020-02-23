@@ -211,7 +211,7 @@ public class ActiveSkillData {
             ItemStack offHandItem = player.getInventory().getItemInOffHand();
 
             //場合分け
-            if (!MaterialSets.breakMaterials().contains(offHandItem.getType())) {
+            if (!MaterialSets.breakToolMaterials().contains(offHandItem.getType())) {
                 // サブハンドにツールを持っていないとき
                 player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
             } else if (offHandItem.getDurability() > offHandItem.getType().getMaxDurability() &&

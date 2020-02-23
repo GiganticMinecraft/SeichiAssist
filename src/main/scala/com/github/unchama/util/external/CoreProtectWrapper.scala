@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.util.external
+package com.github.unchama.util.external
 
 import net.coreprotect.CoreProtectAPI
 import org.bukkit.Location

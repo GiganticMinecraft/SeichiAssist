@@ -3,12 +3,11 @@
 [![CircleCI](https://circleci.com/gh/GiganticMinecraft/SeichiAssist/tree/master.svg?style=svg)](https://circleci.com/gh/GiganticMinecraft/SeichiAssist/tree/master)
 
 ## 開発環境
-- [Intellij IDEA 2019.2](https://www.jetbrains.com/idea/) などの統合開発環境
-- [JDK 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-- [mysql-connecter-java-5.1.35](https://downloads.mysql.com/archives/c-j/)
+- [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
+- [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 - [Scala 2.13](https://www.scala-lang.org/download/)
-- [sbt 1.3.6](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Windows.html)
-- Spigot 1.12
+- [sbt 1.3.7](https://www.scala-sbt.org/1.x/docs/Setup.html)
+- Spigot 1.12.2
 
 ## 前提プラグイン
 - [CoreProtect-2.14.4](https://www.spigotmc.org/resources/coreprotect.8631/download?version=231781)
@@ -25,16 +24,42 @@
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
 ## ビルド
-まずは[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Windows.html)よりsbtのインストールをします。
+
+最初に、Java Development Kit (JDK) 8をインストールする必要があります。
+[AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot) のインストールを推奨します。
+
+[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Setup.html)に従ってsbtのインストールをします。
 sbtがコマンドラインで使える状態で`sbt assembly`を実行すると、`target/build`フォルダにjarが出力されます。
+
+### IntelliJ IDEAの画面からビルドする
 
 IntelliJ IDEAを開発に使用している場合、プロジェクトをsbtプロジェクトとして読み込み、
 sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`build/lib`フォルダにjarが出力されます。
 
 ## デバッグ用docker環境
 
-docker および docker-compose が実行可能な環境では、`./prepare-docker.sh`を実行するとデバッグ用のBungeecord+Spigot環境を構築可能です。
-spigot環境の起動には、 Minecraft EULA に同意する必要があります。同意する場合、`./docker/spigot/eula.txt`を参照し、 `eula=false` を `eula=true`に書き換えてください。
+`docker`、`docker-compose`及び`sbt`が実行可能であるとします。
+Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を実行することで
+デバッグ用のBungeecord + Spigot環境を構築することができます。
+
+初回起動時にはSpigotのビルドに時間がかかります。
+さらに、[Minecraft EULA](https://account.mojang.com/documents/minecraft_eula)に同意する必要があるため実行が中断されます。
+EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles/eula.txt`を参照し、
+`eula=false` を `eula=true` に書き換えてください。
+
+サーバーやDB等を停止する場合、 `docker-compose down` を実行してください。
+
+### デバッグ用環境への接続
+
+DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とします。
+
+`docker`により各サービスが起動したら、`DOCKER_IP`へとMinecraftを接続することができます。
+また、`DOCKER_IP:8080`へとWebブラウザでアクセスすることで、phpMyAdminを介してデータベースを操作することができます。
+
+`op`やコマンド実行等などでSpigotのコンソールにアクセスする必要がある場合、
+`spigota`または`spigotb`へのコンテナ名とともに `docker attach [CONTAINER_NAME]` を実行してください。
+コンテナ名は `docker ps` を実行すると `seichiassist_spigotb_1` のような形式で表示されます。
+コンソールからは `Ctrl+C` で抜けることができます(サーバーは停止されません)。
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。

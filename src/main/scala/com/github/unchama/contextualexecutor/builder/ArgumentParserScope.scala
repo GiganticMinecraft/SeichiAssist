@@ -1,7 +1,6 @@
 package com.github.unchama.contextualexecutor.builder
 
 import com.github.unchama
-import com.github.unchama.contextualexecutor.builder.TypeAliases.ResponseEffectOrResult
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.syntax._
 import org.bukkit.command.CommandSender

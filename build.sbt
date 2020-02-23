@@ -4,7 +4,7 @@ import ResourceFilter.filterResources
 import sbt.Keys.baseDirectory
 
 ThisBuild / scalaVersion     := "2.13.1"
-ThisBuild / version          := "1.2.11"
+ThisBuild / version          := "1.2.12"
 ThisBuild / organization     := "click.seichi"
 ThisBuild / description      := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 

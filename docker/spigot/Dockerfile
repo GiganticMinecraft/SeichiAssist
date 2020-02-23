@@ -7,12 +7,12 @@ RUN java -jar BuildTools.jar -o /artifact --rev 1.12.2
 
 FROM openjdk:8-jdk as runner
 
-COPY --from=builder /artifact/ /spigot/
-COPY localDependencies/ /spigot/plugins/
-COPY docker/spigot/serverfiles/ /spigot/
+# /spigot-filesをコンテナが提供するファイル群にする
 
-COPY target/build /build/
-ADD ./src/main/resources/config.yml /conf/config.yml
+COPY --from=builder /artifact/ /spigot-files/
+COPY localDependencies/ /spigot-files/plugins/
+COPY docker/spigot/serverfiles/ /spigot-files/
 
-WORKDIR /spigot
-CMD java -jar /spigot/spigot*.jar nogui
+COPY target/build /spigot-files/plugins/
+
+ADD ./src/main/resources/config.yml /spigot-files/plugins/SeichiAssist/config.yml
