@@ -142,8 +142,6 @@ class PlayerInventoryListener extends Listener {
       return
     }
     val player = he.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap.getOrElse(uuid, return)
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -235,8 +233,6 @@ class PlayerInventoryListener extends Listener {
       return
     }
     val player = he.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap.getOrElse(uuid, return)
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -266,7 +262,7 @@ class PlayerInventoryListener extends Listener {
         convertItem(event, 2, ("snow_ball", "雪玉", 4), null, null, ("snow_block", "雪(ブロック)", 1), 2)
 
 
-        //ネザーウォートとネザーレンガを赤いネザーレンガに変換10～10万
+        //ネザーウォートとネザーレンガを赤いネザーレンガに変換10～1万
       } else if (itemstackcurrent.getType == Material.RED_NETHER_BRICK) {
         convertItem(event, 2, ("nether_stalk", "ネザーウォート", 2), ("nether_brick_item", "ネザーレンガ", 2), null, ("red_nether_brick", "赤いネザーレンガ", 1), 2)
 
@@ -276,7 +272,7 @@ class PlayerInventoryListener extends Listener {
 
         //溶岩バケツを消費して鉄鉱石を鉄インゴットに変換50～5万
       } else if (itemstackcurrent.getType == Material.IRON_INGOT && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
-        convertItem(event, 3, ("iron_ore", "鉄鉱石", 50), ("lava_bucket", "溶岩バケツ", 1.0), ("bucket", "バケツ", 1.0), ("iron_ingot", "鉄インゴット", 50), 2)
+        convertItem(event, 3, ("iron_ore", "鉄鉱石", 50), ("lava_bucket", "溶岩バケツ", 1), ("bucket", "バケツ", 1), ("iron_ingot", "鉄インゴット", 50), 2)
 
         //石炭を消費して金鉱石を金インゴットに変換4～4000
       } else if (itemstackcurrent.getType == Material.GOLD_INGOT && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
@@ -284,7 +280,7 @@ class PlayerInventoryListener extends Listener {
 
         //溶岩バケツを消費して金鉱石を金インゴットに変換50～5万
       } else if (itemstackcurrent.getType == Material.GOLD_INGOT && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
-        convertItem(event, 3, ("gold_ore", "金鉱石", 50), ("lava_bucket", "溶岩バケツ", 1.0), ("bucket", "バケツ", 1.0), ("gold_ingot", "金インゴット", 50), 2)
+        convertItem(event, 3, ("gold_ore", "金鉱石", 50), ("lava_bucket", "溶岩バケツ", 1), ("bucket", "バケツ", 1), ("gold_ingot", "金インゴット", 50), 2)
 
         //石炭を消費して砂をガラスに変換4～4000
       } else if (itemstackcurrent.getType == Material.GLASS && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
@@ -292,7 +288,7 @@ class PlayerInventoryListener extends Listener {
 
         //溶岩バケツを消費して砂をガラスに変換50～5万
       } else if (itemstackcurrent.getType == Material.GLASS && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
-        convertItem(event, 3, ("sand", "砂", 50), ("lava_bucket", "溶岩バケツ", 1.0), ("bucket", "バケツ", 1.0), ("glass", "ガラス", 50), 2)
+        convertItem(event, 3, ("sand", "砂", 50), ("lava_bucket", "溶岩バケツ", 1), ("bucket", "バケツ", 1), ("glass", "ガラス", 50), 2)
 
         //石炭を消費してネザーラックをネザーレンガに変換4～4000
       } else if (itemstackcurrent.getType == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
@@ -300,7 +296,7 @@ class PlayerInventoryListener extends Listener {
 
         //溶岩バケツを消費してネザーラックをネザーレンガに変換50～5万
       } else if (itemstackcurrent.getType == Material.NETHER_BRICK_ITEM && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
-        convertItem(event, 3, ("netherrack", "ネザーラック", 50), ("lava_bucket", "溶岩バケツ", 1.0), ("bucket", "バケツ", 1.0), ("nether_brick_item", "ネザーレンガ", 50), 2)
+        convertItem(event, 3, ("netherrack", "ネザーラック", 50), ("lava_bucket", "溶岩バケツ", 1), ("bucket", "バケツ", 1), ("nether_brick_item", "ネザーレンガ", 50), 2)
 
       }
     }
@@ -331,8 +327,6 @@ class PlayerInventoryListener extends Listener {
       return
     }
     val player = he.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap.getOrElse(uuid, return)
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -351,12 +345,10 @@ class PlayerInventoryListener extends Listener {
         //2ページ目へ
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.getBlockCraftData2(player))
-
-        /*			} else if (itemstackcurrent.getType().equals(Material.SKULL_ITEM) && ((SkullMeta)itemstackcurrent.ge.getItemMeta()).ge.getOwner().equals("MHF_ArrowDown") ){
-				//4ページ目へ
-				player.playSound(player.getLocation(), Sound.BLOCK_FENCE_GATE_OPEN, 1, (float) 0.1);
-				player.openInventory(MenuInventoryData.getBlockCraftData4(player));
-*/
+      } else if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowDown") {
+        //4ページ目へ
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+        player.openInventory(MenuInventoryData.getBlockCraftData4(player))
 
         //石炭を消費して粘土をレンガに変換4～4000
       } else if (itemstackcurrent.getType == Material.CLAY_BRICK && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
@@ -364,14 +356,112 @@ class PlayerInventoryListener extends Listener {
 
         //溶岩バケツを消費して粘土をレンガに変換50～5万
       } else if (itemstackcurrent.getType == Material.CLAY_BRICK && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
-        convertItem(event, 3, ("clay_ball", "粘土", 50), ("lava_bucket", "溶岩バケツ", 1.0), ("bucket", "バケツ", 1.0), ("brick_item", "レンガ", 50), 3)
+        convertItem(event, 3, ("clay_ball", "粘土", 50), ("lava_bucket", "溶岩バケツ", 1), ("bucket", "バケツ", 1), ("brick_item", "レンガ", 50), 3)
+
+        //石炭を石炭ブロックに変換10~1万
+      } else if (itemstackcurrent.getType == Material.COAL_BLOCK) {
+        convertItem(event, 3, ("coal", "石炭", 9), null, null, ("coal_block", "石炭ブロック", 1), 3)
+
+        //鉄インゴットを鉄ブロックに変換10~1万
+      } else if (itemstackcurrent.getType == Material.IRON_BLOCK) {
+        convertItem(event, 3, ("iron_ingot", "鉄インゴット", 9), null, null, ("iron_block", "鉄ブロック", 1), 3)
+
+        //金インゴットを金ブロックに変換10~1万
+      } else if (itemstackcurrent.getType == Material.GOLD_BLOCK) {
+        convertItem(event, 3, ("gold_ingot", "金インゴット", 9), null, null, ("gold_block", "金ブロック", 1), 3)
+
+        //レッドストーンをレッドストーンブロックに変換10~1万
+      } else if (itemstackcurrent.getType == Material.REDSTONE_BLOCK) {
+        convertItem(event, 3, ("redstone", "レッドストーン", 9), null, null, ("redstone_block", "レッドストーンブロック", 1), 3)
+
+        //ラピスラズリをラピスラズリブロックに変換10~1万
+      } else if (itemstackcurrent.getType == Material.LAPIS_BLOCK) {
+        convertItem(event, 3, ("lapis_lazuli", "ラピスラズリ", 9), null, null, ("lapis_block", "ラピスラズリブロック", 1), 3)
+
+        //エメラルドをエメラルドブロックに変換10~1万
+      } else if (itemstackcurrent.getType == Material.EMERALD_BLOCK) {
+        convertItem(event, 3, ("emerald", "エメラルド", 9), null, null, ("emerald_block", "エメラルドブロック", 1), 3)
+
+        //ダイヤモンドをダイヤモンドブロックに変換10~1万
+      } else if (itemstackcurrent.getType == Material.DIAMOND_BLOCK) {
+        convertItem(event, 3, ("diamond", "ダイヤモンド", 9), null, null, ("diamond_block", "ダイヤモンドブロック", 1), 3)
+
+      }
+    }
+  }
+
+  //MineStackブロック一括クラフト画面3
+  @EventHandler
+  def onPlayerClickBlockCraft4(event: InventoryClickEvent): Unit = {
+    //外枠のクリック処理なら終了
+    if (event.getClickedInventory == null) {
+      return
+    }
+
+    val itemstackcurrent = event.getCurrentItem
+    val view = event.getView
+    val he = view.getPlayer
+    //インベントリを開けたのがプレイヤーではない時終了
+    if (he.getType != EntityType.PLAYER) {
+      return
+    }
+
+    val topinventory = view.getTopInventory.ifNull {
+      return
+    }
+    //インベントリが存在しない時終了
+    //インベントリサイズが54でない時終了
+    if (topinventory.getSize != 54) {
+      return
+    }
+    val player = he.asInstanceOf[Player]
+
+    //プレイヤーデータが無い場合は処理終了
+
+    //インベントリ名が以下の時処理
+    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "MineStackブロック一括クラフト4") {
+      event.setCancelled(true)
+
+      //プレイヤーインベントリのクリックの場合終了
+      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+        return
+      }
+      /*
+			 * クリックしたボタンに応じた各処理内容の記述ここから
+			 */
+      if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowUp") {
+        //3ページ目へ
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+        player.openInventory(MenuInventoryData.getBlockCraftData3(player))
+
+        /* else if (itemstackcurrent.getType == Material.SKULL_ITEM && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowDown") {
+        //5ページ目へ
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+        player.openInventory(MenuInventoryData.getBlockCraftData5(player))
+*/
+
+        //エンドストーンをエンドストーンレンガに変換4～4000
+      } else if (itemstackcurrent.getType == Material.END_BRICKS) {
+        convertItem(event, 3, ("ender_stone", "エンドストーン", 1), null, null, ("end_bricks", "エンドストーンレンガ", 1), 4)
+
+        //ネザーウォートをネザーウォートブロックに変換10～1万
+      } else if (itemstackcurrent.getType == Material.NETHER_WART_BLOCK) {
+        convertItem(event, 3, ("nether_stalk", "ネザーウォート", 9), null, null, ("nether_wart_block", "ネザーウォートブロック", 1), 4)
+
+        //石炭を消費してコーラスフルーツをプルパーブロックに変換10~1万
+      } else if (itemstackcurrent.getType == Material.PURPUR_BLOCK && itemstackcurrent.getItemMeta.getDisplayName.contains("石炭")) {
+        convertItem(event, 3, ("chorus_fruit", "コーラスフルーツ", 4), ("coal", "石炭", 1), null, ("purpur_block", "プルパーブロック", 4), 4)
+
+        //溶岩バケツを消費してコーラスフルーツをプルパーブロックに変換50～5万
+      } else if (itemstackcurrent.getType == Material.PURPUR_BLOCK && itemstackcurrent.getItemMeta.getDisplayName.contains("溶岩")) {
+        convertItem(event, 3, ("chorus_fruit", "コーラスフルーツ", 50), ("lava_bucket", "溶岩バケツ", 1), ("bucket", "バケツ", 1), ("purpur_block", "プルパーブロック", 50), 4)
 
       }
     }
   }
 
   @EventHandler
-  def convertItem(event: InventoryClickEvent, minestackBlockCraftlevel: Int, block_before_id_1: Tuple3[String, String, Int], block_before_id_2: Tuple3[String, String, Double], block_return_id: Tuple3[String, String, Double], block_after_id: Tuple3[String, String, Int], page: Int): Unit = {
+  def convertItem(event: InventoryClickEvent, minestackBlockCraftlevel: Int, block_before_id_1: Tuple3[String, String, Int], block_before_id_2: Tuple3[String, String, Int], block_return_id: Tuple3[String, String, Int], block_after_id: Tuple3[String, String, Int], page: Int): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -446,8 +536,8 @@ class PlayerInventoryListener extends Listener {
         player.openInventory(MenuInventoryData.getBlockCraftData2(player))
       } else if (page == 3) {
         player.openInventory(MenuInventoryData.getBlockCraftData3(player))
-      } else {
-        player.openInventory(MenuInventoryData.getBlockCraftData3(player))
+      } else if (page == 4) {
+        player.openInventory(MenuInventoryData.getBlockCraftData4(player))
       }
     }
   }

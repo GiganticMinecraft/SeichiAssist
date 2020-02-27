@@ -288,7 +288,7 @@ object MenuInventoryData {
     }
 
 
-    //石を石レンガに変換10～10万
+    //石を石レンガに変換10～1万
     num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("stone"))
     num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("smooth_brick0"))
     for (x <- 1 to 5) {
@@ -451,7 +451,7 @@ object MenuInventoryData {
     }
 
 
-    //ネザーウォートとネザーレンガを赤いネザーレンガに変換10～10万
+    //ネザーウォートとネザーレンガを赤いネザーレンガに変換10～1万
     num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_stalk"))
     num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("red_nether_brick"))
     num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_brick_item"))
@@ -608,7 +608,7 @@ object MenuInventoryData {
     val inventory = Bukkit.getServer.createInventory(null, 6 * 9, DARK_PURPLE.toString + "" + BOLD + "MineStackブロック一括クラフト3")
     var itemstack: ItemStack = null
     var itemmeta: ItemMeta = null
-    val skullmeta: SkullMeta = ItemMetaFactory.SKULL.getValue
+    var skullmeta: SkullMeta = ItemMetaFactory.SKULL.getValue
     var lore: List[String] = null
 
     // 2ページ目を開く
@@ -619,6 +619,16 @@ object MenuInventoryData {
     skullmeta.setOwner("MHF_ArrowUp")
     itemstack.setItemMeta(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 45, itemstack)
+
+    // 4ページ目を開く
+    itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3)
+    skullmeta = ItemMetaFactory.SKULL.getValue
+    skullmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "4ページ目へ")
+    lore = List(RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで移動")
+    skullmeta.setLore(lore.asJava)
+    skullmeta.setOwner("MHF_ArrowDown")
+    itemstack.setItemMeta(skullmeta)
+    AsyncInventorySetter.setItemAsync(inventory, 53, itemstack)
 
     //石炭を消費して粘土をレンガに変換4～4000
     {
@@ -656,6 +666,240 @@ object MenuInventoryData {
       }
     }
 
+    //石炭を石炭ブロックに変換10～1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal_block"))
+      val num_3: Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.COAL_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.COAL_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "石炭を石炭ブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "石炭" + p10 * 9 + "個→石炭ブロック" + p10 + "個", RESET.toString + "" + GRAY + "石炭の数:" + comma(num_1), RESET.toString + "" + GRAY + "石炭ブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 9, itemstack)
+      }
+    }
+
+    //鉄インゴットを鉄ブロックに変換10～1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_ingot"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("iron_block"))
+      val num_3: Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.IRON_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.IRON_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "鉄インゴットを鉄ブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "鉄インゴット" + p10 * 9 + "個→鉄ブロック" + p10 + "個", RESET.toString + "" + GRAY + "鉄インゴットの数:" + comma(num_1), RESET.toString + "" + GRAY + "鉄ブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 14, itemstack)
+      }
+    }
+
+    //金インゴットを金ブロックに変換10～1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_ingot"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("gold_block"))
+      val num_3: Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.GOLD_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.GOLD_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "金インゴットを金ブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "金インゴット" + p10 * 9 + "個→金ブロック" + p10 + "個", RESET.toString + "" + GRAY + "金インゴットの数:" + comma(num_1), RESET.toString + "" + GRAY + "金ブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 18, itemstack)
+      }
+    }
+
+    //レッドストーンをレッドストーンブロックに変換10～1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("redstone"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("redstone_block"))
+      val num_3: Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.REDSTONE_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.REDSTONE_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "レッドストーンをレッドストーンブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "レッドストーン" + p10 * 9 + "個→レッドストーンブロック" + p10 + "個", RESET.toString + "" + GRAY + "レッドストーンの数:" + comma(num_1), RESET.toString + "" + GRAY + "レッドストーンブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 23, itemstack)
+      }
+    }
+
+    //ラピスラズリをラピスラズリブロックに変換10～1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lapis_lazuli"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lapis_block"))
+      val num_3: Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.LAPIS_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.LAPIS_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "ラピスラズリをラピスラズリブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "ラピスラズリ" + p10 * 9 + "個→ラピスラズリブロック" + p10 + "個", RESET.toString + "" + GRAY + "ラピスラズリの数:" + comma(num_1), RESET.toString + "" + GRAY + "ラピスラズリブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 27, itemstack)
+      }
+    }
+
+    //エメラルドをエメラルドブロックに変換10～1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("emerald"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("emerald_block"))
+      val num_3: Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.EMERALD_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.EMERALD_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "エメラルドをエメラルドブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "エメラルド" + p10 * 9 + "個→エメラルドブロック" + p10 + "個", RESET.toString + "" + GRAY + "エメラルドの数:" + comma(num_1), RESET.toString + "" + GRAY + "エメラルドブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 32, itemstack)
+      }
+    }
+
+    //ダイヤモンドをダイヤモンドブロックに変換10～1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("diamond"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("diamond_block"))
+      val num_3: Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.DIAMOND_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "ダイヤモンドをダイヤモンドブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "ダイヤモンド" + p10 * 9 + "個→ダイヤモンドブロック" + p10 + "個", RESET.toString + "" + GRAY + "ダイヤモンドの数:" + comma(num_1), RESET.toString + "" + GRAY + "ダイヤモンドブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 36, itemstack)
+      }
+    }
+    inventory
+  }
+
+  //MineStackブロック一括クラフトメニュー3
+  def getBlockCraftData4(p: Player): Inventory = {
+    //プレイヤーを取得
+    val player = p.getPlayer
+    //UUID取得
+    val uuid = player.getUniqueId
+    val playerdata_s = SeichiAssist.playermap(uuid)
+
+    val inventory = Bukkit.getServer.createInventory(null, 6 * 9, DARK_PURPLE.toString + "" + BOLD + "MineStackブロック一括クラフト4")
+    var itemstack: ItemStack = null
+    var itemmeta: ItemMeta = null
+    val skullmeta: SkullMeta = ItemMetaFactory.SKULL.getValue
+    var lore: List[String] = null
+
+    // 3ページ目を開く
+    itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3.toShort)
+    skullmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "3ページ目へ")
+    lore = List(RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで移動")
+    skullmeta.setLore(lore.asJava)
+    skullmeta.setOwner("MHF_ArrowUp")
+    itemstack.setItemMeta(skullmeta)
+    AsyncInventorySetter.setItemAsync(inventory, 45, itemstack)
+    /*
+        // 5ページ目を開く
+        itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3)
+        skullmeta = ItemMetaFactory.SKULL.getValue
+        skullmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "5ページ目へ")
+        lore = List(RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで移動")
+        skullmeta.setLore(lore.asJava)
+        skullmeta.setOwner("MHF_ArrowDown")
+        itemstack.setItemMeta(skullmeta)
+        AsyncInventorySetter.setItemAsync(inventory, 53, itemstack)
+
+    */
+
+    //エンドストーンをエンドストーンレンガに変換4～4000
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("ender_stone"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("end_bricks"))
+      val num_3 : Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.END_BRICKS, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.END_BRICKS)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "エンドストーンをエンドストーンレンガに変換します")
+        lore = List(RESET.toString + "" + GRAY + "エンドストーン" + p10 + "個→エンドストーンレンガ" + p10 + "個", RESET.toString + "" + GRAY + "エンドストーンの数:" + comma(num_1), RESET.toString + "" + GRAY + "エンドストーンレンガの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x, itemstack)
+      }
+    }
+
+    //ネザーウォートをネザーウォートブロックに変換10～1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_stalk"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("nether_wart_block"))
+      val num_3: Long = 0
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.NETHER_WART_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.NETHER_WART_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "ネザーウォートをネザーウォートブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "ネザーウォート" + p10 * 9 + "個→ネザーウォートブロック" + p10 + "個", RESET.toString + "" + GRAY + "ネザーウォートの数:" + comma(num_1), RESET.toString + "" + GRAY + "ネザーウォートブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(2) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 5, itemstack)
+      }
+    }
+
+    //石炭を消費してコーラスフルーツをプルパーブロックに変換10~1万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("chorus_fruit"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("purpur_block"))
+      val num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("coal"))
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.PURPUR_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.PURPUR_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "石炭を消費してコーラスフルーツをプルパーブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "コーラスフルーツ" + p10 * 4 + "個+石炭" + p10 + "個→プルパーブロック" + p10 * 4 + "個", RESET.toString + "" + GRAY + "コーラスフルーツの数:" + comma(num_1), RESET.toString + "" + GRAY + "石炭の数:" + comma(num_3), RESET.toString + "" + GRAY + "プルパーブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 9, itemstack)
+      }
+    }
+
+    //溶岩バケツを消費してコーラスフルーツをプルパーブロックに変換50～5万
+    {
+      val num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("chorus_fruit"))
+      val num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("purpur_block"))
+      val num_3 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("lava_bucket"))
+      for (x <- 0 to 3) {
+        val p10 = power10(x)
+        itemstack = new ItemStack(Material.PURPUR_BLOCK, x)
+        itemmeta = Bukkit.getItemFactory.getItemMeta(Material.PURPUR_BLOCK)
+        itemmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "溶岩バケツを消費してコーラスフルーツをプルパーブロックに変換します")
+        lore = List(RESET.toString + "" + GRAY + "コーラスフルーツ" + p10 * 50 + "個+溶岩バケツ" + p10 + "個→プルパーブロック" + p10 * 50 + "個", RESET.toString + "" + GRAY + "コーラスフルーツの数:" + comma(num_1), RESET.toString + "" + GRAY + "溶岩バケツの数:" + comma(num_3), RESET.toString + "" + GRAY + "プルパーブロックの数:" + comma(num_2), RESET.toString + "" + GRAY + "建築LV" + BuildAssist.config.getMinestackBlockCraftlevel(3) + "以上で利用可能", RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで変換"
+        )
+        itemmeta.setLore(lore.asJava)
+        itemstack.setItemMeta(itemmeta)
+        inventory.setItem(x + 14, itemstack)
+      }
+    }
     inventory
   }
 
