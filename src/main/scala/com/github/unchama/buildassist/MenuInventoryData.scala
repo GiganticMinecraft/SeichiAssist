@@ -288,7 +288,7 @@ object MenuInventoryData {
     }
 
 
-    //石を石レンガに変換10～1万
+    //石を石レンガに変換10～10万
     num_1 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("stone"))
     num_2 = playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName("smooth_brick0"))
     for (x <- 1 to 5) {
