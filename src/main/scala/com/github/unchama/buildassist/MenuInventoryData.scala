@@ -419,7 +419,7 @@ object MenuInventoryData {
     var itemmeta: ItemMeta = null
     var lore: List[String] = null
     //順番に処理をする
-    val ingredients= beforeItemID
+    val ingredients = beforeItemID
       .toList
       .map(string => (Util.findMineStackObjectByName(string._1), string._2))
     //1個以上ないが…
