@@ -432,7 +432,7 @@ object MenuInventoryData {
         val p10 = power10(x)
         itemstack = products.head._1.itemStack
         itemmeta = itemstack.getItemMeta()
-        itemmeta.setDisplayName(s"${YELLOW.toString}$UNDERLINE$BOLD${ingredients.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}を${products.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}に変換します")
+        itemmeta.setDisplayName(s"$YELLOW$UNDERLINE$BOLD${ingredients.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}を${products.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}に変換します")
         lore = List(
           s"${RESET.toString}$GRAY${ingredients.map(mineStackObjName => s"${mineStackObjName._1.uiName.get}${p10 * mineStackObjName._2}個").mkString("+")}→${products.head._1.uiName.get}${p10 * products.head._2}個"
         ) ::: {ingredients.map(mineStackObjName => s"${RESET.toString}$GRAY${mineStackObjName._1.uiName.get}の数:${comma(playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName(mineStackObjName._1.mineStackObjName)))}")} :::
