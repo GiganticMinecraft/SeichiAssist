@@ -394,7 +394,7 @@ object MenuInventoryData {
     itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3)
     skullmeta = ItemMetaFactory.SKULL.getValue
     skullmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "4ページ目へ")
-    lore = List(RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで移動")
+    lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
     skullmeta.setLore(lore.asJava)
     skullmeta.setOwner("MHF_ArrowDown")
     itemstack.setItemMeta(skullmeta)
