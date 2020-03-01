@@ -1,12 +1,15 @@
 package com.github.unchama.seichiassist.menus.skill
 
 import cats.effect.IO
+import cats.effect.concurrent.Ref
 import com.github.unchama.generic.CachedFunction
-import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
+import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.activeskill.SeichiSkill
+import com.github.unchama.seichiassist.data.player.PlayerSkillState
 import com.github.unchama.seichiassist.menus.CommonButtons
-import org.bukkit.ChatColor.{BOLD, DARK_PURPLE}
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 object ActiveSkillMenu extends Menu {
@@ -16,14 +19,54 @@ object ActiveSkillMenu extends Menu {
 
   private case class ButtonComputations(player: Player) {
 
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
 
-    import scala.util.chaining._
+    val skillStateRef: Ref[IO, PlayerSkillState] = ???
 
-    val computeStatusButton: IO[Button] = {
-      ???
-    }
+    val totalActiveSkillPoint: IO[Int] = ???
+
+    val availableActiveSkillPoint: IO[Int] =
+      for {
+        skillState <- skillStateRef.get
+        totalPoint <- totalActiveSkillPoint
+      } yield {
+        totalPoint - skillState.obtainedSkills.map(_.requiredActiveSkillPoint).sum
+      }
+
+    val computeStatusButton: IO[Button] = RecomputedButton(
+      for {
+        state <- skillStateRef.get
+        availablePoints <- availableActiveSkillPoint
+      } yield {
+        val activeSkillSelectionLore: Option[String] =
+          state.activeSkill.map(activeSkill =>
+            s"$RESET${GREEN}現在選択しているアクティブスキル：${activeSkill.name}"
+          )
+
+        val assaultSkillSelectionLore: Option[String] =
+          state.assaultSkill.map { assaultSkill =>
+            val heading =
+              if (assaultSkill == SeichiSkill.AssaultArmor)
+                s"$RESET${GREEN}現在選択しているアサルトスキル："
+              else
+                s"$RESET${GREEN}現在選択している凝固スキル："
+
+            s"$heading${assaultSkill.name}"
+          }
+
+        val itemStack =
+          new SkullItemStackBuilder(getUniqueId)
+            .title(s"$YELLOW$UNDERLINE$BOLD${getName}のアクティブスキルデータ")
+            .lore(
+              activeSkillSelectionLore.toList ++
+                assaultSkillSelectionLore.toList ++
+                List(s"$RESET${YELLOW}使えるアクティブスキルポイント：$availablePoints")
+            )
+            .build()
+        Button(itemStack)
+      }
+    )
 
     val normalSeichiSkillButton: CachedFunction[(Boolean, Boolean, SeichiSkill), Button] =
       CachedFunction { case (unlocked, selected, skill) =>
@@ -68,8 +111,8 @@ object ActiveSkillMenu extends Menu {
     import eu.timepit.refined.auto._
 
     val buttonComputations = ButtonComputations(player)
-    import buttonComputations._
     import ConstantButtons._
+    import buttonComputations._
 
     val constantPart = Map(
       ChestSlotRef(0, 1) -> resetSkillsButton,
