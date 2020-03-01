@@ -409,7 +409,7 @@ object MenuInventoryData {
     inventory
   }
 
-  private def batchCraftMenu(p: Player, inventory: Inventory, minestackBlockCraftlevel: Int, beforeItemID: NonEmptyList[(String, Int)], afterItemID: NonEmptyList[(String, Int)], minPower10Index: Int, maxPower10Index: Int, inventoryIndex: Int): Unit ={
+  private def bulkCraftMenu(p: Player, inventory: Inventory, minestackBlockCraftlevel: Int, beforeItemID: NonEmptyList[(String, Int)], afterItemID: NonEmptyList[(String, Int)], minPower10Index: Int, maxPower10Index: Int, inventoryIndex: Int): Unit ={
     //プレイヤーを取得
     val player = p.getPlayer
     //UUID取得
