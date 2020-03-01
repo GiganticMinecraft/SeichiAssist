@@ -435,7 +435,7 @@ object MenuInventoryData {
         itemmeta.setDisplayName(s"$YELLOW$UNDERLINE$BOLD${ingredients.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}を${products.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}に変換します")
         lore = List(
           s"$RESET$GRAY${ingredients.map(mineStackObjName => s"${mineStackObjName._1.uiName.get}${p10 * mineStackObjName._2}個").mkString("+")}→${products.head._1.uiName.get}${p10 * products.head._2}個"
-        ) ::: {ingredients.map(mineStackObjName => s"${RESET.toString}$GRAY${mineStackObjName._1.uiName.get}の数:${comma(playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName(mineStackObjName._1.mineStackObjName)))}")} :::
+        ) ::: {ingredients.map(mineStackObjName => s"$RESET$GRAY${mineStackObjName._1.uiName.get}の数:${comma(playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName(mineStackObjName._1.mineStackObjName)))}")} :::
           {products.map(mineStackObjName => s"${RESET.toString}$GRAY${mineStackObjName._1.uiName.get}の数:${comma(playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName(mineStackObjName._1.mineStackObjName)))}")} :::
           List(
             s"${RESET.toString}${GRAY}建築LV${BuildAssist.config.getMinestackBlockCraftlevel(minestackBlockCraftlevel)}以上で利用可能",
