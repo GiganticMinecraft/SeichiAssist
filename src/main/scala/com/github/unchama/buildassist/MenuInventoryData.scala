@@ -431,7 +431,7 @@ object MenuInventoryData {
       for (x <- minPower10Index to maxPower10Index) {
         val p10 = power10(x)
         itemstack = products.head._1.itemStack
-        itemmeta = Bukkit.getItemFactory.getItemMeta(products.head._1.itemStack.getType)
+        itemmeta = itemstack.getItemMeta()
         itemmeta.setDisplayName(s"${YELLOW.toString}$UNDERLINE$BOLD${ingredients.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}を${products.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}に変換します")
         lore = List(
           s"${RESET.toString}$GRAY${ingredients.map(mineStackObjName => s"${mineStackObjName._1.uiName.get}${p10 * mineStackObjName._2}個").mkString("+")}→${products.head._1.uiName.get}${p10 * products.head._2}個"
