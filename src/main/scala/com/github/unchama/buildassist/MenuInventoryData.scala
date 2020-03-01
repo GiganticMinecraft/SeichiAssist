@@ -423,8 +423,7 @@ object MenuInventoryData {
       .toList
       .map(string => (Util.findMineStackObjectByName(string._1), string._2))
     //1個以上ないが…
-    val products = afterItemID
-      .toList
+    val products = afterItemID.toList
       .map(string => (Util.findMineStackObjectByName(string._1), string._2))
 
     {
