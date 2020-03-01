@@ -393,7 +393,7 @@ object MenuInventoryData {
     // 4ページ目を開く
     itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3)
     skullmeta = ItemMetaFactory.SKULL.getValue
-    skullmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "4ページ目へ")
+    skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}4ページ目へ")
     lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
     skullmeta.setLore(lore.asJava)
     skullmeta.setOwner("MHF_ArrowDown")
