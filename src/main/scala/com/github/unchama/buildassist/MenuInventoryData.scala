@@ -376,7 +376,7 @@ object MenuInventoryData {
     val inventory = Bukkit.getServer.createInventory(null, 6 * 9, DARK_PURPLE.toString + "" + BOLD + "MineStackブロック一括クラフト3")
     var itemstack: ItemStack = null
     var itemmeta: ItemMeta = null
-    var skullmeta: SkullMeta = ItemMetaFactory.SKULL.getValue
+    val metaFactory = ItemMetaFactory.SKULL
     var lore: List[String] = null
 
     // 2ページ目を開く
