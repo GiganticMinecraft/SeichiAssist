@@ -434,7 +434,7 @@ object MenuInventoryData {
           {products.map(mineStackObjName => s"${RESET.toString}$GRAY${mineStackObjName._1.uiName.get}の数:${comma(playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName(mineStackObjName._1.mineStackObjName)))}")} :::
           List(
             s"$RESET${GRAY}建築LV${BuildAssist.config.getMinestackBlockCraftlevel(minestackBlockCraftlevel)}以上で利用可能",
-            s"${RESET.toString}$DARK_RED${UNDERLINE}クリックで変換"
+            s"$RESET$DARK_RED${UNDERLINE}クリックで変換"
           )
         itemmeta.setLore(lore.asJava)
         itemstack.setItemMeta(itemmeta)
