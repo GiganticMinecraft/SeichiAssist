@@ -1,5 +1,31 @@
 **参照:** [masterへのマージ履歴](https://github.com/GiganticMinecraft/SeichiAssist/pulls?utf8=✓&q=is%3Apr+sort%3Aupdated-desc+is%3Aclosed+base%3Amaster)
-## \[Head\]
+## \[1.2.12\] - 2020-02-23 \([#463](https://github.com/GiganticMinecraft/SeichiAssist/pull/463)\)
+### 修正 / Fixed
+- スキルで破壊したブロックがマインスタックに格納されない問題
+
+## \[1.2.11\] - 2020-02-17 \([#446](https://github.com/GiganticMinecraft/SeichiAssist/pull/446)\)
+### 修正 / Fixed
+- ガチャ景品が複製できてしまう問題
+
+### その他 / Misc
+- Docker対応
+## \[1.2.10\] - 2020-02-16 \([#440](https://github.com/GiganticMinecraft/SeichiAssist/pull/440)\)
+### 修正 / Fixed
+- アクティブスキルのポイント計算
+
+## \[1.2.9\] - 2020-02-16 \([#438](https://github.com/GiganticMinecraft/SeichiAssist/pull/438)\)
+### 追加 / Added
+- 実績
+
+### 改善 / Improved
+- インベントリからあふれるガチャ景品をマインスタックに格納するように
+
+### 修正 / Fixed
+- マインスタックのアイテム増殖
+
+### 内部的変更 / Refactor
+- `ResourceScope`による資源管理
+- `MenuInventoryData`の整理
 
 ## \[1.2.8\] - 2020-01-29 \([#422](https://github.com/GiganticMinecraft/SeichiAssist/pull/422)\)
 ### 追加 / Added
