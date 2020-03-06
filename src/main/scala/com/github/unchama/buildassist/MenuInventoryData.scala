@@ -389,7 +389,7 @@ object MenuInventoryData {
 
     // 4ページ目を開く
     itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3)
-    val skullmeta = metaFactory.getValue
+    val skullmeta = ItemMetaFactory.SKULL.getValue
     skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}4ページ目へ")
     lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
     skullmeta.setLore(lore.asJava)
