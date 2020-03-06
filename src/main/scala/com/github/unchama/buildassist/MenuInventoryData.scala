@@ -388,6 +388,7 @@ object MenuInventoryData {
     AsyncInventorySetter.setItemAsync(inventory, 45, itemstack)
 
     // 4ページ目を開く
+	// 3 = プレイヤーの頭
     itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3)
     val skullmeta = ItemMetaFactory.SKULL.getValue
     skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}4ページ目へ")
