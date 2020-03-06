@@ -379,6 +379,7 @@ object MenuInventoryData {
     var lore: List[String] = null
 
     // 2ページ目を開く
+  	val skullmeta = ItemMetaFactory.SKULL.getValue
     itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3.toShort)
     skullmeta.setDisplayName(YELLOW.toString + "" + UNDERLINE + "" + BOLD + "2ページ目へ")
     lore = List(RESET.toString + "" + DARK_RED + "" + UNDERLINE + "クリックで移動")
@@ -388,9 +389,9 @@ object MenuInventoryData {
     AsyncInventorySetter.setItemAsync(inventory, 45, itemstack)
 
     // 4ページ目を開く
-	// 3 = プレイヤーの頭
+		// 3 = プレイヤーの頭
     itemstack = new ItemStack(Material.SKULL_ITEM, 1, 3)
-    val skullmeta = ItemMetaFactory.SKULL.getValue
+    
     skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}4ページ目へ")
     lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
     skullmeta.setLore(lore.asJava)
