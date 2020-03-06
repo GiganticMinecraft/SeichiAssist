@@ -350,31 +350,31 @@ object MenuInventoryData {
     collectCraftMenu(p,inventory,2,NonEmptyList.of(("snow_ball",4)),NonEmptyList.of(("snow_block",1)),1,4,-1)
 
     //ネザーウォートとネザーレンガを赤いネザーレンガに変換10～1万
-    collectCraftMenu(p,inventory,2,NonEmptyList.of(("nether_stalk",2),("nether_brick_item",2)),NonEmptyList.of(("red_nether_brick",1)),1,5,4)
+    collectCraftMenu(p,inventory,2,NonEmptyList.of(("nether_stalk",2),("nether_brick_item",2)),NonEmptyList.of(("red_nether_brick",1)),1,4,4)
 
     //石炭を消費して鉄鉱石を鉄インゴットに変換4～4000
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("iron_ore",4),("coal",1)),NonEmptyList.of(("iron_ingot",4)),0,3,9)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("iron_ore",4),("coal",1)),NonEmptyList.of(("iron_ingot",4)),1,3,9)
 
     //溶岩バケツを消費して鉄鉱石を鉄インゴットに変換50～5万
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("iron_ore",50),("lava_bucket",1)),NonEmptyList.of(("iron_ingot",50)),0,3,14)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("iron_ore",50),("lava_bucket",1)),NonEmptyList.of(("iron_ingot",50)),1,3,14)
 
     //石炭を消費して金鉱石を金インゴットに変換4～4000
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("gold_ore",4),("coal",1)),NonEmptyList.of(("gold_ingot",4)),0,3,18)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("gold_ore",4),("coal",1)),NonEmptyList.of(("gold_ingot",4)),1,3,18)
 
     //溶岩バケツを消費して金鉱石を金インゴットに変換50～5万
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("gold_ore",50),("lava_bucket",1)),NonEmptyList.of(("gold_ingot",50)),0,3,23)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("gold_ore",50),("lava_bucket",1)),NonEmptyList.of(("gold_ingot",50)),1,3,23)
 
     //石炭を消費して砂をガラスに変換4～4000
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("sand",4),("coal",1)),NonEmptyList.of(("glass",4)),0,3,27)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("sand",4),("coal",1)),NonEmptyList.of(("glass",4)),1,3,27)
 
     //溶岩バケツを消費して砂をガラスに変換50～5万
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("sand",50),("lava_bucket",1)),NonEmptyList.of(("glass",50)),0,3,32)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("sand",50),("lava_bucket",1)),NonEmptyList.of(("glass",50)),1,3,32)
 
     //石炭を消費してネザーラックをネザーレンガに変換4～4000
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("netherrack",4),("coal",1)),NonEmptyList.of(("nether_brick_item",4)),0,3,36)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("netherrack",4),("coal",1)),NonEmptyList.of(("nether_brick_item",4)),1,3,36)
 
     //溶岩バケツを消費してネザーラックをネザーレンガに変換50～5万
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("netherrack",50),("lava_bucket",1)),NonEmptyList.of(("nether_brick_item",50)),0,3,41)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("netherrack",50),("lava_bucket",1)),NonEmptyList.of(("nether_brick_item",50)),1,3,41)
 
     inventory
   }
@@ -409,10 +409,10 @@ object MenuInventoryData {
     AsyncInventorySetter.setItemAsync(inventory, 53, itemstack)
 
     //石炭を消費して粘土をレンガに変換4～4000
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("clay_ball",4),("coal",1)),NonEmptyList.of(("brick_item",4)),0,3,0)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("clay_ball",4),("coal",1)),NonEmptyList.of(("brick_item",4)),1,3,0)
 
     //溶岩バケツを消費して粘土をレンガに変換50～5万
-    collectCraftMenu(p,inventory,3,NonEmptyList.of(("clay_ball",50),("lava_bucket",1)),NonEmptyList.of(("brick_item",50)),0,3,5)
+    collectCraftMenu(p,inventory,3,NonEmptyList.of(("clay_ball",50),("lava_bucket",1)),NonEmptyList.of(("brick_item",50)),1,3,5)
 
     inventory
   }
@@ -423,6 +423,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.getUniqueId
     val playerdata_s = SeichiAssist.playermap(uuid)
+
     //順番に処理をする
     val ingredients = beforeItemID
       .toList
@@ -447,6 +448,7 @@ object MenuInventoryData {
             s"$RESET$DARK_RED${UNDERLINE}クリックで変換"
           )
         itemmeta.setLore(lore.asJava)
+        itemstack.setAmount(x)
         itemstack.setItemMeta(itemmeta)
         inventory.setItem(x + inventoryIndex, itemstack)
       }
