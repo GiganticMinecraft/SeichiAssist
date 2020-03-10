@@ -434,7 +434,7 @@ object MenuInventoryData {
     {
       for (x <- minPower10Index to maxPower10Index) {
         val p10 = power10(x)
-        val itemstack = products.head._1.itemStack
+        val itemstack = products.head._1.itemStack.clone
         val itemmeta = itemstack.getItemMeta
         itemmeta.setDisplayName(s"$YELLOW$UNDERLINE$BOLD${ingredients.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}を${products.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}に変換します")
         val ingredientRequest = ingredients.map(mineStackObjName => s"${mineStackObjName._1.uiName.get}${p10 * mineStackObjName._2}個").mkString("+")
