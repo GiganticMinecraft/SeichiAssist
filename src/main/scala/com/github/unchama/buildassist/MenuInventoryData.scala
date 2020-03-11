@@ -427,7 +427,8 @@ object MenuInventoryData {
     //順番に処理をする
     val ingredients = beforeItemID
       .toList
-      .map(string => (Util.findMineStackObjectByName(string._1), string._2))
+      // _1: MS Key, _2: amount
+      .map(entry => (Util.findMineStackObjectByName(entry._1), entry._2))
     val products = afterItemID.toList
       .map(string => (Util.findMineStackObjectByName(string._1), string._2))
 
