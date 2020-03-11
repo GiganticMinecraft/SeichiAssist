@@ -439,7 +439,8 @@ object MenuInventoryData {
         val itemmeta = itemstack.getItemMeta
 		// [原料1]と[原料2]を[加工後1]と[加工後2]に変換します
         itemmeta.setDisplayName(s"$YELLOW$UNDERLINE$BOLD${ingredients.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}を${products.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}に変換します")
-        val ingredientRequest = ingredients.map(mineStackObjName => s"${mineStackObjName._1.uiName.get}${p10 * mineStackObjName._2}個").mkString("+")
+		// _1: MS object, _2: power of amount
+        val ingredientRequest = ingredients.map(entry => s"${entry._1.uiName.get}${p10 * entry._2}個").mkString("+")
         val lore = List(
           s"$RESET$GRAY$ingredientRequest→${products.head._1.uiName.get}${p10 * products.head._2}個"
         ) ::: {ingredients.map(mineStackObjName => s"$RESET$GRAY${mineStackObjName._1.uiName.get}の数:${comma(playerdata_s.minestack.getStackedAmountOf(Util.findMineStackObjectByName(mineStackObjName._1.mineStackObjName)))}")} :::
