@@ -436,6 +436,7 @@ object MenuInventoryData {
         val p10 = power10(x)
         val itemstack = products.head._1.itemStack.clone
         val itemmeta = itemstack.getItemMeta
+		// [原料1]と[原料2]を[加工後1]と[加工後2]に変換します
         itemmeta.setDisplayName(s"$YELLOW$UNDERLINE$BOLD${ingredients.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}を${products.map(mineStackObj => mineStackObj._1.uiName.get).mkString("と")}に変換します")
         val ingredientRequest = ingredients.map(mineStackObjName => s"${mineStackObjName._1.uiName.get}${p10 * mineStackObjName._2}個").mkString("+")
         val lore = List(
