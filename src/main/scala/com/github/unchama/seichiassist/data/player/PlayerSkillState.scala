@@ -19,4 +19,6 @@ case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
 
   val assaultSkillArea: Option[BreakArea] =
     assaultSkill.map(new BreakArea(_, None))
+
+  def deselected(): PlayerSkillState = this.copy(activeSkill = None, assaultSkill = None)
 }

@@ -1,17 +1,22 @@
 package com.github.unchama.seichiassist.menus.skill
 
+import cats.data.Kleisli
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.CachedFunction
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
+import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.activeskill.{ActiveSkill, ActiveSkillRange, AssaultSkill, AssaultSkillRange, SeichiSkill, SkillDependency, SkillRange}
-import com.github.unchama.seichiassist.data.XYZTuple
+import com.github.unchama.seichiassist.data.{MenuInventoryData, XYZTuple}
 import com.github.unchama.seichiassist.data.player.PlayerSkillState
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.targetedeffect.computedEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import org.bukkit.ChatColor._
-import org.bukkit.Material
+import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionType
 
@@ -25,18 +30,20 @@ object ActiveSkillMenu extends Menu {
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
+  // TODO inline
+  def skillStateRef(player: Player): IO[Ref[IO, PlayerSkillState]] = ???
+
   private case class ButtonComputations(player: Player) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
 
-    val skillStateRef: Ref[IO, PlayerSkillState] = ???
-
     val totalActiveSkillPoint: IO[Int] = ???
 
     val availableActiveSkillPoint: IO[Int] =
       for {
-        skillState <- skillStateRef.get
+        ref <- skillStateRef(player)
+        skillState <- ref.get
         totalPoint <- totalActiveSkillPoint
       } yield {
         totalPoint - skillState.obtainedSkills.map(_.requiredActiveSkillPoint).sum
@@ -44,7 +51,8 @@ object ActiveSkillMenu extends Menu {
 
     val computeStatusButton: IO[Button] = RecomputedButton(
       for {
-        state <- skillStateRef.get
+        ref <- skillStateRef(player)
+        state <- ref.get
         availablePoints <- availableActiveSkillPoint
       } yield {
         val activeSkillSelectionLore: Option[String] =
@@ -76,6 +84,15 @@ object ActiveSkillMenu extends Menu {
       }
     )
 
+    def computeSkillButtonFor(skill: SeichiSkill): IO[Button] = {
+      for {
+        ref <- skillStateRef(player)
+        state <- ref.get
+      } yield ButtonComputations.seichiSkillButton((ButtonComputations.selectionStateOf(skill)(state), skill))
+    }
+  }
+
+  private object ButtonComputations {
     def baseSkillIcon(skill: SeichiSkill): AbstractItemStackBuilder[Nothing] = {
       skill match {
         case skill: ActiveSkill =>
@@ -265,23 +282,48 @@ object ActiveSkillMenu extends Menu {
           base.build()
         }
 
-        ???
-      }
+        val effect: ButtonEffect = ???
 
-    def computeSkillButtonFor(skill: SeichiSkill): IO[Button] = {
-      for {
-        state <- skillStateRef.get
-      } yield seichiSkillButton((selectionStateOf(skill)(state), skill))
-    }
+        Button(itemStack, effect)
+      }
   }
 
   private object ConstantButtons {
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, layoutPreparationContext}
+
     val skillEffectMenuButton: Button = {
-      ???
+      Button(
+        new IconItemStackBuilder(Material.BOOKSHELF)
+          .title(s"$UNDERLINE$BOLD${LIGHT_PURPLE}演出効果設定")
+          .lore(
+            s"$RESET${GRAY}スキル使用時の演出を選択できるゾ",
+            s"$RESET$UNDERLINE${DARK_RED}クリックで演出一覧を開く",
+          )
+          .build(),
+        LeftClickButtonEffect(
+          FocusedSoundEffect(Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5.toFloat),
+          // TODO メニューに置き換える
+          computedEffect(p => openInventoryEffect(MenuInventoryData.getActiveSkillEffectMenuData(p)))
+        )
+      )
     }
 
+    // TODO reload menu
     val resetSkillsButton: Button = {
-      ???
+      Button(
+        new IconItemStackBuilder(Material.GLASS)
+          .title(s"$UNDERLINE$BOLD${YELLOW}スキルを使用しない")
+          .lore(s"$RESET$UNDERLINE${DARK_RED}クリックでセット")
+          .build(),
+        LeftClickButtonEffect(
+          Kleisli { p =>
+            for {
+              ref <- skillStateRef(p)
+              _ <- ref.update(_.deselected())
+            } yield ()
+          }
+        )
+      )
     }
   }
 
