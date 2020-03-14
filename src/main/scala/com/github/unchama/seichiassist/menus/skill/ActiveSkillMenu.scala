@@ -17,9 +17,9 @@ import org.bukkit.potion.PotionType
 
 object ActiveSkillMenu extends Menu {
   private sealed trait SkillSelectionState
-  case object Locked extends SkillSelectionState
-  case object Unlocked extends SkillSelectionState
-  case object Selected extends SkillSelectionState
+  private case object Locked extends SkillSelectionState
+  private case object Unlocked extends SkillSelectionState
+  private case object Selected extends SkillSelectionState
 
   import com.github.unchama.menuinventory.syntax._
 
