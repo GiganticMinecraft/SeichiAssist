@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.activeskill
 
+import com.github.unchama.generic.CachedFunction
+
 object SkillDependency {
   import SeichiSkill._
   
@@ -48,4 +50,7 @@ object SkillDependency {
 
     intermediate ++ assaultArmorDependency
   }
+
+  val prerequisites: SeichiSkill => Seq[SeichiSkill] =
+    CachedFunction { skill => dependency.filter(_._2 == skill).map(_._1) }
 }
