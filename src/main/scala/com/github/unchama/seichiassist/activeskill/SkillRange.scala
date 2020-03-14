@@ -26,34 +26,45 @@ object ActiveSkillRange {
   }
 }
 
-trait AssaultSkillRange extends SkillRange {
+sealed trait AssaultSkillRange extends SkillRange {
   val blockMaterialConversion: Material => Material
 }
 
 object AssaultSkillRange {
   type AssaultRangeBuilder = (Int, Int, Int) => AssaultSkillRange
 
-  private val condenseLavaConversion: Material => Material = {
-    case Material.LAVA => Material.MAGMA
-    case x => x
+  case class Armor(effectChunkSize: XYZTuple) extends AssaultSkillRange {
+    override val blockMaterialConversion: Material => Material = _ => Material.AIR
   }
 
-  private val condenseWaterConversion: Material => Material = {
-    case Material.WATER => Material.ICE
-    case x => x
-  }
-
-  private val condenseLiquidConversion: Material => Material = condenseLavaConversion.compose(condenseWaterConversion)
-
-  private def withConversion(f: Material => Material): AssaultRangeBuilder = {
-    case (width, height, depth) => new AssaultSkillRange {
-      override val effectChunkSize: XYZTuple = XYZTuple(width, height, depth)
-      override val blockMaterialConversion: Material => Material = f
+  case class Water(effectChunkSize: XYZTuple) extends AssaultSkillRange {
+    override val blockMaterialConversion: Material => Material = {
+      case Material.WATER => Material.ICE
+      case x => x
     }
   }
 
-  val armor: AssaultRangeBuilder = withConversion(_ => Material.AIR)
-  val condenseWater: AssaultRangeBuilder = withConversion(condenseWaterConversion)
-  val condenseLava: AssaultRangeBuilder = withConversion(condenseLavaConversion)
-  val condenseLiquid: AssaultRangeBuilder = withConversion(condenseLiquidConversion)
+  case class Lava(effectChunkSize: XYZTuple) extends AssaultSkillRange {
+    override val blockMaterialConversion: Material => Material = {
+      case Material.LAVA => Material.MAGMA
+      case x => x
+    }
+  }
+
+  case class Liquid(effectChunkSize: XYZTuple) extends AssaultSkillRange {
+    override val blockMaterialConversion: Material => Material = {
+      case Material.WATER => Material.ICE
+      case Material.LAVA => Material.MAGMA
+      case x => x
+    }
+  }
+
+  private def build(f: XYZTuple => AssaultSkillRange): AssaultRangeBuilder = {
+    case (width, height, depth) => f(XYZTuple(width, height, depth))
+  }
+
+  val armor: AssaultRangeBuilder = build(Armor)
+  val condenseWater: AssaultRangeBuilder = build(Water)
+  val condenseLava: AssaultRangeBuilder = build(Lava)
+  val condenseLiquid: AssaultRangeBuilder = build(Liquid)
 }
