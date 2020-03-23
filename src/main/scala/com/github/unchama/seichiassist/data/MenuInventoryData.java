@@ -470,7 +470,7 @@ public final class MenuInventoryData {
                 else {
                     itemstack = build(
                             Material.BEDROCK,
-                            null,
+                            elem.nameOnUI(),
                             Arrays.asList(
                                     ChatColor.RESET + "" + ChatColor.GREEN + elem.explanation(),
                                     ChatColor.RESET + "" + ChatColor.YELLOW + "必要エフェクトポイント：" + elem.usePoint(),

@@ -110,7 +110,7 @@ class PlayerData(
             s"${GREEN}整地量バー表示"
           else
             s"${RED}整地量バー非表示"
-          }.asMessageEffect())
+        }.asMessageEffect())
       }
     }.followedBy {
       UnfocusedEffect {
@@ -607,22 +607,7 @@ class PlayerData(
   }
 
   //現在の採掘量順位
-  def calcPlayerRank(): Int = {
-    //ランク用関数
-    var i = 0
-
-    if (SeichiAssist.ranklist.isEmpty) return 1
-
-    var rankdata = SeichiAssist.ranklist(i)
-
-    //ランクが上がらなくなるまで処理
-    while (rankdata.totalbreaknum > totalbreaknum) {
-      i += 1
-      rankdata = SeichiAssist.ranklist(i)
-    }
-
-    i + 1
-  }
+  def calcPlayerRank(): Int = 1 + SeichiAssist.ranklist.count(rank => rank.totalbreaknum > totalbreaknum)
 
   def calcPlayerApple(): Int = {
     //ランク用関数
@@ -880,6 +865,6 @@ object PlayerData {
     Material.GRASS_PATH,
     Material.SOIL, Material.MOB_SPAWNER,
     Material.CAULDRON, Material.ENDER_CHEST,
-    Material.ENDER_PORTAL_FRAME,Material.ENDER_PORTAL
+    Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL
   )
 }
