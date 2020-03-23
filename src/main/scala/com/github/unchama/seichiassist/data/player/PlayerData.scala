@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.{GregorianCalendar, UUID}
 
 import cats.effect.IO
+import cats.effect.concurrent.Ref
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
@@ -190,8 +191,16 @@ class PlayerData(
   //期間限定ログイン用
   var LimitedLoginCount = 0
   var ChainVote = 0
+
   //アクティブスキル関連データ
-  val activeskilldata: ActiveSkillData_Legacy = new ActiveSkillData_Legacy()
+  @deprecated val activeskilldata: ActiveSkillData_Legacy = new ActiveSkillData_Legacy()
+
+  // スキルデータ
+  val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
+
+  // スキルエフェクトデータ
+  val skillEffectState: Ref[IO, PlayerSkillEffectState] = Ref.unsafe(PlayerSkillEffectState.initial)
+
   //二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 

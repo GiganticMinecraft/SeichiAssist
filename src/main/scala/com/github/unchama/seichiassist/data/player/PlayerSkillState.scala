@@ -6,6 +6,11 @@ import com.github.unchama.seichiassist.activeskill.{ActiveSkill, AssaultSkill, B
 case class PlayerSkillEffectState(obtainedEffects: Set[ActiveSkillEffect],
                                   selection: Option[ActiveSkillEffect])
 
+object PlayerSkillEffectState {
+  val initial: PlayerSkillEffectState =
+    PlayerSkillEffectState(Set(), None)
+}
+
 case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
                             activeSkillBreakSide: Option[BreakSide], // TODO should be in configuration
                             isActiveSkillAvailable: Boolean,
