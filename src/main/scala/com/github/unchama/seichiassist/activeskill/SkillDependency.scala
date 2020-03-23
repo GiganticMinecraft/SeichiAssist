@@ -45,7 +45,7 @@ object SkillDependency {
     )
 
     val assaultArmorDependency = for {
-      skill <- SeichiSkill.values if Seq(VenderBlizzard, AssaultArmor).contains(skill)
+      skill <- SeichiSkill.values if !Seq(VenderBlizzard, AssaultArmor).contains(skill)
     } yield skill -> AssaultArmor
 
     intermediate ++ assaultArmorDependency
