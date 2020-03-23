@@ -11,10 +11,15 @@ object BroadcastEffect {
     Kleisli { _ =>
       import cats.implicits._
 
-      import scala.jdk.CollectionConverters._
-
       for {
-        players <- IO(synchronized(Bukkit.getOnlinePlayers.asScala.toList))
+        players <- IO {
+          val players = Bukkit.getOnlinePlayers
+
+          players.synchronized {
+            import scala.jdk.CollectionConverters._
+            players.asScala.toList
+          }
+        }
         _ <- players.map(effect.run).sequence
       } yield ()
     }
