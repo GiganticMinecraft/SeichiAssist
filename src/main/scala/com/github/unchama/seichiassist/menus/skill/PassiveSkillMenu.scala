@@ -183,8 +183,9 @@ object PassiveSkillMenu extends Menu {
         )
       }
       val probability = 100 * openerData.giganticBerserk.manaRegenerationProbability()
+      val formatted = f"$probability%2.0f"
       // 細かい数字が表示されないようにする
-      val levelInfoLore = List(sf"${GRAY}現在 ${openerData.giganticBerserk.level + 1}レベル,回復率 $formattedProbability%2.0f")
+      val levelInfoLore = List(s"${GRAY}現在 ${openerData.giganticBerserk.level + 1}レベル,回復率 $formatted%")
       val evolutionLore = if (openerData.giganticBerserk.canEvolve) {
         List(
           "",
