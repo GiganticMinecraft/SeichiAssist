@@ -261,7 +261,14 @@ object BreakUtil {
                  Material.ENDER_PORTAL => false
             case _ => true
           }
-          .foreach(player.incrementStatistic(Statistic.MINE_BLOCK, _))
+          .foreach(m =>
+            try player.incrementStatistic(Statistic.MINE_BLOCK, m)
+            catch {
+              case _: IllegalArgumentException =>
+                Bukkit.getLogger
+                  .warning(s"${m.toString}の破壊統計のインクリメントに失敗しました。")
+            }
+          )
       }
 
       _ <- PluginExecutionContexts.syncShift.shift
