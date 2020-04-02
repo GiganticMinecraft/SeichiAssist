@@ -81,6 +81,13 @@ publicなメソッドについては、JavaDocsを記載するよう心がけて
 masterブランチは本番環境に反映されます。
 本番環境を更新するタイミングでdevelopブランチをmasterブランチにマージします。
 
+## AutoRelease
+- developブランチが更新されると、そのコードを基に実行用jarがビルドされ、デバッグ環境に配布されます。デバッグ環境はjarの配布を検知すると自動で再起動し、最新のjarを使用して稼働します。
+  - デバッグ環境へは、Minecraft Java Editionで`play.seichi.click`に接続し、`T`キーでチャットを開き、`/server deb112`と入力して`Enter`を押すとアクセスできます。
+- masterブランチが更新されると、そのコードを基に実行用jarがビルドされ、本番環境に配布されます。本番環境は翌再起動時に自動で最新のjarを取り込んで稼働します。
+- jar以外の自動リリースは未対応です(config.ymlなど)。運営チームへ更新を依頼する必要があります。
+  - 各サーバーや環境で共通で構わないパラメータはconfig.ymlを読まず、コードへの直接実装を推奨します。
+
 ## 利用条件
 - [GPLv3ライセンス](https://github.com/GiganticMinecraft/SeichiAssist/blob/develop/LICENSE)での公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。
 - 当リポジトリのコードの著作権はunchamaが所有しています。

@@ -220,7 +220,7 @@ object BlockPlacementSkillMenu extends Menu {
             } else {
               List(
                 s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
-                s"$RESET$RED※範囲設定の最大値は3×3※"
+                s"$RESET$RED※範囲設定の最小値は3×3※"
               )
             }
           )

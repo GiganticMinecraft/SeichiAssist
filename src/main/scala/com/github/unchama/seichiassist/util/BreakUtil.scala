@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.targetedeffect.player
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
 import org.bukkit._
@@ -22,9 +23,23 @@ object BreakUtil {
 
   import ManagedWorld._
 
-  //他のプラグインの影響があってもブロックを破壊できるのか
-  def canBreak(player: Player, breakblockOption: Option[Block]): Boolean = {
-    val breakblock = breakblockOption.getOrElse(return false)
+  def unsafeGetLockedBlocks(): Set[Block] =
+    SeichiAssist.instance
+      .lockedBlockChunkScope.trackedHandlers.unsafeRunSync()
+      .flatten.map(x => x: Block)
+
+  /**
+   * 他のプラグインの影響があってもブロックを破壊できるのかを判定する。
+   *
+   * `lockedBlocks`は[[unsafeGetLockedBlocks()]]の結果が利用されるべきだが、
+   * 複数ブロックのキャッシュのためにこれを事前にキャッシュして渡したほうが速い。
+   * （引数を省略した場合呼び出しごとに再計算される）
+   *
+   * @param player 破壊者
+   * @param checkTarget 破壊対象のブロック
+   * @param lockedBlocks グローバルにロックされているブロックの集合
+   */
+  def canBreak(player: Player, checkTarget: Block, lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
     if (!player.isOnline) return false
 
     val playermap = SeichiAssist.playermap
@@ -32,10 +47,10 @@ object BreakUtil {
     val playerdata = playermap(uuid)
 
     //壊されるブロックのMaterialを取得
-    val material = breakblock.getType
+    val material = checkTarget.getType
 
     //壊されるブロックがワールドガード範囲だった場合処理を終了
-    if (!ExternalPlugins.getWorldGuard.canBuild(player, breakblock.getLocation)) {
+    if (!ExternalPlugins.getWorldGuard.canBuild(player, checkTarget.getLocation)) {
       if (playerdata.settings.shouldDisplayWorldGuardLogs) {
         player.sendMessage(RED.toString + "ワールドガードで保護されています。")
       }
@@ -47,7 +62,7 @@ object BreakUtil {
       if (wrapper == null) {
         Bukkit.getLogger.warning("CoreProtectにアクセスできませんでした。")
       } else {
-        val failure = !wrapper.queueBlockRemoval(player, breakblock)
+        val failure = !wrapper.queueBlockRemoval(player, checkTarget)
         //もし失敗したらプレイヤーに報告し処理を終了
         if (failure) {
           player.sendMessage(RED.toString + "coreprotectに保存できませんでした。管理者に報告してください。")
@@ -66,10 +81,14 @@ object BreakUtil {
       }
     }
 
-    if (breakblock.getWorld.asManagedWorld().exists(_.isSeichi)) {
-      val isBlockY5Step = material == Material.STEP && breakblock.getY == 5 && breakblock.getData == 0.toByte
+    if (checkTarget.getWorld.asManagedWorld().exists(_.isSeichi)) {
+      val isBlockY5Step = material == Material.STEP && checkTarget.getY == 5 && checkTarget.getData == 0.toByte
 
       if (isBlockY5Step && !playerdata.canBreakHalfBlock) return false
+    }
+
+    if (lockedBlocks.contains(checkTarget)) {
+      return false
     }
 
     true

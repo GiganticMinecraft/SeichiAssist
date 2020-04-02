@@ -23,10 +23,12 @@ object BlockSearching {
     val waterBlocks = new mutable.HashSet[Block]
     val lavaBlocks  = new mutable.HashSet[Block]
 
+    val lockedBlocks = BreakUtil.unsafeGetLockedBlocks()
+
     relativeVectors.collect { case XYZTuple(x, y, z) =>
       val targetBlock = referencePoint.getRelative(x, y, z)
 
-      if (BreakUtil.canBreak(player, Some.apply(targetBlock)))
+      if (BreakUtil.canBreak(player, targetBlock, lockedBlocks))
         targetBlock.getType match {
           case Material.STATIONARY_LAVA | Material.LAVA =>
             lavaBlocks.add(targetBlock)
