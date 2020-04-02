@@ -48,6 +48,12 @@ class PlayerBlockBreakListener extends Listener {
     //UUIDを基にプレイヤーデータ取得
     val playerdata = SeichiAssist.playermap(player.getUniqueId)
 
+    //破壊不可能ブロックの時処理を終了
+    if (!BreakUtil.canBreak(player, Some(block))) {
+      event.setCancelled(true)
+      return
+    }
+
     //重力値によるキャンセル判定(スキル判定より先に判定させること)
     if (!MaterialSets.gravityMaterials.contains(block.getType) && !MaterialSets.cancelledMaterials.contains(block.getType))
       if (BreakUtil.getGravity(player, block, isAssault = false) > 15) {
@@ -67,13 +73,6 @@ class PlayerBlockBreakListener extends Listener {
 
     //耐久値がマイナスかつ耐久無限ツールでない時処理を終了
     if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable) return
-
-    //スキルで破壊されるブロックの時処理を終了
-    if (SeichiAssist.instance.brokenBlockChunkScope.trackedHandlers.unsafeRunSync().exists(_.contains(block))) {
-      event.setCancelled(true)
-      if (SeichiAssist.DEBUG) player.sendMessage("スキルで使用中のブロックです。")
-      return
-    }
 
     //もしサバイバルでなければ処理を終了
     //もしフライ中なら終了
@@ -224,7 +223,7 @@ class PlayerBlockBreakListener extends Listener {
         ((blocks, lavas), chunkIndex) <- multiBreakList.zip(multiLavaList).zipWithIndex
         blockChunk = BukkitResources.vanishingBlockSetResource(blocks)
       } yield {
-        SeichiAssist.instance.brokenBlockChunkScope.useTracked(blockChunk) { blocks =>
+        SeichiAssist.instance.lockedBlockChunkScope.useTracked(blockChunk) { blocks =>
           for {
             _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
             _ <- syncShift.shift
@@ -332,7 +331,7 @@ class PlayerBlockBreakListener extends Listener {
 
       com.github.unchama.seichiassist.unsafe.runIOAsync(
         "単爆破壊エフェクトを再生する",
-        SeichiAssist.instance.brokenBlockChunkScope.useTracked(blockChunk) { blocks =>
+        SeichiAssist.instance.lockedBlockChunkScope.useTracked(blockChunk) { blocks =>
           ActiveSkillEffect
             .fromEffectNum(playerdata.activeskilldata.effectnum, playerdata.activeskilldata.skillnum)
             .runBreakEffect(player, playerdata.activeskilldata, tool, blocks, breakArea, centerOfBlock)

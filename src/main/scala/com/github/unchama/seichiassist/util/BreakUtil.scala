@@ -22,8 +22,23 @@ object BreakUtil {
 
   import ManagedWorld._
 
-  //他のプラグインの影響があってもブロックを破壊できるのか
-  def canBreak(player: Player, breakblockOption: Option[Block]): Boolean = {
+  def unsafeGetLockedBlocks(): Set[Block] =
+    SeichiAssist.instance
+      .lockedBlockChunkScope.trackedHandlers.unsafeRunSync()
+      .flatten.map(x => x: Block)
+
+  /**
+   * 他のプラグインの影響があってもブロックを破壊できるのかを判定する。
+   *
+   * `lockedBlocks`は[[unsafeGetLockedBlocks()]]の結果が利用されるべきだが、
+   * 複数ブロックのキャッシュのためにこれを事前にキャッシュして渡したほうが速い。
+   * （引数を省略した場合呼び出しごとに再計算される）
+   *
+   * @param player 破壊者
+   * @param breakblockOption 破壊対象のブロック
+   * @param lockedBlocks グローバルにロックされているブロックの集合
+   */
+  def canBreak(player: Player, breakblockOption: Option[Block], lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
     val breakblock = breakblockOption.getOrElse(return false)
     if (!player.isOnline) return false
 
@@ -70,6 +85,10 @@ object BreakUtil {
       val isBlockY5Step = material == Material.STEP && breakblock.getY == 5 && breakblock.getData == 0.toByte
 
       if (isBlockY5Step && !playerdata.canBreakHalfBlock) return false
+    }
+
+    if (lockedBlocks.contains(breakblock)) {
+      return false
     }
 
     true
