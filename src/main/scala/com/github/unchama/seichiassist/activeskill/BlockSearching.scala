@@ -28,7 +28,7 @@ object BlockSearching {
     relativeVectors.collect { case XYZTuple(x, y, z) =>
       val targetBlock = referencePoint.getRelative(x, y, z)
 
-      if (BreakUtil.canBreak(player, Some.apply(targetBlock), lockedBlocks))
+      if (BreakUtil.canBreak(player, targetBlock, lockedBlocks))
         targetBlock.getType match {
           case Material.STATIONARY_LAVA | Material.LAVA =>
             lavaBlocks.add(targetBlock)

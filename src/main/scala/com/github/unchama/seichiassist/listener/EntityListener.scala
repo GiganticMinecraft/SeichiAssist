@@ -40,7 +40,7 @@ class EntityListener extends Listener {
       ).getOrElse(return)
 
     //破壊不可能な場合は処理を終了
-    if (!BreakUtil.canBreak(player, Some(block))) return
+    if (!BreakUtil.canBreak(player, block)) return
 
     //整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {

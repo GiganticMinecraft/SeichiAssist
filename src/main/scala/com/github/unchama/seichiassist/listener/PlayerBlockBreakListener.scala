@@ -49,7 +49,7 @@ class PlayerBlockBreakListener extends Listener {
     val playerdata = SeichiAssist.playermap(player.getUniqueId)
 
     //破壊不可能ブロックの時処理を終了
-    if (!BreakUtil.canBreak(player, Some(block))) {
+    if (!BreakUtil.canBreak(player, block)) {
       event.setCancelled(true)
       return
     }
