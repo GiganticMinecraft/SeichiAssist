@@ -490,7 +490,7 @@ class PlayerClickListener extends Listener {
     }
 
     //壊せない場合無視
-    if (!BreakUtil.canBreak(p, targetBlock)) {
+    if (!BreakUtil.canBreakWithSkill(p, targetBlock)) {
       return
     }
 
