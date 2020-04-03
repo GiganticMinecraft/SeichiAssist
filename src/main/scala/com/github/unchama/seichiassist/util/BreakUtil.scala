@@ -29,7 +29,7 @@ object BreakUtil {
       .flatten.map(x => x: Block)
 
   /**
-   * 他のプラグインの影響があってもブロックを破壊できるのかを判定する。
+   * 他のプラグインの影響があってもスキルでブロックを破壊できるのかを判定する。
    *
    * `lockedBlocks`は[[unsafeGetLockedBlocks()]]の結果が利用されるべきだが、
    * 複数ブロックのキャッシュのためにこれを事前にキャッシュして渡したほうが速い。
@@ -39,7 +39,7 @@ object BreakUtil {
    * @param checkTarget 破壊対象のブロック
    * @param lockedBlocks グローバルにロックされているブロックの集合
    */
-  def canBreak(player: Player, checkTarget: Block, lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
+  def canBreakWithSkill(player: Player, checkTarget: Block, lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
     if (!player.isOnline) return false
 
     val playermap = SeichiAssist.playermap

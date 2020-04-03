@@ -48,12 +48,6 @@ class PlayerBlockBreakListener extends Listener {
     //UUIDを基にプレイヤーデータ取得
     val playerdata = SeichiAssist.playermap(player.getUniqueId)
 
-    //破壊不可能ブロックの時処理を終了
-    if (!BreakUtil.canBreak(player, block)) {
-      event.setCancelled(true)
-      return
-    }
-
     //重力値によるキャンセル判定(スキル判定より先に判定させること)
     if (!MaterialSets.gravityMaterials.contains(block.getType) && !MaterialSets.cancelledMaterials.contains(block.getType))
       if (BreakUtil.getGravity(player, block, isAssault = false) > 15) {
@@ -64,6 +58,12 @@ class PlayerBlockBreakListener extends Listener {
 
     //スキル発動条件がそろってなければ終了
     if (!Util.isSkillEnable(player)) return
+
+    //破壊不可能ブロックの時処理を終了
+    if (!BreakUtil.canBreakWithSkill(player, block)) {
+      event.setCancelled(true)
+      return
+    }
 
     //実際に使用するツール
     val tool = MaterialSets.refineItemStack(

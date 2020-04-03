@@ -39,9 +39,6 @@ class EntityListener extends Listener {
         MaterialSets.materials
       ).getOrElse(return)
 
-    //破壊不可能な場合は処理を終了
-    if (!BreakUtil.canBreak(player, block)) return
-
     //整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
       player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。")
@@ -50,6 +47,9 @@ class EntityListener extends Listener {
 
     //スキル発動条件がそろってなければ終了
     if (!Util.isSkillEnable(player)) return
+
+    //破壊不可能な場合は処理を終了
+    if (!BreakUtil.canBreakWithSkill(player, block)) return
 
     //実際に使用するツール
     val tool = MaterialSets.refineItemStack(
