@@ -90,7 +90,7 @@ class PlayerBlockBreakListener extends Listener {
 
     //これ以前の終了処理はマナは回復しません
     //追加マナ獲得
-    playerdata.activeskilldata.mana.increase(BreakUtil.calcManaDrop(playerdata), player, playerdata.level)
+    playerdata.manaState.increase(BreakUtil.calcManaDrop(playerdata), player, playerdata.level)
 
     //これ以降の終了処理はマナが回復します
     //アクティブスキルフラグがオフの時処理を終了
@@ -115,7 +115,7 @@ class PlayerBlockBreakListener extends Listener {
     //playerdataを取得
     val playerdata = SeichiAssist.playermap(player.getUniqueId)
 
-    val mana = playerdata.activeskilldata.mana
+    val mana = playerdata.manaState
 
     //プレイヤーの足のy座標を取得
     val playerLocY = player.getLocation.getBlockY - 1
@@ -258,7 +258,7 @@ class PlayerBlockBreakListener extends Listener {
   //範囲破壊実行処理
   private def runBreakSkill(player: Player, block: BlockBreakableBySkill, tool: BreakTool): Unit = {
     val playerdata = SeichiAssist.playermap(player.getUniqueId)
-    val mana = playerdata.activeskilldata.mana
+    val mana = playerdata.manaState
     val playerLocY = player.getLocation.getBlockY - 1
     val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
 

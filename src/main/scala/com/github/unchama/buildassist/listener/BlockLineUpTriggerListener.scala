@@ -105,7 +105,7 @@ object BlockLineUpTriggerListener extends Listener {
       val available = availableOnHand + availableInMineStack
 
       val manaCap: Option[Long] = {
-        val availableMana = seichiAssistData.activeskilldata.mana.getMana
+        val availableMana = seichiAssistData.manaState.getMana
 
         if (availableMana < available.toDouble * manaConsumptionPerPlacement)
           Some((availableMana / manaConsumptionPerPlacement).toLong)

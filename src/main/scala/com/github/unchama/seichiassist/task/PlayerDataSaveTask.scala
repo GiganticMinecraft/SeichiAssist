@@ -180,7 +180,7 @@ object PlayerDataSaveTask {
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.activeskilldata.effectpoint
           + ",premiumeffectpoint = " + playerdata.activeskilldata.premiumeffectpoint
-          + ",mana = " + playerdata.activeskilldata.mana.getMana
+          + ",mana = " + playerdata.manaState.getMana
           + ",expvisible = " + playerdata.settings.isExpBarVisible
           + ",totalexp = " + playerdata.totalexp
           + ",expmarge = " + playerdata.expmarge

@@ -68,7 +68,7 @@ class EntityListener extends Listener {
     val playerData = playermap.apply(uuid)
 
     //マナを取得
-    val mana = playerData.activeskilldata.mana
+    val mana = playerData.manaState
 
     val area = playerData.activeskilldata.area.makeBreakArea(player).unsafeRunSync()(0)
 

@@ -131,7 +131,7 @@ class AssaultTask(val player: Player, val tool: BreakTool) extends BukkitRunnabl
     //減る耐久値の計算
     val durability = (tool.getDurability + BreakUtil.calcDurability(tool.getEnchantmentLevel(Enchantment.DURABILITY), breakTargets)).toShort
 
-    val playerMana: Mana = playerdata.activeskilldata.mana
+    val playerMana: Mana = playerdata.manaState
 
     //実際に経験値を減らせるか判定
     if (!playerMana.has(useMana)) {

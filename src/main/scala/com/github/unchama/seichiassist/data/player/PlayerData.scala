@@ -195,11 +195,17 @@ class PlayerData(
   //アクティブスキル関連データ
   @deprecated val activeskilldata: ActiveSkillData_Legacy = new ActiveSkillData_Legacy()
 
+  //region スキル関連のデータ
+
   // スキルデータ
   val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
 
   // スキルエフェクトデータ
   val skillEffectState: Ref[IO, PlayerSkillEffectState] = Ref.unsafe(PlayerSkillEffectState.initial)
+
+  val manaState: Mana = new Mana()
+
+  //endregion
 
   //二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
@@ -325,7 +331,7 @@ class PlayerData(
     updateStarLevel()
     setDisplayName()
     SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-    activeskilldata.mana.display(player, level)
+    manaState.display(player, level)
   }
 
   //表示される名前に整地レベルor二つ名を追加
@@ -397,9 +403,9 @@ class PlayerData(
 
         i += 1
 
-        if (activeskilldata.mana.isLoaded) {
+        if (manaState.isLoaded) {
           //マナ最大値の更新
-          activeskilldata.mana.onLevelUp(player, i)
+          manaState.onLevelUp(player, i)
         }
 
         //レベル上限に達したら終了

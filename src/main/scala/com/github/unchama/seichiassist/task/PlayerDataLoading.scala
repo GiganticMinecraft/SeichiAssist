@@ -213,7 +213,7 @@ object PlayerDataLoading {
         playerData.activeskilldata.effectpoint = rs.getInt("effectpoint")
         playerData.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint")
         //マナの情報
-        playerData.activeskilldata.mana.setMana(rs.getDouble("mana"))
+        playerData.manaState.setMana(rs.getDouble("mana"))
         playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
 
         playerData.totalexp = rs.getInt("totalexp")
