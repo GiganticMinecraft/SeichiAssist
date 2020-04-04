@@ -33,12 +33,12 @@ abstract class PlayerDataOnMemoryRepository[D] extends Listener {
    * 何故なら、プレーヤーのjoin処理が終了した時点で
    * このリポジトリはそのプレーヤーに関する[[D]]を格納している必要があるからである。
    */
-  abstract val loadData: (String, UUID) => SyncIO[Either[Option[String], D]]
+  val loadData: (String, UUID) => SyncIO[Either[Option[String], D]]
 
   /**
    * プレーヤーが退出したときに、格納されたデータをもとに終了処理を行う。
    */
-  abstract val unloadData: (Player, D) => IO[Unit]
+  val unloadData: (Player, D) => IO[Unit]
 
   /**
    * ログイン中の [[Player]] に対して関連付けられた [[D]] への参照を取得する。
