@@ -2,9 +2,8 @@ package com.github.unchama
 
 import java.util.UUID
 
-import cats.effect.{IO, SyncIO}
 import cats.effect.concurrent.Ref
-import org.bukkit.Bukkit
+import cats.effect.{IO, SyncIO}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, Listener}
