@@ -4,6 +4,7 @@ import java.util.UUID
 
 import cats.effect.{IO, SyncIO}
 import cats.effect.concurrent.Ref
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, Listener}
@@ -62,7 +63,11 @@ abstract class PlayerDataOnMemoryRepository[D] extends Listener {
 
     state(uuid).get
       .flatMap(unloadData(player, _))
-      .unsafeRunSync()
+      .unsafeRunAsync {
+        case Left(value) =>
+          value.printStackTrace()
+        case Right(_) => ()
+      }
 
     state.remove(uuid)
   }
