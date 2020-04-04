@@ -447,16 +447,22 @@ class PlayerClickListener extends Listener {
   //　経験値瓶を持った状態でのShift右クリック…一括使用
   @EventHandler
   def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent): Unit = {
+    val player = event.getPlayer
+    val playerInventory = player.getInventory
+    val action = event.getAction
+
     // 経験値瓶を持った状態でShift右クリックをした場合
-    if (event.getPlayer.isSneaking && event.getPlayer.getInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
-      && (event.getAction == Action.RIGHT_CLICK_AIR || event.getAction == Action.RIGHT_CLICK_BLOCK)) {
+    if (player.isSneaking
+      && playerInventory.getItemInMainHand != null
+      && playerInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
+      && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
+
+      val count = playerInventory.getItemInMainHand.getAmount
+
+      (0 until count).foreach { _ => player.launchProjectile(classOf[ThrownExpBottle]) }
+
+      playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
       event.setCancelled(true)
-
-      (0 until event.getItem.getAmount).foreach { _ =>
-        event.getPlayer.launchProjectile(classOf[ThrownExpBottle])
-      }
-
-      event.getPlayer.getInventory.setItemInMainHand(new ItemStack(Material.AIR))
     }
   }
 
@@ -484,7 +490,7 @@ class PlayerClickListener extends Listener {
     }
 
     //壊せない場合無視
-    if (!BreakUtil.canBreak(p, Some.apply(targetBlock))) {
+    if (!BreakUtil.canBreakWithSkill(p, targetBlock)) {
       return
     }
 

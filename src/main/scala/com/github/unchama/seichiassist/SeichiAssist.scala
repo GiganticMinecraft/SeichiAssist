@@ -47,7 +47,11 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
-  val brokenBlockChunkScope: ResourceScope[IO, Set[BlockBreakableBySkill]] = {
+
+  /**
+   * スキル使用などで破壊されることが確定したブロック塊のスコープ
+   */
+  val lockedBlockChunkScope: ResourceScope[IO, Set[BlockBreakableBySkill]] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
@@ -225,7 +229,7 @@ class SeichiAssist extends JavaPlugin() {
     // ファイナライザはunsafeRunSyncによってこのスレッドで同期的に実行されるため
     // onDisable内で呼び出して問題はない。
     // https://scastie.scala-lang.org/NqT4BFw0TiyfjycWvzRIuQ
-    brokenBlockChunkScope.releaseAll.unsafeRunSync()
+    lockedBlockChunkScope.releaseAll.unsafeRunSync()
     arrowSkillProjectileScope.releaseAll.unsafeRunSync()
     magicEffectEntityScope.releaseAll.value.unsafeRunSync()
 
