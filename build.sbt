@@ -87,6 +87,9 @@ lazy val root = (project in file("."))
     name := "SeichiAssist",
     assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist-${version.value}.jar",
     libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
+    excludeDependencies := Seq(
+      ExclusionRule(organization = "org.bukkit", name = "bukkit")
+    ),
     unmanagedBase := baseDirectory.value / "localDependencies",
     scalacOptions ++= Seq(
       "-encoding", "utf8",
