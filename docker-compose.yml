@@ -25,6 +25,7 @@ services:
       - db
     command: >
       bash -c "mkdir -p /spigot/plugins/SeichiAssist/ &&
+        (rm /spigot/plugins/SeichiAssist* || true) &&
         cp -Rf /spigot-files/* /spigot/ &&
         sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
         sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
@@ -45,6 +46,7 @@ services:
       - db
     command: >
       bash -c "mkdir -p /spigot/plugins/SeichiAssist/ &&
+        (rm /spigot/plugins/SeichiAssist* || true) &&
         cp -Rf /spigot-files/* /spigot/ &&
         sed -i -e 's/host: .*/host: db/' /spigot/plugins/SeichiAssist/config.yml &&
         sed -i -e 's/pw: .*/pw: unchamaisgod/' /spigot/plugins/SeichiAssist/config.yml &&
