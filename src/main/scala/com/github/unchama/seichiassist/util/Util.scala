@@ -32,10 +32,9 @@ object Util {
     player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい")
   }
 
-  //スキルの発動可否の処理(発動可能ならtrue、発動不可ならfalse)
-  def isSkillEnable(player: Player): Boolean = {
+  def seichiSkillsAllowedIn(world: World): Boolean = {
     val seichiWorldPrefix = if (SeichiAssist.DEBUG) SeichiAssist.DEBUGWORLDNAME else SeichiAssist.SEICHIWORLDNAME
-    val worldNameLowerCase = player.getWorld.getName.toLowerCase()
+    val worldNameLowerCase = world.getName.toLowerCase()
 
     worldNameLowerCase match {
       case "world_sw_zero" => false // 整地ワールドzeroではスキル発動不可

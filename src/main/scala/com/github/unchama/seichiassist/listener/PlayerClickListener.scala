@@ -59,7 +59,7 @@ class PlayerClickListener extends Listener {
     if (playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0) return
 
     //スキル発動条件がそろってなければ終了
-    if (!Util.isSkillEnable(player)) return
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
 
     action match {
       case Action.LEFT_CLICK_BLOCK | Action.LEFT_CLICK_AIR =>
@@ -279,7 +279,7 @@ class PlayerClickListener extends Listener {
 
 
     //スキル発動条件がそろってなければ終了
-    if (!Util.isSkillEnable(player)) {
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) {
       return
     }
 

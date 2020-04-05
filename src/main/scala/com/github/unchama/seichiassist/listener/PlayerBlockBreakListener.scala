@@ -56,8 +56,7 @@ class PlayerBlockBreakListener extends Listener {
         return
       }
 
-    //スキル発動条件がそろってなければ終了
-    if (!Util.isSkillEnable(player)) return
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
 
     //破壊不可能ブロックの時処理を終了
     if (!BreakUtil.canBreakWithSkill(player, block)) {

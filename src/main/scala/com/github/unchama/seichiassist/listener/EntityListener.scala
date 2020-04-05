@@ -46,7 +46,7 @@ class EntityListener extends Listener {
     }
 
     //スキル発動条件がそろってなければ終了
-    if (!Util.isSkillEnable(player)) return
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
 
     //破壊不可能な場合は処理を終了
     if (!BreakUtil.canBreakWithSkill(player, block)) return

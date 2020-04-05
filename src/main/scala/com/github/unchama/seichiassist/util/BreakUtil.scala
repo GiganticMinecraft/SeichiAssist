@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.targetedeffect.player
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
 import org.bukkit._

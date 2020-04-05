@@ -396,7 +396,7 @@ object FirstPage extends Menu {
     val computeActiveSkillButton: IO[Button] = IO {
       val iconItemStack = {
         val lore =
-          if (Util.isSkillEnable(player))
+          if (Util.seichiSkillsAllowedIn(player.getWorld))
             List(
               s"$RESET${GRAY}整地に便利なスキルを使用できるゾ",
               s"$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く"
