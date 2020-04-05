@@ -1,4 +1,4 @@
-package com.github.unchama
+package com.github.unchama.playerdatarepository
 
 import java.util.UUID
 
