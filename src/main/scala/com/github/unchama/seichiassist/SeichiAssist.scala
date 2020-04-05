@@ -9,6 +9,7 @@ import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRepository, PlayerDataOnMemoryRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
@@ -24,7 +25,6 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.repeating.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
-import org.bukkit.block.Block
 import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
@@ -55,6 +55,9 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
+
+  val activeSkillAvailability: PlayerDataOnMemoryRepository[Boolean] =
+    new NonPersistentPlayerDataRepository(true)
 
   override def onEnable(): Unit = {
     val logger = getLogger
@@ -145,9 +148,13 @@ class SeichiAssist extends JavaPlugin() {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
 
+    val repositories = Seq(
+      activeSkillAvailability
+    )
+
     import PluginExecutionContexts.asyncShift
     //リスナーの登録
-    Set(
+    Seq(
       new PlayerJoinListener(),
       new PlayerQuitListener(),
       new PlayerClickListener(),
@@ -162,9 +169,11 @@ class SeichiAssist extends JavaPlugin() {
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler()
-    ).foreach {
-      getServer.getPluginManager.registerEvents(_, this)
-    }
+    )
+      .concat(repositories)
+      .foreach {
+        getServer.getPluginManager.registerEvents(_, this)
+      }
 
     //正月イベント用
     new NewYearsEvent(this)
