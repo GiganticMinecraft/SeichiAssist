@@ -59,7 +59,7 @@ class PlayerBlockBreakListener extends Listener {
     if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
 
     //破壊不可能ブロックの時処理を終了
-    if (!BreakUtil.canBreakWithSkill(player, block)) {
+    if (!BreakUtil.canBreak(player, block)) {
       event.setCancelled(true)
       return
     }
@@ -160,7 +160,7 @@ class PlayerBlockBreakListener extends Listener {
 
         val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
           BlockSearching
-            .searchForBreakableBlocks(player, breakArea.gridPoints(), block)
+            .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
             .unsafeRunSync()
             .filterSolids(targetBlock =>
               isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(block)(targetBlock)
@@ -276,7 +276,7 @@ class PlayerBlockBreakListener extends Listener {
     import com.github.unchama.seichiassist.data.syntax._
     val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
       BlockSearching
-        .searchForBreakableBlocks(player, breakArea.gridPoints(), block)
+        .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
         .unsafeRunSync()
         .filterSolids(targetBlock =>
           isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(block)(targetBlock)

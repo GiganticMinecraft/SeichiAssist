@@ -108,7 +108,7 @@ class AssaultTask(val player: Player, val tool: BreakTool) extends BukkitRunnabl
 
     import com.github.unchama.seichiassist.data.syntax._
     val BlockSearching.Result(foundBlocks, foundWaters, foundLavas) =
-      BlockSearching.searchForBreakableBlocks(player, breakArea.gridPoints(), block)
+      BlockSearching.searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
           .unsafeRunSync()
           .filterAll(targetBlock =>
             player.isSneaking || !shouldBreakAllBlocks ||

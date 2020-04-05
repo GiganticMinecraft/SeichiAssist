@@ -2,13 +2,13 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
 import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.{SeichiAssist, _}
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.ThrownExpBottle
@@ -490,7 +490,7 @@ class PlayerClickListener extends Listener {
     }
 
     //壊せない場合無視
-    if (!BreakUtil.canBreakWithSkill(p, targetBlock)) {
+    if (!BreakUtil.canBreak(p, targetBlock)) {
       return
     }
 

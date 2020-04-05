@@ -28,7 +28,7 @@ object BreakUtil {
       .flatten.map(x => x: Block)
 
   /**
-   * 他のプラグインの影響があってもスキルでブロックを破壊できるのかを判定する。
+   * 他のプラグインの影響があってもブロックを破壊できるのかを判定する。
    *
    * `lockedBlocks`は[[unsafeGetLockedBlocks()]]の結果が利用されるべきだが、
    * 複数ブロックのキャッシュのためにこれを事前にキャッシュして渡したほうが速い。
@@ -38,20 +38,13 @@ object BreakUtil {
    * @param checkTarget 破壊対象のブロック
    * @param lockedBlocks グローバルにロックされているブロックの集合
    */
-  def canBreakWithSkill(player: Player, checkTarget: Block, lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
-    if (!player.isOnline) return false
-
-    val playermap = SeichiAssist.playermap
-    val uuid = player.getUniqueId
-    val playerdata = playermap(uuid)
-
-    //壊されるブロックのMaterialを取得
-    val material = checkTarget.getType
+  def canBreak(player: Player, checkTarget: Block, lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     //壊されるブロックがワールドガード範囲だった場合処理を終了
     if (!ExternalPlugins.getWorldGuard.canBuild(player, checkTarget.getLocation)) {
-      if (playerdata.settings.shouldDisplayWorldGuardLogs) {
-        player.sendMessage(RED.toString + "ワールドガードで保護されています。")
+      if (playerData.settings.shouldDisplayWorldGuardLogs) {
+        player.sendMessage(s"${RED}ワールドガードで保護されています。")
       }
       return false
     }
@@ -61,36 +54,47 @@ object BreakUtil {
       if (wrapper == null) {
         Bukkit.getLogger.warning("CoreProtectにアクセスできませんでした。")
       } else {
-        val failure = !wrapper.queueBlockRemoval(player, checkTarget)
         //もし失敗したらプレイヤーに報告し処理を終了
-        if (failure) {
-          player.sendMessage(RED.toString + "coreprotectに保存できませんでした。管理者に報告してください。")
+        if (!wrapper.queueBlockRemoval(player, checkTarget)) {
+          player.sendMessage(s"${RED}coreprotectに保存できませんでした。管理者に報告してください。")
           return false
         }
       }
     }
 
-    if (material == Material.CHEST || material == Material.TRAPPED_CHEST) {
-      if (!playerdata.chestflag) {
-        player.sendMessage(RED.toString + "スキルでのチェスト破壊は無効化されています")
-        return false
-      } else if (!Util.isSeichiWorld(player)) {
-        player.sendMessage(RED.toString + "スキルでのチェスト破壊は整地ワールドでのみ有効です")
-        return false
-      }
+    if (ManagedWorld.seichiWorlds.contains(checkTarget.getWorld)) {
+      val isBlockY5Step =
+        checkTarget.getType == Material.STEP &&
+          checkTarget.getY == 5 &&
+          checkTarget.getData == 0.toByte
+
+      if (isBlockY5Step && !playerData.canBreakHalfBlock) return false
     }
 
-    if (checkTarget.getWorld.asManagedWorld().exists(_.isSeichi)) {
-      val isBlockY5Step = material == Material.STEP && checkTarget.getY == 5 && checkTarget.getData == 0.toByte
+    !lockedBlocks.contains(checkTarget)
+  }
 
-      if (isBlockY5Step && !playerdata.canBreakHalfBlock) return false
+  def canBreakWithSkill(player: Player,
+                        checkTarget: Block,
+                        lockedBlocks: Set[Block] = unsafeGetLockedBlocks()): Boolean = {
+    !isProtectedChest(player, checkTarget) &&
+      canBreak(player, checkTarget, lockedBlocks)
+  }
+
+  def isProtectedChest(player: Player, checkTarget: Block): Boolean = {
+    checkTarget.getType match {
+      case Material.CHEST | Material.TRAPPED_CHEST =>
+        if (!SeichiAssist.playermap(player.getUniqueId).chestflag) {
+          player.sendMessage(s"${RED}スキルでのチェスト破壊は無効化されています")
+          true
+        } else if (!ManagedWorld.seichiWorlds.contains(player.getWorld)) {
+          player.sendMessage(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です")
+          true
+        } else {
+          false
+        }
+      case _ => false
     }
-
-    if (lockedBlocks.contains(checkTarget)) {
-      return false
-    }
-
-    true
   }
 
   private def equalsIgnoreNameCaseWorld(name: String): Boolean = {
