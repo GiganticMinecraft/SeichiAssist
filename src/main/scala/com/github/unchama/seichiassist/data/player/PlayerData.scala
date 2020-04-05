@@ -198,12 +198,16 @@ class PlayerData(
   //region スキル関連のデータ
 
   // スキルデータ
-  val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
+  var skillState: PlayerSkillState = PlayerSkillState.initial
 
   // スキルエフェクトデータ
-  val skillEffectState: Ref[IO, PlayerSkillEffectState] = Ref.unsafe(PlayerSkillEffectState.initial)
+  var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
 
   val manaState: Mana = new Mana()
+
+  var skillPoint: Int = 0
+  var effectPoint: Int = 0
+  var premiumEffectPoint: Int = 0
 
   //endregion
 
