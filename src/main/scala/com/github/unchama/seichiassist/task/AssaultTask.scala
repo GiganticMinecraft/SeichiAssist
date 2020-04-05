@@ -43,7 +43,7 @@ class AssaultTask(val player: Player, val tool: BreakTool) extends BukkitRunnabl
     }
 
     //整地ワールドではない時スキルを発動しない。
-    if (!Util.isSkillEnable(player)) {
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) {
       player.sendMessage(s"${ChatColor.GREEN}スキルは整地ワールドでのみ使用可能です。")
       setCancel()
       return
@@ -108,7 +108,7 @@ class AssaultTask(val player: Player, val tool: BreakTool) extends BukkitRunnabl
 
     import com.github.unchama.seichiassist.data.syntax._
     val BlockSearching.Result(foundBlocks, foundWaters, foundLavas) =
-      BlockSearching.searchForBreakableBlocks(player, breakArea.gridPoints(), block)
+      BlockSearching.searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
           .unsafeRunSync()
           .filterAll(targetBlock =>
             player.isSneaking || !shouldBreakAllBlocks ||

@@ -18,7 +18,9 @@ object BlockSearching {
     def filterAll(f: Block => Boolean): Result = copy(solids = solids.filter(f), waters = waters.filter(f), lavas = lavas.filter(f))
   }
 
-  def searchForBreakableBlocks(player: Player, relativeVectors: Seq[XYZTuple], referencePoint: Block): SyncIO[Result] = SyncIO {
+  def searchForBlocksBreakableWithSkill(player: Player,
+                                        relativeVectors: Seq[XYZTuple],
+                                        referencePoint: Block): SyncIO[Result] = SyncIO {
     val solidBlocks = new mutable.HashSet[BlockBreakableBySkill]
     val waterBlocks = new mutable.HashSet[Block]
     val lavaBlocks  = new mutable.HashSet[Block]

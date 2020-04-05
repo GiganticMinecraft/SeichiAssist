@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
-import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Player, Projectile}
@@ -46,7 +45,7 @@ class EntityListener extends Listener {
     }
 
     //スキル発動条件がそろってなければ終了
-    if (!Util.isSkillEnable(player)) return
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
 
     //破壊不可能な場合は処理を終了
     if (!BreakUtil.canBreakWithSkill(player, block)) return
@@ -90,7 +89,7 @@ class EntityListener extends Listener {
     import com.github.unchama.seichiassist.data.syntax._
     val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
       BlockSearching
-        .searchForBreakableBlocks(player, area.gridPoints(), hitBlock)
+        .searchForBlocksBreakableWithSkill(player, area.gridPoints(), hitBlock)
         .unsafeRunSync()
         .filterSolids(targetBlock =>
           isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(hitBlock)(targetBlock)
