@@ -9,6 +9,8 @@ import org.bukkit.entity.Player
 import org.bukkit.{Location, Material}
 
 trait ActiveSkillEffect {
+  val nameOnUI: String
+
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData_Legacy,
                      tool: BreakTool,
@@ -19,6 +21,8 @@ trait ActiveSkillEffect {
 
 object ActiveSkillEffect {
   object NoEffect extends ActiveSkillEffect {
+    override val nameOnUI: String = "未設定"
+
     override def runBreakEffect(player: Player,
                                 skillData: ActiveSkillData_Legacy,
                                 tool: BreakTool,

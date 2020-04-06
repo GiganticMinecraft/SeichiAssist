@@ -13,20 +13,19 @@ import com.github.unchama.util.effect.BukkitResources
 import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit._
-import org.bukkit.block.Block
 import org.bukkit.entity.{Chicken, Player}
 import org.bukkit.material.Wool
 
 import scala.util.Random
 
 sealed abstract class ActiveSkillPremiumEffect(val num: Int,
-                                               val sql_name: String,
-                                               val desc: String,
-                                               val explain: String,
+                                               val nameOnDatabase: String,
+                                               val nameOnUI: String,
+                                               val explanation: String,
                                                val usePoint: Int,
                                                val material: Material) extends EnumEntry with ActiveSkillEffect {
   @Deprecated
-  def getsqlName: String = this.sql_name
+  def getsqlName: String = this.nameOnDatabase
 
   def runBreakEffect(player: Player,
                      skillData: ActiveSkillData_Legacy,
@@ -105,7 +104,7 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
   @Deprecated()
   val arrayValues: Array[ActiveSkillPremiumEffect] = values.toArray
 
-  def fromSqlName(sqlName: String): Option[ActiveSkillPremiumEffect] = values.find(sqlName == _.sql_name)
+  def fromSqlName(sqlName: String): Option[ActiveSkillPremiumEffect] = values.find(sqlName == _.nameOnDatabase)
 
   case object MAGIC extends ActiveSkillPremiumEffect(1, "ef_magic", s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10, Material.RED_ROSE)
 }

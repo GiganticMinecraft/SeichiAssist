@@ -1,14 +1,15 @@
 package com.github.unchama.seichiassist.data.player
 
+import com.github.unchama.seichiassist.activeskill._
 import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
-import com.github.unchama.seichiassist.activeskill.{ActiveSkill, AssaultSkill, BreakArea, BreakSide, SeichiSkill, SkillDependency}
+import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect.NoEffect
 
 case class PlayerSkillEffectState(obtainedEffects: Set[ActiveSkillEffect],
-                                  selection: Option[ActiveSkillEffect])
+                                  selection: ActiveSkillEffect)
 
 object PlayerSkillEffectState {
   val initial: PlayerSkillEffectState =
-    PlayerSkillEffectState(Set(), None)
+    PlayerSkillEffectState(Set(), NoEffect)
 }
 
 case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
