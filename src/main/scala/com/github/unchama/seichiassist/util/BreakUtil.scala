@@ -62,7 +62,7 @@ object BreakUtil {
       }
     }
 
-    if (ManagedWorld.seichiWorlds.contains(checkTarget.getWorld)) {
+    if (ManagedWorld.fromBukkitWorld(checkTarget.getWorld).exists(_.isSeichi)) {
       val isBlockY5Step =
         checkTarget.getType == Material.STEP &&
           checkTarget.getY == 5 &&
@@ -87,7 +87,7 @@ object BreakUtil {
         if (!SeichiAssist.playermap(player.getUniqueId).chestflag) {
           player.sendMessage(s"${RED}スキルでのチェスト破壊は無効化されています")
           true
-        } else if (!ManagedWorld.seichiWorlds.contains(player.getWorld)) {
+        } else if (!ManagedWorld.fromBukkitWorld(player.getWorld).exists(_.isSeichi)) {
           player.sendMessage(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です")
           true
         } else {
