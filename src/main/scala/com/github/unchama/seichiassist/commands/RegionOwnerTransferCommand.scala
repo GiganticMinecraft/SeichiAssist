@@ -43,7 +43,7 @@ object RegionOwnerTransferCommand {
 
   private def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): IO[TargetedEffect[Player]] = IO {
     val owners = region.getOwners
-    val world = recipient.getWorld
+    val world = donner.getWorld
     val limit = WorldGuardWrapper.getMaxRegionCount(recipient, world)
     val having = WorldGuardWrapper.getNumberOfRegions(recipient, world)
     if (limit <= having) {
