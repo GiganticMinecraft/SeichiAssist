@@ -43,11 +43,13 @@ object RegionOwnerTransferCommand {
 
   private def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): IO[TargetedEffect[Player]] = IO {
     val owners = region.getOwners
-    val world = recipient.getWorld
-    val limit = WorldGuardWrapper.getMaxRegionCount(recipient, world)
-    val having = WorldGuardWrapper.getNumberOfRegions(recipient, world)
-    if (limit <= having) {
-      s"相手が保護を上限 ($limit)まで所持しているため権限を譲渡できません。".asMessageEffect()
+    val regionWorld = donner.getWorld
+
+    val recipientLimit = WorldGuardWrapper.getMaxRegionCount(recipient, regionWorld)
+    val recipientHas = WorldGuardWrapper.getNumberOfRegions(recipient, regionWorld)
+
+    if (recipientLimit <= recipientHas) {
+      s"相手が保護を上限 ($recipientLimit)まで所持しているため権限を譲渡できません。".asMessageEffect()
     } else if (owners.contains(WorldGuardPlugin.inst().wrapPlayer(recipient))) {
       "相手がすでにオーナーであるため権限を譲渡できません。".asMessageEffect()
     } else if (!owners.contains(donner.getUniqueId)) {
