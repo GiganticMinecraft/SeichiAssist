@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat
 import java.util.{GregorianCalendar, UUID}
 
 import cats.effect.IO
-import cats.effect.concurrent.Ref
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
@@ -205,7 +204,9 @@ class PlayerData(
 
   val manaState: Mana = new Mana()
 
-  var skillPoint: Int = 0
+  def totalActiveSkillPoint: Int =
+    (1 to level).map(i => Math.ceil(i.toDouble / 10.0).toInt).sum
+
   var effectPoint: Int = 0
   var premiumEffectPoint: Int = 0
 
