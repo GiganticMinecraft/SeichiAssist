@@ -48,7 +48,7 @@ object ActiveSkillMenu extends Menu {
         skillState <- ref.get
         totalPoint <- totalActiveSkillPoint(player)
       } yield {
-        totalPoint - skillState.consumedActiveSkillPoint()
+        totalPoint - skillState.consumedActiveSkillPoint
       }
 
     val computeStatusButton: IO[Button] = RecomputedButton(
@@ -293,7 +293,7 @@ object ActiveSkillMenu extends Menu {
             feedbackEffect <- playerSkillStateRef.modify { skillState =>
               selectionStateOf(skill)(skillState) match {
                 case Locked =>
-                  val availablePoints = totalPoints - skillState.consumedActiveSkillPoint()
+                  val availablePoints = totalPoints - skillState.consumedActiveSkillPoint
 
                   if (availablePoints >= skill.requiredActiveSkillPoint)
                     skillState.lockedDependency(skill) match {

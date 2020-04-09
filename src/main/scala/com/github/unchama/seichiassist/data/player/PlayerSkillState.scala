@@ -17,7 +17,7 @@ case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
                             isActiveSkillAvailable: Boolean,
                             activeSkill: Option[ActiveSkill],
                             assaultSkill: Option[AssaultSkill]) {
-  def consumedActiveSkillPoint(): Int =
+  lazy val consumedActiveSkillPoint: Int =
     obtainedSkills.map(_.requiredActiveSkillPoint).sum
 
   val activeSkillArea: Option[BreakArea] =
