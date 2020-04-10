@@ -8,8 +8,8 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
-import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.MillisecondTimer

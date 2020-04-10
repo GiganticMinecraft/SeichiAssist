@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.data.player
 
-import com.github.unchama.seichiassist.activeskill._
-import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
-import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect.NoEffect
+import com.github.unchama.seichiassist.seichiskill._
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 
 case class PlayerSkillEffectState(obtainedEffects: Set[ActiveSkillEffect],
                                   selection: ActiveSkillEffect)

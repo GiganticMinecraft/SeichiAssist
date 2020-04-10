@@ -1,12 +1,12 @@
-package com.github.unchama.seichiassist.activeskill.effect
+package com.github.unchama.seichiassist.seichiskill.effect
 
 import cats.effect.{IO, Timer}
 import com.github.unchama.seichiassist.ActiveSkill
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
-import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
-import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
+import com.github.unchama.seichiassist.seichiskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect

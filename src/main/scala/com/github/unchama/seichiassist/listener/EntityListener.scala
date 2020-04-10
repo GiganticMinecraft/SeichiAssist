@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.activeskill.BlockSearching
-import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillEffect
+import com.github.unchama.seichiassist.seichiskill.BlockSearching
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import org.bukkit._

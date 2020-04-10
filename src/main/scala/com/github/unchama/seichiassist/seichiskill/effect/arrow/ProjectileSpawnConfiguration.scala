@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.activeskill.effect.arrow
+package com.github.unchama.seichiassist.seichiskill.effect.arrow
 
 import org.bukkit.util.Vector
 

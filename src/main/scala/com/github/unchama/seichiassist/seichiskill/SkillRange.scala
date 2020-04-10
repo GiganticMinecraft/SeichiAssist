@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.activeskill
+package com.github.unchama.seichiassist.seichiskill
 
 import com.github.unchama.seichiassist.data.XYZTuple
 import org.bukkit.Material

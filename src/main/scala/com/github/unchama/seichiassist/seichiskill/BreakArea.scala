@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.activeskill
+package com.github.unchama.seichiassist.seichiskill
 
 import cats.effect.IO
 import com.github.unchama.generic.CachedFunction
-import com.github.unchama.seichiassist.activeskill.SeichiSkill._
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, BreakArea_Legacy, XYZTuple, syntax}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill._
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.entity.Player
 

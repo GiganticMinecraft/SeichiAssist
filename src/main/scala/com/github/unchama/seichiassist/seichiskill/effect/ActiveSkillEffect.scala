@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.activeskill.effect
+package com.github.unchama.seichiassist.seichiskill.effect
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
-import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect.Blizzard
 import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, AxisAlignedCuboid}
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.Blizzard
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.entity.Player
 import org.bukkit.{Location, Material}

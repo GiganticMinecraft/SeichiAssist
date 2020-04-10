@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.activeskill
+package com.github.unchama.seichiassist.seichiskill
 
 import com.github.unchama.generic.CachedFunction
 

@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.task
 
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
-import com.github.unchama.seichiassist.activeskill.BlockSearching
 import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.seichiskill.BlockSearching
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{ActiveSkill, SeichiAssist}
 import org.bukkit.enchantments.Enchantment

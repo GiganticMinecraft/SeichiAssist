@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.activeskill
+package com.github.unchama.seichiassist.seichiskill
 
 import enumeratum.EnumEntry.Snakecase
 import enumeratum._

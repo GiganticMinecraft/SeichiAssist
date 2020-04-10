@@ -8,11 +8,11 @@ import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemSt
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.activeskill._
 import com.github.unchama.seichiassist.data.player.PlayerSkillState
 import com.github.unchama.seichiassist.data.{MenuInventoryData, XYZTuple}
 import com.github.unchama.seichiassist.effects.unfocused.{BroadcastMessageEffect, BroadcastSoundEffect}
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import com.github.unchama.targetedeffect.{computedEffect, emptyEffect, sequentialEffect}
