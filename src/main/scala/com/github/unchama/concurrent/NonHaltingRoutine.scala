@@ -6,37 +6,25 @@ import cats.effect.IO
 import scala.concurrent.duration.FiniteDuration
 
 abstract class NonHaltingRoutine {
+  import cats.implicits._
+
   /**
    * [[getRepeatInterval]]で指定される長さの待機処理と[[runRoutine]]を交互に行っていくプログラム.
    *
    * [[runRoutine]]が例外を吐こうと実行が終了することはない.
    */
   lazy val launch: IO[Nothing] = {
-    val sleep: IO[Unit] = for {
-      interval <- getRepeatInterval
-      _ <- IO.timer(context).sleep(interval)
-    } yield ()
-
-    val fireRoutine: IO[Unit] = {
-      for {
-        _ <- IO.shift(context)
-        r <- runRoutine.attempt
-        _ <- r match {
-          case Left(error) => IO {
-            println("定期実行タスクの実行中にエラーが発生しました。")
-            error.printStackTrace()
-          }
-          case Right(value) => IO.pure(value)
-        }
-      } yield ()
+    val recoveringRoutine: IO[Unit] = {
+      runRoutine.redeemWith(
+        error => IO {
+          println("定期実行タスクの実行中にエラーが発生しました。")
+          error.printStackTrace()
+        },
+        _ => IO.unit
+      )
     }
 
-    Monad[IO].foreverM {
-      for {
-        _ <- sleep
-        _ <- fireRoutine
-      } yield ()
-    }
+    Monad[IO].foreverM(sleepBetweenRoutines >> recoveringRoutine)
   }
 
   /**
@@ -50,4 +38,7 @@ abstract class NonHaltingRoutine {
 
   protected val getRepeatInterval: IO[FiniteDuration]
   protected val runRoutine: IO[Any]
+
+  val sleepBetweenRoutines: IO[Unit] =
+    getRepeatInterval >>= (IO.timer(context).sleep(_))
 }

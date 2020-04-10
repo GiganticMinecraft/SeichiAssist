@@ -27,7 +27,7 @@ trait RepeatingRoutine {
       )
 
     Monad[IO]
-      .iterateWhile(sleep >> recoveringRoutine)(identity)
+      .iterateWhile(sleepBetweenRoutines >> recoveringRoutine)(identity)
       .as(())
   }
 
@@ -47,6 +47,6 @@ trait RepeatingRoutine {
 
   val routineAction: IO[Boolean]
 
-  val sleep: IO[Unit] =
+  val sleepBetweenRoutines: IO[Unit] =
     getRepeatInterval >>= (IO.timer(context).sleep(_))
 }
