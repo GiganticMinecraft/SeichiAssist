@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.task.global
 
 import cats.effect.IO
-import com.github.unchama.concurrent.{RepeatingTask, RepeatingTaskContext}
+import com.github.unchama.concurrent.{NonHaltingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.util.Util
@@ -10,7 +10,7 @@ import org.bukkit.ChatColor._
 
 import scala.concurrent.duration.FiniteDuration
 
-class PlayerDataBackupTask(implicit override val context: RepeatingTaskContext) extends RepeatingTask() {
+class PlayerDataBackupRoutine(implicit override val context: RepeatingTaskContext) extends NonHaltingRoutine() {
 
   override val getRepeatInterval: IO[FiniteDuration] = IO {
     import scala.concurrent.duration._

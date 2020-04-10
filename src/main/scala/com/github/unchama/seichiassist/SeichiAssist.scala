@@ -5,7 +5,7 @@ import java.util.UUID
 import cats.effect.{Fiber, IO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
-import com.github.unchama.concurrent.RepeatingTask
+import com.github.unchama.concurrent.NonHaltingRoutine
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.menuinventory.MenuHandler
@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
-import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
+import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandSender}
@@ -211,10 +211,10 @@ class SeichiAssist extends JavaPlugin() {
       import cats.implicits._
 
       // 公共鯖なら整地量のランキングを表示する必要はない
-      val programs: List[RepeatingTask] =
+      val programs: List[NonHaltingRoutine] =
         List(
-          new PlayerDataPeriodicRecalculation,
-          new PlayerDataBackupTask
+          new PlayerDataRecalculationRoutine,
+          new PlayerDataBackupRoutine
         ) ++
           Option.unless(
             SeichiAssist.seichiAssistConfig.getServerNum == 7

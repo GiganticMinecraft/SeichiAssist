@@ -1,11 +1,11 @@
 package com.github.unchama.concurrent
 
+import cats.Monad
 import cats.effect.IO
-import com.github.unchama.util.effect.IOUtils._
 
 import scala.concurrent.duration.FiniteDuration
 
-abstract class RepeatingTask {
+abstract class NonHaltingRoutine {
   /**
    * [[getRepeatInterval]]で指定される長さの待機処理と[[runRoutine]]を交互に行っていくプログラム.
    *
