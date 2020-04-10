@@ -30,7 +30,7 @@ abstract class RepeatingTask {
       case Right(value) => IO.pure(value)
     }.toIO
 
-    forever {
+    Monad[IO].foreverM {
       for {
         _ <- sleep
         _ <- fireRoutine
