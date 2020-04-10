@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.task.repeating
+package com.github.unchama.seichiassist.task.global
 
 import cats.effect.IO
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingTask, RepeatingTaskContext}
