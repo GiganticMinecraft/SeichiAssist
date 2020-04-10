@@ -20,15 +20,16 @@ abstract class NonHaltingRoutine {
     val fireRoutine: IO[Unit] = {
       for {
         _ <- IO.shift(context)
-        _ <- runRoutine
+        r <- runRoutine.attempt
+        _ <- r match {
+          case Left(error) => IO {
+            println("定期実行タスクの実行中にエラーが発生しました。")
+            error.printStackTrace()
+          }
+          case Right(value) => IO.pure(value)
+        }
       } yield ()
-    }.runAsync {
-      case Left(error) => IO {
-        println("定期実行タスクの実行中にエラーが発生しました。")
-        error.printStackTrace()
-      }
-      case Right(value) => IO.pure(value)
-    }.toIO
+    }
 
     Monad[IO].foreverM {
       for {
