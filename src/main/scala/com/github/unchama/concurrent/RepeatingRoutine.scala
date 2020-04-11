@@ -10,9 +10,9 @@ trait RepeatingRoutine {
 
   /**
    * [[getRepeatInterval]]で指定される長さの待機処理と、
-   * [[routineAction]]を交互に行っていくプログラム。
+   * [[routineAction]]を交互に行うプログラム。
    *
-   * [[routineAction]]が例外を吐いて終了するか`false`を返すと実行が終了する。
+   * デフォルトの実装では、[[routineAction]]が例外を吐いて終了するか`false`を返すと実行が終了する。
    */
   lazy val launch: IO[Unit] = {
     val recoveringRoutine: IO[Boolean] =

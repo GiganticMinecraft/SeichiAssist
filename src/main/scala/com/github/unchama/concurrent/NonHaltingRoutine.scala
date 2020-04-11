@@ -3,19 +3,16 @@ package com.github.unchama.concurrent
 import cats.Monad
 import cats.effect.IO
 
-import scala.concurrent.duration.FiniteDuration
-
-abstract class NonHaltingRoutine {
+trait NonHaltingRoutine extends RepeatingRoutine {
   import cats.implicits._
 
   /**
-   * [[getRepeatInterval]]で指定される長さの待機処理と[[runRoutine]]を交互に行っていくプログラム.
-   *
-   * [[runRoutine]]が例外を吐こうと実行が終了することはない.
+   * この実装では、スリープと[[routineAction]]は交互に実行されるが、
+   * [[routineAction]]が例外を吐こうとfalseを返そうと実行が終了することはない.
    */
-  lazy val launch: IO[Nothing] = {
+  override lazy val launch: IO[Nothing] = {
     val recoveringRoutine: IO[Unit] = {
-      runRoutine.redeemWith(
+      routineAction.redeemWith(
         error => IO {
           println("定期実行タスクの実行中にエラーが発生しました。")
           error.printStackTrace()
@@ -26,19 +23,4 @@ abstract class NonHaltingRoutine {
 
     Monad[IO].foreverM(sleepBetweenRoutines >> recoveringRoutine)
   }
-
-  /**
-   * [[runRoutine]]の実行、及びスリープ処理に使用される[[RepeatingTaskContext]].
-   *
-   * サーバーメインスレッドでの実行コンテキストは渡してはならず、
-   * [[runRoutine]]の実行がサーバーメインスレッドで行われてほしければ、
-   * [[runRoutine]]内でコンテキストをシフトすべきである。
-   */
-  val context: RepeatingTaskContext
-
-  protected val getRepeatInterval: IO[FiniteDuration]
-  protected val runRoutine: IO[Any]
-
-  val sleepBetweenRoutines: IO[Unit] =
-    getRepeatInterval >>= (IO.timer(context).sleep(_))
 }

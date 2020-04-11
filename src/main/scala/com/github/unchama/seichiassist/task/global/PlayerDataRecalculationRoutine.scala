@@ -186,8 +186,8 @@ class PlayerDataRecalculationRoutine(implicit val syncContext: BukkitSyncIOShift
     }
   }
 
-  override val runRoutine: IO[Unit] = for {
+  override val routineAction: IO[Boolean] = for {
     _ <- IO.shift(syncContext)
     _ <- routineOnMainThread
-  } yield ()
+  } yield true
 }

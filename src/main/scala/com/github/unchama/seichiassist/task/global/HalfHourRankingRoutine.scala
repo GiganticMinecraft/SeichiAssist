@@ -17,7 +17,7 @@ class HalfHourRankingRoutine(implicit override val context: RepeatingTaskContext
     if (SeichiAssist.DEBUG) 20.seconds else 30.minutes
   }
 
-  override val runRoutine: IO[Unit] = IO {
+  override val routineAction: IO[Boolean] = IO {
     Util.sendEveryMessage("--------------30分間整地ランキング--------------")
 
     var totalBreakCount = 0
@@ -77,5 +77,7 @@ class HalfHourRankingRoutine(implicit override val context: RepeatingTaskContext
     }
 
     Util.sendEveryMessage("--------------------------------------------------")
+
+    true
   }
 }

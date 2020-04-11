@@ -18,7 +18,7 @@ class PlayerDataBackupRoutine(implicit override val context: RepeatingTaskContex
     if (SeichiAssist.DEBUG) 20.seconds else 10.minutes
   }
 
-  override val runRoutine: IO[Unit] = {
+  override val routineAction: IO[Boolean] = {
     val save = IO {
       import scala.jdk.CollectionConverters._
 
@@ -46,6 +46,6 @@ class PlayerDataBackupRoutine(implicit override val context: RepeatingTaskContex
     for {
       _ <- save
       _ <- updateRankingData
-    } yield ()
+    } yield true
   }
 }
