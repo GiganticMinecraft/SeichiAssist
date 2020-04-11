@@ -47,6 +47,16 @@ class PlayerData(
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
+
+  //MineStackの履歴
+  val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
+
+  //現在座標
+  var loc: Option[Location] = None
+
+  //放置時間
+  var idleMinute = 0
+
   //各統計値差分計算用配列
   lazy private val statisticsData: mutable.ArrayBuffer[Int] = {
     val buffer: mutable.ArrayBuffer[Int] = ArrayBuffer()
@@ -147,13 +157,7 @@ class PlayerData(
   var samepageflag = false //実績ショップ用
 
   //endregion
-  //MineStackの履歴
-  val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
-  var titlepage = 1 //実績メニュー用汎用ページ指定
-  //現在座標
-  var loc: Option[Location] = None
-  //放置時間
-  var idleMinute = 0
+
   //共有インベントリにアイテムが入っているかどうか
   var contentsPresentInSharedInventory = false
   //ガチャの基準となるポイント
