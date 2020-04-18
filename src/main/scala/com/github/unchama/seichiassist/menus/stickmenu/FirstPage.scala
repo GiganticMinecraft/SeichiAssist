@@ -587,7 +587,6 @@ object FirstPage extends Menu {
 
     val spawnCommandButton: Button = {
       val buttonLore = List(
-        s"$GRAY・メインワールド",
         s"$GRAY・整地ワールド",
         s"${GRAY}間を移動するときに使います",
         s"$DARK_RED${UNDERLINE}クリックするとワープします",
@@ -596,7 +595,7 @@ object FirstPage extends Menu {
 
       Button(
         new IconItemStackBuilder(Material.BEACON)
-          .title(s"$YELLOW$UNDERLINE${BOLD}スポーンワールドへワープ")
+          .title(s"$YELLOW$UNDERLINE${BOLD}メインワールドへワープ")
           .lore(buttonLore)
           .build(),
         LeftClickButtonEffect(
