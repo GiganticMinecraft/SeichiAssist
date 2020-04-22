@@ -20,12 +20,6 @@ case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
   lazy val consumedActiveSkillPoint: Int =
     obtainedSkills.map(_.requiredActiveSkillPoint).sum
 
-  val activeSkillArea: Option[BreakArea] =
-    activeSkill.map(new BreakArea(_, activeSkillBreakSide))
-
-  val assaultSkillArea: Option[BreakArea] =
-    assaultSkill.map(new BreakArea(_, None))
-
   /**
    * `skill` が [[obtainedSkills]] に追加された状態を返す。
    */

@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkill._
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.entity.Player
 
-class BreakArea(skill: SeichiSkill, breakSide: Option[BreakSide]) {
+class BreakArea private (skill: SeichiSkill, breakSide: Option[BreakSide]) {
   //南向きを基準として破壊の範囲座標
   val breakLength: XYZTuple = skill.range.effectChunkSize
 
@@ -137,4 +137,10 @@ object BreakArea {
       }
     }
   }
+
+  private val constructorCache: CachedFunction[(SeichiSkill, Option[BreakSide]), BreakArea] =
+    CachedFunction { case (skill, breakSide) => new BreakArea(skill, breakSide) }
+
+  def apply(skill: SeichiSkill, breakSide: Option[BreakSide]): BreakArea =
+    constructorCache(skill, breakSide)
 }
