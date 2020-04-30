@@ -170,6 +170,7 @@ class PlayerClickListener extends Listener {
     //各自当たった個数を記録するための変数
     var gachaBigWin = 0
     var gachaWin = 0
+    var gachaGTWin = 0
 
     (1 to count).foreach { _ =>
       //プレゼント用ガチャデータ作成
@@ -247,6 +248,7 @@ class PlayerClickListener extends Listener {
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
         Util.sendEveryMessageWithoutIgnore(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
         Util.sendEveryMessageWithoutIgnore(message)
+        gachaGTWin += 1
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat, 1f)
         if (count == 1) {
@@ -264,8 +266,23 @@ class PlayerClickListener extends Listener {
         }
       }
     }
+    var gachaResultDescription = ""
     if (count != 1) {
-      player.sendMessage(s"${YELLOW}当たりが${gachaWin}個, ${GOLD}大当たりが${gachaBigWin}個出ました！")
+      if (gachaWin != 0){
+        gachaResultDescription += s"${YELLOW}当たりが${gachaWin}個"
+        if (gachaBigWin != 0){
+          gachaResultDescription += ","
+        }
+      }
+      if (gachaBigWin != 0){
+        gachaResultDescription += s"${GOLD}大当たりが${gachaBigWin}個"
+      }
+      //当たりが何も出なかったら
+      if (gachaGTWin == 0 && gachaBigWin == 0 && gachaWin == 0){
+        player.sendMessage(s"${WHITE}はずれ！また遊んでね！")
+      }else {
+        player.sendMessage(s"$gachaResultDescription${GOLD}出ました！")
+      }
     }
     player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1.toFloat)
   }
