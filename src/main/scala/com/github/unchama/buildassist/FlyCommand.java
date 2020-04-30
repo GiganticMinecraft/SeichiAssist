@@ -23,9 +23,9 @@ public final class FlyCommand implements CommandExecutor {
         }
         if (args.length == 0) {
             sender.sendMessage(ChatColor.GREEN
-                    + "FLY機能を利用したい場合は、末尾に「利用したい時間(分単位)」の数値を、");
+                    + "fly機能を利用したい場合は、末尾に「利用したい時間(分単位)」の数値を、");
             sender.sendMessage(ChatColor.GREEN
-                    + "FLY機能を中断したい場合は、末尾に「finish」を記入してください。");
+                    + "fly機能を中断したい場合は、末尾に「finish」を記入してください。");
             return true;
         }
 
@@ -67,7 +67,7 @@ public final class FlyCommand implements CommandExecutor {
                     player.setAllowFlight(true);
                     player.setFlying(true);
                     sender.sendMessage(ChatColor.GREEN
-                            + "無期限でFLY効果をONにしました。");
+                            + "無期限でfly効果をONにしました。");
                 }
 
             } else if (TypeConverter.isParsableToInteger(query)) {
@@ -88,16 +88,16 @@ public final class FlyCommand implements CommandExecutor {
                     playerdata.flyflag = true;
                     playerdata.flytime = flytime;
                     playerdata.endlessfly = false;
-                    sender.sendMessage(ChatColor.YELLOW + "【FLYコマンド認証】効果の残り時間はあと"
+                    sender.sendMessage(ChatColor.YELLOW + "【flyコマンド認証】効果の残り時間はあと"
                             + flytime + "分です。");
                     player.setAllowFlight(true);
                     player.setFlying(true);
                 }
             } else {
                 sender.sendMessage(ChatColor.GREEN
-                        + "FLY機能を利用したい場合は、末尾に「利用したい時間(分単位)」の数値を、");
+                        + "fly機能を利用したい場合は、末尾に「利用したい時間(分単位)」の数値を、");
                 sender.sendMessage(ChatColor.GREEN
-                        + "FLY機能を中断したい場合は、末尾に「finish」を記入してください。");
+                        + "fly機能を中断したい場合は、末尾に「finish」を記入してください。");
             }
             return true;
         }

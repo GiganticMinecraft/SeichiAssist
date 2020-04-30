@@ -82,10 +82,10 @@ object BuildMainMenu extends Menu {
     def computeButtonToShowStateOfFlying(): IO[Button] = IO {
       val openerData = BuildAssist.playermap(getUniqueId)
       val iconItemStack = new IconItemStackBuilder(Material.COOKED_CHICKEN)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能 情報表示")
+        .title(s"$YELLOW${EMPHASIZE}fly機能 情報表示")
         .lore(
-          s"$RESET${AQUA}FLY 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
-          s"$RESET${AQUA}FLY 残り時間: ${if (openerData.endlessfly) "∞" else openerData.flytime}"
+          s"$RESET${AQUA}fly 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
+          s"$RESET${AQUA}fly 残り時間: ${if (openerData.endlessfly) "∞" else openerData.flytime}"
         )
         .build()
 
@@ -247,10 +247,10 @@ object BuildMainMenu extends Menu {
     val buttonToFlyFor1Minute: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
         .amount(1)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(1分)")
+        .title(s"$YELLOW${EMPHASIZE}fly機能、ON$AQUA$EMPHASIZE(1分)")
         .lore(
           s"$RESET${YELLOW}クリックすると以降1分間に渡り",
-          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+          s"$RESET${YELLOW}経験値を消費しつつflyが可能になります。",
           s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
         )
         .build()
@@ -270,10 +270,10 @@ object BuildMainMenu extends Menu {
     val buttonToFlyFor5Minutes: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
         .amount(5)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$AQUA$EMPHASIZE(5分)")
+        .title(s"$YELLOW${EMPHASIZE}fly機能、ON$AQUA$EMPHASIZE(5分)")
         .lore(
           s"$RESET${YELLOW}クリックすると以降5分間に渡り",
-          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+          s"$RESET${YELLOW}経験値を消費しつつflyが可能になります。",
           s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
         )
         .build()
@@ -292,10 +292,10 @@ object BuildMainMenu extends Menu {
 
     val buttonToFlyEndlessly: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.ELYTRA)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能、ON$RED$EMPHASIZE(無制限)")
+        .title(s"$YELLOW${EMPHASIZE}fly機能、ON$RED$EMPHASIZE(無制限)")
         .lore(
           s"$RESET${YELLOW}クリックすると以降OFFにするまで",
-          s"$RESET${YELLOW}経験値を消費しつつFLYが可能になります。",
+          s"$RESET${YELLOW}経験値を消費しつつflyが可能になります。",
           s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
         )
         .build()
@@ -314,10 +314,10 @@ object BuildMainMenu extends Menu {
 
     val buttonToTerminateFlight: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.CHAINMAIL_BOOTS)
-        .title(s"$YELLOW${EMPHASIZE}FLY機能、OFF")
+        .title(s"$YELLOW${EMPHASIZE}fly機能、OFF")
         .lore(
           s"$RESET${RED}クリックすると、残り時間にかかわらず",
-          s"$RESET${RED}FLYを終了します。"
+          s"$RESET${RED}flyを終了します。"
         )
         .flagged(ItemFlag.HIDE_ATTRIBUTES)
         .build()
