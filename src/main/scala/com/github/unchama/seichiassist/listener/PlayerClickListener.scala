@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
+import eu.timepit.refined.boolean.False
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.ThrownExpBottle
@@ -166,6 +167,10 @@ class PlayerClickListener extends Listener {
       return
     }
 
+    //各自当たった個数を記録するための変数
+    var gachaBigWin = 0
+    var gachaWin = 0
+
     (1 to count).foreach { _ =>
       //プレゼント用ガチャデータ作成
       val present = GachaPrize.runGacha()
@@ -244,14 +249,23 @@ class PlayerClickListener extends Listener {
         Util.sendEveryMessageWithoutIgnore(message)
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat, 1f)
-        player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+        if (count == 1) {
+          player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+        }
+        gachaBigWin += 1
       } else if (probabilityOfItem < 0.1) {
-        player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
+        if (count == 1) {
+          player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
+        }
+        gachaWin += 1
       } else {
         if (count == 1) {
           player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
         }
       }
+    }
+    if (count != 1) {
+      player.sendMessage(s"${YELLOW}当たりが${gachaWin}個, ${GOLD}大当たりが${gachaBigWin}個出ました！")
     }
     player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1.toFloat)
   }
