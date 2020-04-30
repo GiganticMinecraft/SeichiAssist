@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
-import eu.timepit.refined.boolean.False
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.ThrownExpBottle
