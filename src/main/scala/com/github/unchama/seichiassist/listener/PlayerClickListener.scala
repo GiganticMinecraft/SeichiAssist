@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import scala.collection.mutable
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.activeskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.activeskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
@@ -214,7 +215,7 @@ class PlayerClickListener extends Listener {
                 }
               }
             )
-          }.unsafeRunSync()
+        }.unsafeRunSync()
 
         val loreWithoutOwnerName = givenItem.getItemMeta.getLore.asScala.toList
           .filterNot {
@@ -265,24 +266,21 @@ class PlayerClickListener extends Listener {
         }
       }
     }
-    var gachaResultDescription = ""
+
+    val rewardDetailTexts = mutable.ArrayBuffer[String]()
+    if (gachaWin > 0) rewardDetailTexts += s"${YELLOW}当たりが${gachaWin}個"
+    if (gachaBigWin > 0) rewardDetailTexts += s"${GOLD}大当たりが${gachaBigWin}個"
+    if (gachaGTWin > 0) rewardDetailTexts += s"${RED}Gigantic☆大当たりが${gachaGTWin}個"
     if (count != 1) {
-      if (gachaWin != 0){
-        gachaResultDescription += s"${YELLOW}当たりが${gachaWin}個"
-        if (gachaBigWin != 0){
-          gachaResultDescription += ","
+      player.sendMessage(
+        if (rewardDetailTexts.isEmpty) {
+          s"${WHITE}はずれ！また遊んでね！"
+        } else {
+          s"${rewardDetailTexts.mkString(s"${GRAY},")}${GOLD}出ました！"
         }
-      }
-      if (gachaBigWin != 0){
-        gachaResultDescription += s"${GOLD}大当たりが${gachaBigWin}個"
-      }
-      //当たりが何も出なかったら
-      if (gachaGTWin == 0 && gachaBigWin == 0 && gachaWin == 0){
-        player.sendMessage(s"${WHITE}はずれ！また遊んでね！")
-      }else {
-        player.sendMessage(s"$gachaResultDescription${GOLD}出ました！")
-      }
+      )
     }
+
     player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1.toFloat)
   }
 
@@ -368,8 +366,10 @@ class PlayerClickListener extends Listener {
           player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
           playerdata.activeskilldata.updateSkill(skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
-        } else if (skillTypeId > 0 && skillNumber > 0
-          && skillTypeId < 4) {
+        }
+        else if (skillTypeId > 0 && skillNumber > 0
+          && skillTypeId < 4
+        ) {
           activemineflagnum = (activemineflagnum + 1) % 2
           activemineflagnum match {
             case 0 => player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
