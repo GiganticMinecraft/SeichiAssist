@@ -301,7 +301,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
       if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
         Bukkit.getLogger.warning(s"${player.getName} database failure.")
-        Left(s"$${RED}アイテムの収納に失敗しました".asMessageEffect())
+        Left(s"${RED}アイテムの収納に失敗しました".asMessageEffect())
       } else {
         Right(())
       }
