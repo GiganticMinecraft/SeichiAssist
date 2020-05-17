@@ -14,7 +14,7 @@ object PlayerSkillEffectState {
 }
 
 case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
-                            usageIntention: ActiveSkillUsageMode,
+                            usageMode: ActiveSkillUsageMode,
                             isActiveSkillAvailable: Boolean,
                             activeSkill: Option[ActiveSkill],
                             assaultSkill: Option[AssaultSkill]) {
@@ -71,7 +71,7 @@ object PlayerSkillState {
   val initial: PlayerSkillState =
     PlayerSkillState(
       obtainedSkills = Set(),
-      usageIntention = Disabled,
+      usageMode = Disabled,
       isActiveSkillAvailable = false,
       activeSkill = None,
       assaultSkill = None
