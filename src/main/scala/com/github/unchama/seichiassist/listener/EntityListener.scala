@@ -68,7 +68,7 @@ class EntityListener extends Listener {
 
     val skillState = playerData.skillState
     val selectedSkill = skillState.activeSkill.getOrElse(return)
-    val activeSkillArea = BreakArea(selectedSkill, skillState.activeSkillBreakSide)
+    val activeSkillArea = BreakArea(selectedSkill, skillState.usageIntention)
 
     val breakArea = activeSkillArea.makeBreakArea(player).unsafeRunSync().head
 

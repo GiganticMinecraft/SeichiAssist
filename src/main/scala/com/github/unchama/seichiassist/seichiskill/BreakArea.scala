@@ -3,11 +3,12 @@ package com.github.unchama.seichiassist.seichiskill
 import cats.effect.IO
 import com.github.unchama.generic.CachedFunction
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, BreakArea_Legacy, XYZTuple, syntax}
+import com.github.unchama.seichiassist.seichiskill.ActiveSkillUsageMode.Active
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill._
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.entity.Player
 
-class BreakArea private (skill: SeichiSkill, breakSide: Option[BreakSide]) {
+class BreakArea private (skill: SeichiSkill, usageIntention: ActiveSkillUsageMode) {
   //南向きを基準として破壊の範囲座標
   val breakLength: XYZTuple = skill.range.effectChunkSize
 
@@ -52,7 +53,7 @@ class BreakArea private (skill: SeichiSkill, breakSide: Option[BreakSide]) {
         identity
 
     val thirdShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      if (Seq(DualBreak, TrialBreak).contains(skill) && breakSide.contains(Upper))
+      if (Seq(DualBreak, TrialBreak).contains(skill) && usageIntention == Active)
         areaShift(XYZTuple(0, 1, 0))
       else
         identity
@@ -138,9 +139,9 @@ object BreakArea {
     }
   }
 
-  private val constructorCache: CachedFunction[(SeichiSkill, Option[BreakSide]), BreakArea] =
-    CachedFunction { case (skill, breakSide) => new BreakArea(skill, breakSide) }
+  private val constructorCache: CachedFunction[(SeichiSkill, ActiveSkillUsageMode), BreakArea] =
+    CachedFunction { case (skill, usageIntention) => new BreakArea(skill, usageIntention) }
 
-  def apply(skill: SeichiSkill, breakSide: Option[BreakSide]): BreakArea =
-    constructorCache(skill, breakSide)
+  def apply(skill: SeichiSkill, usageIntention: ActiveSkillUsageMode): BreakArea =
+    constructorCache(skill, usageIntention)
 }
