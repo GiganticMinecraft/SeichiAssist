@@ -201,7 +201,7 @@ class SeichiAssist extends JavaPlugin() {
       import PluginExecutionContexts._
       import cats.implicits._
 
-      // 公共鯖なら整地量のランキングを表示する必要はない
+      // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
       val programs: List[RepeatingTask] =
         List(
           new PlayerDataPeriodicRecalculation,
@@ -209,6 +209,7 @@ class SeichiAssist extends JavaPlugin() {
         ) ++
           Option.unless(
             SeichiAssist.seichiAssistConfig.getServerNum == 7
+            || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
             new HalfHourRankingRoutine
           ).toList
