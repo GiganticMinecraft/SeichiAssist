@@ -26,28 +26,25 @@ object MineStackMassCraftMenu {
      * @param requiredBuildLevel レシピの実行に必要な建築レベル
      * @param recipeScale レシピを実行する回数
      */
-    def toButton(player: Player, requiredBuildLevel: Int, recipeScale: Int): IO[Button] = {
+    def computeButton(player: Player, requiredBuildLevel: Int, recipeScale: Int): IO[Button] = {
       ???
     }
   }
 
   case class MassCraftRecipeBlock(recipe: MassCraftRecipe, recipeScales: List[Int], requiredBuildLevel: Int) {
-    def toLayoutMap(player: Player, beginIndex: Int): IO[Map[Int, Slot]] = {
+    def toLayout(player: Player, beginIndex: Int): IO[List[(Int, Slot)]] = {
       import cats.implicits._
 
-      recipeScales
-        .zipWithIndex
-        .map { case (scale, scaleIndex) =>
+      recipeScales.zipWithIndex
+        .traverse { case (scale, scaleIndex) =>
           for {
-            button <- recipe.toButton(player, requiredBuildLevel, scale)
+            button <- recipe.computeButton(player, requiredBuildLevel, scale)
           } yield (beginIndex + scaleIndex, button)
         }
-        .sequence
-        .map(_.toMap)
     }
   }
 
-  val recipeBlocks: Seq[Map[Int, MassCraftRecipeBlock]] = {
+  val recipeBlocks: Seq[List[(Int, MassCraftRecipeBlock)]] = {
     import eu.timepit.refined.auto._
 
     val oneToHundred: List[Int] = List(1, 10, 100)
@@ -55,7 +52,7 @@ object MineStackMassCraftMenu {
     val oneToTenThousand: List[Int] = List(1, 10, 100, 1000, 10000)
 
     Seq(
-      Map(
+      List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("stone", 10)),
@@ -105,7 +102,7 @@ object MineStackMassCraftMenu {
           ), oneToThousand, 2
         ),
       ),
-      Map(
+      List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("snow_ball", 40)),
@@ -167,7 +164,7 @@ object MineStackMassCraftMenu {
           ), oneToHundred, 3
         ),
       ),
-      Map(
+      List(
         ChestSlotRef(0, 1) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("clay_ball", 4), ("coal", 1)),
@@ -220,14 +217,13 @@ object MineStackMassCraftMenu {
         import cats.implicits._
 
         for {
-          recipeSection <-
+          recipeSectionBlocks <-
             recipeBlocks(pageNumber - 1)
-              .toList
-              .map { case (beginIndex, recipeBlock) =>
-                recipeBlock.toLayoutMap(player, beginIndex)
+              .traverse { case (beginIndex, recipeBlock) =>
+                recipeBlock.toLayout(player, beginIndex)
               }
-              .sequence
-              .map(_.flatten.toMap)
+
+          recipeSection = recipeSectionBlocks.flatten.toMap
         } yield {
           MenuSlotLayout(
             recipeSection ++ previousPageButtonSection ++ nextPageButtonSection
