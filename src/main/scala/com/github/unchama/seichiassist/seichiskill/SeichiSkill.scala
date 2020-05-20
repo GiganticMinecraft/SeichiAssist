@@ -10,7 +10,7 @@ sealed abstract class SeichiSkill(val name: String,
                                   val requiredActiveSkillPoint: Int) extends Snakecase
 
 sealed abstract class ActiveSkill(name: String,
-                                  range: SkillRange,
+                                  range: ActiveSkillRange,
                                   maxCoolDownTicks: Option[Int],
                                   manaCost: Int,
                                   requiredActiveSkillPoint: Int) extends
