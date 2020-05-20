@@ -236,7 +236,7 @@ object BuildMainMenu extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            computedEffect(p => openInventoryEffect(MenuInventoryData.getBlockCraftData(p)))
+            MineStackMassCraftMenu().open
           )
         }
       )
