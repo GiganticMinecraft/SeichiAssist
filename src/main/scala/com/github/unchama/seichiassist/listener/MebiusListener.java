@@ -37,14 +37,17 @@ import java.net.URLConnection;
 import java.util.*;
 
 public class MebiusListener implements Listener {
-    // 経験値瓶をボーナスするLv(EXPBONUS未満)
+    /** 
+     * 経験値瓶をボーナスするLv
+     * この値未満だとボーナス発生
+     */
     private static final int EXPBONUS = 50;
-    // Mebius用private
-    // Mebius最大Lv
+    
+    /** 最大Lv */
     private static final int LVMAX = 30;
-    // 初期Name
+    /** 初期の名前 */
     private static final String DEFNAME = "MEBIUS";
-    // Mebius識別用の先頭Lore
+    /** 識別用の先頭Lore */
     private static final List<String> LOREFIRST = Arrays.asList(
             ChatColor.RESET + "" + ChatColor.GRAY + "経験値瓶 効果2倍" + ChatColor.RED + "(整地レベル" + EXPBONUS + "未満限定)", "",
             ChatColor.RESET + "" + ChatColor.AQUA + "初心者をサポートする不思議なヘルメット。", "");
@@ -56,14 +59,14 @@ public class MebiusListener implements Listener {
     private static final String TALKHEAD = ChatColor.RESET + "" + ChatColor.GOLD + "" + ChatColor.ITALIC + "";
     private static final String DESTHEAD = ChatColor.RESET + "" + ChatColor.GRAY + "" + ChatColor.ITALIC + "";
     private static final String OWNERHEAD = ChatColor.RESET + "" + ChatColor.DARK_GREEN + "所有者：";
-    // Mebiusレベルアップ確率テーブル
+    /** レベルアップ確率テーブル */
     private static final List<Integer> lvPer = Arrays.asList(
             500, 500, 500, 500, 800, 800, 800, 800, 800, 1700,
             1700, 1700, 1700, 1700, 1800, 1800, 1800, 1800, 1800, 2200,
             2200, 2200, 2200, 2200, 2600, 2600, 2600, 2600, 3000, 3000);
     // Mebiusドロップ率
     private static final int dropPer = 50000;
-    // 見た目更新Lv
+    /** 見た目テーブル */
     private static final Map<Integer, Material> APPEARANCE = new LinkedHashMap() {
         {
             put(1, Material.LEATHER_HELMET);
@@ -73,8 +76,7 @@ public class MebiusListener implements Listener {
             put(25, Material.DIAMOND_HELMET);
         }
     };
-    // レベル別Talk
-    // TODO: ここをList<MebiusSerif>にする
+    /** レベル別Talk */
     private static final List<MebiusTalk> TALKDEST = Arrays.asList(
             new MebiusTalk("こんにちは！これからよろしくねー！", "いつの間にか被っていた。"), new MebiusTalk("僕のこと外さないでね？", "段々成長していくらしい。"), new MebiusTalk("モンスターって怖いねえ…", "どこから喋っているのだろう。"),
             new MebiusTalk("どこでもルールって大切だね。", "ちゃんと守らなきゃね。"), new MebiusTalk("整地神様って知ってる？偉いんだよ！", "どうやら神様を知ってるみたい。"), new MebiusTalk("知らないこと、いっぱい学びたいなぁ。", "どこに記憶しているんだろう。"),
@@ -87,7 +89,7 @@ public class MebiusListener implements Listener {
             new MebiusTalk("ああー饅頭が怖いなあ！", "落語でも見た？あげないよ。"), new MebiusTalk("僕にも手足があったらなー…！", "被れなくなるでしょ。"), new MebiusTalk("このフィット感…着心地抜群だよね？", "もう少し静かだったらね。"),
             new MebiusTalk("餃子っておいしいんだねえ！", "ニンニク臭がこもってるよ…"), new MebiusTalk("君も立派になったねえ", "同じこと思ってたとこ。"), new MebiusTalk("育ててくれてありがとう！", "ある意味、最強のヘルメット。")
     );
-    // エンチャント別レベル制限リスト
+    /** エンチャント別レベル制限 */
     private static final List<Enchant> ENCHANT = Arrays.asList(
             new Enchant(Enchantment.PROTECTION_ENVIRONMENTAL, 2, 10, "ダメージ軽減"),
             new Enchant(Enchantment.PROTECTION_FIRE, 6, 10, "火炎耐性"),
@@ -98,7 +100,6 @@ public class MebiusListener implements Listener {
             new Enchant(Enchantment.DURABILITY, 2, 10, "耐久力"));
     private static final String UNBREAK = ChatColor.RESET + "" + ChatColor.AQUA + "耐久無限";
     private static final List<String> ROMAN = Arrays.asList("", "", " II", " III", " IV", " V", " VI", " VII", " VIII", " IX", " X", " XI", " XII", " XIII", " XIV", " XV", " XVI", " XVII", " XVIII", " XIX", " XX");
-    // Tipsリスト
     private static final List<String> tips = Arrays.asList(
             "僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
             "僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！",
@@ -129,7 +130,8 @@ public class MebiusListener implements Listener {
     }
 
     // デバッグ
-    // TODO ここはListenerクラスですよ
+    // FIXME ここはListenerクラスですよ
+    @Deprecated
     public static void debug(Player player) {
         if (DEBUGENABLE) {
             if (debugFlg) {
@@ -142,14 +144,15 @@ public class MebiusListener implements Listener {
     }
 
     // デバッグgive
-    // TODO ここはListenerクラスですよ
+    // FIXME ここはListenerクラスですよ
+    @Deprecated
     public static void debugGive(Player player) {
         if (debugFlg) {
             give(player);
         }
     }
 
-    // Tipsを呼び出されたとき
+    // Tipsが呼び出されたとき
     public static void callTips(Player player) {
         if (isEquip(player)) {
             int no = new Random().nextInt(tips.size() + 1);
@@ -163,8 +166,9 @@ public class MebiusListener implements Listener {
         }
     }
 
-    // ブロックを破壊した時
+    /** ブロックを破壊した時 */
     public static void onBlockBreak(BlockBreakEvent event) {
+        // TODO move to class
         final Set<String> msgs = SetFactory.of(
                 "ポコポコポコポコ…整地の音って、落ち着くねえ。",
                 "頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
@@ -176,7 +180,7 @@ public class MebiusListener implements Listener {
         if (isEquip(player)) {
             PlayerData pd = getPlayerData(player);
             pd.mebius().speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""));
-            // Lvup
+            // Level UP☆
             if (isLevelUp(player)) {
                 levelUp(player);
             }
@@ -187,7 +191,7 @@ public class MebiusListener implements Listener {
         }
     }
 
-    // Mebiusを装備しているか
+    /** Mebiusを装備しているか */
     public static boolean isEquip(Player player) {
         try {
             return isMebius(player.getInventory().getHelmet());
@@ -196,7 +200,7 @@ public class MebiusListener implements Listener {
         return false;
     }
 
-    // MebiusのDisplayNameを設定
+    /** MebiusのDisplayNameを設定 */
     public static boolean setName(Player player, String name) {
         if (isEquip(player)) {
             ItemStack mebius = player.getInventory().getHelmet();
@@ -211,7 +215,7 @@ public class MebiusListener implements Listener {
         return false;
     }
 
-    // MebiusのDisplayNameを取得
+    /** MebiusのDisplayNameを取得 */
     public static String getName(ItemStack mebius) {
         try {
             if (isMebius(mebius)) {
@@ -235,7 +239,7 @@ public class MebiusListener implements Listener {
         }
     }
 
-    // TODO あの！ここはListenerクラスですよ！！
+    // FIXME あの！ここはListenerクラスですよ！！
     public static String getNickname(Player player) {
         if (!isEquip(player)) {
             return null;
@@ -268,7 +272,12 @@ public class MebiusListener implements Listener {
         return false;
     }
 
-    // 新規Mebius配布処理(初見配布時)
+    /**
+     * 新規Mebius配布処理
+     * 新規参加者に配る
+     */
+    // FIXME This is listener class.
+    @Deprecated
     public static void give(Player player) {
         ItemStack mebius = create(null, player);
         player.getInventory().setHelmet(mebius);

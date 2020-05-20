@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import scala.collection.mutable
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -166,6 +167,11 @@ class PlayerClickListener extends Listener {
       return
     }
 
+    //各自当たった個数を記録するための変数
+    var gachaBigWin = 0
+    var gachaWin = 0
+    var gachaGTWin = 0
+
     (1 to count).foreach { _ =>
       //プレゼント用ガチャデータ作成
       val present = GachaPrize.runGacha()
@@ -187,12 +193,12 @@ class PlayerClickListener extends Listener {
           //アイテムがスタックでき、かつ整地レベルがマインスタックの開放レベルに足りているとき...
           if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack) && SeichiAssist.playermap(player.getUniqueId).level >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)) {
             // ...格納した！
-            s"${AQUA}プレゼントをマインスタックに収納しました。"
+            s"${AQUA}景品をマインスタックに収納しました。"
           } else {
             // スタックできないか、整地レベルがマインスタックの開放レベルに足りていないとき...
             // ...ドロップする
             Util.dropItem(player, givenItem)
-            s"${AQUA}プレゼントがドロップしました。"
+            s"${AQUA}景品がドロップしました。"
           }
         }
 
@@ -209,7 +215,7 @@ class PlayerClickListener extends Listener {
                 }
               }
             )
-          }.unsafeRunSync()
+        }.unsafeRunSync()
 
         val loreWithoutOwnerName = givenItem.getItemMeta.getLore.asScala.toList
           .filterNot {
@@ -242,17 +248,39 @@ class PlayerClickListener extends Listener {
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
         Util.sendEveryMessageWithoutIgnore(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
         Util.sendEveryMessageWithoutIgnore(message)
+        gachaGTWin += 1
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat, 1f)
-        player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+        if (count == 1) {
+          player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
+        }
+        gachaBigWin += 1
       } else if (probabilityOfItem < 0.1) {
-        player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
+        if (count == 1) {
+          player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
+        }
+        gachaWin += 1
       } else {
         if (count == 1) {
           player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
         }
       }
     }
+
+    val rewardDetailTexts = mutable.ArrayBuffer[String]()
+    if (gachaWin > 0) rewardDetailTexts += s"${YELLOW}当たりが${gachaWin}個"
+    if (gachaBigWin > 0) rewardDetailTexts += s"${GOLD}大当たりが${gachaBigWin}個"
+    if (gachaGTWin > 0) rewardDetailTexts += s"${RED}Gigantic☆大当たりが${gachaGTWin}個"
+    if (count != 1) {
+      player.sendMessage(
+        if (rewardDetailTexts.isEmpty) {
+          s"${WHITE}はずれ！また遊んでね！"
+        } else {
+          s"${rewardDetailTexts.mkString(s"${GRAY},")}${GOLD}出ました！"
+        }
+      )
+    }
+
     player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1.toFloat)
   }
 
@@ -338,8 +366,10 @@ class PlayerClickListener extends Listener {
           player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
           playerdata.activeskilldata.updateSkill(skillTypeId, skillNumber, activemineflagnum)
           player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
-        } else if (skillTypeId > 0 && skillNumber > 0
-          && skillTypeId < 4) {
+        }
+        else if (skillTypeId > 0 && skillNumber > 0
+          && skillTypeId < 4
+        ) {
           activemineflagnum = (activemineflagnum + 1) % 2
           activemineflagnum match {
             case 0 => player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
