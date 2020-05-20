@@ -1,13 +1,23 @@
 package com.github.unchama.buildassist.menu
 
-import cats.data.NonEmptyList
+import java.text.NumberFormat
+import java.util.Locale
+
+import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.IO
-import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
+import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
+import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import org.bukkit.ChatColor._
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 
 object MineStackMassCraftMenu {
@@ -16,7 +26,17 @@ object MineStackMassCraftMenu {
   type MineStackItemId = String
 
   case class MassCraftRecipe(ingredients: NonEmptyList[(MineStackItemId, Int)],
-                             outputs: NonEmptyList[(MineStackItemId, Int)]) {
+                             products: NonEmptyList[(MineStackItemId, Int)]) {
+    /**
+     * このレシピのクラフトを `scale` 回実行するような新たなレシピを作成する。
+     */
+    def scaleBy(scale: Int): MassCraftRecipe = {
+      def scaleChunk(chunk: (MineStackItemId, Int)): (MineStackItemId, Int) =
+        chunk match { case (id, amount) => (id, amount * scale) }
+
+      MassCraftRecipe(ingredients.map(scaleChunk), products.map(scaleChunk))
+    }
+
     /**
      * 押すとこのレシピのクラフトが実行されるようなボタンを計算する。
      *
@@ -24,26 +44,140 @@ object MineStackMassCraftMenu {
      * クラフトは実行されず適切なメッセージがプレーヤーに通達される。
      *
      * @param requiredBuildLevel レシピの実行に必要な建築レベル
-     * @param recipeScale レシピを実行する回数
+     * @param menuPageNumber このボタンが表示される一括クラフト画面のページ番号
      */
-    def computeButton(player: Player, requiredBuildLevel: Int, recipeScale: Int): IO[Button] = {
-      ???
+    def computeButton(player: Player, requiredBuildLevel: Int, menuPageNumber: Int): IO[Button] = {
+      import cats.implicits._
+
+      def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
+        SeichiAssist.playermap(player.getUniqueId).minestack.getStackedAmountOf(mineStackObj)
+      }
+
+      def toMineStackObjectChunk(chunk: (MineStackItemId, Int)): (MineStackObj, Int) =
+        chunk.leftMap(id => Util.findMineStackObjectByName(id).get)
+
+      def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObj, Int)]): String =
+        chunks.map { case (obj, amount) => s"${obj.uiName.get}${amount}個" }.mkString_("+")
+
+      val ingredientObjects = ingredients.map(toMineStackObjectChunk)
+      val productObjects = products.map(toMineStackObjectChunk)
+
+      val iconComputation = {
+        val title = {
+          def enumerateChunkNames(chunks: NonEmptyList[(MineStackObj, Int)]): String =
+            chunks.map(_._1.uiName.get).mkString_("と")
+
+          s"$YELLOW$UNDERLINE$BOLD" +
+            s"${enumerateChunkNames(ingredientObjects)}を${enumerateChunkNames(productObjects)}に変換します"
+        }
+
+        val loreHeading = {
+          s"$RESET$GRAY" +
+            s"${enumerateChunkDetails(ingredientObjects)}→${enumerateChunkDetails(productObjects)}"
+        }
+
+        for {
+          possessionDisplayBlock <-
+            (ingredientObjects.toList ++ productObjects.toList)
+              .map(_._1)
+              .traverse { obj =>
+                queryAmountOf(obj).map { amount =>
+                  s"$RESET$GRAY${obj.uiName.get}の数：${NumberFormat.getNumberInstance(Locale.US).format(amount)}"
+                }
+              }
+        } yield {
+          new IconItemStackBuilder(productObjects.head._1.itemStack.getType)
+            .title(title)
+            .lore(
+              List(
+                List(loreHeading),
+                possessionDisplayBlock,
+                List(
+                  s"$RESET${GRAY}建築LV${requiredBuildLevel}以上で利用可能",
+                  s"$RESET$DARK_RED${UNDERLINE}クリックで変換"
+                )
+              ).flatten
+            )
+            // 対数オーダーをアイコンのスタック数にする
+            .amount(products.head._2.toString.length)
+            .build()
+        }
+
+      }
+
+      import com.github.unchama.targetedeffect.syntax._
+
+      val buttonEffect = LeftClickButtonEffect(
+        Kleisli { player =>
+          for {
+            buildAssistPlayerData <- IO { BuildAssist.playermap(player.getUniqueId) }
+            seichiAssistPlayerData <- IO { SeichiAssist.playermap(player.getUniqueId) }
+            mineStack = seichiAssistPlayerData.minestack
+
+            _ <-
+              if (buildAssistPlayerData.level < BuildAssist.config.getMinestackBlockCraftlevel(requiredBuildLevel)) {
+                s"${RED}建築レベルが足りません".asMessageEffect()(player)
+              } else {
+                syncShift.shift >> {
+                  val allIngredientsAvailable =
+                    ingredientObjects.forall { case (obj, amount) =>
+                      mineStack.getStackedAmountOf(obj) >= amount
+                    }
+
+                  if (!allIngredientsAvailable)
+                    s"${RED}クラフト材料が足りません".asMessageEffect()(player)
+                  else
+                    IO {
+                      ingredientObjects.toList.foreach { case (obj, amount) =>
+                        mineStack.subtractStackedAmountOf(obj, amount)
+                      }
+                      productObjects.toList.foreach { case (obj, amount) =>
+                        mineStack.addStackedAmountOf(obj, amount)
+                      }
+                    } >> {
+                      val message =
+                        s"$GREEN${enumerateChunkDetails(ingredientObjects)}→" +
+                          s"${enumerateChunkDetails(productObjects)}変換"
+
+                      message.asMessageEffect()(player)
+                    }
+                }
+              }
+          } yield ()
+        },
+        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+      )
+
+      for {
+        icon <- iconComputation
+      } yield {
+        val button = Button(icon, buttonEffect)
+        val reloadTargetMenu = MineStackMassCraftMenu(menuPageNumber)
+
+        ReloadingButton(reloadTargetMenu)(button)
+      }
     }
   }
 
   case class MassCraftRecipeBlock(recipe: MassCraftRecipe, recipeScales: List[Int], requiredBuildLevel: Int) {
-    def toLayout(player: Player, beginIndex: Int): IO[List[(Int, Slot)]] = {
+    def toLayout(player: Player, beginIndex: Int, pageNumber: Int): IO[List[(Int, Slot)]] = {
       import cats.implicits._
 
       recipeScales.zipWithIndex
         .traverse { case (scale, scaleIndex) =>
           for {
-            button <- recipe.computeButton(player, requiredBuildLevel, scale)
+            button <- recipe.scaleBy(scale).computeButton(player, requiredBuildLevel, pageNumber)
           } yield (beginIndex + scaleIndex, button)
         }
     }
   }
 
+  /**
+   * 各メニューページのレシピブロックを持つ`Seq`。
+   *
+   * `Seq`の`i`番目の`List`には、
+   * メニュー`(i+1)`番目のインベントリ内のスロットへの参照とレシピブロックの組が格納されている。
+   */
   val recipeBlocks: Seq[List[(Int, MassCraftRecipeBlock)]] = {
     import eu.timepit.refined.auto._
 
@@ -186,7 +320,7 @@ object MineStackMassCraftMenu {
 
     val menuFrame = {
       import com.github.unchama.menuinventory.syntax._
-      MenuFrame(6.chestRows, ColorScheme.purpleBold(s"MineStackブロック一括クラフト${pageNumber}"))
+      MenuFrame(6.chestRows, ColorScheme.purpleBold(s"MineStackブロック一括クラフト$pageNumber"))
     }
 
     new Menu {
@@ -228,7 +362,7 @@ object MineStackMassCraftMenu {
           recipeSectionBlocks <-
             recipeBlocks(pageNumber - 1)
               .traverse { case (beginIndex, recipeBlock) =>
-                recipeBlock.toLayout(player, beginIndex)
+                recipeBlock.toLayout(player, beginIndex, pageNumber)
               }
 
           recipeSection = recipeSectionBlocks.flatten.toMap
