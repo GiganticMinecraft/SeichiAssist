@@ -202,7 +202,7 @@ object MineStackMassCraftMenu {
 
         val previousPageButtonSection =
           if (pageNumber > 1) {
-            Map(ChestSlotRef(5, 0) -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowUp))
+            Map(ChestSlotRef(5, 7) -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowUp))
           } else {
             Map()
           }
@@ -213,6 +213,14 @@ object MineStackMassCraftMenu {
           } else {
             Map()
           }
+
+        val backToMenuButtonSection =
+          Map(
+            ChestSlotRef(5, 0) -> CommonButtons.transferButton(
+              new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+              "ホームへ", BuildMainMenu
+            )
+          )
 
         import cats.implicits._
 
@@ -226,7 +234,7 @@ object MineStackMassCraftMenu {
           recipeSection = recipeSectionBlocks.flatten.toMap
         } yield {
           MenuSlotLayout(
-            recipeSection ++ previousPageButtonSection ++ nextPageButtonSection
+            recipeSection ++ previousPageButtonSection ++ nextPageButtonSection ++ backToMenuButtonSection
           )
         }
       }
