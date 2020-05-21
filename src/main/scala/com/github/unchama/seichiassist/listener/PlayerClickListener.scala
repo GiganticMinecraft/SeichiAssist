@@ -1,15 +1,16 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
-import scala.collection.mutable
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
-import com.github.unchama.seichiassist.seichiskill.effect.arrow.ArrowEffects
-import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
+import com.github.unchama.seichiassist.seichiskill.ActiveSkill
+import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
+import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.ThrownExpBottle
@@ -19,9 +20,11 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.{GameMode, Material, Sound}
 
+import scala.collection.mutable
+
 class PlayerClickListener extends Listener {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
   import com.github.unchama.seichiassist.util.ops.ItemStackOps._
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
@@ -35,81 +38,66 @@ class PlayerClickListener extends Listener {
   //アクティブスキル処理
   @EventHandler
   def onPlayerActiveSkillEvent(event: PlayerInteractEvent): Unit = {
-    //プレイヤー型を取得
     val player = event.getPlayer
-    //プレイヤーが起こしたアクションを取得
     val action = event.getAction
-    //使った手を取得
-    val equipmentslot = event.getHand
-    //UUIDを取得
-    val uuid = player.getUniqueId
-    //プレイヤーデータを取得
-    val playerdata = playerMap.getOrElse(uuid, return)
 
-    if (equipmentslot == null) return
+    val equipmentSlot = event.getHand
 
-    //オフハンドから実行された時処理を終了
-    if (equipmentslot == EquipmentSlot.OFF_HAND) return
+    if (equipmentSlot == null || equipmentSlot == EquipmentSlot.OFF_HAND) return
+    if (player.isSneaking || player.getGameMode != GameMode.SURVIVAL || player.isFlying) return
 
-    if (player.isSneaking) return
+    val playerData = playerMap(player.getUniqueId)
+    val skillState = playerData.skillState
 
-    //サバイバルでない時　または　フライ中の時終了
-    if (player.getGameMode != GameMode.SURVIVAL || player.isFlying) return
-
-    //アクティブスキルフラグがオフの時処理を終了
-    if (playerdata.activeskilldata.mineflagnum == 0 || playerdata.activeskilldata.skillnum == 0) return
-
-    //スキル発動条件がそろってなければ終了
+    if (skillState.usageMode == Disabled) return
     if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
 
     action match {
       case Action.LEFT_CLICK_BLOCK | Action.LEFT_CLICK_AIR =>
-        //アサルトアーマーをどっちも使用していない時終了
-        if (playerdata.activeskilldata.assaulttype == 0) return
+        if (skillState.assaultSkill.isEmpty) return
       case Action.RIGHT_CLICK_BLOCK | Action.RIGHT_CLICK_AIR =>
-        //アサルトアーマー使用中の時は終了左クリックで判定
-        if (playerdata.activeskilldata.assaulttype != 0) return
-      case Action.PHYSICAL =>
-        // クリック以外のInteractEventを無視する
-        return
+        if (skillState.assaultSkill.nonEmpty) return
+      // クリック以外のInteractEventを無視する
+      case Action.PHYSICAL => return
     }
 
     //クールダウンタイム中は処理を終了
-    if (!playerdata.activeskilldata.skillcanbreakflag) {
+    if (!skillState.isActiveSkillAvailable) {
       //SEを再生
       player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5.toFloat, 1f)
       return
     }
 
     if (MaterialSets.breakToolMaterials.contains(event.getMaterial)) {
-      if (playerdata.activeskilldata.skilltype == ActiveSkill.ARROW.gettypenum()) {
-        //クールダウン処理
-        val cooldown = ActiveSkill.ARROW.getCoolDown(playerdata.activeskilldata.skillnum)
-        if (cooldown > 5) {
-          new CoolDownTask(player, false, true, false).runTaskLater(plugin, cooldown)
-        } else {
-          new CoolDownTask(player, false, false, false).runTaskLater(plugin, cooldown)
-        }
+      skillState.activeSkill match {
+        case Some(ActiveSkill(_, RemoteArea(_), coolDownOption, _, _)) =>
+          import com.github.unchama.concurrent.syntax._
 
-        val projectArrowEffect =
-          if (playerdata.activeskilldata.effectnum == 0) {
-            // エフェクトが指定されていないとき
-            ArrowEffects.normalArrowEffect
-          } else if (playerdata.activeskilldata.effectnum <= 100) {
-            // 通常エフェクトが指定されているときの処理(100以下の番号に割り振る）
-            val skilleffect = ActiveSkillNormalEffect.values
-            skilleffect(playerdata.activeskilldata.effectnum - 1).arrowEffect
-          } else {
-            // スペシャルエフェクトが指定されているときの処理(１０１からの番号に割り振る）
-            val premiumeffect = ActiveSkillPremiumEffect.values
-            premiumeffect(playerdata.activeskilldata.effectnum - 1 - 100).arrowEffect
-          }
+          //クールダウン処理
+          val coolDownTicks = coolDownOption.getOrElse(0)
+          val playSoundAfterCoolDown = coolDownTicks > 5
 
-        seichiassist.unsafe.runAsyncTargetedEffect(player)(projectArrowEffect, "ArrowEffectを非同期で実行する")
+          seichiassist.unsafe.runIOAsync("スキルのクールダウンの状態を戻す",
+            for {
+              _ <- IO { playerData.skillState = playerData.skillState.copy(isActiveSkillAvailable = false) }
+              _ <- IO.sleep(coolDownTicks.ticks)
+              _ <- syncShift.shift
+              _ <- IO { playerData.skillState = playerData.skillState.copy(isActiveSkillAvailable = true) }
+              _ <-
+                if (playSoundAfterCoolDown)
+                  FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f)(player)
+                else
+                  IO.unit
+            } yield ()
+          )
+
+          val effect = playerData.skillEffectState.selection.arrowEffect
+
+          seichiassist.unsafe.runAsyncTargetedEffect(player)(effect, "ArrowEffectを非同期で実行する")
+        case _ =>
       }
     }
   }
-
 
   //プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
   @EventHandler
@@ -276,7 +264,7 @@ class PlayerClickListener extends Listener {
         if (rewardDetailTexts.isEmpty) {
           s"${WHITE}はずれ！また遊んでね！"
         } else {
-          s"${rewardDetailTexts.mkString(s"${GRAY},")}${GOLD}出ました！"
+          s"${rewardDetailTexts.mkString(s"$GRAY,")}${GOLD}出ました！"
         }
       )
     }
@@ -287,119 +275,65 @@ class PlayerClickListener extends Listener {
   //スキル切り替えのイベント
   @EventHandler
   def onPlayerActiveSkillToggleEvent(event: PlayerInteractEvent): Unit = {
-    //プレイヤーを取得
     val player = event.getPlayer
-    //プレイヤーの起こしたアクションの取得
     val action = event.getAction
-    //アクションを起こした手を取得
-    val equipmentslot = event.getHand
+
+    val equipmentSlot = event.getHand
+
     val currentItem = player.getInventory.getItemInMainHand.getType
-    if (currentItem == Material.STICK || currentItem == Material.SKULL_ITEM) {
-      return
-    }
-    //UUIDを取得
-    val uuid = player.getUniqueId
-    //playerdataを取得
-    val playerdata = playerMap(uuid).ifNull {
-      return
-    }
-    //playerdataがない場合はreturn
+    if (currentItem == Material.STICK || currentItem == Material.SKULL_ITEM) return
 
+    val playerData = playerMap(player.getUniqueId)
 
-    //スキル発動条件がそろってなければ終了
-    if (!Util.seichiSkillsAllowedIn(player.getWorld)) {
-      return
-    }
-
-    //アクティブスキルを発動できるレベルに達していない場合処理終了
-    if (playerdata.level < SeichiAssist.seichiAssistConfig.getDualBreaklevel) {
-      return
-    }
-
-    //クールダウンタイム中は処理を終了
-    if (!playerdata.activeskilldata.skillcanbreakflag) {
-      //SEを再生
-      //player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, (float)0.5, 1);
-      return
-    }
+    if (playerData.level < SeichiAssist.seichiAssistConfig.getDualBreaklevel) return
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
+    if (!playerData.skillState.isActiveSkillAvailable) return
 
     if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+      val hasToolInMainHand = MaterialSets.breakToolMaterials.contains(currentItem)
+      val hasToolInOffHand = MaterialSets.breakToolMaterials.contains(player.getInventory.getItemInOffHand.getType)
 
-      val mainhandflag = MaterialSets.breakToolMaterials.contains(currentItem)
-      val offhandflag = MaterialSets.breakToolMaterials.contains(player.getInventory.getItemInOffHand.getType)
+      if (action == Action.RIGHT_CLICK_BLOCK &&
+        MaterialSets.cancelledMaterials.contains(event.getClickedBlock.getType)) return
 
-      var activemineflagnum = playerdata.activeskilldata.mineflagnum
-      //どちらにも対応したアイテムを持っていない場合終了
-      if (!mainhandflag && !offhandflag) {
-        return
-      }
-      //アクション実行されたブロックがある場合の処理
-      if (action == Action.RIGHT_CLICK_BLOCK) {
-        //クリックされたブロックの種類を取得
-        val cmaterial = event.getClickedBlock.getType
-        //cancelledmateriallistに存在すれば処理終了
-        if (MaterialSets.cancelledMaterials.contains(cmaterial)) {
-          return
-        }
-      }
+      val skillState = playerData.skillState
 
-      if (mainhandflag && equipmentslot == EquipmentSlot.HAND) {
+      if (equipmentSlot == EquipmentSlot.HAND && hasToolInMainHand) {
         //メインハンドで指定ツールを持っていた時の処理
         //スニークしていないかつアサルトタイプが選択されていない時処理を終了
-        if (!player.isSneaking && playerdata.activeskilldata.assaulttype == 0) {
-          return
-        }
+        if (!player.isSneaking && skillState.assaultSkill.isEmpty) return
 
         //設置をキャンセル
         event.setCancelled(true)
-        val skillTypeId = playerdata.activeskilldata.skilltype
-        val skillNumber = playerdata.activeskilldata.skillnum
-        if (skillTypeId == ActiveSkill.BREAK.gettypenum() && skillNumber == 1 || skillTypeId == ActiveSkill.BREAK.gettypenum() && skillNumber == 2) {
 
-          activemineflagnum = (activemineflagnum + 1) % 3
-          val status = activemineflagnum match {
-            case 0 => "：OFF"
-            case 1 => ":ON-Above(上向き）"
-            case 2 => ":ON-Under(下向き）"
-            case _ => throw new RuntimeException("This branch should not be reached")
-          }
-          player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + status)
-          playerdata.activeskilldata.updateSkill(skillTypeId, skillNumber, activemineflagnum)
-          player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
-        }
-        else if (skillTypeId > 0 && skillNumber > 0
-          && skillTypeId < 4
-        ) {
-          activemineflagnum = (activemineflagnum + 1) % 2
-          activemineflagnum match {
-            case 0 => player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + "：OFF")
-            case 1 => player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(skillTypeId, skillNumber) + ":ON")
-          }
-          playerdata.activeskilldata.updateSkill(skillTypeId, skillNumber, activemineflagnum)
-          player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
-        }
-      }
+        skillState.activeSkill match {
+          case Some(skill) =>
+            val toggledMode = skillState.usageMode.nextMode(skill)
 
-      if (MaterialSets.breakToolMaterials(player.getInventory.getItemInOffHand.getType) && equipmentslot == EquipmentSlot.OFF_HAND) {
+            playerData.skillState = skillState.copy(usageMode = toggledMode)
+            player.sendMessage(s"$GOLD${skill.name}：${toggledMode.modeString(skill)}")
+            player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
+        }
+      } else if (equipmentSlot == EquipmentSlot.OFF_HAND && hasToolInOffHand) {
         //オフハンドで指定ツールを持っていた時の処理
 
         //設置をキャンセル
         event.setCancelled(true)
-        val assaultNumber = playerdata.activeskilldata.assaultnum
-        val assaultTypeId = playerdata.activeskilldata.assaulttype
 
-        if (assaultNumber >= 4 && assaultTypeId >= 4) {
-          //メインハンドでも指定ツールを持っていたらフラグは変えない
-          if (!mainhandflag || playerdata.activeskilldata.skillnum == 0) {
-            activemineflagnum = (activemineflagnum + 1) % 2
-          }
-          if (activemineflagnum == 0) {
-            player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":OFF")
-          } else {
-            player.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(assaultTypeId, assaultNumber) + ":ON")
-          }
-          playerdata.activeskilldata.updateAssaultSkill(player, assaultTypeId, assaultNumber, activemineflagnum)
-          player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
+        skillState.assaultSkill match {
+          case Some(skill) =>
+            //メインハンドでも指定ツールを持っていたらフラグは変えない
+            val toggledMode =
+              if (!hasToolInMainHand || skillState.activeSkill.nonEmpty) skillState.usageMode.nextMode(skill)
+              else skillState.usageMode
+
+            val newSkillSelection = if (toggledMode == Disabled) None else skillState.assaultSkill
+
+            playerData.skillState = skillState.copy(usageMode = toggledMode, assaultSkill = newSkillSelection)
+            // TODO start running assault skill routine
+            player.sendMessage(s"$GOLD${skill.name}：${toggledMode.modeString(skill)}")
+            player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
+          case None =>
         }
       }
     }

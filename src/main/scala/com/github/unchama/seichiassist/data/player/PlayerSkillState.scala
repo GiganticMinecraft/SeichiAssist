@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.data.player
 
-import com.github.unchama.seichiassist.seichiskill.ActiveSkillUsageMode.Disabled
+import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
@@ -14,7 +14,7 @@ object PlayerSkillEffectState {
 }
 
 case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
-                            usageMode: ActiveSkillUsageMode,
+                            usageMode: SeichiSkillUsageMode,
                             isActiveSkillAvailable: Boolean,
                             activeSkill: Option[ActiveSkill],
                             assaultSkill: Option[AssaultSkill]) {

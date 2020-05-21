@@ -2,11 +2,11 @@ package com.github.unchama.seichiassist.concurrent
 
 import java.util.concurrent.Executors
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.{ContextShift, IO, Timer}
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingTaskContext, RepeatingTaskContextTag}
 import com.github.unchama.generic
-import com.github.unchama.menuinventory.Tags.LayoutPreparationContextTag
 import com.github.unchama.menuinventory.LayoutPreparationContext
+import com.github.unchama.menuinventory.Tags.LayoutPreparationContextTag
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -19,6 +19,8 @@ object PluginExecutionContexts {
   implicit val syncShift: BukkitSyncIOShift = BukkitSyncIOShift()
 
   val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
+
+  implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
   implicit val asyncShift: ContextShift[IO] = IO.contextShift(cachedThreadPool)
 

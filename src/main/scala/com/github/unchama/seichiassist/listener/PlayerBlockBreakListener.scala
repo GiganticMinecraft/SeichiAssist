@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.listener
 import cats.effect.{Fiber, IO}
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
-import com.github.unchama.seichiassist.seichiskill.ActiveSkillUsageMode.Disabled
+import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}

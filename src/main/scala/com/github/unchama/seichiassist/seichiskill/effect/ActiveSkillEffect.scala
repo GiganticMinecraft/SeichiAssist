@@ -5,12 +5,16 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist.data.AxisAlignedCuboid
 import com.github.unchama.seichiassist.seichiskill.ActiveSkill
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.Blizzard
+import com.github.unchama.seichiassist.seichiskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 import org.bukkit.{Location, Material}
 
 trait ActiveSkillEffect {
   val nameOnUI: String
+
+  val arrowEffect: TargetedEffect[Player]
 
   def runBreakEffect(player: Player,
                      usedSkill: ActiveSkill,
@@ -23,6 +27,8 @@ trait ActiveSkillEffect {
 object ActiveSkillEffect {
   object NoEffect extends ActiveSkillEffect {
     override val nameOnUI: String = "未設定"
+
+    override val arrowEffect: TargetedEffect[Player] = ArrowEffects.normalArrowEffect
 
     override def runBreakEffect(player: Player,
                                 usedSkill: ActiveSkill,
