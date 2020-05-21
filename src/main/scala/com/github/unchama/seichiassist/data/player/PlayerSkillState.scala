@@ -15,7 +15,6 @@ object PlayerSkillEffectState {
 
 case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
                             usageMode: SeichiSkillUsageMode,
-                            isActiveSkillAvailable: Boolean,
                             activeSkill: Option[ActiveSkill],
                             assaultSkill: Option[AssaultSkill]) {
   lazy val consumedActiveSkillPoint: Int =
@@ -72,7 +71,6 @@ object PlayerSkillState {
     PlayerSkillState(
       obtainedSkills = Set(),
       usageMode = Disabled,
-      isActiveSkillAvailable = false,
       activeSkill = None,
       assaultSkill = None
     )

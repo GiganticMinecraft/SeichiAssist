@@ -24,6 +24,8 @@ import scala.util.control.Breaks
 class PlayerBlockBreakListener extends Listener {
   private val plugin = SeichiAssist.instance
 
+  import plugin.activeSkillAvailability
+
   @EventHandler(priority = EventPriority.LOW)
   def onPlayerBlockBreak(event: BlockBreakEvent): Unit = {
     val block = event.getBlock
@@ -82,7 +84,7 @@ class PlayerBlockBreakListener extends Listener {
     val playerLevel = playerData.level
 
     //クールダウンタイム中は処理を終了
-    if (!skillState.isActiveSkillAvailable) {
+    if (!activeSkillAvailability(player).get.unsafeRunSync()) {
       //SEを再生
       player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1)
       return

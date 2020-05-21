@@ -32,6 +32,9 @@ class PlayerClickListener extends Listener {
   import scala.jdk.CollectionConverters._
 
   private val plugin = SeichiAssist.instance
+
+  import plugin.activeSkillAvailability
+
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
 
@@ -62,7 +65,7 @@ class PlayerClickListener extends Listener {
     }
 
     //クールダウンタイム中は処理を終了
-    if (!skillState.isActiveSkillAvailable) {
+    if (!activeSkillAvailability(player).get.unsafeRunSync()) {
       //SEを再生
       player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5.toFloat, 1f)
       return
@@ -71,29 +74,28 @@ class PlayerClickListener extends Listener {
     if (MaterialSets.breakToolMaterials.contains(event.getMaterial)) {
       skillState.activeSkill match {
         case Some(ActiveSkill(_, RemoteArea(_), coolDownOption, _, _)) =>
+          import cats.implicits._
           import com.github.unchama.concurrent.syntax._
 
           //クールダウン処理
           val coolDownTicks = coolDownOption.getOrElse(0)
-          val playSoundAfterCoolDown = coolDownTicks > 5
+          val soundEffectAfterCoolDown =
+            if (coolDownTicks > 5)
+              FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f)(player)
+            else
+              IO.unit
 
-          seichiassist.unsafe.runIOAsync("スキルのクールダウンの状態を戻す",
-            for {
-              _ <- IO { playerData.skillState = playerData.skillState.copy(isActiveSkillAvailable = false) }
-              _ <- IO.sleep(coolDownTicks.ticks)
-              _ <- syncShift.shift
-              _ <- IO { playerData.skillState = playerData.skillState.copy(isActiveSkillAvailable = true) }
-              _ <-
-                if (playSoundAfterCoolDown)
-                  FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f)(player)
-                else
-                  IO.unit
-            } yield ()
-          )
+          val controlSkillAvailability =
+            activeSkillAvailability(player).set(false) >>
+              IO.sleep(coolDownTicks.ticks) >>
+              syncShift.shift >>
+              activeSkillAvailability(player).set(true) >>
+              soundEffectAfterCoolDown
 
-          val effect = playerData.skillEffectState.selection.arrowEffect
+          val arrowEffect = playerData.skillEffectState.selection.arrowEffect(player)
 
-          seichiassist.unsafe.runAsyncTargetedEffect(player)(effect, "ArrowEffectを非同期で実行する")
+          seichiassist.unsafe.runIOAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
+          seichiassist.unsafe.runIOAsync("ArrowEffectを非同期で実行する", arrowEffect)
         case _ =>
       }
     }
@@ -287,7 +289,7 @@ class PlayerClickListener extends Listener {
 
     if (playerData.level < SeichiAssist.seichiAssistConfig.getDualBreaklevel) return
     if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
-    if (!playerData.skillState.isActiveSkillAvailable) return
+    if (!activeSkillAvailability(player).get.unsafeRunSync()) return
 
     if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
       val hasToolInMainHand = MaterialSets.breakToolMaterials.contains(currentItem)
@@ -331,6 +333,7 @@ class PlayerClickListener extends Listener {
 
             playerData.skillState = skillState.copy(usageMode = toggledMode, assaultSkill = newSkillSelection)
             // TODO start running assault skill routine
+
             player.sendMessage(s"$GOLD${skill.name}：${toggledMode.modeString(skill)}")
             player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
           case None =>
