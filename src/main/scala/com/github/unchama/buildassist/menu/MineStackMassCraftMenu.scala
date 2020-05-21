@@ -43,10 +43,10 @@ object MineStackMassCraftMenu {
      * プレーヤーが`requiredBuildLevel`に達していない場合にこのボタンを押すと、
      * クラフトは実行されず適切なメッセージがプレーヤーに通達される。
      *
-     * @param requiredBuildLevel レシピの実行に必要な建築レベル
+     * @param requiredMassCraftLevel レシピの実行に必要なクラフトレベル
      * @param menuPageNumber このボタンが表示される一括クラフト画面のページ番号
      */
-    def computeButton(player: Player, requiredBuildLevel: Int, menuPageNumber: Int): IO[Button] = {
+    def computeButton(player: Player, requiredMassCraftLevel: Int, menuPageNumber: Int): IO[Button] = {
       import cats.implicits._
 
       def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
@@ -58,6 +58,8 @@ object MineStackMassCraftMenu {
 
       def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObj, Int)]): String =
         chunks.map { case (obj, amount) => s"${obj.uiName.get}${amount}個" }.mkString_("+")
+
+      val requiredBuildLevel = BuildAssist.config.getMinestackBlockCraftlevel(requiredMassCraftLevel)
 
       val ingredientObjects = ingredients.map(toMineStackObjectChunk)
       val productObjects = products.map(toMineStackObjectChunk)
@@ -115,7 +117,7 @@ object MineStackMassCraftMenu {
             mineStack = seichiAssistPlayerData.minestack
 
             _ <-
-              if (buildAssistPlayerData.level < BuildAssist.config.getMinestackBlockCraftlevel(requiredBuildLevel)) {
+              if (buildAssistPlayerData.level < requiredBuildLevel) {
                 s"${RED}建築レベルが足りません".asMessageEffect()(player)
               } else {
                 syncShift.shift >> {
