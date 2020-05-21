@@ -3,24 +3,26 @@ package com.github.unchama.seichiassist.seichiskill
 import enumeratum.EnumEntry.Snakecase
 import enumeratum._
 
-sealed abstract class SeichiSkill(val name: String,
-                                  val range: SkillRange,
-                                  val maxCoolDownTicks: Option[Int],
-                                  val manaCost: Int,
-                                  val requiredActiveSkillPoint: Int) extends Snakecase
+sealed trait SeichiSkill extends Snakecase {
+  val name: String
+  val range: SkillRange
+  val maxCoolDownTicks: Option[Int]
+  val manaCost: Int
+  val requiredActiveSkillPoint: Int
+}
 
-sealed abstract class ActiveSkill(name: String,
+sealed abstract class ActiveSkill(override val name: String,
                                   override val range: ActiveSkillRange,
-                                  maxCoolDownTicks: Option[Int],
-                                  manaCost: Int,
-                                  requiredActiveSkillPoint: Int) extends
-  SeichiSkill(name, range, maxCoolDownTicks, manaCost, requiredActiveSkillPoint)
+                                  override val maxCoolDownTicks: Option[Int],
+                                  override val manaCost: Int,
+                                  override val requiredActiveSkillPoint: Int) extends SeichiSkill
 
-sealed abstract class AssaultSkill(name: String,
-                                   range: AssaultSkillRange,
-                                   manaCost: Int,
-                                   requiredActiveSkillPoint: Int) extends
-  SeichiSkill(name, range, None, manaCost, requiredActiveSkillPoint)
+sealed abstract class AssaultSkill(override val name: String,
+                                   override val range: AssaultSkillRange,
+                                   override val manaCost: Int,
+                                   override val requiredActiveSkillPoint: Int) extends SeichiSkill {
+  override val maxCoolDownTicks: None.type = None
+}
 
 object SeichiSkill extends Enum[SeichiSkill] {
   import ActiveSkillRange._
