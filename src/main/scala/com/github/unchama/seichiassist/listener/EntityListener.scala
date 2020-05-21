@@ -145,7 +145,7 @@ class EntityListener extends Listener {
     com.github.unchama.seichiassist.unsafe.runIOAsync(
       "破壊エフェクトを再生する",
       playerData.skillEffectState.selection
-        .runBreakEffect(player, playerData.activeskilldata, tool, breakBlocks.toSet, breakArea, centerOfBlock)
+        .runBreakEffect(player, selectedSkill, tool, breakBlocks.toSet, breakArea, centerOfBlock)
     )
   }
 

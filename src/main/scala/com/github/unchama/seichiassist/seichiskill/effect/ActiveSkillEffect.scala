@@ -2,7 +2,8 @@ package com.github.unchama.seichiassist.seichiskill.effect
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
-import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, AxisAlignedCuboid}
+import com.github.unchama.seichiassist.data.AxisAlignedCuboid
+import com.github.unchama.seichiassist.seichiskill.ActiveSkill
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.Blizzard
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.entity.Player
@@ -12,7 +13,7 @@ trait ActiveSkillEffect {
   val nameOnUI: String
 
   def runBreakEffect(player: Player,
-                     skillData: ActiveSkillData_Legacy,
+                     usedSkill: ActiveSkill,
                      tool: BreakTool,
                      breakBlocks: Set[BlockBreakableBySkill],
                      breakArea: AxisAlignedCuboid,
@@ -24,7 +25,7 @@ object ActiveSkillEffect {
     override val nameOnUI: String = "未設定"
 
     override def runBreakEffect(player: Player,
-                                skillData: ActiveSkillData_Legacy,
+                                usedSkill: ActiveSkill,
                                 tool: BreakTool,
                                 breakBlocks: Set[BlockBreakableBySkill],
                                 breakArea: AxisAlignedCuboid,

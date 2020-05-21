@@ -185,7 +185,7 @@ class PlayerBlockBreakListener extends Listener {
               _ <- IO { lavas.foreach(_.setType(Material.AIR)) }
               _ <-
                 playerData.skillEffectState.selection.runBreakEffect(
-                  player, playerData.activeskilldata, tool, blocks,
+                  player, selectedSkill, tool, blocks,
                   breakAreaList(chunkIndex), block.getLocation.add(0.5, 0.5, 0.5)
                 )
             } yield ()

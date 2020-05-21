@@ -1,12 +1,13 @@
 package com.github.unchama.seichiassist.seichiskill.effect
 
 import cats.effect.{IO, Timer}
-import com.github.unchama.seichiassist.ActiveSkill
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
 import com.github.unchama.seichiassist.seichiskill.effect.arrow.ArrowEffects
+import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, ActiveSkillRange}
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -25,7 +26,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
                                               val material: Material) extends EnumEntry with ActiveSkillEffect {
 
   override def runBreakEffect(player: Player,
-                              skillData: ActiveSkillData_Legacy,
+                              usedSkill: ActiveSkill,
                               tool: BreakTool,
                               breakBlocks: Set[BlockBreakableBySkill],
                               breakArea: AxisAlignedCuboid,
@@ -36,7 +37,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
 
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
-    val skillId = skillData.skillnum
+    val isSkillDualBreakOrTrialBreak = Seq(DualBreak, TrialBreak).contains(usedSkill)
 
     this match {
       case Explosion =>
@@ -52,7 +53,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
               .map(XYZTuple.of(standard) + _)
               .filter(PositionSearching.containsOneOfPositionsAround(_, 1, blockPositions))
           }
-          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, skillId <= 2)
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, isSkillDualBreakOrTrialBreak)
           _ <- IO {
             explosionLocations.foreach(coordinates =>
               world.createExplosion(coordinates.toLocation(world), 0f, false)
@@ -75,10 +76,15 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
               .foreach(location =>
                 player.getWorld.spawnParticle(Particle.SNOWBALL, location, 1))
 
+            val setEffectRadius = usedSkill.range match {
+              case ActiveSkillRange.MultiArea(_, areaCount) => areaCount == 1
+              case ActiveSkillRange.RemoteArea(_) => false
+            }
+
             breakBlocks.foreach { b =>
               b.setType(Material.AIR)
 
-              if (skillData.skilltype == ActiveSkill.BREAK.gettypenum())
+              if (setEffectRadius)
                 b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE, 5)
               else
                 b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE)
@@ -87,7 +93,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
         } yield ()
 
       case Meteo =>
-        val delay = if (skillId < 3) 1L else 10L
+        val delay = if (isSkillDualBreakOrTrialBreak) 1L else 10L
 
         import com.github.unchama.seichiassist.data.syntax._
 
@@ -110,7 +116,7 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
           // [0.8, 1.2)
           vol <- IO { new Random().nextFloat() * 0.4f + 0.8f }
           _ <- FocusedSoundEffect(Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol).run(player)
-          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, skillData.skillnum <= 2)
+          _ <- BreakUtil.massBreakBlock(player, breakBlocks, standard, tool, isSkillDualBreakOrTrialBreak)
         } yield ()
       }
     }
