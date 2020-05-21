@@ -6,7 +6,7 @@ import java.util.Locale
 import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder, SkullOwnerReference}
+import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
@@ -88,21 +88,30 @@ object MineStackMassCraftMenu {
                 }
               }
         } yield {
-          new IconItemStackBuilder(productObjects.head._1.itemStack.getType)
-            .title(title)
-            .lore(
-              List(
-                List(loreHeading),
-                possessionDisplayBlock,
-                List(
-                  s"$RESET${GRAY}建築LV${requiredBuildLevel}以上で利用可能",
-                  s"$RESET$DARK_RED${UNDERLINE}クリックで変換"
-                )
-              ).flatten
+          val lore = List(
+            List(loreHeading),
+            possessionDisplayBlock,
+            List(
+              s"$RESET${GRAY}建築LV${requiredBuildLevel}以上で利用可能",
+              s"$RESET$DARK_RED${UNDERLINE}クリックで変換"
             )
-            // 対数オーダーをアイコンのスタック数にする
-            .amount(products.head._2.toString.length)
-            .build()
+          ).flatten
+
+          // MineStackObjectから直接メタ等のスタック情報を受け継ぐべきなのでビルダを使わずメタを直接書き換える
+          val productStack = productObjects.head._1.itemStack.clone()
+
+          productStack.setItemMeta {
+            import scala.jdk.javaapi.CollectionConverters.asJava
+
+            val meta = productStack.getItemMeta
+            meta.setDisplayName(title)
+            meta.setLore(asJava(lore))
+            meta
+          }
+
+          // 対数オーダーをアイコンのスタック数にする
+          productStack.setAmount(products.head._2.toString.length)
+          productStack
         }
 
       }
