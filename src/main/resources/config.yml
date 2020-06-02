@@ -239,7 +239,6 @@ minestack_BlockCraft:
   level1: '25'
   level2: '35'
   level3: '45'
-  level4: '65'
 
 #ブロック設置カウントの1分上限
 BuildNum1minLimit: '256'
