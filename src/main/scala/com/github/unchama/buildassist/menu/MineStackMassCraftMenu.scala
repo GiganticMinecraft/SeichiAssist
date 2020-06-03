@@ -380,7 +380,7 @@ object MineStackMassCraftMenu {
         ),
         ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-            NonEmptyList.of(("magma", 4), ("iron_ingot", 3)),
+            NonEmptyList.of(("magma", 8), ("bucket", 1)),
             NonEmptyList.of(("lava_bucket", 1))
           ), oneToThousand, 3
         ),
@@ -436,38 +436,32 @@ object MineStackMassCraftMenu {
       List(
         ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-            NonEmptyList.of(("lapis_ore", 4), ("coal", 1)),
-            NonEmptyList.of(("lapis_lazuli", 4))
-          ), oneToThousand, 3
-        ),
-        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
-          MassCraftRecipe(
-            NonEmptyList.of(("lapis_ore", 50), ("lava_bucket", 1)),
-            NonEmptyList.of(("lapis_lazuli", 50))
-          ), oneToThousand, 3
-        ),
-        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
-          MassCraftRecipe(
             NonEmptyList.of(("emerald_ore", 4), ("coal", 1)),
             NonEmptyList.of(("emerald", 4))
           ), oneToThousand, 3
         ),
-        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("emerald_ore", 50), ("lava_bucket", 1)),
             NonEmptyList.of(("emerald", 50))
           ), oneToThousand, 3
         ),
-        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("diamond_ore", 4), ("coal", 1)),
             NonEmptyList.of(("diamond", 4))
           ), oneToThousand, 3
         ),
-        ChestSlotRef(2, 5) -> MassCraftRecipeBlock(
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("diamond_ore", 50), ("lava_bucket", 1)),
             NonEmptyList.of(("diamond", 50))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("iron_ingot", 3)),
+            NonEmptyList.of(("bucket", 1))
           ), oneToThousand, 3
         ),
       )
