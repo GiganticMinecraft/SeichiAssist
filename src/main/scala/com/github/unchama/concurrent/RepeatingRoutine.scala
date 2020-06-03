@@ -2,6 +2,7 @@ package com.github.unchama.concurrent
 
 import cats.Monad
 import cats.effect.IO
+import com.github.unchama.generic.effect.SyncExtra
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -15,19 +16,11 @@ trait RepeatingRoutine {
    * デフォルトの実装では、[[routineAction]]が例外を吐いて終了するか`false`を返すと実行が終了する。
    */
   lazy val launch: IO[Unit] = {
-    val recoveringRoutine: IO[Boolean] =
-      routineAction.redeemWith(
-        error => IO {
-          println("ルーチンの実行中にエラーが発生しました。")
-          error.printStackTrace()
-
-          false
-        },
-        IO.pure
-      )
-
     Monad[IO]
-      .iterateWhile(sleepBetweenRoutines >> recoveringRoutine)(identity)
+      .iterateWhile(
+        sleepBetweenRoutines >>
+          SyncExtra.recoverWithStackTrace("ルーチンの実行中にエラーが発生しました", false)(routineAction)
+      )(identity)
       .as(())
   }
 
