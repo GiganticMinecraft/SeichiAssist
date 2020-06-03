@@ -20,8 +20,8 @@ object RepeatingRoutine {
     Monad[IO].foreverM(sleepWith(getInterval) >> recoveringAction)
   }
 
-  def loopingRoutine(getInterval: IO[FiniteDuration], action: IO[Boolean])
-                    (implicit context: RepeatingTaskContext): IO[Unit] = {
+  def doWhileTask(getInterval: IO[FiniteDuration], action: IO[Boolean])
+                 (implicit context: RepeatingTaskContext): IO[Unit] = {
     val recoveringAction = SyncExtra.recoverWithStackTrace("繰り返し実行タスクの実行に失敗しました", false, action)
 
     Monad[IO].iterateWhile(sleepWith(getInterval) >> recoveringAction)(identity).as(())
