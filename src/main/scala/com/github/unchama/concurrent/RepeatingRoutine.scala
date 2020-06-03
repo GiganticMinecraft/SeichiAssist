@@ -4,42 +4,26 @@ import cats.Monad
 import cats.effect.IO
 import com.github.unchama.generic.effect.SyncExtra
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-trait RepeatingRoutine {
+object RepeatingRoutine {
   import cats.implicits._
 
-  /**
-   * [[getRepeatInterval]]で指定される長さの待機処理と、
-   * [[routineAction]]を交互に行うプログラム。
-   *
-   * デフォルトの実装では、[[routineAction]]が例外を吐いて終了するか`false`を返すと実行が終了する。
-   */
-  lazy val launch: IO[Unit] = {
-    Monad[IO]
-      .iterateWhile(
-        sleepBetweenRoutines >>
-          SyncExtra.recoverWithStackTrace("ルーチンの実行中にエラーが発生しました", false)(routineAction)
-      )(identity)
-      .as(())
+  private def sleepWith(getInterval: IO[FiniteDuration])(implicit ctx: ExecutionContext): IO[Unit] =
+    getInterval >>= (IO.timer(ctx).sleep(_))
+
+  def permanentRoutine(getInterval: IO[FiniteDuration], action: IO[Any])
+                      (implicit context: RepeatingTaskContext): IO[Nothing] = {
+    val recoveringAction = SyncExtra.recoverWithStackTrace("定期実行タスクの実行に失敗しました", (), action)
+
+    Monad[IO].foreverM(sleepWith(getInterval) >> recoveringAction)
   }
 
-  /**
-   * [[routineAction]]の実行、及びスリープ処理に使用される[[RepeatingTaskContext]].
-   *
-   * ここにサーバーメインスレッドでの実行コンテキストは渡してはならず、
-   * [[routineAction]]の実行がサーバーメインスレッドで行われてほしければ、
-   * [[routineAction]]内でコンテキストをシフトすべきである。
-   */
-  val context: RepeatingTaskContext
+  def loopingRoutine(getInterval: IO[FiniteDuration], action: IO[Boolean])
+                    (implicit context: RepeatingTaskContext): IO[Unit] = {
+    val recoveringAction = SyncExtra.recoverWithStackTrace("繰り返し実行タスクの実行に失敗しました", false, action)
 
-  /**
-   * 次回のルーチン実行までどのくらい間隔を開けるかを計算する
-   */
-  val getRepeatInterval: IO[FiniteDuration]
-
-  val routineAction: IO[Boolean]
-
-  val sleepBetweenRoutines: IO[Unit] =
-    getRepeatInterval >>= (IO.timer(context).sleep(_))
+    Monad[IO].iterateWhile(sleepWith(getInterval) >> recoveringAction)(identity).as(())
+  }
 }

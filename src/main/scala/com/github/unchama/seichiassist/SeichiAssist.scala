@@ -5,7 +5,6 @@ import java.util.UUID
 import cats.effect.{Fiber, IO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
-import com.github.unchama.concurrent.NonHaltingRoutine
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.menuinventory.MenuHandler
@@ -58,6 +57,9 @@ class SeichiAssist extends JavaPlugin() {
 
   val activeSkillAvailability: PlayerDataOnMemoryRepository[Boolean] =
     new NonPersistentPlayerDataRepository(true)
+
+  val assaultSkillRoutines: PlayerDataOnMemoryRepository[Option[Fiber[IO, Unit]]] =
+    new NonPersistentPlayerDataRepository[Option[Fiber[IO, Unit]]](None)
 
   override def onEnable(): Unit = {
     val logger = getLogger
@@ -211,19 +213,19 @@ class SeichiAssist extends JavaPlugin() {
       import cats.implicits._
 
       // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
-      val programs: List[NonHaltingRoutine] =
+      val programs: List[IO[Nothing]] =
         List(
-          new PlayerDataRecalculationRoutine,
-          new PlayerDataBackupRoutine
+          PlayerDataRecalculationRoutine(),
+          PlayerDataBackupRoutine()
         ) ++
           Option.unless(
             SeichiAssist.seichiAssistConfig.getServerNum == 7
             || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
-            new HalfHourRankingRoutine
+            HalfHourRankingRoutine()
           ).toList
 
-      programs.map(_.launch).parSequence.start
+      programs.parSequence.start
     }
 
     repeatedTaskFiber = Some(startTask.unsafeRunSync())
