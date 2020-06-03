@@ -4,8 +4,9 @@ import java.util.UUID
 
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.{ActiveSkill, ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -140,17 +141,13 @@ class PlayerJoinListener extends Listener {
       }
 
       // アサルトスキルを切る
-      // 現在アサルトスキルorアサルトアーマーを選択中
-      if (pd.activeskilldata.assaultnum >= 4 && pd.activeskilldata.assaulttype >= 4) {
-        // アクティブスキルがONになっている
-        if (pd.activeskilldata.mineflagnum != 0) {
-          // メッセージを表示
-          p.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
-          // 内部状態をアサルトOFFに変更
-          pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0)
-          // トグル音を鳴らす
+      val skillState = pd.skillState
+      skillState.assaultSkill match {
+        case Some(skill) if skillState.usageMode != Disabled =>
+          p.sendMessage(s"$GOLD${skill.name}：OFF")
+          pd.skillState = skillState.copy(usingAssaultSkill = false)
           p.playSound(p.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
-        }
+        case None =>
       }
     }
   }
