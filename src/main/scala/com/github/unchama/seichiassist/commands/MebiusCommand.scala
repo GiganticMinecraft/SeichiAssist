@@ -76,7 +76,8 @@ object MebiusCommand {
     val namingExecutor: ContextualExecutor = playerCommandBuilder
       .argumentsParsers(List(Parsers.identity))
       .execution { context =>
-        val newName = s"${context.args.parsed(0).asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
+        // https://github.com/GiganticMinecraft/SeichiAssist/issues/518
+        val newName = s"${context.args.parsed(0).asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}".replace("　", "")
 
         if (!MebiusListener.setName(context.sender, newName)) {
           IO(s"${RED}命名はMEBIUSを装着して行ってください.".asMessageEffect())
