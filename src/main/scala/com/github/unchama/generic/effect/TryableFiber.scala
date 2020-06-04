@@ -12,10 +12,29 @@ import cats.effect.{CancelToken, Concurrent, Fiber}
  * a [[Fiber]] which can tell its completion status. [[TryableFiber]] serves this purpose.
  */
 trait TryableFiber[F[_], A] extends Fiber[F, A] {
+  implicit val fConcurrent: Concurrent[F]
+
   /**
    * Obtains the current value of the `Fiber`, or None if it hasn't completed.
    */
   def tryJoin: F[Option[A]]
+
+  import cats.implicits._
+
+  def isComplete: F[Boolean] = tryJoin map (_.nonEmpty)
+
+  def isIncomplete: F[Boolean] = isComplete map (!_)
+
+  /**
+   * A computation that cancels the fiber if it is not complete,
+   * returning whether the cancellation happened or not.
+   */
+  def cancelIfIncomplete: F[Boolean] = {
+    // cancellation does not alter completion status;
+    // if it has been complete then nothing occurs,
+    // or else cancellation is performed and tryJoin would be empty.
+    cancel >> isComplete
+  }
 }
 
 object TryableFiber {
@@ -31,6 +50,7 @@ object TryableFiber {
       promise <- Deferred.tryable[F, A]
       fiber <- Concurrent[F].start(fa >>= promise.complete)
     } yield new TryableFiber[F, A] {
+      override implicit val fConcurrent: Concurrent[F] = Concurrent[F]
       override def tryJoin: F[Option[A]] = promise.tryGet
       override def cancel: CancelToken[F] = fiber.cancel
       override def join: F[A] = promise.get
