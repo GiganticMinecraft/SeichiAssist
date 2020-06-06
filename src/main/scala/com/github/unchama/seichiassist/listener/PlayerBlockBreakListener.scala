@@ -93,7 +93,7 @@ class PlayerBlockBreakListener extends Listener {
     val manaState = playerData.manaState
 
     // 追加マナ獲得
-    manaState.increase(BreakUtil.calcManaDrop(playerData), player, playerLevel)
+    manaState.increase(BreakUtil.calcManaDrop(player), player, playerLevel)
 
     val selectedSkill = skillState.activeSkill.getOrElse(return)
 

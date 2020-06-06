@@ -56,8 +56,6 @@ object PlayerDataRecalculationRoutine {
         val increase = playerData.updateAndCalcMinedBlockAmount()
         //Levelを設定(必ず総整地量更新後に実施！)
         playerData.updateLevel()
-        //activeskillpointを設定
-        playerData.activeskilldata.updateActiveSkillPoint(player, playerData.level)
         //総プレイ時間更新
         playerData.updatePlayTick()
 
