@@ -2,47 +2,39 @@ package com.github.unchama.playerdatarepository
 
 import java.util.UUID
 
-import cats.effect.{Fiber, IO, SyncIO}
-import com.github.unchama.generic.effect.TryableFiber
+import cats.effect.{ContextShift, IO, SyncIO}
+import com.github.unchama.generic.effect.{Mutex, TryableFiber}
+import com.github.unchama.playerdatarepository.TryableFiberRepository.MFiber
 import org.bukkit.entity.Player
 
-class TryableFiberRepository extends PlayerDataOnMemoryRepository[Option[TryableFiber[IO, Unit]]] {
-  override val loadData: (String, UUID) => SyncIO[Either[Option[String], Option[TryableFiber[IO, Unit]]]] =
-    (_, _) => SyncIO.pure(Right(None))
+class TryableFiberRepository(implicit shift: ContextShift[IO]) extends PlayerDataOnMemoryRepository[MFiber] {
 
-  override val unloadData: (Player, Option[Fiber[IO, Unit]]) => IO[Unit] = (_, o) => o match {
-    case Some(f) => f.cancel
-    case None => IO.unit
-  }
+  override val loadData: (String, UUID) => SyncIO[Either[Option[String], MFiber]] =
+    (_, _) => Mutex.of[SyncIO, IO, TryableFiber[IO, Unit]](TryableFiber.unit[IO]).map(Right.apply)
 
-  import cats.implicits._
-
-  /**
-   * 与えられたプレーヤーのアサルトスキルの処理を実行するFiberがあれば止めるIOを返す
-   */
-  def stopFiber(p: Player): IO[Unit] =
-    apply(p).getAndSet(None) >>= {
-      case Some(fiber) => fiber.cancel
-      case None => IO.unit
-    }
+  override val unloadData: (Player, MFiber) => IO[Unit] = (_, mf) =>
+      mf.lockAndModify { fiber =>
+        for {
+          _ <- fiber.cancel
+        } yield (fiber, ())
+      }
 
   /**
    * 与えられたプレーヤーに対して、
-   *  - 実行中のFiberがあれば停止しfalseを返す
-   *  - そうでなければ `startNewFiber` により提供されるFiberにてRefを上書きしtrueを返す
+   *  - 実行中のFiberがあれば停止し、Mutexの中身を停止したFiberで上書きしfalseを返す
+   *  - そうでなければ、Mutexの中身を `startNewFiber` により提供されるFiberにて上書きしtrueを返す
    * ような計算を返す。
    */
-  def flipState(p: Player)(startNewFiber: IO[TryableFiber[IO, Unit]]): IO[Boolean] = {
-    val reference = apply(p)
-    val overwriteFiber = startNewFiber >>= (f => reference.set(Some(f)))
-
-    reference.get flatMap {
-      case Some(fiber) =>
-        for {
-          cancelled <- fiber.cancelIfIncomplete
-          _ <- if (cancelled) overwriteFiber else IO.unit
-        } yield cancelled
-      case None => overwriteFiber.as(true)
+  def flipState(p: Player)(startNewFiber: IO[TryableFiber[IO, Unit]]): IO[Boolean] =
+    apply(p).lockAndModify { fiber =>
+      for {
+        wasIncomplete <- fiber.cancelIfIncomplete
+        newFiber <- if (wasIncomplete) IO.pure(TryableFiber.unit[IO]) else startNewFiber
+        // Fiberが完了していた <=> 新たなFiberをmutexへ入れた
+      } yield (newFiber, !wasIncomplete)
     }
-  }
+}
+
+object TryableFiberRepository {
+  type MFiber = Mutex[IO, TryableFiber[IO, Unit]]
 }
