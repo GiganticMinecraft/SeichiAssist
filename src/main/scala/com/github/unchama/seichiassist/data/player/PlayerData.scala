@@ -328,7 +328,8 @@ class PlayerData(
       player.sendMessage(s"${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
     }
 
-    activeskilldata.updateOnJoin(player, level)
+    manaState.initialize(player, level)
+
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
     isVotingFairy()
@@ -515,7 +516,7 @@ class PlayerData(
     //総プレイ時間更新
     updatePlayTick()
 
-    activeskilldata.updateOnQuit()
+    manaState.hide()
 
     mebius.cancel()
 
