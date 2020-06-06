@@ -44,14 +44,14 @@ object TryableFiber {
    *
    * @return a [[TryableFiber]] which can be used to cancel, join or tryJoin the result
    */
-  def start[F[_]: Concurrent, A](fa: F[A]): F[TryableFiber[F, A]] = {
+  def start[F[_], A](fa: F[A])(implicit fConc: Concurrent[F]): F[TryableFiber[F, A]] = {
     import cats.implicits._
 
     for {
       promise <- Deferred.tryable[F, A]
-      fiber <- Concurrent[F].start(fa >>= promise.complete)
+      fiber <- fConc.start(fa >>= promise.complete)
     } yield new TryableFiber[F, A] {
-      override implicit val fFMap: Concurrent[F] = Concurrent[F]
+      override implicit val fFMap: Concurrent[F] = fConc
       override def tryJoin: F[Option[A]] = promise.tryGet
       override def cancel: CancelToken[F] = fiber.cancel
       override def join: F[A] = promise.get
@@ -61,11 +61,11 @@ object TryableFiber {
   /**
    * Creates a trivial value of TryableFiber which is always complete.
    */
-  def unit[F[_]: Monad]: TryableFiber[F, Unit] = new TryableFiber[F, Unit] {
-    override implicit val fFMap: Monad[F] = Monad[F]
+  def unit[F[_]](implicit fMonad: Monad[F]): TryableFiber[F, Unit] = new TryableFiber[F, Unit] {
+    override implicit val fFMap: Monad[F] = fMonad
 
-    override def tryJoin: F[Option[Unit]] = fFMap.pure(Some(()))
-    override def cancel: CancelToken[F] = fFMap.unit
-    override def join: F[Unit] = fFMap.unit
+    override def tryJoin: F[Option[Unit]] = fMonad.pure(Some(()))
+    override def cancel: CancelToken[F] = fMonad.unit
+    override def join: F[Unit] = fMonad.unit
   }
 }
