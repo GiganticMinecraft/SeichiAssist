@@ -1,12 +1,14 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.seichiskill.ActiveSkill
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
+import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
@@ -324,17 +326,21 @@ class PlayerClickListener extends Listener {
 
         skillState.assaultSkill match {
           case Some(skill) =>
-            //メインハンドでも指定ツールを持っていたらフラグは変えない
-            val toggledMode =
-              if (!hasToolInMainHand || skillState.activeSkill.nonEmpty) skillState.usageMode.nextMode(skill)
-              else skillState.usageMode
+            MaterialSets.refineItemStack(player.getInventory.getItemInOffHand, MaterialSets.breakToolMaterials) match {
+              case Some(tool) =>
+                import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+                val flipActiveSkillActivity = for {
+                  _ <- SeichiAssist.instance
+                    .assaultSkillRoutines
+                    .flipState(player)(TryableFiber.start(AssaultRoutine(player, playerData, tool)))
+                } yield ()
 
-            val newSkillSelection = if (toggledMode == Disabled) None else skillState.assaultSkill
+                flipActiveSkillActivity.unsafeRunSync()
+              case None =>
+                // サブハンドにツールを持っていないとき
+                player.sendMessage(s"${GREEN}使うツールをオフハンドにセット(fキー)してください")
+            }
 
-            playerData.skillState = skillState.copy(usageMode = toggledMode, assaultSkill = newSkillSelection)
-            // TODO start running assault skill routine
-
-            player.sendMessage(s"$GOLD${skill.name}：${toggledMode.modeString(skill)}")
             player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
           case None =>
         }
