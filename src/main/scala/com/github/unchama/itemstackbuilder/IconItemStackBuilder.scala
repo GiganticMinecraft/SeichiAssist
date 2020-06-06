@@ -20,7 +20,7 @@ class IconItemStackBuilder(material: Material, durability: Short = 0.toShort) ex
    *
    * @return このBuilder
    */
-  def showAttribute(): IconItemStackBuilder = {
+  def showAttribute(): this.type = {
     this.shouldShowAttribute = true
     this
   }
