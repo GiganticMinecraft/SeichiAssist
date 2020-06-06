@@ -607,7 +607,7 @@ class PlayerData(
 
   def convertEffectPointToAchievePoint(): Unit = {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
-    activeskilldata.effectpoint -= 10
+    effectPoint -= 10
   }
 
   //エフェクトデータのdurationを60秒引く

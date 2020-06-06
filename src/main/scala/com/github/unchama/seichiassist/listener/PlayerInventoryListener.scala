@@ -844,7 +844,7 @@ class PlayerInventoryListener extends Listener {
             }
           }
           //エフェクトポイント加算処理
-          playerdata.activeskilldata.effectpoint += 10
+          playerdata.effectPoint += 10
 
           n -= 1
           count += 1
@@ -903,7 +903,7 @@ class PlayerInventoryListener extends Listener {
         }
 
         //投票ptが足りない場合終了
-        if (playerdata.activeskilldata.effectpoint < playerdata.toggleVotingFairy * 2) {
+        if (playerdata.effectPoint < playerdata.toggleVotingFairy * 2) {
           player.sendMessage(GOLD.toString + "投票ptが足りません")
           player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat)
           return

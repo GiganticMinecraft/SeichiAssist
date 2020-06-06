@@ -19,7 +19,7 @@ public class VotingFairyListener implements Listener {
         HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
         UUID uuid = p.getUniqueId();
         PlayerData playerdata = playermap.apply(uuid);
-        Mana mana = playerdata.activeskilldata().mana;
+        Mana mana = playerdata.manaState();
 
         //召喚した時間を取り出す
         playerdata.votingFairyStartTime_$eq(new GregorianCalendar(
@@ -48,7 +48,7 @@ public class VotingFairyListener implements Listener {
         ));
 
         //投票ptを減らす
-        playerdata.activeskilldata().effectpoint -= playerdata.toggleVotingFairy() * 2;
+        playerdata.effectPoint_$eq(playerdata.effectPoint() - playerdata.toggleVotingFairy() * 2);
         //フラグ
         playerdata.usingVotingFairy_$eq(true);
 
@@ -92,7 +92,7 @@ public class VotingFairyListener implements Listener {
         HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
         UUID uuid = p.getUniqueId();
         PlayerData playerdata = playermap.apply(uuid);
-        Mana mana = playerdata.activeskilldata().mana;
+        Mana mana = playerdata.manaState();
 
         if (mana.getMana() == mana.getMax()) {        //マナが最大だった場合はメッセージを送信して終わり
             final List<String> msg = Arrays.asList(
