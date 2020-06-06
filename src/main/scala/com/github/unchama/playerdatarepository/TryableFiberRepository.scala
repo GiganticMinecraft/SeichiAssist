@@ -33,6 +33,19 @@ class TryableFiberRepository(implicit shift: ContextShift[IO]) extends PlayerDat
         // Fiberが完了していた <=> 新たなFiberをmutexへ入れた
       } yield (newFiber, !wasIncomplete)
     }
+
+  /**
+   * プレーヤーが
+   *  - 実行中のFiberを持っていればそれを止めtrueを返し
+   *  - そうでなければfalseを返す
+   * ようなIOを返す
+   */
+  def stopAnyFiber(p: Player): IO[Boolean] =
+    apply(p).lockAndModify { fiber =>
+      for {
+        wasIncomplete <- fiber.cancelIfIncomplete
+      } yield (TryableFiber.unit[IO], wasIncomplete)
+    }
 }
 
 object TryableFiberRepository {
