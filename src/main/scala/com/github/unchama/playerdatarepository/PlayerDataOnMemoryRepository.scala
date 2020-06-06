@@ -60,13 +60,12 @@ abstract class PlayerDataOnMemoryRepository[R] extends Listener {
     val player = event.getPlayer
     val uuid = player.getUniqueId
 
-    unloadData(player, state(uuid))
-      .unsafeRunAsync {
-        case Left(value) =>
-          value.printStackTrace()
-        case Right(_) => ()
-      }
+    // safe because player has been online
+    val storedValue = state.remove(uuid).get
 
-    state.remove(uuid)
+    unloadData(player, storedValue).unsafeRunAsync {
+      case Left(error) => error.printStackTrace()
+      case Right(_) => ()
+    }
   }
 }
