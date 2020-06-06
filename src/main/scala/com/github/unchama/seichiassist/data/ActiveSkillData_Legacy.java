@@ -1,15 +1,9 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.ActiveSkill;
-import com.github.unchama.seichiassist.MaterialSets;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect;
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffect;
-import com.github.unchama.seichiassist.task.AssaultTask;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashSet;
@@ -64,7 +58,6 @@ public class ActiveSkillData_Legacy {
     public BreakArea_Legacy assaultarea;
     //マナクラス
     public Mana mana;
-    private SeichiAssist plugin = SeichiAssist.instance();
 
     public ActiveSkillData_Legacy() {
         mineflagnum = 0;
@@ -167,107 +160,8 @@ public class ActiveSkillData_Legacy {
 
     }
 
-    public void RemoveAllTask() {
-        try {
-            assaulttask.cancel();
-        } catch (NullPointerException e) {
-        }
-    }
-
-    public void updateSkill(int type, int skilllevel, int mineflagnum) {
-        this.skilltype = type;
-        this.skillnum = skilllevel;
-        this.mineflagnum = mineflagnum;
-        //スキルが選択されていなければ終了
-        if (skilltype == 0) {
-            return;
-        }
-        //スキルフラグがオンの時の処理
-        if (mineflagnum != 0) {
-            this.area = new BreakArea_Legacy(type, skilllevel, mineflagnum, false);
-        }
-
-    }
-
-    public void updateAssaultSkill(Player player, int type, int skilllevel, int mineflagnum) {
-        this.assaulttype = type;
-        this.assaultnum = skilllevel;
-        this.mineflagnum = mineflagnum;
-
-        try {
-            this.assaulttask.cancel();
-        } catch (NullPointerException e) {
-        }
-        //スキルが選択されていなければ終了
-        if (assaulttype == 0) {
-            return;
-        }
-        if (mineflagnum != 0) {
-            //スキルフラグがオンの時の処理
-            this.assaultarea = new BreakArea_Legacy(type, skilllevel, mineflagnum, true);
-            this.assaultflag = true;
-
-            // オフハンドを取得
-            ItemStack offHandItem = player.getInventory().getItemInOffHand();
-
-            //場合分け
-            if (!MaterialSets.breakToolMaterials().contains(offHandItem.getType())) {
-                // サブハンドにツールを持っていないとき
-                player.sendMessage(ChatColor.GREEN + "使うツールをオフハンドにセット(fキー)してください");
-            } else if (offHandItem.getDurability() > offHandItem.getType().getMaxDurability() &&
-                    !offHandItem.getItemMeta().isUnbreakable()) {
-                //耐久値がマイナスかつ耐久無限ツールでない時
-                player.sendMessage(ChatColor.GREEN + "不正な耐久値です。");
-            } else {
-                this.assaulttask = new AssaultTask(player, offHandItem).runTaskTimer(plugin, 10, 10);
-            }
-        } else {
-            //オフの時の処理
-            this.assaultflag = false;
-        }
-    }
-
-    //スキル使用中の場合Taskを実行する
-    private void runTask(Player player) {
-
-        //アサルトスキルの実行
-        if (this.assaultflag && this.assaulttype != 0) {
-            this.updateAssaultSkill(player, this.assaulttype, this.assaultnum, this.mineflagnum);
-            String name = ActiveSkill.getActiveSkillName(this.assaulttype, this.assaultnum);
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "アサルトスキル:" + name + "  を選択しています。");
-            player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
-        }
-
-        //通常スキルの実行
-        if (this.skilltype != 0) {
-            this.updateSkill(this.skilltype, this.skillnum, this.mineflagnum);
-            String name = ActiveSkill.getActiveSkillName(this.skilltype, this.skillnum);
-            player.sendMessage(ChatColor.GREEN + "アクティブスキル:" + name + "  を選択しています。");
-            player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
-        }
-
-
-    }
-
-    public void clearSelection(Player player) {
-        this.skilltype = 0;
-        this.skillnum = 0;
-        this.mineflagnum = 0;
-        this.assaultnum = 0;
-        this.assaulttype = 0;
-        this.assaultflag = false;
-        try {
-            this.assaulttask.cancel();
-        } catch (NullPointerException e) {
-        }
-        player.sendMessage(ChatColor.GREEN + "全ての選択を削除しました。");
-        player.playSound(player.getLocation(), Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1, 0.1f);
-
-    }
-
     public void updateOnJoin(Player player, int level) {
         updateActiveSkillPoint(player, level);
-        runTask(player);
         mana.initialize(player, level);
     }
 

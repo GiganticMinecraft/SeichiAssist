@@ -521,8 +521,6 @@ class PlayerData(
 
     //クライアント経験値をサーバー保管
     saveTotalExp()
-
-    activeskilldata.RemoveAllTask()
   }
 
   //総プレイ時間を更新する
