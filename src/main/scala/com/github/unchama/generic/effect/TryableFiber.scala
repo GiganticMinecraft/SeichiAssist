@@ -2,6 +2,7 @@ package com.github.unchama.generic.effect
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{CancelToken, Concurrent, Fiber}
+import cats.{FlatMap, Monad}
 
 /**
  * We can think of a [[cats.effect.concurrent.Deferred]] as a "mutable" Promise to which
@@ -12,7 +13,7 @@ import cats.effect.{CancelToken, Concurrent, Fiber}
  * a [[Fiber]] which can tell its completion status. [[TryableFiber]] serves this purpose.
  */
 trait TryableFiber[F[_], A] extends Fiber[F, A] {
-  implicit val fConcurrent: Concurrent[F]
+  implicit val fFMap: FlatMap[F]
 
   /**
    * Obtains the current value of the `Fiber`, or None if it hasn't completed.
@@ -50,10 +51,21 @@ object TryableFiber {
       promise <- Deferred.tryable[F, A]
       fiber <- Concurrent[F].start(fa >>= promise.complete)
     } yield new TryableFiber[F, A] {
-      override implicit val fConcurrent: Concurrent[F] = Concurrent[F]
+      override implicit val fFMap: Concurrent[F] = Concurrent[F]
       override def tryJoin: F[Option[A]] = promise.tryGet
       override def cancel: CancelToken[F] = fiber.cancel
       override def join: F[A] = promise.get
     }
+  }
+
+  /**
+   * Creates a trivial value of TryableFiber which is always complete.
+   */
+  def unit[F[_]: Monad]: TryableFiber[F, Unit] = new TryableFiber[F, Unit] {
+    override implicit val fFMap: Monad[F] = Monad[F]
+
+    override def tryJoin: F[Option[Unit]] = fFMap.pure(Some(()))
+    override def cancel: CancelToken[F] = fFMap.unit
+    override def join: F[Unit] = fFMap.unit
   }
 }
