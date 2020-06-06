@@ -16,8 +16,7 @@ object PlayerSkillEffectState {
 case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
                             usageMode: SeichiSkillUsageMode,
                             activeSkill: Option[ActiveSkill],
-                            assaultSkill: Option[AssaultSkill],
-                            usingAssaultSkill: Boolean) {
+                            assaultSkill: Option[AssaultSkill]) {
   lazy val consumedActiveSkillPoint: Int =
     obtainedSkills.map(_.requiredActiveSkillPoint).sum
 

@@ -145,7 +145,7 @@ class PlayerJoinListener extends Listener {
       skillState.assaultSkill match {
         case Some(skill) if skillState.usageMode != Disabled =>
           p.sendMessage(s"$GOLD${skill.name}：OFF")
-          pd.skillState = skillState.copy(usingAssaultSkill = false)
+          // TODO actually turn off assault skill
           p.playSound(p.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
         case None =>
       }

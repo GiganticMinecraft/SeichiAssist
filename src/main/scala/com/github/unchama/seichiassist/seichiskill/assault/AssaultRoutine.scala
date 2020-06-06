@@ -149,15 +149,9 @@ object AssaultRoutine {
     for {
       currentLoc <- IO { player.getLocation }
       initialState = IterationState(currentLoc, 0)
-      _ <-
-        RepeatingRoutine.recMTask(initialState)(s =>
-          syncShift.shift >> IO(routineAction(s))
-        )(IO.pure(500.millis))
-      _ <- IO.cancelBoundary
-      _ <- IO {
-        val playerData = SeichiAssist.playermap(player.getUniqueId)
-        playerData.skillState = playerData.skillState.copy(usingAssaultSkill = false, usageMode = Disabled)
-      }
+      _ <- RepeatingRoutine.recMTask(initialState)(s =>
+        syncShift.shift >> IO(routineAction(s))
+      )(IO.pure(500.millis))
     } yield ()
   }
 }
