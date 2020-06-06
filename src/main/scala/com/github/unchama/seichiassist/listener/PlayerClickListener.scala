@@ -126,7 +126,7 @@ class PlayerClickListener extends Listener {
     if (!playerData.gachacooldownflag) return
 
     //連打による負荷防止の為クールダウン処理
-    new CoolDownTask(player, false, false, true).runTaskLater(plugin, 4)
+    new CoolDownTask(player, false, true).runTaskLater(plugin, 4)
 
     //オフハンドから実行された時処理を終了
     if (event.getHand == EquipmentSlot.OFF_HAND) return
@@ -317,6 +317,7 @@ class PlayerClickListener extends Listener {
             playerData.skillState = skillState.copy(usageMode = toggledMode)
             player.sendMessage(s"$GOLD${skill.name}：${toggledMode.modeString(skill)}")
             player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
+          case None =>
         }
       } else if (equipmentSlot == EquipmentSlot.OFF_HAND && hasToolInOffHand) {
         //オフハンドで指定ツールを持っていた時の処理
@@ -325,7 +326,7 @@ class PlayerClickListener extends Listener {
         event.setCancelled(true)
 
         skillState.assaultSkill match {
-          case Some(skill) =>
+          case Some(_) =>
             MaterialSets.refineItemStack(player.getInventory.getItemInOffHand, MaterialSets.breakToolMaterials) match {
               case Some(tool) =>
                 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext

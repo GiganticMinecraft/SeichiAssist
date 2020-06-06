@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seasonalevents.events.valentine.Valentine
+import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
@@ -345,7 +345,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(deferredEffect(IO {
           if (playerData.gachacooldownflag) {
-            new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
+            new CoolDownTask(player, false, true).runTaskLater(SeichiAssist.instance, 20)
 
             // NOTE: playerData.unclaimedApologyItemsは信頼できる値ではない
             // プレーヤーがログインしている最中に配布処理が行われた場合DB上の値とメモリ上の値に差分が出る。
@@ -450,7 +450,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect {
           if (playerData.gachacooldownflag) {
-            new CoolDownTask(player, false, false, true).runTaskLater(SeichiAssist.instance, 20)
+            new CoolDownTask(player, false, true).runTaskLater(SeichiAssist.instance, 20)
 
             val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
             val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)

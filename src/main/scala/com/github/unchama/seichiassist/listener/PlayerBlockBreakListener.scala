@@ -2,12 +2,13 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.{Fiber, IO}
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
-import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor.RED
@@ -194,21 +195,37 @@ class PlayerBlockBreakListener extends Listener {
           }.start(asyncShift)
         }
 
+        //壊したブロック数に応じてクールダウンを発生させる
+        val availabilityFlagManipulation = {
+          val brokenBlockNum = multiBreakList.map(_.size).sum
+          val coolDownTicks = selectedSkill.maxCoolDownTicks.getOrElse(0) * brokenBlockNum / totalBreakRangeVolume
+
+          if (coolDownTicks >= 5) {
+            val reference = SeichiAssist.instance.activeSkillAvailability(player)
+
+            for {
+              _ <- reference.set(false)
+              _ <- IO.timer(PluginExecutionContexts.sleepAndRoutineContext).sleep(coolDownTicks.ticks)
+              _ <- reference.set(true)
+              _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
+            } yield ()
+          } else IO.unit
+        }
+
+        // マナやツールの耐久値を減らす
+        val adjustManaAndDurability = IO {
+          manaState.decrease(manaConsumption, player, playerLevel)
+          if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
+        }
+
         com.github.unchama.seichiassist.unsafe.runIOAsync(
           "複数破壊エフェクトを実行する",
           effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
         )
-
-        //経験値を減らす
-        manaState.decrease(manaConsumption, player, playerLevel)
-
-        //耐久値を減らす
-        if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
-
-        //壊したブロック数に応じてクールダウンを発生させる
-        val brokenBlockNum = multiBreakList.map(_.size).sum
-        val coolDownTicks = selectedSkill.maxCoolDownTicks.getOrElse(0) * brokenBlockNum / totalBreakRangeVolume
-        if (coolDownTicks >= 5) new CoolDownTask(player, false, true, false).runTaskLater(plugin, coolDownTicks)
+        com.github.unchama.seichiassist.unsafe.runIOAsync(
+          "複数破壊エフェクトの後処理を実行する",
+          adjustManaAndDurability >> availabilityFlagManipulation.start
+        )
       }
     }
   }
