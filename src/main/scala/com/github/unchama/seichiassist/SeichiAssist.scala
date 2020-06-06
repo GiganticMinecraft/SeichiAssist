@@ -8,7 +8,7 @@ import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.menuinventory.MenuHandler
-import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRepository, PlayerDataOnMemoryRepository}
+import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
@@ -55,11 +55,13 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreate
   }
 
-  val activeSkillAvailability: PlayerDataOnMemoryRepository[Boolean] =
-    new NonPersistentPlayerDataRepository(true)
+  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[Boolean] =
+    new NonPersistentPlayerDataRefRepository(true)
 
-  val assaultSkillRoutines: PlayerDataOnMemoryRepository[Option[Fiber[IO, Unit]]] =
-    new NonPersistentPlayerDataRepository[Option[Fiber[IO, Unit]]](None)
+  val assaultSkillRoutines: TryableFiberRepository = {
+    import PluginExecutionContexts.asyncShift
+    new TryableFiberRepository()
+  }
 
   override def onEnable(): Unit = {
     val logger = getLogger
