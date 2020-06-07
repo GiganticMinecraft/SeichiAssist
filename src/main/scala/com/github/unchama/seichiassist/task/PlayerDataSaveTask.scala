@@ -98,9 +98,9 @@ object PlayerDataSaveTask {
 
       if (effectsObtained.nonEmpty) {
         stmt.executeUpdate {
-          val data = effectsObtained.map(e => s"($playerUuid, ${e.entryName})").mkString(",")
+          val data = effectsObtained.map(e => s"('$playerUuid', '${e.entryName}')").mkString(",")
 
-          s"insert ingore into seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) values $data"
+          s"insert into seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) values $data"
         }
       }
     }
@@ -115,9 +115,9 @@ object PlayerDataSaveTask {
 
       if (skillsObtained.nonEmpty) {
         stmt.executeUpdate {
-          val data = skillsObtained.map(e => s"($playerUuid, ${e.entryName})").mkString(",")
+          val data = skillsObtained.map(e => s"('$playerUuid', '${e.entryName}')").mkString(",")
 
-          s"insert ingore into seichiassist.unlocked_seichi_skill(player_uuid, skill_name) values $data"
+          s"insert into seichiassist.unlocked_seichi_skill(player_uuid, skill_name) values $data"
         }
       }
     }
