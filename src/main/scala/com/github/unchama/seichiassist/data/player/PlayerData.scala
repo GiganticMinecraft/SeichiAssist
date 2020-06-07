@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{ActiveSkillData_Legacy, GridTemplate, Mana}
+import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
@@ -195,25 +195,12 @@ class PlayerData(
   var LimitedLoginCount = 0
   var ChainVote = 0
 
-  //アクティブスキル関連データ
-  @deprecated val activeskilldata: ActiveSkillData_Legacy = new ActiveSkillData_Legacy()
-
   //region スキル関連のデータ
-
-  // スキルデータ
   var skillState: PlayerSkillState = PlayerSkillState.initial
-
-  // スキルエフェクトデータ
   var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
-
   val manaState: Mana = new Mana()
-
-  def totalActiveSkillPoint: Int =
-    (1 to level).map(i => Math.ceil(i.toDouble / 10.0).toInt).sum
-
   var effectPoint: Int = 0
   var premiumEffectPoint: Int = 0
-
   //endregion
 
   //二つ名解禁フラグ保存用

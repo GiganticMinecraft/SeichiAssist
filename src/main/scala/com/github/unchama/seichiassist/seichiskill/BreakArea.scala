@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.seichiskill
 
 import cats.effect.IO
 import com.github.unchama.generic.CachedFunction
-import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, BreakArea_Legacy, XYZTuple, syntax}
+import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple, syntax}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Active
 import com.github.unchama.seichiassist.util.BreakUtil
@@ -24,7 +24,7 @@ class BreakArea private (skill: SeichiSkill, usageIntention: SeichiSkillUsageMod
   val isAssaultSkill: Boolean = skill.range.isInstanceOf[AssaultSkillRange]
 
   private val breakAreaListFromDirection: String => List[AxisAlignedCuboid] = CachedFunction { dir: String =>
-    import BreakArea_Legacy.CoordinateManipulation._
+    import BreakArea.CoordinateManipulation._
     import syntax._
 
     val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
