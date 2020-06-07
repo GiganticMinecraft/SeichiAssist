@@ -77,7 +77,6 @@ object PlayerSkillState {
 
   object Migration {
     case class LegacyState(mineflagnum: Int,
-                           assaultflag: Boolean,
                            skilltype: Int,
                            skillnum: Int,
                            assaulttype: Int,

@@ -190,10 +190,11 @@ object PlayerDataLoading {
         playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
         playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
         playerData.skillEffectState = PlayerSkillEffectState(obtainedEffects, NoEffect)
+
+        // TODO assaultflagはもはや使用されていない状態なのでDBから削除すべき
         playerData.skillState = PlayerSkillState.Migration.fromLegacyState(
           PlayerSkillState.Migration.LegacyState(
             rs.getInt("activemineflagnum"),
-            rs.getBoolean("assaultflag"),
             rs.getInt("activeskilltype"),
             rs.getInt("activeskillnum"),
             rs.getInt("assaultskilltype"),

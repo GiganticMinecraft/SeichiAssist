@@ -154,7 +154,6 @@ object PlayerDataSaveTask {
           + ",minestackflag = " + playerdata.settings.autoMineStack
           + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
           + ",activemineflagnum = " + legacySkillState.mineflagnum
-          + ",assaultflag = " + legacySkillState.assaultflag
           + ",activeskilltype = " + legacySkillState.skilltype
           + ",activeskillnum = " + legacySkillState.skillnum
           + ",assaultskilltype = " + legacySkillState.assaulttype
