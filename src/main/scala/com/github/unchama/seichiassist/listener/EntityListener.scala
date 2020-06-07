@@ -66,7 +66,7 @@ class EntityListener extends Listener {
 
     val mana = playerData.manaState
 
-    val skillState = playerData.skillState
+    val skillState = playerData.skillState.get.unsafeRunSync()
     val selectedSkill = skillState.activeSkill.getOrElse(return)
     val activeSkillArea = BreakArea(selectedSkill, skillState.usageMode)
 

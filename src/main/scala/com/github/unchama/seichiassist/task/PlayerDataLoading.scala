@@ -205,7 +205,7 @@ object PlayerDataLoading {
         playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
 
         playerData.skillEffectState = PlayerSkillEffectState(obtainedEffects, NoEffect)
-        playerData.skillState =
+        playerData.skillState.set(
           PlayerSkillState.fromUnsafeConfiguration(
             obtainedSkills,
             SeichiSkillUsageMode.withValue(rs.getInt("serialized_usage_mode")),
@@ -218,6 +218,7 @@ object PlayerDataLoading {
               case _ => None
             }
           )
+        ).unsafeRunSync()
 
         playerData.gachapoint = rs.getInt("gachapoint")
         playerData.level = rs.getInt("level")

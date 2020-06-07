@@ -81,7 +81,7 @@ class PlayerBlockBreakListener extends Listener {
     if (player.getGameMode != GameMode.SURVIVAL || player.isFlying) return
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-    val skillState = playerData.skillState
+    val skillState = playerData.skillState.get.unsafeRunSync()
     val playerLevel = playerData.level
 
     //クールダウンタイム中は処理を終了

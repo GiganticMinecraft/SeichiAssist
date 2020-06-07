@@ -8,6 +8,7 @@ import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemSt
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerSkillState
 import com.github.unchama.seichiassist.data.{MenuInventoryData, XYZTuple}
 import com.github.unchama.seichiassist.effects.unfocused.{BroadcastMessageEffect, BroadcastSoundEffect}
@@ -33,7 +34,8 @@ object ActiveSkillMenu extends Menu {
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
-  private def skillStateRef(player: Player): IO[Ref[IO, PlayerSkillState]] = ???
+  private def skillStateRef(player: Player): IO[Ref[IO, PlayerSkillState]] =
+    IO { SeichiAssist.playermap(player.getUniqueId).skillState }
 
   // TODO inline
   // TODO この値は減少してはならないという制約を課す

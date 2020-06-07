@@ -52,7 +52,7 @@ class PlayerClickListener extends Listener {
     if (player.isSneaking || player.getGameMode != GameMode.SURVIVAL || player.isFlying) return
 
     val playerData = playerMap(player.getUniqueId)
-    val skillState = playerData.skillState
+    val skillState = playerData.skillState.get.unsafeRunSync()
 
     if (skillState.usageMode == Disabled) return
     if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
@@ -300,7 +300,7 @@ class PlayerClickListener extends Listener {
       if (action == Action.RIGHT_CLICK_BLOCK &&
         MaterialSets.cancelledMaterials.contains(event.getClickedBlock.getType)) return
 
-      val skillState = playerData.skillState
+      val skillState = playerData.skillState.get.unsafeRunSync()
 
       if (equipmentSlot == EquipmentSlot.HAND && hasToolInMainHand) {
         //メインハンドで指定ツールを持っていた時の処理
@@ -314,7 +314,7 @@ class PlayerClickListener extends Listener {
           case Some(skill) =>
             val toggledMode = skillState.usageMode.nextMode(skill)
 
-            playerData.skillState = skillState.copy(usageMode = toggledMode)
+            playerData.skillState.set(skillState.copy(usageMode = toggledMode)).unsafeRunSync()
             player.sendMessage(s"$GOLD${skill.name}：${toggledMode.modeString(skill)}")
             player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
           case None =>

@@ -143,7 +143,7 @@ class PlayerJoinListener extends Listener {
       }
 
       // アサルトスキルを切る
-      val skillState = pd.skillState
+      val skillState = pd.skillState.get.unsafeRunSync()
       if (skillState.usageMode != Disabled) {
         SeichiAssist.instance.assaultSkillRoutines.stopAnyFiber(p).flatMap(stopped =>
           if (stopped)

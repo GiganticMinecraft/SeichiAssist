@@ -105,7 +105,7 @@ object PlayerDataSaveTask {
 
     def updateSeichiSkillUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
-      val skillsObtained = playerdata.skillState.obtainedSkills
+      val skillsObtained = playerdata.skillState.get.unsafeRunSync().obtainedSkills
 
       stmt.executeUpdate {
         s"delete from seichiassist.unlocked_seichi_skill where player_uuid = '$playerUuid'"
@@ -124,6 +124,8 @@ object PlayerDataSaveTask {
       //実績のフラグ(BitSet)保存用変換処理
       val flagString = playerdata.TitleFlags.toBitMask.map(_.toHexString).mkString(",")
 
+      val skillState = playerdata.skillState.get.unsafeRunSync()
+
       val command = {
         ("update seichiassist.playerdata set"
           + " name = '" + playerdata.lowercaseName + "'"
@@ -132,15 +134,15 @@ object PlayerDataSaveTask {
           + ",minestackflag = " + playerdata.settings.autoMineStack
           + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
 
-          + ",serialized_usage_mode = " + playerdata.skillState.usageMode.value
+          + ",serialized_usage_mode = " + skillState.usageMode.value
           + ",selected_effect = " + {
             playerdata.skillEffectState.selection match {
               case effect: SerializableActiveSkillEffect => effect.entryName
               case ActiveSkillEffect.NoEffect => "null"
             }
           }
-          + ",selected_active_skill = " + playerdata.skillState.activeSkill.map(_.entryName).getOrElse("null")
-          + ",selected_assault_skill = " + playerdata.skillState.assaultSkill.map(_.entryName).getOrElse("null")
+          + ",selected_active_skill = " + skillState.activeSkill.map(_.entryName).getOrElse("null")
+          + ",selected_assault_skill = " + skillState.assaultSkill.map(_.entryName).getOrElse("null")
 
           + ",gachapoint = " + playerdata.gachapoint
           + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute

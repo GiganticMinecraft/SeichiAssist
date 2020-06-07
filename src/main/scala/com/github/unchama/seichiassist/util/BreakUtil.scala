@@ -7,8 +7,6 @@ import cats.effect.IO
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
@@ -422,7 +420,7 @@ object BreakUtil {
     // 2. 破壊要因判定
     /** 該当プレイヤーのPlayerData  */
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-    val skillState = playerData.skillState
+    val skillState = playerData.skillState.get.unsafeRunSync()
 
     /** 重力値の計算を始めるY座標  */
     val startY: Int =

@@ -26,9 +26,10 @@ object AssaultRoutine {
     val idleCountLimit = 20
 
     def routineAction(state: IterationState): Option[IterationState] = {
-      val assaultSkill = playerData.skillState.assaultSkill.getOrElse(return None)
+      val skillState = playerData.skillState.get.unsafeRunSync()
+      val assaultSkill = skillState.assaultSkill.getOrElse(return None)
 
-      if (playerData.skillState.usageMode == Disabled) return None
+      if (skillState.usageMode == Disabled) return None
 
       if (player.getGameMode != GameMode.SURVIVAL) {
         player.sendMessage(s"${GREEN}ゲームモードをサバイバルに変更してください。")
@@ -64,7 +65,7 @@ object AssaultRoutine {
       //最初に登録したツールと今のツールが違う場合
       if (toolToBeUsed != player.getInventory.getItemInOffHand) return None
 
-      val skillArea = BreakArea(assaultSkill, playerData.skillState.usageMode)
+      val skillArea = BreakArea(assaultSkill, skillState.usageMode)
       val breakArea = skillArea.makeBreakArea(player).unsafeRunSync().head
 
       val breakLength = skillArea.breakLength

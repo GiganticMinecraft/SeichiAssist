@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.{GregorianCalendar, UUID}
 
 import cats.effect.IO
+import cats.effect.concurrent.Ref
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
@@ -196,7 +197,7 @@ class PlayerData(
   var ChainVote = 0
 
   //region スキル関連のデータ
-  var skillState: PlayerSkillState = PlayerSkillState.initial
+  var skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
   var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
   val manaState: Mana = new Mana()
   var effectPoint: Int = 0
