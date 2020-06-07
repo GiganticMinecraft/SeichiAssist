@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.task
 
 import java.sql.{SQLException, Statement}
 
-import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
+import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData, PlayerSkillState}
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
@@ -142,6 +142,8 @@ object PlayerDataSaveTask {
       //実績のフラグ(BitSet)保存用変換処理
       val flagString = playerdata.TitleFlags.toBitMask.map(_.toHexString).mkString(",")
 
+      val legacySkillState = PlayerSkillState.Migration.toLegacyState(playerdata.skillState)
+
       val command = {
         ("update seichiassist.playerdata set"
           //名前更新処理
@@ -151,19 +153,19 @@ object PlayerDataSaveTask {
           + ",effectflag = " + playerdata.settings.fastDiggingEffectSuppression.serialized().unsafeRunSync()
           + ",minestackflag = " + playerdata.settings.autoMineStack
           + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
-          + ",activemineflagnum = " + playerdata.activeskilldata.mineflagnum
-          + ",assaultflag = " + playerdata.activeskilldata.assaultflag
-          + ",activeskilltype = " + playerdata.activeskilldata.skilltype
-          + ",activeskillnum = " + playerdata.activeskilldata.skillnum
-          + ",assaultskilltype = " + playerdata.activeskilldata.assaulttype
-          + ",assaultskillnum = " + playerdata.activeskilldata.assaultnum
-          + ",arrowskill = " + playerdata.activeskilldata.arrowskill
-          + ",multiskill = " + playerdata.activeskilldata.multiskill
-          + ",breakskill = " + playerdata.activeskilldata.breakskill
-          + ",fluidcondenskill = " + playerdata.activeskilldata.fluidcondenskill
-          + ",watercondenskill = " + playerdata.activeskilldata.watercondenskill
-          + ",lavacondenskill = " + playerdata.activeskilldata.lavacondenskill
-          + ",effectnum = " + playerdata.activeskilldata.effectnum
+          + ",activemineflagnum = " + legacySkillState.mineflagnum
+          + ",assaultflag = " + legacySkillState.assaultflag
+          + ",activeskilltype = " + legacySkillState.skilltype
+          + ",activeskillnum = " + legacySkillState.skillnum
+          + ",assaultskilltype = " + legacySkillState.assaulttype
+          + ",assaultskillnum = " + legacySkillState.assaultnum
+          + ",arrowskill = " + legacySkillState.arrowskill
+          + ",multiskill = " + legacySkillState.multiskill
+          + ",breakskill = " + legacySkillState.breakskill
+          + ",fluidcondenskill = " + legacySkillState.fluidcondenskill
+          + ",watercondenskill = " + legacySkillState.watercondenskill
+          + ",lavacondenskill = " + legacySkillState.lavacondenskill
+          + ",effectnum = " + legacySkillState.effectnum
           + ",gachapoint = " + playerdata.gachapoint
           + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
           + ",level = " + playerdata.level

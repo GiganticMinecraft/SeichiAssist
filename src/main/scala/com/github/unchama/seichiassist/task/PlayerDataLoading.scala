@@ -190,22 +190,23 @@ object PlayerDataLoading {
         playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
         playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
         playerData.skillEffectState = PlayerSkillEffectState(obtainedEffects, NoEffect)
-        playerData.activeskilldata.modify { d =>
-          import d._
-          mineflagnum = rs.getInt("activemineflagnum")
-          assaultflag = rs.getBoolean("assaultflag")
-          skilltype = rs.getInt("activeskilltype")
-          skillnum = rs.getInt("activeskillnum")
-          assaulttype = rs.getInt("assaultskilltype")
-          assaultnum = rs.getInt("assaultskillnum")
-          arrowskill = rs.getInt("arrowskill")
-          multiskill = rs.getInt("multiskill")
-          breakskill = rs.getInt("breakskill")
-          fluidcondenskill = rs.getInt("fluidcondenskill")
-          watercondenskill = rs.getInt("watercondenskill")
-          lavacondenskill = rs.getInt("lavacondenskill")
-          effectnum = rs.getInt("effectnum")
-        }
+        playerData.skillState = PlayerSkillState.Migration.fromLegacyState(
+          PlayerSkillState.Migration.LegacyState(
+            rs.getInt("activemineflagnum"),
+            rs.getBoolean("assaultflag"),
+            rs.getInt("activeskilltype"),
+            rs.getInt("activeskillnum"),
+            rs.getInt("assaultskilltype"),
+            rs.getInt("assaultskillnum"),
+            rs.getInt("arrowskill"),
+            rs.getInt("multiskill"),
+            rs.getInt("breakskill"),
+            rs.getInt("fluidcondenskill"),
+            rs.getInt("watercondenskill"),
+            rs.getInt("lavacondenskill"),
+            rs.getInt("effectnum")
+          )
+        )
 
         playerData.gachapoint = rs.getInt("gachapoint")
         playerData.settings.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
