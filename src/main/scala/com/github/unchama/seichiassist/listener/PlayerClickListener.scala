@@ -75,7 +75,7 @@ class PlayerClickListener extends Listener {
 
     if (MaterialSets.breakToolMaterials.contains(event.getMaterial)) {
       skillState.activeSkill match {
-        case Some(ActiveSkill(_, RemoteArea(_), coolDownOption, _, _)) =>
+        case Some(ActiveSkill(_, _, RemoteArea(_), coolDownOption, _, _)) =>
           import cats.implicits._
           import com.github.unchama.concurrent.syntax._
 
