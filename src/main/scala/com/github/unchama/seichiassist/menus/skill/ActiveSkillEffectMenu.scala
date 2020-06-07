@@ -30,6 +30,7 @@ object ActiveSkillEffectMenu extends Menu {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     IO {
+      s"${GREEN}エフェクト：${effect.nameOnUI} が選択されました".asMessageEffect()
       playerData.skillEffectState = playerData.skillEffectState.copy(selection = effect)
     }
   }
@@ -131,7 +132,7 @@ object ActiveSkillEffectMenu extends Menu {
             .lore(List(
               s"$RESET$GREEN${effect.explanation}",
               s"$RESET${YELLOW}必要$kindOfPointToUse：${effect.usePoint}",
-              s"${}"
+              s"$RESET$AQUA${UNDERLINE}クリックで解除"
             ))
             .build()
         }
@@ -179,7 +180,6 @@ object ActiveSkillEffectMenu extends Menu {
           LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1f),
             Kleisli(setEffectSelectionTo(NoEffect)),
-            s"${GREEN}エフェクト：未設定　が選択されました".asMessageEffect()
           )
         )
       }
