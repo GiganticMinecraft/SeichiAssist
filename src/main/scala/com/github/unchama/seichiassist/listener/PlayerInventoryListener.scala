@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
+import com.github.unchama.seichiassist.menus.skill.ActiveSkillEffectMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
@@ -382,9 +383,15 @@ class PlayerInventoryListener extends Listener {
 			 */
       //ページ変更処理
       if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
-        //開く音を再生
-        player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1.toFloat)
-        player.openInventory(MenuInventoryData.getActiveSkillEffectMenuData(player))
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
+        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+          sequentialEffect(
+            CommonSoundEffects.menuTransitionFenceSound,
+            ActiveSkillEffectMenu.open
+          ),
+          "アクティブスキルエフェクトメニューを開く"
+        )
       }
     }
   }
