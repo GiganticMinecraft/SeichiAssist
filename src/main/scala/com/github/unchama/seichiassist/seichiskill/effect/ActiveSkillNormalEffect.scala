@@ -18,13 +18,11 @@ import org.bukkit.entity.Player
 
 import scala.util.Random
 
-sealed abstract class ActiveSkillNormalEffect(val num: Int,
-                                              val nameOnDatabase: String,
-                                              val nameOnUI: String,
+sealed abstract class ActiveSkillNormalEffect(val nameOnUI: String,
                                               val explanation: String,
                                               val usePoint: Int,
                                               val material: Material)
-  extends EnumEntry with SerializableActiveSkillEffect {
+  extends SerializableActiveSkillEffect {
 
   override def runBreakEffect(player: Player,
                               usedSkill: ActiveSkill,
@@ -141,18 +139,8 @@ object ActiveSkillNormalEffect extends Enum[ActiveSkillNormalEffect] {
    */
   @Deprecated() val arrayValues: Array[ActiveSkillNormalEffect] = values.toArray
 
-  def getNameByNum(effectNum: Int): String = ActiveSkillNormalEffect.values
-    .filter(_.isInstanceOf[ActiveSkillNormalEffect])
-    .find(activeSkillEffect => activeSkillEffect.num == effectNum)
-    .map(_.nameOnUI)
-    .getOrElse("未設定")
-
-  def fromSqlName(sqlName: String): Option[ActiveSkillNormalEffect] = ActiveSkillNormalEffect.values.find(_.nameOnDatabase == sqlName)
-
-  case object Explosion extends ActiveSkillNormalEffect(1, s"ef_explosion", s"${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
-
-  case object Blizzard extends ActiveSkillNormalEffect(2, s"ef_blizzard", s"${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
-
-  case object Meteo extends ActiveSkillNormalEffect(3, s"ef_meteo", s"${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
+  case object Explosion extends ActiveSkillNormalEffect(s"${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
+  case object Blizzard extends ActiveSkillNormalEffect(s"${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
+  case object Meteo extends ActiveSkillNormalEffect(s"${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
 
 }

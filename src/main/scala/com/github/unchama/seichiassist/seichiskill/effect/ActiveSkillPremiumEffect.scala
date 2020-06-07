@@ -19,15 +19,11 @@ import org.bukkit.material.Wool
 
 import scala.util.Random
 
-sealed abstract class ActiveSkillPremiumEffect(val num: Int,
-                                               val nameOnDatabase: String,
-                                               val nameOnUI: String,
+sealed abstract class ActiveSkillPremiumEffect(val nameOnUI: String,
                                                val explanation: String,
                                                val usePoint: Int,
                                                val material: Material)
-  extends EnumEntry with SerializableActiveSkillEffect {
-  @Deprecated
-  def getsqlName: String = this.nameOnDatabase
+  extends SerializableActiveSkillEffect {
 
   def runBreakEffect(player: Player,
                      usedSkill: ActiveSkill,
@@ -106,7 +102,5 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
   @Deprecated()
   val arrayValues: Array[ActiveSkillPremiumEffect] = values.toArray
 
-  def fromSqlName(sqlName: String): Option[ActiveSkillPremiumEffect] = values.find(sqlName == _.nameOnDatabase)
-
-  case object MAGIC extends ActiveSkillPremiumEffect(1, "ef_magic", s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10, Material.RED_ROSE)
+  case object MAGIC extends ActiveSkillPremiumEffect(s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10, Material.RED_ROSE)
 }

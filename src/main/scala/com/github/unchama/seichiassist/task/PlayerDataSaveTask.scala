@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.task
 import java.sql.{SQLException, Statement}
 
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData, PlayerSkillState}
-import com.github.unchama.seichiassist.database.DatabaseConstants
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, SerializableActiveSkillEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
@@ -90,20 +90,32 @@ object PlayerDataSaveTask {
 
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
-
       val effectsObtained = playerdata.skillEffectState.obtainedEffects
 
-      val removeCommand = {
-       s"delete from seichiassist.unlocked_active_skill_effect where player_uuid = '$playerUuid'"
+      stmt.executeUpdate {
+        s"delete from seichiassist.unlocked_active_skill_effect where player_uuid = '$playerUuid'"
       }
-      val insertCommand = {
-        val base = s"insert ingore into seichiassist.${DatabaseConstants.SKILL_EFFECT_TABLENAME} values"
-        val data = effectsObtained.map(e => s"($playerUuid, ${e.nameOnDatabase}").mkString(",")
 
-        s"$base $data"
+      stmt.executeUpdate {
+        val data = effectsObtained.map(e => s"($playerUuid, ${e.entryName}").mkString(",")
+
+        s"insert ingore into seichiassist.unlocked_active_skill_effect values $data"
       }
-      stmt.executeUpdate(removeCommand)
-      stmt.executeUpdate(insertCommand)
+    }
+
+    def updateSeichiSkillUnlockState(stmt: Statement): Unit = {
+      val playerUuid = playerdata.uuid.toString
+      val skillsObtained = playerdata.skillState.obtainedSkills
+
+      stmt.executeUpdate {
+        s"delete from seichiassist.unlocked_seichi_skill where player_uuid = '$playerUuid'"
+      }
+
+      stmt.executeUpdate {
+        val data = skillsObtained.map(e => s"($playerUuid, ${e.entryName}").mkString(",")
+
+        s"insert ingore into seichiassist.unlocked_seichi_skill values $data"
+      }
     }
 
     def updatePlayerDataColumns(stmt: Statement): Unit = {
@@ -116,25 +128,28 @@ object PlayerDataSaveTask {
 
       val command = {
         ("update seichiassist.playerdata set"
-          //名前更新処理
           + " name = '" + playerdata.lowercaseName + "'"
 
-          //各種数値更新処理
           + ",effectflag = " + playerdata.settings.fastDiggingEffectSuppression.serialized().unsafeRunSync()
           + ",minestackflag = " + playerdata.settings.autoMineStack
           + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
-          + ",activemineflagnum = " + legacySkillState.mineflagnum
-          + ",activeskilltype = " + legacySkillState.skilltype
-          + ",activeskillnum = " + legacySkillState.skillnum
-          + ",assaultskilltype = " + legacySkillState.assaulttype
-          + ",assaultskillnum = " + legacySkillState.assaultnum
+
+          + ",serialized_usage_mode = " + playerdata.skillState.usageMode.value
+          + ",selected_effect = " + {
+            playerdata.skillEffectState.selection match {
+              case effect: SerializableActiveSkillEffect => effect.entryName
+              case ActiveSkillEffect.NoEffect => "null"
+            }
+          }
+          + ",selected_active_skill = " + playerdata.skillState.activeSkill.map(_.entryName).getOrElse("null")
+          + ",selected_assault_skill = " + playerdata.skillState.assaultSkill.map(_.entryName).getOrElse("null")
+
           + ",arrowskill = " + legacySkillState.arrowskill
           + ",multiskill = " + legacySkillState.multiskill
           + ",breakskill = " + legacySkillState.breakskill
           + ",fluidcondenskill = " + legacySkillState.fluidcondenskill
           + ",watercondenskill = " + legacySkillState.watercondenskill
           + ",lavacondenskill = " + legacySkillState.lavacondenskill
-          + ",effectnum = " + legacySkillState.effectnum
           + ",gachapoint = " + playerdata.gachapoint
           + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
           + ",level = " + playerdata.level
@@ -220,6 +235,7 @@ object PlayerDataSaveTask {
         //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
         val localStatement = databaseGateway.con.createStatement()
         updateActiveSkillEffectUnlockState(localStatement)
+        updateSeichiSkillUnlockState(localStatement)
         updatePlayerDataColumns(localStatement)
         updatePlayerMineStack(localStatement)
         updateGridTemplate(localStatement)

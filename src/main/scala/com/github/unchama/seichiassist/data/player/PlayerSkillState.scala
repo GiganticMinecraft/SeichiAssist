@@ -75,6 +75,19 @@ object PlayerSkillState {
       assaultSkill = None
     )
 
+  def fromUnsafeConfiguration(obtainedSkills: Set[SeichiSkill],
+                              usageMode: SeichiSkillUsageMode,
+                              activeSkill: Option[ActiveSkill],
+                              assaultSkill: Option[AssaultSkill]): PlayerSkillState = {
+    def notObtained(skill: SeichiSkill): Boolean = !obtainedSkills.contains(skill)
+
+    val selections = Seq(activeSkill, assaultSkill).flatten
+    if (selections.exists(notObtained))
+      initial
+    else
+      PlayerSkillState(obtainedSkills, usageMode, activeSkill, assaultSkill)
+  }
+
   object Migration {
     case class LegacyState(mineflagnum: Int,
                            skilltype: Int,
