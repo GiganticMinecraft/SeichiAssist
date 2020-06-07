@@ -19,6 +19,7 @@ import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
 object ActiveSkillEffectMenu extends Menu {
+  import cats.implicits._
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import com.github.unchama.targetedeffect._
@@ -29,16 +30,13 @@ object ActiveSkillEffectMenu extends Menu {
   def setEffectSelectionTo(effect: ActiveSkillEffect)(player: Player): IO[Unit] = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
-    IO {
-      s"${GREEN}エフェクト：${effect.nameOnUI} が選択されました".asMessageEffect()
+    s"${GREEN}エフェクト：${effect.nameOnUI} が選択されました".asMessageEffect()(player) >> IO {
       playerData.skillEffectState = playerData.skillEffectState.copy(selection = effect)
     }
   }
 
   def unlockOrSet(effect: ActiveSkillEffect): TargetedEffect[Player] = Kleisli { player =>
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-
-    import cats.implicits._
 
     def unlockNormalEffect(effect: ActiveSkillNormalEffect): IO[Unit] =
       for {
@@ -175,7 +173,7 @@ object ActiveSkillEffectMenu extends Menu {
         Button(
           new IconItemStackBuilder(Material.GLASS)
             .title(s"$UNDERLINE$BOLD${YELLOW}エフェクトを使用しない")
-            .lore("クリックでセット")
+            .lore(s"$RESET$DARK_RED${UNDERLINE}クリックでセット")
             .build(),
           LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1f),
@@ -189,7 +187,7 @@ object ActiveSkillEffectMenu extends Menu {
         new IconItemStackBuilder(Material.BOOKSHELF)
           .title(s"$UNDERLINE$BOLD${BLUE}プレミアムエフェクト購入履歴")
           .lore(
-            s"$RESET$UNDERLINE${DARK_RED}クリックで閲覧",
+            s"$RESET$DARK_RED${UNDERLINE}クリックで閲覧",
           )
           .build(),
         LeftClickButtonEffect(
