@@ -9,14 +9,13 @@ import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftCl
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.data.player.PlayerSkillState
-import com.github.unchama.seichiassist.data.{MenuInventoryData, XYZTuple}
 import com.github.unchama.seichiassist.effects.unfocused.{BroadcastMessageEffect, BroadcastSoundEffect}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
-import com.github.unchama.targetedeffect.{computedEffect, emptyEffect, sequentialEffect}
+import com.github.unchama.targetedeffect.{emptyEffect, sequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionType
@@ -385,8 +384,7 @@ object ActiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5.toFloat),
-          // TODO メニューに置き換える
-          computedEffect(p => openInventoryEffect(MenuInventoryData.getActiveSkillEffectMenuData(p)))
+          ActiveSkillEffectMenu.open
         )
       )
     }

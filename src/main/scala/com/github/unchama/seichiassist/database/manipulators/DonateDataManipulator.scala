@@ -69,7 +69,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
           inventory.setItem(count, itemStack)
         } else if (usePoint > 0) {
           val effect = ActiveSkillPremiumEffect.withName(lrs.getString("effectname"))
-          val itemStack = new ItemStack(effect.material)
+          val itemStack = new ItemStack(effect.materialOnUI)
 
           val lore = List(
             s"$RESET${GOLD}プレミアムエフェクトポイント： -$usePoint",

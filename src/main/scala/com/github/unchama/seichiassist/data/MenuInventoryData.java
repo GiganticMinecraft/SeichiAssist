@@ -454,7 +454,7 @@ public final class MenuInventoryData {
                 //プレイヤーがそのスキルを取得している場合の処理
                 if (playerdata.skillEffectState().obtainedEffects().contains(elem)) {
                     itemstack = build(
-                            elem.material(),
+                            elem.materialOnUI(),
                             elem.nameOnUI(),
                             Arrays.asList(
                                     ChatColor.RESET + "" + ChatColor.GREEN + elem.explanation(),
@@ -486,7 +486,7 @@ public final class MenuInventoryData {
                 final ItemStack itemstack;
                 if (playerdata.skillEffectState().obtainedEffects().contains(effect)) {
                     itemstack = build(
-                            effect.material(),
+                            effect.materialOnUI(),
                             ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(effect.nameOnUI()),
                             Arrays.asList(
                                     ChatColor.RESET + "" + ChatColor.GREEN + effect.explanation(),

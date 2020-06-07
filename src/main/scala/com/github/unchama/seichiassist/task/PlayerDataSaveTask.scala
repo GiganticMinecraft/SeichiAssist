@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.task
 import java.sql.{SQLException, Statement}
 
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
-import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, SerializableActiveSkillEffect}
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, UnlockableActiveSkillEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
@@ -141,7 +141,7 @@ object PlayerDataSaveTask {
           + ",serialized_usage_mode = " + skillState.usageMode.value
           + ",selected_effect = " + {
             playerdata.skillEffectState.selection match {
-              case effect: SerializableActiveSkillEffect => s"'${effect.entryName}'"
+              case effect: UnlockableActiveSkillEffect => s"'${effect.entryName}'"
               case ActiveSkillEffect.NoEffect => "null"
             }
           }

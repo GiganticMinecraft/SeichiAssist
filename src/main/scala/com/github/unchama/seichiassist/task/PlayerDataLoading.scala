@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSetti
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
-import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect, SerializableActiveSkillEffect}
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
 import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, AssaultSkill, SeichiSkill, SeichiSkillUsageMode}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
@@ -141,7 +141,7 @@ object PlayerDataLoading {
       }
     }
 
-    def loadSkillEffectUnlockState(stmt: Statement): Set[SerializableActiveSkillEffect] = {
+    def loadSkillEffectUnlockState(stmt: Statement): Set[UnlockableActiveSkillEffect] = {
       val unlockedSkillEffectQuery =
         s"select effect_name from $db.${DatabaseConstants.SKILL_EFFECT_TABLENAME} where player_uuid = '$stringUuid'"
 
