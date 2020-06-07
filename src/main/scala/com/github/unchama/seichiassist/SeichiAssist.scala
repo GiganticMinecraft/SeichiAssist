@@ -153,7 +153,8 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     val repositories = Seq(
-      activeSkillAvailability
+      activeSkillAvailability,
+      assaultSkillRoutines
     )
 
     import PluginExecutionContexts.asyncShift

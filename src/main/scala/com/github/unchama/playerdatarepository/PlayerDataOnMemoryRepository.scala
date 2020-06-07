@@ -43,11 +43,10 @@ abstract class PlayerDataOnMemoryRepository[R] extends Listener {
   /**
    * ログイン中の [[Player]] に対して関連付けられた [[R]] を取得する。
    */
-  def apply(player: Player): R = state(player.getUniqueId)
+  final def apply(player: Player): R = state(player.getUniqueId)
 
-  @EventHandler def onPlayerJoin(event: AsyncPlayerPreLoginEvent): Unit = {
-    loadData(event.getName, event.getUniqueId)
-      .unsafeRunSync() match {
+  @EventHandler final def onPlayerJoin(event: AsyncPlayerPreLoginEvent): Unit = {
+    loadData(event.getName, event.getUniqueId).unsafeRunSync() match {
       case Left(errorMessageOption) =>
         errorMessageOption.foreach(event.setKickMessage)
         event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
@@ -56,7 +55,7 @@ abstract class PlayerDataOnMemoryRepository[R] extends Listener {
     }
   }
 
-  @EventHandler def onPlayerLeave(event: PlayerQuitEvent): Unit = {
+  @EventHandler final def onPlayerLeave(event: PlayerQuitEvent): Unit = {
     val player = event.getPlayer
     val uuid = player.getUniqueId
 
