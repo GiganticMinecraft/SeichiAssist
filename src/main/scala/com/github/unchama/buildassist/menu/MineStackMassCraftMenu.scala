@@ -6,7 +6,7 @@ import java.util.Locale
 import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
-import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder, SkullOwnerReference}
+import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
@@ -43,10 +43,10 @@ object MineStackMassCraftMenu {
      * プレーヤーが`requiredBuildLevel`に達していない場合にこのボタンを押すと、
      * クラフトは実行されず適切なメッセージがプレーヤーに通達される。
      *
-     * @param requiredBuildLevel レシピの実行に必要な建築レベル
+     * @param requiredMassCraftLevel レシピの実行に必要なクラフトレベル
      * @param menuPageNumber このボタンが表示される一括クラフト画面のページ番号
      */
-    def computeButton(player: Player, requiredBuildLevel: Int, menuPageNumber: Int): IO[Button] = {
+    def computeButton(player: Player, requiredMassCraftLevel: Int, menuPageNumber: Int): IO[Button] = {
       import cats.implicits._
 
       def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
@@ -58,6 +58,8 @@ object MineStackMassCraftMenu {
 
       def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObj, Int)]): String =
         chunks.map { case (obj, amount) => s"${obj.uiName.get}${amount}個" }.mkString_("+")
+
+      val requiredBuildLevel = BuildAssist.config.getMinestackBlockCraftlevel(requiredMassCraftLevel)
 
       val ingredientObjects = ingredients.map(toMineStackObjectChunk)
       val productObjects = products.map(toMineStackObjectChunk)
@@ -86,21 +88,30 @@ object MineStackMassCraftMenu {
                 }
               }
         } yield {
-          new IconItemStackBuilder(productObjects.head._1.itemStack.getType)
-            .title(title)
-            .lore(
-              List(
-                List(loreHeading),
-                possessionDisplayBlock,
-                List(
-                  s"$RESET${GRAY}建築LV${requiredBuildLevel}以上で利用可能",
-                  s"$RESET$DARK_RED${UNDERLINE}クリックで変換"
-                )
-              ).flatten
+          val lore = List(
+            List(loreHeading),
+            possessionDisplayBlock,
+            List(
+              s"$RESET${GRAY}建築LV${requiredBuildLevel}以上で利用可能",
+              s"$RESET$DARK_RED${UNDERLINE}クリックで変換"
             )
-            // 対数オーダーをアイコンのスタック数にする
-            .amount(products.head._2.toString.length)
-            .build()
+          ).flatten
+
+          // MineStackObjectから直接メタ等のスタック情報を受け継ぐべきなのでビルダを使わずメタを直接書き換える
+          val productStack = productObjects.head._1.itemStack.clone()
+
+          productStack.setItemMeta {
+            import scala.jdk.javaapi.CollectionConverters.asJava
+
+            val meta = productStack.getItemMeta
+            meta.setDisplayName(title)
+            meta.setLore(asJava(lore))
+            meta
+          }
+
+          // 対数オーダーをアイコンのスタック数にする
+          productStack.setAmount(products.head._2.toString.length)
+          productStack
         }
 
       }
@@ -115,7 +126,7 @@ object MineStackMassCraftMenu {
             mineStack = seichiAssistPlayerData.minestack
 
             _ <-
-              if (buildAssistPlayerData.level < BuildAssist.config.getMinestackBlockCraftlevel(requiredBuildLevel)) {
+              if (buildAssistPlayerData.level < requiredBuildLevel) {
                 s"${RED}建築レベルが足りません".asMessageEffect()(player)
               } else {
                 syncShift.shift >> {
