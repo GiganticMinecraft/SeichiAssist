@@ -141,12 +141,12 @@ object PlayerDataSaveTask {
           + ",serialized_usage_mode = " + skillState.usageMode.value
           + ",selected_effect = " + {
             playerdata.skillEffectState.selection match {
-              case effect: SerializableActiveSkillEffect => effect.entryName
+              case effect: SerializableActiveSkillEffect => s"'${effect.entryName}'"
               case ActiveSkillEffect.NoEffect => "null"
             }
           }
-          + ",selected_active_skill = " + skillState.activeSkill.map(_.entryName).getOrElse("null")
-          + ",selected_assault_skill = " + skillState.assaultSkill.map(_.entryName).getOrElse("null")
+          + ",selected_active_skill = " + skillState.activeSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
+          + ",selected_assault_skill = " + skillState.assaultSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
 
           + ",gachapoint = " + playerdata.gachapoint
           + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
