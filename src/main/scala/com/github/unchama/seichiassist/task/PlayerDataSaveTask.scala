@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.task
 
 import java.sql.{SQLException, Statement}
 
-import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData, PlayerSkillState}
+import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, SerializableActiveSkillEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
@@ -124,8 +124,6 @@ object PlayerDataSaveTask {
       //実績のフラグ(BitSet)保存用変換処理
       val flagString = playerdata.TitleFlags.toBitMask.map(_.toHexString).mkString(",")
 
-      val legacySkillState = PlayerSkillState.Migration.toLegacyState(playerdata.skillState)
-
       val command = {
         ("update seichiassist.playerdata set"
           + " name = '" + playerdata.lowercaseName + "'"
@@ -144,12 +142,6 @@ object PlayerDataSaveTask {
           + ",selected_active_skill = " + playerdata.skillState.activeSkill.map(_.entryName).getOrElse("null")
           + ",selected_assault_skill = " + playerdata.skillState.assaultSkill.map(_.entryName).getOrElse("null")
 
-          + ",arrowskill = " + legacySkillState.arrowskill
-          + ",multiskill = " + legacySkillState.multiskill
-          + ",breakskill = " + legacySkillState.breakskill
-          + ",fluidcondenskill = " + legacySkillState.fluidcondenskill
-          + ",watercondenskill = " + legacySkillState.watercondenskill
-          + ",lavacondenskill = " + legacySkillState.lavacondenskill
           + ",gachapoint = " + playerdata.gachapoint
           + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
           + ",level = " + playerdata.level

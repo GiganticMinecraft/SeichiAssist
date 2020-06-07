@@ -87,27 +87,4 @@ object PlayerSkillState {
     else
       PlayerSkillState(obtainedSkills, usageMode, activeSkill, assaultSkill)
   }
-
-  object Migration {
-    case class LegacyState(mineflagnum: Int,
-                           skilltype: Int,
-                           skillnum: Int,
-                           assaulttype: Int,
-                           assaultnum: Int,
-                           arrowskill: Int,
-                           multiskill: Int,
-                           breakskill: Int,
-                           fluidcondenskill: Int,
-                           watercondenskill: Int,
-                           lavacondenskill: Int,
-                           effectnum: Int)
-
-    def fromLegacyState(legacyState: LegacyState): PlayerSkillState = {
-      ???
-    }
-
-    def toLegacyState(state: PlayerSkillState): LegacyState = {
-      ???
-    }
-  }
 }
