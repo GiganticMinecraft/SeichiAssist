@@ -140,32 +140,19 @@ object PlayerDataLoading {
       }
     }
 
-    def loadSkillEffectUnlockState(stmt: Statement): Set[ActiveSkillNormalEffect] = {
+    def loadSkillEffectUnlockState(stmt: Statement): Set[ActiveSkillEffect] = {
       val unlockedSkillEffectQuery =
         s"select effect_name from $db.${DatabaseConstants.SKILL_EFFECT_TABLENAME} where player_uuid = '$stringUuid'"
 
       stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
         val effectName = resultSet.getString("effect_name")
+        val effect =
+          ActiveSkillNormalEffect.fromSqlName(effectName)
+            .orElse(ActiveSkillPremiumEffect.fromSqlName(effectName))
 
-        ActiveSkillNormalEffect.fromSqlName(effectName) match {
+        effect match {
           case None =>
             Bukkit.getLogger.warning(s"${stringUuid}所有のスキルエフェクト${effectName}は未定義です")
-            None
-          case Some(e) => Some(e)
-        }
-      }.flatten.toSet
-    }
-
-    def loadSkillPremiumEffectUnlockState(stmt: Statement): Set[ActiveSkillPremiumEffect] = {
-      val unlockedSkillEffectQuery =
-        s"select effect_name from $db.${DatabaseConstants.SKILL_PREMIUM_EFFECT_TABLENAME} where player_uuid = '$stringUuid'"
-
-      stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
-        val effectName = resultSet.getString("effect_name")
-
-        ActiveSkillPremiumEffect.fromSqlName(effectName) match {
-          case None =>
-            Bukkit.getLogger.warning(s"${stringUuid}所有のプレミアムスキルエフェクト${effectName}は未定義です")
             None
           case Some(e) => Some(e)
         }
@@ -175,9 +162,7 @@ object PlayerDataLoading {
     // playerDataをDBから得られた値で更新する
     def loadPlayerData(stmt: Statement): Unit = {
 
-      val obtainedEffects = (
-        loadSkillEffectUnlockState(stmt) ++ loadSkillPremiumEffectUnlockState(stmt)
-      ).toSet[ActiveSkillEffect]
+      val obtainedEffects = loadSkillEffectUnlockState(stmt)
 
       // TODO: 本当にStarSelectじゃなきゃだめ?
       val command = ("select * from " + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME

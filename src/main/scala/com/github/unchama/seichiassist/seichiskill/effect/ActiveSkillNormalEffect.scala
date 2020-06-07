@@ -23,7 +23,8 @@ sealed abstract class ActiveSkillNormalEffect(val num: Int,
                                               val nameOnUI: String,
                                               val explanation: String,
                                               val usePoint: Int,
-                                              val material: Material) extends EnumEntry with ActiveSkillEffect {
+                                              val material: Material)
+  extends EnumEntry with SerializableActiveSkillEffect {
 
   override def runBreakEffect(player: Player,
                               usedSkill: ActiveSkill,

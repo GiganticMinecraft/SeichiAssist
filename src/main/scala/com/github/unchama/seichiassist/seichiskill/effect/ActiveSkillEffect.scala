@@ -24,6 +24,10 @@ trait ActiveSkillEffect {
                      standard: Location): IO[Unit]
 }
 
+trait SerializableActiveSkillEffect extends ActiveSkillEffect {
+  val nameOnDatabase: String
+}
+
 object ActiveSkillEffect {
   object NoEffect extends ActiveSkillEffect {
     override val nameOnUI: String = "未設定"

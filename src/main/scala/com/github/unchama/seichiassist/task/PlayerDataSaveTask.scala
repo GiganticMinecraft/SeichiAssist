@@ -90,12 +90,10 @@ object PlayerDataSaveTask {
 
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
-      val activeSkillEffects = ActiveSkillNormalEffect.values
+      val activeSkillEffects = ActiveSkillNormalEffect.values ++ ActiveSkillPremiumEffect.values
       val obtainedEffects = playerdata.skillEffectState.obtainedEffects
 
-      val removeCommand = ("delete from "
-        + "seichiassist.unlocked_active_skill_effect "
-        + "where player_uuid = '" + playerUuid + "'")
+      val removeCommand = s"delete from seichiassist.unlocked_active_skill_effect where player_uuid = '$playerUuid'"
       stmt.executeUpdate(removeCommand)
 
       activeSkillEffects.foreach { activeSkillEffect =>
@@ -103,33 +101,10 @@ object PlayerDataSaveTask {
         val isEffectUnlocked = obtainedEffects.contains(activeSkillEffect)
 
         if (isEffectUnlocked) {
-          val updateCommand = ("insert into "
-            + "seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) "
-            + "values ('" + playerUuid + "', '" + effectName + "')")
-
-          stmt.executeUpdate(updateCommand)
-        }
-      }
-    }
-
-    def updateActiveSkillPremiumEffectUnlockState(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString
-      val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values
-      val obtainedEffects = playerdata.skillEffectState.obtainedEffects
-
-      val removeCommand = ("delete from "
-        + "seichiassist.unlocked_active_skill_premium_effect where "
-        + "player_uuid = '" + playerUuid + "'")
-      stmt.executeUpdate(removeCommand)
-
-      activeSkillPremiumEffects.foreach { activeSkillPremiumEffect =>
-        val effectName = activeSkillPremiumEffect.getsqlName
-        val isEffectUnlocked = obtainedEffects.contains(activeSkillPremiumEffect)
-
-        if (isEffectUnlocked) {
-          val updateCommand = ("insert into "
-            + "seichiassist.unlocked_active_skill_premium_effect(player_uuid, effect_name) "
-            + "values ('" + playerUuid + "', '" + effectName + "')")
+          // TODO クエリを結合したほうが良い
+          val updateCommand =
+            "insert into seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) " +
+              s"values ('$playerUuid', '$effectName')"
 
           stmt.executeUpdate(updateCommand)
         }
@@ -249,12 +224,11 @@ object PlayerDataSaveTask {
 
         //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
         val localStatement = databaseGateway.con.createStatement()
+        updateActiveSkillEffectUnlockState(localStatement)
         updatePlayerDataColumns(localStatement)
         updatePlayerMineStack(localStatement)
         updateGridTemplate(localStatement)
         updateSubHome()
-        updateActiveSkillEffectUnlockState(localStatement)
-        updateActiveSkillPremiumEffectUnlockState(localStatement)
         ActionStatus.Ok
       } catch {
         case exception: SQLException =>
