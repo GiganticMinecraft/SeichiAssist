@@ -3,7 +3,8 @@ package com.github.unchama.seichiassist.task
 import java.sql.{SQLException, Statement}
 
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData, PlayerSkillState}
-import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
+import com.github.unchama.seichiassist.database.DatabaseConstants
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect, SerializableActiveSkillEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
@@ -90,25 +91,23 @@ object PlayerDataSaveTask {
 
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
-      val activeSkillEffects = ActiveSkillNormalEffect.values ++ ActiveSkillPremiumEffect.values
-      val obtainedEffects = playerdata.skillEffectState.obtainedEffects
 
-      val removeCommand = s"delete from seichiassist.unlocked_active_skill_effect where player_uuid = '$playerUuid'"
-      stmt.executeUpdate(removeCommand)
+      val activeSkillEffects: Set[SerializableActiveSkillEffect] =
+        (ActiveSkillNormalEffect.values ++ ActiveSkillPremiumEffect.values).toSet
 
-      activeSkillEffects.foreach { activeSkillEffect =>
-        val effectName = activeSkillEffect.nameOnDatabase
-        val isEffectUnlocked = obtainedEffects.contains(activeSkillEffect)
+      val effectsObtained = playerdata.skillEffectState.obtainedEffects
 
-        if (isEffectUnlocked) {
-          // TODO クエリを結合したほうが良い
-          val updateCommand =
-            "insert into seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) " +
-              s"values ('$playerUuid', '$effectName')"
-
-          stmt.executeUpdate(updateCommand)
-        }
+      val removeCommand = {
+       s"delete from seichiassist.unlocked_active_skill_effect where player_uuid = '$playerUuid'"
       }
+      val insertCommand = {
+        val base = s"insert ingore into seichiassist.${DatabaseConstants.SKILL_EFFECT_TABLENAME} values"
+        val data = effectsObtained.map(e => s"($playerUuid, ${e.nameOnDatabase}").mkString(",")
+
+        s"$base $data"
+      }
+      stmt.executeUpdate(removeCommand)
+      stmt.executeUpdate(insertCommand)
     }
 
     def updatePlayerDataColumns(stmt: Statement): Unit = {

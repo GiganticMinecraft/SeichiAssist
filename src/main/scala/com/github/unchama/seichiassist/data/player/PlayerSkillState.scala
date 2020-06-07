@@ -2,10 +2,10 @@ package com.github.unchama.seichiassist.data.player
 
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill._
-import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, SerializableActiveSkillEffect}
 
-case class PlayerSkillEffectState(obtainedEffects: Set[ActiveSkillEffect],
+case class PlayerSkillEffectState(obtainedEffects: Set[SerializableActiveSkillEffect],
                                   selection: ActiveSkillEffect)
 
 object PlayerSkillEffectState {
