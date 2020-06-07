@@ -19,11 +19,14 @@ import org.bukkit.material.Wool
 
 import scala.util.Random
 
-sealed abstract class ActiveSkillPremiumEffect(val nameOnUI: String,
+sealed abstract class ActiveSkillPremiumEffect(stringId: String,
+                                               val nameOnUI: String,
                                                val explanation: String,
                                                val usePoint: Int,
                                                val material: Material)
   extends SerializableActiveSkillEffect {
+
+  override val entryName: String = stringId
 
   def runBreakEffect(player: Player,
                      usedSkill: ActiveSkill,
@@ -102,5 +105,5 @@ case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
   @Deprecated()
   val arrayValues: Array[ActiveSkillPremiumEffect] = values.toArray
 
-  case object MAGIC extends ActiveSkillPremiumEffect(s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10, Material.RED_ROSE)
+  case object MAGIC extends ActiveSkillPremiumEffect("ef_magic", s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10, Material.RED_ROSE)
 }

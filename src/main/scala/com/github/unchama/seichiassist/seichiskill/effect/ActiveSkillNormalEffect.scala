@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, Brea
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{DualBreak, TrialBreak}
-import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteo}
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteor}
 import com.github.unchama.seichiassist.seichiskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, ActiveSkillRange}
 import com.github.unchama.seichiassist.util.BreakUtil
@@ -18,11 +18,14 @@ import org.bukkit.entity.Player
 
 import scala.util.Random
 
-sealed abstract class ActiveSkillNormalEffect(val nameOnUI: String,
+sealed abstract class ActiveSkillNormalEffect(stringId: String,
+                                              val nameOnUI: String,
                                               val explanation: String,
                                               val usePoint: Int,
                                               val material: Material)
   extends SerializableActiveSkillEffect {
+
+  override val entryName: String = stringId
 
   override def runBreakEffect(player: Player,
                               usedSkill: ActiveSkill,
@@ -91,7 +94,7 @@ sealed abstract class ActiveSkillNormalEffect(val nameOnUI: String,
           }
         } yield ()
 
-      case Meteo =>
+      case Meteor =>
         val delay = if (isSkillDualBreakOrTrialBreak) 1L else 10L
 
         import com.github.unchama.seichiassist.data.syntax._
@@ -127,7 +130,7 @@ sealed abstract class ActiveSkillNormalEffect(val nameOnUI: String,
     this match {
       case Explosion => ArrowEffects.singleArrowExplosionEffect
       case Blizzard => ArrowEffects.singleArrowBlizzardEffect
-      case Meteo => ArrowEffects.singleArrowMeteoEffect
+      case Meteor => ArrowEffects.singleArrowMeteoEffect
     }
 }
 
@@ -139,8 +142,8 @@ object ActiveSkillNormalEffect extends Enum[ActiveSkillNormalEffect] {
    */
   @Deprecated() val arrayValues: Array[ActiveSkillNormalEffect] = values.toArray
 
-  case object Explosion extends ActiveSkillNormalEffect(s"${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
-  case object Blizzard extends ActiveSkillNormalEffect(s"${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
-  case object Meteo extends ActiveSkillNormalEffect(s"${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
+  case object Explosion extends ActiveSkillNormalEffect("explosion", s"${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
+  case object Blizzard extends ActiveSkillNormalEffect("blizzard", s"${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
+  case object Meteor extends ActiveSkillNormalEffect("meteor", s"${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
 
 }

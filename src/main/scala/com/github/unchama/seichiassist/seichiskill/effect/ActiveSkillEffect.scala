@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.seichiskill.ActiveSkill
 import com.github.unchama.seichiassist.seichiskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.targetedeffect.TargetedEffect
-import enumeratum.EnumEntry.Snakecase
+import enumeratum.EnumEntry
 import org.bukkit.entity.Player
 import org.bukkit.{Location, Material}
 
@@ -24,7 +24,7 @@ sealed trait ActiveSkillEffect {
                      standard: Location): IO[Unit]
 }
 
-trait SerializableActiveSkillEffect extends ActiveSkillEffect with Snakecase
+trait SerializableActiveSkillEffect extends ActiveSkillEffect with EnumEntry
 
 object ActiveSkillEffect {
   object NoEffect extends ActiveSkillEffect {
