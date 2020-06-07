@@ -24,7 +24,7 @@ final class Mutex[F[_], A] private (mVar: MVar[F, A])
     } {
       case (_, ExitCase.Completed) =>
         // このケースではmVarに値はputされている
-        ().pure
+        fBracket.unit
       case (a, _) =>
         // 元の値をputし直すことでロックを返却する
         // 外側の `F` は失敗する
