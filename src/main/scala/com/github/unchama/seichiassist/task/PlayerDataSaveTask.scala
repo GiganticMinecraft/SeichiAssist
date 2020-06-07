@@ -4,7 +4,6 @@ import java.sql.{SQLException, Statement}
 
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData, PlayerSkillState}
 import com.github.unchama.seichiassist.database.DatabaseConstants
-import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect, SerializableActiveSkillEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
@@ -91,9 +90,6 @@ object PlayerDataSaveTask {
 
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
-
-      val activeSkillEffects: Set[SerializableActiveSkillEffect] =
-        (ActiveSkillNormalEffect.values ++ ActiveSkillPremiumEffect.values).toSet
 
       val effectsObtained = playerdata.skillEffectState.obtainedEffects
 
