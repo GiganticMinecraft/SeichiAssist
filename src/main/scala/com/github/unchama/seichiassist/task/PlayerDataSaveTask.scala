@@ -91,7 +91,7 @@ object PlayerDataSaveTask {
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
       val activeSkillEffects = ActiveSkillNormalEffect.values
-      val obtainedEffects = playerdata.activeskilldata.obtainedSkillEffects
+      val obtainedEffects = playerdata.skillEffectState.obtainedEffects
 
       val removeCommand = ("delete from "
         + "seichiassist.unlocked_active_skill_effect "
@@ -115,7 +115,7 @@ object PlayerDataSaveTask {
     def updateActiveSkillPremiumEffectUnlockState(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
       val activeSkillPremiumEffects = ActiveSkillPremiumEffect.values
-      val obtainedEffects = playerdata.activeskilldata.obtainedSkillPremiumEffects
+      val obtainedEffects = playerdata.skillEffectState.obtainedEffects
 
       val removeCommand = ("delete from "
         + "seichiassist.unlocked_active_skill_premium_effect where "

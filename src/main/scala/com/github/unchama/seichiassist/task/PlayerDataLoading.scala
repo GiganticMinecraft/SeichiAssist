@@ -210,8 +210,8 @@ object PlayerDataLoading {
         playerData.totalbreaknum = rs.getLong("totalbreaknum")
         playerData.playTick = rs.getInt("playtick")
         playerData.p_givenvote = rs.getInt("p_givenvote")
-        playerData.activeskilldata.effectpoint = rs.getInt("effectpoint")
-        playerData.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint")
+        playerData.effectPoint = rs.getInt("effectpoint")
+        playerData.premiumEffectPoint = rs.getInt("premiumeffectpoint")
         //マナの情報
         playerData.manaState.setMana(rs.getDouble("mana"))
         playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
