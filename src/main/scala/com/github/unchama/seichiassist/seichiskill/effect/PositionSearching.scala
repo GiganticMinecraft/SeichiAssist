@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.activeskill.effect
+package com.github.unchama.seichiassist.seichiskill.effect
 
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 

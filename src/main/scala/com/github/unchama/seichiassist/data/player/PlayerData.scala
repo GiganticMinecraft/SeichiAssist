@@ -4,13 +4,14 @@ import java.text.SimpleDateFormat
 import java.util.{GregorianCalendar, UUID}
 
 import cats.effect.IO
+import cats.effect.concurrent.Ref
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{ActiveSkillData, GridTemplate, Mana}
+import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
@@ -47,6 +48,16 @@ class PlayerData(
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
+
+  //MineStackの履歴
+  val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
+
+  //現在座標
+  var loc: Option[Location] = None
+
+  //放置時間
+  var idleMinute = 0
+
   //各統計値差分計算用配列
   lazy private val statisticsData: mutable.ArrayBuffer[Int] = {
     val buffer: mutable.ArrayBuffer[Int] = ArrayBuffer()
@@ -147,13 +158,7 @@ class PlayerData(
   var samepageflag = false //実績ショップ用
 
   //endregion
-  //MineStackの履歴
-  val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
-  var titlepage = 1 //実績メニュー用汎用ページ指定
-  //現在座標
-  var loc: Option[Location] = None
-  //放置時間
-  var idleMinute = 0
+
   //共有インベントリにアイテムが入っているかどうか
   var contentsPresentInSharedInventory = false
   //ガチャの基準となるポイント
@@ -190,8 +195,15 @@ class PlayerData(
   //期間限定ログイン用
   var LimitedLoginCount = 0
   var ChainVote = 0
-  //アクティブスキル関連データ
-  val activeskilldata: ActiveSkillData = new ActiveSkillData()
+
+  //region スキル関連のデータ
+  var skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
+  var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
+  val manaState: Mana = new Mana()
+  var effectPoint: Int = 0
+  var premiumEffectPoint: Int = 0
+  //endregion
+
   //二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 
@@ -304,7 +316,8 @@ class PlayerData(
       player.sendMessage(s"${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
     }
 
-    activeskilldata.updateOnJoin(player, level)
+    manaState.initialize(player, level)
+
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
     isVotingFairy()
@@ -316,7 +329,7 @@ class PlayerData(
     updateStarLevel()
     setDisplayName()
     SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-    activeskilldata.mana.display(player, level)
+    manaState.display(player, level)
   }
 
   //表示される名前に整地レベルor二つ名を追加
@@ -388,9 +401,9 @@ class PlayerData(
 
         i += 1
 
-        if (activeskilldata.mana.isLoaded) {
+        if (manaState.isLoaded) {
           //マナ最大値の更新
-          activeskilldata.mana.onLevelUp(player, i)
+          manaState.onLevelUp(player, i)
         }
 
         //レベル上限に達したら終了
@@ -491,14 +504,12 @@ class PlayerData(
     //総プレイ時間更新
     updatePlayTick()
 
-    activeskilldata.updateOnQuit()
+    manaState.hide()
 
     mebius.cancel()
 
     //クライアント経験値をサーバー保管
     saveTotalExp()
-
-    activeskilldata.RemoveAllTask()
   }
 
   //総プレイ時間を更新する
@@ -585,7 +596,7 @@ class PlayerData(
 
   def convertEffectPointToAchievePoint(): Unit = {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
-    activeskilldata.effectpoint -= 10
+    effectPoint -= 10
   }
 
   //エフェクトデータのdurationを60秒引く

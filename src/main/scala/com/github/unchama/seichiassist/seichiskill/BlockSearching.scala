@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.activeskill
+package com.github.unchama.seichiassist.seichiskill
 
 import cats.effect.SyncIO
 import com.github.unchama.seichiassist.MaterialSets

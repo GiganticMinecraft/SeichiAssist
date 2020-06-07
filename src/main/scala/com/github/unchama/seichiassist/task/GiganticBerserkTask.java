@@ -22,7 +22,7 @@ public class GiganticBerserkTask {
         player = p;
         UUID uuid = p.getUniqueId();
         playerdata = playermap.apply(uuid);
-        Mana mana = playerdata.activeskilldata().mana;
+        Mana mana = playerdata.manaState();
 
         playerdata.GBcd_$eq(playerdata.giganticBerserk().cd() + 1);
         if (playerdata.giganticBerserk().cd() >= SeichiAssist.seichiAssistConfig().getGiganticBerserkLimit()) {

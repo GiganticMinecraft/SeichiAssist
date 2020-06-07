@@ -4,11 +4,11 @@ import java.sql.SQLException
 
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
-import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillPremiumEffect
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffect
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
+import org.bukkit.Material
 import org.bukkit.inventory.{Inventory, ItemStack}
-import org.bukkit.{Bukkit, Material}
 
 class DonateDataManipulator(private val gateway: DatabaseGateway) {
 
@@ -19,12 +19,11 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
   def addPremiumEffectBuy(playerdata: PlayerData,
                           effect: ActiveSkillPremiumEffect): ActionStatus = {
     val command = ("insert into " + tableReference
-      + " (playername,playeruuid,effectnum,effectname,usepoint,date) "
+      + " (playername,playeruuid,effectname,usepoint,date) "
       + "value("
       + "'" + playerdata.lowercaseName + "',"
       + "'" + playerdata.uuid.toString + "',"
-      + effect.num + ","
-      + "'" + effect.getsqlName + "',"
+      + "'" + effect.entryName + "',"
       + effect.usePoint + ","
       + "cast( now() as datetime )"
       + ")")
@@ -46,10 +45,6 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
   private def tableReference: String = gateway.databaseName + "." + DatabaseConstants.DONATEDATA_TABLENAME
 
   def loadDonateData(playerdata: PlayerData, inventory: Inventory): Boolean = {
-    var itemstack: ItemStack = null
-    var material: Material = null
-    var lore2: List[String] = null
-    val effect = ActiveSkillPremiumEffect.values
     // TODO: ほんとうにStarSelectじゃなきゃだめ?
     val command = "select * from " + tableReference + " where playername = '" + playerdata.lowercaseName + "'"
     try {
@@ -59,33 +54,34 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
         val getPoint = lrs.getInt("getpoint")
         val usePoint = lrs.getInt("usepoint")
         if (getPoint > 0) {
-          itemstack = new ItemStack(Material.DIAMOND)
-          lore2 = List(RESET.toString + "" + GREEN + "" + "金額：" + getPoint * 100,
-            "" + RESET + GREEN + "プレミアムエフェクトポイント：+" + getPoint,
-            "" + RESET + GREEN + "日時：" + lrs.getString("date")
+          val itemStack = new ItemStack(Material.DIAMOND)
+          val lore = List(
+            s"${RESET.toString}${GREEN}金額：${getPoint * 100}",
+            s"$RESET${GREEN}プレミアムエフェクトポイント：+$getPoint",
+            s"$RESET${GREEN}日時：${lrs.getString("date")}"
           )
-          itemstack.setItemMeta({
-            val meta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND)
-            meta.setDisplayName("" + AQUA + UNDERLINE + "" + BOLD + "寄付")
-            meta.setLore(lore2.asJava)
+          itemStack.setItemMeta {
+            val meta = itemStack.getItemMeta
+            meta.setDisplayName(s"$AQUA$UNDERLINE${BOLD}寄付")
+            meta.setLore(lore.asJava)
             meta
-          })
-          inventory.setItem(count, itemstack)
+          }
+          inventory.setItem(count, itemStack)
         } else if (usePoint > 0) {
-          val num = lrs.getInt("effectnum") - 1
-          material = effect(num).material
-          itemstack = new ItemStack(material)
+          val effect = ActiveSkillPremiumEffect.withName(lrs.getString("effectname"))
+          val itemStack = new ItemStack(effect.materialOnUI)
 
-          lore2 = List("" + RESET + GOLD + "プレミアムエフェクトポイント： -" + usePoint,
-            "" + RESET + GOLD + "日時：" + lrs.getString("date")
+          val lore = List(
+            s"$RESET${GOLD}プレミアムエフェクトポイント： -$usePoint",
+            s"$RESET${GOLD}日時：${lrs.getString("date")}"
           )
-          itemstack.setItemMeta({
-            val meta = Bukkit.getItemFactory.getItemMeta(material)
-            meta.setDisplayName("" + RESET.toString + YELLOW + "購入エフェクト：" + effect(num).desc)
-            meta.setLore(lore2.asJava)
+          itemStack.setItemMeta {
+            val meta = itemStack.getItemMeta
+            meta.setDisplayName(s"$RESET${YELLOW}購入エフェクト：${effect.nameOnUI}")
+            meta.setLore(lore.asJava)
             meta
-          })
-          inventory.setItem(count, itemstack)
+          }
+          inventory.setItem(count, itemStack)
         }
         count += 1
       }

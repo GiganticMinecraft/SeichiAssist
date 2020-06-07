@@ -1,47 +1,45 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seichiassist.seichiskill
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.ActiveSkill
+import com.github.unchama.generic.CachedFunction
+import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple, syntax}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill._
+import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Active
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.entity.Player
 
-/**
- * 与えられたアクティブスキルの情報に基づいて、
- * プレーヤーがスキルで破壊する範囲を計算するデータオブジェクト
- * @param `type` スキルタイプ番号
- * @param level スキルレベル
- * @param mineflagnum フラグ
- * @param assaultflag アサルトスキルの時true
- */
-class BreakArea(val `type`: Int,
-                val level: Int,
-                val mineflagnum: Int,
-                val assaultflag: Boolean) {
-  private val skill: ActiveSkill = ActiveSkill.values.apply(`type` - 1)
-
+class BreakArea private (skill: SeichiSkill, usageIntention: SeichiSkillUsageMode) {
   //南向きを基準として破壊の範囲座標
-  val breakLength: XYZTuple = skill.getBreakLength(level)
-  //破壊回数
-  val breakNum: Int = skill.getRepeatTimes(level)
+  val breakLength: XYZTuple = skill.range.effectChunkSize
 
-  private def breakAreaListFromDirection(dir: String): List[AxisAlignedCuboid] = {
+  //破壊回数
+  val breakNum: Int = skill.range match {
+    case range: ActiveSkillRange => range match {
+      case ActiveSkillRange.MultiArea(_, areaCount) => areaCount
+      case ActiveSkillRange.RemoteArea(_) => 1
+    }
+    case _: AssaultSkillRange => 1
+  }
+
+  val isAssaultSkill: Boolean = skill.range.isInstanceOf[AssaultSkillRange]
+
+  private val breakAreaListFromDirection: String => List[AxisAlignedCuboid] = CachedFunction { dir: String =>
     import BreakArea.CoordinateManipulation._
     import syntax._
 
     val firstShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      if (assaultflag) {
-        //アサルトスキルの時
-        if (`type` == 6 && level == 10) {
+      if (isAssaultSkill) {
+        if (skill == AssaultArmor) {
           areaShift(XYZTuple(0, (breakLength.y - 1) / 2 - 1, 0))
         } else {
           identity
         }
       } else if (dir == "U" || dir == "D") {
         //上向きまたは下向きの時
-        if (assaultflag || level >= 3) {
-          areaShift(XYZTuple(0, (breakLength.y - 1) / 2, 0))
-        } else {
+        if (Seq(DualBreak, TrialBreak).contains(skill)) {
           identity
+        } else  {
+          areaShift(XYZTuple(0, (breakLength.y - 1) / 2, 0))
         }
       } else {
         //それ以外の範囲
@@ -49,13 +47,13 @@ class BreakArea(val `type`: Int,
       }
 
     val secondShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      if (`type` == ActiveSkill.BREAK.gettypenum && level < 3)
+      if (Seq(DualBreak, TrialBreak).contains(skill))
         incrementYOfEnd
       else
         identity
 
     val thirdShift: AxisAlignedCuboid => AxisAlignedCuboid =
-      if (`type` == ActiveSkill.BREAK.gettypenum && level < 3 && mineflagnum == 1)
+      if (Seq(DualBreak, TrialBreak).contains(skill) && usageIntention == Active)
         areaShift(XYZTuple(0, 1, 0))
       else
         identity
@@ -64,7 +62,7 @@ class BreakArea(val `type`: Int,
       dir match {
         case "N" | "E" | "S" | "W" =>
           areaShift(XYZTuple(0, 0, breakLength.z))
-        case "U" | "D" if assaultflag || level >= 3 =>
+        case "U" | "D" if !Seq(DualBreak, TrialBreak).contains(skill) =>
           areaShift(XYZTuple(0, breakLength.y, 0))
         case _ => identity
       }
@@ -74,7 +72,7 @@ class BreakArea(val `type`: Int,
         case "N" => rotateXZ(180)
         case "E" => rotateXZ(270)
         case "W" => rotateXZ(90)
-        case "D" if !assaultflag => invertY
+        case "D" if !isAssaultSkill => invertY
         // 横向きのスキル発動の場合Sが基準となり、
         // 縦向きの場合Uが基準となっているため回転しないで良い
         case "S" | "U" | _ => identity
@@ -102,6 +100,7 @@ class BreakArea(val `type`: Int,
 
   def makeBreakArea(player: Player): IO[List[AxisAlignedCuboid]] =
     BreakArea.getCardinalDirection(player).map(breakAreaListFromDirection)
+
 }
 
 object BreakArea {
@@ -139,4 +138,10 @@ object BreakArea {
       }
     }
   }
+
+  private val constructorCache: CachedFunction[(SeichiSkill, SeichiSkillUsageMode), BreakArea] =
+    CachedFunction { case (skill, usageIntention) => new BreakArea(skill, usageIntention) }
+
+  def apply(skill: SeichiSkill, usageIntention: SeichiSkillUsageMode): BreakArea =
+    constructorCache(skill, usageIntention)
 }

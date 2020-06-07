@@ -7,7 +7,9 @@ import cats.effect.IO
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
 import org.bukkit._
@@ -379,38 +381,17 @@ object BreakUtil {
     false
   }
 
-  def calcManaDrop(playerdata: PlayerData): Double = {
+  def calcManaDrop(player: Player): Double = {
+    val isSkillAvailable = SeichiAssist.instance.activeSkillAvailability(player).get.unsafeRunSync()
+
     //０～１のランダムな値を取得
     val rand = Math.random()
+
     //10%の確率で経験値付与
-    if (rand < 0.1) {
-      //Lv8未満は獲得経験値ゼロ、それ以上はレベルに応じて経験値付与
-      if (playerdata.level < 8 || !playerdata.activeskilldata.skillcanbreakflag) {
-        0.0
-      } else if (playerdata.level < 18) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(1)
-      } else if (playerdata.level < 28) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(2)
-      } else if (playerdata.level < 38) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(3)
-      } else if (playerdata.level < 48) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(4)
-      } else if (playerdata.level < 58) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(5)
-      } else if (playerdata.level < 68) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(6)
-      } else if (playerdata.level < 78) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(7)
-      } else if (playerdata.level < 88) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(8)
-      } else if (playerdata.level < 98) {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(9)
-      } else {
-        SeichiAssist.seichiAssistConfig.getDropExplevel(10)
-      }
-    } else {
+    if (isSkillAvailable && rand < 0.1)
+      SeichiAssist.playermap(player.getUniqueId).getPassiveExp
+    else
       0.0
-    }
   }
 
   //num回だけ耐久を減らす処理
@@ -431,90 +412,76 @@ object BreakUtil {
    * @return 重力値（破壊範囲の上に積まれているブロック数）
    */
   def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
-    /** OPENHEIGHTマス以上のtransparentmateriallistブロックの連続により、地上判定とする。  */
-    val OPENHEIGHT = 3
-
     // 1. 重力値を適用すべきか判定
     // 整地ワールド判定
-    if (!Util.isSeichiWorld(player)) {
+    if (!Util.isSeichiWorld(player))
       return 0
-    }
 
     // 2. 破壊要因判定
     /** 該当プレイヤーのPlayerData  */
-    val playerdata = SeichiAssist.playermap(player.getUniqueId)
-    /** ActiveSkillのリスト  */
-    val skilllist = ActiveSkill.values()
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
+    val skillState = playerData.skillState.get.unsafeRunSync()
 
     /** 重力値の計算を始めるY座標  */
-    val startY: Int = if (!isAssault) {
-      // Activeスキルの場合
-
-      /** 破壊要因スキルタイプ  */
-      val breakSkillType = playerdata.activeskilldata.skilltype
-      /** 破壊要因スキルレベル  */
-      val breakSkillLevel = playerdata.activeskilldata.skillnum
-      /** 破壊スキル使用判定  */
-      val isBreakSkill = breakSkillType > 0 && playerdata.activeskilldata.mineflagnum > 0
-
-      // 重力値を計算開始するBlockのために、startY(blockのY方向offset値)を計算
-      // 破壊スキルが選択されていなければ初期座標は破壊ブロックと同値
-      if (!isBreakSkill) 0
-      else if (breakSkillType == ActiveSkill.ARROW.gettypenum()) {
-        /** 選択中のスキルの破壊範囲  */
-        val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
-
-        // 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
-        skillBreakArea.y - 2
+    val startY: Int =
+      if (!isAssault) {
+        val usageMode = skillState.usageMode
+        if (usageMode != Disabled) {
+          skillState.activeSkill match {
+            case Some(skill) =>
+              skill.range match {
+                case MultiArea(effectChunkSize, _) =>
+                  val playerDirection = BreakUtil.getCardinalDirection(player)
+                  if (playerDirection == "D") {
+                    // 下向きによる発動
+                    // block＝破壊範囲の最上層ブロックにつき、startは0
+                    0
+                  } else if (playerDirection == "U") {
+                    // 上向きによる発動
+                    // block＝破壊範囲の最下層ブロックにつき、startは破壊範囲の高さ
+                    effectChunkSize.y
+                  } else if (Set(DualBreak, TrialBreak).contains(skill) && usageMode == Active) {
+                    // 横向きによる発動のうち、デュアルorトリアルの上破壊
+                    // 破壊ブロックの1マス上が破壊されるので、startは2段目から
+                    1
+                  } else {
+                    // その他横向き発動時
+                    // 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
+                    effectChunkSize.y - 2
+                  }
+                case RemoteArea(effectChunkSize) =>
+                  // 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
+                  effectChunkSize.y - 2
+              }
+            // 破壊スキルが選択されていなければ初期座標は破壊ブロックと同値
+            case None => 0
+          }
+        } else 0
       } else {
-        /** 該当プレイヤーが向いている方向  */
-        val dir = BreakUtil.getCardinalDirection(player)
-        // 下向きによる発動
-        if (dir == "D") {
-          // block＝破壊範囲の最上層ブロックにつき、startは0
-          0
-        } else if (dir == "U") {
-          /** 選択中のスキルの破壊範囲  */
-          val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
-          // block＝破壊範囲の最下層ブロックにつき、startは破壊範囲の高さ
-          skillBreakArea.y
-        } else if ((breakSkillLevel == 1 || breakSkillLevel == 2) && playerdata.activeskilldata.mineflagnum == 1) {
-          // 破壊ブロックの1マス上が破壊されるので、startは2段目から
-          1
-        } else {
-          /** 選択中のスキルの破壊範囲  */
-          val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
-          // 破壊ブロックの高さ＋破壊範囲の高さ－2（2段目が手動破壊対象となるため）
-          skillBreakArea.y - 2
-        } // その他横向き発動時
-        // 横向きによる発動のうち、デュアルorトリアルのmineflagnumが1(上破壊)
-        // 上向きによる発動
-      } // 単範囲/複数範囲破壊スキルの場合
-      // 遠距離スキルの場合向きに依らずblock中心の横範囲となる
-    } else {
-      /** 破壊要因スキルタイプ  */
-      val breakSkillType = playerdata.activeskilldata.assaulttype
-      /** 破壊要因スキルレベル  */
-      val breakSkillLevel = playerdata.activeskilldata.assaultnum
-      /** 選択中のスキルの破壊範囲  */
-      val skillBreakArea = skilllist(breakSkillType - 1).getBreakLength(breakSkillLevel)
-      // アサルトアーマーの場合
-      if (breakSkillType == ActiveSkill.ARMOR.gettypenum()) {
-        // スキル高さ - 足位置で1 - blockが1段目なので1
-        skillBreakArea.y - 2
-      } else {
-        // 高さはスキル/2の切り上げ…blockが1段目なので-1してプラマイゼロ
-        (skillBreakArea.y - 1) / 2
-      } // その他のアサルトスキルの場合
-    } // Assaultスキルの場合
+        skillState.assaultSkill match {
+          case Some(skill) =>
+            if (skill == AssaultArmor)
+              // アサルトアーマーの場合
+              // スキル高さ - 足位置で1 - blockが1段目なので1
+              skill.range.effectChunkSize.y - 2
+            else
+              // その他のアサルトスキルの場合
+              // 高さはスキル/2の切り上げ…blockが1段目なので-1してプラマイゼロ
+              (skill.range.effectChunkSize.y - 1) / 2
+          case None => 0
+        }
+      }
 
     // 3. 重力値計算
+    /** OPENHEIGHTマス以上のtransparentmateriallistブロックの連続により、地上判定とする。  */
+    val OPENHEIGHT = 3
     /** OPENHEIGHTに達したかの計測カウンタ  */
     var openCount = 0
     /** 重力値  */
     var gravity = 0
     /** 最大ループ数  */
     val YMAX = 255
+
     for (checkPointer <- 1 until YMAX) {
       /** 確認対象ブロック  */
       val target = block.getRelative(0, startY + checkPointer, 0)
@@ -529,11 +496,7 @@ object BreakUtil {
         // カウンタをクリア
         openCount = 0
         // 重力値を加算(水をは2倍にする)
-        if (target.getType == Material.WATER) {
-          gravity += 2
-        } else {
-          gravity += 1
-        }
+        gravity += (if (target.getType == Material.WATER) 2 else 1)
       }
     }
 

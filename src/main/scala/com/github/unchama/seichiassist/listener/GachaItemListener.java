@@ -34,7 +34,7 @@ public class GachaItemListener implements Listener {
             return;
         }
         int level = playerdata.level();
-        Mana mana = playerdata.activeskilldata().mana;
+        Mana mana = playerdata.manaState();
         ItemStack i = e.getItem();
         //Material m = i.getType();
         ItemMeta itemmeta = i.getItemMeta();

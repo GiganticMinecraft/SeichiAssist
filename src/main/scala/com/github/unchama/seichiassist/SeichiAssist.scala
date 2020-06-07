@@ -5,10 +5,10 @@ import java.util.UUID
 import cats.effect.{Fiber, IO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
-import com.github.unchama.concurrent.RepeatingTask
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
@@ -21,10 +21,9 @@ import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
-import com.github.unchama.seichiassist.task.repeating.{HalfHourRankingRoutine, PlayerDataBackupTask, PlayerDataPeriodicRecalculation}
+import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
-import org.bukkit.block.Block
 import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
@@ -54,6 +53,14 @@ class SeichiAssist extends JavaPlugin() {
   val lockedBlockChunkScope: ResourceScope[IO, Set[BlockBreakableBySkill]] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
+  }
+
+  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[Boolean] =
+    new NonPersistentPlayerDataRefRepository(true)
+
+  val assaultSkillRoutines: TryableFiberRepository = {
+    import PluginExecutionContexts.asyncShift
+    new TryableFiberRepository()
   }
 
   override def onEnable(): Unit = {
@@ -145,9 +152,13 @@ class SeichiAssist extends JavaPlugin() {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
 
+    val repositories = Seq(
+      activeSkillAvailability
+    )
+
     import PluginExecutionContexts.asyncShift
     //リスナーの登録
-    Set(
+    Seq(
       new PlayerJoinListener(),
       new PlayerQuitListener(),
       new PlayerClickListener(),
@@ -162,9 +173,11 @@ class SeichiAssist extends JavaPlugin() {
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler()
-    ).foreach {
-      getServer.getPluginManager.registerEvents(_, this)
-    }
+    )
+      .concat(repositories)
+      .foreach {
+        getServer.getPluginManager.registerEvents(_, this)
+      }
 
     //正月イベント用
     new NewYearsEvent(this)
@@ -202,19 +215,19 @@ class SeichiAssist extends JavaPlugin() {
       import cats.implicits._
 
       // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
-      val programs: List[RepeatingTask] =
+      val programs: List[IO[Nothing]] =
         List(
-          new PlayerDataPeriodicRecalculation,
-          new PlayerDataBackupTask
+          PlayerDataRecalculationRoutine(),
+          PlayerDataBackupRoutine()
         ) ++
           Option.unless(
             SeichiAssist.seichiAssistConfig.getServerNum == 7
             || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
-            new HalfHourRankingRoutine
+            HalfHourRankingRoutine()
           ).toList
 
-      programs.map(_.launch).parSequence.start
+      programs.parSequence.start
     }
 
     repeatedTaskFiber = Some(startTask.unsafeRunSync())

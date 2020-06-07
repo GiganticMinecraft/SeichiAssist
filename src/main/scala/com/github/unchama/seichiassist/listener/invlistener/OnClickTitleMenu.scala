@@ -76,7 +76,7 @@ object OnClickTitleMenu extends Listener {
         case Material.EMERALD =>
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           //不足してたらスルー
-          if (playerdata.activeskilldata.effectpoint < 10) {
+          if (playerdata.effectPoint < 10) {
             player.sendMessage("エフェクトポイントが不足しています。")
           } else {
             playerdata.convertEffectPointToAchievePoint()
