@@ -9,7 +9,8 @@ import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
-import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, ActiveSkillNormalEffect, ActiveSkillPremiumEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.MillisecondTimer
@@ -139,35 +140,45 @@ object PlayerDataLoading {
       }
     }
 
-    def loadSkillEffectUnlockState(stmt: Statement): Unit = {
-      // TODO: 本当にStarSelectじゃなきゃだめ?
-      val unlockedSkillEffectQuery = ("select * from "
-        + db + "." + DatabaseConstants.SKILL_EFFECT_TABLENAME + " where "
-        + "player_uuid = '" + stringUuid + "'")
+    def loadSkillEffectUnlockState(stmt: Statement): Set[ActiveSkillNormalEffect] = {
+      val unlockedSkillEffectQuery =
+        s"select effect_name from $db.${DatabaseConstants.SKILL_EFFECT_TABLENAME} where player_uuid = '$stringUuid'"
 
       stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
         val effectName = resultSet.getString("effect_name")
 
-        val effect = ActiveSkillNormalEffect.fromSqlName(effectName).get
-        playerData.activeskilldata.obtainedSkillEffects.add(effect)
-      }
+        ActiveSkillNormalEffect.fromSqlName(effectName) match {
+          case None =>
+            Bukkit.getLogger.warning(s"${stringUuid}所有のスキルエフェクト${effectName}は未定義です")
+            None
+          case Some(e) => Some(e)
+        }
+      }.flatten.toSet
     }
 
-    def loadSkillPremiumEffectUnlockState(stmt: Statement): Unit = {
-      val unlockedSkillEffectQuery = ("select * from "
-        + db + "." + DatabaseConstants.SKILL_PREMIUM_EFFECT_TABLENAME + " where "
-        + "player_uuid = '" + stringUuid + "'")
+    def loadSkillPremiumEffectUnlockState(stmt: Statement): Set[ActiveSkillPremiumEffect] = {
+      val unlockedSkillEffectQuery =
+        s"select effect_name from $db.${DatabaseConstants.SKILL_PREMIUM_EFFECT_TABLENAME} where player_uuid = '$stringUuid'"
 
       stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
         val effectName = resultSet.getString("effect_name")
 
-        val effect = ActiveSkillPremiumEffect.fromSqlName(effectName).get
-        playerData.activeskilldata.obtainedSkillPremiumEffects.add(effect)
-      }
+        ActiveSkillPremiumEffect.fromSqlName(effectName) match {
+          case None =>
+            Bukkit.getLogger.warning(s"${stringUuid}所有のプレミアムスキルエフェクト${effectName}は未定義です")
+            None
+          case Some(e) => Some(e)
+        }
+      }.flatten.toSet
     }
 
+    // playerDataをDBから得られた値で更新する
     def loadPlayerData(stmt: Statement): Unit = {
-      //playerdataをsqlデータから得られた値で更新
+
+      val obtainedEffects = (
+        loadSkillEffectUnlockState(stmt) ++ loadSkillPremiumEffectUnlockState(stmt)
+      ).toSet[ActiveSkillEffect]
+
       // TODO: 本当にStarSelectじゃなきゃだめ?
       val command = ("select * from " + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME
         + " where uuid = '" + stringUuid + "'")
@@ -178,6 +189,7 @@ object PlayerDataLoading {
         playerData.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag")).unsafeRunSync()
         playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
         playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
+        playerData.skillEffectState = PlayerSkillEffectState(obtainedEffects, NoEffect)
         playerData.activeskilldata.modify { d =>
           import d._
           mineflagnum = rs.getInt("activemineflagnum")
@@ -361,8 +373,6 @@ object PlayerDataLoading {
       updateLoginInfo(newStmt)
       loadGridTemplate(newStmt)
       loadMineStack(newStmt)
-      loadSkillEffectUnlockState(newStmt)
-      loadSkillPremiumEffectUnlockState(newStmt)
       loadSubHomeData(newStmt)
     }
 
