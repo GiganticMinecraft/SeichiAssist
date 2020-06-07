@@ -96,10 +96,12 @@ object PlayerDataSaveTask {
         s"delete from seichiassist.unlocked_active_skill_effect where player_uuid = '$playerUuid'"
       }
 
-      stmt.executeUpdate {
-        val data = effectsObtained.map(e => s"($playerUuid, ${e.entryName}").mkString(",")
+      if (effectsObtained.nonEmpty) {
+        stmt.executeUpdate {
+          val data = effectsObtained.map(e => s"($playerUuid, ${e.entryName})").mkString(",")
 
-        s"insert ingore into seichiassist.unlocked_active_skill_effect values $data"
+          s"insert ingore into seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) values $data"
+        }
       }
     }
 
@@ -111,10 +113,12 @@ object PlayerDataSaveTask {
         s"delete from seichiassist.unlocked_seichi_skill where player_uuid = '$playerUuid'"
       }
 
-      stmt.executeUpdate {
-        val data = skillsObtained.map(e => s"($playerUuid, ${e.entryName}").mkString(",")
+      if (skillsObtained.nonEmpty) {
+        stmt.executeUpdate {
+          val data = skillsObtained.map(e => s"($playerUuid, ${e.entryName})").mkString(",")
 
-        s"insert ingore into seichiassist.unlocked_seichi_skill values $data"
+          s"insert ingore into seichiassist.unlocked_seichi_skill(player_uuid, skill_name) values $data"
+        }
       }
     }
 
