@@ -37,9 +37,11 @@ object ActiveSkillMenu extends Menu {
   private def skillStateRef(player: Player): IO[Ref[IO, PlayerSkillState]] =
     IO { SeichiAssist.playermap(player.getUniqueId).skillState }
 
-  // TODO inline
-  // TODO この値は減少してはならないという制約を課す
-  private def totalActiveSkillPoint(player: Player): IO[Int] = ???
+  private def totalActiveSkillPoint(player: Player): IO[Int] =
+    IO {
+      val level = SeichiAssist.playermap(player.getUniqueId).level
+      (1 to level).map(i => (i.toDouble / 10).ceil.toInt).sum
+    }
 
   private case class ButtonComputations(player: Player) {
     import player._
