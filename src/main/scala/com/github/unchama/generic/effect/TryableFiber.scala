@@ -34,7 +34,7 @@ trait TryableFiber[F[_], A] extends Fiber[F, A] {
     // cancellation does not alter completion status;
     // if it has been complete then nothing occurs,
     // or else cancellation is performed and tryJoin would be empty.
-    cancel >> isComplete
+    cancel >> isIncomplete
   }
 }
 
