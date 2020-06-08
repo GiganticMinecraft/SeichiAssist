@@ -40,7 +40,7 @@ object ActiveSkillMenu extends Menu {
   private def totalActiveSkillPoint(player: Player): IO[Int] =
     IO {
       val level = SeichiAssist.playermap(player.getUniqueId).level
-      (1 to level).map(i => (i.toDouble / 10).ceil.toInt).sum
+      (1 to level).map(i => (i.toDouble / 10.0).ceil.toInt).sum
     }
 
   private case class ButtonComputations(player: Player) {

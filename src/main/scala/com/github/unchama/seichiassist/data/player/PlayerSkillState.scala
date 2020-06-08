@@ -18,7 +18,7 @@ case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
                             activeSkill: Option[ActiveSkill],
                             assaultSkill: Option[AssaultSkill]) {
   lazy val consumedActiveSkillPoint: Int =
-    obtainedSkills.map(_.requiredActiveSkillPoint).sum
+    obtainedSkills.toList.map(_.requiredActiveSkillPoint).sum
 
   /**
    * `skill` が [[obtainedSkills]] に追加された状態を返す。
