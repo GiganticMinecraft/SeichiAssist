@@ -85,6 +85,14 @@ object Nicknames {
     5006 -> HeadTail(s"マイ", s"ブーム"),
     5007 -> HeadTail(s"止まらない", s"止まらない"),
     5008 -> HeadTail(s"お楽しみ", s"お楽しみ"),
+    5009 -> HeadTail(s"生活", s"リズム"),
+    5010 -> HeadTail(s"富", s"名声"),
+    5011 -> HeadTail(s"不可能", s"脱却"),
+    5012 -> HeadTail(s"微笑む", s"天使"),
+    5013 -> HeadTail(s"セカンド", s"ステージ"),
+    5014 -> HeadTail(s"刹那", s"ひと時"),
+    5015 -> HeadTail(s"廃人", s"まっしぐら"),
+    5016 -> HeadTail(s"人間", s"超越"),
     // 通算ログイン実績
     5101 -> HeadTail(s"いざ", s"二週目"),
     5102 -> HeadTail(s"終わり", s"見えた"),
@@ -110,7 +118,7 @@ object Nicknames {
     5122 -> HeadTail(s"長老",s"風格"),
     5123 -> FullSet(s"めぐ",s"り",s"巡る"),
     5124 -> FullSet(s"仙人",s"すら",s"凌ぐ"),
-    5125 -> HeadTail(s"四つ葉",s"クローバー"),//の
+    5125 -> HeadTail(s"四つ葉",s"クローバー"),
     // 投票数実績
     6001 -> HeadTail(s"狂信者", s"狂信者"),
     6002 -> HeadTail(s"全身", s"全霊"),

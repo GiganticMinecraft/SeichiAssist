@@ -120,6 +120,14 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_5006 extends NormalAuto(5006, consecutiveLoginDays_>=(5))
   case object No_5007 extends NormalAuto(5007, consecutiveLoginDays_>=(3))
   case object No_5008 extends NormalAuto(5008, consecutiveLoginDays_>=(2))
+  case object No_5009 extends HiddenAuto(5009, dependsOn(5001, totalPlayedDays_>=(200)))
+  case object No_5010 extends HiddenAuto(5010, dependsOn(5009, totalPlayedDays_>=(300)))
+  case object No_5011 extends HiddenAuto(5011, dependsOn(5010, totalPlayedDays_>=(365)))
+  case object No_5012 extends HiddenAuto(5012, dependsOn(5011, totalPlayedDays_>=(540)))
+  case object No_5013 extends HiddenAuto(5013, dependsOn(5012, totalPlayedDays_>=(730)))
+  case object No_5014 extends HiddenAuto(5014, dependsOn(5013, totalPlayedDays_>=(910)))
+  case object No_5015 extends HiddenAuto(5015, dependsOn(5014, totalPlayedDays_>=(1095)))
+  case object No_5016 extends HiddenAuto(5016, dependsOn(5015, totalPlayedDays_>=(1460)))
 
   // 通算ログイン
   case object No_5101 extends NormalAuto(5101, totalPlayedDays_>=(365))

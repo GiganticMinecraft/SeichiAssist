@@ -31,11 +31,11 @@ object AchievementGroupMenu {
       AchievementEntry.within(4001 to 4023) :+
         Achievement8003UnlockEntry
 
+    case ConsecutiveLogins =>
+      AchievementEntry.within(5001 to 5016)
+
     case TotalLogins =>
       AchievementEntry.within(5101 to 5125)
-
-    case ConsecutiveLogins =>
-      AchievementEntry.within(5001 to 5008)
 
     case VoteCounts =>
       AchievementEntry.within(6001 to 6008)
