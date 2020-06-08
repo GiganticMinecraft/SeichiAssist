@@ -32,6 +32,11 @@ class PlayerInventoryListener extends Listener {
   private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
 
+  // Visible for test
+  def getPage(name: String): Int = {
+    name.replaceAll("(\\d+)ページ目", "$1").toInt
+  }
+  
   //ランキングメニュー
   @EventHandler
   def onPlayerClickSeichiRankingMenuEvent(event: InventoryClickEvent): Unit = {
@@ -91,7 +96,7 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowDown" =>
             itemstackcurrent.getItemMeta
             if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
+              val page_display = getPage(name)
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
@@ -101,7 +106,7 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowUp" =>
             itemstackcurrent.getItemMeta
             if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
+              val page_display = getPage(name)
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
@@ -167,7 +172,7 @@ class PlayerInventoryListener extends Listener {
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowDown") {
         val itemmeta = itemstackcurrent.getItemMeta
         if (itemmeta.getDisplayName.contains("ログイン神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
-          val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
+          val page_display = getPage(itemmeta.getDisplayName)
 
           //開く音を再生
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
@@ -176,7 +181,7 @@ class PlayerInventoryListener extends Listener {
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowUp") {
         val itemmeta = itemstackcurrent.getItemMeta
         if (itemmeta.getDisplayName.contains("ログイン神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
-          val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
+          val page_display = getPage(itemmeta.getDisplayName)
 
           //開く音を再生
           player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
@@ -243,7 +248,7 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowDown" =>
             val itemmeta = itemstackcurrent.getItemMeta
             if (itemmeta.getDisplayName.contains("投票神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
+              val page_display = getPage(itemmeta.getDisplayName)
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
@@ -253,7 +258,7 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowUp" =>
             val itemmeta = itemstackcurrent.getItemMeta
             if (itemmeta.getDisplayName.contains("投票神ランキング") && itemmeta.getDisplayName.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
+              val page_display = getPage(itemmeta.getDisplayName)
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
@@ -321,7 +326,7 @@ class PlayerInventoryListener extends Listener {
 
           case "MHF_ArrowDown" =>
             if (name.contains("寄付神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
+              val page_display = getPage(name)
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
@@ -330,7 +335,7 @@ class PlayerInventoryListener extends Listener {
 
           case "MHF_ArrowUp" =>
             if (name.contains("寄付神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
+              val page_display = getPage(name)
 
               //開く音を再生
               player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
