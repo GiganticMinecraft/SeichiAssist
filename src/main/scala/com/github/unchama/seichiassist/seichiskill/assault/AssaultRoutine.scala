@@ -6,12 +6,12 @@ import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
-import com.github.unchama.seichiassist.seichiskill.{AssaultSkillRange, BlockSearching, BreakArea}
+import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.{ChatColor, GameMode, Location, Material}
+import org.bukkit.{GameMode, Location, Material}
 
 object AssaultRoutine {
   private case class IterationState(previousLocation: Location, idleIterationCount: Int)
@@ -21,7 +21,7 @@ object AssaultRoutine {
     projections.exists(p => (p(l1) - p(l2)).abs >= 10)
   }
 
-  def apply(player: Player, playerData: PlayerData, toolToBeUsed: BreakTool)
+  def apply(player: Player, playerData: PlayerData, toolToBeUsed: BreakTool, skill: AssaultSkill)
            (implicit syncShift: BukkitSyncIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
     val idleCountLimit = 20
 
@@ -84,7 +84,7 @@ object AssaultRoutine {
 
       //重力値の判定
       if (gravity > 15) {
-        player.sendMessage(s"${ChatColor.RED}スキルを使用するには上から掘ってください。")
+        player.sendMessage(s"${RED}スキルを使用するには上から掘ってください。")
         return None
       }
 
@@ -141,16 +141,17 @@ object AssaultRoutine {
       Some(newState)
     }
 
-    // TODO アサルトスキルON/OFFの表示をrecMTaskの前後に挟む
     import cats.implicits._
 
     import scala.concurrent.duration._
     for {
+      _ <- IO { player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} ON") }
       currentLoc <- IO { player.getLocation }
-      initialState = IterationState(currentLoc, 0)
-      _ <- RepeatingRoutine.recMTask(initialState)(s =>
+      _ <- RepeatingRoutine.recMTask(IterationState(currentLoc, 0))(s =>
         syncShift.shift >> IO(routineAction(s))
-      )(IO.pure(500.millis))
+      )(IO.pure(500.millis)).guarantee {
+        IO { player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} OFF") }
+      }
     } yield ()
   }
 }

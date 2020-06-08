@@ -295,7 +295,6 @@ class PlayerClickListener extends Listener {
 
     if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
       val hasToolInMainHand = MaterialSets.breakToolMaterials.contains(currentItem)
-      val hasToolInOffHand = MaterialSets.breakToolMaterials.contains(player.getInventory.getItemInOffHand.getType)
 
       if (action == Action.RIGHT_CLICK_BLOCK &&
         MaterialSets.cancelledMaterials.contains(event.getClickedBlock.getType)) return
@@ -319,22 +318,22 @@ class PlayerClickListener extends Listener {
             player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
           case None =>
         }
-      } else if (equipmentSlot == EquipmentSlot.OFF_HAND && hasToolInOffHand) {
-        //オフハンドで指定ツールを持っていた時の処理
-
-        //設置をキャンセル
-        event.setCancelled(true)
-
+      } else if (equipmentSlot == EquipmentSlot.OFF_HAND) {
         skillState.assaultSkill match {
-          case Some(_) =>
+          case Some(skill) =>
+            //オフハンドで指定ツールを持っていた時の処理
+
+            event.setCancelled(true)
             MaterialSets.refineItemStack(player.getInventory.getItemInOffHand, MaterialSets.breakToolMaterials) match {
               case Some(tool) =>
+                import cats.implicits._
                 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
-                val flipActiveSkillActivity = for {
-                  _ <- SeichiAssist.instance
+
+                val flipActiveSkillActivity =
+                  SeichiAssist.instance
                     .assaultSkillRoutines
-                    .flipState(player)(TryableFiber.start(AssaultRoutine(player, playerData, tool)))
-                } yield ()
+                    .flipState(player)(TryableFiber.start(AssaultRoutine(player, playerData, tool, skill)))
+                    .as(())
 
                 flipActiveSkillActivity.unsafeRunSync()
               case None =>
