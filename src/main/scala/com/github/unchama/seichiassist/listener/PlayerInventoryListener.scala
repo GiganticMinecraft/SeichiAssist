@@ -94,7 +94,7 @@ class PlayerInventoryListener extends Listener {
               val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
               player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
             }
 
@@ -104,7 +104,7 @@ class PlayerInventoryListener extends Listener {
               val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
               player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
             }
 
@@ -170,7 +170,7 @@ class PlayerInventoryListener extends Listener {
           val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
           //開く音を再生
-          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.getRankingByPlayingTime(page_display - 1))
         }
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowUp") {
@@ -179,7 +179,7 @@ class PlayerInventoryListener extends Listener {
           val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
           //開く音を再生
-          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.getRankingByPlayingTime(page_display - 1))
         }
       }
@@ -246,7 +246,7 @@ class PlayerInventoryListener extends Listener {
               val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
               player.openInventory(MenuInventoryData.getRankingByVotingCount(page_display - 1))
             }
 
@@ -256,7 +256,7 @@ class PlayerInventoryListener extends Listener {
               val page_display = Integer.parseInt(itemmeta.getDisplayName.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
               player.openInventory(MenuInventoryData.getRankingByVotingCount(page_display - 1))
             }
         }
@@ -324,7 +324,7 @@ class PlayerInventoryListener extends Listener {
               val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
               player.openInventory(MenuInventoryData.getRankingByPremiumEffectPoint(page_display - 1))
             }
 
@@ -333,7 +333,7 @@ class PlayerInventoryListener extends Listener {
               val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
 
               //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
               player.openInventory(MenuInventoryData.getRankingByPremiumEffectPoint(page_display - 1))
             }
         }
@@ -898,21 +898,21 @@ class PlayerInventoryListener extends Listener {
         //プレイヤーレベルが10に達していないとき
         if (playerdata.level < 10) {
           player.sendMessage(GOLD.toString + "プレイヤーレベルが足りません")
-          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
           return
         }
 
         //既に妖精召喚している場合終了
         if (playerdata.usingVotingFairy) {
           player.sendMessage(GOLD.toString + "既に妖精を召喚しています")
-          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
           return
         }
 
         //投票ptが足りない場合終了
         if (playerdata.effectPoint < playerdata.toggleVotingFairy * 2) {
           player.sendMessage(GOLD.toString + "投票ptが足りません")
-          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
           return
         }
 
@@ -962,8 +962,8 @@ class PlayerInventoryListener extends Listener {
       event.setCancelled(true)
       if (itemstackcurrent.getType == Material.NETHER_STAR) {
         playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1, canEvolve = false)
-        player.playSound(player.getLocation, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5.toFloat)
-        player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5f)
+        player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8f)
         player.openInventory(MenuInventoryData.getGiganticBerserkAfterEvolutionMenu(player))
       }
     } else if (topinventory.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {

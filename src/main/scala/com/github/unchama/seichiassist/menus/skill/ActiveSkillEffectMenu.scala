@@ -45,7 +45,7 @@ object ActiveSkillEffectMenu extends Menu {
           if (effectPoint < effect.usePoint) {
             sequentialEffect(
               s"${DARK_RED}エフェクトポイントが足りません".asMessageEffect(),
-              FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0.toFloat, 0.5.toFloat)
+              FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             )(player)
           } else {
             IO {
@@ -54,7 +54,7 @@ object ActiveSkillEffectMenu extends Menu {
               playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
             } >> sequentialEffect(
               s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
-              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0.toFloat, 1.2.toFloat)
+              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
             )(player)
           }
       } yield ()
@@ -66,7 +66,7 @@ object ActiveSkillEffectMenu extends Menu {
           if (premiumEffectPoint < effect.usePoint) {
             sequentialEffect(
               s"${DARK_RED}プレミアムエフェクトポイントが足りません".asMessageEffect(),
-              FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0.toFloat, 0.5.toFloat)
+              FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             )(player)
           } else {
             IO {
@@ -78,7 +78,7 @@ object ActiveSkillEffectMenu extends Menu {
               playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
             } >> sequentialEffect(
               s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
-              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0.toFloat, 1.2.toFloat)
+              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
             )(player)
           }
       } yield ()
@@ -191,7 +191,7 @@ object ActiveSkillEffectMenu extends Menu {
           )
           .build(),
         LeftClickButtonEffect(
-          FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1.toFloat),
+          FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1f),
           // TODO メニューに置き換える
           computedEffect(p => openInventoryEffect(MenuInventoryData.getBuyRecordMenuData(p)))
         )

@@ -69,7 +69,7 @@ class PlayerClickListener extends Listener {
     //クールダウンタイム中は処理を終了
     if (!activeSkillAvailability(player).get.unsafeRunSync()) {
       //SEを再生
-      player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5.toFloat, 1f)
+      player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1f)
       return
     }
 
@@ -196,14 +196,14 @@ class PlayerClickListener extends Listener {
 
       //確率に応じてメッセージを送信
       if (probabilityOfItem < 0.001) {
-        Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat, 2f)
+        Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
 
         {
           playerData.settings.getBroadcastMutingSettings
             .flatMap(settings =>
               IO {
                 if (!settings.shouldMuteMessages) {
-                  player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_DEATH, 0.5.toFloat, 2f)
+                  player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
                 }
               }
             )
@@ -242,7 +242,7 @@ class PlayerClickListener extends Listener {
         Util.sendEveryMessageWithoutIgnore(message)
         gachaGTWin += 1
       } else if (probabilityOfItem < 0.01) {
-        player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8.toFloat, 1f)
+        player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
         if (count == 1) {
           player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
         }
@@ -273,7 +273,7 @@ class PlayerClickListener extends Listener {
       )
     }
 
-    player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1.toFloat)
+    player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1f)
   }
 
   //スキル切り替えのイベント
@@ -410,7 +410,7 @@ class PlayerClickListener extends Listener {
           return
         }
         //開く音を再生
-        player.playSound(player.getLocation, Sound.BLOCK_ENDERCHEST_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_ENDERCHEST_OPEN, 1f, 0.1f)
         //インベントリを開く
         player.openInventory(playerdata.pocketInventory)
       }

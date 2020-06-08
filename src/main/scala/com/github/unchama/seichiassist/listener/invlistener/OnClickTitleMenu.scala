@@ -89,25 +89,25 @@ object OnClickTitleMenu extends Listener {
         //パーツショップ
         case Material.ITEM_FRAME =>
 
-          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.setTitleShopData(player))
 
         //前パーツ
         case Material.WATER_BUCKET =>
 
-          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
 
         //中パーツ
         case Material.MILK_BUCKET =>
 
-          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
 
         //後パーツ
         case Material.LAVA_BUCKET =>
 
-          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+          player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
           player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
         case _ =>
       }
@@ -151,11 +151,11 @@ object OnClickTitleMenu extends Listener {
         player.sendMessage("前パーツの選択を解除しました。")
         return
       } else if (itemstackcurrent.getType == Material.BARRIER) {
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         return
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
         return
       } //次ページ
@@ -189,11 +189,11 @@ object OnClickTitleMenu extends Listener {
         player.sendMessage("中パーツの選択を解除しました。")
         return
       } else if (itemstackcurrent.getType == Material.BARRIER) {
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         return
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
         return
       } //次ページ
@@ -227,11 +227,11 @@ object OnClickTitleMenu extends Listener {
         player.sendMessage("後パーツの選択を解除しました。")
         return
       } else if (itemstackcurrent.getType == Material.BARRIER) {
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         return
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
         return
       } //次ページ
@@ -290,11 +290,11 @@ object OnClickTitleMenu extends Listener {
 
 
       } else if (itemstackcurrent.getType == Material.BARRIER) {
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         return
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
-        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1.toFloat)
+        player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setTitleShopData(player))
         return
       } //次ページ

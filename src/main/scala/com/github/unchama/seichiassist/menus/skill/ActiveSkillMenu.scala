@@ -385,7 +385,7 @@ object ActiveSkillMenu extends Menu {
           )
           .build(),
         LeftClickButtonEffect(
-          FocusedSoundEffect(Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5.toFloat),
+          FocusedSoundEffect(Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5f),
           ActiveSkillEffectMenu.open
         )
       )
