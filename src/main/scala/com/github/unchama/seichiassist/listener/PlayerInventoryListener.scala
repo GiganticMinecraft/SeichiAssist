@@ -34,7 +34,7 @@ class PlayerInventoryListener extends Listener {
 
   // Visible for test
   def getPage(name: String): Int = {
-    name.replaceAll("(\\d+)ページ目", "$1").toInt
+    name.replaceAll(".*?(\\d+)ページ目.*", "$1").toInt
   }
   
   //ランキングメニュー
