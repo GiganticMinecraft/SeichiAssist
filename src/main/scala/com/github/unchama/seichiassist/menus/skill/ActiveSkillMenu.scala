@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.data.player.PlayerSkillState
 import com.github.unchama.seichiassist.effects.unfocused.{BroadcastMessageEffect, BroadcastSoundEffect}
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{emptyEffect, sequentialEffect}
@@ -303,7 +304,8 @@ object ActiveSkillMenu extends Menu {
                       case None =>
                         val unlockedState = skillState.obtained(skill)
                         val (newState, assaultSkillUnlockEffects) =
-                          if (unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
+                          if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
+                            unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
                             (
                               unlockedState.obtained(SeichiSkill.AssaultArmor),
                               sequentialEffect(
