@@ -38,6 +38,7 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference) extends
         /**
          * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
          */
+        //noinspection ScalaDeprecation
         meta.setOwner(name)
     }
   }

@@ -7,8 +7,6 @@ import com.github.unchama.seichiassist.data.player.AchievementPoint;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.data.player.PlayerNickname;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillNormalEffect;
-import com.github.unchama.seichiassist.activeskill.effect.ActiveSkillPremiumEffect;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
@@ -28,11 +26,7 @@ import scala.Option;
 import scala.collection.mutable.HashMap;
 import scala.collection.mutable.Map;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class MenuInventoryData {
@@ -107,7 +101,7 @@ public final class MenuInventoryData {
                 ChatColor.RESET + "" + ChatColor.GRAY + "投票ページで投票した後",
                 ChatColor.RESET + "" + ChatColor.GRAY + "このボタンをクリックします",
                 ChatColor.RESET + "" + ChatColor.AQUA + "特典受取済投票回数：" + playerdata.p_givenvote(),
-                ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.activeskilldata().effectpoint
+                ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.effectPoint()
         );
     }
 
@@ -391,133 +385,6 @@ public final class MenuInventoryData {
     }
 
     /**
-     * エフェクト選択
-     * @param p プレイヤー
-     * @return メニュー
-     */
-    public static Inventory getActiveSkillEffectMenuData(final Player p) {
-        final UUID uuid = p.getUniqueId();
-        final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (validate(p, playerdata, "整地スキルエフェクト選択")) return null;
-        final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地スキルエフェクト選択");
-
-        // 1ページ目を開く
-        {
-            final ItemStack itemstack = buildPlayerSkull(
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "スキルメニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
-                    "MHF_ArrowLeft"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
-        }
-        //1行目
-        {
-            final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "現在選択しているエフェクト：" + ActiveSkillNormalEffect.getNameByNum(playerdata.activeskilldata().effectnum),
-                    ChatColor.RESET + "" + ChatColor.YELLOW + "使えるエフェクトポイント：" + playerdata.activeskilldata().effectpoint,
-                    ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※投票すると獲得出来ます",
-                    ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "使えるプレミアムポイント：" + playerdata.activeskilldata().premiumeffectpoint,
-                    ChatColor.RESET + "" + ChatColor.DARK_GRAY + "※寄付をすると獲得できます"
-            );
-            final ItemStack itemstack = buildPlayerSkull(
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + playerdata.lowercaseName() + "のスキルエフェクトデータ",
-                    lore,
-                    // この操作は安全; メニューを開けているのにUUIDがないなんてことがないから
-                    Bukkit.getOfflinePlayer(playerdata.uuid()).getName(),
-                    DIG100
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 0, itemstack.clone());
-        }
-
-        {
-            final ItemStack itemstack = build(
-                    Material.BOOK_AND_QUILL,
-                    ChatColor.BLUE + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで閲覧"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 2,  itemstack);
-        }
-
-        {
-            final ItemStack itemstack = build(
-                    Material.GLASS,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "エフェクトを使用しない",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット",
-                    DIG100
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 1,  itemstack);
-        }
-
-        {
-            final ActiveSkillNormalEffect[] effects = ActiveSkillNormalEffect.arrayValues();
-            int i = 0;
-            for (final ActiveSkillNormalEffect elem :
-                    effects) {
-                final ItemStack itemstack;
-                //プレイヤーがそのスキルを取得している場合の処理
-                if (playerdata.activeskilldata().obtainedSkillEffects.contains(elem)) {
-                    itemstack = build(
-                            elem.material(),
-                            elem.nameOnUI(),
-                            Arrays.asList(
-                                    ChatColor.RESET + "" + ChatColor.GREEN + elem.explanation(),
-                                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
-                            )
-                    );
-                }
-                //プレイヤーがそのスキルをまだ取得していない場合の処理
-                else {
-                    itemstack = build(
-                            Material.BEDROCK,
-                            elem.nameOnUI(),
-                            Arrays.asList(
-                                    ChatColor.RESET + "" + ChatColor.GREEN + elem.explanation(),
-                                    ChatColor.RESET + "" + ChatColor.YELLOW + "必要エフェクトポイント：" + elem.usePoint(),
-                                    ChatColor.RESET + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除"
-                            )
-                    );
-                }
-                AsyncInventorySetter.setItemAsync(inventory, i + 9,  itemstack);
-                i++;
-            }
-        }
-        {
-            final ActiveSkillPremiumEffect[] effects = ActiveSkillPremiumEffect.arrayValues();
-            int i = 27;
-            for (final ActiveSkillPremiumEffect effect :
-                    effects) {
-                final ItemStack itemstack;
-                if (playerdata.activeskilldata().obtainedSkillPremiumEffects.contains(effect)) {
-                    itemstack = build(
-                            effect.material(),
-                            ChatColor.UNDERLINE + "" + ChatColor.BOLD + ChatColor.stripColor(effect.desc()),
-                            Arrays.asList(
-                                    ChatColor.RESET + "" + ChatColor.GREEN + effect.explain(),
-                                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックでセット"
-                            )
-                    );
-                } else {
-                    //プレイヤーがそのスキルをまだ取得していない場合の処理
-                    itemstack = build(
-                            Material.BEDROCK,
-                            effect.desc(),
-                            Arrays.asList(
-                                    ChatColor.RESET + "" + ChatColor.GREEN + effect.explain(),
-                                    ChatColor.RESET + "" + ChatColor.YELLOW + "必要プレミアムポイント：" + effect.usePoint(),
-                                    ChatColor.RESET + "" + ChatColor.AQUA + "" + ChatColor.UNDERLINE + "クリックで解除"
-                            )
-                    );
-                }
-
-                AsyncInventorySetter.setItemAsync(inventory, i,  itemstack);
-                i++;
-            }
-        }
-        return inventory;
-    }
-
-    /**
      * プレミア購入履歴表示
      * @param player プレイヤー
      * @return メニュー
@@ -597,7 +464,7 @@ public final class MenuInventoryData {
                     ChatColor.RESET + "" + ChatColor.RED + "実績ポイントに変換できます。",
                     ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt",
                     ChatColor.RESET + "" + ChatColor.AQUA + "クリックで変換を一回行います。",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + playerdata.activeskilldata().effectpoint,
+                    ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + playerdata.effectPoint(),
                     ChatColor.RESET + "" + ChatColor.GREEN + "所有実績pt :" + playerdata.achievePoint().left()
             );
 

@@ -2,10 +2,13 @@ package com.github.unchama.seichiassist.listener
 
 import java.util.UUID
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.{ActiveSkill, ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -140,17 +143,14 @@ class PlayerJoinListener extends Listener {
       }
 
       // アサルトスキルを切る
-      // 現在アサルトスキルorアサルトアーマーを選択中
-      if (pd.activeskilldata.assaultnum >= 4 && pd.activeskilldata.assaulttype >= 4) {
-        // アクティブスキルがONになっている
-        if (pd.activeskilldata.mineflagnum != 0) {
-          // メッセージを表示
-          p.sendMessage(GOLD.toString + ActiveSkill.getActiveSkillName(pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum) + "：OFF")
-          // 内部状態をアサルトOFFに変更
-          pd.activeskilldata.updateAssaultSkill(p, pd.activeskilldata.assaulttype, pd.activeskilldata.assaultnum, 0)
-          // トグル音を鳴らす
-          p.playSound(p.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
-        }
+      val skillState = pd.skillState.get.unsafeRunSync()
+      if (skillState.usageMode != Disabled) {
+        SeichiAssist.instance.assaultSkillRoutines.stopAnyFiber(p).flatMap(stopped =>
+          if (stopped)
+            FocusedSoundEffect(Sound.BLOCK_LEVER_CLICK, 1f, 1f).run(p)
+          else
+            IO.unit
+        ).unsafeRunSync()
       }
     }
   }
