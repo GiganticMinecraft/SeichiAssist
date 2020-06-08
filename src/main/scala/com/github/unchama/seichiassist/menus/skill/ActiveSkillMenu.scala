@@ -403,7 +403,9 @@ object ActiveSkillMenu extends Menu {
               ref <- skillStateRef(p)
               _ <- ref.update(_.deselected())
             } yield ()
-          }
+          },
+          s"${YELLOW}スキルの選択をすべて解除しました".asMessageEffect(),
+          FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
         )
       )
     }
