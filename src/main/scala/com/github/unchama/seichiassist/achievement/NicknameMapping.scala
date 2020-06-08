@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.achievement
 
 import com.github.unchama.generic.CachedFunction
 import com.github.unchama.seichiassist.achievement.SeichiAchievement._
-import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup.PlacedBlockAmount
 
 object NicknameMapping {
 
@@ -155,7 +154,7 @@ object NicknameMapping {
     case No_7026 => NicknameCombination(Some(7026), Some(9905), Some(7025))
     case No_7027 => NicknameCombination(Some(7027), None, Some(7027))
 
-    case No_7901 => NicknameCombination(Some(7901), Some(7901), Some(7910))
+    case No_7901 => NicknameCombination(Some(7901), Some(7901), Some(7901))
     case No_7902 => NicknameCombination(Some(7902), None, Some(7902))
     case No_7903 => NicknameCombination(Some(7903), Some(9905), Some(7903))
     case No_7904 => NicknameCombination(Some(7904), Some(9907), Some(7904))
