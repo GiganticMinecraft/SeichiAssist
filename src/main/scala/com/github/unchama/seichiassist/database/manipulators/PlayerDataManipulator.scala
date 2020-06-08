@@ -111,7 +111,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       player.sendMessage(RED.toString + "しばらく待ってからやり直してください")
       return 0
     }
-    new CoolDownTask(player, true, false, false).runTaskLater(plugin, 1200)
+    new CoolDownTask(player, true, false).runTaskLater(plugin, 1200)
 
     supplier
   }

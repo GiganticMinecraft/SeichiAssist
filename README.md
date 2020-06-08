@@ -28,7 +28,7 @@
 最初に、Java Development Kit (JDK) 8をインストールする必要があります。
 [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot) のインストールを推奨します。
 
-[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Setup.html)に従ってsbtのインストールをします。
+[sbtの公式ページ](https://www.scala-sbt.org/1.x/docs/Setup.html) に従ってsbtのインストールをします。
 sbtがコマンドラインで使える状態で`sbt assembly`を実行すると、`target/build`フォルダにjarが出力されます。
 
 ### IntelliJ IDEAの画面からビルドする
@@ -43,7 +43,7 @@ Linux環境では、`./prepare-docker.sh`、Windowsでは`prepare-docker.bat`を
 デバッグ用のBungeecord + Spigot環境を構築することができます。
 
 初回起動時にはSpigotのビルドに時間がかかります。
-さらに、[Minecraft EULA](https://account.mojang.com/documents/minecraft_eula)に同意する必要があるため実行が中断されます。
+さらに、[Minecraft EULA](https://account.mojang.com/documents/minecraft_eula) に同意する必要があるため実行が中断されます。
 EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles/eula.txt`を参照し、
 `eula=false` を `eula=true` に書き換えてください。
 
@@ -75,7 +75,7 @@ publicなメソッドについては、JavaDocsを記載するよう心がけて
 コミットメッセージは変更の方向性を表す英語の動詞(add, remove, clean等)から始めることを推奨しています。
 
 ## Branch Model
-[Git-flow](https://qiita.com/KosukeSone/items/514dd24828b485c69a05)を簡略化したものを使用します。
+[Git-flow](https://qiita.com/KosukeSone/items/514dd24828b485c69a05) を簡略化したものを使用します。
 新規に機能を開発する際は develop ブランチから <任意の文字列> ブランチを作り、そこで作業してください。
 開発が終了したらdevelopブランチにマージします。
 masterブランチは本番環境に反映されます。
@@ -89,6 +89,6 @@ masterブランチは本番環境に反映されます。
   - 各サーバーや環境で共通で構わないパラメータはconfig.ymlを読まず、コードへの直接実装を推奨します。
 
 ## 利用条件
-- [GPLv3ライセンス](https://github.com/GiganticMinecraft/SeichiAssist/blob/develop/LICENSE)での公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。
+- [GPLv3ライセンス](https://github.com/GiganticMinecraft/SeichiAssist/blob/develop/LICENSE) での公開です。ソースコードの使用規約等はGPLv3ライセンスに従います。
 - 当リポジトリのコードの著作権はunchamaが所有しています。
 - 独自機能の追加やバグの修正等、ギガンティック☆整地鯖(以下、当サーバー)の発展への寄与を目的としたコードの修正・改変を歓迎しています。その場合、当サーバーのDiscordコミュニティに参加して、当コードに関する詳細なサポートを受けることが出来ます。

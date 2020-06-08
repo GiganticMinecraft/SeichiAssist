@@ -70,7 +70,7 @@ object BuildMainMenu extends Menu {
           .title(s"$YELLOW$EMPHASIZE${openerData.name}の建築データ")
           .lore(
             s"$RESET${AQUA}建築レベル: ${openerData.level}",
-            s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.doubleValue()}",
+            s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.toPlainString}",
             s"$RESET$DARK_GRAY※1分毎に更新"
           )
           .build()
