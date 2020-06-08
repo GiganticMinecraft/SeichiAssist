@@ -5,14 +5,16 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class NickNameMappingSpec extends AnyWordSpec {
   "mapping" should {
-    "not map to an empty combination" in {
+    "not assign an empty combination" in {
       SeichiAchievement.values.foreach { achievement =>
+        info(s"for achievement $achievement")
+
         val NicknameCombination(first, second, third) = NicknameMapping.getNicknameCombinationFor(achievement)
         assert(List(first, second, third).flatten.nonEmpty)
       }
     }
 
-    "refer only to the existing nicknames" in {
+    "assign only valid references to nicknames" in {
       def referenceExists(id: AchievementId, partSelector: NicknamesToBeUnlocked => Option[String]) =
         Nicknames.getNicknameFor(id).flatMap(partSelector).nonEmpty
 
