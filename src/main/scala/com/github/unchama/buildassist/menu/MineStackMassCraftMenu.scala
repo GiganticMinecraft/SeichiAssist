@@ -322,6 +322,148 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("brick_item", 50))
           ), oneToHundred, 3
         ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("ender_stone", 4)),
+            NonEmptyList.of(("end_bricks", 4))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("coal", 9)),
+            NonEmptyList.of(("coal_block", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("iron_ingot", 9)),
+            NonEmptyList.of(("iron_block", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(2, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("gold_ingot", 9)),
+            NonEmptyList.of(("gold_block", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("lapis_lazuli", 9)),
+            NonEmptyList.of(("lapis_block", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(3, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("redstone", 9)),
+            NonEmptyList.of(("redstone_block", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("emerald", 9)),
+            NonEmptyList.of(("emerald_block", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(4, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("diamond", 9)),
+            NonEmptyList.of(("diamond_block", 1))
+          ), oneToThousand, 3
+        ),
+      ),
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("clay", 1)),
+            NonEmptyList.of(("clay_ball", 4))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("magma", 8), ("bucket", 1)),
+            NonEmptyList.of(("lava_bucket", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("quartz_ore", 4), ("coal", 1)),
+            NonEmptyList.of(("quartz", 4))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("quartz_ore", 50), ("lava_bucket", 1)),
+            NonEmptyList.of(("quartz", 50))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("quartz_block", 1)),
+            NonEmptyList.of(("quartz_block1", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(2, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("quartz_block", 2)),
+            NonEmptyList.of(("quartz_block2", 1))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(3, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("redstone_ore", 4), ("coal", 1)),
+            NonEmptyList.of(("redstone", 4))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(3, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("redstone_ore", 50), ("lava_bucket", 1)),
+            NonEmptyList.of(("redstone", 50))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(4, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("lapis_ore", 4), ("coal", 1)),
+            NonEmptyList.of(("lapis_lazuli", 4))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(4, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("lapis_ore", 50), ("lava_bucket", 1)),
+            NonEmptyList.of(("lapis_lazuli", 50))
+          ), oneToThousand, 3
+        ),
+      ),
+      List(
+        ChestSlotRef(0, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("emerald_ore", 4), ("coal", 1)),
+            NonEmptyList.of(("emerald", 4))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(0, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("emerald_ore", 50), ("lava_bucket", 1)),
+            NonEmptyList.of(("emerald", 50))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("diamond_ore", 4), ("coal", 1)),
+            NonEmptyList.of(("diamond", 4))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(1, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("diamond_ore", 50), ("lava_bucket", 1)),
+            NonEmptyList.of(("diamond", 50))
+          ), oneToThousand, 3
+        ),
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("iron_ingot", 3)),
+            NonEmptyList.of(("bucket", 1))
+          ), oneToThousand, 3
+        ),
       )
     )
   }
