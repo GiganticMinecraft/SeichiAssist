@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, Ac
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
+import com.github.unchama.util.ActionStatus
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -70,7 +71,11 @@ object ActiveSkillEffectMenu extends Menu {
           } else {
             for {
               feedBack <- SeichiAssist.databaseGateway.donateDataManipulator.recordPremiumEffectPurchase(player, effect)
-              _ <- feedBack(player)
+              _ <- feedBack match {
+                case ActionStatus.Ok => IO.unit
+                case ActionStatus.Fail =>
+                  "購入履歴が正しく記録されませんでした。管理者に報告してください。".asMessageEffect()(player)
+              }
               _ <- IO {
                 playerData.premiumEffectPoint -= effect.usePoint
                 val state = playerData.skillEffectState

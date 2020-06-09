@@ -14,21 +14,16 @@ import org.bukkit.inventory.{Inventory, ItemStack}
 
 class DonateDataManipulator(private val gateway: DatabaseGateway) {
 
-  import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.syntax.ResultSetSyntax._
 
   import scala.jdk.CollectionConverters._
 
-  def recordPremiumEffectPurchase(player: Player, effect: ActiveSkillPremiumEffect): IO[TargetedEffect[Player]] = {
+  def recordPremiumEffectPurchase(player: Player, effect: ActiveSkillPremiumEffect): IO[ActionStatus] = {
     val command =
       s"insert into $tableReference (playername,playeruuid,effectname,usepoint,date) " +
         s"value('${player.getName}','${player.getUniqueId.toString}','${effect.entryName}',${effect.usePoint},cast(now() as datetime))"
 
-    IO { gateway.executeUpdate(command) }.map {
-      case ActionStatus.Ok => emptyEffect
-      case ActionStatus.Fail => "購入履歴が正しく記録されませんでした。管理者に報告してください。".asMessageEffect()
-    }
+    IO { gateway.executeUpdate(command) }
   }
 
   def addDonate(name: String, point: Int): ActionStatus = {
