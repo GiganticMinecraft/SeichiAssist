@@ -61,7 +61,7 @@ object ActiveSkillEffectMenu extends Menu {
 
     def unlockPremiumEffect(effect: ActiveSkillPremiumEffect): IO[Unit] =
       for {
-        premiumEffectPoint <- IO { playerData.premiumEffectPoint }
+        premiumEffectPoint <- SeichiAssist.databaseGateway.donateDataManipulator.currentPremiumPointFor(player)
         _ <-
           if (premiumEffectPoint < effect.usePoint) {
             sequentialEffect(
@@ -70,21 +70,19 @@ object ActiveSkillEffectMenu extends Menu {
             )(player)
           } else {
             for {
-              feedBack <- SeichiAssist.databaseGateway.donateDataManipulator.recordPremiumEffectPurchase(player, effect)
-              _ <- feedBack match {
-                case ActionStatus.Ok => IO.unit
+              transactionResult <- SeichiAssist.databaseGateway.donateDataManipulator.recordPremiumEffectPurchase(player, effect)
+              _ <- transactionResult match {
+                case ActionStatus.Ok =>
+                  IO {
+                    val state = playerData.skillEffectState
+                    playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
+                  } >> sequentialEffect(
+                    s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
+                  )(player)
                 case ActionStatus.Fail =>
                   "購入履歴が正しく記録されませんでした。管理者に報告してください。".asMessageEffect()(player)
               }
-              _ <- IO {
-                playerData.premiumEffectPoint -= effect.usePoint
-                val state = playerData.skillEffectState
-                playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
-              }
-              _ <- sequentialEffect(
-                s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
-                FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
-              )(player)
             } yield ()
           }
       } yield ()
@@ -152,25 +150,30 @@ object ActiveSkillEffectMenu extends Menu {
       )
     }
 
-    val effectDataButton: IO[Button] = IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
+    val effectDataButton: IO[Button] =
+      for {
+        premiumEffectPoint <- SeichiAssist.databaseGateway.donateDataManipulator.currentPremiumPointFor(player)
+        button <-
+          IO {
+            val playerData = SeichiAssist.playermap(getUniqueId)
 
-      ReloadingButton(ActiveSkillEffectMenu){
-        Button(
-          new SkullItemStackBuilder(getUniqueId)
-            .title(s"$UNDERLINE$BOLD$YELLOW${getName}のスキルエフェクトデータ")
-            .lore(List(
-              s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
-              s"$RESET${YELLOW}使えるエフェクトポイント：${playerData.effectPoint}",
-              s"$RESET$DARK_GRAY※投票すると獲得できます",
-              s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント${playerData.premiumEffectPoint}",
-              s"$RESET$DARK_GRAY※寄付をすると獲得できます"
-            ))
-            .build(),
-          Nil
-        )
-      }
-    }
+            ReloadingButton(ActiveSkillEffectMenu) {
+              Button(
+                new SkullItemStackBuilder(getUniqueId)
+                  .title(s"$UNDERLINE$BOLD$YELLOW${getName}のスキルエフェクトデータ")
+                  .lore(List(
+                    s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
+                    s"$RESET${YELLOW}使えるエフェクトポイント：${playerData.effectPoint}",
+                    s"$RESET$DARK_GRAY※投票すると獲得できます",
+                    s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント${premiumEffectPoint}",
+                    s"$RESET$DARK_GRAY※寄付をすると獲得できます"
+                  ))
+                  .build(),
+                Nil
+              )
+            }
+          }
+      } yield button
   }
 
   private object ConstantButtons {

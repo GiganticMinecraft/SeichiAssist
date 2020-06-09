@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.database.manipulators
 import java.sql.SQLException
 
 import cats.effect.IO
+import com.github.unchama.generic.effect.SyncExtra
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffect
@@ -41,7 +42,7 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
 
   def loadDonateData(playerdata: PlayerData, inventory: Inventory): Boolean = {
     // TODO: ほんとうにStarSelectじゃなきゃだめ?
-    val command = "select * from " + tableReference + " where playername = '" + playerdata.lowercaseName + "'"
+    val command = s"select * from $tableReference where playername like '${playerdata.lowercaseName}'"
     try {
       var count = 0
       gateway.executeQuery(command).recordIteration { lrs =>
@@ -89,4 +90,43 @@ class DonateDataManipulator(private val gateway: DatabaseGateway) {
 
     true
   }
+
+  def loadTransactionHistoryFor(player: Player): IO[List[PremiumPointTransaction]] = {
+    val command = s"select * from $tableReference where playername like '${player.getName}'"
+
+    SyncExtra.recoverWithStackTrace(
+      "プレミアムエフェクト購入のトランザクション履歴の読み込みに失敗しました。",
+      List(),
+      IO {
+        gateway.executeQuery(command).recordIteration { lrs =>
+          //ポイント購入の処理
+          val getPoint = lrs.getInt("getpoint")
+          val usePoint = lrs.getInt("usepoint")
+
+          if (getPoint > 0) {
+            Obtained(getPoint)
+          } else if (usePoint > 0) {
+            val effectName = lrs.getString("effectname")
+            val nameOrEffect = ActiveSkillPremiumEffect.withNameOption(effectName).toRight(effectName)
+            Used(usePoint, nameOrEffect)
+          } else {
+            throw new IllegalStateException("usepointまたはgetpointが正である必要があります")
+          }
+        }
+      }
+    )
+  }
+
+  def currentPremiumPointFor(player: Player): IO[Int] = {
+    loadTransactionHistoryFor(player).map { history =>
+      history.map {
+        case Obtained(p) => p
+        case Used(p, _) => -p
+      }.sum
+    }
+  }
+
+  sealed trait PremiumPointTransaction
+  case class Obtained(amount: Int) extends PremiumPointTransaction
+  case class Used(amount: Int, forPurchaseOf: Either[String, ActiveSkillPremiumEffect]) extends PremiumPointTransaction
 }
