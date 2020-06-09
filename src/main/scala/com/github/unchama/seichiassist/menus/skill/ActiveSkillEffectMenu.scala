@@ -6,13 +6,11 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import com.github.unchama.util.ActionStatus
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.Player
@@ -201,8 +199,7 @@ object ActiveSkillEffectMenu extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1f),
-          // TODO メニューに置き換える
-          computedEffect(p => openInventoryEffect(MenuInventoryData.getBuyRecordMenuData(p)))
+          PremiumPointTransactionHistoryMenu(1).open
         )
       )
 

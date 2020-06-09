@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.AchievementPoint;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.data.player.PlayerNickname;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
@@ -32,9 +31,6 @@ import java.util.function.Consumer;
 public final class MenuInventoryData {
     private MenuInventoryData() {
     }
-
-    private static final HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
-    private static final DatabaseGateway databaseGateway = SeichiAssist.databaseGateway();
 
     // 実際には60人も入ることは無いのでは？
     private static final Map<UUID, Boolean> finishedHeadPageBuild = new HashMap<>(60, 0.75);
@@ -312,28 +308,6 @@ public final class MenuInventoryData {
             itemstack.setItemMeta(skullmeta);
             AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
         }
-        return inventory;
-    }
-
-    /**
-     * プレミア購入履歴表示
-     * @param player プレイヤー
-     * @return メニュー
-     */
-    public static Inventory getBuyRecordMenuData(final Player player) {
-        final PlayerData playerdata = playermap.apply(player.getUniqueId());
-        final Inventory inventory = getEmptyInventory(4, ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
-
-        // 1ページ目を開く
-        final ItemStack itemstack = buildPlayerSkull(
-                null,
-                ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
-                "MHF_ArrowLeft"
-        );
-        AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
-
-        databaseGateway.donateDataManipulator.loadDonateData(playerdata, inventory);
-
         return inventory;
     }
 

@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
-import com.github.unchama.seichiassist.menus.skill.ActiveSkillEffectMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
@@ -260,61 +259,6 @@ class PlayerInventoryListener extends Listener {
               player.openInventory(MenuInventoryData.getRankingByVotingCount(page_display - 1))
             }
         }
-      }
-    }
-  }
-
-  //購入履歴メニュー
-  @EventHandler
-  def onPlayerClickPremiumLogMenuEvent(event: InventoryClickEvent): Unit = {
-    //外枠のクリック処理なら終了
-    if (event.getClickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.getCurrentItem
-    val view = event.getView
-    val he = view.getPlayer
-    //インベントリを開けたのがプレイヤーではない時終了
-    if (he.getType != EntityType.PLAYER) {
-      return
-    }
-
-    val topinventory = view.getTopInventory.ifNull {
-      return
-    }
-    //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.row != 4) {
-      return
-    }
-    val player = he.asInstanceOf[Player]
-
-    //インベントリ名が以下の時処理
-    if (topinventory.getTitle == BLUE.toString + "" + BOLD + "プレミアムエフェクト購入履歴") {
-      event.setCancelled(true)
-
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-
-      val isSkull = itemstackcurrent.getType == Material.SKULL_ITEM
-
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-      //ページ変更処理
-      if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-
-        seichiassist.unsafe.runAsyncTargetedEffect(player)(
-          sequentialEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            ActiveSkillEffectMenu.open
-          ),
-          "アクティブスキルエフェクトメニューを開く"
-        )
       }
     }
   }
