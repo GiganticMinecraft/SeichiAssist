@@ -243,17 +243,17 @@ object BreakUtil {
 
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- IO {
-       targetBlocks.toSeq
-         .filter { block =>
-           block.getType match {
-             case Material.AIR =>
-               Bukkit.getLogger
-                 .warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
-               false
-             case _ => true
-           }
-         }
-         .map(block => (block.getLocation.clone(), block.getType, block.getData))
+        targetBlocks.toSeq
+          .filter { block =>
+            block.getType match {
+              case Material.AIR =>
+                Bukkit.getLogger
+                  .warning(s"AIRの破壊が${block.getLocation.toString}にて試行されました。")
+                false
+              case _ => true
+            }
+          }
+          .map(block => (block.getLocation.clone(), block.getType, block.getData))
       }
 
       // ブロックをすべて[[toMaterial]]に変える
