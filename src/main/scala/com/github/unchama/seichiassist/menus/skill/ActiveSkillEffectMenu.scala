@@ -13,7 +13,6 @@ import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, Ac
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
-import com.github.unchama.util.ActionStatus
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -69,17 +68,19 @@ object ActiveSkillEffectMenu extends Menu {
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             )(player)
           } else {
-            IO {
-              if (SeichiAssist.databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerData, effect) == ActionStatus.Fail) {
-                player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。")
+            for {
+              feedBack <- SeichiAssist.databaseGateway.donateDataManipulator.recordPremiumEffectPurchase(player, effect)
+              _ <- feedBack(player)
+              _ <- IO {
+                playerData.premiumEffectPoint -= effect.usePoint
+                val state = playerData.skillEffectState
+                playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
               }
-              playerData.premiumEffectPoint -= effect.usePoint
-              val state = playerData.skillEffectState
-              playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
-            } >> sequentialEffect(
-              s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
-              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
-            )(player)
+              _ <- sequentialEffect(
+                s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
+                FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
+              )(player)
+            } yield ()
           }
       } yield ()
 

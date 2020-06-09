@@ -2,33 +2,33 @@ package com.github.unchama.seichiassist.database.manipulators
 
 import java.sql.SQLException
 
+import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffect
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.{Inventory, ItemStack}
 
 class DonateDataManipulator(private val gateway: DatabaseGateway) {
 
+  import com.github.unchama.targetedeffect._
+  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.syntax.ResultSetSyntax._
 
   import scala.jdk.CollectionConverters._
 
-  def addPremiumEffectBuy(playerdata: PlayerData,
-                          effect: ActiveSkillPremiumEffect): ActionStatus = {
-    val command = ("insert into " + tableReference
-      + " (playername,playeruuid,effectname,usepoint,date) "
-      + "value("
-      + "'" + playerdata.lowercaseName + "',"
-      + "'" + playerdata.uuid.toString + "',"
-      + "'" + effect.entryName + "',"
-      + effect.usePoint + ","
-      + "cast( now() as datetime )"
-      + ")")
+  def recordPremiumEffectPurchase(player: Player, effect: ActiveSkillPremiumEffect): IO[TargetedEffect[Player]] = {
+    val command =
+      s"insert into $tableReference (playername,playeruuid,effectname,usepoint,date) " +
+        s"value('${player.getName}','${player.getUniqueId.toString}','${effect.entryName}',${effect.usePoint},cast(now() as datetime))"
 
-    gateway.executeUpdate(command)
+    IO { gateway.executeUpdate(command) }.map {
+      case ActionStatus.Ok => emptyEffect
+      case ActionStatus.Fail => "購入履歴が正しく記録されませんでした。管理者に報告してください。".asMessageEffect()
+    }
   }
 
   def addDonate(name: String, point: Int): ActionStatus = {
