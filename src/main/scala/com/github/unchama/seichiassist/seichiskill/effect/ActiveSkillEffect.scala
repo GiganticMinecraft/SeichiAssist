@@ -181,9 +181,9 @@ object ActiveSkillNormalEffect extends Enum[ActiveSkillNormalEffect] {
    */
   @Deprecated() val arrayValues: Array[ActiveSkillNormalEffect] = values.toArray
 
-  case object Explosion extends ActiveSkillNormalEffect("explosion", s"${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
-  case object Blizzard extends ActiveSkillNormalEffect("blizzard", s"${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
-  case object Meteor extends ActiveSkillNormalEffect("meteor", s"${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
+  case object Explosion extends ActiveSkillNormalEffect("ef_explosion", s"${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
+  case object Blizzard extends ActiveSkillNormalEffect("ef_blizzard", s"${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
+  case object Meteor extends ActiveSkillNormalEffect("ef_meteor", s"${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
 
 }
 
