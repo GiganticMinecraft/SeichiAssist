@@ -17,7 +17,7 @@ class TryableFiberRepository(implicit shift: ContextShift[IO]) extends PlayerDat
         for {
           _ <- fiber.cancel
         } yield (fiber, ())
-      }
+      }.start.map(_ => ())
 
   /**
    * 与えられたプレーヤーに対して、
