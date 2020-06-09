@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.seichiskill.assault
 
-import cats.effect.IO
+import cats.effect.{ExitCase, IO}
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.SeichiAssist
@@ -54,7 +54,6 @@ object AssaultRoutine {
         } else if (idleCount < idleCountLimit) {
           IterationState(prevLocation, idleCount + 1)
         } else {
-          player.sendMessage(s"${YELLOW}アサルトスキルがOFFになりました")
           return None
         }
       }
@@ -151,8 +150,17 @@ object AssaultRoutine {
       currentLoc <- IO { player.getLocation }
       _ <- RepeatingRoutine.recMTask(IterationState(currentLoc, 0))(s =>
         syncShift.shift >> IO(routineAction(s))
-      )(IO.pure(500.millis)).guarantee {
-        IO { player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} OFF") }
+      )(IO.pure(500.millis)).guaranteeCase {
+        case ExitCase.Error(_) | ExitCase.Completed =>
+          IO {
+            // 継続条件が満たされなかった場合の表示
+            player.sendMessage(s"${YELLOW}アサルトスキルがOFFになりました")
+          }
+        case ExitCase.Canceled =>
+          IO {
+            // 明示的にプレーヤーが切り替えた場合
+            player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} OFF")
+          }
       }
     } yield ()
   }
