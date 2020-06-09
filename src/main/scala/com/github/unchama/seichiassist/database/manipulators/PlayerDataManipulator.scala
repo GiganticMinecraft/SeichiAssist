@@ -131,23 +131,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     gateway.executeUpdate(command)
   }
 
-  /**
-   * プレミアムエフェクトポイントを加算するメソッド。
-   *
-   * @param playerName プレーヤーネーム
-   * @param num        足す整数
-   * @return 処理の成否
-   */
-  def addPremiumEffectPoint(playerName: String, num: Int): ActionStatus = {
-    val command = ("update " + tableReference
-      + " set premiumeffectpoint = premiumeffectpoint + " + num //引数で来たポイント数分加算
-
-      + s" where name = '$playerName'")
-
-    gateway.executeUpdate(command)
-  }
-
-
   //指定されたプレイヤーにガチャ券を送信する
   def addPlayerBug(playerName: String, num: Int): ActionStatus = {
     val command = ("update " + tableReference
