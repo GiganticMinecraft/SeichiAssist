@@ -308,8 +308,6 @@ object SeichiAssist {
   val ranklist_p_vote: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   //マナ妖精表示用のデータリスト
   val ranklist_p_apple: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
-  //プレミアムエフェクトポイント表示用データリスト
-  val ranklist_premiumeffectpoint: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
 
   var instance: SeichiAssist = _
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)

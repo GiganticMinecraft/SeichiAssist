@@ -201,7 +201,6 @@ class PlayerData(
   var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
   val manaState: Mana = new Mana()
   var effectPoint: Int = 0
-  var premiumEffectPoint: Int = 0
   //endregion
 
   //二つ名解禁フラグ保存用

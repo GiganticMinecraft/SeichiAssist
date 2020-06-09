@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.AchievementPoint;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.data.player.PlayerNickname;
-import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
@@ -32,9 +31,6 @@ import java.util.function.Consumer;
 public final class MenuInventoryData {
     private MenuInventoryData() {
     }
-
-    private static final HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
-    private static final DatabaseGateway databaseGateway = SeichiAssist.databaseGateway();
 
     // 実際には60人も入ることは無いのでは？
     private static final Map<UUID, Boolean> finishedHeadPageBuild = new HashMap<>(60, 0.75);
@@ -312,97 +308,6 @@ public final class MenuInventoryData {
             itemstack.setItemMeta(skullmeta);
             AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
         }
-        return inventory;
-    }
-
-    /**
-     * プレミアムエフェクトポイント
-     * @param page ページ
-     * @return メニュー
-     */
-    public static Inventory getRankingByPremiumEffectPoint(final int page) {
-        final int pageLimit = 2;
-        final int lowerBound = 1;
-        final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "寄付神ランキング");
-        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
-        for (int donationRank = 50 * page, invIndex = 0; donationRank < 50 + 50 * page; donationRank++, invIndex++) {
-            if (donationRank >= SeichiAssist.ranklist_premiumeffectpoint().size()) {
-                break;
-            }
-            final RankData rankdata = SeichiAssist.ranklist_premiumeffectpoint().apply(donationRank);
-            if (rankdata.premiumeffectpoint < lowerBound) { //寄付金額0
-                break;
-            }
-            final SkullMeta skullmeta = buildSkullMeta(
-        ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (donationRank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
-                Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総寄付金額:" + rankdata.premiumeffectpoint * 100),
-                rankdata.name
-            );
-            itemstack.setItemMeta(skullmeta);
-            final int finalInventoryIndex;
-            if (invIndex == 45) {
-                finalInventoryIndex = 47;
-            } else {
-                finalInventoryIndex = invIndex;
-            }
-            AsyncInventorySetter.setItemAsync(inventory, finalInventoryIndex, itemstack.clone());
-        }
-
-        if (page != pageLimit) {
-            // 整地神ランキング次ページ目を開く
-            final SkullMeta skullmeta = buildSkullMeta(
-                ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付神ランキング" + (page + 2) + "ページ目へ",
-                Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                "MHF_ArrowDown"
-            );
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, 52, itemstack.clone());
-        }
-
-        // 1ページ目を開く
-        {
-            final SkullMeta skullmeta;
-            if (page == 0) {
-                skullmeta = buildSkullMeta(
-                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ",
-                        Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                        "MHF_ArrowLeft"
-                );
-            } else {
-                // 寄付神ランキング前ページ目を開く;
-                skullmeta = buildSkullMeta(
-                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "寄付神ランキング" + page + "ページ目へ",
-                        Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                        "MHF_ArrowUp"
-                );
-            }
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
-        }
-
-
-        return inventory;
-    }
-
-    /**
-     * プレミア購入履歴表示
-     * @param player プレイヤー
-     * @return メニュー
-     */
-    public static Inventory getBuyRecordMenuData(final Player player) {
-        final PlayerData playerdata = playermap.apply(player.getUniqueId());
-        final Inventory inventory = getEmptyInventory(4, ChatColor.BLUE + "" + ChatColor.BOLD + "プレミアムエフェクト購入履歴");
-
-        // 1ページ目を開く
-        final ItemStack itemstack = buildPlayerSkull(
-                null,
-                ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
-                "MHF_ArrowLeft"
-        );
-        AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
-
-        databaseGateway.donateDataManipulator.loadDonateData(playerdata, inventory);
-
         return inventory;
     }
 

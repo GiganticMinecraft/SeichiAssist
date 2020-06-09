@@ -6,13 +6,11 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import com.github.unchama.util.ActionStatus
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.Player
@@ -61,7 +59,7 @@ object ActiveSkillEffectMenu extends Menu {
 
     def unlockPremiumEffect(effect: ActiveSkillPremiumEffect): IO[Unit] =
       for {
-        premiumEffectPoint <- IO { playerData.premiumEffectPoint }
+        premiumEffectPoint <- SeichiAssist.databaseGateway.donateDataManipulator.currentPremiumPointFor(player)
         _ <-
           if (premiumEffectPoint < effect.usePoint) {
             sequentialEffect(
@@ -69,17 +67,21 @@ object ActiveSkillEffectMenu extends Menu {
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             )(player)
           } else {
-            IO {
-              if (SeichiAssist.databaseGateway.donateDataManipulator.addPremiumEffectBuy(playerData, effect) == ActionStatus.Fail) {
-                player.sendMessage("購入履歴が正しく記録されませんでした。管理者に報告してください。")
+            for {
+              transactionResult <- SeichiAssist.databaseGateway.donateDataManipulator.recordPremiumEffectPurchase(player, effect)
+              _ <- transactionResult match {
+                case ActionStatus.Ok =>
+                  IO {
+                    val state = playerData.skillEffectState
+                    playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
+                  } >> sequentialEffect(
+                    s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
+                    FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
+                  )(player)
+                case ActionStatus.Fail =>
+                  "購入履歴が正しく記録されませんでした。管理者に報告してください。".asMessageEffect()(player)
               }
-              playerData.premiumEffectPoint -= effect.usePoint
-              val state = playerData.skillEffectState
-              playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
-            } >> sequentialEffect(
-              s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
-              FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
-            )(player)
+            } yield ()
           }
       } yield ()
 
@@ -146,25 +148,30 @@ object ActiveSkillEffectMenu extends Menu {
       )
     }
 
-    val effectDataButton: IO[Button] = IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
+    val effectDataButton: IO[Button] =
+      for {
+        premiumEffectPoint <- SeichiAssist.databaseGateway.donateDataManipulator.currentPremiumPointFor(player)
+        button <-
+          IO {
+            val playerData = SeichiAssist.playermap(getUniqueId)
 
-      ReloadingButton(ActiveSkillEffectMenu){
-        Button(
-          new SkullItemStackBuilder(getUniqueId)
-            .title(s"$UNDERLINE$BOLD$YELLOW${getName}のスキルエフェクトデータ")
-            .lore(List(
-              s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
-              s"$RESET${YELLOW}使えるエフェクトポイント：${playerData.effectPoint}",
-              s"$RESET$DARK_GRAY※投票すると獲得できます",
-              s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント${playerData.premiumEffectPoint}",
-              s"$RESET$DARK_GRAY※寄付をすると獲得できます"
-            ))
-            .build(),
-          Nil
-        )
-      }
-    }
+            ReloadingButton(ActiveSkillEffectMenu) {
+              Button(
+                new SkullItemStackBuilder(getUniqueId)
+                  .title(s"$UNDERLINE$BOLD$YELLOW${getName}のスキルエフェクトデータ")
+                  .lore(List(
+                    s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
+                    s"$RESET${YELLOW}使えるエフェクトポイント：${playerData.effectPoint}",
+                    s"$RESET$DARK_GRAY※投票すると獲得できます",
+                    s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント${premiumEffectPoint}",
+                    s"$RESET$DARK_GRAY※寄付をすると獲得できます"
+                  ))
+                  .build(),
+                Nil
+              )
+            }
+          }
+      } yield button
   }
 
   private object ConstantButtons {
@@ -192,8 +199,7 @@ object ActiveSkillEffectMenu extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1f),
-          // TODO メニューに置き換える
-          computedEffect(p => openInventoryEffect(MenuInventoryData.getBuyRecordMenuData(p)))
+          PremiumPointTransactionHistoryMenu(1).open
         )
       )
 

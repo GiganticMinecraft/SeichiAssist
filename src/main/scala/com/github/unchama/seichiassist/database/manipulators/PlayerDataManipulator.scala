@@ -131,23 +131,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     gateway.executeUpdate(command)
   }
 
-  /**
-   * プレミアムエフェクトポイントを加算するメソッド。
-   *
-   * @param playerName プレーヤーネーム
-   * @param num        足す整数
-   * @return 処理の成否
-   */
-  def addPremiumEffectPoint(playerName: String, num: Int): ActionStatus = {
-    val command = ("update " + tableReference
-      + " set premiumeffectpoint = premiumeffectpoint + " + num //引数で来たポイント数分加算
-
-      + s" where name = '$playerName'")
-
-    gateway.executeUpdate(command)
-  }
-
-
   //指定されたプレイヤーにガチャ券を送信する
   def addPlayerBug(playerName: String, num: Int): ActionStatus = {
     val command = ("update " + tableReference
@@ -398,7 +381,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     if (!successBlockRankingUpdate()) return false
     if (!successPlayTickRankingUpdate()) return false
     if (!successVoteRankingUpdate()) return false
-    if (!successPremiumEffectPointRanking()) return false
     successAppleNumberRankingUpdate()
 
   }
@@ -475,30 +457,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
     SeichiAssist.ranklist_p_vote.clear()
     SeichiAssist.ranklist_p_vote.addAll(ranklist)
-    true
-  }
-
-  //ランキング表示用にプレミアムエフェクトポイントのカラムだけ全員分引っ張る
-  private def successPremiumEffectPointRanking(): Boolean = {
-    val ranklist = mutable.ArrayBuffer[RankData]()
-    val command = ("select name,premiumeffectpoint from " + tableReference
-      + " order by premiumeffectpoint desc")
-    try {
-      gateway.executeQuery(command).recordIteration { lrs =>
-        val rankdata = new RankData()
-        rankdata.name = lrs.getString("name")
-        rankdata.premiumeffectpoint = lrs.getInt("premiumeffectpoint")
-        ranklist += rankdata
-      }
-    } catch {
-      case e: SQLException =>
-        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-        e.printStackTrace()
-        return false
-    }
-
-    SeichiAssist.ranklist_premiumeffectpoint.clear()
-    SeichiAssist.ranklist_premiumeffectpoint.addAll(ranklist)
     true
   }
 
