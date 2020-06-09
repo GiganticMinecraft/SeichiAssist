@@ -324,22 +324,15 @@ class PlayerClickListener extends Listener {
             //オフハンドで指定ツールを持っていた時の処理
 
             event.setCancelled(true)
-            MaterialSets.refineItemStack(player.getInventory.getItemInOffHand, MaterialSets.breakToolMaterials) match {
-              case Some(tool) =>
-                import cats.implicits._
-                import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
-                val flipActiveSkillActivity =
-                  SeichiAssist.instance
-                    .assaultSkillRoutines
-                    .flipState(player)(TryableFiber.start(AssaultRoutine(player, tool, skill)))
-                    .as(())
+            import cats.implicits._
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
-                flipActiveSkillActivity.unsafeRunSync()
-              case None =>
-                // サブハンドにツールを持っていないとき
-                player.sendMessage(s"${GREEN}使うツールをオフハンドにセット(fキー)してください")
-            }
+            SeichiAssist.instance
+              .assaultSkillRoutines
+              .flipState(player)(TryableFiber.start(AssaultRoutine.tryStart(player, skill)))
+              .as(())
+              .unsafeRunSync()
 
             player.playSound(player.getLocation, Sound.BLOCK_LEVER_CLICK, 1f, 1f)
           case None =>

@@ -4,6 +4,7 @@ import cats.data.Kleisli
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.CachedFunction
+import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
@@ -15,6 +16,7 @@ import com.github.unchama.seichiassist.effects.unfocused.{BroadcastMessageEffect
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
+import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{emptyEffect, sequentialEffect}
 import org.bukkit.ChatColor._
@@ -352,6 +354,20 @@ object ActiveSkillMenu extends Menu {
                   (
                     skillState.select(skill),
                     sequentialEffect(
+                      skill match {
+                        case skill: AssaultSkill =>
+                          import cats.implicits._
+                          import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+
+                          val tryStartRoutine = TryableFiber.start(AssaultRoutine.tryStart(player, skill))
+                          val fiberRepository = SeichiAssist.instance.assaultSkillRoutines
+                          val tryStart =
+                            fiberRepository.stopAnyFiber(player) >>
+                              fiberRepository.flipState(player)(tryStartRoutine)
+
+                          Kleisli.liftF(tryStart)
+                        case _ => emptyEffect
+                      },
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
                       s"$GREEN$skillType：${skill.name} が選択されました".asMessageEffect()
                     )

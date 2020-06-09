@@ -3,11 +3,11 @@ package com.github.unchama.seichiassist.seichiskill.assault
 import cats.effect.{ExitCase, IO}
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -20,6 +20,19 @@ object AssaultRoutine {
     val projections: Seq[Location => Int] = Seq(_.getBlockX, _.getBlockY, _.getBlockZ)
     projections.exists(p => (p(l1) - p(l2)).abs >= 10)
   }
+
+  def tryStart(player: Player, skill: AssaultSkill)
+              (implicit syncShift: BukkitSyncIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
+    for {
+      offHandTool <- IO { player.getInventory.getItemInOffHand }
+      refinedTool = MaterialSets.refineItemStack(offHandTool, MaterialSets.breakToolMaterials)
+      _ <- refinedTool match {
+        case Some(tool) => AssaultRoutine(player, tool, skill)
+        case None => IO { player.sendMessage(s"${GREEN}使うツールをオフハンドにセット(fキー)してください") }
+      }
+    } yield ()
+  }
+
 
   def apply(player: Player, toolToBeUsed: BreakTool, skill: AssaultSkill)
            (implicit syncShift: BukkitSyncIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
