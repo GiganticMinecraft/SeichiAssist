@@ -349,7 +349,7 @@ object FirstPage extends Menu {
 
             // NOTE: playerData.unclaimedApologyItemsは信頼できる値ではない
             // プレーヤーがログインしている最中に配布処理が行われた場合DB上の値とメモリ上の値に差分が出る。
-            // よって配布処理はすべてバックエンドと強調しながら行わなければならない。
+            // よって配布処理はすべてバックエンドと協調しながら行わなければならない。
             val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player)
 
             if (numberOfItemsToGive > 0) {
