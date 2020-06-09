@@ -261,7 +261,13 @@ object BreakUtil {
 
       _ <- PluginExecutionContexts.asyncShift.shift
 
-      dropItems <- IO { targetBlocksInformation.flatMap(dropItemOnTool(miningTool)) }
+      dropItems <- IO {
+        val plainDropList = targetBlocksInformation.flatMap(dropItemOnTool(miningTool))
+
+        // 纏めなければ、FAWEの干渉を受け勝手に消される危険性などがある
+        // また、後々ドロップする可能性もあるため早めに纏めておいて損はない
+        ItemStackUtil.amalgamate(plainDropList)
+      }
 
       itemsToBeDropped <- IO {
         // アイテムのマインスタック自動格納を試みる
