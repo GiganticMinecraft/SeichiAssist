@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.seichiskill.assault
 import cats.effect.IO
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.Mana
-import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
@@ -21,9 +21,11 @@ object AssaultRoutine {
     projections.exists(p => (p(l1) - p(l2)).abs >= 10)
   }
 
-  def apply(player: Player, playerData: PlayerData, toolToBeUsed: BreakTool, skill: AssaultSkill)
+  def apply(player: Player, toolToBeUsed: BreakTool, skill: AssaultSkill)
            (implicit syncShift: BukkitSyncIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
     val idleCountLimit = 20
+
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     def routineAction(state: IterationState): Option[IterationState] = {
       val skillState = playerData.skillState.get.unsafeRunSync()

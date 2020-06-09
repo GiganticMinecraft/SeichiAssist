@@ -332,7 +332,7 @@ class PlayerClickListener extends Listener {
                 val flipActiveSkillActivity =
                   SeichiAssist.instance
                     .assaultSkillRoutines
-                    .flipState(player)(TryableFiber.start(AssaultRoutine(player, playerData, tool, skill)))
+                    .flipState(player)(TryableFiber.start(AssaultRoutine(player, tool, skill)))
                     .as(())
 
                 flipActiveSkillActivity.unsafeRunSync()
