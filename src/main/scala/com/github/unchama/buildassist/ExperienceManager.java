@@ -91,12 +91,10 @@ public class ExperienceManager implements IExperienceManager {
     private static int calculateLevelForExp(int exp) {
         int level = 0;
         int curExp = 7; // level 1
-        int incr = 10;
 
         while (curExp <= exp) {
-            curExp += incr;
             level++;
-            incr += (level % 2 == 0) ? 3 : 4;
+            curExp += level >= 30 ? 112 + (level - 30) * 9 : level >= 15 ? 37 + (level - 15) * 5 : 7 + level * 2;
         }
         return level;
     }
