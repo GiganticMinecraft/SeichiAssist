@@ -247,7 +247,6 @@ public class ExperienceManager implements IExperienceManager {
      * Return the total XP needed to be the given level.
      *
      * @param level The level to check for.
-     
      * @return The amount of XP needed for the level.
      * @throws IllegalArgumentException if the level is less than 0 or greater than the current hard maximum
      */
