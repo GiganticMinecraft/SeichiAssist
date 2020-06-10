@@ -2,15 +2,14 @@ package com.github.unchama.seichiassist.data.player.settings
 
 import cats.effect.IO
 import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.player.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 
 class FastDiggingEffectSuppression {
 
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.syntax._
-
-  private var internalValue = 0
+private var internalValue = 0
 
   def currentStatus(): IO[String] = IO {
     s"$RESET" + {
@@ -65,8 +64,8 @@ class FastDiggingEffectSuppression {
     targetedeffect.UnfocusedEffect {
       internalValue = (internalValue + 1) % 6
     }.followedBy {
-      deferredEffect(IO {
-        {
+      val getMessage =
+        IO {
           internalValue match {
             case 0 => s"${GREEN}採掘速度上昇効果:ON(無制限)"
             case 1 => s"${GREEN}採掘速度上昇効果:ON(127制限)"
@@ -75,8 +74,9 @@ class FastDiggingEffectSuppression {
             case 4 => s"${GREEN}採掘速度上昇効果:ON(600制限)"
             case _ => s"${RED}採掘速度上昇効果:OFF"
           }
-          }.asMessageEffect()
-      })
+        }
+
+      DeferredEffect(getMessage.map(MessageEffect.apply))
     }
   }
 }

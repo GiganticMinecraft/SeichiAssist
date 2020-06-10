@@ -1,10 +1,9 @@
 package com.github.unchama.seichiassist.effects.unfocused
 
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.player.MessageEffect
 
 object BroadcastMessageEffect {
-  import com.github.unchama.targetedeffect.syntax._
-
-  def apply(message: String): TargetedEffect[Any] =
-    BroadcastEffect(message.asMessageEffect())
+def apply(message: String): TargetedEffect[Any] =
+    BroadcastEffect(MessageEffect(message))
 }

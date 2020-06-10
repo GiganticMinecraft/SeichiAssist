@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{EntityType, Player}
@@ -80,7 +80,7 @@ class PlayerInventoryListener extends Listener {
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
-              sequentialEffect(
+              SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
               ),
@@ -157,7 +157,7 @@ class PlayerInventoryListener extends Listener {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(
-          sequentialEffect(
+          SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
           ),
@@ -232,7 +232,7 @@ class PlayerInventoryListener extends Listener {
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
-              sequentialEffect(
+              SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
               ),
@@ -451,13 +451,12 @@ class PlayerInventoryListener extends Listener {
 
     val ticketsToGive = Seq.fill(ticketAmount)(exchangeTicket)
 
-    import syntax._
     if (ticketsToGive.nonEmpty) {
       unsafe.runAsyncTargetedEffect(player)(
-        sequentialEffect(
+        SequentialEffect(
           Util.grantItemStacksEffect(ticketsToGive: _*),
           FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
-          s"${GREEN}交換券の付与が終わりました".asMessageEffect()
+          MessageEffect(s"${GREEN}交換券の付与が終わりました")
         ),
         "交換券を付与する"
       )
@@ -736,7 +735,7 @@ class PlayerInventoryListener extends Listener {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(
-          sequentialEffect(
+          SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
           ),

@@ -65,7 +65,7 @@ class PlayerInventoryListener extends Listener {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(
-          sequentialEffect(
+          SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             BuildMainMenu.open
           ),

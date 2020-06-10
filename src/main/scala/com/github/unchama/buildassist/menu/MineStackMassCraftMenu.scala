@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -116,9 +116,7 @@ object MineStackMassCraftMenu {
 
       }
 
-      import com.github.unchama.targetedeffect.syntax._
-
-      val buttonEffect = LeftClickButtonEffect(
+    val buttonEffect = LeftClickButtonEffect(
         Kleisli { player =>
           for {
             buildAssistPlayerData <- IO { BuildAssist.playermap(player.getUniqueId) }
@@ -127,7 +125,7 @@ object MineStackMassCraftMenu {
 
             _ <-
               if (buildAssistPlayerData.level < requiredBuildLevel) {
-                s"${RED}建築レベルが足りません".asMessageEffect()(player)
+                MessageEffect(s"${RED}建築レベルが足りません")(player)
               } else {
                 syncShift.shift >> {
                   val allIngredientsAvailable =
@@ -136,7 +134,7 @@ object MineStackMassCraftMenu {
                     }
 
                   if (!allIngredientsAvailable)
-                    s"${RED}クラフト材料が足りません".asMessageEffect()(player)
+                    MessageEffect(s"${RED}クラフト材料が足りません")(player)
                   else
                     IO {
                       ingredientObjects.toList.foreach { case (obj, amount) =>
@@ -150,7 +148,7 @@ object MineStackMassCraftMenu {
                         s"$GREEN${enumerateChunkDetails(ingredientObjects)}→" +
                           s"${enumerateChunkDetails(productObjects)}変換"
 
-                      message.asMessageEffect()(player)
+                      MessageEffect(message)(player)
                     }
                 }
               }

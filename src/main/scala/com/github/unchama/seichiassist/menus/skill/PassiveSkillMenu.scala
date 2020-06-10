@@ -9,9 +9,8 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.targetedeffect._
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects._
-import com.github.unchama.targetedeffect.syntax._
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -86,25 +85,25 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           if (openerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel) {
-            sequentialEffect(
+            SequentialEffect(
               openerData.settings.toggleMultipleIdBreakFlag,
-              deferredEffect(IO {
+              DeferredEffect(IO {
                 if (openerData.settings.multipleidbreakflag) {
-                  sequentialEffect(
-                    s"${GREEN}複数種類同時破壊:ON".asMessageEffect(),
+                  SequentialEffect(
+                    MessageEffect(s"${GREEN}複数種類同時破壊:ON"),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                   )
                 } else {
-                  sequentialEffect(
-                    s"${RED}複数種類同時破壊:OFF".asMessageEffect(),
+                  SequentialEffect(
+                    MessageEffect(s"${RED}複数種類同時破壊:OFF"),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                   )
                 }
               })
             )
           } else {
-            sequentialEffect(
-              "整地レベルが足りません".asMessageEffect(),
+            SequentialEffect(
+              MessageEffect("整地レベルが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1f, 0.1f),
             )
           }
@@ -139,17 +138,17 @@ object PassiveSkillMenu extends Menu {
           .lore(baseLore ++ statusLore)
           .build(),
         LeftClickButtonEffect {
-          sequentialEffect(
+          SequentialEffect(
             openerData.toggleChestBreakFlag,
-            deferredEffect(IO {
+            DeferredEffect(IO {
               if (openerData.chestflag) {
-                sequentialEffect(
-                  s"${GREEN}スキルでのチェスト破壊を有効化しました。".asMessageEffect(),
+                SequentialEffect(
+                  MessageEffect(s"${GREEN}スキルでのチェスト破壊を有効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                 )
               } else {
-                sequentialEffect(
-                  s"${RED}スキルでのチェスト破壊を無効化しました。".asMessageEffect(),
+                SequentialEffect(
+                  MessageEffect(s"${RED}スキルでのチェスト破壊を無効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
               }
@@ -207,19 +206,20 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           if (openerData.level < 10) {
-            sequentialEffect(
-              (s"${WHITE}パッシブスキル$YELLOW$UNDERLINE$BOLD" +
-                s"Gigantic$RED$UNDERLINE${BOLD}Berserk${WHITE}はレベル10以上から使用可能です").asMessageEffect(),
+            val message =
+              s"${WHITE}パッシブスキル$YELLOW$UNDERLINE${BOLD}Gigantic$RED$UNDERLINE${BOLD}Berserk${WHITE}はレベル10以上から使用可能です"
+            SequentialEffect(
+              MessageEffect(message),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
             )
           } else if (openerData.giganticBerserk.canEvolve) {
             //TODO: メニューに置き換える
-            sequentialEffect(
-              computedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkBeforeEvolutionMenu(player))),
+            SequentialEffect(
+              ComputedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkBeforeEvolutionMenu(player))),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
             )
           } else {
-            s"${RED}進化条件を満たしていません".asMessageEffect()
+            MessageEffect(s"${RED}進化条件を満たしていません")
           }
         }
       )

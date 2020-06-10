@@ -360,7 +360,7 @@ class PlayerClickListener extends Listener {
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
     seichiassist.unsafe.runAsyncTargetedEffect(player)(
-      sequentialEffect(
+      SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open
       ),

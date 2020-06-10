@@ -4,8 +4,9 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.targetedeffect.syntax._
-import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.targetedeffect.player.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -22,7 +23,7 @@ object EffectCommand {
       )
 
       IO {
-        message.asMessageEffect()
+        MessageEffect(message)
       }
     }
     .build()
@@ -30,7 +31,7 @@ object EffectCommand {
   private val toggleExecutor = playerCommandBuilder
     .execution { context =>
       val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
-      val guidance = "再度 /ef コマンドを実行することでトグルします。".asMessageEffect()
+      val guidance = MessageEffect("再度 /ef コマンドを実行することでトグルします。")
 
       def execution(): TargetedEffect[Player] = {
         import com.github.unchama.generic.syntax._

@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -53,7 +53,6 @@ private[minestack] case class MineStackButtons(player: Player) {
   import MineStackObjectCategory._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.syntax._
   import player._
 
   import scala.jdk.CollectionConverters._
@@ -91,7 +90,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     Button(
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        sequentialEffect(
+        SequentialEffect(
           withDrawOneStackEffect(mineStackObj),
           targetedeffect.UnfocusedEffect {
             if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
@@ -116,7 +115,7 @@ private[minestack] case class MineStackButtons(player: Player) {
         itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
         _ <-
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
             targetedeffect.UnfocusedEffect {
               playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
@@ -154,9 +153,9 @@ private[minestack] case class MineStackButtons(player: Player) {
       }.build()
 
     val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-      sequentialEffect(
+      SequentialEffect(
         playerData.settings.toggleAutoMineStack,
-        deferredEffect(IO {
+        DeferredEffect(IO {
           val (message, soundPitch) =
             if (playerData.settings.autoMineStack) {
               (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
@@ -164,8 +163,8 @@ private[minestack] case class MineStackButtons(player: Player) {
               (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
             }
 
-          sequentialEffect(
-            message.asMessageEffect(),
+          SequentialEffect(
+            MessageEffect(message),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
           )
         })

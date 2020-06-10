@@ -7,14 +7,14 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.util.TypeConverter
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.syntax._
+import com.github.unchama.targetedeffect.player.MessageEffect
 import enumeratum._
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 
 object SeichiHasteCommand {
-  private val descriptionPrintExecutor = new EchoExecutor(List(
+  private val descriptionPrintExecutor = new EchoExecutor(MessageEffect(List(
     s"$RED/seichihaste [説明文id] [効果の持続ティック数] [効果の強さ] [スコープ指定子]",
     "指定されたプレイヤーに採掘速度上昇効果を付与します。",
     "同じサーバーにログイン中であるプレーヤーにしか適用されません。",
@@ -29,7 +29,7 @@ object SeichiHasteCommand {
     " - 3 ドラゲナイタイムから",
     " - 4 投票から",
     " - 5 コマンド入力から(イベントや不具合等)"
-  ).asMessageEffect())
+  )))
 
   sealed trait ScopeSpecification extends EnumEntry
 
@@ -44,11 +44,11 @@ object SeichiHasteCommand {
   val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
     .argumentsParsers(
       List(
-        Parsers.closedRangeInt(0, 5, "説明文idは0から5の整数を指定してください。".asMessageEffect()),
-        Parsers.nonNegativeInteger("効果の持続ティック数は非負の整数を指定してください。".asMessageEffect()),
-        Parsers.double("効果の強さは実数を指定してください。".asMessageEffect()),
+        Parsers.closedRangeInt(0, 5, MessageEffect("説明文idは0から5の整数を指定してください。")),
+        Parsers.nonNegativeInteger(MessageEffect("効果の持続ティック数は非負の整数を指定してください。")),
+        Parsers.double(MessageEffect("効果の強さは実数を指定してください。")),
         Parsers.fromOptionParser(ScopeSpecification.withNameLowercaseOnlyOption,
-          "スコープ指定子はallかplayerのどちらかを指定してください。".asMessageEffect())
+          MessageEffect("スコープ指定子はallかplayerのどちらかを指定してください。"))
       ),
       onMissingArguments = descriptionPrintExecutor
     )
@@ -66,19 +66,19 @@ object SeichiHasteCommand {
           case ScopeSpecification.PLAYER =>
             val playerNameOption = context.args.yetToBeParsed.headOption
             playerNameOption match {
-              case None => "対象のプレーヤー名を指定してください。".asMessageEffect()
+              case None => MessageEffect("対象のプレーヤー名を指定してください。")
               case Some(name) =>
                 val playerData = SeichiAssist.playermap(Bukkit.getPlayer(name).getUniqueId)
                 if (playerData == null) {
-                  return s"プレーヤー $name はオンラインではありません。".asMessageEffect()
+                  return MessageEffect(s"プレーヤー $name はオンラインではありません。")
                 }
 
                 playerData.effectdatalist.addOne(effectData)
-                s"$LIGHT_PURPLE$name に上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
+                MessageEffect(s"$LIGHT_PURPLE$name に上昇値 $effectAmplifier を $effectLengthString 追加しました")
             }
           case ScopeSpecification.ALL =>
             SeichiAssist.playermap.values.foreach(_.effectdatalist.addOne(effectData))
-            s"${LIGHT_PURPLE}すべてのプレーヤーに上昇値 $effectAmplifier を $effectLengthString 追加しました".asMessageEffect()
+            MessageEffect(s"${LIGHT_PURPLE}すべてのプレーヤーに上昇値 $effectAmplifier を $effectLengthString 追加しました")
         }
       }
 

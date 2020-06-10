@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.menus
 
 import com.github.unchama.concurrent.BukkitSyncIOShift
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, SkullItemStackBuilder}
-import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
+import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu}
 import com.github.unchama.seichiassist.menus.ColorScheme.{clickResultDescription, navigation}
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.{CommonSoundEffects, SkullOwners}
@@ -26,7 +26,7 @@ object CommonButtons {
         .lore(List(clickResultDescription(actionDescription)))
         .build(),
       action.LeftClickButtonEffect(
-        sequentialEffect(
+        SequentialEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           target.open
         )
