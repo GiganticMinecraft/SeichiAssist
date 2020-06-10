@@ -150,11 +150,11 @@ class PlayerData(
   //前回の採掘速度上昇レベルを格納
   var lastminespeedlv = 0
   //投票受け取りボタン連打防止用
-  var votecooldownflag = true
+  val votecooldownflag = true
   //ガチャボタン連打防止用
-  var gachacooldownflag = true
+  val gachacooldownflag = true
   //インベントリ共有ボタン連打防止用
-  var shareinvcooldownflag = true
+  val shareinvcooldownflag = true
   var selectHomeNum = 0
   var samepageflag = false //実績ショップ用
 
@@ -177,7 +177,7 @@ class PlayerData(
     this.regionCount += 1
   }
 
-  var starLevels = StarLevel(0, 0, 0)
+  var starLevels: StarLevel = StarLevel(0, 0)
   var minestack = new MineStack()
   //プレイ時間
   var playTick = 0
@@ -192,13 +192,13 @@ class PlayerData(
   //連続・通算ログイン用
   // ロード時に初期化される
   var lastcheckdate: String = _
-  var loginStatus = LoginStatus(null, 0, 0)
+  var loginStatus: LoginStatus = LoginStatus(null, 0)
   //期間限定ログイン用
   var LimitedLoginCount = 0
   var ChainVote = 0
 
   //region スキル関連のデータ
-  var skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
+  val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
   var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
   val manaState: Mana = new Mana()
   var effectPoint: Int = 0
@@ -212,9 +212,9 @@ class PlayerData(
   //二つ名配布予約NOの保存
   var giveachvNo = 0
   //実績ポイント用
-  var achievePoint = AchievementPoint()
+  var achievePoint: AchievementPoint = AchievementPoint()
 
-  var buildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
+  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
   // 1周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
@@ -235,7 +235,7 @@ class PlayerData(
   var newYearBagAmount = 0
   //バレンタインイベント用
   var hasChocoGave = false
-  var giganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false, 0)
+  var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false
   //プレイ時間差分計算用int

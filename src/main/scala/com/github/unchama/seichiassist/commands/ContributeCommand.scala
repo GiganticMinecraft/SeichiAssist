@@ -62,7 +62,7 @@ object ContributeCommand {
       onMissingArguments = printHelpMessageExecutor
     )
     .execution { context =>
-      val operation = context.args.parsed(0).asInstanceOf[ContributeOperation]
+      val operation = context.args.parsed.head.asInstanceOf[ContributeOperation]
       val targetPlayerName = context.args.parsed(1).asInstanceOf[String]
       val point = context.args.parsed(2).asInstanceOf[Int]
 

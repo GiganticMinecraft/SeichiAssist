@@ -269,7 +269,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): IO[ResponseEffectOrResult[Player, Unit]] = {
     val assertSharedInventoryBeEmpty: EitherT[IO, TargetedEffect[CommandSender], Unit] =
       for {
-        sharedInventorySerialized <- EitherT(loadShareInv(player, playerData))
+        sharedInventorySerialized <- EitherT(loadShareInv(player))
         _ <- EitherT.fromEither[IO] {
           if (sharedInventorySerialized != null && sharedInventorySerialized != "")
             Left(s"${RED}既にアイテムが収納されています".asMessageEffect())
@@ -297,7 +297,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     } yield ()
     }.value
 
-  def loadShareInv(player: Player, playerData: PlayerData): IO[ResponseEffectOrResult[CommandSender, String]] = {
+  def loadShareInv(player: Player): IO[ResponseEffectOrResult[CommandSender, String]] = {
     val loadInventoryData: IO[Either[Nothing, String]] = EitherT.right(IO {
       val command = s"SELECT shareinv FROM $tableReference WHERE uuid = '${player.getUniqueId}'"
 

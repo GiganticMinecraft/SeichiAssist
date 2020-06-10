@@ -149,7 +149,7 @@ class EntityListener extends Listener {
     )
   }
 
-  @EventHandler def onEntityExplodeEvent(event: EntityExplodeEvent) = {
+  @EventHandler def onEntityExplodeEvent(event: EntityExplodeEvent): Unit = {
     event.getEntity match {
       case e: Projectile =>
         if (SeichiAssist.instance.arrowSkillProjectileScope.isTracked(e).unsafeRunSync())
@@ -158,7 +158,7 @@ class EntityListener extends Listener {
     }
   }
 
-  @EventHandler def onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent) = {
+  @EventHandler def onEntityDamageByEntityEvent(event: EntityDamageByEntityEvent): Unit = {
     event.getDamager match {
       case e: Projectile =>
         if (SeichiAssist.instance.arrowSkillProjectileScope.isTracked(e).unsafeRunSync())
@@ -167,7 +167,7 @@ class EntityListener extends Listener {
     }
   }
 
-  @EventHandler def onPotionSplashEvent(event: PotionSplashEvent) = {
+  @EventHandler def onPotionSplashEvent(event: PotionSplashEvent): Unit = {
     event.getPotion match {
       case e if e != null =>
         if (SeichiAssist.instance.arrowSkillProjectileScope.isTracked(e).unsafeRunSync())

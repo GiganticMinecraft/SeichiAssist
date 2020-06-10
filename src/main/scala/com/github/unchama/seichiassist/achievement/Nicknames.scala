@@ -315,31 +315,31 @@ sealed trait NicknamesToBeUnlocked {
 }
 
 case class HeadTail(private val _head: String, private val _tail: String) extends NicknamesToBeUnlocked {
-  val head = Some(_head)
-  val middle = None
-  val tail = Some(_tail)
+  val head: Option[String] = Some(_head)
+  val middle: Option[String] = None
+  val tail: Option[String] = Some(_tail)
 }
 
 case class MiddleOnly(private val _middle: String) extends NicknamesToBeUnlocked {
-  val head = None
-  val middle = Some(_middle)
-  val tail = None
+  val head: Option[String] = None
+  val middle: Option[String] = Some(_middle)
+  val tail: Option[String] = None
 }
 
 case class HeadOnly(private val _head: String) extends NicknamesToBeUnlocked {
-  val head = Some(_head)
-  val middle = None
-  val tail = None
+  val head: Option[String] = Some(_head)
+  val middle: Option[String] = None
+  val tail: Option[String] = None
 }
 
 case class FullSet(private val _head: String, private val _middle: String, private val _tail: String) extends NicknamesToBeUnlocked {
-  val head = Some(_head)
-  val middle = Some(_middle)
-  val tail = Some(_tail)
+  val head: Option[String] = Some(_head)
+  val middle: Option[String] = Some(_middle)
+  val tail: Option[String] = Some(_tail)
 }
 
 case class HeadMiddle(private val _head: String, private val _middle: String) extends NicknamesToBeUnlocked {
-  val head = Some(_head)
-  val middle = Some(_middle)
-  val tail = None
+  val head: Option[String] = Some(_head)
+  val middle: Option[String] = Some(_middle)
+  val tail: Option[String] = None
 }

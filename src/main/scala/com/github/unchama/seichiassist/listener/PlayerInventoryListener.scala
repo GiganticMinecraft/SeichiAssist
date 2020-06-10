@@ -590,9 +590,6 @@ class PlayerInventoryListener extends Listener {
   def onTitanRepairEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid).ifNull {
-      return
-    }
     //エラー分岐
     val inventory = event.getInventory
 
@@ -690,7 +687,7 @@ class PlayerInventoryListener extends Listener {
 
           //ガチャ券プレゼント処理
           val skull = Util.getVoteskull(player.getName)
-          for {i <- 0 to 9} {
+          for {_ <- 0 to 9} {
             if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
               Util.addItem(player, skull)
             } else {
@@ -828,7 +825,7 @@ class PlayerInventoryListener extends Listener {
     if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "スキルを進化させますか?") {
       event.setCancelled(true)
       if (itemstackcurrent.getType == Material.NETHER_STAR) {
-        playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1, canEvolve = false)
+        playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1)
         player.playSound(player.getLocation, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5f)
         player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8f)
         player.openInventory(MenuInventoryData.getGiganticBerserkAfterEvolutionMenu(player))

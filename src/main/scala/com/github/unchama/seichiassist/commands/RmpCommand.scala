@@ -2,8 +2,7 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers._
-import com.github.unchama.contextualexecutor.builder.ResponseEffectOrResult
-import com.github.unchama.contextualexecutor.builder.{ArgumentParserScope, ContextualExecutorBuilder}
+import com.github.unchama.contextualexecutor.builder.{ArgumentParserScope, ContextualExecutorBuilder, ResponseEffectOrResult}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
@@ -42,7 +41,7 @@ object RmpCommand {
     ), onMissingArguments = printDescriptionExecutor)
   private val removeExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val world = context.args.parsed(0).asInstanceOf[World]
+      val world = context.args.parsed.head.asInstanceOf[World]
       val days = context.args.parsed(1).asInstanceOf[Int]
 
       val isSeichiWorldWithWGRegionsOption = ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
@@ -76,7 +75,7 @@ object RmpCommand {
 
   private val listExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val world = context.args.parsed(0).asInstanceOf[World]
+      val world = context.args.parsed.head.asInstanceOf[World]
       val days = context.args.parsed(1).asInstanceOf[Int]
 
       IO {

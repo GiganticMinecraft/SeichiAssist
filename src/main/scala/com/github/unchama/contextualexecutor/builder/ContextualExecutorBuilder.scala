@@ -142,5 +142,5 @@ object ContextualExecutorBuilder {
   private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(targetedeffect.emptyEffect) }
   private val defaultSenderValidation: SenderTypeValidation[CommandSender] = { sender: CommandSender => IO.pure(Some(sender)) }
 
-  def beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
+  def beginConfiguration(): ContextualExecutorBuilder[CommandSender] = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
 }

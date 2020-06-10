@@ -34,7 +34,7 @@ case class MenuSlotLayout(private[menuinventory] val layoutMap: Map[Int, Slot]) 
 }
 
 object MenuSlotLayout {
-  val emptyLayout = MenuSlotLayout()
+  val emptyLayout: MenuSlotLayout = MenuSlotLayout()
 
   def apply(): MenuSlotLayout = MenuSlotLayout(Map[Int, Slot]())
 

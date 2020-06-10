@@ -168,7 +168,7 @@ object PassiveSkillMenu extends Menu {
         List(
           s"${RED}敵MOBを倒した時",
           s"${RED}その魂を吸収しマナへと変換するスキル",
-          s"${DARK_GRAY}※成功率は高くなく",
+          s"$DARK_GRAY※成功率は高くなく",
           s"${DARK_GRAY}整地中でなければその効果を発揮しない",
           "",
           s"${DARK_GRAY}実装は試験的であり、変更される場合があります"
@@ -208,7 +208,7 @@ object PassiveSkillMenu extends Menu {
         LeftClickButtonEffect {
           if (openerData.level < 10) {
             sequentialEffect(
-              (s"${WHITE}パッシブスキル$YELLOW$UNDERLINE${BOLD}" +
+              (s"${WHITE}パッシブスキル$YELLOW$UNDERLINE$BOLD" +
                 s"Gigantic$RED$UNDERLINE${BOLD}Berserk${WHITE}はレベル10以上から使用可能です").asMessageEffect(),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
             )

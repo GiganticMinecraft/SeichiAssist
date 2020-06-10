@@ -131,7 +131,6 @@ object OnClickTitleMenu extends Listener {
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
       if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
         // NOTE: WHEN
       } else if (itemstackcurrent.getType == Material.WATER_BUCKET) {
         val itemmeta = itemstackcurrent.getItemMeta
@@ -149,11 +148,9 @@ object OnClickTitleMenu extends Listener {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.updateNickname(id1 = 0)
         player.sendMessage("前パーツの選択を解除しました。")
-        return
       } else if (itemstackcurrent.getType == Material.BARRIER) {
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-        return
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
@@ -169,7 +166,6 @@ object OnClickTitleMenu extends Listener {
       //TitleUnlockTaskRunnable TUTR = new TitleUnlockTaskRunnable() ;
       //プレイヤーインベントリのクリックの場合終了
       if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
         // NOTE: WHEN
       } else if (itemstackcurrent.getType == Material.MILK_BUCKET) {
         val itemmeta = itemstackcurrent.getItemMeta
@@ -187,11 +183,9 @@ object OnClickTitleMenu extends Listener {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.updateNickname(id2 = 0)
         player.sendMessage("中パーツの選択を解除しました。")
-        return
       } else if (itemstackcurrent.getType == Material.BARRIER) {
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-        return
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
@@ -208,7 +202,6 @@ object OnClickTitleMenu extends Listener {
       //プレイヤーインベントリのクリックの場合終了
       // NOTE: when
       if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
       } else if (itemstackcurrent.getType == Material.LAVA_BUCKET) {
         val itemmeta = itemstackcurrent.getItemMeta
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
@@ -225,11 +218,9 @@ object OnClickTitleMenu extends Listener {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerdata.updateNickname(id3 = 0)
         player.sendMessage("後パーツの選択を解除しました。")
-        return
       } else if (itemstackcurrent.getType == Material.BARRIER) {
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-        return
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight") {
         player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
         player.openInventory(MenuInventoryData.setFreeTitle3Data(player))

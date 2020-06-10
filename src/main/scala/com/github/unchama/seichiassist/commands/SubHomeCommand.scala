@@ -36,7 +36,7 @@ object SubHomeCommand {
     )
   private val warpExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
+      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
       val player = context.sender
 
       val subHomeLocation = SeichiAssist.playermap(player.getUniqueId).getSubHomeLocation(subHomeId - 1)
@@ -51,7 +51,7 @@ object SubHomeCommand {
     .build()
   private val setExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
+      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
       val player = context.sender
       val playerData = SeichiAssist.playermap(player.getUniqueId)
 
@@ -63,7 +63,7 @@ object SubHomeCommand {
 
   private def nameExecutor(implicit scope: ChatInterceptionScope) = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
+      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
 
       IO.pure {
         val sendInterceptionMessage =

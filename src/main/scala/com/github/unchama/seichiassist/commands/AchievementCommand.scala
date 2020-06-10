@@ -83,7 +83,7 @@ object AchievementCommand {
     .execution { context =>
       val sender = context.sender
 
-      val operation = context.args.parsed(0).asInstanceOf[AchievementOperation]
+      val operation = context.args.parsed.head.asInstanceOf[AchievementOperation]
       val achievementNumber = context.args.parsed(1).asInstanceOf[Int]
 
       def execution(): IO[TargetedEffect[CommandSender]] = {

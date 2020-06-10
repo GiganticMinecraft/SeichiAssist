@@ -76,7 +76,7 @@ object MebiusCommand {
     val namingExecutor: ContextualExecutor = playerCommandBuilder
       .argumentsParsers(List(Parsers.identity))
       .execution { context =>
-        val newName = s"${context.args.parsed(0).asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
+        val newName = s"${context.args.parsed.head.asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
 
         if (!MebiusListener.setName(context.sender, newName)) {
           IO(s"${RED}命名はMEBIUSを装着して行ってください.".asMessageEffect())
@@ -110,7 +110,7 @@ object MebiusCommand {
       private val setNicknameExecutor = playerCommandBuilder
         .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
         .execution { context =>
-          val newName = s"${context.args.parsed(0).asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
+          val newName = s"${context.args.parsed.head.asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
           val message = if (!MebiusListener.setNickname(context.sender, newName)) {
             s"${RED}呼び名の設定はMEBIUSを装着して行ってください."
           } else {
@@ -121,7 +121,7 @@ object MebiusCommand {
         }
         .build()
 
-      val executor = BranchedExecutor(Map(
+      val executor: BranchedExecutor = BranchedExecutor(Map(
         "reset" -> resetNicknameExecutor,
         "set" -> setNicknameExecutor
       ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))

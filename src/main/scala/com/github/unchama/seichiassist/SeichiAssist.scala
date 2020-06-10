@@ -313,7 +313,7 @@ object SeichiAssist {
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
   var DEBUG = false
   //ガチャシステムのメンテナンスフラグ
-  var gachamente = false
+  val gachamente = false
   // TODO staticであるべきではない
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _

@@ -319,7 +319,7 @@ object PlayerDataLoading {
           val TitleFlags = mutable.BitSet.fromBitMask(Titlearray)
           playerData.TitleFlags = TitleFlags
         } catch {
-          case e: Exception =>
+          case _: Exception =>
             playerData.TitleFlags = new mutable.BitSet(10000)
             playerData.TitleFlags.addOne(1)
         }

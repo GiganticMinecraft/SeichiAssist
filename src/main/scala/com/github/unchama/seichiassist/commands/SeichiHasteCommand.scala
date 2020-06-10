@@ -53,7 +53,7 @@ object SeichiHasteCommand {
       onMissingArguments = descriptionPrintExecutor
     )
     .execution { context =>
-      val descriptionId = context.args.parsed(0).asInstanceOf[Int]
+      val descriptionId = context.args.parsed.head.asInstanceOf[Int]
       val effectLengthInTick = context.args.parsed(1).asInstanceOf[Int]
       val effectAmplifier = context.args.parsed(2).asInstanceOf[Double]
       val scope = context.args.parsed(3).asInstanceOf[ScopeSpecification]

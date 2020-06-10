@@ -38,7 +38,7 @@ object ShareInvCommand {
 
     {
       for {
-        serial <- EitherT(databaseGateway.playerDataManipulator.loadShareInv(player, playerData))
+        serial <- EitherT(databaseGateway.playerDataManipulator.loadShareInv(player))
         _ <- EitherT.cond[IO](serial != "", (), s"$RESET$RED${BOLD}収納アイテムが存在しません。".asMessageEffect())
         _ <- EitherT(databaseGateway.playerDataManipulator.clearShareInv(player, playerData))
         playerInventory = player.getInventory
