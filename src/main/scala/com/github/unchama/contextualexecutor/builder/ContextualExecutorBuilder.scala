@@ -15,7 +15,7 @@ import scala.reflect.ClassTag
  * [ContextualExecutor]を作成するためのビルダークラス.
  *
  * 各引数はビルドされる[ContextualExecutor]において異常系を見つけるとすぐに[RawCommandContext.sender]に応答を送り返す.
- * この副作用を内包させるためにsuspending functionとして宣言されている.
+ * この副作用を内包させるために[[IO]]への関数として宣言されている.
  *
  * @tparam CS 生成するExecutorが受け付ける[CommandSender]のサブタイプの上限
  * @param senderTypeValidation [CommandSender]の[CS]へのダウンキャストを試みる関数
@@ -136,11 +136,13 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
 
 object ContextualExecutorBuilder {
   private val defaultArgumentParser: CommandArgumentsParser[CommandSender] = {
-    case (_, context) =>
-      IO.pure(Some(PartiallyParsedArgs(List(), context.args)))
+    case (_, context) => IO.pure(Some(PartiallyParsedArgs(List(), context.args)))
   }
   private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(emptyEffect) }
-  private val defaultSenderValidation: SenderTypeValidation[CommandSender] = { sender: CommandSender => IO.pure(Some(sender)) }
+  private val defaultSenderValidation: SenderTypeValidation[CommandSender] = {
+    sender: CommandSender => IO.pure(Some(sender))
+  }
 
-  def beginConfiguration(): ContextualExecutorBuilder[CommandSender] = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
+  def beginConfiguration(): ContextualExecutorBuilder[CommandSender] =
+    ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
 }
