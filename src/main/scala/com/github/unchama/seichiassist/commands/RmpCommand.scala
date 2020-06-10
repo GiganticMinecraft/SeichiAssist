@@ -7,6 +7,7 @@ import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoEx
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.player.MessageEffect
 import com.github.unchama.util.external.ExternalPlugins
 import com.sk89q.worldguard.protection.regions.ProtectedRegion
 import org.bukkit.ChatColor._
@@ -17,16 +18,17 @@ import scala.jdk.CollectionConverters._
 
 object RmpCommand {
   import ArgumentParserScope._
-  import targetedeffect.syntax._
 
   private val printDescriptionExecutor = new EchoExecutor(
-    List(
-      s"$RED/rmp remove [world名] [日数]",
-      "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
-      "",
-      s"$RED/rmp list [world名] [日数]",
-      "全Ownerが[日数]間ログインしていないRegionを表示します"
-    ).asMessageEffect()
+    MessageEffect {
+      List(
+        s"$RED/rmp remove [world名] [日数]",
+        "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
+        "",
+        s"$RED/rmp list [world名] [日数]",
+        "全Ownerが[日数]間ログインしていないRegionを表示します"
+      )
+    }
   )
   private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
     .refineSenderWithError[ConsoleCommandSender](s"${GREEN}このコマンドはコンソールから実行してください")
@@ -37,7 +39,7 @@ object RmpCommand {
           case _ => failWith(s"存在しないワールドです: $arg")
         }
       },
-      nonNegativeInteger(s"$RED[日数]には非負整数を入力してください".asMessageEffect())
+      nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください"))
     ), onMissingArguments = printDescriptionExecutor)
   private val removeExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
@@ -48,7 +50,7 @@ object RmpCommand {
 
       def execute(): TargetedEffect[ConsoleCommandSender] = {
         isSeichiWorldWithWGRegionsOption match {
-          case None | Some(false) => return "removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます".asMessageEffect()
+          case None | Some(false) => return MessageEffect("removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます")
           case Some(true) =>
         }
 
@@ -60,11 +62,13 @@ object RmpCommand {
 
           // メッセージ生成
           if (removalTargets.isEmpty) {
-            s"${GREEN}該当Regionは存在しません".asMessageEffect()
+            MessageEffect(s"${GREEN}該当Regionは存在しません")
           } else {
-            removalTargets.map { target =>
-              s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}".asMessageEffect()
-            }.asSequentialEffect()
+            targetedeffect.sequentialEffect(
+              removalTargets.map { target =>
+                MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
+              }
+            )
           }
         }.merge
       }
@@ -81,13 +85,13 @@ object RmpCommand {
       IO {
         getOldRegionsIn(world, days).map { removalTargets =>
           if (removalTargets.isEmpty) {
-            s"${GREEN}該当Regionは存在しません".asMessageEffect()
+            MessageEffect(s"${GREEN}該当Regionは存在しません")
           } else {
-            removalTargets
-              .map { target =>
-                s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}".asMessageEffect()
+            targetedeffect.sequentialEffect(
+              removalTargets.map { target =>
+                MessageEffect(s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}")
               }
-              .asSequentialEffect()
+            )
           }
         }.merge
       }
@@ -99,7 +103,7 @@ object RmpCommand {
 
     val leavers = databaseGateway.playerDataManipulator.selectLeaversUUIDs(daysThreshold)
     if (leavers == null) {
-      return Left(s"${RED}データベースアクセスに失敗しました。".asMessageEffect())
+      return Left(MessageEffect(s"${RED}データベースアクセスに失敗しました。"))
     }
 
     val regions = ExternalPlugins.getWorldGuard.getRegionContainer.get(world).getRegions.asScala

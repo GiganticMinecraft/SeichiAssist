@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, PlayerEffects}
+import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect, MessageEffect, PlayerEffects}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
@@ -27,7 +27,6 @@ object SecondPage extends Menu {
   import PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
-  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.InventoryUtil._
   import eu.timepit.refined.auto._
   import menuinventory.syntax._
@@ -109,12 +108,12 @@ object SecondPage extends Menu {
             sequentialEffect(
               Util.grantItemStacksEffect(skullToGive),
               UnfocusedEffect { expManager.changeExp(-10000) },
-              s"${GOLD}経験値10000を消費して自分の頭を召喚しました".asMessageEffect(),
+              MessageEffect(s"${GOLD}経験値10000を消費して自分の頭を召喚しました"),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
             )
           } else {
             sequentialEffect(
-              s"${RED}必要な経験値が足りません".asMessageEffect(),
+              MessageEffect(s"${RED}必要な経験値が足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
             )
           }
@@ -164,7 +163,7 @@ object SecondPage extends Menu {
                 case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
                 case ReceiveMessageOnly => s"${RED}消音可能な全体通知音を消音します"
                 case MuteMessageAndSound => s"${RED}非表示可能な全体メッセージを非表示にします"
-              }.map(_.asMessageEffect())
+              }.map(MessageEffect(_))
             }
           )
         }
@@ -208,7 +207,7 @@ object SecondPage extends Menu {
                   (0.5f, s"${RED}死亡メッセージ:隠す")
 
               sequentialEffect(
-                message.asMessageEffect(),
+                MessageEffect(message),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
               )
             })
@@ -258,7 +257,7 @@ object SecondPage extends Menu {
 
               sequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
-                message.asMessageEffect()
+                MessageEffect(message)
               )
             })
           )
@@ -299,7 +298,7 @@ object SecondPage extends Menu {
           .build()
       }
 
-      Button(iconItemStack, LeftClickButtonEffect("shareinv".asCommandEffect()))
+      Button(iconItemStack, LeftClickButtonEffect(CommandEffect("shareinv")))
     })
   }
 
@@ -321,7 +320,7 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             closeInventoryEffect,
-            s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}".asMessageEffect(),
+            MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
           )
         }
@@ -345,7 +344,7 @@ object SecondPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             closeInventoryEffect,
-            s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("rule")}".asMessageEffect(),
+            MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("rule")}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
           )
         }
@@ -370,7 +369,7 @@ object SecondPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             closeInventoryEffect,
-            s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("map")}".asMessageEffect(),
+            MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("map")}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
           )
         }
@@ -393,7 +392,7 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           sequentialEffect(
             closeInventoryEffect,
-            s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}".asMessageEffect(),
+            MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
           )
         }

@@ -6,7 +6,7 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.listener.MebiusListener
-import com.github.unchama.targetedeffect.syntax._
+import com.github.unchama.targetedeffect.player.MessageEffect
 import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
 import com.github.unchama.util.syntax.Nullability._
 import org.bukkit.ChatColor._
@@ -28,23 +28,26 @@ object MebiusCommand {
   }
 
   private object Messages {
-    val commandDescription: TargetedEffect[CommandSender] = List(
-      s"$RED[Usage]",
-      s"$RED/mebius naming [name]",
-      s"$RED  現在頭に装着中のMEBIUSに[name]を命名します。",
-      "",
-      s"$RED/mebius nickname",
-      s"$RED  MEBIUSから呼ばれる名前を表示します",
-      "",
-      s"$RED/mebius nickname set [name]",
-      s"$RED  MEBIUSから呼ばれる名前を[name]に変更します",
-      "",
-      s"$RED/mebius nickname reset",
-      s"$RED  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
-      ""
-    ).asMessageEffect()
+    val commandDescription: TargetedEffect[CommandSender] =
+      MessageEffect {
+        List(
+          s"$RED[Usage]",
+          s"$RED/mebius naming [name]",
+          s"$RED  現在頭に装着中のMEBIUSに[name]を命名します。",
+          "",
+          s"$RED/mebius nickname",
+          s"$RED  MEBIUSから呼ばれる名前を表示します",
+          "",
+          s"$RED/mebius nickname set [name]",
+          s"$RED  MEBIUSから呼ばれる名前を[name]に変更します",
+          "",
+          s"$RED/mebius nickname reset",
+          s"$RED  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
+          ""
+        )
+      }
 
-    val permissionWarning: TargetedEffect[CommandSender] = s"${RED}このコマンドは権限者のみが実行可能です.".asMessageEffect()
+    val permissionWarning: TargetedEffect[CommandSender] = MessageEffect(s"${RED}このコマンドは権限者のみが実行可能です.")
   }
 
   private object ChildExecutors {
@@ -79,7 +82,7 @@ object MebiusCommand {
         val newName = s"${context.args.parsed.head.asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
 
         if (!MebiusListener.setName(context.sender, newName)) {
-          IO(s"${RED}命名はMEBIUSを装着して行ってください.".asMessageEffect())
+          IO(MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください."))
         } else IO(emptyEffect)
       }
       .build()
@@ -91,7 +94,7 @@ object MebiusCommand {
             .ifNotNull(name => s"${GREEN}現在のメビウスからの呼び名 : $name")
             .ifNull(s"${RED}呼び名の確認はMEBIUSを装着して行ってください.")
 
-          IO(message.asMessageEffect())
+          IO(MessageEffect(message))
         }
         .build()
 
@@ -103,7 +106,7 @@ object MebiusCommand {
             s"${RED}呼び名のリセットはMEBIUSを装着して行ってください."
           }
 
-          IO(message.asMessageEffect())
+          IO(MessageEffect(message))
         }
         .build()
 
@@ -117,7 +120,7 @@ object MebiusCommand {
             s"${GREEN}メビウスからの呼び名を${newName}にセットしました."
           }
 
-          IO(message.asMessageEffect())
+          IO(MessageEffect(message))
         }
         .build()
 

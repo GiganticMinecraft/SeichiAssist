@@ -25,13 +25,11 @@ case class Button(override val itemStack: ItemStack,
   override def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): TargetedEffect[Player] = {
     import cats.implicits._
     import com.github.unchama.generic.syntax._
-    import syntax._
 
     UnfocusedEffect {
       event.setCancelled(true)
     }.followedBy(data.Kleisli { t =>
-      cs.shift *>
-        effects.map(_.asyncEffectOn(event)).asSequentialEffect()(t)
+      cs.shift *> sequentialEffect(effects.map(_.asyncEffectOn(event)))(t)
     })
   }
 

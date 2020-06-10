@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -53,7 +53,6 @@ private[minestack] case class MineStackButtons(player: Player) {
   import MineStackObjectCategory._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.syntax._
   import player._
 
   import scala.jdk.CollectionConverters._
@@ -165,7 +164,7 @@ private[minestack] case class MineStackButtons(player: Player) {
             }
 
           sequentialEffect(
-            message.asMessageEffect(),
+            MessageEffect(message),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
           )
         })

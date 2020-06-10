@@ -4,12 +4,12 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.targetedeffect.syntax._
+import com.github.unchama.targetedeffect.player.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.{ConsoleCommandSender, TabExecutor}
 
 object SeichiAssistCommand {
-  private val descriptionExecutor = new EchoExecutor(List(
+  private val descriptionExecutor = new EchoExecutor(MessageEffect(List(
     s"$YELLOW$BOLD[コマンドリファレンス]",
     s"$RED/seichiassist reload-config",
     "config.ymlの設定値を再読み込みします",
@@ -18,13 +18,13 @@ object SeichiAssistCommand {
     "config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能",
     s"$RED/seichiassist set-anniversary-flag",
     "1周年記念フラグを立てる（コンソール限定コマンド）"
-  ).asMessageEffect())
+  )))
 
   private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()
     .execution { _ =>
       IO {
         SeichiAssist.seichiAssistConfig.reloadConfig()
-        "config.ymlの設定値を再読み込みしました".asMessageEffect()
+        MessageEffect("config.ymlの設定値を再読み込みしました")
       }
     }
     .build()
@@ -44,12 +44,14 @@ object SeichiAssistCommand {
             s"${GREEN}デバッグモードを無効にしました"
           }
 
-          resultMessage.asMessageEffect()
+          MessageEffect(resultMessage)
         } else {
-          List(
-            s"${RED}このコマンドは現在の設定では実行できません",
-            s"${RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
-          ).asMessageEffect()
+          MessageEffect(
+            List(
+              s"${RED}このコマンドは現在の設定では実行できません",
+              s"${RED}config.ymlのdebugmodeの値を1に書き換えて再起動またはreloadしてください"
+            )
+          )
         }
       }
     }
@@ -61,7 +63,7 @@ object SeichiAssistCommand {
       IO {
         SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(anniversary = true, null)
 
-        "Anniversaryアイテムの配布を開始しました。".asMessageEffect()
+        MessageEffect("Anniversaryアイテムの配布を開始しました。")
       }
     }
     .build()

@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect, MessageEffect}
 import com.github.unchama.util.InventoryUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import org.bukkit.ChatColor.{DARK_RED, RESET, _}
@@ -34,7 +34,6 @@ object FirstPage extends Menu {
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import com.github.unchama.targetedeffect.player.PlayerEffects._
-  import com.github.unchama.targetedeffect.syntax._
   import eu.timepit.refined.auto._
 
   override val frame: MenuFrame =
@@ -362,7 +361,7 @@ object FirstPage extends Menu {
                   playerData.unclaimedApologyItems -= numberOfItemsToGive
                 },
                 FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-                s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました".asMessageEffect()
+                MessageEffect(s"${GREEN}運営チームから${numberOfItemsToGive}枚の${GOLD}ガチャ券${WHITE}を受け取りました")
               )
             } else emptyEffect
           } else emptyEffect
@@ -464,7 +463,7 @@ object FirstPage extends Menu {
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                 },
-                s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー".asMessageEffect(),
+                MessageEffect(s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー"),
                 FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
               )
             } else emptyEffect
@@ -504,13 +503,13 @@ object FirstPage extends Menu {
           deferredEffect(IO {
             if (playerData.settings.receiveGachaTicketEveryMinute) {
               sequentialEffect(
-                s"${GREEN}毎分のガチャ券受け取り:ON".asMessageEffect(),
+                MessageEffect(s"${GREEN}毎分のガチャ券受け取り:ON"),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
               )
             } else {
               sequentialEffect(
-                s"${RED}毎分のガチャ券受け取り:OFF".asMessageEffect(),
-                s"${GREEN}ガチャ券受け取りボタンを押すともらえます".asMessageEffect(),
+                MessageEffect(s"${RED}毎分のガチャ券受け取り:OFF"),
+                MessageEffect(s"${GREEN}ガチャ券受け取りボタンを押すともらえます"),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1.0f, 1.0f)
               )
             }
@@ -547,7 +546,7 @@ object FirstPage extends Menu {
                     Valentine.giveChoco(player)
                     playerData.hasChocoGave = true
                   },
-                  s"${AQUA}チョコチップクッキーを付与しました。".asMessageEffect()
+                  MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。")
                 )
               } else {
                 emptyEffect
@@ -599,7 +598,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           closeInventoryEffect,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          "spawn".asCommandEffect()
+          CommandEffect("spawn")
         )
       )
     }
@@ -754,7 +753,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-          "rtp".asCommandEffect()
+          CommandEffect("rtp")
         )
       )
     }
@@ -777,7 +776,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-          "fc craft".asCommandEffect()
+          CommandEffect("fc craft")
         )
       )
     }
@@ -863,7 +862,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           closeInventoryEffect,
-          "map".asCommandEffect()
+          CommandEffect("map")
         )
       )
   }

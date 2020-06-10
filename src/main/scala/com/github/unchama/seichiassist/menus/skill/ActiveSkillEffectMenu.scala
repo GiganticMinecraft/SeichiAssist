@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
 import com.github.unchama.util.ActionStatus
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.Player
@@ -21,14 +21,12 @@ object ActiveSkillEffectMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.syntax._
-
-  override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
+override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
 
   def setEffectSelectionTo(effect: ActiveSkillEffect)(player: Player): IO[Unit] = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
-    s"${GREEN}エフェクト：${effect.nameOnUI} が選択されました".asMessageEffect()(player) >> IO {
+    MessageEffect(s"${GREEN}エフェクト：${effect.nameOnUI} が選択されました")(player) >> IO {
       playerData.skillEffectState = playerData.skillEffectState.copy(selection = effect)
     }
   }
@@ -42,7 +40,7 @@ object ActiveSkillEffectMenu extends Menu {
         _ <-
           if (effectPoint < effect.usePoint) {
             sequentialEffect(
-              s"${DARK_RED}エフェクトポイントが足りません".asMessageEffect(),
+              MessageEffect(s"${DARK_RED}エフェクトポイントが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             )(player)
           } else {
@@ -51,7 +49,7 @@ object ActiveSkillEffectMenu extends Menu {
               val state = playerData.skillEffectState
               playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
             } >> sequentialEffect(
-              s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
+              MessageEffect(s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"),
               FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
             )(player)
           }
@@ -63,7 +61,7 @@ object ActiveSkillEffectMenu extends Menu {
         _ <-
           if (premiumEffectPoint < effect.usePoint) {
             sequentialEffect(
-              s"${DARK_RED}プレミアムエフェクトポイントが足りません".asMessageEffect(),
+              MessageEffect(s"${DARK_RED}プレミアムエフェクトポイントが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             )(player)
           } else {
@@ -75,11 +73,11 @@ object ActiveSkillEffectMenu extends Menu {
                     val state = playerData.skillEffectState
                     playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
                   } >> sequentialEffect(
-                    s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました".asMessageEffect(),
+                    MessageEffect(s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"),
                     FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
                   )(player)
                 case ActionStatus.Fail =>
-                  "購入履歴が正しく記録されませんでした。管理者に報告してください。".asMessageEffect()(player)
+                  MessageEffect("購入履歴が正しく記録されませんでした。管理者に報告してください。")(player)
               }
             } yield ()
           }

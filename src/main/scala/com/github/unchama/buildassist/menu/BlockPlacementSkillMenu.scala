@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.CommonSoundEffects
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -17,7 +17,6 @@ object BlockPlacementSkillMenu extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.syntax._
   import menuinventory.syntax._
 
   private implicit class PlayerDataOps(val playerData: PlayerData) extends AnyVal {
@@ -81,7 +80,7 @@ object BlockPlacementSkillMenu extends Menu {
             targetedeffect.UnfocusedEffect {
               playerData.zsSkillDirtFlag = !currentStatus
             },
-            s"${RED}土設置機能${if (currentStatus) "OFF" else "ON"}".asMessageEffect()
+            MessageEffect(s"${RED}土設置機能${if (currentStatus) "OFF" else "ON"}")
           )
         )
       }
@@ -127,7 +126,7 @@ object BlockPlacementSkillMenu extends Menu {
           targetedeffect.UnfocusedEffect {
             playerData.AREAint = 5
           },
-          s"${RED}現在の範囲設定は 11×11 です".asMessageEffect(),
+          MessageEffect(s"${RED}現在の範囲設定は 11×11 です"),
           open
         )
       )
@@ -168,7 +167,7 @@ object BlockPlacementSkillMenu extends Menu {
                   UnfocusedEffect {
                     playerData.AREAint += 1
                   },
-                  s"${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
+                  MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
                   open
                 )
               else emptyEffect
@@ -198,7 +197,7 @@ object BlockPlacementSkillMenu extends Menu {
           targetedeffect.UnfocusedEffect {
             playerData.AREAint = 2
           },
-          s"${RED}現在の範囲設定は 5×5 です".asMessageEffect(),
+          MessageEffect(s"${RED}現在の範囲設定は 5×5 です"),
           open
         )
       )
@@ -239,7 +238,7 @@ object BlockPlacementSkillMenu extends Menu {
                   UnfocusedEffect {
                     playerData.AREAint -= 1
                   },
-                  s"${RED}現在の範囲設定は $changedRange×$changedRange です".asMessageEffect(),
+                  MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
                   open
                 )
               else emptyEffect
@@ -269,7 +268,7 @@ object BlockPlacementSkillMenu extends Menu {
           targetedeffect.UnfocusedEffect {
             playerData.AREAint = 1
           },
-          s"${RED}現在の範囲設定は 3×3 です".asMessageEffect(),
+          MessageEffect(s"${RED}現在の範囲設定は 3×3 です"),
           open
         )
       )
@@ -297,13 +296,13 @@ object BlockPlacementSkillMenu extends Menu {
             deferredEffect {
               IO {
                 if (playerData.level < BuildAssist.config.getZoneskillMinestacklevel)
-                  s"${RED}建築LVが足りません".asMessageEffect()
+                  MessageEffect(s"${RED}建築LVが足りません")
                 else
                   sequentialEffect(
                     targetedeffect.UnfocusedEffect {
                       playerData.zs_minestack_flag = !currentStatus
                     },
-                    s"MineStack優先設定${if (currentStatus) "OFF" else "ON"}".asMessageEffect(),
+                    MessageEffect(s"MineStack優先設定${if (currentStatus) "OFF" else "ON"}"),
                     open
                   )
               }

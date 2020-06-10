@@ -7,9 +7,8 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect._
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects._
-import com.github.unchama.targetedeffect.syntax._
+import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -90,7 +89,7 @@ object HomeMenu extends Menu {
           ))
           .build(),
         LeftClickButtonEffect {
-          "home".asCommandEffect()
+          CommandEffect("home")
         }
       )
     }
@@ -125,7 +124,7 @@ object HomeMenu extends Menu {
         LeftClickButtonEffect {
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            s"subhome warp $subHomeNumber".asCommandEffect()
+            CommandEffect(s"subhome warp $subHomeNumber")
           )
         }
       )
@@ -182,7 +181,7 @@ object HomeMenu extends Menu {
         LeftClickButtonEffect {
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            s"subhome name $subHomeNumber".asCommandEffect(),
+            CommandEffect(s"subhome name $subHomeNumber"),
             closeInventoryEffect
           )
         }
@@ -220,8 +219,8 @@ object HomeMenu extends Menu {
           sequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             changeSubHomeNumber match {
-              case None => "sethome".asCommandEffect()
-              case Some(homeNumber) => s"subhome set $homeNumber".asCommandEffect()
+              case None => CommandEffect("sethome")
+              case Some(homeNumber) => CommandEffect(s"subhome set $homeNumber")
             },
             closeInventoryEffect
           )

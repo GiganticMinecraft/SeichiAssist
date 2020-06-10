@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, Fi
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect, MessageEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
@@ -20,7 +20,6 @@ object BuildMainMenu extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
-  import com.github.unchama.targetedeffect.syntax._
   import menuinventory.syntax._
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニューB")
@@ -113,18 +112,18 @@ object BuildMainMenu extends Menu {
               deferredEffect {
                 IO {
                   if (openerData.level < BuildAssist.config.getZoneSetSkillLevel) {
-                    s"${RED}建築LVが足りません".asMessageEffect()
+                    MessageEffect(s"${RED}建築LVが足りません")
                   } else {
                     if (openerData.ZoneSetSkillFlag) sequentialEffect(
                       UnfocusedEffect {
                         openerData.ZoneSetSkillFlag = false
                       },
-                      s"${RED}範囲設置スキルOFF".asMessageEffect()
+                      MessageEffect(s"${RED}範囲設置スキルOFF")
                     ) else sequentialEffect(
                       UnfocusedEffect {
                         openerData.ZoneSetSkillFlag = true
                       },
-                      s"${RED}範囲設置スキルON".asMessageEffect()
+                      MessageEffect(s"${RED}範囲設置スキルON")
                     )
                   }
                 }
@@ -153,7 +152,7 @@ object BuildMainMenu extends Menu {
             deferredEffect {
               IO {
                 if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
-                  s"${RED}建築LVが足りません".asMessageEffect()
+                  MessageEffect(s"${RED}建築LVが足りません")
                 } else {
                   BlockPlacementSkillMenu.open
                 }
@@ -181,7 +180,7 @@ object BuildMainMenu extends Menu {
             deferredEffect {
               IO {
                 if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
-                  s"${RED}建築LVが足りません".asMessageEffect()
+                  MessageEffect(s"${RED}建築LVが足りません")
                 } else {
                   sequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -191,7 +190,7 @@ object BuildMainMenu extends Menu {
                     },
                     deferredEffect {
                       IO {
-                        s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}".asMessageEffect()
+                        MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
                       }
                     }
                   )
@@ -261,7 +260,7 @@ object BuildMainMenu extends Menu {
           sequentialEffect(
             closeInventoryEffect,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "fly 1".asCommandEffect()
+            CommandEffect("fly 1")
           )
         }
       )
@@ -284,7 +283,7 @@ object BuildMainMenu extends Menu {
           sequentialEffect(
             closeInventoryEffect,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "fly 5".asCommandEffect()
+            CommandEffect("fly 5")
           )
         }
       )
@@ -306,7 +305,7 @@ object BuildMainMenu extends Menu {
           sequentialEffect(
             closeInventoryEffect,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "fly endless".asCommandEffect()
+            CommandEffect("fly endless")
           )
         }
       )
@@ -328,7 +327,7 @@ object BuildMainMenu extends Menu {
           sequentialEffect(
             closeInventoryEffect,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "fly finish".asCommandEffect()
+            CommandEffect("fly finish")
           )
         }
       )

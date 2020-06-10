@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
 import com.github.unchama.targetedeffect.{emptyEffect, sequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -32,9 +32,7 @@ object ActiveSkillMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
-  import com.github.unchama.targetedeffect.syntax._
-
-  override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
+override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
   private def skillStateRef(player: Player): IO[Ref[IO, PlayerSkillState]] =
     IO { SeichiAssist.playermap(player.getUniqueId).skillState }
@@ -311,7 +309,7 @@ object ActiveSkillMenu extends Menu {
                             (
                               unlockedState.obtained(SeichiSkill.AssaultArmor),
                               sequentialEffect(
-                                s"$BOLD${YELLOW}全てのスキルを習得し、アサルト・アーマーを解除しました".asMessageEffect(),
+                                MessageEffect(s"$BOLD${YELLOW}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                                 BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
                                 BroadcastMessageEffect(s"$BOLD$GOLD${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
                               )
@@ -323,7 +321,7 @@ object ActiveSkillMenu extends Menu {
                           newState,
                           sequentialEffect(
                             FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f),
-                            s"$BOLD$AQUA${skill.name}を解除しました".asMessageEffect(),
+                            MessageEffect(s"$BOLD$AQUA${skill.name}を解除しました"),
                             assaultSkillUnlockEffects
                           )
                         )
@@ -332,7 +330,7 @@ object ActiveSkillMenu extends Menu {
                           skillState,
                           sequentialEffect(
                             FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
-                            s"${DARK_RED}前提スキル[${locked.name}]を習得する必要があります".asMessageEffect()
+                            MessageEffect(s"${DARK_RED}前提スキル[${locked.name}]を習得する必要があります")
                           )
                         )
                     }
@@ -341,7 +339,7 @@ object ActiveSkillMenu extends Menu {
                       skillState,
                       sequentialEffect(
                         FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
-                        s"${DARK_RED}アクティブスキルポイントが足りません".asMessageEffect()
+                        MessageEffect(s"${DARK_RED}アクティブスキルポイントが足りません")
                       )
                     )
                 case Unlocked =>
@@ -369,7 +367,7 @@ object ActiveSkillMenu extends Menu {
                         case _ => emptyEffect
                       },
                       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
-                      s"$GREEN$skillType：${skill.name} が選択されました".asMessageEffect()
+                      MessageEffect(s"$GREEN$skillType：${skill.name} が選択されました")
                     )
                   )
                 case Selected =>
@@ -377,7 +375,7 @@ object ActiveSkillMenu extends Menu {
                     skillState.deselect(skill),
                     sequentialEffect(
                       FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
-                      s"${YELLOW}選択を解除しました".asMessageEffect()
+                      MessageEffect(s"${YELLOW}選択を解除しました")
                     )
                   )
               }
@@ -420,7 +418,7 @@ object ActiveSkillMenu extends Menu {
               _ <- ref.update(_.deselected())
             } yield ()
           },
-          s"${YELLOW}スキルの選択をすべて解除しました".asMessageEffect(),
+          MessageEffect(s"${YELLOW}スキルの選択をすべて解除しました"),
           FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
         )
       )

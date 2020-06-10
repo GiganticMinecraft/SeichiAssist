@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
-import com.github.unchama.targetedeffect.player.ForcedPotionEffect
+import com.github.unchama.targetedeffect.player.{ForcedPotionEffect, MessageEffect}
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.command.CommandSender
@@ -42,7 +42,6 @@ class PlayerData(
 
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
-  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.InventoryUtil._
 
   lazy val mebius: MebiusTask = new MebiusTask(uuid)
@@ -116,13 +115,11 @@ class PlayerData(
     UnfocusedEffect {
       this.settings.isExpBarVisible = !this.settings.isExpBarVisible
     }.followedBy {
+      val isVisible = IO { this.settings.isExpBarVisible }
       deferredEffect {
-        IO({
-          if (this.settings.isExpBarVisible)
-            s"${GREEN}整地量バー表示"
-          else
-            s"${RED}整地量バー非表示"
-        }.asMessageEffect())
+        isVisible
+          .map(visible => if (visible) s"${GREEN}整地量バー表示" else s"${RED}整地量バー非表示")
+          .map(MessageEffect.apply)
       }
     }.followedBy {
       UnfocusedEffect {
@@ -829,7 +826,7 @@ class PlayerData(
       s"${GREEN}内訳表示:OFF"
     }
 
-    responseMessage.asMessageEffect()
+    MessageEffect(responseMessage)
   })
 
   /**
@@ -844,9 +841,9 @@ class PlayerData(
       TitleFlags.addOne(number)
       player.sendMessage(s"運営チームよりNo${number}の実績が配布されました。")
 
-      s"$lowercaseName に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
+      MessageEffect(s"$lowercaseName に実績No. $number を${GREEN}付与${RESET}しました。")
     } else {
-      s"$GRAY$lowercaseName は既に実績No. $number を獲得しています。".asMessageEffect()
+      MessageEffect(s"$GRAY$lowercaseName は既に実績No. $number を獲得しています。")
     }
   })
 
@@ -861,9 +858,9 @@ class PlayerData(
     if (!TitleFlags(number)) {
       TitleFlags(number) = false
 
-      s"$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
+      MessageEffect(s"$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。")
     } else {
-      s"$GRAY$lowercaseName は実績No. $number を獲得していません。".asMessageEffect()
+      MessageEffect(s"$GRAY$lowercaseName は実績No. $number を獲得していません。")
     }
   })
 }

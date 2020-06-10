@@ -3,7 +3,7 @@ package com.github.unchama.targetedeffect
 import cats.FlatMap
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.targetedeffect
+import cats.kernel.Monoid
 
 trait TargetedEffectFactory {
   /**
@@ -39,6 +39,12 @@ trait TargetedEffectFactory {
   def computedEffect[F[_], T, R](f: T => Kleisli[F, T, R]): Kleisli[F, T, R] =
     Kleisli(t => f(t)(t))
 
-  import targetedeffect.syntax._
-  def sequentialEffect[T](effects: TargetedEffect[T]*): TargetedEffect[T] = effects.toList.asSequentialEffect()
+  import cats.implicits._
+
+  def sequentialEffect[T](effects: TargetedEffect[T]*): TargetedEffect[T] =
+    sequentialEffect(effects.toList)
+
+  def sequentialEffect[T](effects: List[TargetedEffect[T]]): TargetedEffect[T] =
+    Monoid[TargetedEffect[T]].combineAll(effects)
+
 }
