@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.listener.MebiusListener
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
-import com.github.unchama.targetedeffect.player.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.util.syntax.Nullability._
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}

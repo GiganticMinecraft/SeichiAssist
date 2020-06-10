@@ -11,7 +11,8 @@ import com.github.unchama.seichiassist.achievement.NicknameMapping.NicknameCombi
 import com.github.unchama.seichiassist.achievement.SeichiAchievement.{AutoUnlocked, Hidden, ManuallyUnlocked, Normal}
 import com.github.unchama.seichiassist.achievement.{AchievementConditions, NicknameMapping, SeichiAchievement}
 import com.github.unchama.seichiassist.menus.ColorScheme
-import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}

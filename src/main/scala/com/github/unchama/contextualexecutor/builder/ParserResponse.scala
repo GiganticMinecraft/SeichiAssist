@@ -2,7 +2,7 @@ package com.github.unchama.contextualexecutor.builder
 
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect._
-import com.github.unchama.targetedeffect.player.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.command.CommandSender
 
 object ParserResponse {

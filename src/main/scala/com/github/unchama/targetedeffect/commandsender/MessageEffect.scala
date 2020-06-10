@@ -1,4 +1,4 @@
-package com.github.unchama.targetedeffect.player
+package com.github.unchama.targetedeffect.commandsender
 
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.CommandSender

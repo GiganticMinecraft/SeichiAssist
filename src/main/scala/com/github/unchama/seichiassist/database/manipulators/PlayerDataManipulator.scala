@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGate
 import com.github.unchama.seichiassist.task.{CoolDownTask, PlayerDataLoading}
 import com.github.unchama.seichiassist.util.{BukkitSerialization, Util}
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.player.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.util.ActionStatus
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._

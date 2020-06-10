@@ -4,7 +4,7 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.player.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.util.external.WorldGuardWrapper
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import com.sk89q.worldguard.protection.regions.ProtectedRegion

@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.util.TypeConverter
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.player.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import enumeratum._
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
