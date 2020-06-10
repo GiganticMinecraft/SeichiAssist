@@ -5,6 +5,7 @@ import java.util.{GregorianCalendar, UUID}
 
 import cats.effect.IO
 import cats.effect.concurrent.Ref
+import com.github.unchama.generic.ClosedRange
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
@@ -15,9 +16,9 @@ import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
+import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
-import com.github.unchama.seichiassist.util.{ClosedRange, Util}
 import com.github.unchama.targetedeffect.player.ForcedPotionEffect
 import org.bukkit.ChatColor._
 import org.bukkit._

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.util
+package com.github.unchama.generic
 
 class ClosedRange[E](val start: E, val endInclusive: E)(implicit val ord: Ordering[E]) {
 
