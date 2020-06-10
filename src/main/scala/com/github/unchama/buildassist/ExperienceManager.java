@@ -74,9 +74,9 @@ public class ExperienceManager implements IExperienceManager {
 
         for (int i = 0; i < xpTotalToReachLevel.length; i++) {
             xpTotalToReachLevel[i] =
-                    i >= 30 ? (int) (3.5 * i * i - 151.5 * i + 2220) :
-                            i >= 16 ? (int) (1.5 * i * i - 29.5 * i + 360) :
-                                    17 * i;
+                    i >= 30 ? (int) (4.5 * i * i - 162.5 * i + 2220) :
+                            i >= 16 ? (int) (2.5 * i * i - 40.5 * i + 360) :
+                                    i * i + 6 * i;
         }
     }
 
@@ -261,7 +261,7 @@ public class ExperienceManager implements IExperienceManager {
     @Override
     public int getXpNeededToLevelUp(int level) {
         Validate.isTrue(level >= 0, "Level may not be negative.");
-        return level > 30 ? 62 + (level - 30) * 7 : level >= 16 ? 17 + (level - 15) * 3 : 17;
+        return level > 30 ? 112 + (level - 30) * 9 : level >= 16 ? 37 + (level - 15) * 5 : 7 + (level - 1) * 2;
     }
 
     /**
