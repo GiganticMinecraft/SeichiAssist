@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers._
-import com.github.unchama.contextualexecutor.builder.{ArgumentParserScope, ContextualExecutorBuilder, ResponseEffectOrResult}
+import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, ParserResponse, ResponseEffectOrResult}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
@@ -17,7 +17,7 @@ import org.bukkit.{Bukkit, World}
 import scala.jdk.CollectionConverters._
 
 object RmpCommand {
-  import ArgumentParserScope._
+  import ParserResponse._
 
   private val printDescriptionExecutor = new EchoExecutor(
     MessageEffect {

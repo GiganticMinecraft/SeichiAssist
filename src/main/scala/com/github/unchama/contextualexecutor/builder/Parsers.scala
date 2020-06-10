@@ -5,14 +5,11 @@ import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import org.bukkit.command.CommandSender
 
 object Parsers {
-
-  import ArgumentParserScope._
+  import ParserResponse._
 
   val identity: SingleArgumentParser = {
     succeedWith(_)
   }
-  // TODO not safe
-  val boolean: SingleArgumentParser = { args => succeedWith(args.toBoolean) }
 
   def nonNegativeInteger(failureMessage: TargetedEffect[CommandSender] = emptyEffect): SingleArgumentParser =
     closedRangeInt(0, Int.MaxValue, failureMessage)

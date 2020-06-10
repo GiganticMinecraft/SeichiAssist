@@ -13,7 +13,7 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 object RegionOwnerTransferCommand {
-  import com.github.unchama.contextualexecutor.builder.ArgumentParserScope._
+  import com.github.unchama.contextualexecutor.builder.ParserResponse._
 
   val executor: TabExecutor = playerCommandBuilder
     .argumentsParsers(List(
