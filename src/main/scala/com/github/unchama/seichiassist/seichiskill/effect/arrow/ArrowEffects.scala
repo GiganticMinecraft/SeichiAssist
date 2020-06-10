@@ -105,6 +105,7 @@ object ArrowEffects {
               setGravity(spawnConfiguration.gravity)
               setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))
             }
+            projectile.modify(projectileModifier)
           }
 
           /**
@@ -115,7 +116,7 @@ object ArrowEffects {
            */
           _ <- SeichiAssist.instance.arrowSkillProjectileScope
             .useTracked(BukkitResources.vanishingEntityResource(spawnLocation, runtimeClass)) { projectile =>
-              modifyProjectile(projectile) *> waitForCollision
+              modifyProjectile(projectile) >> waitForCollision
             }
         } yield ()
       )
