@@ -12,7 +12,7 @@ object MineHeadCommand {
   import com.github.unchama.targetedeffect._
 
   val effect: TargetedEffect[Player] =
-    sequentialEffect(
+    SequentialEffect(
       Util.grantItemStacksEffect(StaticGachaPrizeFactory.getMineHeadItem),
       MessageEffect(s"${GREEN}専用アイテムを付与しました。")
     )

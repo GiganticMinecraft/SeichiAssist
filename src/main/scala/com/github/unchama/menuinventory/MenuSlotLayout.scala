@@ -2,7 +2,8 @@ package com.github.unchama.menuinventory
 
 import cats.effect.{ContextShift, IO}
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 

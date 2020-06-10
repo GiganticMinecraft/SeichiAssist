@@ -116,7 +116,7 @@ class PlayerData(
       this.settings.isExpBarVisible = !this.settings.isExpBarVisible
     }.followedBy {
       val isVisible = IO { this.settings.isExpBarVisible }
-      deferredEffect {
+      DeferredEffect {
         isVisible
           .map(visible => if (visible) s"${GREEN}整地量バー表示" else s"${RED}整地量バー非表示")
           .map(MessageEffect.apply)
@@ -817,7 +817,7 @@ class PlayerData(
     mana.calcAndSetMax(player, this.level)
   }
 
-  def toggleMessageFlag(): TargetedEffect[Player] = deferredEffect(IO {
+  def toggleMessageFlag(): TargetedEffect[Player] = DeferredEffect(IO {
     settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
 
     val responseMessage = if (settings.receiveFastDiggingEffectStats) {
@@ -836,7 +836,7 @@ class PlayerData(
    * @param number 解除対象の実績番号
    * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
    */
-  def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] = deferredEffect(IO {
+  def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] = DeferredEffect(IO {
     if (!TitleFlags(number)) {
       TitleFlags.addOne(number)
       player.sendMessage(s"運営チームよりNo${number}の実績が配布されました。")
@@ -854,7 +854,7 @@ class PlayerData(
    * @param number 解除対象の実績番号
    * @return この作用の実行者に向け操作の結果を記述する[TargetedEffect]
    */
-  def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] = deferredEffect(IO {
+  def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] = DeferredEffect(IO {
     if (!TitleFlags(number)) {
       TitleFlags(number) = false
 

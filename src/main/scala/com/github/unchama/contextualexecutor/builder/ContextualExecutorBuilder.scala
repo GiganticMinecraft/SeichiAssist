@@ -4,8 +4,8 @@ import cats.data.OptionT
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.player.MessageEffect
 import org.bukkit.command.CommandSender
 
@@ -139,7 +139,7 @@ object ContextualExecutorBuilder {
     case (_, context) =>
       IO.pure(Some(PartiallyParsedArgs(List(), context.args)))
   }
-  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(targetedeffect.emptyEffect) }
+  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(emptyEffect) }
   private val defaultSenderValidation: SenderTypeValidation[CommandSender] = { sender: CommandSender => IO.pure(Some(sender)) }
 
   def beginConfiguration(): ContextualExecutorBuilder[CommandSender] = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)

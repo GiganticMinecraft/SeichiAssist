@@ -94,7 +94,7 @@ object SecondPage extends Menu {
       }
 
       val effect = action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        deferredEffect(IO {
+        DeferredEffect(IO {
           val expManager = new ExperienceManager(player)
           if (expManager.hasExp(10000)) {
             val skullToGive = new SkullItemStackBuilder(getUniqueId).build().modify { stack =>
@@ -105,14 +105,14 @@ object SecondPage extends Menu {
               }
             }
 
-            sequentialEffect(
+            SequentialEffect(
               Util.grantItemStacksEffect(skullToGive),
               UnfocusedEffect { expManager.changeExp(-10000) },
               MessageEffect(s"${GOLD}経験値10000を消費して自分の頭を召喚しました"),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
             )
           } else {
-            sequentialEffect(
+            SequentialEffect(
               MessageEffect(s"${RED}必要な経験値が足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
             )
@@ -155,10 +155,10 @@ object SecondPage extends Menu {
       } yield Button(
         iconItemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             playerData.settings.toggleBroadcastMutingSettings,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
-            deferredEffect {
+            DeferredEffect {
               playerData.settings.getBroadcastMutingSettings.map {
                 case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
                 case ReceiveMessageOnly => s"${RED}消音可能な全体通知音を消音します"
@@ -197,16 +197,16 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             playerData.settings.toggleDeathMessageMutingSettings,
-            deferredEffect(IO {
+            DeferredEffect(IO {
               val (soundPitch, message) =
                 if (playerData.settings.shouldDisplayDeathMessages)
                   (1.0f, s"${GREEN}死亡メッセージ:表示")
                 else
                   (0.5f, s"${RED}死亡メッセージ:隠す")
 
-              sequentialEffect(
+              SequentialEffect(
                 MessageEffect(message),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
               )
@@ -246,16 +246,16 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             playerData.settings.toggleWorldGuardLogEffect,
-            deferredEffect(IO {
+            DeferredEffect(IO {
               val (soundPitch, message) =
                 if (playerData.settings.shouldDisplayWorldGuardLogs)
                   (1.0f, s"${GREEN}ワールドガード保護メッセージ:表示")
                 else
                   (0.5f, s"${RED}ワールドガード保護メッセージ:隠す")
 
-              sequentialEffect(
+              SequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch),
                 MessageEffect(message)
               )
@@ -318,7 +318,7 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             closeInventoryEffect,
             MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
@@ -342,7 +342,7 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             closeInventoryEffect,
             MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("rule")}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
@@ -367,7 +367,7 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             closeInventoryEffect,
             MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("map")}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
@@ -390,7 +390,7 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             closeInventoryEffect,
             MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("jms")}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
@@ -419,7 +419,7 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
             // TODO メニューインベントリに差し替える
             openInventoryEffect(
@@ -450,7 +450,7 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
             // TODO メニューインベントリに差し替える
             openInventoryEffect(
@@ -474,7 +474,7 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
             // クローズ時に何も処理されないインベントリを開くことでアイテムを虚空に飛ばす
             openInventoryEffect(
@@ -497,7 +497,7 @@ object SecondPage extends Menu {
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             closeInventoryEffect,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
             PlayerEffects.connectToServerEffect("lobby")

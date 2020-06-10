@@ -29,7 +29,7 @@ case class Button(override val itemStack: ItemStack,
     UnfocusedEffect {
       event.setCancelled(true)
     }.followedBy(data.Kleisli { t =>
-      cs.shift *> sequentialEffect(effects.map(_.asyncEffectOn(event)))(t)
+      cs.shift *> SequentialEffect(effects.map(_.asyncEffectOn(event)))(t)
     })
   }
 

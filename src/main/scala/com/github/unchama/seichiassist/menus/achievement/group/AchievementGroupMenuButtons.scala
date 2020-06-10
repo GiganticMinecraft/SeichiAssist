@@ -95,7 +95,7 @@ object AchievementGroupMenuButtons {
               player.sendMessage(s"二つ名「${NicknameMapping.getTitleFor(achievement)}」が設定されました。")
             }
 
-            delay(setNickname)
+            TargetedEffect.delay(setNickname)
           } else {
             achievement match {
               case _: AutoUnlocked =>
@@ -122,14 +122,14 @@ object AchievementGroupMenuButtons {
             }
           }
 
-        sequentialEffect(clickSound, effect)
+        SequentialEffect(clickSound, effect)
       }
 
       Button(itemStack, LeftClickButtonEffect(clickEffect))
     }
 
   import com.github.unchama.targetedeffect._
-// 実績8003を解除するためのボタン
+  // 実績8003を解除するためのボタン
   val unlock8003Button: Button = Button(
     new IconItemStackBuilder(Material.EMERALD_BLOCK)
       .title(ColorScheme.navigation("タイムカード、切りましょ？"))
@@ -138,7 +138,7 @@ object AchievementGroupMenuButtons {
     LeftClickButtonEffect(
       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
       MessageEffect("お疲れ様でした！今日のお給料の代わりに二つ名をどうぞ！"),
-      delay { player => SeichiAssist.playermap(player.getUniqueId).TitleFlags.addOne(8003) }
+      TargetedEffect.delay { player => SeichiAssist.playermap(player.getUniqueId).TitleFlags.addOne(8003) }
     )
   )
 

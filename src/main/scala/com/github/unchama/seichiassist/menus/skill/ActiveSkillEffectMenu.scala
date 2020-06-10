@@ -39,7 +39,7 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
         effectPoint <- IO { playerData.effectPoint }
         _ <-
           if (effectPoint < effect.usePoint) {
-            sequentialEffect(
+            SequentialEffect(
               MessageEffect(s"${DARK_RED}エフェクトポイントが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             )(player)
@@ -48,7 +48,7 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
               playerData.effectPoint -= effect.usePoint
               val state = playerData.skillEffectState
               playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
-            } >> sequentialEffect(
+            } >> SequentialEffect(
               MessageEffect(s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"),
               FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
             )(player)
@@ -60,7 +60,7 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
         premiumEffectPoint <- SeichiAssist.databaseGateway.donateDataManipulator.currentPremiumPointFor(player)
         _ <-
           if (premiumEffectPoint < effect.usePoint) {
-            sequentialEffect(
+            SequentialEffect(
               MessageEffect(s"${DARK_RED}プレミアムエフェクトポイントが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
             )(player)
@@ -72,7 +72,7 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
                   IO {
                     val state = playerData.skillEffectState
                     playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
-                  } >> sequentialEffect(
+                  } >> SequentialEffect(
                     MessageEffect(s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"),
                     FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
                   )(player)

@@ -122,7 +122,7 @@ object HomeMenu extends Menu {
           ))
           .build(),
         LeftClickButtonEffect {
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             CommandEffect(s"subhome warp $subHomeNumber")
           )
@@ -142,7 +142,7 @@ object HomeMenu extends Menu {
           ))
           .build(),
         LeftClickButtonEffect {
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
             ConfirmationMenu(Some(subHomeNumber)).open
           )
@@ -179,7 +179,7 @@ object HomeMenu extends Menu {
           .lore(lore)
           .build(),
         LeftClickButtonEffect {
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             CommandEffect(s"subhome name $subHomeNumber"),
             closeInventoryEffect
@@ -216,7 +216,7 @@ object HomeMenu extends Menu {
           .title(s"${GREEN}変更する")
           .build(),
         LeftClickButtonEffect {
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             changeSubHomeNumber match {
               case None => CommandEffect("sethome")

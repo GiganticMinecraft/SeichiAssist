@@ -85,11 +85,11 @@ object ArrowEffects {
 
     val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
 
-    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(emptyEffect)
+    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(TargetedEffect.emptyEffect)
 
     val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
 
-    sequentialEffect(
+    SequentialEffect(
       soundEffect,
       Kleisli(player =>
         for {

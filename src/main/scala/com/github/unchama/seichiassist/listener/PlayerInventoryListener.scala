@@ -80,7 +80,7 @@ class PlayerInventoryListener extends Listener {
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
-              sequentialEffect(
+              SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
               ),
@@ -157,7 +157,7 @@ class PlayerInventoryListener extends Listener {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(
-          sequentialEffect(
+          SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
           ),
@@ -232,7 +232,7 @@ class PlayerInventoryListener extends Listener {
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
             seichiassist.unsafe.runAsyncTargetedEffect(player)(
-              sequentialEffect(
+              SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
               ),
@@ -453,7 +453,7 @@ class PlayerInventoryListener extends Listener {
 
     if (ticketsToGive.nonEmpty) {
       unsafe.runAsyncTargetedEffect(player)(
-        sequentialEffect(
+        SequentialEffect(
           Util.grantItemStacksEffect(ticketsToGive: _*),
           FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
           MessageEffect(s"${GREEN}交換券の付与が終わりました")
@@ -735,7 +735,7 @@ class PlayerInventoryListener extends Listener {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(
-          sequentialEffect(
+          SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
           ),

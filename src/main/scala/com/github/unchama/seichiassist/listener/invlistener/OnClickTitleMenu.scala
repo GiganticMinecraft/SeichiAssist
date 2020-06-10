@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
-import com.github.unchama.targetedeffect.sequentialEffect
+import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
@@ -115,7 +115,7 @@ object OnClickTitleMenu extends Listener {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         seichiassist.unsafe.runAsyncTargetedEffect(player)(
-          sequentialEffect(
+          SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
           ),

@@ -55,7 +55,7 @@ val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
       broadcastMutingSettings = nextSettings
     }
   )
-  val toggleHalfBreakFlag: TargetedEffect[Player] = deferredEffect(IO {
+  val toggleHalfBreakFlag: TargetedEffect[Player] = DeferredEffect(IO {
     allowBreakingHalfBlocks = !allowBreakingHalfBlocks
 
     val newStatus = if (allowBreakingHalfBlocks) s"${GREEN}破壊可能" else "${RED}破壊不可能"

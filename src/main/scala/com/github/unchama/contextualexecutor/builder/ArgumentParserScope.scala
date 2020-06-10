@@ -1,6 +1,6 @@
 package com.github.unchama.contextualexecutor.builder
 
-import com.github.unchama
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.MessageEffect
 import org.bukkit.command.CommandSender
@@ -15,7 +15,7 @@ object ArgumentParserScope {
   /**
    * メッセージなしで「失敗」を表す[ResponseEffectOrResult]を作成する.
    */
-  def failWithoutError(): ResponseEffectOrResult[Any, Nothing] = failWith(unchama.targetedeffect.emptyEffect)
+  def failWithoutError(): ResponseEffectOrResult[Any, Nothing] = failWith(emptyEffect)
 
   /**
    * メッセージ付きの「失敗」を表す[ResponseEffectOrResult]を作成する.

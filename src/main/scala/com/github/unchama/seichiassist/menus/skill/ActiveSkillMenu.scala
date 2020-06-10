@@ -17,8 +17,9 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
+import com.github.unchama.targetedeffect.SequentialEffect
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, MessageEffect}
-import com.github.unchama.targetedeffect.{emptyEffect, sequentialEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionType
@@ -308,7 +309,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                             unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
                             (
                               unlockedState.obtained(SeichiSkill.AssaultArmor),
-                              sequentialEffect(
+                              SequentialEffect(
                                 MessageEffect(s"$BOLD${YELLOW}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                                 BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
                                 BroadcastMessageEffect(s"$BOLD$GOLD${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
@@ -319,7 +320,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
 
                         (
                           newState,
-                          sequentialEffect(
+                          SequentialEffect(
                             FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f),
                             MessageEffect(s"$BOLD$AQUA${skill.name}を解除しました"),
                             assaultSkillUnlockEffects
@@ -328,7 +329,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                       case Some(locked) =>
                         (
                           skillState,
-                          sequentialEffect(
+                          SequentialEffect(
                             FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
                             MessageEffect(s"${DARK_RED}前提スキル[${locked.name}]を習得する必要があります")
                           )
@@ -337,7 +338,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                   else
                     (
                       skillState,
-                      sequentialEffect(
+                      SequentialEffect(
                         FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
                         MessageEffect(s"${DARK_RED}アクティブスキルポイントが足りません")
                       )
@@ -351,7 +352,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
 
                   (
                     skillState.select(skill),
-                    sequentialEffect(
+                    SequentialEffect(
                       skill match {
                         case skill: AssaultSkill =>
                           import cats.implicits._
@@ -373,7 +374,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                 case Selected =>
                   (
                     skillState.deselect(skill),
-                    sequentialEffect(
+                    SequentialEffect(
                       FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
                       MessageEffect(s"${YELLOW}選択を解除しました")
                     )

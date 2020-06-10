@@ -76,7 +76,7 @@ private var internalValue = 0
           }
         }
 
-      deferredEffect(getMessage.map(MessageEffect.apply))
+      DeferredEffect(getMessage.map(MessageEffect.apply))
     }
   }
 }

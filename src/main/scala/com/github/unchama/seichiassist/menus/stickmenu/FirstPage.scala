@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect, MessageEffect}
 import com.github.unchama.util.InventoryUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
@@ -105,9 +106,9 @@ object FirstPage extends Menu {
           .lore(lore)
           .build(),
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          sequentialEffect(
+          SequentialEffect(
             openerData.toggleExpBarVisibility,
-            deferredEffect(IO {
+            DeferredEffect(IO {
               val toggleSoundPitch = if (openerData.settings.isExpBarVisible) 1.0f else 0.5f
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
             })
@@ -153,10 +154,10 @@ object FirstPage extends Menu {
             .lore(buttonLore)
             .build(),
           action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-            sequentialEffect(
+            SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               openerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect,
-              deferredEffect[IO, Player, Unit](openerData.computeFastDiggingEffect)
+              DeferredEffect[IO, Player, Unit](openerData.computeFastDiggingEffect)
             )
           }
         )
@@ -226,7 +227,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect {
           if (openerData.level >= minimumLevelRequired) {
-            sequentialEffect(
+            SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
               MineStackMainMenu.open
             )
@@ -264,9 +265,9 @@ object FirstPage extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect(
-          deferredEffect(IO {
+          DeferredEffect(IO {
             if (playerData.level >= minimumRequiredLevel)
-              sequentialEffect(
+              SequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
                 openInventoryEffect(playerData.pocketInventory),
               ) else FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
@@ -297,9 +298,9 @@ object FirstPage extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect(
-          deferredEffect(IO {
+          DeferredEffect(IO {
             if (playerData.level >= minimumRequiredLevel) {
-              sequentialEffect(
+              SequentialEffect(
                 FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
                 openInventoryEffect(player.getEnderChest)
               )
@@ -342,7 +343,7 @@ object FirstPage extends Menu {
 
       Button(
         iconItemStack,
-        LeftClickButtonEffect(deferredEffect(IO {
+        LeftClickButtonEffect(DeferredEffect(IO {
           if (playerData.gachacooldownflag) {
             new CoolDownTask(player, false, true).runTaskLater(SeichiAssist.instance, 20)
 
@@ -355,7 +356,7 @@ object FirstPage extends Menu {
               val itemToGive = Util.getForBugskull(player.getName)
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
-              sequentialEffect(
+              SequentialEffect(
                 Util.grantItemStacksEffect(itemStacksToGive: _*),
                 UnfocusedEffect {
                   playerData.unclaimedApologyItems -= numberOfItemsToGive
@@ -458,7 +459,7 @@ object FirstPage extends Menu {
               val itemToGive = Util.getskull(player.getName)
               val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
 
-              sequentialEffect(
+              SequentialEffect(
                 Util.grantItemStacksEffect(itemStacksToGive: _*),
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
@@ -500,14 +501,14 @@ object FirstPage extends Menu {
           targetedeffect.UnfocusedEffect {
             playerData.settings.receiveGachaTicketEveryMinute = !playerData.settings.receiveGachaTicketEveryMinute
           },
-          deferredEffect(IO {
+          DeferredEffect(IO {
             if (playerData.settings.receiveGachaTicketEveryMinute) {
-              sequentialEffect(
+              SequentialEffect(
                 MessageEffect(s"${GREEN}毎分のガチャ券受け取り:ON"),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
               )
             } else {
-              sequentialEffect(
+              SequentialEffect(
                 MessageEffect(s"${RED}毎分のガチャ券受け取り:OFF"),
                 MessageEffect(s"${GREEN}ガチャ券受け取りボタンを押すともらえます"),
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1.0f, 1.0f)
@@ -538,9 +539,9 @@ object FirstPage extends Menu {
         Button(
           iconItemStack,
           LeftClickButtonEffect(
-            deferredEffect(IO {
+            DeferredEffect(IO {
               if (Valentine.isInEvent) {
-                sequentialEffect(
+                SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
                   targetedeffect.UnfocusedEffect {
                     Valentine.giveChoco(player)
@@ -845,7 +846,7 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          computedEffect(p => openInventoryEffect(MenuInventoryData.getVotingMenuData(p))),
+          ComputedEffect(p => openInventoryEffect(MenuInventoryData.getVotingMenuData(p))),
         )
       )
     }

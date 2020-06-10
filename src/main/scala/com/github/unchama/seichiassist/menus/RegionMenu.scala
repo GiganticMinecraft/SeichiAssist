@@ -109,17 +109,17 @@ override val frame: MenuFrame =
           if (!playerHasPermission)
             MessageEffect(s"${RED}このワールドでは保護を申請できません")
           else if (isSelectionNull)
-            sequentialEffect(
+            SequentialEffect(
               MessageEffect(s"${RED}先に木の斧で範囲を指定してからこのボタンを押してください"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
             )
           else if (!selectionHasEnoughSpace)
-            sequentialEffect(
+            SequentialEffect(
               MessageEffect(s"${RED}指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
             )
           else
-            sequentialEffect(
+            SequentialEffect(
               CommandEffect("/expand vert"),
               CommandEffect(s"rg claim ${player.getName}_${openerData.regionCount}"),
               openerData.incrementRegionNumber,
@@ -154,7 +154,7 @@ override val frame: MenuFrame =
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
+          SequentialEffect(
             closeInventoryEffect,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             CommandEffect("/wand"),
@@ -187,10 +187,10 @@ override val frame: MenuFrame =
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             closeInventoryEffect,
-            computedEffect(player => CommandEffect(s"rg list -p ${player.getName}"))
+            ComputedEffect(player => CommandEffect(s"rg list -p ${player.getName}"))
           )
         )
       )
@@ -228,10 +228,10 @@ override val frame: MenuFrame =
       Button(
         iconItemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
             // TODO メニューに置き換える
-            computedEffect(p => openInventoryEffect(RegionMenuData.getGridWorldGuardMenu(p)))
+            ComputedEffect(p => openInventoryEffect(RegionMenuData.getGridWorldGuardMenu(p)))
           )
         )
       )

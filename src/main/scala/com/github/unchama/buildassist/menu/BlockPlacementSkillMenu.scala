@@ -159,10 +159,10 @@ object BlockPlacementSkillMenu extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect(
-          deferredEffect(
+          DeferredEffect(
             IO {
               if (playerData.AREAint < 5)
-                sequentialEffect(
+                SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                   UnfocusedEffect {
                     playerData.AREAint += 1
@@ -170,7 +170,7 @@ object BlockPlacementSkillMenu extends Menu {
                   MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
                   open
                 )
-              else emptyEffect
+              else TargetedEffect.emptyEffect
             }
           )
         )
@@ -230,10 +230,10 @@ object BlockPlacementSkillMenu extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect(
-          deferredEffect(
+          DeferredEffect(
             IO {
               if (playerData.AREAint > 1)
-                sequentialEffect(
+                SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                   UnfocusedEffect {
                     playerData.AREAint -= 1
@@ -241,7 +241,7 @@ object BlockPlacementSkillMenu extends Menu {
                   MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
                   open
                 )
-              else emptyEffect
+              else TargetedEffect.emptyEffect
             }
           )
         )
@@ -293,12 +293,12 @@ object BlockPlacementSkillMenu extends Menu {
           iconItemStackBuilder,
           LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            deferredEffect {
+            DeferredEffect {
               IO {
                 if (playerData.level < BuildAssist.config.getZoneskillMinestacklevel)
                   MessageEffect(s"${RED}建築LVが足りません")
                 else
-                  sequentialEffect(
+                  SequentialEffect(
                     targetedeffect.UnfocusedEffect {
                       playerData.zs_minestack_flag = !currentStatus
                     },

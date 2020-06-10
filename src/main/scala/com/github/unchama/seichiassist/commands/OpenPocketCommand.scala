@@ -5,8 +5,9 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.player.MessageEffect
-import com.github.unchama.targetedeffect.{TargetedEffect, emptyEffect}
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor

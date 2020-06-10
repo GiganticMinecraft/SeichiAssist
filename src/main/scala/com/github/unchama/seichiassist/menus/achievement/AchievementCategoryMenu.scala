@@ -58,8 +58,6 @@ object AchievementCategoryMenu {
         new IconItemStackBuilder(material)
           .title(ColorScheme.navigation(s"実績「${group.name}」"))
 
-      import com.github.unchama.targetedeffect._
-
       if (AchievementGroupMenu.sequentialEntriesIn(group).nonEmpty) {
         Button(
           partialBuilder
@@ -74,8 +72,7 @@ object AchievementCategoryMenu {
         Button(
           partialBuilder
             .lore(s"${RED}獲得状況を表示します。※未実装")
-            .build(),
-          LeftClickButtonEffect(emptyEffect)
+            .build()
         )
       }
     }

@@ -90,7 +90,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     Button(
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        sequentialEffect(
+        SequentialEffect(
           withDrawOneStackEffect(mineStackObj),
           targetedeffect.UnfocusedEffect {
             if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
@@ -115,7 +115,7 @@ private[minestack] case class MineStackButtons(player: Player) {
         itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
         _ <-
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
             targetedeffect.UnfocusedEffect {
               playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
@@ -153,9 +153,9 @@ private[minestack] case class MineStackButtons(player: Player) {
       }.build()
 
     val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-      sequentialEffect(
+      SequentialEffect(
         playerData.settings.toggleAutoMineStack,
-        deferredEffect(IO {
+        DeferredEffect(IO {
           val (message, soundPitch) =
             if (playerData.settings.autoMineStack) {
               (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
@@ -163,7 +163,7 @@ private[minestack] case class MineStackButtons(player: Player) {
               (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
             }
 
-          sequentialEffect(
+          SequentialEffect(
             MessageEffect(message),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
           )

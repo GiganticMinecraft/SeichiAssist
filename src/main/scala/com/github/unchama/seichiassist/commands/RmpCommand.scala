@@ -64,7 +64,7 @@ object RmpCommand {
           if (removalTargets.isEmpty) {
             MessageEffect(s"${GREEN}該当Regionは存在しません")
           } else {
-            targetedeffect.sequentialEffect(
+            targetedeffect.SequentialEffect(
               removalTargets.map { target =>
                 MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
               }
@@ -87,7 +87,7 @@ object RmpCommand {
           if (removalTargets.isEmpty) {
             MessageEffect(s"${GREEN}該当Regionは存在しません")
           } else {
-            targetedeffect.sequentialEffect(
+            targetedeffect.SequentialEffect(
               removalTargets.map { target =>
                 MessageEffect(s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}")
               }

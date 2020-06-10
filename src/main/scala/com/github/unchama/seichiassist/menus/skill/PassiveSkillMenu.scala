@@ -85,16 +85,16 @@ object PassiveSkillMenu extends Menu {
           .build(),
         LeftClickButtonEffect {
           if (openerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel) {
-            sequentialEffect(
+            SequentialEffect(
               openerData.settings.toggleMultipleIdBreakFlag,
-              deferredEffect(IO {
+              DeferredEffect(IO {
                 if (openerData.settings.multipleidbreakflag) {
-                  sequentialEffect(
+                  SequentialEffect(
                     MessageEffect(s"${GREEN}複数種類同時破壊:ON"),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                   )
                 } else {
-                  sequentialEffect(
+                  SequentialEffect(
                     MessageEffect(s"${RED}複数種類同時破壊:OFF"),
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                   )
@@ -102,7 +102,7 @@ object PassiveSkillMenu extends Menu {
               })
             )
           } else {
-            sequentialEffect(
+            SequentialEffect(
               MessageEffect("整地レベルが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1f, 0.1f),
             )
@@ -138,16 +138,16 @@ object PassiveSkillMenu extends Menu {
           .lore(baseLore ++ statusLore)
           .build(),
         LeftClickButtonEffect {
-          sequentialEffect(
+          SequentialEffect(
             openerData.toggleChestBreakFlag,
-            deferredEffect(IO {
+            DeferredEffect(IO {
               if (openerData.chestflag) {
-                sequentialEffect(
+                SequentialEffect(
                   MessageEffect(s"${GREEN}スキルでのチェスト破壊を有効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                 )
               } else {
-                sequentialEffect(
+                SequentialEffect(
                   MessageEffect(s"${RED}スキルでのチェスト破壊を無効化しました。"),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
@@ -208,14 +208,14 @@ object PassiveSkillMenu extends Menu {
           if (openerData.level < 10) {
             val message =
               s"${WHITE}パッシブスキル$YELLOW$UNDERLINE${BOLD}Gigantic$RED$UNDERLINE${BOLD}Berserk${WHITE}はレベル10以上から使用可能です"
-            sequentialEffect(
+            SequentialEffect(
               MessageEffect(message),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
             )
           } else if (openerData.giganticBerserk.canEvolve) {
             //TODO: メニューに置き換える
-            sequentialEffect(
-              computedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkBeforeEvolutionMenu(player))),
+            SequentialEffect(
+              ComputedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkBeforeEvolutionMenu(player))),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
             )
           } else {
