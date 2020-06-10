@@ -72,11 +72,8 @@ public class ExperienceManager implements IExperienceManager {
     private static void initLookupTables(int maxLevel) {
         xpTotalToReachLevel = new int[maxLevel];
 
-        for (int i = 0; i < xpTotalToReachLevel.length; i++) {
-            xpTotalToReachLevel[i] =
-                    i >= 30 ? (int) (4.5 * i * i - 162.5 * i + 2220) :
-                            i >= 16 ? (int) (2.5 * i * i - 40.5 * i + 360) :
-                                    i * i + 6 * i;
+        for (int i = 1; i < xpTotalToReachLevel.length; i++) {
+            xpTotalToReachLevel[i] = xpTotalToReachLevel[i-1] + getXpNeededToLevelUp(i-1);
         }
     }
 
@@ -93,8 +90,7 @@ public class ExperienceManager implements IExperienceManager {
         int curExp = 7; // level 1
 
         while (curExp <= exp) {
-            level++;
-            curExp += level >= 30 ? 112 + (level - 30) * 9 : level >= 15 ? 37 + (level - 15) * 5 : 7 + level * 2;
+            curExp += getXpNeededToLevelUp(++level);
         }
         return level;
     }
@@ -259,7 +255,7 @@ public class ExperienceManager implements IExperienceManager {
     @Override
     public int getXpNeededToLevelUp(int level) {
         Validate.isTrue(level >= 0, "Level may not be negative.");
-        return level > 30 ? 112 + (level - 30) * 9 : level >= 16 ? 37 + (level - 15) * 5 : 7 + level * 2;
+        return level >= 31 ? 112 + (level - 30) * 9 : level >= 16 ? 37 + (level - 15) * 5 : 7 + level * 2;
     }
 
     /**
