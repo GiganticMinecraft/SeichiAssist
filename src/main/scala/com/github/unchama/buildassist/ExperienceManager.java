@@ -259,7 +259,7 @@ public class ExperienceManager implements IExperienceManager {
     @Override
     public int getXpNeededToLevelUp(int level) {
         Validate.isTrue(level >= 0, "Level may not be negative.");
-        return level > 30 ? 112 + (level - 30) * 9 : level >= 16 ? 37 + (level - 15) * 5 : 7 + (level - 1) * 2;
+        return level > 30 ? 112 + (level - 30) * 9 : level >= 16 ? 37 + (level - 15) * 5 : 7 + level * 2;
     }
 
     /**
