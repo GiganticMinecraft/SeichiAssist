@@ -54,7 +54,7 @@ public class ExperienceManager implements IExperienceManager {
         xpTotalToReachLevel = new int[maxLevel];
 
         for (int i = 1; i < xpTotalToReachLevel.length; i++) {
-            xpTotalToReachLevel[i] = xpTotalToReachLevel[i-1] + getXpNeededToLevelUp(i-1);
+            xpTotalToReachLevel[i] = xpTotalToReachLevel[i-1] + calculateXpNeededToLevelUp(i-1);
         }
     }
 
@@ -71,9 +71,19 @@ public class ExperienceManager implements IExperienceManager {
         int curExp = 7; // level 1
 
         while (curExp <= exp) {
-            curExp += getXpNeededToLevelUp(++level);
+            curExp += calculateXpNeededToLevelUp(++level);
         }
         return level;
+    }
+
+    /**
+     * Calculate the amount of XP needed for level up.
+     *
+     * @param level The level to check for.
+     * @return The amount of XP needed for level up.
+     */
+    private static int calculateXpNeededToLevelUp(int level){
+        return level >= 31 ? 112 + (level - 30) * 9 : level >= 16 ? 37 + (level - 15) * 5 : 7 + level * 2;
     }
 
     /**
@@ -236,7 +246,7 @@ public class ExperienceManager implements IExperienceManager {
     @Override
     public int getXpNeededToLevelUp(int level) {
         Validate.isTrue(level >= 0, "Level may not be negative.");
-        return level >= 31 ? 112 + (level - 30) * 9 : level >= 16 ? 37 + (level - 15) * 5 : 7 + level * 2;
+        return calculateXpNeededToLevelUp(level);
     }
 
     /**
