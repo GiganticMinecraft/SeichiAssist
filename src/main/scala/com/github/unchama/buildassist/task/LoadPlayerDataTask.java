@@ -12,14 +12,13 @@ import scala.collection.mutable.HashMap;
 
 import java.util.UUID;
 
-
-public class LoadPlayerDataTaskRunnable extends BukkitRunnable {
+public class LoadPlayerDataTask extends BukkitRunnable {
     private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap();
     private final Player p;
     private final UUID uuid;
     private int retryCount;
 
-    public LoadPlayerDataTaskRunnable(final Player p) {
+    public LoadPlayerDataTask(final Player p) {
         this.p = p;
         uuid = this.p.getUniqueId();
         retryCount = 0;
@@ -62,7 +61,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable {
             playerdata = playermap.get(uuid).get();
         }
         //建築系データ読み込み
-        playerdata.buildload(p);
+        playerdata.load(p);
         Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "建築系データ読み込み完了");
     }
 }

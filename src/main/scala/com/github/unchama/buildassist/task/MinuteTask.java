@@ -16,7 +16,7 @@ import scala.runtime.BoxedUnit;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class MinuteTaskRunnable extends BukkitRunnable {
+public class MinuteTask extends BukkitRunnable {
     private final HashMap<UUID, PlayerData> playermap = BuildAssist.playermap();
 
     @Override
@@ -36,15 +36,15 @@ public class MinuteTaskRunnable extends BukkitRunnable {
                 //1分間の建築量を加算する
 
                 if (playerdata.build_num_1min.doubleValue() > BuildAssist.config().getBuildNum1minLimit()) {
-                    playerdata.totalbuildnum = playerdata.totalbuildnum.add(new BigDecimal(BuildAssist.config().getBuildNum1minLimit()));
+                    playerdata.totalBuildCount = playerdata.totalBuildCount.add(new BigDecimal(BuildAssist.config().getBuildNum1minLimit()));
                 } else {
-                    playerdata.totalbuildnum = playerdata.totalbuildnum.add(playerdata.build_num_1min);
+                    playerdata.totalBuildCount = playerdata.totalBuildCount.add(playerdata.build_num_1min);
                 }
                 playerdata.build_num_1min = BigDecimal.ZERO;
                 playerdata.updateLevel(player);
-                playerdata.buildsave(player);
+                playerdata.save(player);
 
-                if (playerdata.endlessfly) {
+                if (playerdata.doesEndlessFly) {
                     if (playerdata_s.idleMinute() >= 10) {
                         player.setAllowFlight(true);
                         player.sendMessage(ChatColor.GRAY + "放置時間中のflyは無期限で継続中です(経験値は消費しません)");
@@ -52,9 +52,9 @@ public class MinuteTaskRunnable extends BukkitRunnable {
                         player.sendMessage(ChatColor.RED
                                 + "fly効果の発動に必要な経験値が不足しているため、");
                         player.sendMessage(ChatColor.RED + "fly効果を終了しました");
-                        playerdata.flytime = 0;
-                        playerdata.flyflag = false;
-                        playerdata.endlessfly = false;
+                        playerdata.flyingTime = 0;
+                        playerdata.isFlying = false;
+                        playerdata.doesEndlessFly = false;
                         player.setAllowFlight(false);
                         player.setFlying(false);
                     } else {
@@ -62,29 +62,29 @@ public class MinuteTaskRunnable extends BukkitRunnable {
                         player.sendMessage(ChatColor.GREEN + "fly効果は無期限で継続中です");
                         expman.changeExp(minus);
                     }
-                } else if (playerdata.flyflag) {
-                    final int flytime = playerdata.flytime;
+                } else if (playerdata.isFlying) {
+                    final int flytime = playerdata.flyingTime;
                     if (playerdata_s.idleMinute() >= 10) {
                         player.setAllowFlight(true);
                         player.sendMessage(ChatColor.GRAY + "放置時間中のflyは無期限で継続中です(経験値は消費しません)");
                     } else if (flytime <= 0) {
                         player.sendMessage(ChatColor.GREEN + "fly効果が終了しました");
-                        playerdata.flyflag = false;
+                        playerdata.isFlying = false;
                         player.setAllowFlight(false);
                         player.setFlying(false);
                     } else if (!expman.hasExp(BuildAssist.config().getFlyExp())) {
                         player.sendMessage(ChatColor.RED
                                 + "fly効果の発動に必要な経験値が不足しているため、");
                         player.sendMessage(ChatColor.RED + "fly効果を終了しました");
-                        playerdata.flytime = 0;
-                        playerdata.flyflag = false;
+                        playerdata.flyingTime = 0;
+                        playerdata.isFlying = false;
                         player.setAllowFlight(false);
                         player.setFlying(false);
                     } else {
                         player.setAllowFlight(true);
                         player.sendMessage(ChatColor.GREEN + "fly効果はあと"
                                 + flytime + "分です");
-                        playerdata.flytime -= 1;
+                        playerdata.flyingTime -= 1;
                         expman.changeExp(minus);
                     }
                 }
