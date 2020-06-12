@@ -11,7 +11,7 @@ trait XYZTupleSyntax {
   implicit class XYZTupleOps(a: XYZTuple) {
     def mapEachComponent(f: Int => Int): XYZTuple = XYZTuple(f(a.x), f(a.y), f(a.z))
 
-    def +(another: XYZTuple) = XYZTuple(a.x + another.x, a.y + another.y, a.z + another.z)
+    def +(another: XYZTuple): XYZTuple = XYZTuple(a.x + another.x, a.y + another.y, a.z + another.z)
 
     def negative: XYZTuple = (-1) * a
 

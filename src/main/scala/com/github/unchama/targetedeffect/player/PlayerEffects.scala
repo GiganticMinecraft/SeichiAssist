@@ -4,13 +4,12 @@ import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.concurrent.{BukkitSyncIOShift, Execution}
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
 object PlayerEffects {
-  val closeInventoryEffect: TargetedEffect[Player] = targetedeffect.delay(_.closeInventory())
+  val closeInventoryEffect: TargetedEffect[Player] = TargetedEffect.delay(_.closeInventory())
 
   def openInventoryEffect(inventory: => Inventory)
                          (implicit ctx: BukkitSyncIOShift): TargetedEffect[Player] =

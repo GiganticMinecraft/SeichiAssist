@@ -8,7 +8,8 @@ import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RegionMenuData
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -20,9 +21,7 @@ object RegionMenu extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, _}
-  import com.github.unchama.targetedeffect.syntax._
-
-  override val frame: MenuFrame =
+override val frame: MenuFrame =
     MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
   override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
@@ -98,8 +97,9 @@ object RegionMenu extends Menu {
             ) else Seq()
         }
 
+        import scala.util.chaining._
         new IconItemStackBuilder(Material.GOLD_AXE)
-          .modify { b => if (canMakeRegion) b.enchanted() }
+          .tap { b => if (canMakeRegion) b.enchanted() }
           .title(s"$YELLOW$UNDERLINE${BOLD}保護の申請")
           .lore(lore.toList)
           .build()
@@ -109,23 +109,23 @@ object RegionMenu extends Menu {
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           if (!playerHasPermission)
-            s"${RED}このワールドでは保護を申請できません".asMessageEffect()
+            MessageEffect(s"${RED}このワールドでは保護を申請できません")
           else if (isSelectionNull)
-            sequentialEffect(
-              s"${RED}先に木の斧で範囲を指定してからこのボタンを押してください".asMessageEffect(),
+            SequentialEffect(
+              MessageEffect(s"${RED}先に木の斧で範囲を指定してからこのボタンを押してください"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
             )
           else if (!selectionHasEnoughSpace)
-            sequentialEffect(
-              s"${RED}指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください".asMessageEffect(),
+            SequentialEffect(
+              MessageEffect(s"${RED}指定された範囲が狭すぎます。1辺当たり最低10ブロック以上にしてください"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
             )
           else
-            sequentialEffect(
-              "/expand vert".asCommandEffect(),
-              s"rg claim ${player.getName}_${openerData.regionCount}".asCommandEffect(),
+            SequentialEffect(
+              CommandEffect("/expand vert"),
+              CommandEffect(s"rg claim ${player.getName}_${openerData.regionCount}"),
               openerData.incrementRegionNumber,
-              "/sel".asCommandEffect(),
+              CommandEffect("/sel"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
             )
         )
@@ -136,7 +136,7 @@ object RegionMenu extends Menu {
   private object ConstantButtons {
 
     val summonWandButton: Button = {
-      val wandUsage = Array(
+      val wandUsage = List(
         s"$GREEN①召喚された斧を手に持ちます",
         s"$GREEN②保護したい領域の一方の角を${YELLOW}左${GREEN}クリック",
         s"$GREEN③もう一方の対角線上の角を${RED}右${GREEN}クリック",
@@ -146,20 +146,21 @@ object RegionMenu extends Menu {
       val iconItemStack = new IconItemStackBuilder(Material.WOOD_AXE)
         .title(s"$YELLOW$UNDERLINE${BOLD}保護設定用の木の斧を召喚")
         .lore(
-          (wandUsage ++ Array(
+          wandUsage ++ List(
             s"$DARK_RED${UNDERLINE}クリックで召喚",
             s"$DARK_GREEN$UNDERLINE※インベントリを空けておこう",
-            s"${DARK_GRAY}command=>[//wand]")).toList
+            s"${DARK_GRAY}command=>[//wand]"
+          )
         ).build()
 
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
+          SequentialEffect(
             closeInventoryEffect,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            "/wand".asCommandEffect(),
-            wandUsage.toList.asMessageEffect()
+            CommandEffect("/wand"),
+            MessageEffect(wandUsage)
           )
         )
       )
@@ -188,10 +189,10 @@ object RegionMenu extends Menu {
       Button(
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             closeInventoryEffect,
-            computedEffect(player => s"rg list -p ${player.getName}".asCommandEffect())
+            ComputedEffect(player => CommandEffect(s"rg list -p ${player.getName}"))
           )
         )
       )
@@ -210,7 +211,7 @@ object RegionMenu extends Menu {
 
       Button(
         iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ => "land".asCommandEffect())
+        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ => CommandEffect("land"))
       )
     }
 
@@ -229,10 +230,10 @@ object RegionMenu extends Menu {
       Button(
         iconItemStack,
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
-          sequentialEffect(
+          SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
             // TODO メニューに置き換える
-            computedEffect(p => openInventoryEffect(RegionMenuData.getGridWorldGuardMenu(p)))
+            ComputedEffect(p => openInventoryEffect(RegionMenuData.getGridWorldGuardMenu(p)))
           )
         )
       )

@@ -5,29 +5,31 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.command.{CommandSender, TabExecutor}
 
 object ContributeCommand {
 
-  import com.github.unchama.targetedeffect.syntax._
   import enumeratum._
   import net.md_5.bungee.api.ChatColor._
 
   private val printHelpMessageExecutor = new EchoExecutor(
-    List(
-      s"$YELLOW$BOLD[コマンドリファレンス]",
-      s"$RED/contribute add [プレイヤー名] [増加分ポイント]",
-      "指定されたプレイヤーの貢献度ptを指定分増加させます",
-      s"$RED/contribute remove [プレイヤー名] [減少分ポイント]",
-      "指定されたプレイヤーの貢献度ptを指定分減少させます(入力ミス回避用)"
-    ).asMessageEffect()
+    MessageEffect(
+      List(
+        s"$YELLOW$BOLD[コマンドリファレンス]",
+        s"$RED/contribute add [プレイヤー名] [増加分ポイント]",
+        "指定されたプレイヤーの貢献度ptを指定分増加させます",
+        s"$RED/contribute remove [プレイヤー名] [減少分ポイント]",
+        "指定されたプレイヤーの貢献度ptを指定分減少させます(入力ミス回避用)"
+      )
+    )
   )
   private val operationParser = Parsers.fromOptionParser(
     ContributeOperation.withNameLowercaseOnlyOption,
-    "操作はadd/removeで与えてください。".asMessageEffect()
+    MessageEffect("操作はadd/removeで与えてください。")
   )
   private val pointParser = Parsers.nonNegativeInteger(
-    s"${RED}増加分ポイントは0以上の整数を指定してください。".asMessageEffect()
+    MessageEffect(s"${RED}増加分ポイントは0以上の整数を指定してください。")
   )
 
   private def addContributionPoint(targetPlayerName: String, point: Int): IO[TargetedEffect[CommandSender]] = {
@@ -41,7 +43,7 @@ object ContributeCommand {
             } else {
               s"$GREEN${targetPlayerName}の貢献度ポイントを${point}減少させました"
             }
-          operationResponse.asMessageEffect()
+          MessageEffect(operationResponse)
         }.merge
       })
   }
@@ -62,7 +64,7 @@ object ContributeCommand {
       onMissingArguments = printHelpMessageExecutor
     )
     .execution { context =>
-      val operation = context.args.parsed(0).asInstanceOf[ContributeOperation]
+      val operation = context.args.parsed.head.asInstanceOf[ContributeOperation]
       val targetPlayerName = context.args.parsed(1).asInstanceOf[String]
       val point = context.args.parsed(2).asInstanceOf[Int]
 

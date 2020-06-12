@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.achievement.NicknameMapping.NicknameCombi
 import com.github.unchama.seichiassist.achievement.SeichiAchievement.{AutoUnlocked, Hidden, ManuallyUnlocked, Normal}
 import com.github.unchama.seichiassist.achievement.{AchievementConditions, NicknameMapping, SeichiAchievement}
 import com.github.unchama.seichiassist.menus.ColorScheme
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -81,9 +82,7 @@ object AchievementGroupMenuButtons {
 
       val clickEffect = {
         import com.github.unchama.targetedeffect._
-        import com.github.unchama.targetedeffect.syntax._
-
-        val clickSound = FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+      val clickSound = FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
         val effect =
           if (hasUnlocked) {
@@ -97,11 +96,11 @@ object AchievementGroupMenuButtons {
               player.sendMessage(s"二つ名「${NicknameMapping.getTitleFor(achievement)}」が設定されました。")
             }
 
-            delay(setNickname)
+            TargetedEffect.delay(setNickname)
           } else {
             achievement match {
               case _: AutoUnlocked =>
-                s"${RED}この実績は自動解禁式です。毎分の処理をお待ちください。".asMessageEffect()
+                MessageEffect(s"${RED}この実績は自動解禁式です。毎分の処理をお待ちください。")
               case achievement: ManuallyUnlocked =>
                 achievement match {
                   case achievement: Normal[_] =>
@@ -112,27 +111,25 @@ object AchievementGroupMenuButtons {
                           SeichiAssist.playermap(player.getUniqueId).TitleFlags.addOne(achievement.id)
                           player.sendMessage(s"実績No${achievement.id}を解除しました！おめでとうございます！")
                         } else {
-                          s"${RED}実績No${achievement.id}は条件を満たしていません。".asMessageEffect()(player)
+                          MessageEffect(s"${RED}実績No${achievement.id}は条件を満たしていません。")(player)
                         }
                       } yield ()
                     }
                   case _ =>
-                    s"$RESET$RED※この実績は手動解禁式です。".asMessageEffect()
+                    MessageEffect(s"$RESET$RED※この実績は手動解禁式です。")
                 }
               case _ =>
-                s"$RED※この実績は配布解禁式です。運営チームからの配布タイミングを逃さないようご注意ください。".asMessageEffect()
+                MessageEffect(s"$RED※この実績は配布解禁式です。運営チームからの配布タイミングを逃さないようご注意ください。")
             }
           }
 
-        sequentialEffect(clickSound, effect)
+        SequentialEffect(clickSound, effect)
       }
 
       Button(itemStack, LeftClickButtonEffect(clickEffect))
     }
 
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.syntax._
-
   // 実績8003を解除するためのボタン
   val unlock8003Button: Button = Button(
     new IconItemStackBuilder(Material.EMERALD_BLOCK)
@@ -141,8 +138,8 @@ object AchievementGroupMenuButtons {
       .build(),
     LeftClickButtonEffect(
       FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-      "お疲れ様でした！今日のお給料の代わりに二つ名をどうぞ！".asMessageEffect(),
-      delay { player => SeichiAssist.playermap(player.getUniqueId).TitleFlags.addOne(8003) }
+      MessageEffect("お疲れ様でした！今日のお給料の代わりに二つ名をどうぞ！"),
+      TargetedEffect.delay { player => SeichiAssist.playermap(player.getUniqueId).TitleFlags.addOne(8003) }
     )
   )
 

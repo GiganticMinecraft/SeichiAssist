@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.sequentialEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -52,7 +52,7 @@ object AchievementMenu extends Menu {
                 .lore(List(s"${RED}以下の実績が含まれます。") ++ includedGroups.map(s"$AQUA「" + _.name + "」"))
                 .build(),
               action.LeftClickButtonEffect(
-                sequentialEffect(
+                SequentialEffect(
                   CommonSoundEffects.menuTransitionFenceSound,
                   AchievementCategoryMenu(category).open
                 )
@@ -61,7 +61,7 @@ object AchievementMenu extends Menu {
           } else {
             Button(
               partialBuilder.lore(s"${YELLOW}今後実装予定のカテゴリです。").build(),
-              action.LeftClickButtonEffect(com.github.unchama.targetedeffect.emptyEffect)
+              action.LeftClickButtonEffect(TargetedEffect.emptyEffect)
             )
           }
       }
@@ -80,7 +80,7 @@ object AchievementMenu extends Menu {
         .build(),
       action.LeftClickButtonEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-        delay { player =>
+        TargetedEffect.delay { player =>
           SeichiAssist.playermap(player.getUniqueId).updateNickname(style = NicknameStyle.Level)
         }
       )
@@ -93,7 +93,7 @@ object AchievementMenu extends Menu {
       action.LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         Kleisli.liftF(PluginExecutionContexts.syncShift.shift),
-        delay { player =>
+        TargetedEffect.delay { player =>
           player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
         }
       )

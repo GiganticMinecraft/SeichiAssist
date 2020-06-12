@@ -4,7 +4,7 @@ import ResourceFilter.filterResources
 import sbt.Keys.baseDirectory
 
 ThisBuild / scalaVersion     := "2.13.1"
-ThisBuild / version          := "1.2.14-hotfix-4"
+ThisBuild / version          := "1.3.0"
 ThisBuild / organization     := "click.seichi"
 ThisBuild / description      := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -31,7 +31,8 @@ val providedDependencies = Seq(
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "4.4.0",
-  "org.scalatest" %% "scalatest" % "3.1.0",
+  "org.scalatest" %% "scalatest" % "3.1.2",
+  "org.scalacheck" %% "scalacheck" % "1.14.1",
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
@@ -87,6 +88,9 @@ lazy val root = (project in file("."))
     name := "SeichiAssist",
     assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist-${version.value}.jar",
     libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
+    excludeDependencies := Seq(
+      ExclusionRule(organization = "org.bukkit", name = "bukkit")
+    ),
     unmanagedBase := baseDirectory.value / "localDependencies",
     scalacOptions ++= Seq(
       "-encoding", "utf8",

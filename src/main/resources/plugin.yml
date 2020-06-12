@@ -2,6 +2,7 @@ name: @name@
 main: com.github.unchama.seichiassist.SeichiAssist
 version: @version@
 
+softdepend: [WorldGuard, CoreProtect]
 default-permission-message: &denied You don't have <permission>
 commands:
   gacha:

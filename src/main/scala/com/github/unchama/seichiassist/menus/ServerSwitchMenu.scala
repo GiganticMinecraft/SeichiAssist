@@ -66,7 +66,7 @@ object ServerSwitchMenu extends Menu {
       val button = Button(
         iconItemStack,
         LeftClickButtonEffect {
-          computedEffect(_ => {
+          ComputedEffect(_ => {
             connectToServerEffect(server.identifier)
           })
         }

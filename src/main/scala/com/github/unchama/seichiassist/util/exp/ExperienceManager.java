@@ -53,11 +53,8 @@ public class ExperienceManager implements IExperienceManager {
     private static void initLookupTables(int maxLevel) {
         xpTotalToReachLevel = new int[maxLevel];
 
-        for (int i = 0; i < xpTotalToReachLevel.length; i++) {
-            xpTotalToReachLevel[i] =
-                    i >= 30 ? (int) (3.5 * i * i - 151.5 * i + 2220) :
-                            i >= 16 ? (int) (1.5 * i * i - 29.5 * i + 360) :
-                                    17 * i;
+        for (int i = 1; i < xpTotalToReachLevel.length; i++) {
+            xpTotalToReachLevel[i] = xpTotalToReachLevel[i-1] + calculateXpNeededToLevelUp(i-1);
         }
     }
 
@@ -72,14 +69,21 @@ public class ExperienceManager implements IExperienceManager {
     private static int calculateLevelForExp(int exp) {
         int level = 0;
         int curExp = 7; // level 1
-        int incr = 10;
 
         while (curExp <= exp) {
-            curExp += incr;
-            level++;
-            incr += (level % 2 == 0) ? 3 : 4;
+            curExp += calculateXpNeededToLevelUp(++level);
         }
         return level;
+    }
+
+    /**
+     * Calculate the amount of XP needed for level up.
+     *
+     * @param level The level to check for.
+     * @return The amount of XP needed for level up.
+     */
+    private static int calculateXpNeededToLevelUp(int level){
+        return level >= 31 ? 112 + (level - 30) * 9 : level >= 16 ? 37 + (level - 15) * 5 : 7 + level * 2;
     }
 
     /**
@@ -242,7 +246,7 @@ public class ExperienceManager implements IExperienceManager {
     @Override
     public int getXpNeededToLevelUp(int level) {
         Validate.isTrue(level >= 0, "Level may not be negative.");
-        return level > 30 ? 62 + (level - 30) * 7 : level >= 16 ? 17 + (level - 15) * 3 : 17;
+        return calculateXpNeededToLevelUp(level);
     }
 
     /**

@@ -4,9 +4,9 @@ import cats.data.OptionT
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.syntax._
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.command.CommandSender
 
 import scala.reflect.ClassTag
@@ -15,7 +15,7 @@ import scala.reflect.ClassTag
  * [ContextualExecutor]を作成するためのビルダークラス.
  *
  * 各引数はビルドされる[ContextualExecutor]において異常系を見つけるとすぐに[RawCommandContext.sender]に応答を送り返す.
- * この副作用を内包させるためにsuspending functionとして宣言されている.
+ * この副作用を内包させるために[[IO]]への関数として宣言されている.
  *
  * @tparam CS 生成するExecutorが受け付ける[CommandSender]のサブタイプの上限
  * @param senderTypeValidation [CommandSender]の[CS]へのダウンキャストを試みる関数
@@ -78,7 +78,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
    *         新しい[ContextualExecutorBuilder]
    */
   def refineSenderWithError[CS1 <: CS : ClassTag](message: String): ContextualExecutorBuilder[CS1] =
-    refineSender(message.asMessageEffect())
+    refineSender(MessageEffect(message))
 
   /**
    * @return [CS]を[CS1]へ狭めるキャストを試み,
@@ -86,7 +86,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
    *         新しい[ContextualExecutorBuilder]
    */
   def refineSenderWithError[CS1 <: CS : ClassTag](messages: List[String]): ContextualExecutorBuilder[CS1] =
-    refineSender(messages.asMessageEffect())
+    refineSender(MessageEffect(messages))
 
   /**
    * @return [CS]を[CS1]へ狭めるキャストを試み,
@@ -136,11 +136,13 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
 
 object ContextualExecutorBuilder {
   private val defaultArgumentParser: CommandArgumentsParser[CommandSender] = {
-    case (_, context) =>
-      IO.pure(Some(PartiallyParsedArgs(List(), context.args)))
+    case (_, context) => IO.pure(Some(PartiallyParsedArgs(List(), context.args)))
   }
-  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(targetedeffect.emptyEffect) }
-  private val defaultSenderValidation: SenderTypeValidation[CommandSender] = { sender: CommandSender => IO.pure(Some(sender)) }
+  private val defaultExecution: ScopedContextualExecution[CommandSender] = { _ => IO(emptyEffect) }
+  private val defaultSenderValidation: SenderTypeValidation[CommandSender] = {
+    sender: CommandSender => IO.pure(Some(sender))
+  }
 
-  def beginConfiguration() = ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
+  def beginConfiguration(): ContextualExecutorBuilder[CommandSender] =
+    ContextualExecutorBuilder(defaultSenderValidation, defaultArgumentParser, defaultExecution)
 }

@@ -16,7 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import scala.Option;
 import scala.jdk.CollectionConverters;
 
 import java.util.UUID;
@@ -227,11 +226,7 @@ public class GachaCommand implements CommandExecutor {
                 //配布ポイント数取得
                 int num = TypeConverter.toInt(args[2]);
 
-                //プレイヤーオンライン時はplayerdataに直接反映、オフライン時はsqlに送信(結果をsenderへ)
-                sender.sendMessage(ChatColor.YELLOW + name + "のプレミアムエフェクトポイント配布処理開始…");
-
-                //mysqlにも書き込んどく
-                if (databaseGateway.playerDataManipulator.addPremiumEffectPoint(name, num) == Fail || databaseGateway.donateDataManipulator.addDonate(name, num) == Fail) {
+                if (databaseGateway.donateDataManipulator.addDonate(name, num) == Fail) {
                     sender.sendMessage(ChatColor.RED + "失敗");
                 } else {
                     sender.sendMessage(ChatColor.GREEN + "成功");

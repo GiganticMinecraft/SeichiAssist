@@ -4,19 +4,22 @@ import java.text.SimpleDateFormat
 import java.util.{GregorianCalendar, UUID}
 
 import cats.effect.IO
+import cats.effect.concurrent.Ref
+import com.github.unchama.generic.ClosedRange
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{ActiveSkillData, GridTemplate, Mana}
+import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
+import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
-import com.github.unchama.seichiassist.util.{ClosedRange, Util}
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.ForcedPotionEffect
 import org.bukkit.ChatColor._
 import org.bukkit._
@@ -40,13 +43,22 @@ class PlayerData(
 
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
-  import com.github.unchama.targetedeffect.syntax._
   import com.github.unchama.util.InventoryUtil._
 
   lazy val mebius: MebiusTask = new MebiusTask(uuid)
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
+
+  //MineStackの履歴
+  val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
+
+  //現在座標
+  var loc: Option[Location] = None
+
+  //放置時間
+  var idleMinute = 0
+
   //各統計値差分計算用配列
   lazy private val statisticsData: mutable.ArrayBuffer[Int] = {
     val buffer: mutable.ArrayBuffer[Int] = ArrayBuffer()
@@ -104,13 +116,11 @@ class PlayerData(
     UnfocusedEffect {
       this.settings.isExpBarVisible = !this.settings.isExpBarVisible
     }.followedBy {
-      deferredEffect {
-        IO({
-          if (this.settings.isExpBarVisible)
-            s"${GREEN}整地量バー表示"
-          else
-            s"${RED}整地量バー非表示"
-        }.asMessageEffect())
+      val isVisible = IO { this.settings.isExpBarVisible }
+      DeferredEffect {
+        isVisible
+          .map(visible => if (visible) s"${GREEN}整地量バー表示" else s"${RED}整地量バー非表示")
+          .map(MessageEffect.apply)
       }
     }.followedBy {
       UnfocusedEffect {
@@ -147,13 +157,7 @@ class PlayerData(
   var samepageflag = false //実績ショップ用
 
   //endregion
-  //MineStackの履歴
-  val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
-  var titlepage = 1 //実績メニュー用汎用ページ指定
-  //現在座標
-  var loc: Option[Location] = None
-  //放置時間
-  var idleMinute = 0
+
   //共有インベントリにアイテムが入っているかどうか
   var contentsPresentInSharedInventory = false
   //ガチャの基準となるポイント
@@ -171,7 +175,7 @@ class PlayerData(
     this.regionCount += 1
   }
 
-  var starLevels = StarLevel(0, 0, 0)
+  var starLevels: StarLevel = StarLevel(0, 0)
   var minestack = new MineStack()
   //プレイ時間
   var playTick = 0
@@ -186,12 +190,18 @@ class PlayerData(
   //連続・通算ログイン用
   // ロード時に初期化される
   var lastcheckdate: String = _
-  var loginStatus = LoginStatus(null, 0, 0)
+  var loginStatus: LoginStatus = LoginStatus(null, 0)
   //期間限定ログイン用
   var LimitedLoginCount = 0
   var ChainVote = 0
-  //アクティブスキル関連データ
-  val activeskilldata: ActiveSkillData = new ActiveSkillData()
+
+  //region スキル関連のデータ
+  val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
+  var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
+  val manaState: Mana = new Mana()
+  var effectPoint: Int = 0
+  //endregion
+
   //二つ名解禁フラグ保存用
   var TitleFlags: mutable.BitSet = new mutable.BitSet(10001)
 
@@ -200,9 +210,9 @@ class PlayerData(
   //二つ名配布予約NOの保存
   var giveachvNo = 0
   //実績ポイント用
-  var achievePoint = AchievementPoint()
+  var achievePoint: AchievementPoint = AchievementPoint()
 
-  var buildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
+  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
   // 1周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
@@ -223,7 +233,7 @@ class PlayerData(
   var newYearBagAmount = 0
   //バレンタインイベント用
   var hasChocoGave = false
-  var giganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false, 0)
+  var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false
   //プレイ時間差分計算用int
@@ -304,7 +314,8 @@ class PlayerData(
       player.sendMessage(s"${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
     }
 
-    activeskilldata.updateOnJoin(player, level)
+    manaState.initialize(player, level)
+
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
     isVotingFairy()
@@ -316,7 +327,7 @@ class PlayerData(
     updateStarLevel()
     setDisplayName()
     SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-    activeskilldata.mana.display(player, level)
+    manaState.display(player, level)
   }
 
   //表示される名前に整地レベルor二つ名を追加
@@ -388,9 +399,9 @@ class PlayerData(
 
         i += 1
 
-        if (activeskilldata.mana.isLoaded) {
+        if (manaState.isLoaded) {
           //マナ最大値の更新
-          activeskilldata.mana.onLevelUp(player, i)
+          manaState.onLevelUp(player, i)
         }
 
         //レベル上限に達したら終了
@@ -491,14 +502,12 @@ class PlayerData(
     //総プレイ時間更新
     updatePlayTick()
 
-    activeskilldata.updateOnQuit()
+    manaState.hide()
 
     mebius.cancel()
 
     //クライアント経験値をサーバー保管
     saveTotalExp()
-
-    activeskilldata.RemoveAllTask()
   }
 
   //総プレイ時間を更新する
@@ -585,7 +594,7 @@ class PlayerData(
 
   def convertEffectPointToAchievePoint(): Unit = {
     achievePoint = achievePoint.copy(conversionCount = achievePoint.conversionCount + 1)
-    activeskilldata.effectpoint -= 10
+    effectPoint -= 10
   }
 
   //エフェクトデータのdurationを60秒引く
@@ -809,7 +818,7 @@ class PlayerData(
     mana.calcAndSetMax(player, this.level)
   }
 
-  def toggleMessageFlag(): TargetedEffect[Player] = deferredEffect(IO {
+  def toggleMessageFlag(): TargetedEffect[Player] = DeferredEffect(IO {
     settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
 
     val responseMessage = if (settings.receiveFastDiggingEffectStats) {
@@ -818,7 +827,7 @@ class PlayerData(
       s"${GREEN}内訳表示:OFF"
     }
 
-    responseMessage.asMessageEffect()
+    MessageEffect(responseMessage)
   })
 
   /**
@@ -828,14 +837,14 @@ class PlayerData(
    * @param number 解除対象の実績番号
    * @return この作用の実行者に向け操作の結果を記述する[MessageToSender]
    */
-  def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] = deferredEffect(IO {
+  def tryForcefullyUnlockAchievement(number: Int): TargetedEffect[CommandSender] = DeferredEffect(IO {
     if (!TitleFlags(number)) {
       TitleFlags.addOne(number)
       player.sendMessage(s"運営チームよりNo${number}の実績が配布されました。")
 
-      s"$lowercaseName に実績No. $number を${GREEN}付与${RESET}しました。".asMessageEffect()
+      MessageEffect(s"$lowercaseName に実績No. $number を${GREEN}付与${RESET}しました。")
     } else {
-      s"$GRAY$lowercaseName は既に実績No. $number を獲得しています。".asMessageEffect()
+      MessageEffect(s"$GRAY$lowercaseName は既に実績No. $number を獲得しています。")
     }
   })
 
@@ -846,13 +855,13 @@ class PlayerData(
    * @param number 解除対象の実績番号
    * @return この作用の実行者に向け操作の結果を記述する[TargetedEffect]
    */
-  def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] = deferredEffect(IO {
+  def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] = DeferredEffect(IO {
     if (!TitleFlags(number)) {
       TitleFlags(number) = false
 
-      s"$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。".asMessageEffect()
+      MessageEffect(s"$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。")
     } else {
-      s"$GRAY$lowercaseName は実績No. $number を獲得していません。".asMessageEffect()
+      MessageEffect(s"$GRAY$lowercaseName は実績No. $number を獲得していません。")
     }
   })
 }
