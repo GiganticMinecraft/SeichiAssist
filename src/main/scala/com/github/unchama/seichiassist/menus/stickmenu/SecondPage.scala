@@ -98,7 +98,8 @@ object SecondPage extends Menu {
         DeferredEffect(IO {
           val expManager = new ExperienceManager(player)
           if (expManager.hasExp(10000)) {
-            val skullToGive = new SkullItemStackBuilder(getUniqueId).build().modify { stack =>
+            import scala.util.chaining._
+            val skullToGive = new SkullItemStackBuilder(getUniqueId).build().tap { stack =>
               import stack._
               //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
               setItemMeta {

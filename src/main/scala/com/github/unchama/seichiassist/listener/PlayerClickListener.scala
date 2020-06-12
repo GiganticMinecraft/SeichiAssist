@@ -219,8 +219,9 @@ class PlayerClickListener extends Listener {
             s"$GRAY${Util.getEnchantName(enchantment.getName, level)}"
           }
 
+        import scala.util.chaining._
         val message =
-          new TextComponent().modify { c =>
+          new TextComponent().tap { c =>
             import c._
             setText(s"$AQUA${givenItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！")
             setHoverEvent {

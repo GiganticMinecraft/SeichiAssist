@@ -21,9 +21,8 @@ import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
 
 object Util {
 
-  import com.github.unchama.util.syntax._
-
   import scala.jdk.CollectionConverters._
+  import scala.util.chaining._
 
   private val types = List(FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST, FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR)
 
@@ -67,11 +66,11 @@ object Util {
 
   //ガチャ券アイテムスタック型の取得
   def getskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).modify { skull =>
+    new ItemStack(Material.SKULL_ITEM, 1).tap { skull =>
       import skull._
       setDurability(3.toShort)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.modify { skullMeta =>
+        ItemMetaFactory.SKULL.getValue.tap { skullMeta =>
           import skullMeta._
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
@@ -349,11 +348,11 @@ object Util {
   }
 
   def getForBugskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack =>
+    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
       import itemStack._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.modify { meta =>
+        ItemMetaFactory.SKULL.getValue.tap { meta =>
           import meta._
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
@@ -370,11 +369,11 @@ object Util {
   }
 
   def getVoteskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack =>
+    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
       import itemStack._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.modify { meta =>
+        ItemMetaFactory.SKULL.getValue.tap { meta =>
           import meta._
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
@@ -391,11 +390,11 @@ object Util {
   }
 
   def getExchangeskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).modify { itemStack =>
+    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
       import itemStack._
       setDurability(3)
       setItemMeta {
-        ItemMetaFactory.SKULL.getValue.modify { meta =>
+        ItemMetaFactory.SKULL.getValue.tap { meta =>
           import meta._
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
@@ -438,10 +437,10 @@ object Util {
    */
   def getMenuIcon(material: Material, amount: Int,
                   displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack = {
-    new ItemStack(material, amount).modify { itemStack =>
+    new ItemStack(material, amount).tap { itemStack =>
       import itemStack._
       setItemMeta {
-        getItemMeta.modify { meta =>
+        getItemMeta.tap { meta =>
           import meta._
           setDisplayName(displayName)
           setLore(lore.asJava)
@@ -467,11 +466,11 @@ object Util {
    * @return ItemStack型のメニューアイコン
    */
   def getMenuIcon(material: Material, amount: Int, durabity: Int,
-                  displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack =
-    new ItemStack(material, amount, durabity.toShort).modify { itemStack =>
+                  displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack = {
+    new ItemStack(material, amount, durabity.toShort).tap { itemStack =>
       import itemStack._
       setItemMeta {
-        getItemMeta.modify { meta =>
+        getItemMeta.tap { meta =>
           import meta._
           setDisplayName(displayName)
           setLore(lore.asJava)
@@ -480,6 +479,7 @@ object Util {
         }
       }
     }
+  }
 
   def getPlayerDirection(player: Player): Direction = {
     var rotation = ((player.getLocation.getYaw + 180) % 360).toDouble
@@ -595,11 +595,10 @@ object Util {
         case SkullType.ZOMBIE => SkullType.ZOMBIE.ordinal.toShort
         case _ => itemStack.getDurability
       }
-      return itemStack.modify(_.setDurability(durability))
+      return itemStack.tap(_.setDurability(durability))
     }
-
     //プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
-    block.getDrops.asScala.head.modify(_.setDurability(SkullType.PLAYER.ordinal.toShort))
+    block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort))
   }
 
   def isLimitedTitanItem(itemstack: ItemStack): Boolean = {

@@ -58,7 +58,7 @@ object SeichiSkill extends Enum[SeichiSkill] {
 
   object WhiteBreath extends AssaultSkill("white_breath", "ホワイト・ブレス", condenseWater(7, 7, 7), 30, 70)
   object AbsoluteZero extends AssaultSkill("absolute_zero", "アブソリュート・ゼロ", condenseWater(11, 11, 11), 80, 80)
-  object DiamondDust extends AssaultSkill("diamond_dust", "ダイヤモンドダスト", condenseWater(15, 15, 15), 160, 90)
+  object DiamondDust extends AssaultSkill("diamond_dust", "ダイヤモンド・ダスト", condenseWater(15, 15, 15), 160, 90)
 
   object LavaCondensation extends AssaultSkill("lava_condensation", "ラヴァ・コンデンセーション", condenseLava(7, 7, 7), 20, 70)
   object MoerakiBoulders extends AssaultSkill("moeraki_boulders", "モエラキ・ボールダーズ", condenseLava(11, 11, 11), 60, 80)
