@@ -210,11 +210,8 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
 
     def coolDownDescription(skill: SeichiSkill): String = {
       val colorPrefix = s"$RESET$DARK_GRAY"
-
       val coolDownAmount = skill.maxCoolDownTicks.map { ticks =>
-        (ticks * 50).toString
-          .replaceFirst("(\\d\\d)$", ".$1")
-          .replaceFirst("0$", "")
+        String.format("%.2f", ticks * 50 / 1000.0)
       }.getOrElse("なし")
 
       colorPrefix + coolDownAmount
