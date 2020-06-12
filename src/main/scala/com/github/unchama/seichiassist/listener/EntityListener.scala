@@ -56,7 +56,7 @@ class EntityListener extends Listener {
     ).getOrElse(return)
 
     //耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.spigot.isUnbreakable) return
+    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable) return
 
     runArrowSkillOfHitBlock(player, block, tool)
   }
