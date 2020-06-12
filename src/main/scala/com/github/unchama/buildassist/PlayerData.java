@@ -111,7 +111,7 @@ public final class PlayerData {
      * 建築系データを読み込む
      *
      * @param player
-     * @return ture:読み込み成功　false:読み込み失敗
+     * @return true:読み込み成功　false:読み込み失敗
      */
     boolean buildload(final Player player) {
         final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.playermap().getOrElse(uuid, () -> null);
