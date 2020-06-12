@@ -246,31 +246,32 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
           }
 
           val clickEffectDescription: List[String] = state match {
-            case Locked => skill match {
-              case skill: AssaultSkill => skill match {
-                case SeichiSkill.VenderBlizzard =>
-                  List(
-                    s"$RESET${YELLOW}必要アクティブスキルポイント：${skill.requiredActiveSkillPoint}",
-                    s"$RESET${DARK_RED}水凝固/熔岩凝固の双方を扱える者にのみ発現する上位凝固スキル",
-                    s"$RESET${DARK_RED}アサルト・アーマーの発現には影響しない",
-                    s"$RESET$AQUA${UNDERLINE}クリックで解除"
-                  )
-                case SeichiSkill.AssaultArmor =>
-                  List(
-                    s"$RESET${YELLOW}全てのスキルを獲得すると解除されます"
-                  )
-                case _ =>
-                  List(
-                    s"前提スキル：${prerequisiteSkillName(skill)}",
-                    s"$RESET$AQUA${UNDERLINE}クリックで解除"
-                  )
-              }
-              case skill: ActiveSkill =>
+            case Locked =>
+              val requiredPointDescription =
+                s"$RESET${YELLOW}必要アクティブスキルポイント：${skill.requiredActiveSkillPoint}"
+
+              val defaultDescription =
                 List(
-                  s"前提スキル：${prerequisiteSkillName(skill)}",
+                  requiredPointDescription,
+                  s"$RESET${DARK_RED}前提スキル：${prerequisiteSkillName(skill)}",
                   s"$RESET$AQUA${UNDERLINE}クリックで解除"
                 )
-            }
+
+              skill match {
+                case skill: AssaultSkill => skill match {
+                  case SeichiSkill.VenderBlizzard =>
+                    List(
+                      requiredPointDescription,
+                      s"$RESET${DARK_RED}水凝固/熔岩凝固の双方を扱える者にのみ発現する上位凝固スキル",
+                      s"$RESET${DARK_RED}アサルト・アーマーの発現には影響しない",
+                      s"$RESET$AQUA${UNDERLINE}クリックで解除"
+                    )
+                  case SeichiSkill.AssaultArmor =>
+                    List(s"$RESET${YELLOW}全てのスキルを獲得すると解除されます")
+                  case _ => defaultDescription
+                }
+                case skill: ActiveSkill => defaultDescription
+              }
             case Unlocked => List(s"$RESET$DARK_RED${UNDERLINE}クリックでセット")
             case Selected => List(s"$RESET$DARK_RED${UNDERLINE}クリックで選択解除")
           }
