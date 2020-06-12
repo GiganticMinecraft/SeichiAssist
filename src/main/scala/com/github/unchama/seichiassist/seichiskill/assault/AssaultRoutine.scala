@@ -44,8 +44,6 @@ object AssaultRoutine {
       val skillState = playerData.skillState.get.unsafeRunSync()
       val assaultSkill = skillState.assaultSkill.getOrElse(return None)
 
-      if (skillState.usageMode == Disabled) return None
-
       if (player.getGameMode != GameMode.SURVIVAL) {
         player.sendMessage(s"${GREEN}ゲームモードをサバイバルに変更してください。")
         return None
