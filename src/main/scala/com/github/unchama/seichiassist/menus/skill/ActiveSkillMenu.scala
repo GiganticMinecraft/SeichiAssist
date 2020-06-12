@@ -311,9 +311,9 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                             (
                               unlockedState.obtained(SeichiSkill.AssaultArmor),
                               SequentialEffect(
-                                MessageEffect(s"$BOLD${YELLOW}全てのスキルを習得し、アサルト・アーマーを解除しました"),
+                                MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                                 BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-                                BroadcastMessageEffect(s"$BOLD$GOLD${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
+                                BroadcastMessageEffect(s"$GOLD$BOLD${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
                               )
                             )
                           } else
@@ -323,7 +323,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                           newState,
                           SequentialEffect(
                             FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f),
-                            MessageEffect(s"$BOLD$AQUA${skill.name}を解除しました"),
+                            MessageEffect(s"$AQUA$BOLD${skill.name}を解除しました"),
                             assaultSkillUnlockEffects
                           )
                         )
