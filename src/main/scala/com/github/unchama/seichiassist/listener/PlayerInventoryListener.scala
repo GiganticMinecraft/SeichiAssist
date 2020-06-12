@@ -438,9 +438,10 @@ class PlayerInventoryListener extends Listener {
      * step2 交換券をインベントリへ
      */
     val exchangeTicket = {
-      new ItemStack(Material.PAPER).modify {
+      import scala.util.chaining._
+      new ItemStack(Material.PAPER).tap {
         _.setItemMeta {
-          Bukkit.getItemFactory.getItemMeta(Material.PAPER).modify { m =>
+          Bukkit.getItemFactory.getItemMeta(Material.PAPER).tap { m =>
             import m._
             setDisplayName(s"$DARK_RED${BOLD}交換券")
             addEnchant(Enchantment.PROTECTION_FIRE, 1, false)
@@ -470,9 +471,9 @@ class PlayerInventoryListener extends Listener {
       exchangingAmount
         .flatMap { case (exchangedMaterial, exchangedAmount) =>
           val returningAmount = exchangedAmount % requiredAmountPerTicket(exchangedMaterial)
-
+          import scala.util.chaining._
           if (returningAmount != 0)
-            Some(new ItemStack(exchangedMaterial).modify(_.setAmount(returningAmount)))
+            Some(new ItemStack(exchangedMaterial).tap(_.setAmount(returningAmount)))
           else
             None
         }.++(rejectedItems)

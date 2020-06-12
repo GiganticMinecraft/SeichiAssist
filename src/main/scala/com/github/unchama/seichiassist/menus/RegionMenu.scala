@@ -97,8 +97,9 @@ override val frame: MenuFrame =
             ) else Seq()
         }
 
+        import scala.util.chaining._
         new IconItemStackBuilder(Material.GOLD_AXE)
-          .modify { b => if (canMakeRegion) b.enchanted() }
+          .tap { b => if (canMakeRegion) b.enchanted() }
           .title(s"$YELLOW$UNDERLINE${BOLD}保護の申請")
           .lore(lore.toList)
           .build()

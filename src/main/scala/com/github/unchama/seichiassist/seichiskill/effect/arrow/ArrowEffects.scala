@@ -41,12 +41,13 @@ object ArrowEffects {
     Some(Sound.ENTITY_SNOWBALL_THROW)
   )
   val singleArrowMagicEffect: TargetedEffect[Player] = {
-    val thrownPotionItem = new ItemStack(Material.SPLASH_POTION).modify { itemStack =>
+    import scala.util.chaining._
+    val thrownPotionItem = new ItemStack(Material.SPLASH_POTION).tap { itemStack =>
       itemStack.setItemMeta {
         Bukkit.getItemFactory
           .getItemMeta(Material.SPLASH_POTION)
           .asInstanceOf[PotionMeta]
-          .modify(_.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL)))
+          .tap(_.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL)))
       }
     }
 
@@ -89,6 +90,7 @@ object ArrowEffects {
 
     val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
 
+    import scala.util.chaining._
     SequentialEffect(
       soundEffect,
       Kleisli(player =>
@@ -98,14 +100,13 @@ object ArrowEffects {
           spawnLocation = playerLocation.clone()
             .add(playerLocation.getDirection)
             .add(spawnConfiguration.offset)
-
           modifyProjectile = (projectile: P) => IO {
-            projectile.modify { p => import p._
+            projectile.tap { p => import p._
               setShooter(player)
               setGravity(spawnConfiguration.gravity)
               setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))
             }
-            projectile.modify(projectileModifier)
+            projectile.tap(projectileModifier)
           }
 
           /**

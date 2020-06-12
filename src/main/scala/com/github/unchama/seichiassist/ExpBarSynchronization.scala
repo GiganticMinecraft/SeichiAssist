@@ -20,10 +20,11 @@ class ExpBarSynchronization {
 
     if (playerData.settings.isExpBarVisible) {
       val ExpBarProperties(title, progress) = computePropertiesFor(player)
+      import scala.util.chaining._
 
       managedExpBars(player) =
         Bukkit.getServer.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID)
-          .modify { b =>
+          .tap { b =>
             import b._
             setProgress(progress)
             addPlayer(player)
