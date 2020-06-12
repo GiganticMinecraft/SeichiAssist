@@ -1,4 +1,4 @@
-package com.github.unchama.buildassist;
+package com.github.unchama.buildassist.util;
 
 
 import com.github.unchama.seichiassist.util.exp.IExperienceManager;

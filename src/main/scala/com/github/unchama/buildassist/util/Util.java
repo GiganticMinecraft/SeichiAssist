@@ -1,5 +1,7 @@
-package com.github.unchama.buildassist;
+package com.github.unchama.buildassist.util;
 
+import com.github.unchama.buildassist.BuildAssist;
+import com.github.unchama.buildassist.data.PlayerData;
 import com.github.unchama.seichiassist.MineStackObjectList;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.minestack.MineStackObj;

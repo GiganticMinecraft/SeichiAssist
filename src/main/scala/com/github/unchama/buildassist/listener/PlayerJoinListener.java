@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist.listener;
 
 import com.github.unchama.buildassist.BuildAssist$;
-import com.github.unchama.buildassist.LoadPlayerDataTaskRunnable;
+import com.github.unchama.buildassist.task.LoadPlayerDataTaskRunnable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

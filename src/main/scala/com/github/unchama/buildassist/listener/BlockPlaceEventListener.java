@@ -1,8 +1,8 @@
 package com.github.unchama.buildassist.listener;
 
 import com.github.unchama.buildassist.BuildAssist;
-import com.github.unchama.buildassist.PlayerData;
-import com.github.unchama.buildassist.Util;
+import com.github.unchama.buildassist.data.PlayerData;
+import com.github.unchama.buildassist.util.Util;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;

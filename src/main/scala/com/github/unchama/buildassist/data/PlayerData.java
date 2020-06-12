@@ -1,5 +1,8 @@
-package com.github.unchama.buildassist;
+package com.github.unchama.buildassist.data;
 
+import com.github.unchama.buildassist.BuildAssist;
+import com.github.unchama.buildassist.BuildBlock;
+import com.github.unchama.buildassist.util.Util;
 import com.github.unchama.seichiassist.PackagePrivate;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.BuildCount;

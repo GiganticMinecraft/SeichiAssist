@@ -1,7 +1,8 @@
 package com.github.unchama.buildassist.menu
 
 import cats.effect.IO
-import com.github.unchama.buildassist.{BuildAssist, PlayerData}
+import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.data.PlayerData
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}

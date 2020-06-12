@@ -1,4 +1,4 @@
-package com.github.unchama.buildassist
+package com.github.unchama.buildassist.util
 
 object PowerOf10 {
   val power10: Array[Int] = Array(

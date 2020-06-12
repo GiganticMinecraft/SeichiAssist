@@ -1,6 +1,9 @@
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
-package com.github.unchama.buildassist;
+package com.github.unchama.buildassist.task;
 
+import com.github.unchama.buildassist.BuildAssist;
+import com.github.unchama.buildassist.util.ExperienceManager;
+import com.github.unchama.buildassist.data.PlayerData;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.util.exp.IExperienceManager;
 import org.bukkit.Bukkit;

@@ -1,5 +1,6 @@
-package com.github.unchama.buildassist
+package com.github.unchama.buildassist.data
 
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.util.AsyncInventorySetter
 import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._

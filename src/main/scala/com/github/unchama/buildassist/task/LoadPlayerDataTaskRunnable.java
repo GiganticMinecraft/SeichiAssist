@@ -1,6 +1,8 @@
-package com.github.unchama.buildassist;
+package com.github.unchama.buildassist.task;
 
 
+import com.github.unchama.buildassist.BuildAssist;
+import com.github.unchama.buildassist.data.PlayerData;
 import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
