@@ -21,9 +21,8 @@ import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
 
 object Util {
 
-  import com.github.unchama.util.syntax._
-
   import scala.jdk.CollectionConverters._
+  import scala.util.chaining._
 
   private val types = List(FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST, FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR)
 
@@ -67,7 +66,6 @@ object Util {
 
   //ガチャ券アイテムスタック型の取得
   def getskull(name: String): ItemStack = {
-    import scala.util.chaining._
     new ItemStack(Material.SKULL_ITEM, 1).tap { skull =>
       import skull._
       setDurability(3.toShort)
@@ -350,7 +348,6 @@ object Util {
   }
 
   def getForBugskull(name: String): ItemStack = {
-    import scala.util.chaining._
     new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
       import itemStack._
       setDurability(3)
@@ -372,7 +369,6 @@ object Util {
   }
 
   def getVoteskull(name: String): ItemStack = {
-    import scala.util.chaining._
     new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
       import itemStack._
       setDurability(3)
@@ -394,7 +390,6 @@ object Util {
   }
 
   def getExchangeskull(name: String): ItemStack = {
-    import scala.util.chaining._
     new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
       import itemStack._
       setDurability(3)
@@ -442,7 +437,6 @@ object Util {
    */
   def getMenuIcon(material: Material, amount: Int,
                   displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack = {
-    import scala.util.chaining._
     new ItemStack(material, amount).tap { itemStack =>
       import itemStack._
       setItemMeta {
@@ -473,7 +467,6 @@ object Util {
    */
   def getMenuIcon(material: Material, amount: Int, durabity: Int,
                   displayName: String, lore: List[String], isHideFlags: Boolean): ItemStack = {
-    import scala.util.chaining._
     new ItemStack(material, amount, durabity.toShort).tap { itemStack =>
       import itemStack._
       setItemMeta {
@@ -602,10 +595,8 @@ object Util {
         case SkullType.ZOMBIE => SkullType.ZOMBIE.ordinal.toShort
         case _ => itemStack.getDurability
       }
-      import scala.util.chaining._
       return itemStack.tap(_.setDurability(durability))
     }
-    import scala.util.chaining._
     //プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
     block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort))
   }
