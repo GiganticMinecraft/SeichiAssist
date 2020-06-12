@@ -28,7 +28,7 @@ object BlockLineUpTriggerListener extends Listener {
     val playerMineStack = seichiAssistData.minestack
 
     //スキルOFFなら終了
-    if (buildAssistData.line_up_flg == 0) return
+    if (buildAssistData.lineFillFlag == 0) return
 
     //スキル利用可能でないワールドの場合終了
     if (!Util.isSkillEnable(player)) return
@@ -71,7 +71,7 @@ object BlockLineUpTriggerListener extends Listener {
     } else if (pitch < -45) {
       step_y = 1
     } else {
-      if (buildAssistData.line_up_flg == 2) {
+      if (buildAssistData.lineFillFlag == 2) {
         //下設置設定の場合は一段下げる
         py -= 1
       }
@@ -89,7 +89,7 @@ object BlockLineUpTriggerListener extends Listener {
     val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag()
 
     val mineStackObjectToBeUsed =
-      if (buildAssistData.line_up_minestack_flg == 1)
+      if (buildAssistData.preferMineStackI == 1)
         MineStackObjectList.minestacklist.find { obj =>
           mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
         }
@@ -126,7 +126,7 @@ object BlockLineUpTriggerListener extends Listener {
     }
 
     val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
-    val slabLineUpStepMode = buildAssistData.line_up_step_flg
+    val slabLineUpStepMode = buildAssistData.lineUpStepFlag
     val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
 
     val placingBlockData: Byte =
@@ -156,7 +156,7 @@ object BlockLineUpTriggerListener extends Listener {
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる
-          if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.line_up_des_flg == 0) {
+          if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.breakLightBlockFlag == 0) {
             b.break
           }
 

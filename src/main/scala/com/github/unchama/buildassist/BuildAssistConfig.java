@@ -44,20 +44,6 @@ public class BuildAssistConfig {
     public int getFlyExp() {
         return Integer.parseInt(config.getString("flyexp"));
     }
-/*
-	public String getURL(){
-		String url = "jdbc:mysql://";
-		url += config.getString("host");
-		if(!config.getString("port").isEmpty()){
-			url += ":" + config.getString("port");
-		}
-		return url;
-	}
-
-	public String getLvMessage(int i) {
-		return config.getString("lv" + i + "message","");
-	}
-*/
 
     //ブロックを並べるスキル開放LV
     public int getblocklineuplevel() {

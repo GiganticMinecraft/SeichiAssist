@@ -1,9 +1,7 @@
 package com.github.unchama.buildassist.data;
 
 import com.github.unchama.buildassist.BuildAssist;
-import com.github.unchama.buildassist.BuildBlock;
 import com.github.unchama.buildassist.util.Util;
-import com.github.unchama.seichiassist.PackagePrivate;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.BuildCount;
 import org.bukkit.Bukkit;
@@ -13,6 +11,8 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static com.github.unchama.buildassist.BuildBlock.*;
+
 public final class PlayerData {
     public final String name;
     public final UUID uuid;
@@ -20,57 +20,57 @@ public final class PlayerData {
     /**
      * トータル設置ブロック数
      */
-    public BigDecimal totalbuildnum;
+    public BigDecimal totalBuildCount;
 
-    public boolean flyflag;
+    // 飛行関連
+    public boolean isFlying;
+    public int flyingTime;
+    public boolean doesEndlessFly;
 
-    public int flytime;
-
-    public boolean endlessfly;
-
-    public boolean ZoneSetSkillFlag;
-
-    public boolean zsSkillDirtFlag;
-
-    // TODO: こいつは殺す
-    public int AREAint;
+    // 一括設置関連
+    public boolean isEnabledBulkBlockPlace;
+    public boolean fillSurface;
+    // FIXME: 殺れ！！！！！！
+    public int actualRangeIndex;
     /**
      * ブロックを並べるスキル設定フラグ
+     * 0: OFF
+     * 1: 上
+     * 2: 下
      */
-    public int line_up_flg;
-    public int line_up_step_flg;
-    public int line_up_des_flg;
-    public int line_up_minestack_flg;
+    public int lineFillFlag;
+    public int lineUpStepFlag;
+    public int breakLightBlockFlag;
+    public int preferMineStackI;
     /**
      * ブロック範囲設置スキル設定フラグ
      */
-    public boolean zs_minestack_flag;
+    public boolean preferMineStackZ;
     /**
      * 1分のブロック設置数
      */
-    @PackagePrivate
-    BigDecimal build_num_1min;
+    public BigDecimal build_num_1min;
 
     //プレイヤーデータクラスのコンストラクタ
     public PlayerData(final Player player) {
         //初期値を設定
         name = Util.getName(player);
         uuid = player.getUniqueId();
-        totalbuildnum = BigDecimal.ZERO;
+        totalBuildCount = BigDecimal.ZERO;
         level = 1;
-        flyflag = false;
-        flytime = 0;
-        endlessfly = false;
-        ZoneSetSkillFlag = false;
-        zsSkillDirtFlag = true;
-        AREAint = 2;
+        isFlying = false;
+        flyingTime = 0;
+        doesEndlessFly = false;
+        isEnabledBulkBlockPlace = false;
+        fillSurface = true;
+        actualRangeIndex = 2;
 
-        line_up_flg = 0;
-        line_up_step_flg = 0;
-        line_up_des_flg = 0;
-        line_up_minestack_flg = 0;
+        lineFillFlag = 0;
+        lineUpStepFlag = 0;
+        breakLightBlockFlag = 0;
+        preferMineStackI = 0;
 
-        zs_minestack_flag = false;
+        preferMineStackZ = false;
 
         build_num_1min = BigDecimal.ZERO;
 
@@ -79,7 +79,7 @@ public final class PlayerData {
     /**
      * レベルを更新
      */
-    void updateLevel(final Player player) {
+    public void updateLevel(final Player player) {
         calcPlayerLevel(player);
     }
 
@@ -90,7 +90,7 @@ public final class PlayerData {
         //現在のランクの次を取得
         int i = level;
         //ランクが上がらなくなるまで処理
-        while (((int) BuildAssist.levellist().apply(i)) <= totalbuildnum.doubleValue() && (i + 2) <= BuildAssist.levellist().size()) {
+        while (((int) BuildAssist.levellist().apply(i)) <= totalBuildCount.doubleValue() && (i + 2) <= BuildAssist.levellist().size()) {
             if (!BuildAssist.DEBUG()) {
                 //レベルアップ時のメッセージ
                 player.sendMessage(ChatColor.GOLD + "ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + i + ")→建築Lv(" + (i + 1) + ")】");
@@ -106,7 +106,7 @@ public final class PlayerData {
     /**
      * オフラインかどうか
      */
-    boolean isOffline() {
+    public boolean isOffline() {
         return Bukkit.getServer().getPlayer(uuid) == null;
     }
 
@@ -116,7 +116,7 @@ public final class PlayerData {
      * @param player
      * @return ture:読み込み成功　false:読み込み失敗
      */
-    boolean buildload(final Player player) {
+    public boolean load(final Player player) {
         final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.playermap().getOrElse(uuid, () -> null);
         if (playerdata_s == null) {
             return false;
@@ -125,19 +125,19 @@ public final class PlayerData {
 
         final BuildCount oldBuildCount = playerdata_s.buildCount();
 
-        totalbuildnum = playerdata_s.buildCount().count();
+        totalBuildCount = playerdata_s.buildCount().count();
         //ブロック設置カウントが統合されてない場合は統合する
         if (server_num >= 1 && server_num <= 3) {
             byte f = playerdata_s.buildCount().migrationFlag();
             if ((f & (0x01 << server_num)) == 0) {
                 if (f == 0) {
                     // 初回は加算じゃなくベースとして代入にする
-                    totalbuildnum = BuildBlock.calcBuildBlock(player);
+                    totalBuildCount = calcBuildBlock(player);
                 } else {
-                    totalbuildnum = totalbuildnum.add(BuildBlock.calcBuildBlock(player));
+                    totalBuildCount = totalBuildCount.add(calcBuildBlock(player));
                 }
                 f = (byte) (f | (0x01 << server_num));
-                final BuildCount updatedBuildCount = playerdata_s.buildCount().copy(oldBuildCount.lv(), totalbuildnum, f);
+                final BuildCount updatedBuildCount = playerdata_s.buildCount().copy(oldBuildCount.lv(), totalBuildCount, f);
                 playerdata_s.buildCount_$eq(updatedBuildCount);
 
                 player.sendMessage(ChatColor.GREEN + "サーバー" + server_num + "の建築データを統合しました");
@@ -154,7 +154,7 @@ public final class PlayerData {
     /**
      * 建築系データを保存
      */
-    public void buildsave(final Player player) {
+    public void save(final Player player) {
         final com.github.unchama.seichiassist.data.player.PlayerData playerData = SeichiAssist.playermap().getOrElse(uuid, () -> null);
         if (playerData == null) {
             player.sendMessage(ChatColor.RED + "建築系データ保存失敗しました");
@@ -166,9 +166,9 @@ public final class PlayerData {
         //1分制限の判断
         final BigDecimal newBuildCount;
         if (build_num_1min.doubleValue() <= BuildAssist.config().getBuildNum1minLimit()) {
-            newBuildCount = totalbuildnum.add(build_num_1min);
+            newBuildCount = totalBuildCount.add(build_num_1min);
         } else {
-            newBuildCount = totalbuildnum.add(new BigDecimal(BuildAssist.config().getBuildNum1minLimit()));
+            newBuildCount = totalBuildCount.add(new BigDecimal(BuildAssist.config().getBuildNum1minLimit()));
         }
 
         playerData.buildCount_$eq(new BuildCount(level, newBuildCount, oldBuildCount.migrationFlag()));

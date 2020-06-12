@@ -22,7 +22,7 @@ object BlockPlacementSkillMenu extends Menu {
   import menuinventory.syntax._
 
   private implicit class PlayerDataOps(val playerData: PlayerData) extends AnyVal {
-    def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
+    def computeCurrentSkillRange(): Int = playerData.actualRangeIndex * 2 + 1
   }
 
   override val frame: MenuFrame =
@@ -65,7 +65,7 @@ object BlockPlacementSkillMenu extends Menu {
     def computeButtonToToggleDirtPlacement(): IO[Button] = RecomputedButton {
       IO {
         val playerData = BuildAssist.playermap(getUniqueId)
-        val currentStatus = playerData.zsSkillDirtFlag
+        val currentStatus = playerData.fillSurface
 
         val iconItemStack = new IconItemStackBuilder(Material.DIRT)
           .title(s"$YELLOW$UNDERLINE${BOLD}設置時に下の空洞を埋める機能")
@@ -80,7 +80,7 @@ object BlockPlacementSkillMenu extends Menu {
           LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             targetedeffect.UnfocusedEffect {
-              playerData.zsSkillDirtFlag = !currentStatus
+              playerData.fillSurface = !currentStatus
             },
             MessageEffect(s"${RED}土設置機能${if (currentStatus) "OFF" else "ON"}")
           )
@@ -91,9 +91,9 @@ object BlockPlacementSkillMenu extends Menu {
     def computeButtonToShowCurrentStatus(): IO[Button] = RecomputedButton {
       IO {
         val playerData = BuildAssist.playermap(getUniqueId)
-        val isSkillEnabled = playerData.ZoneSetSkillFlag
+        val isSkillEnabled = playerData.isEnabledBulkBlockPlace
         val skillRange = playerData.computeCurrentSkillRange()
-        val isConsumingMineStack = playerData.zs_minestack_flag
+        val isConsumingMineStack = playerData.preferMineStackZ
 
         val iconItemStack = new IconItemStackBuilder(Material.STONE)
           .title(s"$YELLOW$UNDERLINE${BOLD}現在の設定は以下の通りです")
@@ -126,7 +126,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 5
+            playerData.actualRangeIndex = 5
           },
           MessageEffect(s"${RED}現在の範囲設定は 11×11 です"),
           open
@@ -143,7 +143,7 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
         .lore {
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
-            if (playerData.AREAint == 5) {
+            if (playerData.actualRangeIndex == 5) {
               Seq(
                 s"$RESET${RED}これ以上範囲設定を大きくできません。"
               )
@@ -163,11 +163,11 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           DeferredEffect(
             IO {
-              if (playerData.AREAint < 5)
+              if (playerData.actualRangeIndex < 5)
                 SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                   UnfocusedEffect {
-                    playerData.AREAint += 1
+                    playerData.actualRangeIndex += 1
                   },
                   MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
                   open
@@ -197,7 +197,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 2
+            playerData.actualRangeIndex = 2
           },
           MessageEffect(s"${RED}現在の範囲設定は 5×5 です"),
           open
@@ -214,7 +214,7 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
         .lore(
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
-            if (playerData.AREAint == 1) {
+            if (playerData.actualRangeIndex == 1) {
               List(
                 s"${RED}これ以上範囲設定を小さくできません。"
               )
@@ -234,11 +234,11 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           DeferredEffect(
             IO {
-              if (playerData.AREAint > 1)
+              if (playerData.actualRangeIndex > 1)
                 SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                   UnfocusedEffect {
-                    playerData.AREAint -= 1
+                    playerData.actualRangeIndex -= 1
                   },
                   MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
                   open
@@ -268,7 +268,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 1
+            playerData.actualRangeIndex = 1
           },
           MessageEffect(s"${RED}現在の範囲設定は 3×3 です"),
           open
@@ -279,7 +279,7 @@ object BlockPlacementSkillMenu extends Menu {
     def computeButtonToToggleConsumingMineStack(): IO[Button] = RecomputedButton {
       IO {
         val playerData = BuildAssist.playermap(getUniqueId)
-        val currentStatus = playerData.zs_minestack_flag
+        val currentStatus = playerData.preferMineStackZ
 
         val iconItemStackBuilder = new IconItemStackBuilder(Material.CHEST)
           .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
@@ -302,7 +302,7 @@ object BlockPlacementSkillMenu extends Menu {
                 else
                   SequentialEffect(
                     targetedeffect.UnfocusedEffect {
-                      playerData.zs_minestack_flag = !currentStatus
+                      playerData.preferMineStackZ = !currentStatus
                     },
                     MessageEffect(s"MineStack優先設定${if (currentStatus) "OFF" else "ON"}"),
                     open

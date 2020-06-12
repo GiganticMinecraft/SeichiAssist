@@ -3,6 +3,7 @@ package com.github.unchama.buildassist.listener
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.util.Util
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor.RED
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -36,7 +37,7 @@ object TilingSkillTriggerListener extends Listener {
 
     if (!(player.isSneaking &&
       BuildAssist.materiallist.contains(offHandItem.getType) &&
-      buildAssistPlayerData.ZoneSetSkillFlag)) return
+      buildAssistPlayerData.isEnabledBulkBlockPlace)) return
 
     val clickedBlock = event.getClickedBlock
 
@@ -46,7 +47,7 @@ object TilingSkillTriggerListener extends Listener {
     }
 
     //スキルの範囲設定
-    val areaInt = buildAssistPlayerData.AREAint
+    val areaInt = buildAssistPlayerData.actualRangeIndex
 
     //設置範囲の基準となる座標
     val centerX = clickedBlock.getX
@@ -62,7 +63,7 @@ object TilingSkillTriggerListener extends Listener {
         .find { obj =>
           offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
         }
-        .filter(_ => buildAssistPlayerData.zs_minestack_flag)
+        .filter(_ => buildAssistPlayerData.preferMineStackZ)
 
     val replaceableMaterials = Set(
       Material.AIR,
@@ -83,15 +84,15 @@ object TilingSkillTriggerListener extends Listener {
       Material.STATIONARY_WATER
     )
 
-    val b1 = new Breaks
-    b1.breakable {
+    val bulkPlace = new Breaks
+    bulkPlace.breakable {
       val targetXValues = centerX - areaInt to centerX + areaInt
       val targetZValues = centerZ - areaInt to centerZ + areaInt
 
       targetZValues.foreach { targetZ =>
         targetXValues.foreach { targetX =>
-          val b2 = new Breaks
-          b2.breakable {
+          val eachTry = new Breaks
+          eachTry.breakable {
             val targetSurfaceLocation = new Location(playerWorld, targetX, surfaceY, targetZ)
             val targetSurfaceBlock = targetSurfaceLocation.getBlock
 
@@ -101,7 +102,7 @@ object TilingSkillTriggerListener extends Listener {
                 val blockToBeReplaced = fillLocation.getBlock
 
                 if (fillTargetMaterials.contains(blockToBeReplaced.getType)) {
-                  if (Util.getWorldGuard.canBuild(player, fillLocation)) {
+                  if (ExternalPlugins.getWorldGuard.canBuild(player, fillLocation)) {
                     blockToBeReplaced.setType(Material.DIRT)
                   } else {
                     //他人の保護がかかっている場合は通知を行う
@@ -112,7 +113,7 @@ object TilingSkillTriggerListener extends Listener {
             }
 
             def commitPlacement(): Unit = {
-              if (buildAssistPlayerData.zsSkillDirtFlag) {
+              if (buildAssistPlayerData.fillSurface) {
                 fillBelowSurfaceWithDirt()
               }
 
@@ -158,9 +159,9 @@ object TilingSkillTriggerListener extends Listener {
 
             if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
               //他人の保護がかかっている場合は処理を終了
-              if (!Util.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
+              if (!ExternalPlugins.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
                 player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
-                b1.break()
+                bulkPlace.break()
               }
 
               minestackObjectToUse match {
@@ -169,7 +170,7 @@ object TilingSkillTriggerListener extends Listener {
                     seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObject, 1)
 
                     commitPlacement()
-                    b2.break()
+                    eachTry.break()
                   }
                 case None =>
               }
@@ -179,7 +180,7 @@ object TilingSkillTriggerListener extends Listener {
                   commitPlacement()
                 case None =>
                   player.sendMessage(s"${RED}アイテムが不足しています!")
-                  b1.break()
+                  bulkPlace.break()
               }
             }
           }

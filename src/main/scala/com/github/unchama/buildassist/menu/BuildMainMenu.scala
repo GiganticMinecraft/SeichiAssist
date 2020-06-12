@@ -71,7 +71,7 @@ object BuildMainMenu extends Menu {
           .title(s"$YELLOW$EMPHASIZE${openerData.name}の建築データ")
           .lore(
             s"$RESET${AQUA}建築レベル: ${openerData.level}",
-            s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.toPlainString}",
+            s"$RESET${AQUA}総建築量: ${openerData.totalBuildCount.toPlainString}",
             s"$RESET$DARK_GRAY※1分毎に更新"
           )
           .build()
@@ -85,8 +85,8 @@ object BuildMainMenu extends Menu {
       val iconItemStack = new IconItemStackBuilder(Material.COOKED_CHICKEN)
         .title(s"$YELLOW${EMPHASIZE}fly機能 情報表示")
         .lore(
-          s"$RESET${AQUA}fly 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
-          s"$RESET${AQUA}fly 残り時間: ${if (openerData.endlessfly) "∞" else openerData.flytime}"
+          s"$RESET${AQUA}fly 効果: ${if (openerData.isFlying) "ON" else "OFF"}",
+          s"$RESET${AQUA}fly 残り時間: ${if (openerData.doesEndlessFly) "∞" else openerData.flyingTime}"
         )
         .build()
 
@@ -97,7 +97,7 @@ object BuildMainMenu extends Menu {
       IO {
         val openerData = BuildAssist.playermap(getUniqueId)
         val iconItemStack = new IconItemStackBuilder(Material.STONE)
-          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
+          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.isEnabledBulkBlockPlace) "ON" else "OFF"}")
           .lore(
             s"$RESET$YELLOW「スニーク+左クリック」をすると、",
             s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
@@ -116,14 +116,14 @@ object BuildMainMenu extends Menu {
                   if (openerData.level < BuildAssist.config.getZoneSetSkillLevel) {
                     MessageEffect(s"${RED}建築LVが足りません")
                   } else {
-                    if (openerData.ZoneSetSkillFlag) SequentialEffect(
+                    if (openerData.isEnabledBulkBlockPlace) SequentialEffect(
                       UnfocusedEffect {
-                        openerData.ZoneSetSkillFlag = false
+                        openerData.isEnabledBulkBlockPlace = false
                       },
                       MessageEffect(s"${RED}範囲設置スキルOFF")
                     ) else SequentialEffect(
                       UnfocusedEffect {
-                        openerData.ZoneSetSkillFlag = true
+                        openerData.isEnabledBulkBlockPlace = true
                       },
                       MessageEffect(s"${RED}範囲設置スキルON")
                     )
@@ -143,7 +143,7 @@ object BuildMainMenu extends Menu {
         .lore(
           s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
           s"$RESET${GRAY}現在の設定",
-          s"$RESET${GRAY}MineStack優先設定:${if (openerData.zs_minestack_flag) "ON" else "OFF"}"
+          s"$RESET${GRAY}MineStack優先設定:${if (openerData.preferMineStackZ) "ON" else "OFF"}"
         )
         .build()
 
@@ -169,7 +169,7 @@ object BuildMainMenu extends Menu {
       IO {
         val openerData = BuildAssist.playermap(getUniqueId)
         val iconItemStack = new IconItemStackBuilder(Material.WOOD)
-          .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+          .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.lineFillFlag(openerData.lineFillFlag)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
             s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -187,12 +187,12 @@ object BuildMainMenu extends Menu {
                   SequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                     UnfocusedEffect {
-                      openerData.line_up_flg += 1
-                      openerData.line_up_flg %= 3
+                      openerData.lineFillFlag += 1
+                      openerData.lineFillFlag %= 3
                     },
                     DeferredEffect {
                       IO {
-                        MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+                        MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.lineFillFlag(openerData.lineFillFlag)}")
                       }
                     }
                   )
@@ -210,10 +210,10 @@ object BuildMainMenu extends Menu {
         .title(s"$YELLOW$EMPHASIZE「ブロックを並べるスキル（仮） 」設定画面へ")
         .lore(
           s"$RESET${GRAY}現在の設定",
-          s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str(openerData.line_up_flg)}",
-          s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.line_up_step_str(openerData.line_up_step_flg)}",
-          s"$RESET${GRAY}破壊設定: ${BuildAssist.line_up_off_on_str(openerData.line_up_des_flg)}",
-          s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.line_up_off_on_str(openerData.line_up_minestack_flg)}"
+          s"$RESET${GRAY}スキル設定: ${BuildAssist.lineFillFlag(openerData.lineFillFlag)}",
+          s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.lineUpStepStr(openerData.lineUpStepFlag)}",
+          s"$RESET${GRAY}破壊設定: ${BuildAssist.onOrOff(openerData.breakLightBlockFlag)}",
+          s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.onOrOff(openerData.preferMineStackI)}"
         )
         .build()
 

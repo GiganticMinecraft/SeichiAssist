@@ -1,4 +1,3 @@
-/*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package com.github.unchama.buildassist.command;
 
 import com.github.unchama.buildassist.BuildAssist;
@@ -14,7 +13,9 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-
+/**
+ * {@code fly}コマンドを定義する。
+ */
 public final class FlyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label,
@@ -47,26 +48,26 @@ public final class FlyCommand implements CommandExecutor {
 
             final IExperienceManager expman = new ExperienceManager(player);
 
-            int flytime = playerdata.flytime;
-            final boolean endlessFly = playerdata.endlessfly;
-            final String query = args[0];
-            if (query.equalsIgnoreCase("finish")) {
-                playerdata.flyflag = false;
-                playerdata.flytime = 0;
-                playerdata.endlessfly = false;
+            int flytime = playerdata.flyingTime;
+            final boolean endlessFly = playerdata.doesEndlessFly;
+            final String query = args[0].toLowerCase();
+            if (query.equals("finish")) {
+                playerdata.isFlying = false;
+                playerdata.flyingTime = 0;
+                playerdata.doesEndlessFly = false;
                 player.setAllowFlight(false);
                 player.setFlying(false);
                 sender.sendMessage(ChatColor.GREEN
                         + "fly効果を停止しました。");
-            } else if (query.equalsIgnoreCase("endless")) {
+            } else if (query.equals("endless")) {
 
                 if (!expman.hasExp(BuildAssist.config().getFlyExp())) {
                     sender.sendMessage(ChatColor.GREEN
                             + "所持している経験値が、必要経験値量(" + BuildAssist.config().getFlyExp() + ")に達していません。");
                 } else {
-                    playerdata.flyflag = true;
-                    playerdata.endlessfly = true;
-                    playerdata.flytime = 0;
+                    playerdata.isFlying = true;
+                    playerdata.doesEndlessFly = true;
+                    playerdata.flyingTime = 0;
                     player.setAllowFlight(true);
                     player.setFlying(true);
                     sender.sendMessage(ChatColor.GREEN
@@ -88,9 +89,9 @@ public final class FlyCommand implements CommandExecutor {
                                 + "無期限飛行モードは解除されました。");
                     }
                     flytime += minutes;
-                    playerdata.flyflag = true;
-                    playerdata.flytime = flytime;
-                    playerdata.endlessfly = false;
+                    playerdata.isFlying = true;
+                    playerdata.flyingTime = flytime;
+                    playerdata.doesEndlessFly = false;
                     sender.sendMessage(ChatColor.YELLOW + "【flyコマンド認証】効果の残り時間はあと"
                             + flytime + "分です。");
                     player.setAllowFlight(true);

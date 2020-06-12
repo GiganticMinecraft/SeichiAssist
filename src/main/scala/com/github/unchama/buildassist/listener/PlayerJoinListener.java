@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist.listener;
 
 import com.github.unchama.buildassist.BuildAssist$;
-import com.github.unchama.buildassist.task.LoadPlayerDataTaskRunnable;
+import com.github.unchama.buildassist.task.LoadPlayerDataTask;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,7 +13,7 @@ public class PlayerJoinListener implements TypedEventListener<PlayerJoinEvent> {
     public void onEvent(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         //DBからデータを読み込むのを待ってから初期化
-        new LoadPlayerDataTaskRunnable(player).runTaskTimerAsynchronously(BuildAssist$.MODULE$.plugin(), 0, 20);
+        new LoadPlayerDataTask(player).runTaskTimerAsynchronously(BuildAssist$.MODULE$.plugin(), 0, 20);
 
     }
 }

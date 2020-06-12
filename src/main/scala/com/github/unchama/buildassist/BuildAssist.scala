@@ -5,8 +5,8 @@ import java.util.{ArrayList, EnumSet, UUID}
 
 import com.github.unchama.buildassist.command.FlyCommand
 import com.github.unchama.buildassist.data.PlayerData
-import com.github.unchama.buildassist.listener.{BlockLineUpTriggerListener, BlockPlaceEventListener, EntityListener, PlayerInventoryListener, PlayerJoinListener, PlayerLeftClickListener, PlayerQuitListener, TilingSkillTriggerListener}
-import com.github.unchama.buildassist.task.MinuteTaskRunnable
+import com.github.unchama.buildassist.listener.{BlockLineUpTriggerListener, BlockPlaceEventListener, AntiLargeFireball, PlayerInventoryListener, PlayerJoinListener, PlayerLeftClickListener, PlayerQuitListener, TilingSkillTriggerListener}
+import com.github.unchama.buildassist.task.MinuteTask
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
@@ -37,7 +37,7 @@ class BuildAssist(plugin: Plugin) {
     commandlist += "fly" -> new FlyCommand()
 
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new EntityListener(), plugin)
+    Bukkit.getServer.getPluginManager.registerEvents(new AntiLargeFireball(), plugin)
     Bukkit.getServer.getPluginManager.registerEvents(PlayerLeftClickListener, plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
@@ -57,7 +57,7 @@ class BuildAssist(plugin: Plugin) {
     }
     plugin.getLogger.info("BuildAssist is Enabled!")
 
-    tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200))
+    tasklist.add(new MinuteTask().runTaskTimer(plugin, 0, 1200))
   }
 
   def onCommand(sender: CommandSender, cmd: Command, label: String, args: Array[String]): Boolean = {
@@ -285,7 +285,7 @@ object BuildAssist {
   var plugin: Plugin = _
   val DEBUG: Boolean = false
   var config: BuildAssistConfig = _
-  val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
-  val line_up_step_str: Seq[String] = Seq("上側", "下側", "両方")
-  val line_up_off_on_str: Seq[String] = Seq("OFF", "ON")
+  val lineFillFlag: Seq[String] = Seq("OFF", "上側", "下側")
+  val lineUpStepStr: Seq[String] = Seq("上側", "下側", "両方")
+  val onOrOff: Seq[String] = Seq("OFF", "ON")
 }

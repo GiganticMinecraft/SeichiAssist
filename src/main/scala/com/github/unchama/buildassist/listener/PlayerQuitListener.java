@@ -35,7 +35,7 @@ public class PlayerQuitListener implements TypedEventListener<PlayerQuitEvent> {
         }
 
         //建築系データを保存
-        playerdata.buildsave(player);
+        playerdata.save(player);
         //不要なplayerdataを削除
         playermap.remove(uuid);
     }

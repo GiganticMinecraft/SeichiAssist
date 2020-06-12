@@ -25,44 +25,44 @@ class PlayerInventoryListener extends Listener {
   @EventHandler
   def onPlayerClickBlockLineUpEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
-    if (event.getClickedInventory == null) {
-      return
-    }
+    event.getClickedInventory.ifNull(return)
 
-    val itemstackcurrent = event.getCurrentItem
+    val current = event.getCurrentItem
     val view = event.getView
     val he = view.getPlayer
     //インベントリを開けたのがプレイヤーではない時終了
     if (he.getType != EntityType.PLAYER) return
 
-    val topinventory = view.getTopInventory.ifNull {
+    //インベントリが存在しない時終了
+    val inventory = view.getTopInventory.ifNull {
       return
     }
 
-    //インベントリが存在しない時終了
-    //インベントリサイズが36でない時終了
-    if (topinventory.getSize != 36) {
+    if (inventory.getSize != 36) {
       return
     }
 
     val player = he.asInstanceOf[Player]
     val uuid = player.getUniqueId
+    //プレイヤーデータが無い場合は処理終了
     val playerdata = playerMap.getOrElse(uuid, return)
 
-    //プレイヤーデータが無い場合は処理終了
-
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == s"${DARK_PURPLE.toString}$BOLD「ブロックを並べるスキル（仮）」設定") {
-      event.setCancelled(true)
+    if (inventory.getTitle != s"${DARK_PURPLE.toString}$BOLD「ブロックを並べるスキル（仮）」設定") {
+      return
+    }
 
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-      if (itemstackcurrent.getType == Material.SKULL_ITEM) {
+    event.setCancelled(true)
+
+    //プレイヤーインベントリのクリックの場合終了
+    if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+      return
+    }
+    /*
+     * クリックしたボタンに応じた各処理内容の記述ここから
+     */
+    current.getType match {
+      case Material.SKULL_ITEM =>
         //ホームメニューへ帰還
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
@@ -73,46 +73,44 @@ class PlayerInventoryListener extends Listener {
           ),
           "BuildMainMenuを開く"
         )
-      } else if (itemstackcurrent.getType == Material.WOOD) {
+
+      case Material.WOOD =>
         //ブロックを並べるスキル設定
         if (playerdata.level < BuildAssist.config.getblocklineuplevel()) {
           player.sendMessage(RED.toString + "建築LVが足りません")
         } else {
-          playerdata.line_up_flg = (playerdata.line_up_flg + 1) % 3
+          playerdata.lineFillFlag = (playerdata.lineFillFlag + 1) % 3
 
-          player.sendMessage(s"${GREEN.toString}ブロックを並べるスキル（仮） ：${BuildAssist.line_up_str.apply(playerdata.line_up_flg)}")
+          player.sendMessage(s"${GREEN.toString}ブロックを並べるスキル（仮） ：${BuildAssist.lineFillFlag.apply(playerdata.lineFillFlag)}")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
-      } else if (itemstackcurrent.getType == Material.STEP) {
+
+      case Material.STEP =>
         //ブロックを並べるスキルハーフブロック設定
-        if (playerdata.line_up_step_flg >= 2) {
-          playerdata.line_up_step_flg = 0
-        } else {
-          playerdata.line_up_step_flg += 1
-        }
-        player.sendMessage(s"${GREEN.toString}ハーフブロック設定 ：${BuildAssist.line_up_step_str(playerdata.line_up_step_flg)}")
+        playerdata.lineUpStepFlag = (playerdata.lineUpStepFlag + 1) % 3
+        player.sendMessage(s"${GREEN.toString}ハーフブロック設定 ：${BuildAssist.lineUpStepStr(playerdata.lineUpStepFlag)}")
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getBlockLineUpData(player))
 
-      } else if (itemstackcurrent.getType == Material.TNT) {
+      case Material.TNT =>
         //ブロックを並べるスキル一部ブロックを破壊して並べる設定
-        playerdata.line_up_des_flg = if (playerdata.line_up_des_flg == 0) 1 else 0
-        player.sendMessage(s"${GREEN.toString}破壊設定 ：${BuildAssist.line_up_off_on_str(playerdata.line_up_des_flg)}")
+        playerdata.breakLightBlockFlag = if (playerdata.breakLightBlockFlag == 0) 1 else 0
+        player.sendMessage(s"${GREEN.toString}破壊設定 ：${BuildAssist.onOrOff(playerdata.breakLightBlockFlag)}")
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getBlockLineUpData(player))
 
-      } else if (itemstackcurrent.getType == Material.CHEST) {
+      case Material.CHEST =>
         //マインスタックの方を優先して消費する設定
         if (playerdata.level < BuildAssist.config.getblocklineupMinestacklevel()) {
           player.sendMessage(s"${RED.toString}建築LVが足りません")
         } else {
-          playerdata.line_up_minestack_flg = if (playerdata.line_up_minestack_flg == 0) 1 else 0
-          player.sendMessage(GREEN.toString + "マインスタック優先設定 ：" + BuildAssist.line_up_off_on_str(playerdata.line_up_minestack_flg))
+          playerdata.preferMineStackI = if (playerdata.preferMineStackI == 0) 1 else 0
+          player.sendMessage(GREEN.toString + "マインスタック優先設定 ：" + BuildAssist.onOrOff(playerdata.preferMineStackI))
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
-      }
+      case _ => // NOP
     }
   }
 }
