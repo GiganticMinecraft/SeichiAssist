@@ -32,48 +32,38 @@ public class UpdateFlyStateTask extends BukkitRunnable {
                     final int decrease = -needs;
                     final com.github.unchama.seichiassist.data.player.PlayerData playerdata_s = SeichiAssist.playermap().get(uuid).get();
                     final boolean isAFK = playerdata_s.idleMinute() >= 10;
-                    if (playerdata.doesEndlessFly) {
-                        if (isAFK) {
-                            player.setAllowFlight(true);
-                            player.sendMessage(ChatColor.GRAY + "放置時間中のflyは無期限で継続中です(経験値は消費しません)");
-                        } else if (!expman.hasExp(needs)) {
-                            player.sendMessage(ChatColor.RED
-                                    + "fly効果の発動に必要な経験値が不足しているため、");
-                            player.sendMessage(ChatColor.RED + "fly効果を終了しました");
-                            playerdata.flyingTime = 0;
-                            playerdata.isFlying = false;
-                            playerdata.doesEndlessFly = false;
-                            player.setAllowFlight(false);
-                            player.setFlying(false);
-                        } else {
+                    final boolean has = expman.hasExp(needs);
+                    if (isAFK) {
+                        player.setAllowFlight(true);
+                        player.sendMessage(ChatColor.GRAY + "放置時間中のflyは無期限で継続中です(経験値は消費しません)");
+                    } else if (!has) {
+                        player.sendMessage(ChatColor.RED
+                                + "fly効果の発動に必要な経験値が不足しているため、");
+                        player.sendMessage(ChatColor.RED + "fly効果を終了しました");
+                        playerdata.flyMinute = 0;
+                        playerdata.isFlying = false;
+                        playerdata.doesEndlessFly = false;
+                        player.setAllowFlight(false);
+                        player.setFlying(false);
+                    } else {
+                        if (playerdata.doesEndlessFly) {
                             player.setAllowFlight(true);
                             player.sendMessage(ChatColor.GREEN + "fly効果は無期限で継続中です");
                             expman.changeExp(decrease);
-                        }
-                    } else if (playerdata.isFlying) {
-                        final int time = playerdata.flyingTime;
-                        if (isAFK) {
-                            player.setAllowFlight(true);
-                            player.sendMessage(ChatColor.GRAY + "放置時間中のflyは無期限で継続中です(経験値は消費しません)");
-                        } else if (time <= 0) {
-                            player.sendMessage(ChatColor.GREEN + "fly効果が終了しました");
-                            playerdata.isFlying = false;
-                            player.setAllowFlight(false);
-                            player.setFlying(false);
-                        } else if (!expman.hasExp(needs)) {
-                            player.sendMessage(ChatColor.RED
-                                    + "fly効果の発動に必要な経験値が不足しているため、");
-                            player.sendMessage(ChatColor.RED + "fly効果を終了しました");
-                            playerdata.flyingTime = 0;
-                            playerdata.isFlying = false;
-                            player.setAllowFlight(false);
-                            player.setFlying(false);
-                        } else {
-                            player.setAllowFlight(true);
-                            player.sendMessage(ChatColor.GREEN + "fly効果はあと"
-                                    + time + "分です");
-                            playerdata.flyingTime--;
-                            expman.changeExp(decrease);
+                        } else if (playerdata.isFlying) {
+                            final int minute = playerdata.flyMinute;
+                            if (minute <= 0) {
+                                player.sendMessage(ChatColor.GREEN + "fly効果が終了しました");
+                                playerdata.isFlying = false;
+                                player.setAllowFlight(false);
+                                player.setFlying(false);
+                            } else {
+                                player.setAllowFlight(true);
+                                player.sendMessage(ChatColor.GREEN + "fly効果はあと"
+                                        + minute + "分です");
+                                playerdata.flyMinute--;
+                                expman.changeExp(decrease);
+                            }
                         }
                     }
 
