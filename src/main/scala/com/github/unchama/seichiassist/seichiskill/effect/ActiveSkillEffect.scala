@@ -57,6 +57,11 @@ sealed trait UnlockableActiveSkillEffect extends ActiveSkillEffect with EnumEntr
   val usePoint: Int
 }
 
+object UnlockableActiveSkillEffect extends Enum[UnlockableActiveSkillEffect] {
+  override def values: IndexedSeq[UnlockableActiveSkillEffect] =
+    ActiveSkillNormalEffect.values ++ ActiveSkillPremiumEffect.values
+}
+
 sealed abstract class ActiveSkillNormalEffect(stringId: String,
                                               override val nameOnUI: String,
                                               override val explanation: String,
@@ -176,14 +181,24 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
 object ActiveSkillNormalEffect extends Enum[ActiveSkillNormalEffect] {
 
   val values: IndexedSeq[ActiveSkillNormalEffect] = findValues
-  /**
-   * @deprecated for interop purpose only
-   */
-  @Deprecated() val arrayValues: Array[ActiveSkillNormalEffect] = values.toArray
 
-  case object Explosion extends ActiveSkillNormalEffect("ef_explosion", s"${RED}エクスプロージョン", "単純な爆発", 50, Material.TNT)
-  case object Blizzard extends ActiveSkillNormalEffect("ef_blizzard", s"${AQUA}ブリザード", "凍らせる", 70, Material.PACKED_ICE)
-  case object Meteor extends ActiveSkillNormalEffect("ef_meteor", s"${DARK_RED}メテオ", "隕石を落とす", 100, Material.FIREBALL)
+  case object Explosion extends ActiveSkillNormalEffect(
+    "ef_explosion",
+    s"${RED}エクスプロージョン", "単純な爆発", 50,
+    Material.TNT
+  )
+
+  case object Blizzard extends ActiveSkillNormalEffect(
+    "ef_blizzard",
+    s"${AQUA}ブリザード", "凍らせる", 70,
+    Material.PACKED_ICE
+  )
+
+  case object Meteor extends ActiveSkillNormalEffect(
+    "ef_meteor",
+    s"${DARK_RED}メテオ", "隕石を落とす", 100,
+    Material.FIREBALL
+  )
 
 }
 
@@ -267,11 +282,11 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
 case object ActiveSkillPremiumEffect extends Enum[ActiveSkillPremiumEffect] {
 
   val values: IndexedSeq[ActiveSkillPremiumEffect] = findValues
-  /**
-   * @deprecated for interop purpose only
-   */
-  @Deprecated()
-  val arrayValues: Array[ActiveSkillPremiumEffect] = values.toArray
 
-  case object MAGIC extends ActiveSkillPremiumEffect("ef_magic", s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10, Material.RED_ROSE)
+  case object MAGIC extends ActiveSkillPremiumEffect(
+    "ef_magic",
+    s"$RED$UNDERLINE${BOLD}マジック", "鶏が出る手品", 10,
+    Material.RED_ROSE
+  )
+
 }
