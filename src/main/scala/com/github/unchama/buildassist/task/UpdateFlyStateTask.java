@@ -21,7 +21,9 @@ public class UpdateFlyStateTask extends BukkitRunnable {
     public void run() {
         this.playermap.values()
                 .filterNot(PlayerData::isOffline)
-                .foreach(pd -> {
+                .foreach(o -> {
+                    // 無能なのでこのキャストは必要
+                    final PlayerData pd = (PlayerData) o;
                     final Player player = Bukkit.getServer().getPlayer(
                             pd.uuid);
                     final UUID uuid = player.getUniqueId();
