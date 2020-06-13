@@ -23,7 +23,7 @@ public class UpdateFlyStateTask extends BukkitRunnable {
                 .filterNot(PlayerData::isOffline)
                 .foreach(o -> {
                     // 無能なのでこのキャストは必要
-                    final PlayerData pd = (PlayerData) o;
+                    @SuppressWarnings("RedundantCast") final PlayerData pd = (PlayerData) o;
                     final Player player = Bukkit.getServer().getPlayer(
                             pd.uuid);
                     final UUID uuid = player.getUniqueId();
