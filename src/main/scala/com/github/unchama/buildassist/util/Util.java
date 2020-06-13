@@ -17,28 +17,8 @@ public final class Util {
     private Util() {
     }
 
-    public static int toInt(final String s) {
-        return Integer.parseInt(s);
-    }
-
     public static String getName(final Player p) {
         return p.getName().toLowerCase();
-    }
-
-    public static String getName(final String name) {
-        return name.toLowerCase();
-    }
-
-    //ワールドガードAPIを返す
-    public static WorldGuardPlugin getWorldGuard() {
-        final Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-
-        // WorldGuard may not be loaded
-        if (!(plugin instanceof WorldGuardPlugin)) {
-            return null; // Maybe you want throw an exception instead
-        }
-
-        return (WorldGuardPlugin) plugin;
     }
 
     /**
@@ -75,31 +55,19 @@ public final class Util {
      * @return いる場合はtrue、いない場合はfalse
      */
     public static boolean inTrackedWorld(final Player player) {
-        //デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
+        //デバッグモード時は全ワールドでスキル使用を許可する
         if (SeichiAssist.DEBUG()) {
             return true;
         }
         final String name = player.getWorld().getName();
-        //プレイヤーの場所がメインワールド(world)または各種整地ワールド(world_SW)にいる場合
+        //プレイヤーの場所がメインワールド(world)または各種整地ワールド(world_SW)にいるかどうか
+        // TODO: ManagedWorldへ移行
         return name.toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())
                 || name.equalsIgnoreCase("world")
                 || name.equalsIgnoreCase("world_2")
                 || name.equalsIgnoreCase("world_nether")
                 || name.equalsIgnoreCase("world_the_end")
                 || name.equalsIgnoreCase("world_dot");
-        //それ以外のワールドの場合
-    }
-
-    /**
-     * 指定した名前のマインスタックオブジェクトを返す
-     */
-    // FIXME: これはここにあるべきではない
-    @Deprecated
-    public static @Nullable
-    MineStackObj findMineStackObjectByName(final String name) {
-        return MineStackObjectList.minestacklist()
-                .filter((MineStackObj obj) -> name.equals(obj.mineStackObjName()))
-                .headOption().getOrElse(() -> null);
     }
 
     /**
@@ -109,15 +77,13 @@ public final class Util {
      * @param player 増加させるプレイヤー
      * @param amount 増加量
      */
-    public static void addBuild1MinAmount(final Player player, final BigDecimal amount) {
-        //プレイヤーデータ取得
+    public static void increaseBuildCount(final Player player, final BigDecimal amount) {
         final PlayerData playerData = BuildAssist.playermap().get(player.getUniqueId()).get();
-        //player.sendMessage("足す数:" + amount.doubleValue() + ",かけた後:" + amount.multiply(new BigDecimal("0.1")).doubleValue());
-        //ワールドによって倍率変化
-        if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())) {
-            playerData.buildCountBuffer = playerData.buildCountBuffer.add(amount.multiply(new BigDecimal("0.1")));
-        } else {
-            playerData.buildCountBuffer = playerData.buildCountBuffer.add(amount);
-        }
+        // 整地ワールドならx0.1
+        // TODO: ManagedWorldへ移行
+        final BigDecimal finalAmount = player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())
+                ? amount.multiply(new BigDecimal("0.1"))
+                : amount;
+        playerData.buildCountBuffer = playerData.buildCountBuffer.add(finalAmount);
     }
 }
