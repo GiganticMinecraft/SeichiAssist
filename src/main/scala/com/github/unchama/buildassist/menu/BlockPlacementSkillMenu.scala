@@ -82,6 +82,7 @@ object BlockPlacementSkillMenu extends Menu {
             targetedeffect.UnfocusedEffect {
               playerData.fillSurface = !currentStatus
             },
+            // 切り替えた先のステータスを表示するのでおｋ
             MessageEffect(s"${RED}土設置機能${if (currentStatus) "OFF" else "ON"}")
           )
         )
