@@ -13,8 +13,7 @@ import org.bukkit.{Material, Sound}
 import scala.util.control.Breaks
 
 object BlockLineUpTriggerListener extends Listener {
-
-  import collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   @EventHandler
   def onBlockLineUpSkillTrigger(event: PlayerInteractEvent): Unit = {
@@ -33,31 +32,35 @@ object BlockLineUpTriggerListener extends Listener {
     //スキル利用可能でないワールドの場合終了
     if (!Util.isSkillEnable(player)) return
 
-    //左クリックの処理
-    if (!(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) return
+    //左クリックのみをハンドル
+    action match {
+      case Action.LEFT_CLICK_BLOCK | Action.LEFT_CLICK_AIR =>
+      case _ => return
+    }
 
     //プレイヤーインベントリを取得
     val inventory = player.getInventory
     //メインハンドとオフハンドを取得
     val mainHandItem = inventory.getItemInMainHand
     val offhandItem = inventory.getItemInOffHand
+    val mainHandItemType = mainHandItem.getType
 
-    //メインハンドに設置対象ブロックがある場合
-    if (!(BuildAssist.materiallist2.contains(mainHandItem.getType) || BuildAssist.material_slab2.contains(mainHandItem.getType))) return
+    //メインハンドが設置対象ブロックでない場合バイバイ
+    if (!(BuildAssist.materiallist2.contains(mainHandItemType) || BuildAssist.material_slab2.contains(mainHandItemType))) return
 
     //オフハンドに木の棒を持ってるときのみ発動させる
     if (offhandItem.getType != Material.STICK) return
 
     val pl = player.getLocation
-    val mainHandItemType = mainHandItem.getType
     val mainHandItemData = mainHandItem.getData.getData
 
+    // ぐだぐだと正規化をする
     //仰角は下向きがプラスで上向きがマイナス
     val pitch = pl.getPitch
     val yaw = (pl.getYaw + 360) % 360
-    var step_x = 0
-    var step_y = 0
-    var step_z = 0
+    var dx = 0
+    var dy = 0
+    var dz = 0
 
     //プレイヤーの足の座標を取得
     var px = pl.getBlockX
@@ -66,26 +69,29 @@ object BlockLineUpTriggerListener extends Listener {
 
     //プレイヤーの向いてる方向を判定
     if (pitch > 45) {
-      step_y = -1
+      // 下
+      dy = -1
       py = pl.getBlockY
     } else if (pitch < -45) {
-      step_y = 1
+      // 上
+      dy = 1
     } else {
       if (buildAssistData.lineFillFlag == 2) {
         //下設置設定の場合は一段下げる
         py -= 1
       }
       if (yaw > 315 || yaw < 45) { //南
-        step_z = 1
+        dz = 1
       } else if (yaw < 135) { //西
-        step_x = -1
+        dx = -1
       } else if (yaw < 225) { //北
-        step_z = -1
+        dz = -1
       } else { //東
-        step_x = 1
+        dx = 1
       }
     }
 
+    // ここまで正規化
     val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag()
 
     val mineStackObjectToBeUsed =
@@ -115,7 +121,7 @@ object BlockLineUpTriggerListener extends Listener {
       }
 
       Seq(Some(available), manaCap, Some(64L)).flatten.min
-      }.toInt
+    }.toInt
 
     def slabToDoubleSlab(material: Material) = material match {
       case Material.STONE_SLAB2 => Material.DOUBLE_STONE_SLAB2
@@ -131,7 +137,8 @@ object BlockLineUpTriggerListener extends Listener {
 
     val placingBlockData: Byte =
       if (playerHoldsSlabBlock && slabLineUpStepMode == 0)
-        (mainHandItemData + 8).toByte
+        // 0x08は上付きを示すビット
+        (mainHandItemData | 8).toByte
       else mainHandItemData
 
     val (placingBlockType, itemConsumptionPerPlacement, placementIteration) =
@@ -143,21 +150,21 @@ object BlockLineUpTriggerListener extends Listener {
     //設置した数
     var placedBlockCount = 0
 
-    val b = new Breaks
-    b.breakable {
+    val linePlace = new Breaks
+    linePlace.breakable {
       while (placedBlockCount < placementIteration) { //設置ループ
-        px += step_x
-        py += step_y
-        pz += step_z
+        px += dx
+        py += dy
+        pz += dz
         val block = playerWorld.getBlockAt(px, py, pz)
 
         //他人の保護がかかっている場合は設置終わり
-        if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) b.break
+        if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) linePlace.break
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる
           if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.breakLightBlockFlag == 0) {
-            b.break
+            linePlace.break
           }
 
           block.getDrops.asScala.foreach {
@@ -175,7 +182,7 @@ object BlockLineUpTriggerListener extends Listener {
     //カウント対象ワールドの場合カウント値を足す
     if (Util.inTrackedWorld(player)) {
       //対象ワールドかチェック
-      Util.addBuild1MinAmount(player, new java.math.BigDecimal(placedBlockCount * BuildAssist.config.getBlockCountMag)) //設置した数を足す
+      Util.increaseBuildCount(player, new java.math.BigDecimal(placedBlockCount * BuildAssist.config.getBlockCountMag)) //設置した数を足す
     }
 
     val consumptionFromMainHand = mineStackObjectToBeUsed match {
