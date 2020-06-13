@@ -5,8 +5,8 @@ import java.util.{ArrayList, EnumSet, UUID}
 
 import com.github.unchama.buildassist.command.FlyCommand
 import com.github.unchama.buildassist.data.PlayerData
-import com.github.unchama.buildassist.listener.{BlockLineUpTriggerListener, BlockPlaceEventListener, AntiLargeFireball, PlayerInventoryListener, PlayerJoinListener, PlayerLeftClickListener, PlayerQuitListener, TilingSkillTriggerListener}
-import com.github.unchama.buildassist.task.MinuteTask
+import com.github.unchama.buildassist.listener.{AntiLargeFireball, BlockLineUpTriggerListener, BlockPlaceEventListener, PlayerInventoryListener, PlayerJoinListener, PlayerLeftClickListener, PlayerQuitListener, TilingSkillTriggerListener}
+import com.github.unchama.buildassist.task.UpdateFlyStateTask
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
@@ -57,7 +57,7 @@ class BuildAssist(plugin: Plugin) {
     }
     plugin.getLogger.info("BuildAssist is Enabled!")
 
-    tasklist.add(new MinuteTask().runTaskTimer(plugin, 0, 1200))
+    tasklist.add(new UpdateFlyStateTask().runTaskTimer(plugin, 0, 1200))
   }
 
   def onCommand(sender: CommandSender, cmd: Command, label: String, args: Array[String]): Boolean = {
