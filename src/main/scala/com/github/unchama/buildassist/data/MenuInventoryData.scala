@@ -265,19 +265,19 @@ object MenuInventoryData {
     inventory.setItem(2, stack)
 
     //MineStackの方を優先して消費する設定
-    stack = new ItemStack(Material.CHEST, 1).tap { zz =>
-      val meta = Bukkit.getItemFactory.getItemMeta(Material.CHEST).tap { zzz =>
-        zzz.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.onOrOff(playerdata.preferMineStackI)}")
+    stack = new ItemStack(Material.CHEST, 1).tap { s =>
+      val meta = Bukkit.getItemFactory.getItemMeta(Material.CHEST).tap { m =>
+        m.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.onOrOff(playerdata.preferMineStackI)}")
         val lore = List(
           s"$RESET${GRAY}スキルでブロックを並べるとき",
           s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
           s"$RESET${GRAY}建築LV${BuildAssist.config.getblocklineupMinestacklevel()}以上で利用可能",
           s"$RESET${GRAY}クリックで切り替え"
         )
-        zzz.setLore(lore.asJava)
+        m.setLore(lore.asJava)
       }
 
-      zz.setItemMeta(meta)
+      s.setItemMeta(meta)
 
     }
 

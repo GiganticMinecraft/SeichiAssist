@@ -37,9 +37,17 @@ public final class PlayerData {
      * 0: OFF
      * 1: 上
      * 2: 下
+     * @see LineFillState
      */
     public int lineFillFlag;
+    /**
+     * フラグ
+     * 0: 上
+     * 1: 下
+     * 2: 両方
+     */
     public int lineUpStepFlag;
+    // TODO: boolean
     public int breakLightBlockFlag;
     public int preferMineStackI;
     /**
@@ -51,6 +59,16 @@ public final class PlayerData {
      */
     public BigDecimal buildCountBuffer;
 
+    enum LineFillState {
+        OFF(0),
+        UP(1),
+        DOWN(2);
+
+        public final int internalId;
+        LineFillState(int a) {
+            this.internalId = a;
+        }
+    }
     //プレイヤーデータクラスのコンストラクタ
     public PlayerData(final Player player) {
         //初期値を設定
@@ -65,7 +83,7 @@ public final class PlayerData {
         fillSurface = true;
         actualRangeIndex = 2;
 
-        lineFillFlag = 0;
+        lineFillFlag = LineFillState.OFF.internalId;
         lineUpStepFlag = 0;
         breakLightBlockFlag = 0;
         preferMineStackI = 0;
