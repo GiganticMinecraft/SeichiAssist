@@ -34,6 +34,7 @@ public class LoadPlayerDataTask extends BukkitRunnable {
             Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "はオフラインの為取得処理を中断");
             return;
         }
+        // FIXME: 同期ロード！！！！！！！！！！！！
         //読み込み失敗が規定回数超えたら終わる
         if (retryCount >= 7) {
             cancel();
