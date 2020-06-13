@@ -204,7 +204,14 @@ object PlayerDataLoading {
         playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
         playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
 
-        playerData.skillEffectState = PlayerSkillEffectState(obtainedEffects, NoEffect)
+        playerData.skillEffectState = {
+          val selectedEffect =
+            UnlockableActiveSkillEffect
+              .withNameOption(rs.getString("selected_effect"))
+              .flatMap { eff => Some(eff).filter(obtainedEffects.contains) }
+
+          PlayerSkillEffectState(obtainedEffects, selectedEffect.getOrElse(NoEffect))
+        }
         playerData.skillState.set(
           PlayerSkillState.fromUnsafeConfiguration(
             obtainedSkills,
