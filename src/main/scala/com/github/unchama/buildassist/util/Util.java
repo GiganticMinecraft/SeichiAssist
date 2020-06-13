@@ -115,9 +115,9 @@ public final class Util {
         //player.sendMessage("足す数:" + amount.doubleValue() + ",かけた後:" + amount.multiply(new BigDecimal("0.1")).doubleValue());
         //ワールドによって倍率変化
         if (player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())) {
-            playerData.build_num_1min = playerData.build_num_1min.add(amount.multiply(new BigDecimal("0.1")));
+            playerData.buildCountBuffer = playerData.buildCountBuffer.add(amount.multiply(new BigDecimal("0.1")));
         } else {
-            playerData.build_num_1min = playerData.build_num_1min.add(amount);
+            playerData.buildCountBuffer = playerData.buildCountBuffer.add(amount);
         }
     }
 }

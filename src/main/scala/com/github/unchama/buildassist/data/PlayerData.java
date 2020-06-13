@@ -49,7 +49,7 @@ public final class PlayerData {
     /**
      * 1分のブロック設置数
      */
-    public BigDecimal build_num_1min;
+    public BigDecimal buildCountBuffer;
 
     //プレイヤーデータクラスのコンストラクタ
     public PlayerData(final Player player) {
@@ -72,7 +72,7 @@ public final class PlayerData {
 
         preferMineStackZ = false;
 
-        build_num_1min = BigDecimal.ZERO;
+        buildCountBuffer = BigDecimal.ZERO;
 
     }
 
@@ -165,8 +165,8 @@ public final class PlayerData {
 
         //1分制限の判断
         final BigDecimal newBuildCount;
-        if (build_num_1min.doubleValue() <= BuildAssist.config().getBuildNum1minLimit()) {
-            newBuildCount = totalBuildCount.add(build_num_1min);
+        if (buildCountBuffer.doubleValue() <= BuildAssist.config().getBuildNum1minLimit()) {
+            newBuildCount = totalBuildCount.add(buildCountBuffer);
         } else {
             newBuildCount = totalBuildCount.add(new BigDecimal(BuildAssist.config().getBuildNum1minLimit()));
         }
