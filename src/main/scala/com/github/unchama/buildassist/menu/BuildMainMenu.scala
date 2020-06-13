@@ -86,7 +86,7 @@ object BuildMainMenu extends Menu {
         .title(s"$YELLOW${EMPHASIZE}fly機能 情報表示")
         .lore(
           s"$RESET${AQUA}fly 効果: ${if (openerData.isFlying) "ON" else "OFF"}",
-          s"$RESET${AQUA}fly 残り時間: ${if (openerData.doesEndlessFly) "∞" else openerData.flyingTime}"
+          s"$RESET${AQUA}fly 残り時間: ${if (openerData.doesEndlessFly) "∞" else openerData.flyMinute}"
         )
         .build()
 

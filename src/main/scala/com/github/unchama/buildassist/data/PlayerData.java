@@ -24,7 +24,7 @@ public final class PlayerData {
 
     // 飛行関連
     public boolean isFlying;
-    public int flyingTime;
+    public int flyMinute;
     public boolean doesEndlessFly;
 
     // 一括設置関連
@@ -33,7 +33,7 @@ public final class PlayerData {
     // FIXME: 殺れ！！！！！！
     public int actualRangeIndex;
     /**
-     * ブロックを並べるスキル設定フラグ
+     * ブロックを直線に並べるスキル設定フラグ
      * 0: OFF
      * 1: 上
      * 2: 下
@@ -59,7 +59,7 @@ public final class PlayerData {
         totalBuildCount = BigDecimal.ZERO;
         level = 1;
         isFlying = false;
-        flyingTime = 0;
+        flyMinute = 0;
         doesEndlessFly = false;
         isEnabledBulkBlockPlace = false;
         fillSurface = true;

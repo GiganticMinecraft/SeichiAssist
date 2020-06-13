@@ -48,12 +48,12 @@ public final class FlyCommand implements CommandExecutor {
 
             final IExperienceManager expman = new ExperienceManager(player);
 
-            int flytime = playerdata.flyingTime;
+            int flytime = playerdata.flyMinute;
             final boolean endlessFly = playerdata.doesEndlessFly;
             final String query = args[0].toLowerCase();
             if (query.equals("finish")) {
                 playerdata.isFlying = false;
-                playerdata.flyingTime = 0;
+                playerdata.flyMinute = 0;
                 playerdata.doesEndlessFly = false;
                 player.setAllowFlight(false);
                 player.setFlying(false);
@@ -67,7 +67,7 @@ public final class FlyCommand implements CommandExecutor {
                 } else {
                     playerdata.isFlying = true;
                     playerdata.doesEndlessFly = true;
-                    playerdata.flyingTime = 0;
+                    playerdata.flyMinute = 0;
                     player.setAllowFlight(true);
                     player.setFlying(true);
                     sender.sendMessage(ChatColor.GREEN
@@ -90,7 +90,7 @@ public final class FlyCommand implements CommandExecutor {
                     }
                     flytime += minutes;
                     playerdata.isFlying = true;
-                    playerdata.flyingTime = flytime;
+                    playerdata.flyMinute = flytime;
                     playerdata.doesEndlessFly = false;
                     sender.sendMessage(ChatColor.YELLOW + "【flyコマンド認証】効果の残り時間はあと"
                             + flytime + "分です。");

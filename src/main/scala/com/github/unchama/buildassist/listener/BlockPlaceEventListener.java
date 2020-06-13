@@ -29,6 +29,6 @@ public class BlockPlaceEventListener implements TypedEventListener<BlockPlaceEve
         //プレイヤーデータが無い場合は処理終了
         if (playerdata == null) return;
 
-        Util.addBuild1MinAmount(player, BigDecimal.ONE);
+        Util.increaseBuildCount(player, BigDecimal.ONE);
     }
 }
