@@ -32,6 +32,8 @@ jobs:
             - build-cache-v2-
       - run: du -h --max-depth=1 ~
       - run: du -h --max-depth=1 target
+      ## ビルド結果が残っている可能性があるのでクリアする
+      - run: rm -rf target/build
       - run: ./sbt assembly
       - save_cache:
           paths:
@@ -55,12 +57,14 @@ jobs:
     working_directory: ~/repo
     steps:
       - *load_workspace
+      - run: du -h --max-depth=1 /tmp/workspace/builds
       - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST > /dev/null 2>&1
   deploy_production:
     <<: *sbt_docker
     working_directory: ~/repo
     steps:
       - *load_workspace
+      - run: du -h --max-depth=1 /tmp/workspace/builds
       - run: scp -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $PRODUCTION_DEPLOY_TARGET_HOST > /dev/null 2>&1
 
 workflows:
