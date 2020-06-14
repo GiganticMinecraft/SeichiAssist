@@ -28,10 +28,10 @@ jobs:
             - sbt-repo-v3-
       - restore_cache:
           keys:
-            - build-cache-v2-{{ .Branch }}-
-            - build-cache-v2-
+            - build-cache-v3-{{ .Branch }}-
+            - build-cache-v3-
       - run: du -h --max-depth=1 ~
-      - run: du -h --max-depth=1 target
+      - run: du -h --max-depth=2 target
       ## ビルド結果が残っている可能性があるのでクリアする
       - run: rm -rf target/build
       - run: ./sbt assembly
@@ -57,14 +57,14 @@ jobs:
     working_directory: ~/repo
     steps:
       - *load_workspace
-      - run: du -h --max-depth=1 /tmp/workspace/builds
+      - run: du -h --max-depth=2 /tmp/workspace/builds
       - run: scp -v -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST
   deploy_production:
     <<: *sbt_docker
     working_directory: ~/repo
     steps:
       - *load_workspace
-      - run: du -h --max-depth=1 /tmp/workspace/builds
+      - run: du -h --max-depth=2 /tmp/workspace/builds
       - run: scp -v -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $PRODUCTION_DEPLOY_TARGET_HOST
 
 workflows:
