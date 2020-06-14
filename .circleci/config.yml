@@ -30,8 +30,7 @@ jobs:
           keys:
             - build-cache-v3-{{ .Branch }}-
             - build-cache-v3-
-      - run: du -h --max-depth=1 ~
-      - run: du -h --max-depth=2 target
+      - run: du -h --max-depth=2 ~
       ## ビルド結果が残っている可能性があるのでクリアする
       - run: rm -rf target/build
       - run: ./sbt assembly
