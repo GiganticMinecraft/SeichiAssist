@@ -48,7 +48,7 @@ jobs:
           paths:
             - ~/repo/target
             - ~/repo/project/target
-          key: build-cache-v2-{{ .Branch }}-{{ epoch }}
+          key: build-cache-v3-{{ .Branch }}-{{ epoch }}
       - run: mkdir -p workspace/builds && cp target/build/**.jar workspace/builds
       - *save_workspace
   deploy_debug:
