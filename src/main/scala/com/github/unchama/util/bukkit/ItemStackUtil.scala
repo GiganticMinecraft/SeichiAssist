@@ -1,6 +1,9 @@
 package com.github.unchama.util.bukkit
 
+import org.bukkit.ChatColor.{DARK_GREEN, RESET}
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 
 object ItemStackUtil {
   /**
@@ -26,5 +29,32 @@ object ItemStackUtil {
     }
 
     result.toSeq
+  }
+
+  /**
+   * メタが `f` によって変更されたような新たな `ItemStack` を作成する
+   */
+  def modifyMeta(f: ItemMeta => Unit)(stack: ItemStack): ItemStack = {
+    val itemMeta = stack.getItemMeta
+    val newItem = stack.clone()
+    f(itemMeta)
+    newItem.setItemMeta(itemMeta)
+    newItem
+  }
+
+  /**
+   * `owner` のloreが追加されたような新たな `ItemStack` を作成する
+   */
+  def appendOwnerInformation(owner: Player)(itemStack: ItemStack): ItemStack = {
+    import scala.jdk.CollectionConverters._
+
+    modifyMeta { m => import m._
+      setLore {
+        val originalLore = if (itemStack.getItemMeta.hasLore) getLore.asScala else Nil
+        val appended = originalLore ++ List(s"$RESET${DARK_GREEN}所有者：${owner.getName}")
+
+        appended.asJava
+      }
+    }(itemStack)
   }
 }
