@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.util
+package com.github.unchama.util.bukkit
 
 import org.bukkit.inventory.ItemStack
 

@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
+import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
 import org.bukkit._
