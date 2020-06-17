@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands.legacy;
 import java.util.List;
 import java.util.UUID;
 
+import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -66,7 +67,7 @@ public class PresentCommand implements CommandExecutor {
             }
         } else if (mode.equals("login")) {
             // TODO: 非同期
-            for (Player p : Bukkit.getOfflinePlayers()) {
+            for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
                 sendItem(p, stack);
             }
         } else if (mode.equals("one")) {
@@ -82,13 +83,22 @@ public class PresentCommand implements CommandExecutor {
             } else {
                 // 引数の個数が誤っている
                 return false;
-                }
+            }
         } else {
             return false;
         }
 
     }
 
+    /**
+    * ここでアイテムを実際に送信したりする。
+    * @param target 送信するプレイヤー
+    * @param item 送信するアイテム
+    */
+    public static boolean sendItem(OfflinePlayer target, ItemStack item) {
+        throw new RuntimeException("This method is not implemented yet.");
+    }
+    
     /**
     * ここでアイテムを実際に送信したりする。
     * @param target 送信するプレイヤー
