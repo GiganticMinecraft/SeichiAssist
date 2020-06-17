@@ -19,12 +19,12 @@ public class PresentCommand implements CommandExecutor {
     /**
     * 配布モード。ALLはオフラインプレイヤーを含めた全部のプレイヤー。LOGINは現在ログインしているプレイヤー。ONEは特定の誰か。
     */
-    public enum class PresentMode {
+    public enum PresentMode {
         ALL,
         LOGIN,
         ONE,;
     }
-    private final SeichiAssist plugin = SeichiAssist.instance;
+    private final SeichiAssist plugin = SeichiAssist.instance();
 
     @Override
     public List<String> onTabComplete(CommandSender paramCommandSender,
