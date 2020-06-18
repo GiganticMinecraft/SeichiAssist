@@ -74,7 +74,8 @@ public class PresentCommand implements CommandExecutor {
         } else if (mode.equals("one")) {
             if (args.length == 2) {
                 String name = args[1];
-                Player target = Bukkit.getOfflinePlayer(name);
+                // オンラインじゃないかもしれない
+                OfflinePlayer target = Bukkit.getOfflinePlayer(name);
                 if (target == null) {
                     sender.sendMessage(name + "というプレイヤーは存在しません");
                     return true;
