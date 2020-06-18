@@ -1,23 +1,22 @@
 package com.github.unchama.seichiassist.commands.legacy;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Random;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
 /**
 * /<コマンド名未定> で識別されるコマンド。
 */
-public class PresentCommand implements CommandExecutor {
+public class PresentCommand implements TabExecutor {
     /**
     * 配布モード。ALLはオフラインプレイヤーを含めた全部のプレイヤー。LOGINは現在ログインしているプレイヤー。ONEは特定の誰か。
     */
@@ -49,8 +48,8 @@ public class PresentCommand implements CommandExecutor {
         // プレイヤーを取得
         Player player = (Player) sender;
         
-        // 運営かどうか。 TODO: 判定ロジック
-        final boolean isAdmin = false;
+        // 運営かどうか。 TODO: 判定ロジック。これは定数警告を黙らせるためのプレスホルダーに過ぎない。
+        final boolean isAdmin = new Random().nextBoolean();
         if (!isAdmin) {
             sender.sendMessage("このコマンドは運営以外は使用できません。");
             return false;
@@ -61,33 +60,37 @@ public class PresentCommand implements CommandExecutor {
         // 大文字小文字でブレるのはストレスなので小文字同士で比較
         final String mode = args[0].toLowerCase();
         final ItemStack stack = player.getInventory().getItemInMainHand();
-        if (mode.equals("all")) {
-            // TODO: 非同期
-            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                sendItem(p, stack);
-            }
-        } else if (mode.equals("login")) {
-            // TODO: 非同期
-            for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
-                sendItem(p, stack);
-            }
-        } else if (mode.equals("one")) {
-            if (args.length == 2) {
+        switch (mode) {
+            case "all":
+                // TODO: 非同期
+                for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+                    sendItem(p, stack);
+                }
+                return true;
+            case "login":
+                // TODO: 非同期
+                for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
+                    sendItem(p, stack);
+                }
+                return true;
+            case "one":
+                if (args.length != 2) {
+                    // 引数の個数が誤っている
+                    return false;
+                }
+
                 String name = args[1];
                 // オンラインじゃないかもしれない
                 OfflinePlayer target = Bukkit.getOfflinePlayer(name);
                 if (target == null) {
                     sender.sendMessage(name + "というプレイヤーは存在しません");
-                    return true;
                 } else {
                     sendItem(target, stack);
+                    sender.sendMessage(name + "にアイテムを送信しました");
                 }
-            } else {
-                // 引数の個数が誤っている
+                return true;
+            default:
                 return false;
-            }
-        } else {
-            return false;
         }
 
     }
