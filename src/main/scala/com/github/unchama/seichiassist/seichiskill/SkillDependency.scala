@@ -40,7 +40,7 @@ object SkillDependency {
       LavaCondensation -> MoerakiBoulders,
       MoerakiBoulders -> Eldfell,
 
-      Eldfell -> VenderBlizzard,
+      DiamondDust -> VenderBlizzard,
       Eldfell -> VenderBlizzard,
     )
 

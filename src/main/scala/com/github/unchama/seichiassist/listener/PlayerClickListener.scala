@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.util.bukkit.ItemStackUtil
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.ThrownExpBottle
@@ -27,7 +28,6 @@ import scala.collection.mutable
 class PlayerClickListener extends Listener {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
-  import com.github.unchama.seichiassist.util.ops.ItemStackOps._
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
 
@@ -169,11 +169,11 @@ class PlayerClickListener extends Listener {
       val present = GachaPrize.runGacha()
 
       val probabilityOfItem = present.probability
-      val givenItem = present.itemStack
+      val givenItem = {
+        val base = present.itemStack
 
-      //ガチャ実行
-      if (probabilityOfItem < 0.1) {
-        givenItem.appendOwnerInformation(player)
+        if (probabilityOfItem < 0.1) ItemStackUtil.appendOwnerInformation(player)(base)
+        else base
       }
 
       //メッセージ設定
