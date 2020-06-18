@@ -25,7 +25,6 @@ public class PresentCommand implements TabExecutor {
         LOGIN,
         ONE,;
     }
-    private final SeichiAssist plugin = SeichiAssist.instance();
 
     @Override
     public List<String> onTabComplete(CommandSender paramCommandSender,
