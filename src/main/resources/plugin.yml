@@ -72,7 +72,11 @@ commands:
     usage: /<command> <finish/amount/endless>
     permission-message: *denied
     permission: multibuildplugin.build
-
+  present:
+    description: send a gift
+    usage: /<command> [player name]
+    permission-message: *denied
+    permission: multiseichiplugin.present
 permissions:
   multiseichiplugin.*:
     default: false
@@ -103,3 +107,5 @@ permissions:
     default: not op
   multiseichiplugin.mebius:
     default: not op
+  multiseichiplugin.present:
+    default: false
