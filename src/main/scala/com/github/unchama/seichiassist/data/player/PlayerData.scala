@@ -566,9 +566,20 @@ class PlayerData(
 
     val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
     val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
+    
+    val sw01Mult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) {
+      import java.time.LocalDate
+      val now = LocalDate.now()
+      // 2020-07-11 のみ s1 で x1.5
+      // see https://github.com/GiganticMinecraft/SeichiAssist/issues/549 for more info
+      val isIt20200711 = now.getYear == 2020 && now.getMonthValue == 7 && now.getDayOfMonth == 11
+      val isServer1 = SeichiAssist.seichiAssistConfig.getServerNum == 1
+      if (isIt20200711 && isServer1) 1.5 else 0.8
+    } else {
+      1.0 
+    }
 
-    amount * materialFactor * swMult * sw01PenaltyMult
+    amount * materialFactor * swMult * sw01Mult
   }
 
   private def saveTotalExp(): Unit = {
