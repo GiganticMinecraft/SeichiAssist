@@ -12,7 +12,7 @@ import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefReposi
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.GachaCommand
+import com.github.unchama.seichiassist.commands.legacy.{GachaCommand, PresentCommand}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
