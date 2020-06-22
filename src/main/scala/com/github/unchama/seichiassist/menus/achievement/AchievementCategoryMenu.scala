@@ -17,7 +17,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 
 object AchievementCategoryMenu {
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
 
   type AchievementGroupRepr = (AchievementGroup, Material)
@@ -29,7 +29,9 @@ object AchievementCategoryMenu {
         ChestSlotRef(1, 5) -> (BrokenBlockRanking, Material.DIAMOND_PICKAXE)
       )
     case Building =>
-      Map()
+      Map(
+        ChestSlotRef(1, 4) -> (PlacedBlockAmount, Material.BIRCH_WOOD_STAIRS)
+      )
     case Login =>
       Map(
         ChestSlotRef(1, 1) -> (PlayTime, Material.COMPASS),
@@ -56,8 +58,6 @@ object AchievementCategoryMenu {
         new IconItemStackBuilder(material)
           .title(ColorScheme.navigation(s"実績「${group.name}」"))
 
-      import com.github.unchama.targetedeffect._
-
       if (AchievementGroupMenu.sequentialEntriesIn(group).nonEmpty) {
         Button(
           partialBuilder
@@ -72,8 +72,7 @@ object AchievementCategoryMenu {
         Button(
           partialBuilder
             .lore(s"${RED}獲得状況を表示します。※未実装")
-            .build(),
-          LeftClickButtonEffect(emptyEffect)
+            .build()
         )
       }
     }

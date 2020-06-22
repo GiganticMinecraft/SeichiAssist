@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.menus.minestack
 
+import cats.data.Kleisli
 import cats.effect.IO
+import com.github.unchama.concurrent.{BukkitSyncIOShift, Execution}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
@@ -8,6 +10,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -51,12 +54,11 @@ private[minestack] case class MineStackButtons(player: Player) {
   import MineStackObjectCategory._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.syntax._
   import player._
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(mineStackObj: MineStackObj): IO[Button] = RecomputedButton(IO {
+  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncIOShift): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -89,7 +91,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     Button(
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        sequentialEffect(
+        SequentialEffect(
           withDrawOneStackEffect(mineStackObj),
           targetedeffect.UnfocusedEffect {
             if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
@@ -101,24 +103,30 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def withDrawOneStackEffect(mineStackObj: MineStackObj): TargetedEffect[Player] = {
-    computedEffect { player =>
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
-      val currentAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
-      val grantAmount = Math.min(mineStackObj.itemStack.getMaxStackSize.toLong, currentAmount).toInt
+  private def withDrawOneStackEffect(mineStackObj: MineStackObj)(implicit ctx: BukkitSyncIOShift): TargetedEffect[Player] = {
+    val maxStackSize = mineStackObj.itemStack.getMaxStackSize.toLong
 
-      val soundEffectPitch =
-        if (grantAmount == mineStackObj.itemStack.getMaxStackSize.toLong) 1.0f else 0.5f
-      val grantItemStack = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
+    Kleisli(player => Execution.onServerMainThread {
+      for {
+        playerData <- IO { SeichiAssist.playermap(player.getUniqueId) }
+        currentAmount <- IO { playerData.minestack.getStackedAmountOf(mineStackObj) }
+        grantAmount = Math.min(maxStackSize, currentAmount).toInt
 
-      sequentialEffect(
-        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
-        Util.grantItemStacksEffect(grantItemStack),
-        targetedeffect.UnfocusedEffect {
-          playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
-        }
-      )
-    }
+        soundEffectPitch = if (grantAmount == maxStackSize) 1.0f else 0.5f
+        itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
+
+        _ <-
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
+            targetedeffect.UnfocusedEffect {
+              playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
+            },
+            // アイテム付与はアトミックな操作ではない(コンテキストシフトを含む)ので、
+            // subtractが終わってから行わなければならない
+            Util.grantItemStacksEffect(itemStackToGrant)
+          ).run(player)
+      } yield ()
+    })
   }
 
   def computeAutoMineStackToggleButton(): IO[Button] = RecomputedButton(IO {
@@ -127,7 +135,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     val iconItemStack = {
       val baseBuilder =
         new IconItemStackBuilder(Material.IRON_PICKAXE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}対象ブロック自動スタック機能")
+          .title(s"$YELLOW$UNDERLINE${BOLD}対象アイテム自動スタック機能")
 
       if (playerData.settings.autoMineStack) {
         baseBuilder
@@ -146,18 +154,18 @@ private[minestack] case class MineStackButtons(player: Player) {
       }.build()
 
     val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-      sequentialEffect(
+      SequentialEffect(
         playerData.settings.toggleAutoMineStack,
-        deferredEffect(IO {
+        DeferredEffect(IO {
           val (message, soundPitch) =
             if (playerData.settings.autoMineStack) {
-              (s"${GREEN}対象ブロック自動スタック機能:ON", 1.0f)
+              (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
             } else {
-              (s"${RED}対象ブロック自動スタック機能:OFF", 0.5f)
+              (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
             }
 
-          sequentialEffect(
-            message.asMessageEffect(),
+          SequentialEffect(
+            MessageEffect(message),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
           )
         })

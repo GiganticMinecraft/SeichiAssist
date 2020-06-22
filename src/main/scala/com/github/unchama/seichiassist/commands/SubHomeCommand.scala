@@ -3,26 +3,28 @@ package com.github.unchama.seichiassist.commands
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
-import com.github.unchama.chatinterceptor.ChatInterceptor.ChatInterceptionScope
+import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.targetedeffect.syntax._
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
 object SubHomeCommand {
   private val printDescriptionExecutor = new EchoExecutor(
-    List(
-      s"$GREEN/subhome コマンドの使い方",
-      s"${GREEN}移動する場合",
-      s"$GREEN/subhome warp [移動したいサブホームの番号]",
-      s"${GREEN}セットする場合",
-      s"$GREEN/subhome set [セットしたいサブホームの番号]",
-      s"${GREEN}名前変更する場合",
-      s"$GREEN/subhome name [名前変更したいサブホームの番号]"
-    ).asMessageEffect()
+    MessageEffect(
+      List(
+        s"$GREEN/subhome コマンドの使い方",
+        s"${GREEN}移動する場合",
+        s"$GREEN/subhome warp [移動したいサブホームの番号]",
+        s"${GREEN}セットする場合",
+        s"$GREEN/subhome set [セットしたいサブホームの番号]",
+        s"${GREEN}名前変更する場合",
+        s"$GREEN/subhome name [名前変更したいサブホームの番号]"
+      )
+    )
   )
   private val subHomeMax = SeichiAssist.seichiAssistConfig.getSubHomeMax
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder
@@ -30,56 +32,60 @@ object SubHomeCommand {
       List(
         Parsers.closedRangeInt(
           0, subHomeMax,
-          failureMessage = s"サブホームの番号を1～${subHomeMax}の間で入力してください".asMessageEffect())
+          failureMessage = MessageEffect(s"サブホームの番号を1～${subHomeMax}の間で入力してください"))
       ),
       onMissingArguments = printDescriptionExecutor
     )
   private val warpExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
+      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
       val player = context.sender
 
       val subHomeLocation = SeichiAssist.playermap(player.getUniqueId).getSubHomeLocation(subHomeId - 1)
       subHomeLocation match {
-        case None => IO(s"サブホームポイント${subHomeId}が設定されてません".asMessageEffect())
+        case None => IO(MessageEffect(s"サブホームポイント${subHomeId}が設定されてません"))
         case Some(location) => IO {
           player.teleport(location)
-          s"サブホームポイント${subHomeId}にワープしました".asMessageEffect()
+          MessageEffect(s"サブホームポイント${subHomeId}にワープしました")
         }
       }
     }
     .build()
   private val setExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
+      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
       val player = context.sender
       val playerData = SeichiAssist.playermap(player.getUniqueId)
 
       playerData.setSubHomeLocation(player.getLocation, subHomeId - 1)
 
-      IO(s"現在位置をサブホームポイント${subHomeId}に設定しました".asMessageEffect())
+      IO(MessageEffect(s"現在位置をサブホームポイント${subHomeId}に設定しました"))
     }
     .build()
 
   private def nameExecutor(implicit scope: ChatInterceptionScope) = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed(0).asInstanceOf[Int]
+      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
 
       IO.pure {
         val sendInterceptionMessage =
-          List(
-            s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
-            s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
-          ).asMessageEffect()
+          MessageEffect(
+            List(
+              s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
+              s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
+            )
+          )
 
         val sendCancellationMessage =
-          s"${YELLOW}入力がキャンセルされました。".asMessageEffect()
+          MessageEffect(s"${YELLOW}入力がキャンセルされました。")
 
         def sendCompletionMessage(inputName: String) =
-          List(
-            s"${GREEN}サブホームポイント${subHomeId}の名前を",
-            s"$GREEN${inputName}に更新しました"
-          ).asMessageEffect()
+          MessageEffect(
+            List(
+              s"${GREEN}サブホームポイント${subHomeId}の名前を",
+              s"$GREEN${inputName}に更新しました"
+            )
+          )
 
         import cats.implicits._
         import com.github.unchama.generic.syntax._

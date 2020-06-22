@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.{ItemListSerialization, Util}
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -15,9 +16,7 @@ import org.bukkit.{Bukkit, Material}
 
 object ShareInvCommand {
 
-  import com.github.unchama.targetedeffect.syntax._
-
-  import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters._
 
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
@@ -38,8 +37,8 @@ object ShareInvCommand {
 
     {
       for {
-        serial <- EitherT(databaseGateway.playerDataManipulator.loadShareInv(player, playerData))
-        _ <- EitherT.cond[IO](serial != "", (), s"$RESET$RED${BOLD}収納アイテムが存在しません。".asMessageEffect())
+        serial <- EitherT(databaseGateway.playerDataManipulator.loadShareInv(player))
+        _ <- EitherT.cond[IO](serial != "", (), MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。"))
         _ <- EitherT(databaseGateway.playerDataManipulator.clearShareInv(player, playerData))
         playerInventory = player.getInventory
         _ <- EitherT.right {
@@ -55,7 +54,7 @@ object ShareInvCommand {
             Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB書き換え成功)")
           }
         }
-        successful <- EitherT.rightT[IO, TargetedEffect[Player]](s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。".asMessageEffect())
+        successful <- EitherT.rightT[IO, TargetedEffect[Player]](MessageEffect(s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。"))
       } yield successful
       }.merge
   }
@@ -82,7 +81,7 @@ object ShareInvCommand {
         serializedInventory <-
           takeIfNotNull[IO, TargetedEffect[Player], String](
             ItemListSerialization.serializeToBase64(inventory),
-            s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。".asMessageEffect()
+            MessageEffect(s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。")
           )
         _ <- EitherT(databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory))
         successEffect <- EitherT.right[TargetedEffect[Player]] {
@@ -95,7 +94,7 @@ object ShareInvCommand {
             player.performCommand("stick")
 
             Bukkit.getLogger.info(s"${player.getName}がアイテム収納を実施(SQL送信成功)")
-            s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。".asMessageEffect()
+            MessageEffect(s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。")
           }
         }
       } yield successEffect

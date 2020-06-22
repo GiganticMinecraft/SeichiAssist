@@ -3,13 +3,13 @@ package com.github.unchama.menuinventory.syntax
 import com.github.unchama.menuinventory.InventoryRowSize
 import com.github.unchama.menuinventory.InventoryRowSize.InventorySize
 
-trait InventorySizeIntOps {
+trait InventorySizeIntSyntax {
   implicit final class IntInventorySizeOps(val rowNumber: Int) {
     def chestRows: InventorySize = Left(InventoryRowSize(rowNumber))
   }
 }
 
-trait InventorySizeOps {
+trait InventorySizeSyntax {
   implicit final class InventorySizeOps(val size: InventorySize) {
     def slotCount: Int =
       size match {
@@ -19,5 +19,5 @@ trait InventorySizeOps {
   }
 }
 
-trait AllSyntax extends InventorySizeIntOps
-  with InventorySizeOps
+trait AllSyntax extends InventorySizeIntSyntax
+  with InventorySizeSyntax

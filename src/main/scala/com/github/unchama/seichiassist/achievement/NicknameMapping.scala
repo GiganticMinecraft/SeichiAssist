@@ -23,6 +23,22 @@ object NicknameMapping {
     case No_1011 => NicknameCombination(Some(1011), Some(9904), Some(1011))
     case No_1012 => NicknameCombination(Some(1012), Some(9901), Some(1012))
 
+    case No_2001 => NicknameCombination(Some(2001), Some(9905), Some(2001))
+    case No_2002 => NicknameCombination(Some(2002), Some(9905), Some(2002))
+    case No_2003 => NicknameCombination(Some(2003), Some(9909), Some(2003))
+    case No_2004 => NicknameCombination(Some(2004), None, Some(2004))
+    case No_2005 => NicknameCombination(Some(2005), None, Some(2005))
+    case No_2006 => NicknameCombination(Some(2006), Some(9909), Some(2006))
+    case No_2007 => NicknameCombination(Some(2007), None, Some(2007))
+    case No_2008 => NicknameCombination(Some(2008), Some(9911), Some(2008))
+    case No_2009 => NicknameCombination(Some(2009), None, Some(2009))
+    case No_2010 => NicknameCombination(Some(2010), None, Some(2010))
+    case No_2011 => NicknameCombination(Some(2011), None, Some(2011))
+    case No_2012 => NicknameCombination(Some(2012), Some(9905), Some(2012))
+    case No_2013 => NicknameCombination(Some(2013), Some(9905), Some(2013))
+    case No_2014 => NicknameCombination(Some(2014), None, Some(2014))
+
+
     case No_3001 => NicknameCombination(Some(3001))
     case No_3002 => NicknameCombination(Some(3002), Some(9905), Some(3002))
     case No_3003 => NicknameCombination(Some(3003))
@@ -96,6 +112,11 @@ object NicknameMapping {
     case No_5118 => NicknameCombination(Some(5118), None, Some(5118))
     case No_5119 => NicknameCombination(Some(5119), Some(9905), Some(5119))
     case No_5120 => NicknameCombination(Some(5120), Some(5120), Some(5120))
+    case No_5121 => NicknameCombination(Some(5121), None, Some(5121))
+    case No_5122 => NicknameCombination(Some(5122), Some(9905), Some(5122))
+    case No_5123 => NicknameCombination(Some(5123), Some(5123), Some(5123))
+    case No_5124 => NicknameCombination(Some(5124), Some(5124), Some(5124))
+    case No_5125 => NicknameCombination(Some(5125), Some(9905), Some(5125))
 
     case No_6001 => NicknameCombination(Some(6001))
     case No_6002 => NicknameCombination(Some(6002), None, Some(6002))
@@ -133,7 +154,7 @@ object NicknameMapping {
     case No_7026 => NicknameCombination(Some(7026), Some(9905), Some(7025))
     case No_7027 => NicknameCombination(Some(7027), None, Some(7027))
 
-    case No_7901 => NicknameCombination(Some(7901), Some(7901), Some(7910))
+    case No_7901 => NicknameCombination(Some(7901), Some(7901), Some(7901))
     case No_7902 => NicknameCombination(Some(7902), None, Some(7902))
     case No_7903 => NicknameCombination(Some(7903), Some(9905), Some(7903))
     case No_7904 => NicknameCombination(Some(7904), Some(9907), Some(7904))

@@ -44,11 +44,11 @@ public class MinuteTaskRunnable extends BukkitRunnable {
                 if (playerdata.endlessfly) {
                     if (playerdata_s.idleMinute() >= 10) {
                         player.setAllowFlight(true);
-                        player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
+                        player.sendMessage(ChatColor.GRAY + "放置時間中のflyは無期限で継続中です(経験値は消費しません)");
                     } else if (!expman.hasExp(BuildAssist.config().getFlyExp())) {
                         player.sendMessage(ChatColor.RED
-                                + "Fly効果の発動に必要な経験値が不足しているため、");
-                        player.sendMessage(ChatColor.RED + "Fly効果を終了しました");
+                                + "fly効果の発動に必要な経験値が不足しているため、");
+                        player.sendMessage(ChatColor.RED + "fly効果を終了しました");
                         playerdata.flytime = 0;
                         playerdata.flyflag = false;
                         playerdata.endlessfly = false;
@@ -56,30 +56,30 @@ public class MinuteTaskRunnable extends BukkitRunnable {
                         player.setFlying(false);
                     } else {
                         player.setAllowFlight(true);
-                        player.sendMessage(ChatColor.GREEN + "Fly効果は無期限で継続中です");
+                        player.sendMessage(ChatColor.GREEN + "fly効果は無期限で継続中です");
                         expman.changeExp(minus);
                     }
                 } else if (playerdata.flyflag) {
                     final int flytime = playerdata.flytime;
                     if (playerdata_s.idleMinute() >= 10) {
                         player.setAllowFlight(true);
-                        player.sendMessage(ChatColor.GRAY + "放置時間中のFLYは無期限で継続中です(経験値は消費しません)");
+                        player.sendMessage(ChatColor.GRAY + "放置時間中のflyは無期限で継続中です(経験値は消費しません)");
                     } else if (flytime <= 0) {
-                        player.sendMessage(ChatColor.GREEN + "Fly効果が終了しました");
+                        player.sendMessage(ChatColor.GREEN + "fly効果が終了しました");
                         playerdata.flyflag = false;
                         player.setAllowFlight(false);
                         player.setFlying(false);
                     } else if (!expman.hasExp(BuildAssist.config().getFlyExp())) {
                         player.sendMessage(ChatColor.RED
-                                + "Fly効果の発動に必要な経験値が不足しているため、");
-                        player.sendMessage(ChatColor.RED + "Fly効果を終了しました");
+                                + "fly効果の発動に必要な経験値が不足しているため、");
+                        player.sendMessage(ChatColor.RED + "fly効果を終了しました");
                         playerdata.flytime = 0;
                         playerdata.flyflag = false;
                         player.setAllowFlight(false);
                         player.setFlying(false);
                     } else {
                         player.setAllowFlight(true);
-                        player.sendMessage(ChatColor.GREEN + "Fly効果はあと"
+                        player.sendMessage(ChatColor.GREEN + "fly効果はあと"
                                 + flytime + "分です");
                         playerdata.flytime -= 1;
                         expman.changeExp(minus);

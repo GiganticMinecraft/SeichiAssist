@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 object CategorizedMineStackMenu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, sync}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
 
   private val mineStackObjectPerPage = 5.chestRows.slotCount
@@ -48,7 +48,7 @@ object CategorizedMineStackMenu {
     val categorizedItemSectionComputation =
       categoryItemList
         .slice(mineStackObjectPerPage * page, mineStackObjectPerPage * page + mineStackObjectPerPage).toList
-        .traverse(getMineStackItemButtonOf)
+        .traverse(getMineStackItemButtonOf(_))
         .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算

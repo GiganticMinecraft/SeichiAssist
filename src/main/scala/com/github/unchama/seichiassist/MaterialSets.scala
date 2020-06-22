@@ -1,14 +1,24 @@
 package com.github.unchama.seichiassist
 
+import com.github.unchama.generic.tag.tag
+import com.github.unchama.generic.tag.tag.@@
 import org.bukkit.Material
+import org.bukkit.block.Block
+import org.bukkit.inventory.ItemStack
 
 object MaterialSets {
+  val fortuneMaterials: Set[Material] = Set(
+    Material.COAL_ORE, Material.DIAMOND_ORE,
+    Material.LAPIS_ORE, Material.EMERALD_ORE,
+    Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE,
+    Material.QUARTZ_ORE
+  )
+
   // このMaterialは整地スキルに対応するブロック群を示しています。
   val materials: Set[Material] = Set(
     Material.STONE, Material.NETHERRACK, Material.NETHER_BRICK, Material.DIRT, Material.GRAVEL, Material.LOG,
-    Material.LOG_2, Material.GRASS, Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.DIAMOND_ORE,
-    Material.LAPIS_ORE, Material.EMERALD_ORE, Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE, Material.SAND,
-    Material.SANDSTONE, Material.QUARTZ_ORE, Material.END_BRICKS, Material.ENDER_STONE, Material.ICE,
+    Material.LOG_2, Material.GRASS, Material.IRON_ORE, Material.GOLD_ORE, Material.SAND,
+    Material.SANDSTONE, Material.END_BRICKS, Material.ENDER_STONE, Material.ICE,
     Material.PACKED_ICE, Material.OBSIDIAN, Material.MAGMA, Material.SOUL_SAND, Material.LEAVES, Material.LEAVES_2,
     Material.CLAY, Material.STAINED_CLAY, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE, Material.HARD_CLAY,
     Material.MONSTER_EGGS, Material.WEB, Material.WOOD, Material.FENCE, Material.DARK_OAK_FENCE, Material.RAILS,
@@ -23,20 +33,28 @@ object MaterialSets {
     Material.PUMPKIN, Material.MELON_BLOCK, Material.STONE_SLAB2, Material.SPONGE, Material.SOIL, Material.GRASS_PATH,
     Material.MOB_SPAWNER, Material.WORKBENCH, Material.FURNACE, Material.QUARTZ_BLOCK, Material.CHEST,
     Material.TRAPPED_CHEST, Material.NETHER_FENCE, Material.NETHER_BRICK_STAIRS, Material.CAULDRON, Material.END_ROD,
-    Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST, Material.PURPUR_SLAB, Material.STEP
+    Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST, Material.PURPUR_SLAB, Material.STEP,
+    Material.DOUBLE_STEP,Material.ENDER_PORTAL_FRAME,Material.ENDER_PORTAL
+  ) ++ fortuneMaterials
+
+  /**
+   * これらのマテリアルを用いてブロックの破壊試行を行う。
+   *
+   * 整地スキル使用時のブロックから取れるアイテムは、
+   * プレーヤーの使用ツールのマテリアルをこれらに張り替えた時のドロップのmaxとして計算される。
+   *
+   * 例えば石をシャベルで掘った時にも、ツールのエンチャントを保ったままダイヤツルハシで掘ったものとして計算し、
+   * 結果得られるスタック数が最大のものが結果として採用される。
+   */
+  val breakTestToolMaterials: Seq[Material] = Seq(
+    Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SPADE
   )
 
-  val luckMaterials: Set[Material] = Set(
-    Material.COAL_ORE, Material.DIAMOND_ORE, Material.LAPIS_ORE, Material.EMERALD_ORE,
-    Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE, Material.QUARTZ_ORE
-  )
-
-  val breakMaterials: Set[Material] = Set(
-    Material.DIAMOND_PICKAXE, Material.DIAMOND_AXE, Material.DIAMOND_SPADE,
+  val breakToolMaterials: Set[Material] = Set(
     Material.WOOD_PICKAXE, Material.WOOD_SPADE,
     Material.IRON_PICKAXE, Material.IRON_AXE, Material.IRON_SPADE,
     Material.GOLD_PICKAXE, Material.GOLD_AXE, Material.GOLD_SPADE
-  )
+  ) ++ breakTestToolMaterials
 
   val cancelledMaterials: Set[Material] = Set(
     Material.CHEST, Material.ENDER_CHEST, Material.TRAPPED_CHEST, Material.ANVIL, Material.ARMOR_STAND,
@@ -51,4 +69,24 @@ object MaterialSets {
   val gravityMaterials: Set[Material] = Set(
     Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2
   )
+
+  trait MaterialOf[S <: Set[Material]]
+
+  type ItemStackOf[S <: Set[Material]] = ItemStack @@ MaterialOf[S]
+  type BlockOf[S <: Set[Material]] = Block @@ MaterialOf[S]
+
+  type BreakTool = ItemStackOf[breakToolMaterials.type]
+  type BlockBreakableBySkill = BlockOf[materials.type]
+
+  def refineItemStack(stack: ItemStack, set: collection.immutable.Set[Material]): Option[ItemStackOf[set.type]] =
+    if (set.contains(stack.getType))
+      Some(tag.apply[MaterialOf[set.type]][ItemStack](stack))
+    else
+      None
+
+  def refineBlock(block: Block, set: collection.immutable.Set[Material]): Option[BlockOf[set.type]] =
+    if (set.contains(block.getType))
+      Some(tag.apply[MaterialOf[set.type]][Block](block))
+    else
+      None
 }

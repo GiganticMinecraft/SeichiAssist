@@ -5,7 +5,7 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.syntax._
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
@@ -17,7 +17,7 @@ object AchievementCommand {
 
   private val operationParser = Parsers.fromOptionParser(
     AchievementOperation.fromString,
-    "操作はgive/depriveで与えてください。".asMessageEffect()
+    MessageEffect("操作はgive/depriveで与えてください。")
   )
   /**
    * TODO
@@ -27,11 +27,11 @@ object AchievementCommand {
   private val achievementNumberParser =
     Parsers.closedRangeInt(
       1000, 9999,
-      s"${RED}操作の対象として指定できるのはNo1000～9999の実績です。".asMessageEffect()
+      MessageEffect(s"${RED}操作の対象として指定できるのはNo1000～9999の実績です。")
     )
   private val scopeParser = Parsers.fromOptionParser(
     ScopeSpecification.fromString,
-    s"${RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。".asMessageEffect()
+    MessageEffect(s"${RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。")
   )
 
   sealed trait AchievementOperation
@@ -68,11 +68,13 @@ object AchievementCommand {
   }
 
   private val descriptionPrintExecutor = new EchoExecutor(
-    List(
-      s"$RED/achievement [操作] [実績No] [スコープ指定子]",
-      "[操作]にはgive(実績付与)またはdeprive(実績剥奪)のいずれかを入力することができます。",
-      "[スコープ指定子]にはuser [ユーザー名], server, worldのいずれかを入力することができます。"
-    ).asMessageEffect()
+    MessageEffect(
+      List(
+        s"$RED/achievement [操作] [実績No] [スコープ指定子]",
+        "[操作]にはgive(実績付与)またはdeprive(実績剥奪)のいずれかを入力することができます。",
+        "[スコープ指定子]にはuser [ユーザー名], server, worldのいずれかを入力することができます。"
+      )
+    )
   )
 
   val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
@@ -83,7 +85,7 @@ object AchievementCommand {
     .execution { context =>
       val sender = context.sender
 
-      val operation = context.args.parsed(0).asInstanceOf[AchievementOperation]
+      val operation = context.args.parsed.head.asInstanceOf[AchievementOperation]
       val achievementNumber = context.args.parsed(1).asInstanceOf[Int]
 
       def execution(): IO[TargetedEffect[CommandSender]] = {
@@ -91,13 +93,13 @@ object AchievementCommand {
           case ScopeSpecification.USER =>
             val targetPlayerName =
               context.args.yetToBeParsed.headOption
-                .getOrElse(return IO.pure(s"${RED}プレーヤー名が未入力です。".asMessageEffect()))
+                .getOrElse(return IO.pure(MessageEffect(s"${RED}プレーヤー名が未入力です。")))
             List(targetPlayerName)
           case ScopeSpecification.SERVER => Bukkit.getServer.getOnlinePlayers.asScala.map(_.getName).toList
           case ScopeSpecification.WORLD =>
             sender match {
               case player: Player => player.getWorld.getPlayers.asScala.map(_.getName).toList
-              case _ => return IO.pure("コンソール実行の場合は「world」処理は実行できません。".asMessageEffect())
+              case _ => return IO.pure(MessageEffect("コンソール実行の場合は「world」処理は実行できません。"))
             }
         }
 
@@ -113,7 +115,7 @@ object AchievementCommand {
                   case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
                 }
               case None =>
-                s"$playerName は現在サーバーにログインしていません。".asMessageEffect()
+                MessageEffect(s"$playerName は現在サーバーにログインしていません。")
               // TODO 実績付与予約システムに書き込むようにする
             }
           }

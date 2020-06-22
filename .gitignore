@@ -1,20 +1,16 @@
-/bin/
-/out/
-
-# Eclipse
-.classpath
-*.prefs
-
 # IntelliJ IDEA
 .idea/
 *.iml
-/bins/
-/test/
 
-# Gradle
-.gradle
-build
+# SBT
+project/target
+project/project
+target
 
 # Local files
 deployLocal.sh
-/localDependencies/
+
+# Docker
+docker/spigot/serverfiles/eula.txt
+
+.env

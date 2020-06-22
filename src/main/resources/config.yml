@@ -2,7 +2,6 @@
 # このファイルを削除orリネームしてからサーバを起動するとデフォルトの設定ファイルが再生成されます(エラーが出たときは真っ先に試しましょう)
 
 # MySQLデータベースへの接続設定
-# xamppの設定を変えていなければデフォルトの値で問題ありません
 host: 'localhost'
 port: '3306'
 db: 'seichiassist'
@@ -209,7 +208,7 @@ NewYearEvent:
 
 #GiganticBerserk
 #1分間上限
-GBLimit: 20
+GBLimit: 50
 
 #各種URL
 Url:

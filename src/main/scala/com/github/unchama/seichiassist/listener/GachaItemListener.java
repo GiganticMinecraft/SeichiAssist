@@ -19,7 +19,7 @@ import scala.jdk.CollectionConverters;
 import java.util.UUID;
 
 public class GachaItemListener implements Listener {
-    HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
 
     //private SeichiAssist instance = SeichiAssist.instance;
     @EventHandler
@@ -34,7 +34,7 @@ public class GachaItemListener implements Listener {
             return;
         }
         int level = playerdata.level();
-        Mana mana = playerdata.activeskilldata().mana;
+        Mana mana = playerdata.manaState();
         ItemStack i = e.getItem();
         //Material m = i.getType();
         ItemMeta itemmeta = i.getItemMeta();

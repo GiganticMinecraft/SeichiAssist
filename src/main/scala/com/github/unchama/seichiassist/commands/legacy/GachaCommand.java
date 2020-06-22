@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands.legacy;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
+import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.TypeConverter;
@@ -65,6 +66,8 @@ public class GachaCommand implements CommandExecutor {
             sender.sendMessage("メンテモードのON,OFF切り替え。ONだとガチャが引けなくなる");
             sender.sendMessage(ChatColor.RED + "/gacha give <all/プレイヤー名> <個数>");
             sender.sendMessage("ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)");
+            sender.sendMessage(ChatColor.RED + "/gacha set <プレイヤー名> <個数>");
+            sender.sendMessage("ガチャ券の枚数設定コマンドです。指定したプレイヤーのガチャ券を指定した枚数に設定します。");
             sender.sendMessage(ChatColor.RED + "/gacha vote <プレイヤー名>");
             sender.sendMessage("投票特典配布用コマンドです(マルチ鯖対応済)");
             sender.sendMessage(ChatColor.RED + "/gacha donate <プレイヤー名> <ポイント数>");
@@ -156,6 +159,31 @@ public class GachaCommand implements CommandExecutor {
             }
 
 
+        } else if (args[0].equalsIgnoreCase("set")) {
+            if (args.length != 3) {
+                sender.sendMessage(ChatColor.RED + "/gacha set <プレイヤー名> <個数>");
+                sender.sendMessage("ガチャ券の枚数設定コマンドです。指定したプレイヤーのガチャ券を指定した枚数に設定します。");
+            }
+
+            String name = args[1].toLowerCase();
+            int amount = TypeConverter.toInt(args[2]);
+
+            sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券の枚数設定処理開始...");
+            if (databaseGateway.playerDataManipulator.changeGachaAmountOf(name, amount) == Fail) {
+                sender.sendMessage(ChatColor.RED + "失敗");
+                return false;
+            } else {
+                Player player = Bukkit.getPlayer(name);
+                // ログインしているプレーヤーの場合、変更を反映し通知する。
+                if (player != null) {
+                    PlayerData playerData = SeichiAssist.playermap().apply(player.getUniqueId());
+                    playerData.gachapoint_$eq(amount * 1000);
+                    player.sendMessage(ChatColor.GREEN + "運営チームによりガチャ券が" + amount + "枚に設定されました。");
+                }
+
+                sender.sendMessage(ChatColor.GREEN + "成功");
+                return true;
+            }
         } else if (args[0].equalsIgnoreCase("vote")) {
             if (args.length != 2) {
                 //引数が2つでない時の処理
@@ -198,11 +226,7 @@ public class GachaCommand implements CommandExecutor {
                 //配布ポイント数取得
                 int num = TypeConverter.toInt(args[2]);
 
-                //プレイヤーオンライン時はplayerdataに直接反映、オフライン時はsqlに送信(結果をsenderへ)
-                sender.sendMessage(ChatColor.YELLOW + name + "のプレミアムエフェクトポイント配布処理開始…");
-
-                //mysqlにも書き込んどく
-                if (databaseGateway.playerDataManipulator.addPremiumEffectPoint(name, num) == Fail || databaseGateway.donateDataManipulator.addDonate(name, num) == Fail) {
+                if (databaseGateway.donateDataManipulator.addDonate(name, num) == Fail) {
                     sender.sendMessage(ChatColor.RED + "失敗");
                 } else {
                     sender.sendMessage(ChatColor.GREEN + "成功");

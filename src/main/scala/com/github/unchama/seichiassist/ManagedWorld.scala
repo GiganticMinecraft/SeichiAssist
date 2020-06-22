@@ -8,12 +8,6 @@ sealed class ManagedWorld(val alphabetName: String, val japaneseName: String) ex
 case object ManagedWorld extends Enum[ManagedWorld] {
 
   val values: IndexedSeq[ManagedWorld] = findValues
-  val seichiWorlds: IndexedSeq[ManagedWorld] = values.filter(_.isSeichi)
-
-  def fromBukkitWorld(world: World): Option[ManagedWorld] = fromName(world.getName)
-
-  def fromName(worldName: String): Option[ManagedWorld] = values.find(_.alphabetName == worldName)
-
   case object WORLD_SPAWN extends ManagedWorld("world_spawn", "スポーンワールド")
 
   // "world"は旧メインワールドのidであり既に存在しない
@@ -24,6 +18,12 @@ case object ManagedWorld extends Enum[ManagedWorld] {
   case object WORLD_SW_2 extends ManagedWorld("world_SW_2", "第二整地ワールド")
 
   case object WORLD_SW_3 extends ManagedWorld("world_SW_3", "第三整地ワールド")
+
+  case object WORLD_SW_4 extends ManagedWorld("world_SW_4", "第四整地ワールド")
+
+  case object WORLD_SW_NETHER extends ManagedWorld("world_SW_nether", "整地ネザー")
+
+  case object WORLD_SW_END extends ManagedWorld("world_SW_the_end", "整地エンド")
 
   implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
     def isSeichi: Boolean = managedWorld match {
@@ -47,14 +47,15 @@ case object ManagedWorld extends Enum[ManagedWorld] {
     }
   }
 
-  case object WORLD_SW_4 extends ManagedWorld("world_SW_4", "第四整地ワールド")
-
-  case object WORLD_SW_NETHER extends ManagedWorld("world_SW_nether", "整地ネザー")
-
-  case object WORLD_SW_END extends ManagedWorld("world_SW_the_end", "整地エンド")
-
   implicit class WorldOps(val world: World) {
     def asManagedWorld(): Option[ManagedWorld] = fromBukkitWorld(world)
+
+    def isSeichi: Boolean = asManagedWorld().exists(_.isSeichi)
   }
 
+  val seichiWorlds: IndexedSeq[ManagedWorld] = values.filter(_.isSeichi)
+
+  def fromBukkitWorld(world: World): Option[ManagedWorld] = fromName(world.getName)
+
+  def fromName(worldName: String): Option[ManagedWorld] = values.find(_.alphabetName == worldName)
 }

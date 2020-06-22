@@ -9,8 +9,11 @@ import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
+import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
+import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, AssaultSkill, SeichiSkill, SeichiSkillUsageMode}
 import com.github.unchama.seichiassist.util.BukkitSerialization
-import com.github.unchama.seichiassist.{ActiveSkillEffect, ActiveSkillPremiumEffect, MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.ChatColor._
 import org.bukkit.{Bukkit, Location}
@@ -138,82 +141,103 @@ object PlayerDataLoading {
       }
     }
 
-    def loadSkillEffectUnlockState(stmt: Statement): Unit = {
-      // TODO: 本当にStarSelectじゃなきゃだめ?
-      val unlockedSkillEffectQuery = ("select * from "
-        + db + "." + DatabaseConstants.SKILL_EFFECT_TABLENAME + " where "
-        + "player_uuid = '" + stringUuid + "'")
+    def loadSkillEffectUnlockState(stmt: Statement): Set[UnlockableActiveSkillEffect] = {
+      val unlockedSkillEffectQuery =
+        s"select effect_name from $db.${DatabaseConstants.SKILL_EFFECT_TABLENAME} where player_uuid = '$stringUuid'"
 
       stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
         val effectName = resultSet.getString("effect_name")
+        val effect =
+          ActiveSkillNormalEffect.withNameOption(effectName)
+            .orElse(ActiveSkillPremiumEffect.withNameOption(effectName))
 
-        val effect = ActiveSkillEffect.fromSqlName(effectName).get
-        playerData.activeskilldata.obtainedSkillEffects.add(effect)
-      }
+        if (effect.isEmpty) {
+          Bukkit.getLogger.warning(s"${stringUuid}所有のスキルエフェクト${effectName}は未定義です")
+        }
+
+        effect
+      }.flatten.toSet
     }
 
-    def loadSkillPremiumEffectUnlockState(stmt: Statement): Unit = {
-      val unlockedSkillEffectQuery = ("select * from "
-        + db + "." + DatabaseConstants.SKILL_PREMIUM_EFFECT_TABLENAME + " where "
-        + "player_uuid = '" + stringUuid + "'")
+    def loadSeichiSkillUnlockState(statement: Statement): Set[SeichiSkill] = {
+      val unlockedSkillQuery =
+        s"select skill_name from seichiassist.unlocked_seichi_skill where player_uuid = '$stringUuid'"
 
-      stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
-        val effectName = resultSet.getString("effect_name")
+      statement.executeQuery(unlockedSkillQuery).recordIteration { resultSet: ResultSet =>
+        val skillName = resultSet.getString("skill_name")
+        val skill = SeichiSkill.withNameOption(skillName)
+        if (skill.isEmpty) {
+          Bukkit.getLogger.warning(s"${stringUuid}所有のスキル${skillName}は未定義です")
+        }
 
-        val effect = ActiveSkillPremiumEffect.fromSqlName(effectName).get
-        playerData.activeskilldata.obtainedSkillPremiumEffects.add(effect)
-      }
+        skill
+      }.flatten.toSet
     }
 
+    // playerDataをDBから得られた値で更新する
     def loadPlayerData(stmt: Statement): Unit = {
-      //playerdataをsqlデータから得られた値で更新
-      // TODO: 本当にStarSelectじゃなきゃだめ?
+
+      val obtainedEffects = loadSkillEffectUnlockState(stmt)
+      val obtainedSkills = loadSeichiSkillUnlockState(stmt)
+
       val command = ("select * from " + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME
         + " where uuid = '" + stringUuid + "'")
 
       stmt.executeQuery(command).recordIteration { rs: ResultSet =>
-
-        //各種数値
-        playerData.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag")).unsafeRunSync()
-        playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
-        playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
-        playerData.activeskilldata.modify { d =>
-          import d._
-          mineflagnum = rs.getInt("activemineflagnum")
-          assaultflag = rs.getBoolean("assaultflag")
-          skilltype = rs.getInt("activeskilltype")
-          skillnum = rs.getInt("activeskillnum")
-          assaulttype = rs.getInt("assaultskilltype")
-          assaultnum = rs.getInt("assaultskillnum")
-          arrowskill = rs.getInt("arrowskill")
-          multiskill = rs.getInt("multiskill")
-          breakskill = rs.getInt("breakskill")
-          fluidcondenskill = rs.getInt("fluidcondenskill")
-          watercondenskill = rs.getInt("watercondenskill")
-          lavacondenskill = rs.getInt("lavacondenskill")
-          effectnum = rs.getInt("effectnum")
-        }
-
-        playerData.gachapoint = rs.getInt("gachapoint")
         playerData.settings.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
-        playerData.level = rs.getInt("level")
-        playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
-        playerData.regionCount = rs.getInt("rgnum")
-        playerData.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
         playerData.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
         playerData.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
         playerData.settings.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 
         playerData.settings.pvpflag = rs.getBoolean("pvpflag")
+        playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
+        playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
+        playerData.settings.nickname = PlayerNickname(
+          NicknameStyle.marshal(rs.getBoolean("displayTypeLv")),
+          rs.getInt("displayTitle1No"),
+          rs.getInt("displayTitle2No"),
+          rs.getInt("displayTitle3No")
+        )
+
+        playerData.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag")).unsafeRunSync()
+        playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
+        playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
+
+        playerData.skillEffectState = {
+          val selectedEffect =
+            UnlockableActiveSkillEffect
+              .withNameOption(rs.getString("selected_effect"))
+              .flatMap { eff => Some(eff).filter(obtainedEffects.contains) }
+
+          PlayerSkillEffectState(obtainedEffects, selectedEffect.getOrElse(NoEffect))
+        }
+        playerData.skillState.set(
+          PlayerSkillState.fromUnsafeConfiguration(
+            obtainedSkills,
+            SeichiSkillUsageMode.withValue(rs.getInt("serialized_usage_mode")),
+            SeichiSkill.withNameOption(rs.getString("selected_active_skill")).flatMap {
+              case a: ActiveSkill => Some(a)
+              case _ => None
+            },
+            SeichiSkill.withNameOption(rs.getString("selected_assault_skill")).flatMap {
+              case a: AssaultSkill => Some(a)
+              case _ => None
+            }
+          )
+        ).unsafeRunSync()
+
+        playerData.gachapoint = rs.getInt("gachapoint")
+        playerData.level = rs.getInt("level")
+        playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
+        playerData.regionCount = rs.getInt("rgnum")
+        playerData.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
         playerData.totalbreaknum = rs.getLong("totalbreaknum")
         playerData.playTick = rs.getInt("playtick")
         playerData.p_givenvote = rs.getInt("p_givenvote")
-        playerData.activeskilldata.effectpoint = rs.getInt("effectpoint")
-        playerData.activeskilldata.premiumeffectpoint = rs.getInt("premiumeffectpoint")
+        playerData.effectPoint = rs.getInt("effectpoint")
         //マナの情報
-        playerData.activeskilldata.mana.setMana(rs.getDouble("mana"))
-        playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
+        playerData.manaState.setMana(rs.getDouble("mana"))
 
         playerData.totalexp = rs.getInt("totalexp")
 
@@ -223,17 +247,9 @@ object PlayerDataLoading {
           serializedInventory != null && serializedInventory != ""
         }
 
-        playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
-
         playerData.selectHomeNum = 0
 
         //実績、二つ名の情報
-        playerData.settings.nickname = PlayerNickname(
-          NicknameStyle.marshal(rs.getBoolean("displayTypeLv")),
-          rs.getInt("displayTitle1No"),
-          rs.getInt("displayTitle2No"),
-          rs.getInt("displayTitle3No")
-        )
         playerData.p_vote_forT = rs.getInt("p_vote")
         playerData.giveachvNo = rs.getInt("giveachvNo")
         playerData.achievePoint = AchievementPoint(
@@ -310,7 +326,7 @@ object PlayerDataLoading {
           val TitleFlags = mutable.BitSet.fromBitMask(Titlearray)
           playerData.TitleFlags = TitleFlags
         } catch {
-          case e: Exception =>
+          case _: Exception =>
             playerData.TitleFlags = new mutable.BitSet(10000)
             playerData.TitleFlags.addOne(1)
         }
@@ -360,8 +376,6 @@ object PlayerDataLoading {
       updateLoginInfo(newStmt)
       loadGridTemplate(newStmt)
       loadMineStack(newStmt)
-      loadSkillEffectUnlockState(newStmt)
-      loadSkillPremiumEffectUnlockState(newStmt)
       loadSubHomeData(newStmt)
     }
 

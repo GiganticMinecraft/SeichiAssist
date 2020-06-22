@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist.listener
 
-import com.github.unchama.buildassist.util.ExternalPlugins
+import com.github.unchama.util.external.ExternalPlugins
 import com.github.unchama.buildassist.{BuildAssist, Util}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import org.bukkit.event.block.Action
@@ -105,7 +105,7 @@ object BlockLineUpTriggerListener extends Listener {
       val available = availableOnHand + availableInMineStack
 
       val manaCap: Option[Long] = {
-        val availableMana = seichiAssistData.activeskilldata.mana.getMana
+        val availableMana = seichiAssistData.manaState.getMana
 
         if (availableMana < available.toDouble * manaConsumptionPerPlacement)
           Some((availableMana / manaConsumptionPerPlacement).toLong)
