@@ -14,7 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
-* /<コマンド名未定> で識別されるコマンド。
+* /present で識別されるコマンド。
+* プレイヤーに手に持っているアイテムを配る。
 */
 public class PresentCommand implements TabExecutor {
     /**
