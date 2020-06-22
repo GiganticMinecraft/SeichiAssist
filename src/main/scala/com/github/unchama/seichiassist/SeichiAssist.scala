@@ -147,7 +147,8 @@ class SeichiAssist extends JavaPlugin() {
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
-      "x-transfer" -> RegionOwnerTransferCommand.executor
+      "x-transfer" -> RegionOwnerTransferCommand.executor,
+      "present" -> new PresentCommand()
     ).foreach {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
