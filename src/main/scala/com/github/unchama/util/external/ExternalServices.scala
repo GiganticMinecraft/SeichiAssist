@@ -2,6 +2,7 @@ package com.github.unchama.util.external
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.XYZTuple
+import com.github.unchama.util.bukkit.WorldUtil
 import inventory_search.{Coordinate, SearchResult, TileEntity}
 import org.bukkit.World
 
@@ -17,7 +18,7 @@ object ExternalServices {
     mvc.getMVWorldManager.getMVWorlds
       .asScala.toList.map(_.getCBWorld)
       .map { world =>
-        val command = s"$inventorySearchCommand ${world.getWorldFolder}"
+        val command = s"$inventorySearchCommand ${WorldUtil.getAbsoluteWorldFolder(world)}"
         val result =
           SearchResult.parseFrom(Runtime.getRuntime.exec(command).getInputStream)
             .result
@@ -29,7 +30,6 @@ object ExternalServices {
               case _ =>
                 None
             }
-
         world -> result
       }.toMap
   }

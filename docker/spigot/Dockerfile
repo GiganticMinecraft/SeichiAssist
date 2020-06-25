@@ -4,7 +4,7 @@ WORKDIR /work
 ADD https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar BuildTools.jar
 RUN java -jar BuildTools.jar -o /artifact --rev 1.12.2
 
-FROM docker.pkg.github.com/giganticminecraft/inventorysearch/inventory-search:cbbe2c265260 as inventory-search-provider
+FROM docker.pkg.github.com/giganticminecraft/inventorysearch/inventory-search:3959e02249f2 as inventory-search-provider
 
 FROM openjdk:8-jdk as runner
 
