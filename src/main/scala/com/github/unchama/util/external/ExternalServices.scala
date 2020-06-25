@@ -1,16 +1,15 @@
 package com.github.unchama.util.external
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.util.bukkit.WorldUtil
-import inventory_search.{Coordinate, SearchResult, TileEntity}
+import inventory_search.{Chunk, ChunkCoord, SearchResult}
 import org.bukkit.World
 
 object ExternalServices {
   // TODO inject this from config
   val defaultCommand: String = "dotnet /inventory-search/InventorySearch.dll"
 
-  def getAllTileEntitiesWithInventories(inventorySearchCommand: String): IO[Map[World, Seq[XYZTuple]]] = IO {
+  def getAllChunkCoordsWithPotentialItems(inventorySearchCommand: String): IO[Map[World, Seq[(Int, Int)]]] = IO {
     val mvc = ExternalPlugins.getMultiverseCore
 
     import scala.jdk.CollectionConverters._
@@ -25,8 +24,8 @@ object ExternalServices {
             .flatMap {
               // https://bukkit.org/threads/combining-world-and-world_nether.60319/
               // Bukkitの挙動でワールドとフォルダが一対一に対応するため、dimIdは無視して良い
-              case TileEntity(Some(Coordinate(x, y, z, _)), _, _) =>
-                Some(XYZTuple(x, y, z))
+              case Chunk(Some(ChunkCoord(x, z, _)), _, _) =>
+                Some((x, z))
               case _ =>
                 None
             }
