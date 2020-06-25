@@ -41,7 +41,8 @@ val dependenciesToEmbed = Seq(
   "org.typelevel" %% "cats-core" % "2.1.0",
   "org.typelevel" %% "cats-effect" % "2.1.0",
   "eu.timepit" %% "refined" % "0.9.10",
-  "com.beachape" %% "enumeratum" % "1.5.13"
+  "com.beachape" %% "enumeratum" % "1.5.13",
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 )
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
@@ -82,6 +83,10 @@ unmanagedResources in Compile += baseDirectory.value / "LICENSE"
 // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
 excludeFilter in unmanagedResources :=
   filesToBeReplacedInResourceFolder.foldLeft((excludeFilter in unmanagedResources).value)(_.||(_))
+
+// ScalaPBの設定
+PB.protoSources in Compile := Seq(baseDirectory.value / "protocol")
+PB.targets in Compile := Seq(scalapb.gen() -> (sourceManaged in Compile).value / "scalapb")
 
 lazy val root = (project in file("."))
   .settings(
