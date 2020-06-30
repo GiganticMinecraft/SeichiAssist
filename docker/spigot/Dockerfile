@@ -4,7 +4,7 @@ WORKDIR /work
 ADD https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar BuildTools.jar
 RUN java -jar BuildTools.jar -o /artifact --rev 1.12.2
 
-FROM docker.pkg.github.com/giganticminecraft/chunksearch/chunk-search:59b46586b2bd as chunk-search-provider
+FROM docker.pkg.github.com/giganticminecraft/chunksearch/chunk-search:fe21760dbb41 as chunk-search-provider
 
 FROM openjdk:8-jdk as runner
 

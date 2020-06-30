@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
+import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData, XYZTuple}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
@@ -23,9 +23,12 @@ import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectC
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
 import com.github.unchama.util.ActionStatus
+import com.github.unchama.util.external.ExternalServices
 import org.bukkit.ChatColor._
+import org.bukkit.block.Container
 import org.bukkit.command.{Command, CommandSender}
-import org.bukkit.entity.Entity
+import org.bukkit.entity.{Entity, Item}
+import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 
@@ -114,6 +117,36 @@ class SeichiAssist extends JavaPlugin() {
       logger.severe("MineStack用ガチャデータのロードに失敗しました")
       Bukkit.shutdown()
     }
+
+    ExternalServices.getAllGeneratedChunks(ExternalServices.defaultCommand)(PluginExecutionContexts.asyncShift)
+      .unsafeRunSync()
+      .foreach { case (world, result) =>
+        var countInv = 0
+        var countEntity = 0
+
+        val t1 = System.nanoTime
+
+        result.foreach { case (x, z) =>
+          world.loadChunk(x, z, false)
+          val chunk = world.getChunkAt(x, z)
+
+          chunk.getTileEntities.foreach {
+            case _: Container => countInv += 1
+            case _ =>
+          }
+          chunk.getEntities.foreach {
+            case _: Item => countEntity += 1
+            case _ =>
+          }
+
+          world.unloadChunkRequest(x, z)
+        }
+
+        println(s"Successfully traversed $countEntity entities in $world")
+        println(s"Successfully traversed $countInv inventories in $world")
+        println(s"Conversion in $world took ${(System.nanoTime() - t1) / 1000000} ms")
+        println(s"${result.length} chunks were traversed")
+      }
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
 
