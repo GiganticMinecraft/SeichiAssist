@@ -28,8 +28,8 @@ jobs:
             - sbt-repo-v3-
       - restore_cache:
           keys:
-            - build-cache-v3-{{ .Branch }}-
-            - build-cache-v3-
+            - build-cache-v4-{{ .Branch }}-
+            - build-cache-v4-
       - run: du -h --max-depth=2 ~
       ## ビルド結果が残っている可能性があるのでクリアする
       - run: rm -rf target/build
