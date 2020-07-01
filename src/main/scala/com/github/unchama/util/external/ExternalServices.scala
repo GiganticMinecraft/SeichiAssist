@@ -3,7 +3,7 @@ package com.github.unchama.util.external
 import cats.effect.{ContextShift, IO}
 import com.github.unchama.util.MillisecondTimer
 import com.github.unchama.util.bukkit.WorldUtil
-import inventory_search.{Chunk, ChunkCoord, SearchResult}
+import chunk_search.{Chunk, ChunkCoord, SearchResult}
 import org.bukkit.World
 
 object ExternalServices {
