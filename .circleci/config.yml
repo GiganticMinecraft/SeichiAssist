@@ -21,6 +21,11 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule sync
+            git submodule update --init
       - restore_cache:
           keys:
             - sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
