@@ -8,7 +8,7 @@ import org.bukkit.World
 
 object ExternalServices {
   // TODO inject this from config
-  val defaultCommand: String = "dotnet /chunk-search/ChunkSearch.dll"
+  val defaultCommand: String = "chunk-search-rs --protobuf --threads 12"
 
   def getAllGeneratedChunks(chunkSearchCommand: String)
                            (implicit contextShift: ContextShift[IO]): IO[Map[World, Seq[(Int, Int)]]] = {

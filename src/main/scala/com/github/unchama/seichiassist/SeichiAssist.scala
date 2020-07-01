@@ -118,6 +118,7 @@ class SeichiAssist extends JavaPlugin() {
       Bukkit.shutdown()
     }
 
+    // TODO Replace this test with real migration system
     ExternalServices.getAllGeneratedChunks(ExternalServices.defaultCommand)(PluginExecutionContexts.asyncShift)
       .unsafeRunSync()
       .foreach { case (world, result) =>
