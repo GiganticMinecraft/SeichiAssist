@@ -25,14 +25,14 @@ object MillisecondTimer {
     timer
   }
 
-  def time[R](message: String)(program: => R): R = {
+  def time[R](program: => R)(message: String): R = {
     val t = getInitializedTimerInstance
     val result = program
     t.sendLapTimeMessage(message)
     result
   }
 
-  def timeIO[R](message: String)(program: IO[R]): IO[R] =
+  def timeIO[R](program: IO[R])(message: String): IO[R] =
     for {
       t <- IO { getInitializedTimerInstance }
       result <- program

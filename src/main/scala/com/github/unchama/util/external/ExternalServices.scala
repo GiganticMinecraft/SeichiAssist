@@ -15,7 +15,7 @@ object ExternalServices {
     val mvc = ExternalPlugins.getMultiverseCore
 
     def getChunkCoordinates(world: World): IO[(World, Seq[(Int, Int)])] =
-      MillisecondTimer.timeIO(s"Search for chunks in ${world.getName}")(IO {
+      MillisecondTimer.timeIO(IO {
         val command = s"$chunkSearchCommand ${WorldUtil.getAbsoluteWorldFolder(world)}"
         val result =
           SearchResult.parseFrom(Runtime.getRuntime.exec(command).getInputStream)
@@ -29,7 +29,7 @@ object ExternalServices {
                 None
             }
         world -> result
-      })
+      }) (s"${world.getName}内のチャンクを検索しました。")
 
     import scala.jdk.CollectionConverters._
     import cats.implicits._

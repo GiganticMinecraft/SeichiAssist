@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
-import com.github.unchama.util.ActionStatus
+import com.github.unchama.util.{ActionStatus, MillisecondTimer}
 import com.github.unchama.util.external.ExternalServices
 import org.bukkit.ChatColor._
 import org.bukkit.block.Container
@@ -125,28 +125,26 @@ class SeichiAssist extends JavaPlugin() {
         var countInv = 0
         var countEntity = 0
 
-        val t1 = System.nanoTime
+        MillisecondTimer.time {
+          result.foreach { case (x, z) =>
+            world.loadChunk(x, z, false)
+            val chunk = world.getChunkAt(x, z)
 
-        result.foreach { case (x, z) =>
-          world.loadChunk(x, z, false)
-          val chunk = world.getChunkAt(x, z)
+            chunk.getTileEntities.foreach {
+              case _: Container => countInv += 1
+              case _ =>
+            }
+            chunk.getEntities.foreach {
+              case _: Item => countEntity += 1
+              case _ =>
+            }
 
-          chunk.getTileEntities.foreach {
-            case _: Container => countInv += 1
-            case _ =>
+            world.unloadChunkRequest(x, z)
           }
-          chunk.getEntities.foreach {
-            case _: Item => countEntity += 1
-            case _ =>
-          }
+        } (s"${world}でのアイテムスタックのマイグレーションを行いました。")
 
-          world.unloadChunkRequest(x, z)
-        }
-
-        println(s"Successfully traversed $countEntity entities in $world")
-        println(s"Successfully traversed $countInv inventories in $world")
-        println(s"Conversion in $world took ${(System.nanoTime() - t1) / 1000000} ms")
-        println(s"${result.length} chunks were traversed")
+        println(s"${countEntity}個のエンティティと${countInv}個のタイルエンティティに変換が掛かりました。")
+        println(s"合計${result.length}チャンク上で変換が行われました。")
       }
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
