@@ -3,7 +3,7 @@ package com.github.unchama.itemmigration
 import cats.effect.Bracket
 
 case class ItemMigrationConfiguration[F[_]](migrationSeq: ItemMigrationSeq,
-                                            migrationTarget: MigrationTarget[F],
+                                            migrationTarget: ItemMigrationTarget[F],
                                             persistenceProvider: ItemMigrationPersistenceProvider[F])
                                            (implicit F: Bracket[F, Throwable]) {
 
