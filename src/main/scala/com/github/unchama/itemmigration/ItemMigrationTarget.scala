@@ -1,10 +1,10 @@
 package com.github.unchama.itemmigration
 
-import org.bukkit.inventory.ItemStack
+import com.github.unchama.itemmigration.ItemMigration.ItemConversion
 
 /**
  * アイテムマイグレーションを行う対象。
  */
 trait ItemMigrationTarget[F[_]] {
-  def runMigration(conversion: ItemStack => ItemStack): F[Unit]
+  def runMigration(conversion: ItemConversion): F[Unit]
 }
