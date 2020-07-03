@@ -35,6 +35,7 @@ import org.bukkit.{Bukkit, Material}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.util.Random
 
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
@@ -119,27 +120,39 @@ class SeichiAssist extends JavaPlugin() {
       Bukkit.shutdown()
     }
 
-    // TODO Replace this test with real migration system
-    import eu.timepit.refined.auto._
-    ItemMigrationConfiguration[IO](
-      ItemMigrationSeq(IndexedSeq(ItemMigration(IndexedSeq(1, 0, 1), s => {
-        s.setType(Material.DIAMOND_AXE);
-        s
-      }))),
-      MVWorldLevelData,
-      new ItemMigrationPersistenceProvider[IO] {
-        override def withPersistence: Resource[IO, ItemMigrationPersistence[IO]] =
-          Resource.pure[IO, ItemMigrationPersistence[IO]] {
-            new ItemMigrationPersistence[IO] {
-              override implicit val fMonad: Monad[IO] = IO.ioEffect
+    {
+      // TODO Replace this test with real migration system
+      import eu.timepit.refined.auto._
 
-              override def getCompletedVersions: IO[IndexedSeq[VersionNumber]] = IO.pure(IndexedSeq())
+      val emptyPersistenceProvider =
+        new ItemMigrationPersistenceProvider[IO] {
+          override def withPersistence: Resource[IO, ItemMigrationPersistence[IO]] =
+            Resource.pure[IO, ItemMigrationPersistence[IO]] {
+              new ItemMigrationPersistence[IO] {
+                override implicit val fMonad: Monad[IO] = IO.ioEffect
 
-              override def writeCompletedVersion(version: VersionNumber): IO[Unit] = IO.unit
+                override def getCompletedVersions: IO[IndexedSeq[VersionNumber]] = IO.pure(IndexedSeq())
+
+                override def writeCompletedVersion(version: VersionNumber): IO[Unit] = IO.unit
+              }
             }
-          }
+        }
+
+      val testMigration = {
+        ItemMigrationSeq(IndexedSeq(
+          ItemMigration(
+            IndexedSeq(1, 0, 1),
+            s => {
+              s.setType(Material.DIAMOND_AXE)
+              s.setAmount(Random.between(1, 64))
+              s
+            }
+          )
+        ))
       }
-    ).run.unsafeRunSync()
+
+      ItemMigrationConfiguration[IO](testMigration, MVWorldLevelData, emptyPersistenceProvider).run
+    }.unsafeRunSync()
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
 
