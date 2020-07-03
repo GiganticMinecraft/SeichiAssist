@@ -1,10 +1,9 @@
 package com.github.unchama.itemmigration
 
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Positive
+import com.github.unchama.itemmigration.ItemMigration.VersionComponent
 
 case class ItemMigrationSeq(migrations: IndexedSeq[ItemMigration]) {
-  private implicit val versionComponentOrdering: Ordering[Int Refined Positive] = Ordering.by(_.value)
+  private implicit val versionComponentOrdering: Ordering[VersionComponent] = Ordering.by(_.value)
 
   import Ordering.Implicits._
 

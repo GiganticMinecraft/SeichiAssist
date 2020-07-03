@@ -8,7 +8,9 @@ import org.bukkit.inventory.ItemStack
 case class ItemMigration(version: VersionNumber, conversion: ItemConversion)
 
 object ItemMigration {
-  type VersionNumber = IndexedSeq[Int Refined NonNegative]
+  type VersionComponent = Int Refined NonNegative
+
+  type VersionNumber = IndexedSeq[VersionComponent]
 
   type MigrationSequence = IndexedSeq[ItemMigration]
 
