@@ -20,7 +20,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.itemconversion.WorldLevelData
+import com.github.unchama.seichiassist.itemconversion.MVWorldLevelData
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
@@ -123,9 +123,10 @@ class SeichiAssist extends JavaPlugin() {
     import eu.timepit.refined.auto._
     ItemMigrationConfiguration[IO](
       ItemMigrationSeq(IndexedSeq(ItemMigration(IndexedSeq(1, 0, 1), s => {
-        s.setType(Material.DIAMOND_AXE); s
+        s.setType(Material.DIAMOND_AXE);
+        s
       }))),
-      WorldLevelData,
+      MVWorldLevelData,
       new ItemMigrationPersistenceProvider[IO] {
         override def withPersistence: Resource[IO, ItemMigrationPersistence[IO]] =
           Resource.pure[IO, ItemMigrationPersistence[IO]] {

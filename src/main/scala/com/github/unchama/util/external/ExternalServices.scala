@@ -1,6 +1,6 @@
 package com.github.unchama.util.external
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
 import chunk_search.{Chunk, ChunkCoord, SearchResult}
 import com.github.unchama.util.MillisecondTimer
 import com.github.unchama.util.bukkit.WorldUtil
@@ -27,22 +27,4 @@ object ExternalServices {
           }
       result
     })(s"${world.getName}内のチャンクを検索しました。")
-
-  def getAllGeneratedChunks(chunkSearchCommand: String)
-                           (implicit contextShift: ContextShift[IO]): IO[Map[World, Seq[(Int, Int)]]] = {
-    val mvc = ExternalPlugins.getMultiverseCore
-
-    import cats.implicits._
-
-    import scala.jdk.CollectionConverters._
-
-    for {
-      worlds <- IO {
-        mvc.getMVWorldManager.getMVWorlds.asScala.toList.map(_.getCBWorld)
-      }
-      result <- worlds.map(w =>
-        getChunkCoordinates(chunkSearchCommand)(w).map(r => w -> r)
-      ).parSequence.map(_.toMap)
-    } yield result
-  }
 }
