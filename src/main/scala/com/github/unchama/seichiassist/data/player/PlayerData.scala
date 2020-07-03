@@ -29,7 +29,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 import scala.util.control.Breaks
 
@@ -59,15 +58,6 @@ class PlayerData(
   //放置時間
   var idleMinute = 0
 
-  //各統計値差分計算用配列
-  lazy private val statisticsData: mutable.ArrayBuffer[Int] = {
-    val buffer: mutable.ArrayBuffer[Int] = ArrayBuffer()
-
-    buffer ++= (MaterialSets.materials -- PlayerData.exclude).toBuffer[Material]
-      .map(material => player.getStatistic(Statistic.MINE_BLOCK, material))
-
-    buffer
-  }
   //経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
@@ -299,15 +289,17 @@ class PlayerData(
 
   //join時とonenable時、プレイヤーデータを最新の状態に更新
   def updateOnJoin(): Unit = {
+    // 前回統計を取った時との差分から整地量を計算するため、最初は統計量を0にしておく
+    // FIX(#542): 即時反映にする
+    {
+      (MaterialSets.materials -- PlayerData.exclude).foreach { m =>
+        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
+      }
+    }
+
     //破壊量データ(before)を設定
     halfhourblock.before = totalbreaknum
     updateLevel()
-
-    // TODO statisticsDataは別の箇所に持たれるべき
-    // statisticsDataを初期化する
-    {
-      statisticsData
-    }
 
     if (unclaimedApologyItems > 0) {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
@@ -522,21 +514,13 @@ class PlayerData(
 
   //総破壊ブロック数を更新する
   def updateAndCalcMinedBlockAmount(): Int = {
-    val blockIncreases = for {
-      (m, i) <- (MaterialSets.materials -- PlayerData.exclude).zipWithIndex
-    } yield {
-      val materialStatistics = player.getStatistic(Statistic.MINE_BLOCK, m)
-      val increase = materialStatistics - statisticsData(i)
-      val amount = calcBlockExp(m, increase)
-      if (SeichiAssist.DEBUG) {
-        if (amount > 0.0) {
-          player.sendMessage(s"calcの値:$amount($m)")
-        }
-      }
-      statisticsData(i) = materialStatistics
+    val blockIncreases =
+      (MaterialSets.materials -- PlayerData.exclude).map { m =>
+        val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
+        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
 
-      amount
-    }
+        calcBlockExp(m, increase)
+      }
 
     val sum = blockIncreases.sum.round.toInt
 

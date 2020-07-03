@@ -43,7 +43,7 @@ object SeichiSkill extends Enum[SeichiSkill] {
   object EternalVice extends ActiveSkill("eternal_vice", "エターナル・ヴァイス", singleArea(15, 13, 15), Some(140), 500, 90)
 
   object TomBoy extends ActiveSkill("tomboy", "トム・ボウイ", MultiArea(3, 3, 3)(3), Some(12), 28, 40)
-  object Thunderstorm extends ActiveSkill("thunderstorm", "サンダーストーム", MultiArea(3, 3, 3)(7), Some(28), 65, 50)
+  object Thunderstorm extends ActiveSkill("thunderstorm", "サンダー・ストーム", MultiArea(3, 3, 3)(7), Some(28), 65, 50)
   object StarlightBreaker extends ActiveSkill("starlight_breaker", "スターライト・ブレイカー", MultiArea(5, 5, 5)(3), Some(48), 90, 60)
   object EarthDivide extends ActiveSkill("earth_divide", "アース・ディバイド", MultiArea(5, 5, 5)(5), Some(68), 185, 70)
   object HeavenGaeBolg extends ActiveSkill("heaven_gaebolg", "ヘヴン・ゲイボルグ", MultiArea(7, 7, 7)(3), Some(96), 330, 80)
