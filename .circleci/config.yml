@@ -28,8 +28,8 @@ jobs:
             - sbt-repo-v3-
       - restore_cache:
           keys:
-            - build-cache-v2-{{ .Branch }}-
-            - build-cache-v2-
+            - build-cache-v3-{{ .Branch }}-
+            - build-cache-v3-
       - run: du -h --max-depth=1 ~
       - run: du -h --max-depth=1 target
       - run: ./sbt assembly
@@ -42,12 +42,12 @@ jobs:
           key: sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
       - save_cache:
           ## 毎回ビルド結果をキャッシュする。次のビルドにて
-          ##  build-cache-v2-{{ .Branch }}
+          ##  build-cache-v3-{{ .Branch }}
           ## までが等しい最新のキャッシュが使われるから、コンパイルはインクリメンタルになる。
           paths:
             - ~/repo/target
             - ~/repo/project/target
-          key: build-cache-v2-{{ .Branch }}-{{ epoch }}
+          key: build-cache-v3-{{ .Branch }}-{{ epoch }}
       - run: mkdir -p workspace/builds && cp target/build/**.jar workspace/builds
       - *save_workspace
   deploy_debug:
