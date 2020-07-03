@@ -514,14 +514,13 @@ class PlayerData(
 
   //総破壊ブロック数を更新する
   def updateAndCalcMinedBlockAmount(): Int = {
-    val blockIncreases = for {
-      (m, i) <- (MaterialSets.materials -- PlayerData.exclude).zipWithIndex
-    } yield {
-      val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
-      player.setStatistic(Statistic.MINE_BLOCK, m, 0)
+    val blockIncreases =
+      (MaterialSets.materials -- PlayerData.exclude).map { m =>
+        val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
+        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
 
-      calcBlockExp(m, increase)
-    }
+        calcBlockExp(m, increase)
+      }
 
     val sum = blockIncreases.sum.round.toInt
 
