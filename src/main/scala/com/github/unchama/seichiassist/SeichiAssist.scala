@@ -2,11 +2,14 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
-import cats.effect.{Fiber, IO}
+import cats.Monad
+import cats.effect.{Fiber, IO, Resource}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
+import com.github.unchama.itemmigration.ItemMigration.VersionNumber
+import com.github.unchama.itemmigration._
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -15,20 +18,18 @@ import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData, XYZTuple}
+import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.itemconversion.WorldLevelData
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
-import com.github.unchama.util.{ActionStatus, MillisecondTimer}
-import com.github.unchama.util.external.ExternalServices
+import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
-import org.bukkit.block.Container
 import org.bukkit.command.{Command, CommandSender}
-import org.bukkit.entity.{Entity, Item}
-import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}
+import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 
@@ -119,33 +120,25 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     // TODO Replace this test with real migration system
-    ExternalServices.getAllGeneratedChunks(ExternalServices.defaultCommand)(PluginExecutionContexts.asyncShift)
-      .unsafeRunSync()
-      .foreach { case (world, result) =>
-        var countInv = 0
-        var countEntity = 0
+    import eu.timepit.refined.auto._
+    ItemMigrationConfiguration[IO](
+      ItemMigrationSeq(IndexedSeq(ItemMigration(IndexedSeq(1, 0, 1), s => {
+        s.setType(Material.DIAMOND_AXE); s
+      }))),
+      WorldLevelData,
+      new ItemMigrationPersistenceProvider[IO] {
+        override def withPersistence: Resource[IO, ItemMigrationPersistence[IO]] =
+          Resource.pure[IO, ItemMigrationPersistence[IO]] {
+            new ItemMigrationPersistence[IO] {
+              override implicit val fMonad: Monad[IO] = IO.ioEffect
 
-        MillisecondTimer.time {
-          result.foreach { case (x, z) =>
-            world.loadChunk(x, z, false)
-            val chunk = world.getChunkAt(x, z)
+              override def getCompletedVersions: IO[IndexedSeq[VersionNumber]] = IO.pure(IndexedSeq())
 
-            chunk.getTileEntities.foreach {
-              case _: Container => countInv += 1
-              case _ =>
+              override def writeCompletedVersion(version: VersionNumber): IO[Unit] = IO.unit
             }
-            chunk.getEntities.foreach {
-              case _: Item => countEntity += 1
-              case _ =>
-            }
-
-            world.unloadChunkRequest(x, z)
           }
-        } (s"${world}でのアイテムスタックのマイグレーションを行いました。")
-
-        println(s"${countEntity}個のエンティティと${countInv}個のタイルエンティティに変換が掛かりました。")
-        println(s"合計${result.length}チャンク上で変換が行われました。")
       }
+    ).run.unsafeRunSync()
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
 
