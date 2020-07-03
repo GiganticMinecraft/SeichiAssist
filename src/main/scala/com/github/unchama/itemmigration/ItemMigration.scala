@@ -2,13 +2,13 @@ package com.github.unchama.itemmigration
 
 import com.github.unchama.itemmigration.ItemMigration.{ItemConversion, VersionNumber}
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Positive
+import eu.timepit.refined.numeric.NonNegative
 import org.bukkit.inventory.ItemStack
 
 case class ItemMigration(version: VersionNumber, conversion: ItemConversion)
 
 object ItemMigration {
-  type VersionNumber = IndexedSeq[Int Refined Positive]
+  type VersionNumber = IndexedSeq[Int Refined NonNegative]
 
   type MigrationSequence = IndexedSeq[ItemMigration]
 
