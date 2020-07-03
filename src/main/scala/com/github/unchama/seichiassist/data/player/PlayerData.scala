@@ -58,14 +58,6 @@ class PlayerData(
   //放置時間
   var idleMinute = 0
 
-  // 前回統計を取った時との差分から整地量を計算するため、最初は統計量を0にしておく
-  // FIX(#542): 即時反映にする
-  {
-    (MaterialSets.materials -- PlayerData.exclude).foreach { m =>
-      player.setStatistic(Statistic.MINE_BLOCK, m, 0)
-    }
-  }
-
   //経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
@@ -297,6 +289,14 @@ class PlayerData(
 
   //join時とonenable時、プレイヤーデータを最新の状態に更新
   def updateOnJoin(): Unit = {
+    // 前回統計を取った時との差分から整地量を計算するため、最初は統計量を0にしておく
+    // FIX(#542): 即時反映にする
+    {
+      (MaterialSets.materials -- PlayerData.exclude).foreach { m =>
+        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
+      }
+    }
+
     //破壊量データ(before)を設定
     halfhourblock.before = totalbreaknum
     updateLevel()
@@ -550,20 +550,9 @@ class PlayerData(
 
     val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
     val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    
-    val sw01Mult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) {
-      import java.time.LocalDate
-      val now = LocalDate.now()
-      // 2020-07-11 のみ s1 で x1.5
-      // see https://github.com/GiganticMinecraft/SeichiAssist/issues/549 for more info
-      val isIt20200711 = now.getYear == 2020 && now.getMonthValue == 7 && now.getDayOfMonth == 11
-      
-      if (isIt20200711) 1.5 else 0.8
-    } else {
-      1.0 
-    }
+    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
 
-    amount * materialFactor * swMult * sw01Mult
+    amount * materialFactor * swMult * sw01PenaltyMult
   }
 
   private def saveTotalExp(): Unit = {
