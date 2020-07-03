@@ -3,9 +3,9 @@ import java.io._
 import ResourceFilter.filterResources
 import sbt.Keys.baseDirectory
 
-ThisBuild / scalaVersion     := "2.13.1"
-ThisBuild / version          := "1.3.2"
-ThisBuild / organization     := "click.seichi"
+ThisBuild / scalaVersion := "2.13.1"
+ThisBuild / version := "1.3.2-hotfix-1"
+ThisBuild / organization := "click.seichi"
 ThisBuild / description      := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 resolvers ++= Seq(

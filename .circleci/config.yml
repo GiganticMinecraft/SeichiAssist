@@ -48,7 +48,7 @@ jobs:
           key: sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
       - save_cache:
           ## 毎回ビルド結果をキャッシュする。次のビルドにて
-          ##  build-cache-v2-{{ .Branch }}
+          ##  build-cache-v3-{{ .Branch }}
           ## までが等しい最新のキャッシュが使われるから、コンパイルはインクリメンタルになる。
           paths:
             - ~/repo/target
