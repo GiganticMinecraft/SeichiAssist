@@ -16,13 +16,13 @@ object WorldLevelData extends ItemMigrationTarget[IO] {
 
       chunk.getTileEntities.foreach {
         case containerState: Container =>
-          MigrationHelper.convertEachContent(containerState.getInventory)(conversion)
+          MigrationHelper.convertEachStackIn(containerState.getInventory)(conversion)
         case _ =>
       }
 
       chunk.getEntities.foreach {
         case inventoryHolder: InventoryHolder =>
-          MigrationHelper.convertEachContent(inventoryHolder.getInventory)(conversion)
+          MigrationHelper.convertEachStackIn(inventoryHolder.getInventory)(conversion)
         case item: Item =>
           item.setItemStack(conversion(item.getItemStack))
         case frame: ItemFrame =>

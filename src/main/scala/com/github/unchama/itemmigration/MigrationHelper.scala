@@ -6,7 +6,7 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.inventory.{Inventory, InventoryHolder}
 
 object MigrationHelper {
-  def convertEachContent(inventory: Inventory)(conversion: ItemConversion): Unit = {
+  def convertEachStackIn(inventory: Inventory)(conversion: ItemConversion): Unit = {
     for (index <- 0 until inventory.getSize) {
       val item = inventory.getItem(index)
       if (item != null && item.getType != Material.AIR) {
@@ -21,7 +21,7 @@ object MigrationHelper {
         case meta: BlockStateMeta if meta.hasBlockState =>
           meta.getBlockState match {
             case state: InventoryHolder =>
-              convertEachContent(state.getInventory)(conversion)
+              convertEachStackIn(state.getInventory)(conversion)
               itemStack
             case _ => conversion(itemStack)
           }
