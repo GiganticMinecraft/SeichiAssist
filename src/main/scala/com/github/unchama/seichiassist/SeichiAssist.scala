@@ -124,18 +124,17 @@ class SeichiAssist extends JavaPlugin() {
       // TODO Replace this test with real migration system
       import eu.timepit.refined.auto._
 
-      val emptyPersistenceProvider =
-        new ItemMigrationPersistenceProvider[IO] {
-          override def withPersistence: Resource[IO, ItemMigrationPersistence[IO]] =
-            Resource.pure[IO, ItemMigrationPersistence[IO]] {
-              new ItemMigrationPersistence[IO] {
-                override implicit val fMonad: Monad[IO] = IO.ioEffect
+      def emptyPersistenceProvider[F[_]](implicit _fMonad: Monad[F]): ItemMigrationPersistence.Provider[F, ItemMigrationTarget[F]] =
+        Resource.pure[F, ItemMigrationPersistence[F, ItemMigrationTarget[F]]] {
+          new ItemMigrationPersistence[F, ItemMigrationTarget[F]] {
+            override implicit val fMonad: Monad[F] = _fMonad
 
-                override def getCompletedVersions: IO[IndexedSeq[VersionNumber]] = IO.pure(IndexedSeq())
+            override def getCompletedVersions(t: ItemMigrationTarget[F]): F[IndexedSeq[VersionNumber]] =
+              _fMonad.pure(IndexedSeq())
 
-                override def writeCompletedVersion(version: VersionNumber): IO[Unit] = IO.unit
-              }
-            }
+            override def writeCompletedVersion(t: ItemMigrationTarget[F])(version: VersionNumber): F[Unit] =
+              _fMonad.unit
+          }
         }
 
       val testMigration = {
@@ -151,7 +150,7 @@ class SeichiAssist extends JavaPlugin() {
         ))
       }
 
-      ItemMigrationConfiguration[IO](testMigration, MVWorldLevelData, emptyPersistenceProvider).run
+      ItemMigrationConfiguration[IO, MVWorldLevelData.type](testMigration, MVWorldLevelData, emptyPersistenceProvider).run
     }.unsafeRunSync()
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()

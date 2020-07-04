@@ -2,21 +2,21 @@ package com.github.unchama.itemmigration
 
 import cats.effect.Bracket
 
-case class ItemMigrationConfiguration[F[_]](migrationSeq: ItemMigrationSeq,
-                                            migrationTarget: ItemMigrationTarget[F],
-                                            persistenceProvider: ItemMigrationPersistenceProvider[F])
-                                           (implicit F: Bracket[F, Throwable]) {
+case class ItemMigrationConfiguration[F[_], T <: ItemMigrationTarget[F]](migrationSeq: ItemMigrationSeq,
+                                                                         migrationTarget: T,
+                                                                         persistenceProvider: ItemMigrationPersistence.Provider[F, T])
+                                                                        (implicit F: Bracket[F, Throwable]) {
 
   def run: F[Unit] = {
     val sortedMigrationSeq = migrationSeq.sortedMigrations
 
     import cats.implicits._
-    persistenceProvider.withPersistence.use { persistence =>
+    persistenceProvider.use { persistence =>
       for {
-        requiredMigrations <- persistence.filterRequiredMigrations(sortedMigrationSeq)
+        requiredMigrations <- persistence.filterRequiredMigrations(migrationTarget)(sortedMigrationSeq)
         unifiedConversion = ItemMigration.toSingleFunction(requiredMigrations)
         _ <- migrationTarget.runMigration(unifiedConversion)
-        _ <- persistence.writeCompletedMigrations(requiredMigrations)
+        _ <- persistence.writeCompletedMigrations(migrationTarget)(requiredMigrations)
       } yield ()
     }
   }
