@@ -34,15 +34,15 @@ anchors:
       ## コンパイルがインクリメンタルになってくれない
       ## https://kurochan-note.hatenablog.jp/entry/2018/03/21/162929
       commands:
-        - &archive_build_cache
-          run:
+        archive:
+          run: &archive_build_cache
             name: Archive build cache
             command: |
-              mkdir -p .cache
+              mkdir -p ~/.build_cache
               tar --format posix -cvf ~/.build_cache/cache_target.tar target/ > /dev/null
               tar --format posix -cvf ~/.build_cache/cache_project_target.tar project/target/ > /dev/null
-        - &unarchive_build_cache
-          run:
+        unarchive:
+          run: &unarchive_build_cache
             name: Unarchive build cache
             command: |
               cat ~/.build_cache/cache_*.tar | tar xvf - -i > /dev/null
