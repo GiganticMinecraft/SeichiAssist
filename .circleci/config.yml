@@ -14,6 +14,50 @@ anchors:
     load_workspace: &load_workspace
       attach_workspace:
         at: '/tmp/workspace'
+  cache:
+    dependencies:
+      save_cache: &save_dependencies
+        paths:
+          - ~/.ivy2/cache
+          - ~/.m2
+          - ~/.cache/coursier/v1
+          - ~/.sbt
+        key: sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
+      restore_cache: &restore_dependencies
+        keys:
+          - sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
+          - sbt-repo-v3-{{ .Branch }}-
+          - sbt-repo-v3-
+    build_cache:
+      ## 圧縮時にタイムスタンプが丸められるため、
+      ## オプション付きで圧縮をしたものをキャッシュとして保存しないと
+      ## コンパイルがインクリメンタルになってくれない
+      ## https://kurochan-note.hatenablog.jp/entry/2018/03/21/162929
+      commands:
+        - &archive_build_cache
+          run:
+            name: Archive build cache
+            command: |
+              mkdir -p .cache
+              tar --format posix -cvf ~/.build_cache/cache_target.tar target/ > /dev/null
+              tar --format posix -cvf ~/.build_cache/cache_project_target.tar project/target/ > /dev/null
+        - &unarchive_build_cache
+          run:
+            name: Unarchive build cache
+            command: |
+              cat ~/.build_cache/cache_*.tar | tar xvf - -i > /dev/null
+      save_cache: &save_build_cache
+        ## 毎回ビルド結果をキャッシュする。次のビルドにて
+        ##  build-cache-v3-{{ .Branch }}
+        ## までが等しい最新のキャッシュが使われるから、コンパイルはインクリメンタルになる。
+        paths:
+          - ~/.build_cache
+        key: build-cache-v3-{{ .Branch }}-{{ epoch }}
+
+      restore_cache: &restore_build_cache
+        ## ブランチ間でのビルドキャッシュ共有は行わない
+        keys:
+          - build-cache-v3-{{ .Branch }}-
 
 jobs:
   build_and_test:
@@ -21,36 +65,22 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
-            - sbt-repo-v3-{{ .Branch }}-
-            - sbt-repo-v3-
-      - restore_cache:
-          keys:
-            - build-cache-v3-{{ .Branch }}-
-            - build-cache-v3-
+      - *restore_dependencies
+      - *restore_build_cache
+      - *unarchive_build_cache
+
       - run: du -h --max-depth=2 ~
-      ## ビルド結果が残っている可能性があるのでクリアする
-      - run: rm -rf target/build
-      - run: ./sbt assembly
-      - save_cache:
-          paths:
-            - ~/.ivy2/cache
-            - ~/.m2
-            - ~/.cache/coursier/v1
-            - ~/.sbt
-          key: sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
-      - save_cache:
-          ## 毎回ビルド結果をキャッシュする。次のビルドにて
-          ##  build-cache-v3-{{ .Branch }}
-          ## までが等しい最新のキャッシュが使われるから、コンパイルはインクリメンタルになる。
-          paths:
-            - ~/repo/target
-            - ~/repo/project/target
-          key: build-cache-v3-{{ .Branch }}-{{ epoch }}
-      - run: mkdir -p workspace/builds && cp target/build/**.jar workspace/builds
+      - run: |
+          ./sbt assembly && \
+          mkdir -p workspace/builds && \
+          cp target/build/**.jar workspace/builds && \
+          rm -rf target/build
+
       - *save_workspace
+
+      - *save_dependencies
+      - *archive_build_cache
+      - *save_build_cache
   deploy_debug:
     <<: *sbt_docker
     working_directory: ~/repo
