@@ -71,9 +71,9 @@ jobs:
 
       - run: du -h --max-depth=2 ~
       - run: |
-          ./sbt assembly && \
-          mkdir -p workspace/builds && \
-          cp target/build/**.jar workspace/builds && \
+          ./sbt assembly
+          mkdir -p workspace/builds
+          cp target/build/**.jar workspace/builds
           rm -rf target/build
 
       - *save_workspace
