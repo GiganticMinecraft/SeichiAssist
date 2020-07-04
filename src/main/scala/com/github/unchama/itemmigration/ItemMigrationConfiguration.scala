@@ -16,6 +16,7 @@ case class ItemMigrationConfiguration[F[_]](migrationSeq: ItemMigrationSeq,
         requiredMigrations <- persistence.filterRequiredMigrations(sortedMigrationSeq)
         unifiedConversion = ItemMigration.toSingleFunction(requiredMigrations)
         _ <- migrationTarget.runMigration(unifiedConversion)
+        _ <- persistence.writeCompletedMigrations(requiredMigrations)
       } yield ()
     }
   }
