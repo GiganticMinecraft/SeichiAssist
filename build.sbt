@@ -83,6 +83,8 @@ unmanagedResources in Compile += baseDirectory.value / "LICENSE"
 excludeFilter in unmanagedResources :=
   filesToBeReplacedInResourceFolder.foldLeft((excludeFilter in unmanagedResources).value)(_.||(_))
 
+logLevel := Level.Debug
+
 lazy val root = (project in file("."))
   .settings(
     name := "SeichiAssist",
