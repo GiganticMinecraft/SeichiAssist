@@ -81,11 +81,10 @@ jobs:
           ./sbt assembly
           mkdir -p workspace/builds
           cp target/build/**.jar workspace/builds
-          rm -rf target/build
-
       - *save_workspace
-
       - *save_dependencies
+
+      - run: rm -rf target/build
       - *archive_build_cache
       - *save_build_cache
   deploy_debug:
