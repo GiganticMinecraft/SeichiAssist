@@ -30,6 +30,10 @@ anchors:
             - sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
             - sbt-repo-v3-{{ .Branch }}-
             - sbt-repo-v3-
+      ## CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
+      ## そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
+      ## 不要なインクリメンタルコンパイルが走る
+      ## タイムスタンプをコミット時刻に設定することでこれが回避できる
       restore_local_dependencies_timestamps: &restore_local_dependencies_timestamps
         run:
           name: Restore timestamps of files in localDependencies
