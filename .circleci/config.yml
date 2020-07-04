@@ -16,48 +16,51 @@ anchors:
         at: '/tmp/workspace'
   cache:
     dependencies:
-      save_cache: &save_dependencies
-        paths:
-          - ~/.ivy2/cache
-          - ~/.m2
-          - ~/.cache/coursier/v1
-          - ~/.sbt
-        key: sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
-      restore_cache: &restore_dependencies
-        keys:
-          - sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
-          - sbt-repo-v3-{{ .Branch }}-
-          - sbt-repo-v3-
+      save: &save_dependencies
+        save_cache:
+          paths:
+            - ~/.ivy2/cache
+            - ~/.m2
+            - ~/.cache/coursier/v1
+            - ~/.sbt
+          key: sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
+      restore: &restore_dependencies
+        restore_cache:
+          keys:
+            - sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
+            - sbt-repo-v3-{{ .Branch }}-
+            - sbt-repo-v3-
     build_cache:
       ## 圧縮時にタイムスタンプが丸められるため、
       ## オプション付きで圧縮をしたものをキャッシュとして保存しないと
       ## コンパイルがインクリメンタルになってくれない
       ## https://kurochan-note.hatenablog.jp/entry/2018/03/21/162929
-      commands:
-        archive:
-          run: &archive_build_cache
-            name: Archive build cache
-            command: |
-              mkdir -p ~/.build_cache
-              tar --format posix -cvf ~/.build_cache/cache_target.tar target/ > /dev/null
-              tar --format posix -cvf ~/.build_cache/cache_project_target.tar project/target/ > /dev/null
-        unarchive:
-          run: &unarchive_build_cache
-            name: Unarchive build cache
-            command: |
-              cat ~/.build_cache/cache_*.tar | tar xvf - -i > /dev/null
-      save_cache: &save_build_cache
+      archive: &archive_build_cache
+        run:
+          name: Archive build cache
+          command: |
+            mkdir -p ~/.build_cache
+            tar --format posix -cvf ~/.build_cache/cache_target.tar target/ > /dev/null
+            tar --format posix -cvf ~/.build_cache/cache_project_target.tar project/target/ > /dev/null
+      save: &save_build_cache
         ## 毎回ビルド結果をキャッシュする。次のビルドにて
         ##  build-cache-v3-{{ .Branch }}
         ## までが等しい最新のキャッシュが使われるから、コンパイルはインクリメンタルになる。
-        paths:
-          - ~/.build_cache
-        key: build-cache-v3-{{ .Branch }}-{{ epoch }}
+        save_cache:
+          paths:
+            - ~/.build_cache
+          key: build-cache-v3-{{ .Branch }}-{{ epoch }}
 
-      restore_cache: &restore_build_cache
-        ## ブランチ間でのビルドキャッシュ共有は行わない
-        keys:
-          - build-cache-v3-{{ .Branch }}-
+      restore: &restore_build_cache
+        restore_cache:
+          ## ブランチ間でのビルドキャッシュ共有は行わない
+          keys:
+            - build-cache-v3-{{ .Branch }}-
+      unarchive: &unarchive_build_cache
+        run:
+          name: Unarchive build cache
+          command: |
+            cat ~/.build_cache/cache_*.tar | tar xvf - -i > /dev/null
 
 jobs:
   build_and_test:
