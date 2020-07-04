@@ -38,7 +38,7 @@ anchors:
           command: |
             for jar in localDependencies/*.jar; do
               timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
-              touch -t="$timestamp" $jar
+              touch -t "$timestamp" $jar
             done
     build_cache:
       ## 圧縮時にタイムスタンプが丸められるため、
