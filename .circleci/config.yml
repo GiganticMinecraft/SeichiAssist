@@ -60,7 +60,7 @@ anchors:
         run:
           name: Unarchive build cache
           command: |
-            if [ -e ~/.build_cache ] && ; then
+            if [ -e ~/.build_cache ]; then
               if test -n "$(find ~/.build_cache -name 'cache_*.tar')"; then
                 cat ~/.build_cache/cache_*.tar | tar xvf - -i > /dev/null
               fi
