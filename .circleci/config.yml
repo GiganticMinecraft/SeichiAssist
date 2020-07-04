@@ -49,13 +49,13 @@ anchors:
         save_cache:
           paths:
             - ~/.build_cache
-          key: build-cache-v3-{{ .Branch }}-{{ epoch }}
+          key: build-cache-v4-{{ .Branch }}-{{ epoch }}
 
       restore: &restore_build_cache
         restore_cache:
           ## ブランチ間でのビルドキャッシュ共有は行わない
           keys:
-            - build-cache-v3-{{ .Branch }}-
+            - build-cache-v4-{{ .Branch }}-
       unarchive: &unarchive_build_cache
         run:
           name: Unarchive build cache
