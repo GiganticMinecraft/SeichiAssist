@@ -82,7 +82,8 @@ anchors:
             fi
 
 jobs:
-  build_and_test:
+  ## 同じブランチ上のビルドキャッシュを使ってビルドを行い、テストする
+  incremental_build_and_test:
     <<: *sbt_docker
     working_directory: ~/repo
     steps:
@@ -103,6 +104,21 @@ jobs:
       - run: rm -rf target/build
       - *archive_build_cache
       - *save_build_cache
+  full_build_and_test:
+    <<: *sbt_docker
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - *restore_dependencies
+
+      - run: du -h --max-depth=2 ~
+      - run: |
+          ./sbt assembly
+          mkdir -p workspace/builds
+          cp target/build/**.jar workspace/builds
+
+      - *save_workspace
+      - *save_dependencies
   deploy_debug:
     <<: *sbt_docker
     working_directory: ~/repo
@@ -122,17 +138,22 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      - build_and_test
-      - deploy_production:
-          requires:
-            - build_and_test
+      - incremental_build_and_test:
+          filters:
+            branches:
+              ignore:
+                - master
+      - full_build_and_test:
           filters:
             branches:
               only:
                 - master
+      - deploy_production:
+          requires:
+            - full_build_and_test
       - deploy_debug:
           requires:
-            - build_and_test
+            - incremental_build_and_test
           filters:
             branches:
               only:
