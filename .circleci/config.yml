@@ -42,6 +42,7 @@ anchors:
             mkdir -p ~/.build_cache
             tar --format posix -cvf ~/.build_cache/cache_target.tar target/ > /dev/null
             tar --format posix -cvf ~/.build_cache/cache_project_target.tar project/target/ > /dev/null
+            tar --format posix -cvf ~/.build_cache/cache_project_project_target.tar project/project/target > /dev/null
       save: &save_build_cache
         ## 毎回ビルド結果をキャッシュする。次のビルドにて
         ##  build-cache-v3-{{ .Branch }}
