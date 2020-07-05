@@ -124,15 +124,15 @@ class SeichiAssist extends JavaPlugin() {
       // TODO Replace this test with real migration system
       import eu.timepit.refined.auto._
 
-      def emptyPersistenceProvider[F[_]](implicit _fMonad: Monad[F]): ItemMigrationPersistence.Provider[F, ItemMigrationTarget[F]] =
-        Resource.pure[F, ItemMigrationPersistence[F, ItemMigrationTarget[F]]] {
-          new ItemMigrationPersistence[F, ItemMigrationTarget[F]] {
+      def emptyPersistenceProvider[F[_]](implicit _fMonad: Monad[F]): ItemMigrationPersistence.Provider[F, Any] =
+        Resource.pure[F, ItemMigrationPersistence[F, Any]] {
+          new ItemMigrationPersistence[F, Any] {
             override implicit val fMonad: Monad[F] = _fMonad
 
-            override def getCompletedVersions(t: ItemMigrationTarget[F]): F[IndexedSeq[VersionNumber]] =
+            override def getCompletedVersions(t: Any): F[IndexedSeq[VersionNumber]] =
               _fMonad.pure(IndexedSeq())
 
-            override def writeCompletedVersion(t: ItemMigrationTarget[F])(version: VersionNumber): F[Unit] =
+            override def writeCompletedVersion(t: Any)(version: VersionNumber): F[Unit] =
               _fMonad.unit
           }
         }

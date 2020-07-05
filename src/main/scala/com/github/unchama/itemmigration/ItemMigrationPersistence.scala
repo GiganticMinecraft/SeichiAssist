@@ -4,7 +4,7 @@ import cats.Monad
 import cats.effect.Resource
 import com.github.unchama.itemmigration.ItemMigration.VersionNumber
 
-trait ItemMigrationPersistence[F[_], -T <: ItemMigrationTarget[F]] {
+trait ItemMigrationPersistence[F[_], -T] {
   implicit val fMonad: Monad[F]
 
   /**
@@ -45,12 +45,5 @@ object ItemMigrationPersistence {
   /**
    * 必要ならば永続化層のロックを取り、永続化層へのアクセスを提供するような `Resource`
    */
-  type Provider[F[_], -T <: ItemMigrationTarget[F]] = Resource[F, ItemMigrationPersistence[F, T]]
-}
-
-trait ItemMigrationPersistenceProvider[F[_], -T <: ItemMigrationTarget[F]] {
-  /**
-   * 必要ならば永続化層のロックを取り、永続化層へのアクセスを提供するような `Resource` を返す。
-   */
-  def withPersistence: Resource[F, ItemMigrationPersistence[F, T]]
+  type Provider[F[_], -T] = Resource[F, ItemMigrationPersistence[F, T]]
 }
