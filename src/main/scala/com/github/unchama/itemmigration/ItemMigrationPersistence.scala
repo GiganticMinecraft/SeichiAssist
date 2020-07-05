@@ -34,10 +34,10 @@ trait ItemMigrationPersistence[F[_], -T] {
    */
   def writeCompletedVersion(target: T)(version: VersionNumber): F[Unit]
 
-  def writeCompletedMigrations(target: T)(versions: IndexedSeq[ItemMigration]): F[Unit] = {
+  def writeCompletedMigrations(target: T)(migrations: IndexedSeq[ItemMigration]): F[Unit] = {
     import cats.implicits._
 
-    versions.map(_.version).toList.traverse(writeCompletedVersion(target)).as(())
+    migrations.map(_.version).toList.traverse(writeCompletedVersion(target)).as(())
   }
 }
 
