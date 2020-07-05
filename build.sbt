@@ -4,7 +4,7 @@ import ResourceFilter.filterResources
 import sbt.Keys.baseDirectory
 
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "1.3.2-hotfix-1"
+ThisBuild / version := "1.3.3"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description      := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -83,6 +83,8 @@ unmanagedResources in Compile += baseDirectory.value / "LICENSE"
 // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
 excludeFilter in unmanagedResources :=
   filesToBeReplacedInResourceFolder.foldLeft((excludeFilter in unmanagedResources).value)(_.||(_))
+
+logLevel := Level.Debug
 
 // ScalaPBの設定
 PB.protoSources in Compile := Seq(baseDirectory.value / "protocol")
