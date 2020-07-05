@@ -1,11 +1,10 @@
-package com.github.unchama.itemmigration.template
+package com.github.unchama.itemmigration.target.player
 
 import java.util.UUID
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{CancelToken, Concurrent, IO, SyncIO}
 import com.github.unchama.generic.effect.TryableFiber
-import com.github.unchama.itemmigration.target.PlayerInventoriesData
 import com.github.unchama.itemmigration.{ItemMigration, ItemMigrationPersistence, ItemMigrationSeq}
 import com.github.unchama.playerdatarepository.PlayerDataOnMemoryRepository
 import org.bukkit.entity.Player

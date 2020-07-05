@@ -1,4 +1,4 @@
-package com.github.unchama.itemmigration.target
+package com.github.unchama.itemmigration.target.player
 
 import cats.effect.IO
 import com.github.unchama.itemmigration.ItemMigration.ItemConversion

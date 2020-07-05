@@ -1,4 +1,4 @@
-package com.github.unchama.itemmigration.template
+package com.github.unchama.itemmigration.target.player
 
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryOpenEvent
