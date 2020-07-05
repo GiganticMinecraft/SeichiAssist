@@ -14,6 +14,14 @@ anchors:
     load_workspace: &load_workspace
       attach_workspace:
         at: '/tmp/workspace'
+  commands:
+    pull_submodules: &pull_submodules
+      run:
+        name: "Pull Submodules"
+        command: |
+          git submodule sync
+          git submodule update --init
+
   cache:
     dependencies:
       save: &save_dependencies
@@ -88,6 +96,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - *pull_submodules
       - *restore_dependencies
       - *restore_build_cache
       - *unarchive_build_cache
@@ -109,6 +118,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - *pull_submodules
       - *restore_dependencies
 
       - run: du -h --max-depth=2 ~
