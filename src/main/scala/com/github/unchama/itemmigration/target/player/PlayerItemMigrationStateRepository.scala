@@ -3,15 +3,18 @@ package com.github.unchama.itemmigration.target.player
 import java.util.UUID
 
 import cats.effect.concurrent.Deferred
-import cats.effect.{CancelToken, Concurrent, IO, SyncIO}
+import cats.effect.{Concurrent, IO, SyncIO}
 import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.itemmigration.{ItemMigration, ItemMigrationPersistence, ItemMigrationSeq}
 import com.github.unchama.playerdatarepository.PlayerDataOnMemoryRepository
 import org.bukkit.entity.Player
 
-class PlayerItemMigrationProgress(migrationSeq: ItemMigrationSeq,
-                                  persistence: ItemMigrationPersistence[IO, UUID])
-                                 (implicit concurrentIO: Concurrent[IO])
+/**
+ * 各プレーヤーのマイグレーション処理の状態を保持するオブジェクトのクラス。
+ */
+class PlayerItemMigrationStateRepository(migrationSeq: ItemMigrationSeq,
+                                         persistence: ItemMigrationPersistence[IO, UUID])
+                                        (implicit concurrentIO: Concurrent[IO])
   extends PlayerDataOnMemoryRepository[PlayerItemMigrationFiber] {
 
   override val loadData: (String, UUID) => SyncIO[Either[Option[String], PlayerItemMigrationFiber]] =
@@ -39,16 +42,14 @@ class PlayerItemMigrationProgress(migrationSeq: ItemMigrationSeq,
       } yield {
         Right {
           new PlayerItemMigrationFiber {
-            override def invokeWith(player: Player): IO[Unit] = playerPromise.complete(player)
+            override def resumeWith(player: Player): IO[Unit] = playerPromise.complete(player)
 
-            override def isComplete: IO[Boolean] = migrationProcessFiber.isComplete
-
-            override val cancel: CancelToken[IO] = migrationProcessFiber.cancel
+            override val fiber: TryableFiber[IO, Unit] = migrationProcessFiber
           }
         }
       }
     }
 
-  override val unloadData: (Player, PlayerItemMigrationFiber) => IO[Unit] = (_, d) => d.cancel
+  override val unloadData: (Player, PlayerItemMigrationFiber) => IO[Unit] = (_, f) => f.fiber.cancel
 
 }

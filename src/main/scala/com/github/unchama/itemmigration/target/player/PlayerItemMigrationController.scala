@@ -5,9 +5,12 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.{PlayerDropItemEvent, PlayerEvent, PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
 
-class PlayerItemMigrationController(progress: PlayerItemMigrationProgress) extends Listener {
+/**
+ * progress
+ */
+class PlayerItemMigrationController(migrationState: PlayerItemMigrationStateRepository) extends Listener {
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
-    if (progress(player).isComplete.unsafeRunSync()) {
+    if (migrationState(player).fiber.isComplete.unsafeRunSync()) {
       event.setCancelled(true)
     }
   }
@@ -32,6 +35,6 @@ class PlayerItemMigrationController(progress: PlayerItemMigrationProgress) exten
   @EventHandler(priority = EventPriority.LOWEST)
   def onJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
-    progress(player).invokeWith(player).unsafeRunSync()
+    migrationState(player).resumeWith(player).unsafeRunSync()
   }
 }
