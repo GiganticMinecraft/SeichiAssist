@@ -25,13 +25,13 @@ class PlayerItemMigrationStateRepository(migrationSeq: ItemMigrationSeq,
         filteredMigrationSequence <- SyncIO {
           persistence.filterRequiredMigrations(uuid)(sortedMigrationSeq).unsafeRunSync()
         }
-        playerPromise <- Deferred.in[SyncIO, IO, Player]
+        unifiedConversion = ItemMigration.toSingleFunction(filteredMigrationSequence)
 
+        playerPromise <- Deferred.in[SyncIO, IO, Player]
         migrationProcess: IO[Unit] =
         for {
           playerInstance <- playerPromise.get
           inventoryData = new PlayerInventoriesData(playerInstance)
-          unifiedConversion = ItemMigration.toSingleFunction(filteredMigrationSequence)
           _ <- inventoryData.runMigration(unifiedConversion)
           _ <- persistence.writeCompletedMigrations(playerInstance.getUniqueId)(filteredMigrationSequence)
         } yield ()
