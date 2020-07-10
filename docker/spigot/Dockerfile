@@ -16,6 +16,6 @@ COPY docker/spigot/serverfiles/ /spigot-files/
 COPY localDependencies/ /spigot-files/plugins/
 COPY target/build /spigot-files/plugins/
 
-ADD ./src/main/resources/config.yml /spigot-files/plugins/SeichiAssist/config.yml
+CMD bash /spigot-files/start-server.sh
 
 COPY --from=chunk-search-provider /build/chunk-search-rs /usr/local/bin/chunk-search-rs
