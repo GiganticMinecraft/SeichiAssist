@@ -15,4 +15,4 @@ COPY docker/spigot/serverfiles/ /spigot-files/
 
 COPY target/build /spigot-files/plugins/
 
-ADD ./src/main/resources/config.yml /spigot-files/plugins/SeichiAssist/config.yml
+CMD bash /spigot-files/start-server.sh
