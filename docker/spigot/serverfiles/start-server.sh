@@ -8,6 +8,10 @@ rm /spigot/plugins/SeichiAssist* || true
 
 cp -Rf /spigot-files/* /spigot/
 
+cd /spigot/plugins/SeichiAssist
+rm config.yml
+jar xf ../SeichiAssist-*.jar config.yml
+
 sed -i -e "s/servernum: .*/servernum: ${SERVER_NUM}/" /spigot/plugins/SeichiAssist/config.yml
 sed -i -e "s/server-id: .*/server-id: ${SERVER_ID}/" /spigot/plugins/SeichiAssist/config.yml
 sed -i -e "s/host: .*/host: ${DB_HOST}/" /spigot/plugins/SeichiAssist/config.yml
