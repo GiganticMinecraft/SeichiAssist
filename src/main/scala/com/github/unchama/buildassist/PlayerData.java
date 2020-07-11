@@ -74,30 +74,18 @@ public final class PlayerData {
     }
 
     /**
-     * レベルを更新
-     */
-    void updateLevel(final Player player) {
-        calcPlayerLevel(player);
-    }
-
-    /**
      * プレイヤーレベルを計算し、更新する。
      */
-    private void calcPlayerLevel(final Player player) {
-        //現在のランクの次を取得
-        int i = level;
-        //ランクが上がらなくなるまで処理
-        while (((int) BuildAssist.levellist().apply(i)) <= totalbuildnum.doubleValue() && (i + 2) <= BuildAssist.levellist().size()) {
-            if (!BuildAssist.DEBUG()) {
-                //レベルアップ時のメッセージ
-                player.sendMessage(ChatColor.GOLD + "ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + i + ")→建築Lv(" + (i + 1) + ")】");
-            }
-            i++;
-            if ((i + 1) == BuildAssist.levellist().size()) {
+    void updateLevel(final Player player) {
+        for (;level < BuildAssist.levellist().size(); level++) {
+            if (totalbuildnum.doubleValue() < (int) BuildAssist.levellist().apply(level+1))
+                break;
+
+            player.sendMessage(ChatColor.GOLD + "ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + level + ")→建築Lv(" + (level + 1) + ")】");
+
+            if (level+1 == BuildAssist.levellist().size())
                 player.sendMessage(ChatColor.GOLD + "最大Lvに到達したよ(`･ω･´)");
-            }
         }
-        level = i;
     }
 
     /**
