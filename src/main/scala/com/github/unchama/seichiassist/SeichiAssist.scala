@@ -20,7 +20,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.itemmigration.MVWorldLevelData
+import com.github.unchama.seichiassist.itemmigration.SeichiAssistWorldLevelData
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
@@ -150,7 +150,11 @@ class SeichiAssist extends JavaPlugin() {
         ))
       }
 
-      ItemMigrationConfiguration[IO, MVWorldLevelData.type](testMigration, MVWorldLevelData, emptyPersistenceProvider).run
+      ItemMigrationConfiguration[IO, ItemMigrationTarget[IO]](
+        testMigration,
+        SeichiAssistWorldLevelData.migrationTarget,
+        emptyPersistenceProvider
+      ).run
     }.unsafeRunSync()
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()

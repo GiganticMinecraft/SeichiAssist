@@ -11,21 +11,25 @@ import org.bukkit.inventory.{InventoryHolder, ItemStack}
 /**
  * マイグレーションターゲットとしてのワールドデータを表すデータ
  *
- * @param worlds                    変換対象であるワールドのコレクション
- * @param chunkCoordinateEnumerator ワールド内で変換すべきチャンク座標を列挙するプログラム
+ * @param getWorlds                 変換対象であるワールドを列挙するプログラム
+ * @param enumerateChunkCoordinates ワールド内で変換すべきチャンク座標を列挙するプログラム
  */
-case class WorldLevelData(worlds: IndexedSeq[World],
-                          chunkCoordinateEnumerator: World => IO[Seq[(Int, Int)]]) extends ItemMigrationTarget[IO] {
+case class WorldLevelData(getWorlds: IO[IndexedSeq[World]],
+                          enumerateChunkCoordinates: World => IO[Seq[(Int, Int)]]) extends ItemMigrationTarget[IO] {
 
   override def runMigration(conversion: ItemConversion): IO[Unit] = {
     import cats.implicits._
 
-    worlds.toList.traverse { w =>
+    def convertWorld(world: World): IO[Unit] =
       for {
-        coords <- chunkCoordinateEnumerator(w)
-        _ <- WorldLevelData.convertChunkWise(w, coords, conversion)
+        coords <- enumerateChunkCoordinates(world)
+        _ <- WorldLevelData.convertChunkWise(world, coords, conversion)
       } yield ()
-    }.as(())
+
+    for {
+      worlds <- getWorlds
+      _ <- worlds.toList.traverse(convertWorld)
+    } yield ()
   }
 
 }
