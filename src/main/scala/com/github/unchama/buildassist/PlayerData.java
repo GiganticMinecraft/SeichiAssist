@@ -77,14 +77,20 @@ public final class PlayerData {
      * プレイヤーレベルを計算し、更新する。
      */
     void updateLevel(final Player player) {
-        for (;level < BuildAssist.levellist().size(); level++) {
-            if (totalbuildnum.doubleValue() < (int) BuildAssist.levellist().apply(level+1))
+        // NOTE:
+        //  level: 0 origin
+        //  level < BuildAssist.levellist().size()
+        //  -1: if lank-up-able
+        for (;level < BuildAssist.levellist().size() -1; level++) {
+            if (totalbuildnum.doubleValue() < (int) BuildAssist.levellist().apply(level + 1)) {
                 break;
+            }
 
             player.sendMessage(ChatColor.GOLD + "ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + level + ")→建築Lv(" + (level + 1) + ")】");
+        }
 
-            if (level+1 == BuildAssist.levellist().size())
-                player.sendMessage(ChatColor.GOLD + "最大Lvに到達したよ(`･ω･´)");
+        if (level == BuildAssist.levellist().size() - 1) {
+            player.sendMessage(ChatColor.GOLD + "最大Lvに到達したよ(`･ω･´)");
         }
     }
 
