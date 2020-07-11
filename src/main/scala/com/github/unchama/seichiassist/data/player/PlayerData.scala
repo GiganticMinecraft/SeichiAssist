@@ -554,11 +554,11 @@ class PlayerData(
     val sw01Mult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) {	
       import java.time.LocalDate	
       val now = LocalDate.now()	
-      // 2020-07-11 のみ s1 で x1.5	
+      // 2020-07-11 のみ x4.0	
       // see https://github.com/GiganticMinecraft/SeichiAssist/issues/549 for more info	
       val isIt20200711 = now.getYear == 2020 && now.getMonthValue == 7 && now.getDayOfMonth == 11	
 
-      if (isIt20200711) 1.5 else 0.8	
+      if (isIt20200711) 4.0 else 0.8	
     } else {	
       1.0 	
     }	
