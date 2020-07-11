@@ -78,18 +78,26 @@ public final class PlayerData {
      */
     void updateLevel(final Player player) {
         // NOTE:
-        //  level: 0 origin
-        //  level < BuildAssist.levellist().size()
-        //  -1: if lank-up-able
-        for (;level < BuildAssist.levellist().size() -1; level++) {
-            if (totalbuildnum.doubleValue() < (int) BuildAssist.levellist().apply(level + 1)) {
+        // levellist[i] に入っているのは、level iからlevel i+1になるための必要totalbuildnum。
+        // levelは1から始まるので、当然levellist[0]にはアクセスされない。
+        // よって、BuildAssist.levellist().size()は最大レベルと同値となる。
+        // はずだった。
+        // 100->101を実現する筈のlevellist[100]は存在するが、
+        // その遷移は元のコードでは境界値により封じられている。
+        // また、遷移に必要なtotalbuildnumも5倍となっている。
+        // 恐らく、実装によりlevellistの最終要素を無視しなければならない。
+
+        int maxLevel = BuildAssist.levellist().size() - 1;
+
+        for (;level < maxLevel; level++) {
+            if (totalbuildnum.doubleValue() < (int) BuildAssist.levellist().apply(level)) {
                 break;
             }
 
             player.sendMessage(ChatColor.GOLD + "ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(" + level + ")→建築Lv(" + (level + 1) + ")】");
         }
 
-        if (level == BuildAssist.levellist().size() - 1) {
+        if (level == maxLevel) {
             player.sendMessage(ChatColor.GOLD + "最大Lvに到達したよ(`･ω･´)");
         }
     }
