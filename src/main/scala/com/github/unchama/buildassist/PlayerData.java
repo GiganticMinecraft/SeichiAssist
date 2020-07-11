@@ -89,6 +89,10 @@ public final class PlayerData {
 
         int maxLevel = BuildAssist.levellist().size() - 1;
 
+        if (maxLevel <= level) {
+            return;
+        }
+
         for (;level < maxLevel; level++) {
             if (totalbuildnum.doubleValue() < (int) BuildAssist.levellist().apply(level)) {
                 break;
