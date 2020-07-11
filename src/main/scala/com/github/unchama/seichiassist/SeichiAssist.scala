@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.infrastructure.migration.SeichiAssistPersistedItems
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistWorldLevelData
 import com.github.unchama.seichiassist.itemmigration.migrations.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
@@ -121,6 +122,18 @@ class SeichiAssist extends JavaPlugin() {
       Bukkit.shutdown()
     }
 
+    // DB内アイテムのマイグレーション処理を同期的に走らせる
+    {
+      // TODO データベースを用いた実装に切り替える
+      val persistenceProvider: ItemMigrationPersistence.Provider[IO, SeichiAssistPersistedItems.type] = ???
+
+      ItemMigrationConfiguration(
+        SeichiAssistItemMigrations.seq,
+        SeichiAssistPersistedItems,
+        persistenceProvider
+      )
+    }
+
     // ワールド内アイテムのマイグレーション処理を同期的に走らせる
     {
       // TODO データベースを用いた実装に切り替える
@@ -128,7 +141,7 @@ class SeichiAssist extends JavaPlugin() {
 
       ItemMigrationConfiguration(
         SeichiAssistItemMigrations.seq,
-        SeichiAssistWorldLevelData.migrationTarget,
+        SeichiAssistWorldLevelData,
         persistenceProvider
       ).run
     }.unsafeRunSync()
