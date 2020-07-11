@@ -6,7 +6,8 @@ import org.bukkit.event.player.{PlayerDropItemEvent, PlayerEvent, PlayerItemCons
 import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
 
 /**
- * progress
+ * プレーヤーのアイテムマイグレーション処理中に、
+ * 該当プレーヤーの行動を制御するためのリスナオブジェクトのクラス
  */
 class PlayerItemMigrationController(migrationState: PlayerItemMigrationStateRepository) extends Listener {
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
