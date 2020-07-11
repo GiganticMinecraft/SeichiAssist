@@ -2,14 +2,14 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
-import cats.Monad
-import cats.effect.{Fiber, IO, Resource}
+import cats.effect.{Fiber, IO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
-import com.github.unchama.itemmigration.ItemMigration.VersionNumber
 import com.github.unchama.itemmigration._
+import com.github.unchama.itemmigration.target.WorldLevelData
+import com.github.unchama.itemmigration.target.player.{PlayerItemMigrationController, PlayerItemMigrationStateRepository}
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -21,6 +21,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistWorldLevelData
+import com.github.unchama.seichiassist.itemmigration.migrations.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
@@ -30,12 +31,12 @@ import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.util.Random
 
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
@@ -120,42 +121,30 @@ class SeichiAssist extends JavaPlugin() {
       Bukkit.shutdown()
     }
 
+    // ワールド内アイテムのマイグレーション処理を同期的に走らせる
     {
-      // TODO Replace this test with real migration system
-      import eu.timepit.refined.auto._
+      // TODO データベースを用いた実装に切り替える
+      val persistenceProvider: ItemMigrationPersistence.Provider[IO, WorldLevelData] = ???
 
-      def emptyPersistenceProvider[F[_]](implicit _fMonad: Monad[F]): ItemMigrationPersistence.Provider[F, Any] =
-        Resource.pure[F, ItemMigrationPersistence[F, Any]] {
-          new ItemMigrationPersistence[F, Any] {
-            override implicit val fMonad: Monad[F] = _fMonad
-
-            override def getCompletedVersions(t: Any): F[IndexedSeq[VersionNumber]] =
-              _fMonad.pure(IndexedSeq())
-
-            override def writeCompletedVersion(t: Any)(version: VersionNumber): F[Unit] =
-              _fMonad.unit
-          }
-        }
-
-      val testMigration = {
-        ItemMigrationSeq(IndexedSeq(
-          ItemMigration(
-            IndexedSeq(1, 0, 1),
-            s => {
-              s.setType(Material.DIAMOND_AXE)
-              s.setAmount(Random.between(1, 64))
-              s
-            }
-          )
-        ))
-      }
-
-      ItemMigrationConfiguration[IO, ItemMigrationTarget[IO]](
-        testMigration,
+      ItemMigrationConfiguration(
+        SeichiAssistItemMigrations.seq,
         SeichiAssistWorldLevelData.migrationTarget,
-        emptyPersistenceProvider
+        persistenceProvider
       ).run
     }.unsafeRunSync()
+
+    // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナ
+    val playerItemMigrationControllerListeners: List[Listener] = {
+      import PluginExecutionContexts.asyncShift
+
+      // TODO データベースを用いた実装に切り替える
+      val persistence: ItemMigrationPersistence[IO, UUID] = ???
+
+      val repository = new PlayerItemMigrationStateRepository(SeichiAssistItemMigrations.seq, persistence)
+      val controller = new PlayerItemMigrationController(repository)
+
+      List(repository, controller)
+    }
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
 
@@ -218,6 +207,7 @@ class SeichiAssist extends JavaPlugin() {
       new MenuHandler()
     )
       .concat(repositories)
+      .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)
       }
