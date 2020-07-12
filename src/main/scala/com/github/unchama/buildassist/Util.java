@@ -15,10 +15,6 @@ public final class Util {
     private Util() {
     }
 
-    public static String getName(final Player p) {
-        return p.getName().toLowerCase();
-    }
-
     //ワールドガードAPIを返す
     public static WorldGuardPlugin getWorldGuard() {
         final Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
