@@ -363,48 +363,33 @@ class PlayerData(
 
   //プレイヤーレベルを計算し、更新する。
   private def updatePlayerLevel(): Unit = {
-    //現在のランクを取得
-    var i: Int = level
-
     //既にレベル上限に達していたら終了
-    if (i >= LevelThresholds.levelExpThresholds.size) return
+    if (level >= LevelThresholds.levelExpThresholds.size) return
 
-    // TODO: 三枚におろして処す
-    val increasingRank = new Breaks
-    increasingRank.breakable {
+    val previousLevel = level
+    level = LevelThresholds.levelExpThresholds
+      .lastIndexWhere(threshold => threshold <= totalbreaknum) + 1
 
-      //ランクが上がらなくなるまで処理
-      while (LevelThresholds.levelExpThresholds(i) <= totalbreaknum && i + 1 <= LevelThresholds.levelExpThresholds.size) {
-        //レベルアップ時のメッセージ
-        player.sendMessage(s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv($i)→Lv(${i + 1})】")
+    for (l <- previousLevel until level) {
+      //レベルアップ時のメッセージ
+      player.sendMessage(s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv($l)→Lv(${l+1})】")
 
-        //レベルアップイベント着火
-        Bukkit.getPluginManager.callEvent(new SeichiLevelUpEvent(player, this, i + 1))
+      //レベルアップイベント着火
+      Bukkit.getPluginManager.callEvent(new SeichiLevelUpEvent(player, this, l+1))
 
-        //レベルアップ時の花火の打ち上げ
-        val loc = player.getLocation
-        Util.launchFireWorks(loc) // TODO: fix Util
-        val lvmessage = SeichiAssist.seichiAssistConfig.getLvMessage(i + 1)
-        if (!lvmessage.isEmpty) {
-          player.sendMessage(AQUA + lvmessage)
-        }
+      //レベルアップ時の花火の打ち上げ
+      Util.launchFireWorks(player.getLocation) // TODO: fix Util
 
-        i += 1
-
-        if (manaState.isLoaded) {
-          //マナ最大値の更新
-          manaState.onLevelUp(player, i)
-        }
-
-        //レベル上限に達したら終了
-        if (i >= LevelThresholds.levelExpThresholds.size) {
-          increasingRank.break()
-        }
+      val lvMessage = SeichiAssist.seichiAssistConfig.getLvMessage(l+1)
+      if (!lvMessage.isEmpty) {
+        player.sendMessage(AQUA + lvMessage)
       }
 
+      //マナ最大値の更新
+      if (manaState.isLoaded) {
+        manaState.onLevelUp(player, l+1)
+      }
     }
-
-    level = i
   }
 
   /**
