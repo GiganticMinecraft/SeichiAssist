@@ -137,6 +137,10 @@ public final class Config {
         return config.getString("server-id");
     }
 
+    public String chunkSearchCommandBase() {
+        return config.getString("chunk-search-command-base");
+    }
+
     //サブホーム最大数取得
     public int getSubHomeMax() {
         return Integer.parseInt(config.getString("subhomemax"));

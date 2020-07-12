@@ -7,8 +7,6 @@ import com.github.unchama.util.bukkit.WorldUtil
 import org.bukkit.World
 
 object ExternalServices {
-  // TODO inject this from config
-  val defaultCommand: String = "chunk-search-rs --protobuf --threads 12"
 
   def getChunkCoordinates(chunkSearchCommand: String)(world: World): IO[Seq[(Int, Int)]] =
   // 普通、この検索にはかなりの時間がかかるので要した時間をログに表示する
@@ -27,4 +25,5 @@ object ExternalServices {
           }
       result
     })(s"${world.getName}内のチャンクを検索しました。")
+
 }
