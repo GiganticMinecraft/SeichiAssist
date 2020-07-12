@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.util;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 
 public final class TypeConverter {
     // 不必要なインスタンス化を防ぐため封印
