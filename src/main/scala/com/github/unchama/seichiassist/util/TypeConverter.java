@@ -10,16 +10,6 @@ public final class TypeConverter {
 
     }
 
-    //String -> double
-    public static double toDouble(String s) {
-        return Double.parseDouble(s);
-    }
-
-    //String -> int
-    public static int toInt(String s) {
-        return Integer.parseInt(s);
-    }
-
     //double -> .1double
     public static double Decimal(double d) {
         BigDecimal bi = new BigDecimal(String.valueOf(d));
@@ -61,17 +51,11 @@ public final class TypeConverter {
      */
     public static boolean isParsableToInteger(final String string) {
         try {
-            toInt(string);
+            Integer.parseInt(string);
             return true;
         } catch (NumberFormatException e) {
             return false;
         }
     }
 
-    public @Nullable
-    static Integer toIntSafe(final String string) {
-        if (isParsableToInteger(string)) return toInt(string);
-
-        return null;
-    }
 }
