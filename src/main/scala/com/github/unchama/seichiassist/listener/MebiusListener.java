@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.util.collection.SetFactory;
 import de.tr7zw.itemnbtapi.NBTItem;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,10 +29,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -309,6 +315,21 @@ public class MebiusListener implements Listener {
         return mebius.getItemMeta().getLore().get(OWNER).replaceFirst(OWNERHEAD, "");
     }
 
+    // MebiusのOwnerのUUIDを取得
+    private static String getOwnerUUID(ItemStack mebius) {
+        String userName = mebius.getItemMeta().getLore().get(OWNER).replaceFirst(OWNERHEAD, "");
+        String url = "https://api.mojang.com/users/profiles/minecraft/" + userName;
+        try {
+            String uuidJson = IOUtils.toString(new URL(url));           
+            if (uuidJson.isEmpty()) return null;                       
+            JSONObject uuidObject = (JSONObject) JSONValue.parseWithException(uuidJson);
+            return uuidObject.get("id").toString();
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // MebiusLvアップ判定
     private static boolean isLevelUp(Player player) {
         int chk = new Random().nextInt(lvPer.get(getIl(player.getInventory().getHelmet()) - 1));
@@ -339,8 +360,8 @@ public class MebiusListener implements Listener {
             return;
         }
 
-        // 所有者が異なる場合…名前変更でもNG
-        if (!player.getName().toLowerCase().equals(getOwner(mebius))) {
+        // 所有者が異なる場合
+        if (!player.getUniqueId().toString().replace("-", "").equals(getOwnerUUID(mebius))) {
             return;
         }
 
