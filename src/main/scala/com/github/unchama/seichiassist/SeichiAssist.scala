@@ -8,7 +8,6 @@ import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.itemmigration._
-import com.github.unchama.itemmigration.target.WorldLevelData
 import com.github.unchama.itemmigration.target.player.{PlayerItemMigrationController, PlayerItemMigrationStateRepository}
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
@@ -137,7 +136,7 @@ class SeichiAssist extends JavaPlugin() {
     // ワールド内アイテムのマイグレーション処理を同期的に走らせる
     {
       // TODO データベースを用いた実装に切り替える
-      val persistenceProvider: ItemMigrationPersistence.Provider[IO, WorldLevelData] = ???
+      val persistenceProvider: ItemMigrationPersistence.Provider[IO, SeichiAssistWorldLevelData.type] = ???
 
       ItemMigrationConfiguration(
         SeichiAssistItemMigrations.seq,
