@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.infrastructure.migration.SeichiAssistPersistedItems
+import com.github.unchama.seichiassist.infrastructure.migration.persistenceproviders.{PersistedItemMigrationPersistence, PlayerItemMigrationPersistence, WorldLevelDataMigrationPersistence}
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistWorldLevelData
 import com.github.unchama.seichiassist.itemmigration.migrations.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
@@ -122,37 +123,28 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     // DB内アイテムのマイグレーション処理を同期的に走らせる
-    {
-      // TODO データベースを用いた実装に切り替える
-      val persistenceProvider: ItemMigrationPersistence.Provider[IO, SeichiAssistPersistedItems.type] = ???
-
-      ItemMigrationConfiguration(
-        SeichiAssistItemMigrations.seq,
-        SeichiAssistPersistedItems,
-        persistenceProvider
-      )
-    }
+    ItemMigrationConfiguration(
+      SeichiAssistItemMigrations.seq,
+      SeichiAssistPersistedItems,
+      PersistedItemMigrationPersistence.provider()
+    ).run.unsafeRunSync()
 
     // ワールド内アイテムのマイグレーション処理を同期的に走らせる
-    {
-      // TODO データベースを用いた実装に切り替える
-      val persistenceProvider: ItemMigrationPersistence.Provider[IO, SeichiAssistWorldLevelData.type] = ???
-
-      ItemMigrationConfiguration(
-        SeichiAssistItemMigrations.seq,
-        SeichiAssistWorldLevelData,
-        persistenceProvider
-      ).run
-    }.unsafeRunSync()
+    ItemMigrationConfiguration(
+      SeichiAssistItemMigrations.seq,
+      SeichiAssistWorldLevelData,
+      WorldLevelDataMigrationPersistence.provider()
+    ).run.unsafeRunSync()
 
     // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナ
     val playerItemMigrationControllerListeners: List[Listener] = {
       import PluginExecutionContexts.asyncShift
 
-      // TODO データベースを用いた実装に切り替える
-      val persistence: ItemMigrationPersistence[IO, UUID] = ???
+      val repository = new PlayerItemMigrationStateRepository(
+        SeichiAssistItemMigrations.seq,
+        PlayerItemMigrationPersistence.persistence()
+      )
 
-      val repository = new PlayerItemMigrationStateRepository(SeichiAssistItemMigrations.seq, persistence)
       val controller = new PlayerItemMigrationController(repository)
 
       List(repository, controller)
