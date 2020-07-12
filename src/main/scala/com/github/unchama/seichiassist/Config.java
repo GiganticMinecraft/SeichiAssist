@@ -37,67 +37,67 @@ public final class Config {
     }
 
     public double getMinuteMineSpeed() {
-        return TypeConverter.toDouble(config.getString("minutespeedamount"));
+        return Double.parseDouble(config.getString("minutespeedamount"));
     }
 
     public double getLoginPlayerMineSpeed() {
-        return TypeConverter.toDouble(config.getString("onlineplayersamount"));
+        return Double.parseDouble(config.getString("onlineplayersamount"));
     }
 
     public int getGachaPresentInterval() {
-        return TypeConverter.toInt(config.getString("presentinterval"));
+        return Integer.parseInt(config.getString("presentinterval"));
     }
 
     public int getDefaultMineAmount() {
-        return TypeConverter.toInt(config.getString("defaultmineamount"));
+        return Integer.parseInt(config.getString("defaultmineamount"));
     }
 
     public int getDualBreaklevel() {
-        return TypeConverter.toInt(config.getString("dualbreaklevel"));
+        return Integer.parseInt(config.getString("dualbreaklevel"));
     }
 
     public int getTrialBreaklevel() {
-        return TypeConverter.toInt(config.getString("trialbreaklevel"));
+        return Integer.parseInt(config.getString("trialbreaklevel"));
     }
 
     public int getExplosionlevel() {
-        return TypeConverter.toInt(config.getString("explosionlevel"));
+        return Integer.parseInt(config.getString("explosionlevel"));
     }
 
     public int getThunderStormlevel() {
-        return TypeConverter.toInt(config.getString("thunderstormlevel"));
+        return Integer.parseInt(config.getString("thunderstormlevel"));
     }
 
     public int getBlizzardlevel() {
-        return TypeConverter.toInt(config.getString("blizzardlevel"));
+        return Integer.parseInt(config.getString("blizzardlevel"));
     }
 
     public int getMeteolevel() {
-        return TypeConverter.toInt(config.getString("meteolevel"));
+        return Integer.parseInt(config.getString("meteolevel"));
     }
 
     public int getGravitylevel() {
-        return TypeConverter.toInt(config.getString("gravitylevel"));
+        return Integer.parseInt(config.getString("gravitylevel"));
     }
 
     public int getMultipleIDBlockBreaklevel() {
-        return TypeConverter.toInt(config.getString("multipleidblockbreaklevel"));
+        return Integer.parseInt(config.getString("multipleidblockbreaklevel"));
     }
 
     public double getDropExplevel(final int i) {
-        return TypeConverter.toDouble(config.getString("dropexplevel" + i, ""));
+        return Double.parseDouble(config.getString("dropexplevel" + i, ""));
     }
 
     public int getPassivePortalInventorylevel() {
-        return TypeConverter.toInt(config.getString("passiveportalinventorylevel"));
+        return Integer.parseInt(config.getString("passiveportalinventorylevel"));
     }
 
     public int getDokodemoEnderlevel() {
-        return TypeConverter.toInt(config.getString("dokodemoenderlevel"));
+        return Integer.parseInt(config.getString("dokodemoenderlevel"));
     }
 
     public int getMineStacklevel(final int i) {
-        return TypeConverter.toInt(config.getString("minestacklevel" + i, ""));
+        return Integer.parseInt(config.getString("minestacklevel" + i, ""));
     }
 
     public String getDB() {
@@ -131,24 +131,24 @@ public final class Config {
 
     //サーバー番号取得
     public int getServerNum() {
-        return TypeConverter.toInt(config.getString("servernum"));
+        return Integer.parseInt(config.getString("servernum"));
     }
 
     //サブホーム最大数取得
     public int getSubHomeMax() {
-        return TypeConverter.toInt(config.getString("subhomemax"));
+        return Integer.parseInt(config.getString("subhomemax"));
     }
 
     public int getDebugMode() {
-        return TypeConverter.toInt(config.getString("debugmode"));
+        return Integer.parseInt(config.getString("debugmode"));
     }
 
     public int getMebiusDebug() {
-        return TypeConverter.toInt(config.getString("mebiusdebug"));
+        return Integer.parseInt(config.getString("mebiusdebug"));
     }
 
     public int rateGiganticToRingo() {
-        return TypeConverter.toInt(config.getString("rategigantictoringo"));
+        return Integer.parseInt(config.getString("rategigantictoringo"));
     }
 
     /**
@@ -180,11 +180,11 @@ public final class Config {
      * @return
      */
     public int getGridLimitPerWorld(final String world) {
-        return TypeConverter.toInt(config.getString("GridLimitPerWorld." + world, config.getString("GridLimitDefault")));
+        return Integer.parseInt(config.getString("GridLimitPerWorld." + world, config.getString("GridLimitDefault")));
     }
 
     public int getTemplateKeepAmount() {
-        return TypeConverter.toInt(config.getString("GridTemplateKeepAmount"));
+        return Integer.parseInt(config.getString("GridTemplateKeepAmount"));
     }
 
     public int getRoadY() {
