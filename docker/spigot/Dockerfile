@@ -10,12 +10,14 @@ FROM openjdk:8-jdk as runner
 
 # /spigot-filesをコンテナが提供するファイル群とする
 
+COPY --from=chunk-search-provider /build/chunk-search-rs /usr/local/bin/chunk-search-rs
 COPY --from=spigot-builder /artifact/ /spigot-files/
-COPY docker/spigot/serverfiles/ /spigot-files/
 
+COPY docker/spigot/serverfiles/ /spigot-files/
 COPY localDependencies/ /spigot-files/plugins/
 COPY target/build /spigot-files/plugins/
 
-CMD bash /spigot-files/start-server.sh
+RUN apt update && apt install nkf
+RUN nkf -Lu --overwrite /spigot-files/start-server.sh
 
-COPY --from=chunk-search-provider /build/chunk-search-rs /usr/local/bin/chunk-search-rs
+CMD bash /spigot-files/start-server.sh
