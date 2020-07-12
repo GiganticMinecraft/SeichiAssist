@@ -15,16 +15,8 @@ public final class Util {
     private Util() {
     }
 
-    public static int toInt(final String s) {
-        return Integer.parseInt(s);
-    }
-
     public static String getName(final Player p) {
         return p.getName().toLowerCase();
-    }
-
-    public static String getName(final String name) {
-        return name.toLowerCase();
     }
 
     //ワールドガードAPIを返す
