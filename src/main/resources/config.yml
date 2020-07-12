@@ -11,6 +11,7 @@ pw: ''
 # サーバ識別設定
 # 複数サーバ構成にする場合はこの値をサーバごとに変更します
 servernum: '1'
+server-id: ''
 
 # 色々な設定、説明は割愛
 defaultmineamount: '3'

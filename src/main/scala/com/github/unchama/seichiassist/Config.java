@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -132,6 +131,10 @@ public final class Config {
     //サーバー番号取得
     public int getServerNum() {
         return Integer.parseInt(config.getString("servernum"));
+    }
+
+    public String getServerId() {
+        return config.getString("server-id");
     }
 
     //サブホーム最大数取得
