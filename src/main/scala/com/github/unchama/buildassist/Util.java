@@ -35,14 +35,13 @@ public final class Util {
      */
     public static boolean isSkillEnable(final Player player) {
         //デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-        String worldname = SeichiAssist.SEICHIWORLDNAME();
         if (SeichiAssist.DEBUG()) {
-            worldname = SeichiAssist.DEBUGWORLDNAME();
+            return true;
         }
         //プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)または各種TTワールドにいる場合
         // TODO: ManagedWorldへ移行
         final String name = player.getWorld().getName();
-        return name.toLowerCase().startsWith(worldname)
+        return name.toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())
                 || name.equalsIgnoreCase("world")
                 || name.equalsIgnoreCase("world_2")
                 || name.equalsIgnoreCase("world_nether")
