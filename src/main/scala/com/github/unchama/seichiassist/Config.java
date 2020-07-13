@@ -1,9 +1,7 @@
 package com.github.unchama.seichiassist;
 
-import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 public final class Config {
     private static FileConfiguration config;
