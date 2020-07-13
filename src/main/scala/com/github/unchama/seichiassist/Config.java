@@ -21,41 +21,47 @@ public final class Config {
         loadConfig();
     }
 
-    // NOTE: config.getIntはnull値の場合0を返す
+    // NOTE:
+    //   config.getInt/config.getDoubleはnull値の場合0を返す
+    //   getIntFailSafe/getDoubleFailSafeはNumberFormatExceptionを投げる
     private static int getIntFailSafe(String path) {
         return Integer.parseInt(config.getString(path));
     }
 
+    private static double getDoubleFailSafe(String path) {
+        return Double.parseDouble(config.getString(path));
+    }
+
     public double getMinuteMineSpeed() {
-        return Double.parseDouble(config.getString("minutespeedamount"));
+        return getDoubleFailSafe("minutespeedamount");
     }
 
     public double getLoginPlayerMineSpeed() {
-        return Double.parseDouble(config.getString("onlineplayersamount"));
+        return getDoubleFailSafe("onlineplayersamount");
     }
 
     public int getGachaPresentInterval() {
-        return getIntFailSafe("presentinterval"));
+        return getIntFailSafe("presentinterval");
     }
 
     public int getDualBreaklevel() {
-        return getIntFailSafe("dualbreaklevel"));
+        return getIntFailSafe("dualbreaklevel");
     }
 
     public int getMultipleIDBlockBreaklevel() {
-        return getIntFailSafe("multipleidblockbreaklevel"));
+        return getIntFailSafe("multipleidblockbreaklevel");
     }
 
     public double getDropExplevel(final int i) {
-        return Double.parseDouble(config.getString("dropexplevel" + i, ""));
+        return getDoubleFailSafe("dropexplevel" + i);
     }
 
     public int getPassivePortalInventorylevel() {
-        return getIntFailSafe("passiveportalinventorylevel"));
+        return getIntFailSafe("passiveportalinventorylevel");
     }
 
     public int getDokodemoEnderlevel() {
-        return getIntFailSafe("dokodemoenderlevel"));
+        return getIntFailSafe("dokodemoenderlevel");
     }
 
     public int getMineStacklevel(final int i) {
