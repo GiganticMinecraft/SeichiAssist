@@ -112,17 +112,6 @@ public final class Config {
 
     /**
      * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
-     * @deprecated 判定の対象はWorldなので意味論的におかしい
-     * @param player
-     * @return 許可されているならtrue、許可されていないならfalse
-     */
-    @Deprecated
-    public boolean isGridProtectionEnabled(final Player player) {
-        return isGridProtectionEnabled(player.getWorld());
-    }
-
-    /**
-     * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
      * @param world 対象のワールド
      * @return 許可されているならtrue、許可されていないならfalse
      */
