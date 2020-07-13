@@ -23,6 +23,11 @@ public final class Config {
         loadConfig();
     }
 
+    // NOTE: config.getIntはnull値の場合0を返す
+    private static int getIntFailSafe(String path) {
+        return Integer.parseInt(config.getString(path));
+    }
+
     public double getMinuteMineSpeed() {
         return Double.parseDouble(config.getString("minutespeedamount"));
     }
@@ -32,15 +37,15 @@ public final class Config {
     }
 
     public int getGachaPresentInterval() {
-        return Integer.parseInt(config.getString("presentinterval"));
+        return getIntFailSafe("presentinterval"));
     }
 
     public int getDualBreaklevel() {
-        return Integer.parseInt(config.getString("dualbreaklevel"));
+        return getIntFailSafe("dualbreaklevel"));
     }
 
     public int getMultipleIDBlockBreaklevel() {
-        return Integer.parseInt(config.getString("multipleidblockbreaklevel"));
+        return getIntFailSafe("multipleidblockbreaklevel"));
     }
 
     public double getDropExplevel(final int i) {
@@ -48,15 +53,15 @@ public final class Config {
     }
 
     public int getPassivePortalInventorylevel() {
-        return Integer.parseInt(config.getString("passiveportalinventorylevel"));
+        return getIntFailSafe("passiveportalinventorylevel"));
     }
 
     public int getDokodemoEnderlevel() {
-        return Integer.parseInt(config.getString("dokodemoenderlevel"));
+        return getIntFailSafe("dokodemoenderlevel"));
     }
 
     public int getMineStacklevel(final int i) {
-        return Integer.parseInt(config.getString("minestacklevel" + i, ""));
+        return getIntFailSafe("minestacklevel" + i);
     }
 
     public String getDB() {
@@ -90,24 +95,24 @@ public final class Config {
 
     //サーバー番号取得
     public int getServerNum() {
-        return Integer.parseInt(config.getString("servernum"));
+        return getIntFailSafe("servernum");
     }
 
     //サブホーム最大数取得
     public int getSubHomeMax() {
-        return Integer.parseInt(config.getString("subhomemax"));
+        return getIntFailSafe("subhomemax");
     }
 
     public int getDebugMode() {
-        return Integer.parseInt(config.getString("debugmode"));
+        return getIntFailSafe("debugmode");
     }
 
     public int getMebiusDebug() {
-        return Integer.parseInt(config.getString("mebiusdebug"));
+        return getIntFailSafe("mebiusdebug");
     }
 
     public int rateGiganticToRingo() {
-        return Integer.parseInt(config.getString("rategigantictoringo"));
+        return getIntFailSafe("rategigantictoringo");
     }
 
     /**
@@ -132,31 +137,31 @@ public final class Config {
     }
 
     public int getTemplateKeepAmount() {
-        return Integer.parseInt(config.getString("GridTemplateKeepAmount"));
+        return getIntFailSafe("GridTemplateKeepAmount");
     }
 
     public int getRoadY() {
-        return config.getInt("road_Y");
+        return getIntFailSafe("road_Y");
     }
 
     public int getRoadLength() {
-        return config.getInt("road_length");
+        return getIntFailSafe("road_length");
     }
 
     public int getSpaceHeight() {
-        return config.getInt("space_height");
+        return getIntFailSafe("space_height");
     }
 
     public int getRoadBlockID() {
-        return config.getInt("road_blockid");
+        return getIntFailSafe("road_blockid");
     }
 
     public int getRoadBlockDamage() {
-        return config.getInt("road_blockdamage");
+        return getIntFailSafe("road_blockdamage");
     }
 
     public int getContributeAddedMana() {
-        return config.getInt("contribute_added_mana");
+        return getIntFailSafe("contribute_added_mana");
     }
 
     public String getLimitedLoginEventStart() {
@@ -167,18 +172,14 @@ public final class Config {
         return config.getString("LimitedLoginEvent.EventEnd");
     }
 
+    // getIntのnull値を0にする仕様を使っている
     public int getLimitedLoginEventItem(final int i) {
-        return Integer.parseInt(
-            config.getString("LimitedLoginEvent.DAY" + i + "_Item", "0")
-        );
+        return config.getInt("LimitedLoginEvent.DAY" + i + "_Item");
     }
 
     public int getLimitedLoginEventAmount(final int i) {
-        return Integer.parseInt(
-            config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "0")
-        );
+        return config.getInt("LimitedLoginEvent.DAY" + i + "_Amount");
     }
-
 
     public String getGivingNewYearSobaDay() {
         return config.getString("NewYearEvent.GivingNewYearSobaDay");
@@ -197,7 +198,7 @@ public final class Config {
     }
 
     public int getNewYearDropProbability() {
-        return config.getInt("NewYearEvent.NewYearBagDropProbability");
+        return getIntFailSafe("NewYearEvent.NewYearBagDropProbability");
     }
 
     public String getNewYear() {
@@ -213,11 +214,11 @@ public final class Config {
     }
 
     public int getWorldSize() {
-        return config.getInt("world_size");
+        return getIntFailSafe("world_size");
     }
 
     public int getGiganticFeverMinutes() {
-        return config.getInt("gigantic_fever_minutes");
+        return getIntFailSafe("gigantic_fever_minutes");
     }
 
     public String getGiganticFeverDisplayTime() {
@@ -226,7 +227,7 @@ public final class Config {
     }
 
     public int getGiganticBerserkLimit() {
-        return config.getInt("GBLimit");
+        return getIntFailSafe("GBLimit");
     }
 
     /**
