@@ -244,12 +244,8 @@ public final class Config {
     }
 
     public String getGiganticFeverDisplayTime() {
-        final int minute = getGiganticFeverMinutes();
-
-        final int hours = minute / 60;
-        final int minutes = minute - 60 * hours;
-
-        return hours + "時間" + minutes + "分";
+        final int totalMinutes = getGiganticFeverMinutes();
+        return (totalMinutes / 60) + "時間" + (totalMinutes % 60) + "分";
     }
 
     public int getGiganticBerserkLimit() {
