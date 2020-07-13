@@ -22,10 +22,6 @@ public final class Config {
         config = getConfig();
     }
 
-    public void saveConfig() {
-        plugin.saveConfig();
-    }
-
     //config.ymlがない時にDefaultのファイルを生成
     private void saveDefaultConfig() {
         plugin.saveDefaultConfig();
