@@ -10,7 +10,8 @@ public final class Config {
     private final SeichiAssist plugin = SeichiAssist.instance();
 
     Config() {
-        saveDefaultConfig();
+        //config.ymlがない時にDefaultのファイルを生成
+        plugin.saveDefaultConfig();
     }
 
     public void loadConfig() {
@@ -20,11 +21,6 @@ public final class Config {
     public void reloadConfig() {
         plugin.reloadConfig();
         loadConfig();
-    }
-
-    //config.ymlがない時にDefaultのファイルを生成
-    private void saveDefaultConfig() {
-        plugin.saveDefaultConfig();
     }
 
     public double getMinuteMineSpeed() {
