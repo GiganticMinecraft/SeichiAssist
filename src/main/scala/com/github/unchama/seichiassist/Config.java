@@ -44,36 +44,8 @@ public final class Config {
         return Integer.parseInt(config.getString("presentinterval"));
     }
 
-    public int getDefaultMineAmount() {
-        return Integer.parseInt(config.getString("defaultmineamount"));
-    }
-
     public int getDualBreaklevel() {
         return Integer.parseInt(config.getString("dualbreaklevel"));
-    }
-
-    public int getTrialBreaklevel() {
-        return Integer.parseInt(config.getString("trialbreaklevel"));
-    }
-
-    public int getExplosionlevel() {
-        return Integer.parseInt(config.getString("explosionlevel"));
-    }
-
-    public int getThunderStormlevel() {
-        return Integer.parseInt(config.getString("thunderstormlevel"));
-    }
-
-    public int getBlizzardlevel() {
-        return Integer.parseInt(config.getString("blizzardlevel"));
-    }
-
-    public int getMeteolevel() {
-        return Integer.parseInt(config.getString("meteolevel"));
-    }
-
-    public int getGravitylevel() {
-        return Integer.parseInt(config.getString("gravitylevel"));
     }
 
     public int getMultipleIDBlockBreaklevel() {
