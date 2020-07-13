@@ -80,10 +80,12 @@ public final class Config {
 
     public String getURL() {
         String url = "jdbc:mysql://";
+
         url += config.getString("host");
-        if (!config.getString("port").isEmpty()) {
-            url += ":" + config.getString("port");
-        }
+
+        String port = config.getString("port", "");
+        url += port.isEmpty() ? "" : ":" + port;
+
         return url;
     }
 
