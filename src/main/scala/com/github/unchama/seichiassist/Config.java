@@ -14,22 +14,17 @@ public final class Config {
     }
 
     public void loadConfig() {
-        config = getConfig();
+        config = plugin.getConfig();
     }
 
     public void reloadConfig() {
         plugin.reloadConfig();
-        config = getConfig();
+        loadConfig();
     }
 
     //config.ymlがない時にDefaultのファイルを生成
     private void saveDefaultConfig() {
         plugin.saveDefaultConfig();
-    }
-
-    //config.ymlファイルからの読み込み
-    private FileConfiguration getConfig() {
-        return plugin.getConfig();
     }
 
     public double getMinuteMineSpeed() {
