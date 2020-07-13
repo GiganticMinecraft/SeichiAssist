@@ -2,33 +2,30 @@ package com.github.unchama.seichiassist;
 
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Config {
-    private static FileConfiguration config;
-    private final SeichiAssist plugin = SeichiAssist.instance();
+    private final FileConfiguration config;
 
-    Config() {
-        //config.ymlがない時にDefaultのファイルを生成
+    private Config(FileConfiguration config) {
+        this.config = config;
+    }
+
+    public static Config loadFrom(JavaPlugin plugin) {
+        // config.ymlがない時にDefaultのファイルを生成
         plugin.saveDefaultConfig();
-    }
-
-    public void loadConfig() {
-        config = plugin.getConfig();
-    }
-
-    public void reloadConfig() {
         plugin.reloadConfig();
-        loadConfig();
+        return new Config(plugin.getConfig());
     }
 
     // NOTE:
     //   config.getInt/config.getDoubleはnull値の場合0を返す
     //   getIntFailSafe/getDoubleFailSafeはNumberFormatExceptionを投げる
-    private static int getIntFailSafe(String path) {
+    private int getIntFailSafe(String path) {
         return Integer.parseInt(config.getString(path));
     }
 
-    private static double getDoubleFailSafe(String path) {
+    private double getDoubleFailSafe(String path) {
         return Double.parseDouble(config.getString(path));
     }
 
