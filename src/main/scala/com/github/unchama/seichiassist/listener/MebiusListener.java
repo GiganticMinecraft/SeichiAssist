@@ -341,7 +341,7 @@ public class MebiusListener implements Listener {
         String mebiusOwnerUUID = nbtItem.getString("ownerUUID");
 
         // 所有者が異なる場合
-        if (!player.getName().equals(getOwner(mebius)) && !mebiusOwnerUUID.equals(player.getUniqueId().toString())) {
+        if (!mebiusOwnerUUID.equals(player.getUniqueId().toString())) {
             return;
         }
 
