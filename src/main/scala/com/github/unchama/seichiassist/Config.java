@@ -167,24 +167,16 @@ public final class Config {
         return config.getString("LimitedLoginEvent.EventEnd");
     }
 
-    public String getLimitedLoginEventItem(final int i) {
-        final String ret;
-        if (config.getString("LimitedLoginEvent.DAY" + i + "_Item", "").isEmpty()) {
-            ret = "0";
-        } else {
-            ret = config.getString("LimitedLoginEvent.DAY" + i + "_Item", "");
-        }
-        return ret;
+    public int getLimitedLoginEventItem(final int i) {
+        return Integer.parseInt(
+            config.getString("LimitedLoginEvent.DAY" + i + "_Item", "0")
+        );
     }
 
-    public String getLimitedLoginEventAmount(final int i) {
-        final String ret;
-        if (config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "").isEmpty()) {
-            ret = "0";
-        } else {
-            ret = config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "");
-        }
-        return ret;
+    public int getLimitedLoginEventAmount(final int i) {
+        return Integer.parseInt(
+            config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "0")
+        );
     }
 
 
