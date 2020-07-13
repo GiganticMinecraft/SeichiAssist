@@ -352,12 +352,7 @@ class PlayerClickListener extends Listener {
 
     if (player.getInventory.getItemInMainHand.getType != Material.STICK) return
 
-    //actionがPHYSICALだった場合は感圧版を踏んだかどうかの判定
-    if (action == Action.PHYSICAL) {
-      val pressurePlates: List[Material] = List(Material.STONE_PLATE, Material.WOOD_PLATE, Material.GOLD_PLATE, Material.IRON_PLATE)
-      event.setCancelled(!pressurePlates.contains(event.getClickedBlock.getType))
-    }
-    else event.setCancelled(true)
+    event.setCancelled(true)
 
     // 右クリックの処理ではない
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
