@@ -12,6 +12,9 @@ import com.github.unchama.seichiassist.PackagePrivate;
 class BuildBlock {
     private BuildBlock() {}
 
+    // TODO:
+    //  sum (last-valueとも言う)。
+    //  既にこれによって壊れたデータがありそう。
     @PackagePrivate
     static BigDecimal calcBuildBlock(final Player player) {
         BigDecimal sum = BigDecimal.ZERO;
