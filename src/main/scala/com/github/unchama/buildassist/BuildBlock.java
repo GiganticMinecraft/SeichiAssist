@@ -10,16 +10,7 @@ import com.github.unchama.seichiassist.PackagePrivate;
 
 @PackagePrivate
 class BuildBlock {
-    private final int after;
-    private final int before;
-    private int increase;
-    
-    @PackagePrivate
-    BuildBlock() {
-        this.after = 0;
-        this.before = 0;
-        this.increase = 0;
-    }
+    private BuildBlock() {}
 
     @PackagePrivate
     static BigDecimal calcBuildBlock(final Player player) {
@@ -28,9 +19,5 @@ class BuildBlock {
             sum = new BigDecimal(player.getStatistic(Statistic.USE_ITEM, m));
         }
         return sum;
-    }
-
-    public void setIncrease() {
-        this.increase = (this.after - this.before);
     }
 }
