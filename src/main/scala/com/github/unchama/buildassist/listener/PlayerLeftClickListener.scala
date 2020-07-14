@@ -2,7 +2,7 @@ package com.github.unchama.buildassist.listener
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist.CommonSoundEffects
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import org.bukkit.Material
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
