@@ -1,6 +1,6 @@
 package com.github.unchama.itemmigration.util
 
-import com.github.unchama.itemmigration.domain.ItemMigration.ItemStackConversion
+import com.github.unchama.itemmigration.domain.ItemStackConversion
 import org.bukkit.Material
 import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.inventory.{Inventory, InventoryHolder}

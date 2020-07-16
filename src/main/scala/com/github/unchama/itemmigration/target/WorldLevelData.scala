@@ -1,8 +1,7 @@
 package com.github.unchama.itemmigration.target
 
 import cats.effect.IO
-import com.github.unchama.itemmigration.domain.ItemMigration.ItemStackConversion
-import com.github.unchama.itemmigration.domain.ItemMigrationTarget
+import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import org.bukkit.World
 import org.bukkit.block.Container

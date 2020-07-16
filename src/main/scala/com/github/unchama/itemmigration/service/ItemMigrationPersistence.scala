@@ -2,8 +2,7 @@ package com.github.unchama.itemmigration.service
 
 import cats.Monad
 import cats.effect.Resource
-import com.github.unchama.itemmigration.domain.ItemMigration
-import com.github.unchama.itemmigration.domain.ItemMigration.VersionNumber
+import com.github.unchama.itemmigration.domain.{ItemMigration, VersionNumber}
 
 trait ItemMigrationPersistence[F[_], -T] {
   implicit val fMonad: Monad[F]
