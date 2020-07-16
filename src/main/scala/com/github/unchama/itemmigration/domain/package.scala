@@ -9,7 +9,5 @@ package object domain {
 
   type ItemMigrationVersionNumber = IndexedSeq[ItemMigrationVersionComponent]
 
-  type ItemMigrationSequence = IndexedSeq[ItemMigration]
-
   type ItemStackConversion = ItemStack => ItemStack
 }
