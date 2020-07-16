@@ -5,6 +5,9 @@ import com.github.unchama.itemmigration.controllers.player.{PlayerItemMigrationC
 import com.github.unchama.itemmigration.domain.{ItemMigrations, VersionedItemMigrationExecutor}
 import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 
+/**
+ * プレーヤーのインベントリのマイグレーションを行うために必要なリスナー等のオブジェクトを提供するオブジェクトのクラス。
+ */
 class PlayerItemMigrationEntryPoints(migrations: ItemMigrations,
                                      executor: VersionedItemMigrationExecutor[IO, PlayerInventoriesData])
                                     (implicit concurrentIO: Concurrent[IO]) {
