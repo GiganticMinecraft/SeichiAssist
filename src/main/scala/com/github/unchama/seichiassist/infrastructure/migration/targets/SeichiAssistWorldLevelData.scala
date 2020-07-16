@@ -1,14 +1,12 @@
-package com.github.unchama.seichiassist.itemmigration
+package com.github.unchama.seichiassist.infrastructure.migration.targets
 
 import cats.effect.IO
-import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.targets.WorldLevelData
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.external.{ExternalPlugins, ExternalServices}
 import org.bukkit.World
 
-object SeichiAssistWorldLevelData extends ItemMigrationTarget[IO] {
-
+private object DelegatedImpls {
   val getWorlds: IO[IndexedSeq[World]] = {
     val multiverseCore = ExternalPlugins.getMultiverseCore
 
@@ -23,7 +21,6 @@ object SeichiAssistWorldLevelData extends ItemMigrationTarget[IO] {
 
   val getWorldChunkCoordinates: World => IO[Seq[(Int, Int)]] =
     ExternalServices.getChunkCoordinates(SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
-
-  override def runMigration(conversion: ItemStackConversion): IO[Unit] =
-    WorldLevelData(getWorlds, getWorldChunkCoordinates).runMigration(conversion)
 }
+
+object SeichiAssistWorldLevelData extends WorldLevelData(DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates)

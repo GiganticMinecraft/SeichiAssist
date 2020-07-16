@@ -8,7 +8,8 @@ import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.itemmigration._
-import com.github.unchama.itemmigration.controllers.player.{PlayerItemMigrationController, PlayerItemMigrationStateRepository}
+import com.github.unchama.itemmigration.domain.{ItemMigrations, VersionedItemMigrationExecutor}
+import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -19,9 +20,8 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.infrastructure.migration.SeichiAssistPersistedItems
-import com.github.unchama.seichiassist.infrastructure.migration.persistenceproviders.{PersistedItemMigrationPersistence, PlayerItemMigrationPersistence, WorldLevelDataMigrationPersistence}
-import com.github.unchama.seichiassist.itemmigration.SeichiAssistWorldLevelData
+import com.github.unchama.seichiassist.infrastructure.migration.executors.{PersistedItemsMigrationExecutor, PlayerItemsMigrationExecutor, WorldLevelItemsMigrationExecutor}
+import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
 import com.github.unchama.seichiassist.itemmigration.migrations.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
@@ -122,32 +122,20 @@ class SeichiAssist extends JavaPlugin() {
       Bukkit.shutdown()
     }
 
+    val migrations: ItemMigrations = SeichiAssistItemMigrations.seq
+
     // DB内アイテムのマイグレーション処理を同期的に走らせる
-    ItemMigrationConfiguration(
-      SeichiAssistItemMigrations.seq,
-      SeichiAssistPersistedItems,
-      PersistedItemMigrationPersistence.provider()
-    ).run.unsafeRunSync()
+    new PersistedItemsMigrationExecutor().runMigration(migrations)(SeichiAssistPersistedItems).unsafeRunSync()
 
     // ワールド内アイテムのマイグレーション処理を同期的に走らせる
-    ItemMigrationConfiguration(
-      SeichiAssistItemMigrations.seq,
-      SeichiAssistWorldLevelData,
-      WorldLevelDataMigrationPersistence.provider()
-    ).run.unsafeRunSync()
+    new WorldLevelItemsMigrationExecutor().runMigration(migrations)(SeichiAssistWorldLevelData).unsafeRunSync()
 
     // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナ
-    val playerItemMigrationControllerListeners: List[Listener] = {
+    val playerItemMigrationControllerListeners: Seq[Listener] = {
       import PluginExecutionContexts.asyncShift
+      val executor: VersionedItemMigrationExecutor[IO, PlayerInventoriesData] = new PlayerItemsMigrationExecutor()
 
-      val repository = new PlayerItemMigrationStateRepository(
-        SeichiAssistItemMigrations.seq,
-        PlayerItemMigrationPersistence.persistence()
-      )
-
-      val controller = new PlayerItemMigrationController(repository)
-
-      List(repository, controller)
+      new PlayerItemMigrationEntryPoints(migrations, executor).listenersToBeRegistered
     }
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()

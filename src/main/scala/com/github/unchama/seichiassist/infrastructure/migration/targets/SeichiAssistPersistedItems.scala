@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.infrastructure.migration
+package com.github.unchama.seichiassist.infrastructure.migration.targets
 
 import cats.effect.IO
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}

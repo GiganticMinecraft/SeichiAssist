@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 /**
  * アイテムマイグレーションを行う対象としてのプレーヤーインベントリを表すオブジェクト
  */
-class PlayerInventoriesData(player: Player) extends ItemMigrationTarget[IO] {
+case class PlayerInventoriesData(player: Player) extends ItemMigrationTarget[IO] {
 
   override def runMigration(conversion: ItemStackConversion): IO[Unit] = IO {
     MigrationHelper.convertEachStackIn(player.getInventory)(conversion)

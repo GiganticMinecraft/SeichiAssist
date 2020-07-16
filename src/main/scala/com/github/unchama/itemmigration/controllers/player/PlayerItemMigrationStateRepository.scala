@@ -7,6 +7,7 @@ import cats.effect.{Concurrent, IO, SyncIO}
 import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.itemmigration.controllers.player.PlayerItemMigrationStateRepository.PlayerItemMigrationFiber
 import com.github.unchama.itemmigration.domain.{ItemMigrations, VersionedItemMigrationExecutor}
+import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 import com.github.unchama.playerdatarepository.PlayerDataOnMemoryRepository
 import org.bukkit.entity.Player
 
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player
  * 各プレーヤーのマイグレーション処理の状態を保持するオブジェクトのクラス。
  */
 class PlayerItemMigrationStateRepository(migrations: ItemMigrations,
-                                         executor: VersionedItemMigrationExecutor[IO, Player])
+                                         executor: VersionedItemMigrationExecutor[IO, PlayerInventoriesData])
                                         (implicit concurrentIO: Concurrent[IO])
   extends PlayerDataOnMemoryRepository[PlayerItemMigrationFiber] {
 
@@ -26,7 +27,7 @@ class PlayerItemMigrationStateRepository(migrations: ItemMigrations,
           TryableFiber.start {
             for {
               player <- playerPromise.get
-              _ <- executor.runMigration(migrations)(player)
+              _ <- executor.runMigration(migrations)(PlayerInventoriesData(player))
             } yield ()
           }.unsafeRunSync()
         }
