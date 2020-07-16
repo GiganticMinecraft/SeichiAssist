@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.itemmigration.migrations
+package com.github.unchama.seichiassist.itemmigration
 
 import com.github.unchama.itemmigration.domain.ItemMigrations
 

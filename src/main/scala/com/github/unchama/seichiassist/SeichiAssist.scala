@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, Ran
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.infrastructure.migration.executors.{PersistedItemsMigrationExecutor, PlayerItemsMigrationExecutor, WorldLevelItemsMigrationExecutor}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
-import com.github.unchama.seichiassist.itemmigration.migrations.SeichiAssistItemMigrations
+import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
