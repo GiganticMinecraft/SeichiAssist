@@ -2,7 +2,7 @@ package com.github.unchama.itemmigration.service
 
 import cats.Monad
 import cats.effect.Resource
-import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
+import com.github.unchama.itemmigration.domain.{ItemMigrationSeq, ItemMigrationVersionNumber}
 
 trait ItemMigrationPersistence[F[_], -T] {
   implicit val fMonad: Monad[F]
@@ -20,13 +20,13 @@ trait ItemMigrationPersistence[F[_], -T] {
    * 永続化された結果が1.0.0, 1.1.0であった場合、即ち永続化されていたものに欠番があった場合は、
    * このメソッドの結果はその欠番(ここでは1.0.1)を含む結果を返し、エラーにはしない。
    */
-  def filterRequiredMigrations(target: T)(migrations: IndexedSeq[ItemMigration]): F[IndexedSeq[ItemMigration]] = {
+  def filterRequiredMigrations(target: T)(migrations: ItemMigrationSeq): F[ItemMigrationSeq] = {
     import cats.implicits._
 
     for {
       completedVersions <- getCompletedVersions(target)
       completedVersionSet = completedVersions.toSet
-    } yield migrations.filter(m => !completedVersionSet.contains(m.version))
+    } yield migrations.yetToBeApplied(completedVersionSet)
   }
 
   /**
@@ -34,10 +34,10 @@ trait ItemMigrationPersistence[F[_], -T] {
    */
   def writeCompletedVersion(target: T)(version: ItemMigrationVersionNumber): F[Unit]
 
-  def writeCompletedMigrations(target: T)(migrations: IndexedSeq[ItemMigration]): F[Unit] = {
+  def writeCompletedMigrations(target: T)(migrations: ItemMigrationSeq): F[Unit] = {
     import cats.implicits._
 
-    migrations.map(_.version).toList.traverse(writeCompletedVersion(target)).as(())
+    migrations.migrations.map(_.version).toList.traverse(writeCompletedVersion(target)).as(())
   }
 }
 

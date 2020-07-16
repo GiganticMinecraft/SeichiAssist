@@ -20,13 +20,14 @@ class PlayerItemMigrationStateRepository(migrationSeq: ItemMigrationSeq,
 
   override val loadData: (String, UUID) => SyncIO[Either[Option[String], PlayerItemMigrationFiber]] =
     (_, uuid) => {
-      val sortedMigrationSeq = migrationSeq.sortedMigrations
+      val sortedMigrationSeq = migrationSeq.sorted
 
       for {
         filteredMigrationSequence <- SyncIO {
           persistence.filterRequiredMigrations(uuid)(sortedMigrationSeq).unsafeRunSync()
         }
-        unifiedConversion = ItemMigration.toSingleFunction(filteredMigrationSequence)
+
+        unifiedConversion = filteredMigrationSequence.toSingleConversion
 
         playerPromise <- Deferred.in[SyncIO, IO, Player]
         migrationProcess: IO[Unit] =

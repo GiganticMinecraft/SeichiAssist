@@ -10,13 +10,13 @@ case class ItemMigrationConfiguration[F[_], T <: ItemMigrationTarget[F]](migrati
                                                                         (implicit F: Bracket[F, Throwable]) {
 
   def run: F[Unit] = {
-    val sortedMigrationSeq = migrationSeq.sortedMigrations
+    val sortedMigrationSeq = migrationSeq.sorted
 
     import cats.implicits._
     persistenceProvider.use { persistence =>
       for {
         requiredMigrations <- persistence.filterRequiredMigrations(migrationTarget)(sortedMigrationSeq)
-        unifiedConversion = ItemMigration.toSingleFunction(requiredMigrations)
+        unifiedConversion = requiredMigrations.toSingleConversion
         _ <- migrationTarget.runMigration(unifiedConversion)
         _ <- persistence.writeCompletedMigrations(migrationTarget)(requiredMigrations)
       } yield ()
