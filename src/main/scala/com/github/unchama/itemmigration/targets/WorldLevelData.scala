@@ -1,4 +1,4 @@
-package com.github.unchama.itemmigration.target
+package com.github.unchama.itemmigration.targets
 
 import cats.effect.IO
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}

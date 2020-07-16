@@ -1,7 +1,7 @@
 package com.github.unchama.itemmigration
 
 import cats.effect.Bracket
-import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrations, ItemMigrationTarget}
+import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemMigrations}
 import com.github.unchama.itemmigration.service.ItemMigrationPersistence
 
 case class ItemMigrationConfiguration[F[_], T <: ItemMigrationTarget[F]](migrationSeq: ItemMigrations,
