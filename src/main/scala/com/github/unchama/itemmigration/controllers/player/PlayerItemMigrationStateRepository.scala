@@ -54,7 +54,7 @@ object PlayerItemMigrationStateRepository {
    * このtraitを持つオブジェクトは、往々にして`Player` のインスタンスがあって初めて処理を続行できる。
    * `resumeWith` にて、処理を続行するために必要な `Player` をプロセスに渡すことができる。
    */
-  private trait PlayerItemMigrationFiber {
+  trait PlayerItemMigrationFiber {
     /**
      * マイグレーション処理を `player` にて続行する `IO` を返す。
      */
