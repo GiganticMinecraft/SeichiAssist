@@ -1,6 +1,6 @@
-package com.github.unchama.itemmigration
+package com.github.unchama.itemmigration.domain
 
-import com.github.unchama.itemmigration.ItemMigration.VersionComponent
+import com.github.unchama.itemmigration.domain.ItemMigration.VersionComponent
 
 case class ItemMigrationSeq(migrations: IndexedSeq[ItemMigration]) {
   private implicit val versionComponentOrdering: Ordering[VersionComponent] = Ordering.by(_.value)

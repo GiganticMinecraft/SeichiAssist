@@ -5,7 +5,8 @@ import java.util.UUID
 import cats.effect.concurrent.Deferred
 import cats.effect.{Concurrent, IO, SyncIO}
 import com.github.unchama.generic.effect.TryableFiber
-import com.github.unchama.itemmigration.{ItemMigration, ItemMigrationPersistence, ItemMigrationSeq}
+import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationSeq}
+import com.github.unchama.itemmigration.service.ItemMigrationPersistence
 import com.github.unchama.playerdatarepository.PlayerDataOnMemoryRepository
 import org.bukkit.entity.Player
 

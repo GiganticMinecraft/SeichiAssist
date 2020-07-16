@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.itemmigration.migrations
 
-import com.github.unchama.itemmigration.ItemMigrationSeq
+import com.github.unchama.itemmigration.domain.ItemMigrationSeq
 
 object SeichiAssistItemMigrations {
 

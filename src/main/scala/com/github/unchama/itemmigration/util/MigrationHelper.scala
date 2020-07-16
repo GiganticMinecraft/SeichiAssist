@@ -1,11 +1,12 @@
-package com.github.unchama.itemmigration
+package com.github.unchama.itemmigration.util
 
-import com.github.unchama.itemmigration.ItemMigration.ItemStackConversion
+import com.github.unchama.itemmigration.domain.ItemMigration.ItemStackConversion
 import org.bukkit.Material
 import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.inventory.{Inventory, InventoryHolder}
 
 object MigrationHelper {
+
   def convertEachStackIn(inventory: Inventory)(conversion: ItemStackConversion): Unit = {
     for (index <- 0 until inventory.getSize) {
       val item = inventory.getItem(index)

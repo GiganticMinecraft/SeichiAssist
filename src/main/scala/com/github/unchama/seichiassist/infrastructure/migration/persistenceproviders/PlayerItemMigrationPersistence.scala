@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.infrastructure.migration.persistenceprov
 import java.util.UUID
 
 import cats.effect.IO
-import com.github.unchama.itemmigration.ItemMigrationPersistence
+import com.github.unchama.itemmigration.service.ItemMigrationPersistence
 
 object PlayerItemMigrationPersistence {
 

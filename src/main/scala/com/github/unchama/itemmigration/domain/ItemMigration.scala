@@ -1,6 +1,6 @@
-package com.github.unchama.itemmigration
+package com.github.unchama.itemmigration.domain
 
-import com.github.unchama.itemmigration.ItemMigration.{ItemStackConversion, VersionNumber}
+import com.github.unchama.itemmigration.domain.ItemMigration.{ItemStackConversion, VersionNumber}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.NonNegative
 import org.bukkit.inventory.ItemStack
