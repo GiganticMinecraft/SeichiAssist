@@ -5,7 +5,7 @@ import java.util.UUID
 import cats.effect.concurrent.Deferred
 import cats.effect.{Concurrent, IO, SyncIO}
 import com.github.unchama.generic.effect.TryableFiber
-import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationSeq}
+import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrations}
 import com.github.unchama.itemmigration.service.ItemMigrationPersistence
 import com.github.unchama.playerdatarepository.PlayerDataOnMemoryRepository
 import org.bukkit.entity.Player
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 /**
  * 各プレーヤーのマイグレーション処理の状態を保持するオブジェクトのクラス。
  */
-class PlayerItemMigrationStateRepository(migrationSeq: ItemMigrationSeq,
+class PlayerItemMigrationStateRepository(migrationSeq: ItemMigrations,
                                          persistence: ItemMigrationPersistence[IO, UUID])
                                         (implicit concurrentIO: Concurrent[IO])
   extends PlayerDataOnMemoryRepository[PlayerItemMigrationFiber] {

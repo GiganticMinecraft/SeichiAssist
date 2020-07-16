@@ -1,10 +1,10 @@
 package com.github.unchama.itemmigration
 
 import cats.effect.Bracket
-import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationSeq, ItemMigrationTarget}
+import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrations, ItemMigrationTarget}
 import com.github.unchama.itemmigration.service.ItemMigrationPersistence
 
-case class ItemMigrationConfiguration[F[_], T <: ItemMigrationTarget[F]](migrationSeq: ItemMigrationSeq,
+case class ItemMigrationConfiguration[F[_], T <: ItemMigrationTarget[F]](migrationSeq: ItemMigrations,
                                                                          migrationTarget: T,
                                                                          persistenceProvider: ItemMigrationPersistence.Provider[F, T])
                                                                         (implicit F: Bracket[F, Throwable]) {

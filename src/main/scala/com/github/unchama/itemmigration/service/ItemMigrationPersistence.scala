@@ -2,7 +2,7 @@ package com.github.unchama.itemmigration.service
 
 import cats.Monad
 import cats.effect.Resource
-import com.github.unchama.itemmigration.domain.{ItemMigrationSeq, ItemMigrationVersionNumber}
+import com.github.unchama.itemmigration.domain.{ItemMigrations, ItemMigrationVersionNumber}
 
 trait ItemMigrationPersistence[F[_], -T] {
   implicit val fMonad: Monad[F]
@@ -20,7 +20,7 @@ trait ItemMigrationPersistence[F[_], -T] {
    * 永続化された結果が1.0.0, 1.1.0であった場合、即ち永続化されていたものに欠番があった場合は、
    * このメソッドの結果はその欠番(ここでは1.0.1)を含む結果を返し、エラーにはしない。
    */
-  def filterRequiredMigrations(target: T)(migrations: ItemMigrationSeq): F[ItemMigrationSeq] = {
+  def filterRequiredMigrations(target: T)(migrations: ItemMigrations): F[ItemMigrations] = {
     import cats.implicits._
 
     for {
@@ -34,10 +34,10 @@ trait ItemMigrationPersistence[F[_], -T] {
    */
   def writeCompletedVersion(target: T)(version: ItemMigrationVersionNumber): F[Unit]
 
-  def writeCompletedMigrations(target: T)(migrations: ItemMigrationSeq): F[Unit] = {
+  def writeCompletedMigrations(target: T)(migrations: ItemMigrations): F[Unit] = {
     import cats.implicits._
 
-    migrations.versions.toList.traverse(writeCompletedVersion(target)).as(())
+    migrations.versions.traverse(writeCompletedVersion(target)).as(())
   }
 }
 
