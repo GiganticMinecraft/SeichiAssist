@@ -19,4 +19,8 @@ case class ItemMigrationSeq(migrations: IndexedSeq[ItemMigration]) {
     migrations.map(_.conversion).reduce((c1, c2) => c1.andThen(c2))
   }
 
+  def versions: List[ItemMigrationVersionNumber] = {
+    migrations.map(_.version).toList
+  }
+
 }

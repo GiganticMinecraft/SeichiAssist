@@ -37,7 +37,7 @@ trait ItemMigrationPersistence[F[_], -T] {
   def writeCompletedMigrations(target: T)(migrations: ItemMigrationSeq): F[Unit] = {
     import cats.implicits._
 
-    migrations.migrations.map(_.version).toList.traverse(writeCompletedVersion(target)).as(())
+    migrations.versions.toList.traverse(writeCompletedVersion(target)).as(())
   }
 }
 
