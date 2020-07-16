@@ -5,11 +5,11 @@ import eu.timepit.refined.numeric.NonNegative
 import org.bukkit.inventory.ItemStack
 
 package object domain {
-  type VersionComponent = Int Refined NonNegative
+  type ItemMigrationVersionComponent = Int Refined NonNegative
 
-  type VersionNumber = IndexedSeq[VersionComponent]
+  type ItemMigrationVersionNumber = IndexedSeq[ItemMigrationVersionComponent]
 
-  type MigrationSequence = IndexedSeq[ItemMigration]
+  type ItemMigrationSequence = IndexedSeq[ItemMigration]
 
   type ItemStackConversion = ItemStack => ItemStack
 }

@@ -2,7 +2,7 @@ package com.github.unchama.itemmigration.service
 
 import cats.Monad
 import cats.effect.Resource
-import com.github.unchama.itemmigration.domain.{ItemMigration, VersionNumber}
+import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 
 trait ItemMigrationPersistence[F[_], -T] {
   implicit val fMonad: Monad[F]
@@ -10,7 +10,7 @@ trait ItemMigrationPersistence[F[_], -T] {
   /**
    * 既に完了した変換のバージョンのリストを取得する。
    */
-  def getCompletedVersions(target: T): F[IndexedSeq[VersionNumber]]
+  def getCompletedVersions(target: T): F[IndexedSeq[ItemMigrationVersionNumber]]
 
   /**
    * 与えられたマイグレーションの集まりのうち、
@@ -32,7 +32,7 @@ trait ItemMigrationPersistence[F[_], -T] {
   /**
    * 完了した変換のバージョンを永続化する。
    */
-  def writeCompletedVersion(target: T)(version: VersionNumber): F[Unit]
+  def writeCompletedVersion(target: T)(version: ItemMigrationVersionNumber): F[Unit]
 
   def writeCompletedMigrations(target: T)(migrations: IndexedSeq[ItemMigration]): F[Unit] = {
     import cats.implicits._
