@@ -1,12 +1,12 @@
 package com.github.unchama.itemmigration
 
-import com.github.unchama.itemmigration.ItemMigration.ItemConversion
+import com.github.unchama.itemmigration.ItemMigration.ItemStackConversion
 import org.bukkit.Material
 import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.inventory.{Inventory, InventoryHolder}
 
 object MigrationHelper {
-  def convertEachStackIn(inventory: Inventory)(conversion: ItemConversion): Unit = {
+  def convertEachStackIn(inventory: Inventory)(conversion: ItemStackConversion): Unit = {
     for (index <- 0 until inventory.getSize) {
       val item = inventory.getItem(index)
       if (item != null && item.getType != Material.AIR) {
@@ -15,7 +15,7 @@ object MigrationHelper {
     }
   }
 
-  def delegateConversionForContainers(conversion: ItemConversion): ItemConversion = {
+  def delegateConversionForContainers(conversion: ItemStackConversion): ItemStackConversion = {
     itemStack => {
       itemStack.getItemMeta match {
         case meta: BlockStateMeta if meta.hasBlockState =>

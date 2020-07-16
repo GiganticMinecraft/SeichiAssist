@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.itemmigration
 
 import cats.effect.IO
-import com.github.unchama.itemmigration.ItemMigration.ItemConversion
+import com.github.unchama.itemmigration.ItemMigration.ItemStackConversion
 import com.github.unchama.itemmigration.ItemMigrationTarget
 import com.github.unchama.itemmigration.target.WorldLevelData
 import com.github.unchama.seichiassist.SeichiAssist
@@ -25,6 +25,6 @@ object SeichiAssistWorldLevelData extends ItemMigrationTarget[IO] {
   val getWorldChunkCoordinates: World => IO[Seq[(Int, Int)]] =
     ExternalServices.getChunkCoordinates(SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
 
-  override def runMigration(conversion: ItemConversion): IO[Unit] =
+  override def runMigration(conversion: ItemStackConversion): IO[Unit] =
     WorldLevelData(getWorlds, getWorldChunkCoordinates).runMigration(conversion)
 }

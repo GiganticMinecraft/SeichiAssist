@@ -1,7 +1,7 @@
 package com.github.unchama.itemmigration.target
 
 import cats.effect.IO
-import com.github.unchama.itemmigration.ItemMigration.ItemConversion
+import com.github.unchama.itemmigration.ItemMigration.ItemStackConversion
 import com.github.unchama.itemmigration.{ItemMigrationTarget, MigrationHelper}
 import org.bukkit.World
 import org.bukkit.block.Container
@@ -17,7 +17,7 @@ import org.bukkit.inventory.{InventoryHolder, ItemStack}
 case class WorldLevelData(getWorlds: IO[IndexedSeq[World]],
                           enumerateChunkCoordinates: World => IO[Seq[(Int, Int)]]) extends ItemMigrationTarget[IO] {
 
-  override def runMigration(conversion: ItemConversion): IO[Unit] = {
+  override def runMigration(conversion: ItemStackConversion): IO[Unit] = {
     import cats.implicits._
 
     def convertWorld(world: World): IO[Unit] =

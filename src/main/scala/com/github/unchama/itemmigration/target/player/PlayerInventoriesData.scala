@@ -1,7 +1,7 @@
 package com.github.unchama.itemmigration.target.player
 
 import cats.effect.IO
-import com.github.unchama.itemmigration.ItemMigration.ItemConversion
+import com.github.unchama.itemmigration.ItemMigration.ItemStackConversion
 import com.github.unchama.itemmigration.{ItemMigrationTarget, MigrationHelper}
 import org.bukkit.entity.Player
 
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
  */
 class PlayerInventoriesData(player: Player) extends ItemMigrationTarget[IO] {
 
-  override def runMigration(conversion: ItemConversion): IO[Unit] = IO {
+  override def runMigration(conversion: ItemStackConversion): IO[Unit] = IO {
     MigrationHelper.convertEachStackIn(player.getInventory)(conversion)
     MigrationHelper.convertEachStackIn(player.getEnderChest)(conversion)
   }
