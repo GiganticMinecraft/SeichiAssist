@@ -5,7 +5,7 @@ import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, Item
 import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 
 class PlayerItemsMigrationVersionRepository extends ItemMigrationVersionRepository[IO, PlayerInventoriesData] {
-  override type PersistenceLock[TInstance <: Singleton with PlayerInventoriesData] = Nothing
+  override type PersistenceLock[TInstance <: PlayerInventoriesData] = Nothing
 
   override def lockVersionPersistence(target: PlayerInventoriesData): Resource[IO, PersistenceLock[target.type]] = ???
 

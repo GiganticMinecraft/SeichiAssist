@@ -5,7 +5,7 @@ import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, Item
 import com.github.unchama.itemmigration.targets.WorldLevelData
 
 class WorldLevelItemsMigrationVersionRepository extends ItemMigrationVersionRepository[IO, WorldLevelData] {
-  override type PersistenceLock[TInstance <: Singleton with WorldLevelData] = Nothing
+  override type PersistenceLock[TInstance <: WorldLevelData] = Nothing
 
   override def lockVersionPersistence(target: WorldLevelData): Resource[IO, PersistenceLock[target.type]] = ???
 
