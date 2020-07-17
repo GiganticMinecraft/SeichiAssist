@@ -1,6 +1,6 @@
 package com.github.unchama.itemmigration.domain
 
-import cats.effect.{Bracket, Resource}
+import cats.effect.Resource
 
 /**
  * 対象 `T` に関するアイテムマイグレーションの適用済みバージョンのリポジトリ。
@@ -14,8 +14,6 @@ trait ItemMigrationVersionRepository[F[_], -T <: ItemMigrationTarget[F]] {
    * `T` の値である `TInstance` に適用されたマイグレーションバージョンの記録のロック
    */
   type PersistenceLock[TInstance <: Singleton with T]
-
-  implicit val F: Bracket[F, Throwable]
 
   /**
    * `target` に適用されたマイグレーションの記録にロックを掛けるための `Resource`。

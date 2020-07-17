@@ -1,14 +1,12 @@
 package com.github.unchama.seichiassist.infrastructure.migration.executors
 
-import cats.effect.{Bracket, IO, Resource}
+import cats.effect.{IO, Resource}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.executors.PersistedItemsMigrationVersionRepository.PI
 import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAssistPersistedItems
 
 class PersistedItemsMigrationVersionRepository extends ItemMigrationVersionRepository[IO, PI] {
   override type PersistenceLock[TInstance <: Singleton with PI] = Nothing
-
-  override implicit val F: Bracket[IO, Throwable] = implicitly
 
   override def lockVersionPersistence(target: PI): Resource[IO, PersistenceLock[PI]] = ???
 
