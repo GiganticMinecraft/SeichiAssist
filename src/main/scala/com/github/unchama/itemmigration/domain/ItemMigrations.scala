@@ -1,5 +1,7 @@
 package com.github.unchama.itemmigration.domain
 
+import org.bukkit.inventory.ItemStack
+
 /**
  * アイテムスタック変換の線形な集まり。
  */
@@ -31,7 +33,11 @@ case class ItemMigrations(migrations: IndexedSeq[ItemMigration]) {
    * @return マイグレーション列のアイテムスタック変換関数を順番に全て合成した関数。
    */
   def toSingleConversion: ItemStackConversion = {
-    migrations.map(_.conversion).reduce((c1, c2) => c1.andThen(c2))
+    if (migrations.isEmpty) {
+      identity[ItemStack]
+    } else {
+      migrations.map(_.conversion).reduce((c1, c2) => c1.andThen(c2))
+    }
   }
 
   /**
