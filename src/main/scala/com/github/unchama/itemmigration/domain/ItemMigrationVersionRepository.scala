@@ -13,7 +13,7 @@ trait ItemMigrationVersionRepository[F[_], -T <: ItemMigrationTarget[F]] {
   /**
    * `T` の値である `TInstance` に適用されたマイグレーションバージョンの記録のロック
    */
-  type PersistenceLock[TInstance <: Singleton with T]
+  type PersistenceLock[TInstance <: T]
 
   /**
    * `target` に適用されたマイグレーションの記録にロックを掛けるための `Resource`。
