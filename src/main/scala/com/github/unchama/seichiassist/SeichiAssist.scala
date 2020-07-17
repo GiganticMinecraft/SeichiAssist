@@ -124,15 +124,19 @@ class SeichiAssist extends JavaPlugin() {
 
     val migrations: ItemMigrations = SeichiAssistItemMigrations.seq
 
-    // DB内アイテムのマイグレーション処理を同期的に走らせる
-    ItemMigrationService(new PersistedItemsMigrationVersionRepository())
-      .runMigration(migrations)(SeichiAssistPersistedItems).unsafeRunSync()
+    {
+      val itemMigrationBatches = List(
+        // DB内アイテムのマイグレーション
+        ItemMigrationService(new PersistedItemsMigrationVersionRepository()).runMigration(migrations)(SeichiAssistPersistedItems),
+        // ワールド内アイテムのマイグレーション
+        ItemMigrationService(new WorldLevelItemsMigrationVersionRepository()).runMigration(migrations)(SeichiAssistWorldLevelData),
+      )
 
-    // ワールド内アイテムのマイグレーション処理を同期的に走らせる
-    ItemMigrationService(new WorldLevelItemsMigrationVersionRepository())
-      .runMigration(migrations)(SeichiAssistWorldLevelData).unsafeRunSync()
+      import cats.implicits._
+      itemMigrationBatches.sequence.unsafeRunSync()
+    }
 
-    // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナ
+    // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナー
     val playerItemMigrationControllerListeners: Seq[Listener] = {
       import PluginExecutionContexts.asyncShift
       val service = ItemMigrationService(new PlayerItemsMigrationVersionRepository())
