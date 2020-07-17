@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.infrastructure.migration.executors
 
 import cats.effect.{Bracket, IO, Resource}
-import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, VersionedItemMigrationExecutor}
+import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
 import com.github.unchama.itemmigration.targets.WorldLevelData
 
-class WorldLevelItemsMigrationExecutor extends VersionedItemMigrationExecutor[IO, WorldLevelData] {
+class WorldLevelItemsMigrationVersionRepository extends ItemMigrationVersionRepository[IO, WorldLevelData] {
   override type PersistenceLock[TInstance <: Singleton with WorldLevelData] = Nothing
 
   override implicit val F: Bracket[IO, Throwable] = implicitly
