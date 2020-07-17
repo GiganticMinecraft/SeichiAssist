@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask

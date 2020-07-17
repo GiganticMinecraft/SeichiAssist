@@ -2,101 +2,67 @@ package com.github.unchama.seichiassist;
 
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Config {
-    private static FileConfiguration config;
-    private final SeichiAssist plugin = SeichiAssist.instance();
+    private final FileConfiguration config;
 
-    Config() {
-        saveDefaultConfig();
+    private Config(FileConfiguration config) {
+        this.config = config;
     }
 
-    public void loadConfig() {
-        config = getConfig();
-    }
-
-    public void reloadConfig() {
-        plugin.reloadConfig();
-        config = getConfig();
-    }
-
-    public void saveConfig() {
-        plugin.saveConfig();
-    }
-
-    //config.ymlがない時にDefaultのファイルを生成
-    private void saveDefaultConfig() {
+    public static Config loadFrom(JavaPlugin plugin) {
+        // config.ymlがない時にDefaultのファイルを生成
         plugin.saveDefaultConfig();
+        plugin.reloadConfig();
+        return new Config(plugin.getConfig());
     }
 
-    //config.ymlファイルからの読み込み
-    private FileConfiguration getConfig() {
-        return plugin.getConfig();
+    // NOTE:
+    //   config.getInt/config.getDoubleはnull値の場合0を返す
+    //   getIntFailSafe/getDoubleFailSafeはNumberFormatExceptionを投げる
+    private int getIntFailSafe(String path) {
+        return Integer.parseInt(config.getString(path));
+    }
+
+    private double getDoubleFailSafe(String path) {
+        return Double.parseDouble(config.getString(path));
     }
 
     public double getMinuteMineSpeed() {
-        return Double.parseDouble(config.getString("minutespeedamount"));
+        return getDoubleFailSafe("minutespeedamount");
     }
 
     public double getLoginPlayerMineSpeed() {
-        return Double.parseDouble(config.getString("onlineplayersamount"));
+        return getDoubleFailSafe("onlineplayersamount");
     }
 
     public int getGachaPresentInterval() {
-        return Integer.parseInt(config.getString("presentinterval"));
-    }
-
-    public int getDefaultMineAmount() {
-        return Integer.parseInt(config.getString("defaultmineamount"));
+        return getIntFailSafe("presentinterval");
     }
 
     public int getDualBreaklevel() {
-        return Integer.parseInt(config.getString("dualbreaklevel"));
-    }
-
-    public int getTrialBreaklevel() {
-        return Integer.parseInt(config.getString("trialbreaklevel"));
-    }
-
-    public int getExplosionlevel() {
-        return Integer.parseInt(config.getString("explosionlevel"));
-    }
-
-    public int getThunderStormlevel() {
-        return Integer.parseInt(config.getString("thunderstormlevel"));
-    }
-
-    public int getBlizzardlevel() {
-        return Integer.parseInt(config.getString("blizzardlevel"));
-    }
-
-    public int getMeteolevel() {
-        return Integer.parseInt(config.getString("meteolevel"));
-    }
-
-    public int getGravitylevel() {
-        return Integer.parseInt(config.getString("gravitylevel"));
+        return getIntFailSafe("dualbreaklevel");
     }
 
     public int getMultipleIDBlockBreaklevel() {
-        return Integer.parseInt(config.getString("multipleidblockbreaklevel"));
+        return getIntFailSafe("multipleidblockbreaklevel");
     }
 
     public double getDropExplevel(final int i) {
-        return Double.parseDouble(config.getString("dropexplevel" + i, ""));
+        return getDoubleFailSafe("dropexplevel" + i);
     }
 
     public int getPassivePortalInventorylevel() {
-        return Integer.parseInt(config.getString("passiveportalinventorylevel"));
+        return getIntFailSafe("passiveportalinventorylevel");
     }
 
     public int getDokodemoEnderlevel() {
-        return Integer.parseInt(config.getString("dokodemoenderlevel"));
+        return getIntFailSafe("dokodemoenderlevel");
     }
 
     public int getMineStacklevel(final int i) {
-        return Integer.parseInt(config.getString("minestacklevel" + i, ""));
+        return getIntFailSafe("minestacklevel" + i);
     }
 
     public String getDB() {
@@ -117,10 +83,12 @@ public final class Config {
 
     public String getURL() {
         String url = "jdbc:mysql://";
+
         url += config.getString("host");
-        if (!config.getString("port").isEmpty()) {
-            url += ":" + config.getString("port");
-        }
+
+        String port = config.getString("port", "");
+        url += port.isEmpty() ? "" : ":" + port;
+
         return url;
     }
 
@@ -130,7 +98,7 @@ public final class Config {
 
     //サーバー番号取得
     public int getServerNum() {
-        return Integer.parseInt(config.getString("servernum"));
+        return getIntFailSafe("servernum");
     }
 
     public String getServerId() {
@@ -143,30 +111,19 @@ public final class Config {
 
     //サブホーム最大数取得
     public int getSubHomeMax() {
-        return Integer.parseInt(config.getString("subhomemax"));
+        return getIntFailSafe("subhomemax");
     }
 
     public int getDebugMode() {
-        return Integer.parseInt(config.getString("debugmode"));
+        return getIntFailSafe("debugmode");
     }
 
     public int getMebiusDebug() {
-        return Integer.parseInt(config.getString("mebiusdebug"));
+        return getIntFailSafe("mebiusdebug");
     }
 
     public int rateGiganticToRingo() {
-        return Integer.parseInt(config.getString("rategigantictoringo"));
-    }
-
-    /**
-     * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
-     * @deprecated 判定の対象はWorldなので意味論的におかしい
-     * @param player
-     * @return 許可されているならtrue、許可されていないならfalse
-     */
-    @Deprecated
-    public boolean isGridProtectionEnabled(final Player player) {
-        return isGridProtectionEnabled(player.getWorld());
+        return getIntFailSafe("rategigantictoringo");
     }
 
     /**
@@ -187,35 +144,40 @@ public final class Config {
      * @return
      */
     public int getGridLimitPerWorld(final String world) {
-        return Integer.parseInt(config.getString("GridLimitPerWorld." + world, config.getString("GridLimitDefault")));
+        return Integer.parseInt(
+            config.getString(
+                "GridLimitPerWorld." + world,
+                config.getString("GridLimitDefault")
+            )
+        );
     }
 
     public int getTemplateKeepAmount() {
-        return Integer.parseInt(config.getString("GridTemplateKeepAmount"));
+        return getIntFailSafe("GridTemplateKeepAmount");
     }
 
     public int getRoadY() {
-        return config.getInt("road_Y");
+        return getIntFailSafe("road_Y");
     }
 
     public int getRoadLength() {
-        return config.getInt("road_length");
+        return getIntFailSafe("road_length");
     }
 
     public int getSpaceHeight() {
-        return config.getInt("space_height");
+        return getIntFailSafe("space_height");
     }
 
     public int getRoadBlockID() {
-        return config.getInt("road_blockid");
+        return getIntFailSafe("road_blockid");
     }
 
     public int getRoadBlockDamage() {
-        return config.getInt("road_blockdamage");
+        return getIntFailSafe("road_blockdamage");
     }
 
     public int getContributeAddedMana() {
-        return config.getInt("contribute_added_mana");
+        return getIntFailSafe("contribute_added_mana");
     }
 
     public String getLimitedLoginEventStart() {
@@ -226,26 +188,14 @@ public final class Config {
         return config.getString("LimitedLoginEvent.EventEnd");
     }
 
-    public String getLimitedLoginEventItem(final int i) {
-        final String ret;
-        if (config.getString("LimitedLoginEvent.DAY" + i + "_Item", "").isEmpty()) {
-            ret = "0";
-        } else {
-            ret = config.getString("LimitedLoginEvent.DAY" + i + "_Item", "");
-        }
-        return ret;
+    // getIntのnull値を0にする仕様を使っている
+    public int getLimitedLoginEventItem(final int i) {
+        return config.getInt("LimitedLoginEvent.DAY" + i + "_Item");
     }
 
-    public String getLimitedLoginEventAmount(final int i) {
-        final String ret;
-        if (config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "").isEmpty()) {
-            ret = "0";
-        } else {
-            ret = config.getString("LimitedLoginEvent.DAY" + i + "_Amount", "");
-        }
-        return ret;
+    public int getLimitedLoginEventAmount(final int i) {
+        return config.getInt("LimitedLoginEvent.DAY" + i + "_Amount");
     }
-
 
     public String getGivingNewYearSobaDay() {
         return config.getString("NewYearEvent.GivingNewYearSobaDay");
@@ -264,7 +214,7 @@ public final class Config {
     }
 
     public int getNewYearDropProbability() {
-        return config.getInt("NewYearEvent.NewYearBagDropProbability");
+        return getIntFailSafe("NewYearEvent.NewYearBagDropProbability");
     }
 
     public String getNewYear() {
@@ -280,24 +230,20 @@ public final class Config {
     }
 
     public int getWorldSize() {
-        return config.getInt("world_size");
+        return getIntFailSafe("world_size");
     }
 
     public int getGiganticFeverMinutes() {
-        return config.getInt("gigantic_fever_minutes");
+        return getIntFailSafe("gigantic_fever_minutes");
     }
 
     public String getGiganticFeverDisplayTime() {
-        final int minute = getGiganticFeverMinutes();
-
-        final int hours = minute / 60;
-        final int minutes = minute - 60 * hours;
-
-        return hours + "時間" + minutes + "分";
+        final int totalMinutes = getGiganticFeverMinutes();
+        return (totalMinutes / 60) + "時間" + (totalMinutes % 60) + "分";
     }
 
     public int getGiganticBerserkLimit() {
-        return config.getInt("GBLimit");
+        return getIntFailSafe("GBLimit");
     }
 
     /**
