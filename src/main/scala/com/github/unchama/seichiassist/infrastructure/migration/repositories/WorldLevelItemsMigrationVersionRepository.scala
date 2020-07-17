@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.infrastructure.migration.executors
+package com.github.unchama.seichiassist.infrastructure.migration.repositories
 
 import cats.effect.{IO, Resource}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}

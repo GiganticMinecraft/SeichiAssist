@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.infrastructure.migration.executors
+package com.github.unchama.seichiassist.infrastructure.migration.repositories
 
 import cats.effect.{IO, Resource}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
-import com.github.unchama.seichiassist.infrastructure.migration.executors.PersistedItemsMigrationVersionRepository.PersistedItems
+import com.github.unchama.seichiassist.infrastructure.migration.repositories.PersistedItemsMigrationVersionRepository.PersistedItems
 import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAssistPersistedItems
 
 class PersistedItemsMigrationVersionRepository extends ItemMigrationVersionRepository[IO, PersistedItems] {
