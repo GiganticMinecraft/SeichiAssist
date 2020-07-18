@@ -133,9 +133,14 @@ class SeichiAssist extends JavaPlugin() {
     {
       val itemMigrationBatches = List(
         // DB内アイテムのマイグレーション
-        ItemMigrationService(new PersistedItemsMigrationVersionRepository()).runMigration(migrations)(SeichiAssistPersistedItems),
+        ItemMigrationService(
+          new PersistedItemsMigrationVersionRepository()
+        ).runMigration(migrations)(SeichiAssistPersistedItems),
+
         // ワールド内アイテムのマイグレーション
-        ItemMigrationService(new WorldLevelItemsMigrationVersionRepository()).runMigration(migrations)(SeichiAssistWorldLevelData),
+        ItemMigrationService(
+          new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId)
+        ).runMigration(migrations)(SeichiAssistWorldLevelData),
       )
 
       import cats.implicits._
@@ -145,7 +150,7 @@ class SeichiAssist extends JavaPlugin() {
     // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナー
     val playerItemMigrationControllerListeners: Seq[Listener] = {
       import PluginExecutionContexts.asyncShift
-      val service = ItemMigrationService(new PlayerItemsMigrationVersionRepository())
+      val service = ItemMigrationService(new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId))
 
       new PlayerItemMigrationEntryPoints(migrations, service).listenersToBeRegistered
     }
