@@ -1,6 +1,7 @@
 package com.github.unchama.itemmigration.controllers.player
 
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.{PlayerDropItemEvent, PlayerEvent, PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
@@ -11,7 +12,7 @@ import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
  */
 class PlayerItemMigrationController(private val migrationState: PlayerItemMigrationStateRepository) extends Listener {
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
-    if (migrationState(player).fiber.isComplete.unsafeRunSync()) {
+    if (!migrationState(player).fiber.isComplete.unsafeRunSync()) {
       event.setCancelled(true)
     }
   }
@@ -26,6 +27,9 @@ class PlayerItemMigrationController(private val migrationState: PlayerItemMigrat
       case _ =>
     }
   }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  def onBlockPlace(e: BlockPlaceEvent): Unit = cancelIfLockActive(e.getPlayer, e)
 
   @EventHandler(priority = EventPriority.LOWEST)
   def onDropItem(e: PlayerDropItemEvent): Unit = cancelIfLockActive(e)
