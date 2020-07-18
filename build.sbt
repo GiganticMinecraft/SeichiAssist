@@ -17,9 +17,7 @@ resolvers ++= Seq(
   "repo.maven.apache.org"  at "https://repo.maven.apache.org/maven2",
   "hub.spigotmc.org"       at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org"       at "https://oss.sonatype.org/content/repositories/snapshots",
-  "nexus.okkero.com"       at "https://nexus.okkero.com/repository/maven-releases/",
-  "mvnrepository.com"      at "https://mvnrepository.com/artifact/commons-io/commons-io/",
-  "maven.elmakers.com"     at "http://maven.elmakers.com/repository/" // stouma915#5421の環境ではなぜかspigot-apiがダウンロードできないため一応追加
+  "nexus.okkero.com"       at "https://nexus.okkero.com/repository/maven-releases/"
 )
 
 val providedDependencies = Seq(
@@ -28,8 +26,7 @@ val providedDependencies = Seq(
   "commons-codec" % "commons-codec" % "1.12",
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
-  "net.coreprotect" % "coreprotect" % "2.14.2",
-  "commons-io" % "commons-io" % "2.7"
+  "net.coreprotect" % "coreprotect" % "2.14.2"
 ).map(_ % "provided")
 
 val testDependencies = Seq(
