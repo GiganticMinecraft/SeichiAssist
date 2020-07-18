@@ -47,11 +47,11 @@ object SeichiAssistPersistedItems extends ItemMigrationTarget[IO] {
 
       val batchParam: Seq[Seq[Any]] = triples.map { case (uuid, shareinv, inventory) =>
         val newSharedInventory =
-          if (shareinv != null && shareinv.get.nonEmpty) convertSharedInventory(shareinv.get)
+          if (shareinv != null && shareinv.get.nonEmpty) convertSharedInventory(shareinv.get)(conversion)
           else shareinv.orNull
 
         val newPocketInventory =
-          if (inventory != null && inventory.get.nonEmpty) convertPocketInventory(inventory.get)
+          if (inventory != null && inventory.get.nonEmpty) convertPocketInventory(inventory.get)(conversion)
           else shareinv.orNull
 
         Seq(newSharedInventory, newPocketInventory, uuid)
