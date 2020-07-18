@@ -13,7 +13,9 @@ case class ItemMigrationService[F[_], -T <: ItemMigrationTarget[F]](persistence:
       for {
         appliedVersions <- persistence.getVersionsAppliedTo(target)(lock)
         migrationsToApply = migrations.yetToBeApplied(appliedVersions)
-        _ <- target.runMigration(migrationsToApply.toSingleConversion)
+        _ <-
+          if (migrationsToApply.isEmpty) F.unit
+          else target.runMigration(migrationsToApply.toSingleConversion)
         _ <- persistence.persistVersionsAppliedTo(target, migrationsToApply.versions)(lock)
       } yield ()
     }

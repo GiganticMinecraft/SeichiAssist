@@ -47,4 +47,6 @@ case class ItemMigrations(migrations: IndexedSeq[ItemMigration]) {
     migrations.map(_.version).toList
   }
 
+  def isEmpty: Boolean = migrations.isEmpty
+
 }
