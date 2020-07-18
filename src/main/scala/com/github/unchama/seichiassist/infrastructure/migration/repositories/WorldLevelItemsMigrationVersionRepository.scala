@@ -34,13 +34,15 @@ class WorldLevelItemsMigrationVersionRepository(serverId: String) extends ItemMi
   override def persistVersionsAppliedTo(target: WorldLevelData,
                                         versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => IO[Unit] =
     implicit session => IO {
-      val batchParams = versions.map(version => Seq(ItemMigrationVersionNumber.convertToString(version)))
+      val batchParams = versions.map { version =>
+        Seq(serverId, ItemMigrationVersionNumber.convertToString(version))
+      }.toSeq
 
       sql"""
         insert into seichiassist.item_migration_in_server_world_levels(server_id, version_string, completed_at)
-        values ($serverId, ?, cast(now() as datetime))
+        values (?, ?, cast(now() as datetime))
       """
-        .batch(batchParams.toSeq: _*)
+        .batch(batchParams: _*)
         .apply[List]()
     }
 }
