@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.infrastructure.migration.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
@@ -95,6 +96,12 @@ class SeichiAssist extends JavaPlugin() {
       logger.info(s"${GREEN}seichiassistを通常モードで起動します")
       logger.info(s"${GREEN}デバッグモードを使用する場合は")
       logger.info(s"${GREEN}config.ymlの設定値を書き換えて再起動してください")
+    }
+
+    {
+      val config = SeichiAssist.seichiAssistConfig;
+      import config._
+      ScalikeJDBCConfiguration.initializeConnectionPool(s"$getURL/$getDB", getID, getPW)
     }
 
     try {
