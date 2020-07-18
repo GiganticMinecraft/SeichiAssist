@@ -99,9 +99,10 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     {
-      val config = SeichiAssist.seichiAssistConfig;
+      val config = SeichiAssist.seichiAssistConfig
       import config._
       ScalikeJDBCConfiguration.initializeConnectionPool(s"$getURL/$getDB", getID, getPW)
+      ScalikeJDBCConfiguration.initializeGlobalConfigs()
     }
 
     try {
