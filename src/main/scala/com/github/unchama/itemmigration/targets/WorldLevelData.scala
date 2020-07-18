@@ -11,6 +11,8 @@ import org.bukkit.inventory.{InventoryHolder, ItemStack}
 /**
  * マイグレーションターゲットとしてのワールドデータを表すデータ
  *
+ * `enumerateChunkCoordinates` は、ワールドを渡すとそのワールド内で変換すべきチャンク座標(x, z)を列挙する。
+ *
  * @param getWorlds                 変換対象であるワールドを列挙するプログラム
  * @param enumerateChunkCoordinates ワールド内で変換すべきチャンク座標を列挙するプログラム
  */
