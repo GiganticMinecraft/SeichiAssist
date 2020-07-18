@@ -1,6 +1,6 @@
-package com.github.unchama.seichiassist.infrastructure.migration
+package com.github.unchama.seichiassist.infrastructure
 
-import scalikejdbc._
+import scalikejdbc.{ConnectionPool, ConnectionPoolSettings}
 
 object ScalikeJDBCConfiguration {
 

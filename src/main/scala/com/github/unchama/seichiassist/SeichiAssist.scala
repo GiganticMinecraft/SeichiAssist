@@ -20,7 +20,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.infrastructure.migration.ScalikeJDBCConfiguration
+import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
