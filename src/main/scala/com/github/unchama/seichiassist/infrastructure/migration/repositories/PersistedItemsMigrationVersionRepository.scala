@@ -2,11 +2,12 @@ package com.github.unchama.seichiassist.infrastructure.migration.repositories
 
 import cats.effect.{IO, Resource}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
-import com.github.unchama.seichiassist.infrastructure.migration.repositories.PersistedItemsMigrationVersionRepository.PersistedItems
 import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAssistPersistedItems
 import scalikejdbc._
 
-class PersistedItemsMigrationVersionRepository extends ItemMigrationVersionRepository[IO, PersistedItems] {
+class PersistedItemsMigrationVersionRepository extends ItemMigrationVersionRepository[IO, SeichiAssistPersistedItems.type] {
+  private type PersistedItems = SeichiAssistPersistedItems.type
+
   override type PersistenceLock[TInstance <: PersistedItems] = DBSession
 
   override def lockVersionPersistence(target: PersistedItems): Resource[IO, PersistenceLock[PersistedItems]] = {
@@ -44,8 +45,4 @@ class PersistedItemsMigrationVersionRepository extends ItemMigrationVersionRepos
         .batch(batchParams.toSeq: _*)
         .apply[List]()
     }
-}
-
-object PersistedItemsMigrationVersionRepository {
-  private type PersistedItems = SeichiAssistPersistedItems.type
 }
