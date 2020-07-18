@@ -17,7 +17,8 @@ resolvers ++= Seq(
   "repo.maven.apache.org"  at "https://repo.maven.apache.org/maven2",
   "hub.spigotmc.org"       at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org"       at "https://oss.sonatype.org/content/repositories/snapshots",
-  "nexus.okkero.com"       at "https://nexus.okkero.com/repository/maven-releases/"
+  "nexus.okkero.com"       at "https://nexus.okkero.com/repository/maven-releases/",
+  "maven.elmakers.com"     at "http://maven.elmakers.com/repository/" // stouma915#5421の環境ではなぜかspigot-apiがダウンロードできないため一応追加
 )
 
 val providedDependencies = Seq(

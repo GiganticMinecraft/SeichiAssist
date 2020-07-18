@@ -32,8 +32,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 
 public class MebiusListener implements Listener {
@@ -339,8 +337,11 @@ public class MebiusListener implements Listener {
             return;
         }
 
-        // 所有者が異なる場合…名前変更でもNG
-        if (!player.getName().toLowerCase().equals(getOwner(mebius))) {
+        NBTItem nbtItem = new NBTItem(mebius);
+        String mebiusOwnerUUID = nbtItem.getString("ownerUUID");
+
+        // 所有者が異なる場合
+        if (!mebiusOwnerUUID.equals(player.getUniqueId().toString())) {
             return;
         }
 
@@ -408,6 +409,7 @@ public class MebiusListener implements Listener {
 
         NBTItem nbtItem = new NBTItem(mebius);
         nbtItem.setString("nickname", nickname);
+        nbtItem.setString("ownerUUID", player.getUniqueId().toString());
         mebius = nbtItem.getItem();
 
         return mebius;
