@@ -101,6 +101,14 @@ public final class Config {
         return getIntFailSafe("servernum");
     }
 
+    public String getServerId() {
+        return config.getString("server-id");
+    }
+
+    public String chunkSearchCommandBase() {
+        return config.getString("chunk-search-command-base");
+    }
+
     //サブホーム最大数取得
     public int getSubHomeMax() {
         return getIntFailSafe("subhomemax");
