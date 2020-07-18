@@ -6,7 +6,7 @@ RUN java -jar BuildTools.jar -o /artifact --rev 1.12.2
 
 FROM docker.pkg.github.com/giganticminecraft/chunk-search-rs/chunk-search-rs:8673f70e880b as chunk-search-provider
 
-FROM openjdk:8-jdk as runner
+FROM docker.pkg.github.com/giganticminecraft/dockers/seichiassist-runner:9128bc6651c6
 
 # /spigot-filesをコンテナが提供するファイル群とする
 
@@ -17,7 +17,6 @@ COPY docker/spigot/serverfiles/ /spigot-files/
 COPY localDependencies/ /spigot-files/plugins/
 COPY target/build /spigot-files/plugins/
 
-RUN apt update && apt install nkf
 RUN nkf -Lu --overwrite /spigot-files/start-server.sh
 
 CMD bash /spigot-files/start-server.sh
