@@ -25,7 +25,7 @@ class PlayerItemsMigrationVersionRepository(serverId: String) extends ItemMigrat
     implicit session => IO {
       sql"""
         select version_string from seichiassist.player_in_server_item_migration
-          where server_id = $serverId and player_uuid = ${target.player.getUniqueId}
+          where server_id = $serverId and player_uuid = ${target.player.getUniqueId.toString}
       """
         .map { rs => rs.string("version_string") }
         .list.apply()
@@ -35,11 +35,13 @@ class PlayerItemsMigrationVersionRepository(serverId: String) extends ItemMigrat
   override def persistVersionsAppliedTo(target: PlayerInventoriesData,
                                         versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => IO[Unit] =
     implicit session => IO {
-      val batchParams = versions.map(version => Seq(ItemMigrationVersionNumber.convertToString(version)))
+      val batchParams = versions.map { version =>
+        Seq(target.player.getUniqueId.toString, serverId, ItemMigrationVersionNumber.convertToString(version))
+      }
 
       sql"""
         insert into seichiassist.player_in_server_item_migration(player_uuid, server_id, version_string, completed_at)
-        values (${target.player.getUniqueId}, $serverId, ?, cast(now() as datetime))
+        values (?, ?, ?, cast(now() as datetime))
       """
         .batch(batchParams.toSeq: _*)
         .apply[List]()
