@@ -64,8 +64,16 @@ object BuildMainMenu extends Menu {
 
     def computeNotationOfStats(): IO[Button] = RecomputedButton {
       IO {
-        import java.math.RoundingMode
         val openerData = BuildAssist.playermap(getUniqueId)
+
+        var totalBuildNum = 0.0
+        if (("" + openerData.totalbuildnum).split('.').size <= 1)
+          totalBuildNum = java.lang.Double.parseDouble("" + openerData.totalbuildnum)
+        else {
+          val splited = ("" + openerData.totalbuildnum).split('.')
+          totalBuildNum = java.lang.Double.parseDouble(s"${splited(0)}.${splited(1).charAt(0)}")
+        }
+
         val iconItemStack = new SkullItemStackBuilder(getUniqueId)
           .enchanted()
           .title(s"$YELLOW$EMPHASIZE${openerData.name}の建築データ")
@@ -74,7 +82,7 @@ object BuildMainMenu extends Menu {
             /* 小数点以下一桁で表示。
              * https://github.com/GiganticMinecraft/SeichiAssist/issues/540 対策。
              */
-            s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.setScale(1).toPlainString}",
+            s"$RESET${AQUA}総建築量: ${"" + totalBuildNum}",
             s"$RESET$DARK_GRAY※1分毎に更新"
           )
           .build()
