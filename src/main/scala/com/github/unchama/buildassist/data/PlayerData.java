@@ -1,7 +1,6 @@
 package com.github.unchama.buildassist.data;
 
 import com.github.unchama.buildassist.BuildAssist;
-import com.github.unchama.buildassist.util.Util;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.BuildCount;
 import org.bukkit.Bukkit;
@@ -11,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static com.github.unchama.buildassist.BuildBlock.*;
+import static com.github.unchama.buildassist.BuildBlock.calcBuildBlock;
 
 public final class PlayerData {
     public final String name;
@@ -30,8 +29,7 @@ public final class PlayerData {
     // 一括設置関連
     public boolean isEnabledBulkBlockPlace;
     public boolean fillSurface;
-    // FIXME: 殺れ！！！！！！
-    public int actualRangeIndex;
+
     /**
      * ブロックを直線に並べるスキル設定フラグ
      * 0: OFF
@@ -47,13 +45,12 @@ public final class PlayerData {
      * 2: 両方
      */
     public int lineUpStepFlag;
-    // TODO: boolean
-    public int breakLightBlockFlag;
-    public int preferMineStackI;
+    public boolean breakLightBlockFlagBool;
+
     /**
      * ブロック範囲設置スキル設定フラグ
      */
-    public boolean preferMineStackZ;
+    public boolean preferMineStackBool;
     /**
      * 1分のブロック設置数
      */
@@ -81,14 +78,11 @@ public final class PlayerData {
         doesEndlessFly = false;
         isEnabledBulkBlockPlace = false;
         fillSurface = true;
-        actualRangeIndex = 2;
 
         lineFillFlag = LineFillState.OFF.internalId;
         lineUpStepFlag = 0;
-        breakLightBlockFlag = 0;
-        preferMineStackI = 0;
-
-        preferMineStackZ = false;
+        breakLightBlockFlagBool = false;
+        preferMineStackBool = false;
 
         buildCountBuffer = BigDecimal.ZERO;
 
@@ -148,12 +142,10 @@ public final class PlayerData {
         if (server_num >= 1 && server_num <= 3) {
             byte f = playerdata_s.buildCount().migrationFlag();
             if ((f & (0x01 << server_num)) == 0) {
-                if (f == 0) {
-                    // 初回は加算じゃなくベースとして代入にする
-                    totalBuildCount = calcBuildBlock(player);
-                } else {
-                    totalBuildCount = totalBuildCount.add(calcBuildBlock(player));
-                }
+                // 初回は加算じゃなくベースとして代入にする
+                totalBuildCount = f == 0
+                        ? calcBuildBlock(player)
+                        : totalBuildCount.add(calcBuildBlock(player));
                 f = (byte) (f | (0x01 << server_num));
                 final BuildCount updatedBuildCount = playerdata_s.buildCount().copy(oldBuildCount.lv(), totalBuildCount, f);
                 playerdata_s.buildCount_$eq(updatedBuildCount);
@@ -182,12 +174,9 @@ public final class PlayerData {
         final BuildCount oldBuildCount = playerData.buildCount();
 
         //1分制限の判断
-        final BigDecimal newBuildCount;
-        if (buildCountBuffer.doubleValue() <= BuildAssist.config().getBuildNum1minLimit()) {
-            newBuildCount = totalBuildCount.add(buildCountBuffer);
-        } else {
-            newBuildCount = totalBuildCount.add(new BigDecimal(BuildAssist.config().getBuildNum1minLimit()));
-        }
+        final BigDecimal newBuildCount = buildCountBuffer.doubleValue() <= BuildAssist.config().getBuildDeltaLimitPerMinute()
+                ? buildCountBuffer
+                : new BigDecimal(BuildAssist.config().getBuildDeltaLimitPerMinute());
 
         playerData.buildCount_$eq(new BuildCount(level, newBuildCount, oldBuildCount.migrationFlag()));
     }

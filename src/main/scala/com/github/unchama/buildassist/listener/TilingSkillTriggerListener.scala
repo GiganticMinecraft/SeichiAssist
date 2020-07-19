@@ -1,6 +1,7 @@
 package com.github.unchama.buildassist.listener
 
 import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.repo.InMemoryBulkFillRangeRepo
 import com.github.unchama.buildassist.util.Util
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.external.ExternalPlugins
@@ -36,7 +37,7 @@ object TilingSkillTriggerListener extends Listener {
     }
 
     if (!(player.isSneaking &&
-      BuildAssist.materiallist.contains(offHandItem.getType) &&
+      BuildAssist.fillBlocks.contains(offHandItem.getType) &&
       buildAssistPlayerData.isEnabledBulkBlockPlace)) return
 
     val clickedBlock = event.getClickedBlock
@@ -47,7 +48,7 @@ object TilingSkillTriggerListener extends Listener {
     }
 
     //スキルの範囲設定
-    val areaInt = buildAssistPlayerData.actualRangeIndex
+    val areaInt = (InMemoryBulkFillRangeRepo.get(player) - 1) / 2
 
     //設置範囲の基準となる座標
     val centerX = clickedBlock.getX
@@ -63,7 +64,7 @@ object TilingSkillTriggerListener extends Listener {
         .find { obj =>
           offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
         }
-        .filter(_ => buildAssistPlayerData.preferMineStackZ)
+        .filter(_ => buildAssistPlayerData.preferMineStackBool)
 
     val replaceableMaterials = Set(
       Material.AIR,
@@ -190,7 +191,7 @@ object TilingSkillTriggerListener extends Listener {
 
     if (Util.inTrackedWorld(player)) {
       //設置した数を足す
-      Util.increaseBuildCount(player, new java.math.BigDecimal(placementCount * BuildAssist.config.getBlockCountMag))
+      Util.increaseBuildCount(player, new java.math.BigDecimal(placementCount * BuildAssist.config.getBlockMultWithSkills))
     }
   }
 

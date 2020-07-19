@@ -147,7 +147,7 @@ object BuildMainMenu extends Menu {
         .lore(
           s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
           s"$RESET${GRAY}現在の設定",
-          s"$RESET${GRAY}MineStack優先設定:${if (openerData.preferMineStackZ) "ON" else "OFF"}"
+          s"$RESET${GRAY}MineStack優先設定:${if (openerData.preferMineStackBool) "ON" else "OFF"}"
         )
         .build()
 
@@ -216,8 +216,8 @@ object BuildMainMenu extends Menu {
           s"$RESET${GRAY}現在の設定",
           s"$RESET${GRAY}スキル設定: ${BuildAssist.lineFillFlag(openerData.lineFillFlag)}",
           s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.lineUpStepStr(openerData.lineUpStepFlag)}",
-          s"$RESET${GRAY}破壊設定: ${BuildAssist.onOrOff(openerData.breakLightBlockFlag)}",
-          s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.onOrOff(openerData.preferMineStackI)}"
+          s"$RESET${GRAY}破壊設定: ${MenuInventoryData.getOnOff(openerData.breakLightBlockFlagBool)}",
+          s"$RESET${GRAY}MineStack優先設定: ${MenuInventoryData.getOnOff(openerData.preferMineStackBool)}"
         )
         .build()
 
