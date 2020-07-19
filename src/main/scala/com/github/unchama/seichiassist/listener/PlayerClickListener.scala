@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
+import java.util.function.Consumer
+
 import cats.effect.IO
 import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -18,14 +20,16 @@ import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.ThrownExpBottle
+import org.bukkit.entity.{ExperienceOrb, ThrownExpBottle}
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
+import org.bukkit.metadata.{FixedMetadataValue, MetadataValue}
 import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
+import scala.util.Random
 
 class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
 
@@ -427,8 +431,13 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
       val count = playerInventory.getItemInMainHand.getAmount
 
-      (0 until count).foreach { _ => player.launchProjectile(classOf[ThrownExpBottle]) }
+      // TODO: ThrownExpBottleには経験値の量を操作するAPIが付随していない
+      // val proj = player.launchProjectile(classOf[ThrownExpBottle])
+      // 一つに付きもたらされる経験値量は3..11。ソースはGamepedia
+      val exp = (0 until count).map(_ => Random.nextInt(8) + 3).sum
 
+      // とりあえず経験値オーブをスポーンさせておく
+      player.getWorld.spawn(player.getLocation, classOf[ExperienceOrb], { (_: ExperienceOrb).setExperience(exp) })
       playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
       event.setCancelled(true)
     }
