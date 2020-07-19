@@ -128,7 +128,7 @@ object MebiusListener {
     " XVI", " XVII", " XVIII", " XIX", " XX"
   )
 
-  private val tips = List(
+  val tips = List(
     "僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
     "僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！",
     "僕たち兄弟のステータスはみんなバラバラなんだよー！",
@@ -144,17 +144,6 @@ object MebiusListener {
   // デバッグフラグ
   private var DEBUGENABLE = false
   private val debugFlg = false
-
-  // Tipsが呼び出されたとき
-  def callTips(player: Player): Unit = if (isEquip(player)) {
-    val no = new Random().nextInt(tips.size + 1)
-    if (no == tips.size) {
-      getPlayerData(player).mebius.speak(getTalk(getMebiusLevel(player.getInventory.getHelmet)))
-    } else {
-      // tipsの中身を設定
-      getPlayerData(player).mebius.speak(tips(no))
-    }
-  }
 
   /** ブロックを破壊した時 */
   def onBlockBreak(event: BlockBreakEvent): Unit = { // TODO move to class
@@ -279,7 +268,7 @@ object MebiusListener {
   }
 
   // MebiusのLvを取得
-  private def getMebiusLevel(mebius: ItemStack): Int = {
+  def getMebiusLevel(mebius: ItemStack): Int = {
     mebius.getItemMeta.getLore.get(LV).replace(ILHEAD, "").toInt
   }
 
@@ -400,7 +389,7 @@ object MebiusListener {
   }
 
   // Talkを取得
-  private def getTalk(level: Int): String = TALKDEST(level - 1).mebiusMessage
+  def getTalk(level: Int): String = TALKDEST(level - 1).mebiusMessage
 
   private def setEnchant(meta: ItemMeta, level: Int, player: Player): Unit = { // LvMAXなら無限とLoreをセット
     if (level == LVMAX) {
@@ -458,14 +447,12 @@ object MebiusListener {
   }
 }
 
-class MebiusListener() // 起動時
-  extends Listener {
+class MebiusListener() extends Listener {
 
   if (SeichiAssist.seichiAssistConfig.getMebiusDebug == 1) { // mebiusdebug=1の時はコマンドでトグル可能
     Bukkit.getServer.getConsoleSender.sendMessage(RED + "メビウス帽子のdebugモードトグル機能：有効")
     MebiusListener.DEBUGENABLE = true
-  }
-  else { // debugmode=0の時はトグル不可能
+  } else { // debugmode=0の時はトグル不可能
     Bukkit.getServer.getConsoleSender.sendMessage(ChatColor.GREEN + "メビウス帽子のdebugモードトグル機能：無効")
   }
 

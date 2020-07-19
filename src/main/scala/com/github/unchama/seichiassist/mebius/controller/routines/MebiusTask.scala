@@ -1,11 +1,14 @@
 package com.github.unchama.seichiassist.mebius.controller.routines
 
-import java.util.{Objects, Random, UUID}
+import java.util.{Objects, UUID}
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
-import org.bukkit.{Bukkit, ChatColor, Sound}
+import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener.tips
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.{Bukkit, ChatColor, Sound}
+
+import scala.util.Random
 
 /**
  * 2分に1回呼び出される
@@ -31,8 +34,14 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
     // 前回喋って2分経過によりお喋り解禁
     silence = false
 
-    // Tipsを呼び出し
-    MebiusListener.callTips(p)
+    val no = Random.nextInt(MebiusListener.tips.size + 1)
+
+    if (no == tips.size) {
+      speak(MebiusListener.getTalk(MebiusListener.getMebiusLevel(p.getInventory.getHelmet)))
+    } else {
+      // tipsの中身を設定
+      speak(tips(no))
+    }
   }
 
   // silence OFFかつ50%でmessageを喋って、silence trueにする
