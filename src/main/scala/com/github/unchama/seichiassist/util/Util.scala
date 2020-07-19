@@ -329,7 +329,7 @@ object Util {
 
     val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
 
-    if (skullMeta.getLore == null) return false
+    if (!skullMeta.hasLore) return false
     if (!skullMeta.getLore.contains(s"$RESET${GREEN}右クリックで使えます")) return false
 
     // オーナーがunchamaか？
