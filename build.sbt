@@ -38,10 +38,13 @@ val testDependencies = Seq(
 val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1",
   "org.flywaydb" % "flyway-core" % "5.2.4",
+  "org.scalikejdbc" %% "scalikejdbc" % "3.4.2",
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
   "org.typelevel" %% "cats-core" % "2.1.0",
   "org.typelevel" %% "cats-effect" % "2.1.0",
   "eu.timepit" %% "refined" % "0.9.10",
-  "com.beachape" %% "enumeratum" % "1.5.13"
+  "com.beachape" %% "enumeratum" % "1.5.13",
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 )
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
@@ -84,6 +87,10 @@ excludeFilter in unmanagedResources :=
   filesToBeReplacedInResourceFolder.foldLeft((excludeFilter in unmanagedResources).value)(_.||(_))
 
 logLevel := Level.Debug
+
+// ScalaPBの設定
+PB.protoSources in Compile := Seq(baseDirectory.value / "protocol")
+PB.targets in Compile := Seq(scalapb.gen() -> (sourceManaged in Compile).value / "scalapb")
 
 lazy val root = (project in file("."))
   .settings(

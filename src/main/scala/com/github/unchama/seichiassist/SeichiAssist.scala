@@ -7,6 +7,9 @@ import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
+import com.github.unchama.itemmigration._
+import com.github.unchama.itemmigration.domain.ItemMigrations
+import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -17,6 +20,10 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
+import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
+import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
+import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
@@ -26,6 +33,7 @@ import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 
@@ -90,6 +98,13 @@ class SeichiAssist extends JavaPlugin() {
       logger.info(s"${GREEN}config.ymlの設定値を書き換えて再起動してください")
     }
 
+    {
+      val config = SeichiAssist.seichiAssistConfig
+      import config._
+      ScalikeJDBCConfiguration.initializeConnectionPool(s"$getURL/$getDB", getID, getPW)
+      ScalikeJDBCConfiguration.initializeGlobalConfigs()
+    }
+
     try {
       SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
         SeichiAssist.seichiAssistConfig.getURL, SeichiAssist.seichiAssistConfig.getDB,
@@ -112,6 +127,33 @@ class SeichiAssist extends JavaPlugin() {
     if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
       logger.severe("MineStack用ガチャデータのロードに失敗しました")
       Bukkit.shutdown()
+    }
+
+    val migrations: ItemMigrations = SeichiAssistItemMigrations.seq
+
+    {
+      val itemMigrationBatches = List(
+        // DB内アイテムのマイグレーション
+        ItemMigrationService(
+          new PersistedItemsMigrationVersionRepository()
+        ).runMigration(migrations)(SeichiAssistPersistedItems),
+
+        // ワールド内アイテムのマイグレーション
+        ItemMigrationService(
+          new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId)
+        ).runMigration(migrations)(SeichiAssistWorldLevelData),
+      )
+
+      import cats.implicits._
+      itemMigrationBatches.sequence.unsafeRunSync()
+    }
+
+    // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナー
+    val playerItemMigrationControllerListeners: Seq[Listener] = {
+      import PluginExecutionContexts.asyncShift
+      val service = ItemMigrationService(new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId))
+
+      new PlayerItemMigrationEntryPoints(migrations, service).listenersToBeRegistered
     }
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
@@ -175,6 +217,7 @@ class SeichiAssist extends JavaPlugin() {
       new MenuHandler()
     )
       .concat(repositories)
+      .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)
       }
