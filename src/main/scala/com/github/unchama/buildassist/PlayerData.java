@@ -51,7 +51,7 @@ public final class PlayerData {
     //プレイヤーデータクラスのコンストラクタ
     public PlayerData(final Player player) {
         //初期値を設定
-        name = Util.getName(player);
+        name = player.getName().toLowerCase();
         uuid = player.getUniqueId();
         totalbuildnum = BigDecimal.ZERO;
         level = 1;

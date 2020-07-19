@@ -29,7 +29,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 import scala.util.control.Breaks
 
@@ -59,15 +58,6 @@ class PlayerData(
   //放置時間
   var idleMinute = 0
 
-  //各統計値差分計算用配列
-  lazy private val statisticsData: mutable.ArrayBuffer[Int] = {
-    val buffer: mutable.ArrayBuffer[Int] = ArrayBuffer()
-
-    buffer ++= (MaterialSets.materials -- PlayerData.exclude).toBuffer[Material]
-      .map(material => player.getStatistic(Statistic.MINE_BLOCK, material))
-
-    buffer
-  }
   //経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
@@ -299,15 +289,17 @@ class PlayerData(
 
   //join時とonenable時、プレイヤーデータを最新の状態に更新
   def updateOnJoin(): Unit = {
+    // 前回統計を取った時との差分から整地量を計算するため、最初は統計量を0にしておく
+    // FIX(#542): 即時反映にする
+    {
+      (MaterialSets.materials -- PlayerData.exclude).foreach { m =>
+        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
+      }
+    }
+
     //破壊量データ(before)を設定
     halfhourblock.before = totalbreaknum
     updateLevel()
-
-    // TODO statisticsDataは別の箇所に持たれるべき
-    // statisticsDataを初期化する
-    {
-      statisticsData
-    }
 
     if (unclaimedApologyItems > 0) {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
@@ -371,48 +363,33 @@ class PlayerData(
 
   //プレイヤーレベルを計算し、更新する。
   private def updatePlayerLevel(): Unit = {
-    //現在のランクを取得
-    var i: Int = level
-
     //既にレベル上限に達していたら終了
-    if (i >= LevelThresholds.levelExpThresholds.size) return
+    if (level >= LevelThresholds.levelExpThresholds.size) return
 
-    // TODO: 三枚におろして処す
-    val increasingRank = new Breaks
-    increasingRank.breakable {
+    val previousLevel = level
+    level = LevelThresholds.levelExpThresholds
+      .lastIndexWhere(threshold => threshold <= totalbreaknum) + 1
 
-      //ランクが上がらなくなるまで処理
-      while (LevelThresholds.levelExpThresholds(i) <= totalbreaknum && i + 1 <= LevelThresholds.levelExpThresholds.size) {
-        //レベルアップ時のメッセージ
-        player.sendMessage(s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv($i)→Lv(${i + 1})】")
+    for (l <- previousLevel until level) {
+      //レベルアップ時のメッセージ
+      player.sendMessage(s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv($l)→Lv(${l+1})】")
 
-        //レベルアップイベント着火
-        Bukkit.getPluginManager.callEvent(new SeichiLevelUpEvent(player, this, i + 1))
+      //レベルアップイベント着火
+      Bukkit.getPluginManager.callEvent(new SeichiLevelUpEvent(player, this, l+1))
 
-        //レベルアップ時の花火の打ち上げ
-        val loc = player.getLocation
-        Util.launchFireWorks(loc) // TODO: fix Util
-        val lvmessage = SeichiAssist.seichiAssistConfig.getLvMessage(i + 1)
-        if (!lvmessage.isEmpty) {
-          player.sendMessage(AQUA + lvmessage)
-        }
+      //レベルアップ時の花火の打ち上げ
+      Util.launchFireWorks(player.getLocation) // TODO: fix Util
 
-        i += 1
-
-        if (manaState.isLoaded) {
-          //マナ最大値の更新
-          manaState.onLevelUp(player, i)
-        }
-
-        //レベル上限に達したら終了
-        if (i >= LevelThresholds.levelExpThresholds.size) {
-          increasingRank.break()
-        }
+      val lvMessage = SeichiAssist.seichiAssistConfig.getLvMessage(l+1)
+      if (!lvMessage.isEmpty) {
+        player.sendMessage(AQUA + lvMessage)
       }
 
+      //マナ最大値の更新
+      if (manaState.isLoaded) {
+        manaState.onLevelUp(player, l+1)
+      }
     }
-
-    level = i
   }
 
   /**
@@ -522,21 +499,13 @@ class PlayerData(
 
   //総破壊ブロック数を更新する
   def updateAndCalcMinedBlockAmount(): Int = {
-    val blockIncreases = for {
-      (m, i) <- (MaterialSets.materials -- PlayerData.exclude).zipWithIndex
-    } yield {
-      val materialStatistics = player.getStatistic(Statistic.MINE_BLOCK, m)
-      val increase = materialStatistics - statisticsData(i)
-      val amount = calcBlockExp(m, increase)
-      if (SeichiAssist.DEBUG) {
-        if (amount > 0.0) {
-          player.sendMessage(s"calcの値:$amount($m)")
-        }
-      }
-      statisticsData(i) = materialStatistics
+    val blockIncreases =
+      (MaterialSets.materials -- PlayerData.exclude).map { m =>
+        val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
+        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
 
-      amount
-    }
+        calcBlockExp(m, increase)
+      }
 
     val sum = blockIncreases.sum.round.toInt
 

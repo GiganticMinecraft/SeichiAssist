@@ -1,6 +1,5 @@
 package com.github.unchama.buildassist;
 
-import com.github.unchama.buildassist.util.TypeConverter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -66,36 +65,36 @@ public class BuildAssistConfig {
 
     //ブロックを並べるスキルのマナ消費倍率
     public double getblocklineupmana_mag() {
-        return TypeConverter.toDouble(config.getString("blocklineup.mana_mag"));
+        return Double.parseDouble(config.getString("blocklineup.mana_mag"));
     }
 
     //ブロックを並べるスキルマインスタック優先開放LV
     public int getblocklineupMinestacklevel() {
-        return TypeConverter.toInt(config.getString("blocklineup.minestack_level"));
+        return Integer.parseInt(config.getString("blocklineup.minestack_level"));
     }
 
     public int getZoneSetSkillLevel() {
-        return TypeConverter.toInt(config.getString("ZoneSetSkill.level"));
+        return Integer.parseInt(config.getString("ZoneSetSkill.level"));
     }
 
     //スキルを使って並べた時のブロックカウント倍率
     public double getBlockCountMag() {
-        return TypeConverter.toDouble(config.getString("BlockCountMag"));
+        return Double.parseDouble(config.getString("BlockCountMag"));
     }
 
     //MineStackブロック一括クラフト開放LV
     public int getMinestackBlockCraftlevel(int lv) {
-        return TypeConverter.toInt(config.getString("minestack_BlockCraft.level" + lv));
+        return Integer.parseInt(config.getString("minestack_BlockCraft.level" + lv));
     }
 
     //ブロック設置カウントの1分上限
     public int getBuildNum1minLimit() {
-        return TypeConverter.toInt(config.getString("BuildNum1minLimit"));
+        return Integer.parseInt(config.getString("BuildNum1minLimit"));
     }
 
     //ブロック範囲設置スキルのマインスタック優先解放レベル
     public int getZoneskillMinestacklevel() {
-        return TypeConverter.toInt(config.getString("ZoneSetSkill.minestack"));
+        return Integer.parseInt(config.getString("ZoneSetSkill.minestack"));
     }
 
 }

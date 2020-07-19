@@ -15,18 +15,6 @@ public final class Util {
     private Util() {
     }
 
-    public static int toInt(final String s) {
-        return Integer.parseInt(s);
-    }
-
-    public static String getName(final Player p) {
-        return p.getName().toLowerCase();
-    }
-
-    public static String getName(final String name) {
-        return name.toLowerCase();
-    }
-
     //ワールドガードAPIを返す
     public static WorldGuardPlugin getWorldGuard() {
         final Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -46,15 +34,10 @@ public final class Util {
      * @return 発動できる場合はtrue、できない場合はfalse
      */
     public static boolean isSkillEnable(final Player player) {
-        //デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-        String worldname = SeichiAssist.SEICHIWORLDNAME();
-        if (SeichiAssist.DEBUG()) {
-            worldname = SeichiAssist.DEBUGWORLDNAME();
-        }
         //プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)または各種TTワールドにいる場合
         // TODO: ManagedWorldへ移行
         final String name = player.getWorld().getName();
-        return name.toLowerCase().startsWith(worldname)
+        return name.toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())
                 || name.equalsIgnoreCase("world")
                 || name.equalsIgnoreCase("world_2")
                 || name.equalsIgnoreCase("world_nether")
@@ -73,10 +56,6 @@ public final class Util {
      * @return いる場合はtrue、いない場合はfalse
      */
     public static boolean inTrackedWorld(final Player player) {
-        //デバッグモード時は全ワールドでスキル使用を許可する(DEBUGWORLDNAME = worldの場合)
-        if (SeichiAssist.DEBUG()) {
-            return true;
-        }
         final String name = player.getWorld().getName();
         //プレイヤーの場所がメインワールド(world)または各種整地ワールド(world_SW)にいる場合
         return name.toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())

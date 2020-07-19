@@ -75,8 +75,7 @@ class SeichiAssist extends JavaPlugin() {
 
 
     //コンフィグ系の設定は全てConfig.javaに移動
-    SeichiAssist.seichiAssistConfig = new Config()
-    SeichiAssist.seichiAssistConfig.loadConfig()
+    SeichiAssist.seichiAssistConfig = Config.loadFrom(this)
 
     if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
       //debugmode=1の時は最初からデバッグモードで鯖を起動

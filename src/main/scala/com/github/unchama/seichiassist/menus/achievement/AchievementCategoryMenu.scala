@@ -11,12 +11,14 @@ import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
-import com.github.unchama.seichiassist.{CommonSoundEffects, SkullOwners}
+import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player
 
 object AchievementCategoryMenu {
+
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
 

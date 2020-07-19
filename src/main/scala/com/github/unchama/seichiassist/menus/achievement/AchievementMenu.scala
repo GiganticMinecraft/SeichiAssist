@@ -11,7 +11,8 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
-import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
@@ -19,6 +20,7 @@ import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
 object AchievementMenu extends Menu {
+
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
