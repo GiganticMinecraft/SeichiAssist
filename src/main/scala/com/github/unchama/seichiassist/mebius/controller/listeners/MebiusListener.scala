@@ -163,16 +163,6 @@ object MebiusListener {
     }
   }
 
-  /**
-   * 新規Mebius配布処理
-   * 新規参加者に配る
-   */
-  // FIXME This is listener class.
-  @deprecated def give(player: Player): Unit = {
-    val mebius = create(null, player)
-    player.getInventory.setHelmet(mebius)
-  }
-
   // 新規Mebius発見処理(採掘時)
   private def discovery(player: Player): Unit = {
     val mebius = create(null, player)
@@ -252,7 +242,7 @@ object MebiusListener {
   }
 
   // 新しいMebiusのひな形を作る
-  private def create(mebius: ItemStack, player: Player): ItemStack = {
+  def create(mebius: ItemStack, player: Player): ItemStack = {
     val (name, nickname, level, enchantments) =
       if (mebius != null) {
         val level = getMebiusLevel(mebius) + 1

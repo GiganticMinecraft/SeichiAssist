@@ -101,8 +101,8 @@ class PlayerJoinListener extends Listener {
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {
       //初見さんであることを全体告知
-      Util.sendEveryMessage(LIGHT_PURPLE.toString + "" + BOLD + player.getName + "さんはこのサーバーに初めてログインしました！")
-      Util.sendEveryMessage(WHITE.toString + "webサイトはもう読みましたか？→" + YELLOW + "" + UNDERLINE + "https://www.seichi.network/gigantic")
+      Util.sendEveryMessage(s"${LIGHT_PURPLE.toString}$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
+      Util.sendEveryMessage(s"${WHITE.toString}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       player.getInventory.addItem(new ItemStack(Material.STICK))
@@ -115,12 +115,13 @@ class PlayerJoinListener extends Listener {
         new ItemStack(Material.LOG, 64, 2.toShort),
         new ItemStack(Material.LOG_2, 64, 1.toShort))
 
+      //メビウスおひとつどうぞ
+      player.getInventory.setHelmet(MebiusListener.create(null, player))
+
       /* 期間限定ダイヤ配布.期間終了したので64→32に変更して恒久継続 */
       player.getInventory.addItem(new ItemStack(Material.DIAMOND, 32))
 
       player.sendMessage("初期装備を配布しました。Eキーで確認してネ")
-      //メビウスおひとつどうぞ
-      MebiusListener.give(player)
       //初見さんにLv1メッセージを送信
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
