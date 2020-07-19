@@ -5,7 +5,7 @@ import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.listener.MebiusListener
+import com.github.unchama.seichiassist.mebius.controller.MebiusListener
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -20,8 +20,6 @@ object MebiusCommand {
 
     BranchedExecutor(
       Map(
-        "get" -> getExecutor,
-        "debug" -> debugExecutor,
         "nickname" -> ChildExecutors.NicknameCommand.executor,
         "naming" -> namingExecutor
       ), whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
@@ -47,8 +45,6 @@ object MebiusCommand {
           ""
         )
       }
-
-    val permissionWarning: TargetedEffect[CommandSender] = MessageEffect(s"${RED}このコマンドは権限者のみが実行可能です.")
   }
 
   private object ChildExecutors {
@@ -56,27 +52,6 @@ object MebiusCommand {
       .execution { _ => IO(Messages.commandDescription) }
       .build()
 
-    val getExecutor: ContextualExecutor = playerCommandBuilder
-      .execution { context =>
-        if (!context.sender.isOp) {
-          IO(Messages.permissionWarning)
-        } else {
-          MebiusListener.debugGive(context.sender)
-          IO(emptyEffect)
-        }
-      }
-      .build()
-
-    val debugExecutor: ContextualExecutor = playerCommandBuilder
-      .execution { context =>
-        if (!context.sender.isOp) {
-          IO(Messages.permissionWarning)
-        } else {
-          MebiusListener.debug(context.sender)
-          IO(emptyEffect)
-        }
-      }
-      .build()
     val namingExecutor: ContextualExecutor = playerCommandBuilder
       .argumentsParsers(List(Parsers.identity))
       .execution { context =>

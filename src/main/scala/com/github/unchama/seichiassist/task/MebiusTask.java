@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.task;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.listener.MebiusListener;
+import com.github.unchama.seichiassist.mebius.controller.MebiusListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
