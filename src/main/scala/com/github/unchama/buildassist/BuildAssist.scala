@@ -1,13 +1,14 @@
 package com.github.unchama.buildassist
 
 import java.util
-import java.util.{ArrayList, EnumSet, UUID}
+import java.util.UUID
 
 import com.github.unchama.buildassist.command.FlyCommand
 import com.github.unchama.buildassist.data.PlayerData
-import com.github.unchama.buildassist.listener.{AntiLargeFireball, BlockLineUpTriggerListener, BlockPlaceEventListener, PlayerInventoryListener, PlayerJoinListener, PlayerLeftClickListener, PlayerQuitListener, TilingSkillTriggerListener}
+import com.github.unchama.buildassist.listener._
 import com.github.unchama.buildassist.task.UpdateFlyStateTask
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
+import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Bukkit, Material}
@@ -19,32 +20,41 @@ class BuildAssist(plugin: Plugin) {
   import collection.JavaConverters._
 
   //起動するタスクリスト
-  private val tasklist = new util.ArrayList[BukkitTask]()
-  private var commandlist = mutable.HashMap[String, CommandExecutor]()
+  private val tasks = new util.ArrayList[BukkitTask]()
+  private var commands = mutable.HashMap[String, CommandExecutor]()
 
   {
-    BuildAssist.plugin = plugin
+    BuildAssist.instance = plugin
   }
 
   def onEnable(): Unit = {
     //コンフィグ系の設定は全てConfig.javaに移動
-    BuildAssist.config = new BuildAssistConfig(plugin)
+    BuildAssist.config = new BuildAssistConfig()
     BuildAssist.config.loadConfig()
 
 
     //コマンドの登録
-    commandlist = mutable.HashMap()
-    commandlist += "fly" -> new FlyCommand()
+    commands = mutable.HashMap()
+    commands += "fly" -> new FlyCommand()
 
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new AntiLargeFireball(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(PlayerLeftClickListener, plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
-    Bukkit.getServer.getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
-    Bukkit.getServer.getPluginManager.registerEvents(BlockLineUpTriggerListener, plugin) //ブロックを並べるスキル
-    Bukkit.getServer.getPluginManager.registerEvents(TilingSkillTriggerListener, plugin) //一括設置スキル
+    def register(listener: Listener): Unit = {
+      Bukkit.getServer.getPluginManager.registerEvents(listener, plugin)
+    }
 
+    Set(
+      new PlayerJoinListener(),
+      new AntiLargeFireball(),
+      PlayerLeftClickListener,
+      new PlayerInventoryListener(),
+      //退出時
+      new PlayerQuitListener(),
+      //ブロックを置いた時
+      new BlockPlaceEventListener(),
+      //ブロックを並べるスキル
+      BlockLineUpTriggerListener,
+      //一括設置スキル
+      TilingSkillTriggerListener
+    ).foreach(register)
 
     for (p <- Bukkit.getServer.getOnlinePlayers.asScala) {
       val uuid = p.getUniqueId
@@ -57,19 +67,18 @@ class BuildAssist(plugin: Plugin) {
     }
     plugin.getLogger.info("BuildAssist is Enabled!")
 
-    tasklist.add(new UpdateFlyStateTask().runTaskTimer(plugin, 0, 1200))
+    tasks.add(new UpdateFlyStateTask().runTaskTimer(plugin, 0, 1200))
   }
 
   def onCommand(sender: CommandSender, cmd: Command, label: String, args: Array[String]): Boolean = {
-    commandlist.get(cmd.getName).exists(_.onCommand(sender, cmd, label, args))
+    commands.get(cmd.getName).exists(_.onCommand(sender, cmd, label, args))
   }
 
   def onDisable(): Unit = {
-    for (task <- this.tasklist.asScala) {
+    for (task <- this.tasks.asScala) {
       task.cancel()
     }
   }
-
 }
 
 object BuildAssist {
@@ -100,9 +109,7 @@ object BuildAssist {
     5000000
   )
   //範囲設置ブロックの対象リスト
-  val materiallist: java.util.Set[Material] = util.EnumSet.of(
-
-
+  val fillBlocks: java.util.Set[Material] = util.EnumSet.of(
     Material.STONE //石
     , Material.GRASS //草
     , Material.DIRT //土
@@ -189,7 +196,7 @@ object BuildAssist {
   )
 
   //直列設置ブロックの対象リスト
-  val materiallist2: java.util.Set[Material] = util.EnumSet.of(
+  val linearBlocks: java.util.Set[Material] = util.EnumSet.of(
     Material.STONE //石
     , Material.GRASS //草
     , Material.DIRT //土
@@ -261,14 +268,14 @@ object BuildAssist {
   )
 
   //ハーフブロックとして扱うMaterial
-  val material_slab2: java.util.Set[Material] = util.EnumSet.of(
+  val slabMaterials: java.util.Set[Material] = util.EnumSet.of(
     Material.STONE_SLAB2 //赤砂岩
     , Material.PURPUR_SLAB //プルパー
     , Material.WOOD_STEP //木
     , Material.STEP //石
   )
 
-  val material_destruction: java.util.Set[Material] = util.EnumSet.of(
+  val autoDestructMaterials: java.util.Set[Material] = util.EnumSet.of(
     Material.LONG_GRASS //草
     , Material.DEAD_BUSH //枯れ木
     , Material.YELLOW_FLOWER //タンポポ
@@ -282,10 +289,9 @@ object BuildAssist {
     , Material.STATIONARY_WATER //水
   )
 
-  var plugin: Plugin = _
+  var instance: Plugin = _
   val DEBUG: Boolean = false
   var config: BuildAssistConfig = _
   val lineFillFlag: Seq[String] = Seq("OFF", "上側", "下側")
   val lineUpStepStr: Seq[String] = Seq("上側", "下側", "両方")
-  val onOrOff: Seq[String] = Seq("OFF", "ON")
 }

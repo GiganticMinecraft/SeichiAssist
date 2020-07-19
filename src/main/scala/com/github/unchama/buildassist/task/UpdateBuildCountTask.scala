@@ -13,7 +13,7 @@ class UpdateBuildCountTask extends BukkitRunnable {
 
       // 1分間の建築量を加算する
       val actualBuildCount = playerdata.buildCountBuffer.doubleValue
-      val limit = BuildAssist.config.getBuildNum1minLimit
+      val limit = BuildAssist.config.getBuildDeltaLimitPerMinute
       // デルタが上限以上なら上限に丸める
       val delta = if (actualBuildCount > limit)
         new BigDecimal(limit)

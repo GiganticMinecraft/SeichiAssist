@@ -5,11 +5,9 @@ import org.bukkit.plugin.Plugin;
 
 public class BuildAssistConfig {
     private static FileConfiguration config;
-    private final Plugin plugin;
+    private final Plugin plugin = BuildAssist$.MODULE$.instance();
 
-    //コンストラクタ
-    public BuildAssistConfig(final Plugin plugin) {
-        this.plugin = plugin;
+    public BuildAssistConfig() {
         saveDefaultConfig();
     }
 
@@ -39,13 +37,12 @@ public class BuildAssistConfig {
         return plugin.getConfig();
     }
 
-
     public int getFlyExp() {
         return Integer.parseInt(config.getString("flyexp"));
     }
 
     //ブロックを並べるスキル開放LV
-    public int getblocklineuplevel() {
+    public int getLinearFillSkillLevel() {
         return Integer.parseInt(config.getString("blocklineup.level"));
     }
 
@@ -55,7 +52,7 @@ public class BuildAssistConfig {
     }
 
     //ブロックを並べるスキルマインスタック優先開放LV
-    public int getblocklineupMinestacklevel() {
+    public int getLinearFillSkillPreferMineStackLevel() {
         return Integer.parseInt(config.getString("blocklineup.minestack_level"));
     }
 
@@ -64,7 +61,7 @@ public class BuildAssistConfig {
     }
 
     //スキルを使って並べた時のブロックカウント倍率
-    public double getBlockCountMag() {
+    public double getBlockMultWithSkills() {
         return Double.parseDouble(config.getString("BlockCountMag"));
     }
 
@@ -74,12 +71,12 @@ public class BuildAssistConfig {
     }
 
     //ブロック設置カウントの1分上限
-    public int getBuildNum1minLimit() {
+    public int getBuildDeltaLimitPerMinute() {
         return Integer.parseInt(config.getString("BuildNum1minLimit"));
     }
 
     //ブロック範囲設置スキルのマインスタック優先解放レベル
-    public int getZoneskillMinestacklevel() {
+    public int getRangeFillSkillPreferMineStackLevel() {
         return Integer.parseInt(config.getString("ZoneSetSkill.minestack"));
     }
 

@@ -46,7 +46,7 @@ object BlockLineUpTriggerListener extends Listener {
     val mainHandItemType = mainHandItem.getType
 
     //メインハンドが設置対象ブロックでない場合バイバイ
-    if (!(BuildAssist.materiallist2.contains(mainHandItemType) || BuildAssist.material_slab2.contains(mainHandItemType))) return
+    if (!(BuildAssist.linearBlocks.contains(mainHandItemType) || BuildAssist.slabMaterials.contains(mainHandItemType))) return
 
     //オフハンドに木の棒を持ってるときのみ発動させる
     if (offhandItem.getType != Material.STICK) return
@@ -95,7 +95,7 @@ object BlockLineUpTriggerListener extends Listener {
     val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag()
 
     val mineStackObjectToBeUsed =
-      if (buildAssistData.preferMineStackI == 1)
+      if (buildAssistData.preferMineStackBool)
         MineStackObjectList.minestacklist.find { obj =>
           mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
         }
@@ -131,7 +131,7 @@ object BlockLineUpTriggerListener extends Listener {
       case _ => mainHandItemType
     }
 
-    val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
+    val playerHoldsSlabBlock = BuildAssist.slabMaterials.contains(mainHandItemType)
     val slabLineUpStepMode = buildAssistData.lineUpStepFlag
     val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
 
@@ -163,7 +163,7 @@ object BlockLineUpTriggerListener extends Listener {
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる
-          if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.breakLightBlockFlag == 0) {
+          if (!BuildAssist.autoDestructMaterials.contains(block.getType) || buildAssistData.breakLightBlockFlagBool == 0) {
             linePlace.break
           }
 
@@ -182,7 +182,7 @@ object BlockLineUpTriggerListener extends Listener {
     //カウント対象ワールドの場合カウント値を足す
     if (Util.inTrackedWorld(player)) {
       //対象ワールドかチェック
-      Util.increaseBuildCount(player, new java.math.BigDecimal(placedBlockCount * BuildAssist.config.getBlockCountMag)) //設置した数を足す
+      Util.increaseBuildCount(player, new java.math.BigDecimal(placedBlockCount * BuildAssist.config.getBlockMultWithSkills)) //設置した数を足す
     }
 
     val consumptionFromMainHand = mineStackObjectToBeUsed match {
