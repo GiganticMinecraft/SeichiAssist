@@ -4,7 +4,7 @@ import java.util.{Objects, UUID}
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
-import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener.tips
+import com.github.unchama.seichiassist.mebius.domain.MebiusMessages
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{Bukkit, ChatColor, Sound}
 
@@ -34,13 +34,13 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
     // 前回喋って2分経過によりお喋り解禁
     silence = false
 
-    val no = Random.nextInt(MebiusListener.tips.size + 1)
+    val no = Random.nextInt(MebiusMessages.tips.size + 1)
 
-    if (no == tips.size) {
-      speak(MebiusListener.getTalk(MebiusListener.getMebiusLevel(p.getInventory.getHelmet)))
+    if (no == MebiusMessages.tips.size) {
+      speak(MebiusMessages.talkOnLevelUp(MebiusListener.getMebiusLevel(p.getInventory.getHelmet)).mebiusMessage)
     } else {
       // tipsの中身を設定
-      speak(tips(no))
+      speak(MebiusMessages.tips(no))
     }
   }
 
@@ -52,7 +52,7 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
       // 引数のメッセージを表示
       val name = MebiusListener.getName(p.getInventory.getHelmet)
       playSe()
-      p.sendMessage(ChatColor.RESET + "<" + name + ChatColor.RESET + "> " + message)
+      p.sendMessage(s"${ChatColor.RESET}<$name${ChatColor.RESET}> $message")
       // 次タスクまでお喋り禁止
       silence = true
     }
