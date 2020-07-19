@@ -2,31 +2,17 @@ package com.github.unchama.buildassist.util;
 
 import com.github.unchama.buildassist.BuildAssist;
 import com.github.unchama.buildassist.data.PlayerData;
-import com.github.unchama.seichiassist.MineStackObjectList;
-import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.minestack.MineStackObj;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import org.bukkit.Bukkit;
+import com.github.unchama.seichiassist.ManagedWorld;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.Nullable;
+import scala.Option;
 
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
+@Deprecated
 public final class Util {
     private Util() {
-    }
-
-    //ワールドガードAPIを返す
-    public static WorldGuardPlugin getWorldGuard() {
-        final Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-
-        // WorldGuard may not be loaded
-        if (!(plugin instanceof WorldGuardPlugin)) {
-            return null; // Maybe you want throw an exception instead
-        }
-
-        return (WorldGuardPlugin) plugin;
     }
 
     /**
@@ -37,18 +23,19 @@ public final class Util {
      */
     public static boolean isSkillEnable(final Player player) {
         //プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または各種メインワールド(world)または各種TTワールドにいる場合
-        // TODO: ManagedWorldへ移行
-        final String name = player.getWorld().getName();
-        return name.toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())
-                || name.equalsIgnoreCase("world")
-                || name.equalsIgnoreCase("world_2")
-                || name.equalsIgnoreCase("world_nether")
-                || name.equalsIgnoreCase("world_the_end")
-                || name.equalsIgnoreCase("world_TT")
-                || name.equalsIgnoreCase("world_nether_TT")
-                || name.equalsIgnoreCase("world_the_end_TT")
-                || name.equalsIgnoreCase("world_dot");
-        //それ以外のワールドの場合
+        Option<ManagedWorld> option = ManagedWorld.fromBukkitWorld(player.getWorld());
+        if (option.nonEmpty()) {
+            final ManagedWorld unwrapped = option.get();
+            return ManagedWorld.ManagedWorldOps(unwrapped).isSeichi()
+                    || Stream.of("world", "world_2", "world_nether", "world_the_end",
+                                     "world_TT", "world_nether_TT", "world_the_end_TT", "world_dot")
+                    .map(ManagedWorld::fromName)
+                    .filter(Option::nonEmpty)
+                    .map(Option::get)
+                    .anyMatch(unwrapped::equals);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -58,15 +45,19 @@ public final class Util {
      * @return いる場合はtrue、いない場合はfalse
      */
     public static boolean inTrackedWorld(final Player player) {
-        final String name = player.getWorld().getName();
         //プレイヤーの場所がメインワールド(world)または各種整地ワールド(world_SW)にいるかどうか
-        // TODO: ManagedWorldへ移行
-        return name.toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())
-                || name.equalsIgnoreCase("world")
-                || name.equalsIgnoreCase("world_2")
-                || name.equalsIgnoreCase("world_nether")
-                || name.equalsIgnoreCase("world_the_end")
-                || name.equalsIgnoreCase("world_dot");
+        Option<ManagedWorld> option = ManagedWorld.fromBukkitWorld(player.getWorld());
+        if (option.nonEmpty()) {
+            final ManagedWorld unwrapped = option.get();
+            return ManagedWorld.ManagedWorldOps(unwrapped).isSeichi()
+                    || Stream.of("world", "world_2", "world_nether", "world_the_end", "world_dot")
+                            .map(ManagedWorld::fromName)
+                            .filter(Option::nonEmpty)
+                            .map(Option::get)
+                            .anyMatch(unwrapped::equals);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -78,10 +69,11 @@ public final class Util {
      */
     public static void increaseBuildCount(final Player player, final BigDecimal amount) {
         final PlayerData playerData = BuildAssist.playermap().get(player.getUniqueId()).get();
+        final ManagedWorld mw = ManagedWorld.fromBukkitWorld(player.getWorld())
+                .getOrElse(() -> { throw new NoSuchElementException("Fatal: World " + player.getWorld() + " is not managed"); });
         // 整地ワールドならx0.1
-        // TODO: ManagedWorldへ移行
-        final BigDecimal finalAmount = player.getWorld().getName().toLowerCase().startsWith(SeichiAssist.SEICHIWORLDNAME())
-                ? amount.multiply(new BigDecimal("0.1"))
+        final BigDecimal finalAmount = ManagedWorld.ManagedWorldOps(mw).isSeichi()
+                ? amount.movePointRight(1)
                 : amount;
         playerData.buildCountBuffer = playerData.buildCountBuffer.add(finalAmount);
     }
