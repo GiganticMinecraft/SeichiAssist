@@ -71,8 +71,10 @@ object HalfHourRankingRoutine {
           .foreach { case ((playerData, positionColor), index) =>
             val starLevel = playerData.starLevels.total()
             var playerNameText = ""
-            if(starLevel == 0) playerNameText = s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}$WHITE"
-            else playerNameText = s"$positionColor[ Lv${playerData.level}☆${starLevel} ]${playerData.lowercaseName}$WHITE"
+            playerNameText = if(starLevel == 0) 
+                s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}$WHITE"
+            else 
+                s"$positionColor[ Lv${playerData.level}☆${starLevel} ]${playerData.lowercaseName}$WHITE"
             val increaseAmountText = s"$AQUA${playerData.halfhourblock.increase}$WHITE"
 
             Util.sendEveryMessage(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
