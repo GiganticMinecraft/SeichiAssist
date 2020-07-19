@@ -48,7 +48,7 @@ class PlayerInventoryListener extends Listener {
     val playerdata = playerMap.getOrElse(uuid, return)
 
     //インベントリ名が以下の時処理
-    if (inventory.getTitle != s"${DARK_PURPLE.toString}$BOLD「ブロックを並べるスキル（仮）」設定") {
+    if (inventory.getTitle != s"$DARK_PURPLE$BOLD「ブロックを並べるスキル（仮）」設定") {
       return
     }
 
@@ -76,12 +76,12 @@ class PlayerInventoryListener extends Listener {
 
       case Material.WOOD =>
         //ブロックを並べるスキル設定
-        if (playerdata.level < BuildAssist.config.getblocklineuplevel()) {
-          player.sendMessage(RED.toString + "建築LVが足りません")
+        if (playerdata.level < BuildAssist.config.getLinearFillSkillLevel) {
+          player.sendMessage(s"${RED}建築LVが足りません")
         } else {
           playerdata.lineFillFlag = (playerdata.lineFillFlag + 1) % 3
 
-          player.sendMessage(s"${GREEN.toString}ブロックを並べるスキル（仮） ：${BuildAssist.lineFillFlag.apply(playerdata.lineFillFlag)}")
+          player.sendMessage(s"${GREEN}ブロックを並べるスキル（仮） ：${BuildAssist.lineFillFlag.apply(playerdata.lineFillFlag)}")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
@@ -89,24 +89,24 @@ class PlayerInventoryListener extends Listener {
       case Material.STEP =>
         //ブロックを並べるスキルハーフブロック設定
         playerdata.lineUpStepFlag = (playerdata.lineUpStepFlag + 1) % 3
-        player.sendMessage(s"${GREEN.toString}ハーフブロック設定 ：${BuildAssist.lineUpStepStr(playerdata.lineUpStepFlag)}")
+        player.sendMessage(s"${GREEN}ハーフブロック設定 ：${BuildAssist.lineUpStepStr(playerdata.lineUpStepFlag)}")
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getBlockLineUpData(player))
 
       case Material.TNT =>
         //ブロックを並べるスキル一部ブロックを破壊して並べる設定
-        playerdata.breakLightBlockFlag = if (playerdata.breakLightBlockFlag == 0) 1 else 0
-        player.sendMessage(s"${GREEN.toString}破壊設定 ：${BuildAssist.onOrOff(playerdata.breakLightBlockFlag)}")
+        playerdata.breakLightBlockFlagBool = !playerdata.breakLightBlockFlagBool
+        player.sendMessage(s"${GREEN}破壊設定 ：${MenuInventoryData.getOnOff(playerdata.breakLightBlockFlagBool)}")
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getBlockLineUpData(player))
 
       case Material.CHEST =>
         //マインスタックの方を優先して消費する設定
-        if (playerdata.level < BuildAssist.config.getblocklineupMinestacklevel()) {
-          player.sendMessage(s"${RED.toString}建築LVが足りません")
+        if (playerdata.level < BuildAssist.config.getLinearFillSkillPreferMineStackLevel) {
+          player.sendMessage(s"${RED}建築LVが足りません")
         } else {
-          playerdata.preferMineStackI = if (playerdata.preferMineStackI == 0) 1 else 0
-          player.sendMessage(GREEN.toString + "マインスタック優先設定 ：" + BuildAssist.onOrOff(playerdata.preferMineStackI))
+          playerdata.preferMineStackBool = !playerdata.preferMineStackBool
+          player.sendMessage(s"${GREEN}マインスタック優先設定 ：${MenuInventoryData.getOnOff(playerdata.preferMineStackBool)}")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
