@@ -6,7 +6,8 @@ import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu}
 import com.github.unchama.seichiassist.menus.ColorScheme.{clickResultDescription, navigation}
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
-import com.github.unchama.seichiassist.{CommonSoundEffects, SkullOwners}
+import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 
 /**
  * メニューUIに頻繁に現れるような[Button]を生成する、または定数として持っているオブジェクト.

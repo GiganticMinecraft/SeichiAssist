@@ -7,7 +7,8 @@ import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
-import com.github.unchama.seichiassist.{CommonSoundEffects, SeichiAssist}
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player

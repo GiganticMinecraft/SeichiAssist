@@ -65,13 +65,17 @@ object BuildMainMenu extends Menu {
 
     def computeNotationOfStats(): IO[Button] = RecomputedButton {
       IO {
+        import java.math.RoundingMode
         val openerData = BuildAssist.playermap(getUniqueId)
         val iconItemStack = new SkullItemStackBuilder(getUniqueId)
           .enchanted()
           .title(s"$YELLOW$EMPHASIZE${openerData.name}の建築データ")
           .lore(
             s"$RESET${AQUA}建築レベル: ${openerData.level}",
-            s"$RESET${AQUA}総建築量: ${openerData.totalBuildCount.toPlainString}",
+            /* 小数点以下一桁で表示。
+             * https://github.com/GiganticMinecraft/SeichiAssist/issues/540 対策。
+             */
+            s"$RESET${AQUA}総建築量: ${openerData.totalBuildCount.setScale(1).toPlainString}",
             s"$RESET$DARK_GRAY※1分毎に更新"
           )
           .build()

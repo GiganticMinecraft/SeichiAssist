@@ -125,7 +125,7 @@ public class GachaCommand implements CommandExecutor {
                 //プレイヤー名を取得
                 String name = Util.getName(args[1]);
                 //個数取得
-                int num = TypeConverter.toInt(args[2]);
+                int num = Integer.parseInt(args[2]);
 
                 if (!name.equalsIgnoreCase("all")) {
                     //プレイヤー名がallでない時の処理
@@ -166,7 +166,7 @@ public class GachaCommand implements CommandExecutor {
             }
 
             String name = args[1].toLowerCase();
-            int amount = TypeConverter.toInt(args[2]);
+            int amount = Integer.parseInt(args[2]);
 
             sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券の枚数設定処理開始...");
             if (databaseGateway.playerDataManipulator.changeGachaAmountOf(name, amount) == Fail) {
@@ -224,7 +224,7 @@ public class GachaCommand implements CommandExecutor {
                 //プレイヤー名を取得(小文字にする)
                 String name = Util.getName(args[1]);
                 //配布ポイント数取得
-                int num = TypeConverter.toInt(args[2]);
+                int num = Integer.parseInt(args[2]);
 
                 if (databaseGateway.donateDataManipulator.addDonate(name, num) == Fail) {
                     sender.sendMessage(ChatColor.RED + "失敗");
@@ -287,10 +287,10 @@ public class GachaCommand implements CommandExecutor {
              */
 
             if (args.length == 2) {
-                int id = TypeConverter.toInt(args[1]);
+                int id = Integer.parseInt(args[1]);
                 Gachagive(player, id, null);
             } else if (args.length == 3) {
-                int id = TypeConverter.toInt(args[1]);
+                int id = Integer.parseInt(args[1]);
                 Gachagive(player, id, args[2]);
             }
             return true;
@@ -312,7 +312,7 @@ public class GachaCommand implements CommandExecutor {
                 return true;
             }
 
-            int id = TypeConverter.toInt(args[1]);
+            int id = Integer.parseInt(args[1]);
             Gachagive(player, id, player.getName());
             return true;
         } else if (args[0].equalsIgnoreCase("add")) {
@@ -332,7 +332,7 @@ public class GachaCommand implements CommandExecutor {
              * ここまで
              */
 
-            double probability = TypeConverter.toDouble(args[1]);
+            double probability = Double.parseDouble(args[1]);
             Gachaadd(player, probability);
             return true;
         } else if (args[0].equalsIgnoreCase("addms2")) {
@@ -352,8 +352,8 @@ public class GachaCommand implements CommandExecutor {
              * ここまで
              */
 
-            double probability = TypeConverter.toDouble(args[1]);
-            int level = TypeConverter.toInt(args[3]);
+            double probability = Double.parseDouble(args[1]);
+            int level = Integer.parseInt(args[3]);
             Gachaaddms2(player, probability, args[2], level);
             return true;
         } else if (args[0].equalsIgnoreCase("addms")) {
@@ -362,8 +362,8 @@ public class GachaCommand implements CommandExecutor {
                 return true;
             }
 
-            int level = TypeConverter.toInt(args[2]);
-            int num = TypeConverter.toInt(args[3]);
+            int level = Integer.parseInt(args[2]);
+            int num = Integer.parseInt(args[3]);
             Gachaaddms(sender, args[1], level, num);
 
             return true;
@@ -372,7 +372,7 @@ public class GachaCommand implements CommandExecutor {
                 sender.sendMessage("/gacha remove 2 のように、削除したいリスト番号を入力してください");
                 return true;
             }
-            int num = TypeConverter.toInt(args[1]);
+            int num = Integer.parseInt(args[1]);
             Gacharemove(sender, num);
             return true;
         } else if (args[0].equalsIgnoreCase("removems")) {
@@ -387,8 +387,8 @@ public class GachaCommand implements CommandExecutor {
                 sender.sendMessage("/gacha setamount 2 1 のように、変更したいリスト番号と変更後のアイテム個数を入力してください");
                 return true;
             }
-            int num = TypeConverter.toInt(args[1]);
-            int amount = TypeConverter.toInt(args[2]);
+            int num = Integer.parseInt(args[1]);
+            int amount = Integer.parseInt(args[2]);
             GachaEditAmount(sender, num, amount);
             return true;
         } else if (args[0].equalsIgnoreCase("setprob")) {
@@ -396,8 +396,8 @@ public class GachaCommand implements CommandExecutor {
                 sender.sendMessage("/gacha setprob 2 1 のように、変更したいリスト番号と変更後の確率を入力してください");
                 return true;
             }
-            int num = TypeConverter.toInt(args[1]);
-            double probability = TypeConverter.toDouble(args[2]);
+            int num = Integer.parseInt(args[1]);
+            double probability = Double.parseDouble(args[2]);
             GachaEditProbability(sender, num, probability);
             return true;
         } else if (args[0].equalsIgnoreCase("move")) {
@@ -405,8 +405,8 @@ public class GachaCommand implements CommandExecutor {
                 sender.sendMessage("/gacha move 2 10 のように、変更したいリスト番号と変更後のリスト番号を入力してください");
                 return true;
             }
-            int num = TypeConverter.toInt(args[1]);
-            int tonum = TypeConverter.toInt(args[2]);
+            int num = Integer.parseInt(args[1]);
+            int tonum = Integer.parseInt(args[2]);
             GachaMove(sender, num, tonum);
             return true;
         } else if (args[0].equalsIgnoreCase("list")) {
@@ -440,7 +440,7 @@ public class GachaCommand implements CommandExecutor {
                 sender.sendMessage("/gacha demo 10000  のように、試行したい回数を入力して下さい");
                 return true;
             }
-            int n = TypeConverter.toInt(args[1]);
+            int n = Integer.parseInt(args[1]);
             if (n > 1000000) {
                 sender.sendMessage("100万回以上は指定出来ません");
                 return true;

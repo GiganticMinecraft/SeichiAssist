@@ -6,7 +6,7 @@ import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.data.{MenuInventoryData, PlayerData}
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist.CommonSoundEffects
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}

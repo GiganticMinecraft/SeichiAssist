@@ -8,8 +8,15 @@ import java.math.BigDecimal;
 
 import com.github.unchama.seichiassist.PackagePrivate;
 
-public class BuildBlock {
-    public static BigDecimal calcBuildBlock(final Player player) {
+@PackagePrivate
+class BuildBlock {
+    private BuildBlock() {}
+
+    // TODO:
+    //  sum (last-valueとも言う)。
+    //  既にこれによって壊れたデータがありそう。
+    @PackagePrivate
+    static BigDecimal calcBuildBlock(final Player player) {
         BigDecimal sum = BigDecimal.ZERO;
         for (final Material m : BuildAssist.materiallist()) {
             sum = new BigDecimal(player.getStatistic(Statistic.USE_ITEM, m));
