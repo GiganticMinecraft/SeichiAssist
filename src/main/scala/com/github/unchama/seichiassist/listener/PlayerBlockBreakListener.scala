@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener
 import cats.effect.{Fiber, IO}
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
@@ -27,18 +26,6 @@ class PlayerBlockBreakListener extends Listener {
   private val plugin = SeichiAssist.instance
 
   import plugin.activeSkillAvailability
-
-  @EventHandler(priority = EventPriority.LOW)
-  def onPlayerBlockBreak(event: BlockBreakEvent): Unit = {
-    val block = event.getBlock
-
-    //他人の保護がかかっている場合は処理を終了
-    if (!ExternalPlugins.getWorldGuard.canBuild(event.getPlayer, block.getLocation)) return
-
-    // 保護と重力値に問題無く、ブロックタイプがmateriallistに登録されていたらMebiusListenerを呼び出す
-    if (MaterialSets.materials.contains(event.getBlock.getType))
-      MebiusListener.onBlockBreak(event)
-  }
 
   //アクティブスキルの実行
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)

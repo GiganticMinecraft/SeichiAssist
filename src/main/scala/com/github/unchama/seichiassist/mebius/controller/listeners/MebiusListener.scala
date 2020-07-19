@@ -2,9 +2,11 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import java.util.Objects
 
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
 import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusTalk}
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.util.external.ExternalPlugins
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{RED, RESET}
 import org.bukkit.enchantments.Enchantment
@@ -13,7 +15,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryDragEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.{AnvilInventory, ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, ChatColor, Material, Sound}
@@ -141,32 +143,6 @@ object MebiusListener {
     "余った鉱石は公共施設サーバの交換所で交換券に出来るって知ってた？交換券で強いピッケルやスコップが手に入るらしいよ！"
   )
 
-  // デバッグフラグ
-  private var DEBUGENABLE = false
-  private val debugFlg = false
-
-  /** ブロックを破壊した時 */
-  def onBlockBreak(event: BlockBreakEvent): Unit = { // TODO move to class
-    val msgs = Set(
-      "ポコポコポコポコ…整地の音って、落ち着くねえ。",
-      "頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
-      "一生懸命掘ってると、いつの間にか無心になっちゃうよねえ…！",
-      "なんだか眠たくなってきちゃったー、[str1]は平気ー？",
-      "今日はどこまで掘るのかなー？",
-      "[str1]と一緒に整地するの、楽しいねえ！"
-    )
-
-    val player = event.getPlayer
-    if (isEquip(player)) {
-      val pd = getPlayerData(player)
-      pd.mebius.speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""))
-      // Level UP☆
-      if (isLevelUp(player)) levelUp(player)
-    }
-    // 取得判定
-    if (isDrop) discovery(player)
-  }
-
   /** Mebiusを装備しているか */
   def isEquip(player: Player): Boolean = {
     try return isMebius(player.getInventory.getHelmet)
@@ -286,7 +262,6 @@ object MebiusListener {
   // Mebiusドロップ判定
   private def isDrop = {
     var chk = new Random().nextInt(dropPer)
-    if (debugFlg) chk /= 100
     chk == 0
   }
 
@@ -449,13 +424,6 @@ object MebiusListener {
 
 class MebiusListener() extends Listener {
 
-  if (SeichiAssist.seichiAssistConfig.getMebiusDebug == 1) { // mebiusdebug=1の時はコマンドでトグル可能
-    Bukkit.getServer.getConsoleSender.sendMessage(RED + "メビウス帽子のdebugモードトグル機能：有効")
-    MebiusListener.DEBUGENABLE = true
-  } else { // debugmode=0の時はトグル不可能
-    Bukkit.getServer.getConsoleSender.sendMessage(ChatColor.GREEN + "メビウス帽子のdebugモードトグル機能：無効")
-  }
-
   // ダメージを受けた時
   @EventHandler def onDamage(event: EntityDamageByEntityEvent): Unit = {
     val breakmsgs = Set(
@@ -587,6 +555,43 @@ class MebiusListener() extends Listener {
         event.setCancelled(true)
         event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
       }
+    }
+  }
+
+  /**
+   * ブロックを破壊した時
+   * 保護と重力値に問題無く、ブロックタイプがmateriallistに登録されていたらメッセージを送る。
+   */
+  @EventHandler(priority = EventPriority.LOW)
+  def onBlockBreak(event: BlockBreakEvent): Unit = {
+    val block = event.getBlock
+
+    //他人の保護がかかっている場合は処理を終了
+    if (!ExternalPlugins.getWorldGuard.canBuild(event.getPlayer, block.getLocation)) return
+
+    if (!MaterialSets.materials.contains(event.getBlock.getType)) return
+
+    val msgs = Set(
+      "ポコポコポコポコ…整地の音って、落ち着くねえ。",
+      "頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
+      "一生懸命掘ってると、いつの間にか無心になっちゃうよねえ…！",
+      "なんだか眠たくなってきちゃったー、[str1]は平気ー？",
+      "今日はどこまで掘るのかなー？",
+      "[str1]と一緒に整地するの、楽しいねえ！"
+    )
+
+    val player = event.getPlayer
+
+    if (isEquip(player)) {
+      val pd = getPlayerData(player)
+      pd.mebius.speak(getMessage(msgs, Objects.requireNonNull(getNickname(player)), ""))
+      // Level UP☆
+      if (isLevelUp(player)) levelUp(player)
+    }
+
+    // 取得判定
+    if (isDrop) {
+      discovery(player)
     }
   }
 }
