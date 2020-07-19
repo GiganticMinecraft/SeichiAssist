@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.controller
+package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import java.util.Objects
 
@@ -150,8 +150,8 @@ object MebiusListener {
     val no = new Random().nextInt(tips.size + 1)
     if (no == tips.size) {
       getPlayerData(player).mebius.speak(getTalk(getMebiusLevel(player.getInventory.getHelmet)))
-    }
-    else { // tipsの中身を設定
+    } else {
+      // tipsの中身を設定
       getPlayerData(player).mebius.speak(tips(no))
     }
   }

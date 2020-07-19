@@ -1,7 +1,7 @@
-package com.github.unchama.seichiassist.task;
+package com.github.unchama.seichiassist.mebius.controller.routines;
 
 import com.github.unchama.seichiassist.SeichiAssist;
-import com.github.unchama.seichiassist.mebius.controller.MebiusListener;
+import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -37,6 +37,7 @@ public class MebiusTask extends BukkitRunnable {
     public void run() {
         // 前回喋って2分経過によりお喋り解禁
         silence = false;
+
         // Tipsを呼び出し
         MebiusListener.callTips(p);
     }
