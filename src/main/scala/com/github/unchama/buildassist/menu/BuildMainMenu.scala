@@ -157,7 +157,7 @@ object BuildMainMenu extends Menu {
             FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
             DeferredEffect {
               IO {
-                if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
+                if (openerData.level < BuildAssist.config.getLinearFillSkillLevel) {
                   MessageEffect(s"${RED}建築LVが足りません")
                 } else {
                   BlockPlacementSkillMenu.open
@@ -185,7 +185,7 @@ object BuildMainMenu extends Menu {
           action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
             DeferredEffect {
               IO {
-                if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
+                if (openerData.level < BuildAssist.config.getLinearFillSkillLevel) {
                   MessageEffect(s"${RED}建築LVが足りません")
                 } else {
                   SequentialEffect(
