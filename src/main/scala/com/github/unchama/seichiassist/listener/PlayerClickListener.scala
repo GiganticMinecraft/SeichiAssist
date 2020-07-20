@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.listener
 
-import java.util.function.Consumer
-
 import cats.effect.IO
 import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -452,10 +450,6 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
           waitForCollision
       }
       
-
-      // とりあえず経験値オーブをスポーンさせておく
-      player.getWorld.spawn(player.getLocation, classOf[ExperienceOrb], { (_: ExperienceOrb).setExperience(exp) })
-      player.getWorld.playSound(player.getLocation, Sound.BLOCK_GLASS_BREAK, 1.0F, 1.0F)
       playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
 
       event.setCancelled(true)
