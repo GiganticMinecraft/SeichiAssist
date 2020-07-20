@@ -434,7 +434,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       // TODO: ThrownExpBottleには経験値の量を操作するAPIが付随していない
       // val proj = player.launchProjectile(classOf[ThrownExpBottle])
       // 一つに付きもたらされる経験値量は3..11。ソースはGamepedia
-      val exp = (0 until count).map(_ => Random.nextInt(8) + 3).sum
+      val exp = (0 until count).map(_ => Random.nextInt(9 /* Exclusive */) + 3).sum
 
       // とりあえず経験値オーブをスポーンさせておく
       player.getWorld.spawn(player.getLocation, classOf[ExperienceOrb], { (_: ExperienceOrb).setExperience(exp) })
