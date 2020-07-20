@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 import java.util.Objects
 
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
-import com.github.unchama.seichiassist.mebius.domain.MebiusEnchantment
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusMessages}
+import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import de.tr7zw.itemnbtapi.NBTItem
@@ -28,8 +28,6 @@ object MebiusListener {
 
   import scala.jdk.CollectionConverters._
 
-  /** 最大Lv */
-  private val LVMAX = 30
   /** 初期の名前 */
   private val DEFNAME = "MEBIUS"
 
@@ -190,7 +188,7 @@ object MebiusListener {
 
     // 上限Lvチェック
     var level = getMebiusLevel(mebius)
-    if (level == LVMAX) return
+    if (level == MebiusLevel.max) return
 
     // 所有者が異なる場合…名前変更でもNG
     if (player.getName.toLowerCase != getOwner(mebius)) return
@@ -286,7 +284,7 @@ object MebiusListener {
   }
 
   private def setEnchant(meta: ItemMeta, level: Int, player: Player): Unit = { // LvMAXなら無限とLoreをセット
-    if (level == LVMAX) {
+    if (level == MebiusLevel.max) {
       meta.spigot.setUnbreakable(true)
       val lore = meta.getLore
       lore.add(UNBREAK)

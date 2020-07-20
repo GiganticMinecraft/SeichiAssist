@@ -4,8 +4,10 @@ class MebiusLevel private(val value: Int) extends AnyVal
 
 object MebiusLevel {
 
+  val max = 30
+
   def apply(level: Int): MebiusLevel = {
-    require(level >= 1)
+    require(1 <= level && level < max)
 
     new MebiusLevel(level)
   }
