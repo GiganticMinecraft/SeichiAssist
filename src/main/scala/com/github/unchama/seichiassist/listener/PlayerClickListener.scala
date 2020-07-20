@@ -15,6 +15,7 @@ import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
+import com.github.unchama.util.external.ExternalPlugins
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.ThrownExpBottle
@@ -470,6 +471,9 @@ class PlayerClickListener extends Listener {
 
     //頭を付与
     p.getInventory.addItem(Util.getSkullDataFromBlock(targetBlock))
+    if (!ExternalPlugins.getCoreProtectWrapper.queueBlockRemoval(p, targetBlock)) {
+      SeichiAssist.instance.getLogger.warning(s"Logging in skull break: Failed Location: ${targetBlock.getLocation}, Player:$p")
+    }
     //ブロックを空気で置き換える
     targetBlock.setType(Material.AIR)
     //音を鳴らしておく
