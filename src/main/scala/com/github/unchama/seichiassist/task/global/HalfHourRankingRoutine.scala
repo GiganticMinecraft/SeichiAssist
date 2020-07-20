@@ -70,10 +70,10 @@ object HalfHourRankingRoutine {
           .zipWithIndex
           .foreach { case ((playerData, positionColor), index) =>
             val starLevel = playerData.starLevels.total()
-            var playerNameText = ""
-            playerNameText = if(starLevel == 0) 
+            val playerNameText =
+              if(starLevel == 0) 
                 s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}$WHITE"
-            else 
+              else 
                 s"$positionColor[ Lv${playerData.level}☆${starLevel} ]${playerData.lowercaseName}$WHITE"
             val increaseAmountText = s"$AQUA${playerData.halfhourblock.increase}$WHITE"
 
