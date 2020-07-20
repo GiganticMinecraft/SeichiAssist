@@ -436,9 +436,9 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
       def resource[E <: Entity](loc: Location, runtimeClass: Class[E], onRelease: (E) => Unit): Resource[IO, E] = {
             Resource.make(
-              IO(spawnLocation.getWorld.spawn(spawnLocation, tag))
+              IO(spawnLocation.getWorld.spawn(loc, runtimeClass))
             )(e =>
-              IO(e.remove())
+              IO(onRelease(e))
             )
       }
       // 一つに付きもたらされる経験値量は3..11。ソースはGamepedia
