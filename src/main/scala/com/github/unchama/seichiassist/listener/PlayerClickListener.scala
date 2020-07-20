@@ -45,8 +45,10 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
   private val gachaDataList = SeichiAssist.gachadatalist
   
   // TODO: ビンはいくつなげても一つなのでSingletonでよい (?)
+  import com.github.unchama.generic.effect.ResourceScope
+  import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
   private val bottleScope: SingleResourceScope[IO, ThrownExpBottle] = {
-    import PluginExecutionContexts.asyncShift
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
   //アクティブスキル処理
@@ -436,7 +438,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
       def resource[E <: Entity](loc: Location, runtimeClass: Class[E], onRelease: (E) => Unit): Resource[IO, E] = {
             Resource.make(
-              IO(spawnLocation.getWorld.spawn(loc, runtimeClass))
+              IO(loc.getWorld.spawn(loc, runtimeClass))
             )(e =>
               IO(onRelease(e))
             )
