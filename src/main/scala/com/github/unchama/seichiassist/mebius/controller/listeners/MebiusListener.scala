@@ -28,23 +28,11 @@ object MebiusListener {
 
   import scala.jdk.CollectionConverters._
 
-  /**
-   * 経験値瓶をボーナスするLv
-   * この値未満だとボーナス発生
-   */
-  private val EXPBONUS = 50
   /** 最大Lv */
   private val LVMAX = 30
   /** 初期の名前 */
   private val DEFNAME = "MEBIUS"
 
-  /** 識別用の先頭Lore */
-  private val LOREFIRST = List(
-    s"$RESET${ChatColor.GRAY}経験値瓶 効果2倍$RED(整地レベル${EXPBONUS}未満限定)",
-    "",
-    s"$RESET${ChatColor.AQUA}初心者をサポートする不思議なヘルメット。",
-    ""
-  )
   private val LOREFIRST2 = List(
     s"$RESET",
     s"$RESET${ChatColor.AQUA}初心者をサポートする不思議なヘルメット。",
@@ -159,7 +147,7 @@ object MebiusListener {
 
     meta.hasLore && {
       val lore = meta.getLore.asScala
-      LOREFIRST2.forall(lore.contains) || LOREFIRST.forall(lore.contains)
+      LOREFIRST2.forall(lore.contains)
     }
   }
 
