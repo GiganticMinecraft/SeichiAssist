@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 import java.util.Objects
 
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
-import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
-import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel}
+import com.github.unchama.seichiassist.mebius.domain.MebiusEnchantment
+import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusMessages}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import de.tr7zw.itemnbtapi.NBTItem
@@ -63,19 +63,15 @@ object MebiusListener {
   private val averageBlocksToBeBrokenPerMebiusDrop = 50000
 
   /** 見た目テーブル */
-  private val APPEARANCE = new mutable.LinkedHashMap[Int, Material]() {}
-
-  /** エンチャント別レベル制限 */
-  private val ENCHANT = List(
-    MebiusEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, MebiusLevel(2), 10, "ダメージ軽減"),
-    MebiusEnchantment(Enchantment.DURABILITY, MebiusLevel(2), 10, "耐久力"),
-    MebiusEnchantment(Enchantment.PROTECTION_FIRE, MebiusLevel(6), 10, "火炎耐性"),
-    MebiusEnchantment(Enchantment.PROTECTION_PROJECTILE, MebiusLevel(6), 10, "飛び道具耐性"),
-    MebiusEnchantment(Enchantment.PROTECTION_EXPLOSIONS, MebiusLevel(6), 10, "爆発耐性"),
-    MebiusEnchantment(Enchantment.OXYGEN, MebiusLevel(15), 3, "水中呼吸"),
-    MebiusEnchantment(Enchantment.WATER_WORKER, MebiusLevel(15), 1, "水中採掘"),
+  private val APPEARANCE = Map(
+    1 -> Material.LEATHER_HELMET,
+    5 -> Material.GOLD_HELMET,
+    10 -> Material.CHAINMAIL_HELMET,
+    20 -> Material.IRON_HELMET,
+    25 -> Material.DIAMOND_HELMET
   )
 
+  /** エンチャント別レベル制限 */
   private val UNBREAK = s"$RESET${ChatColor.AQUA}耐久無限"
   private val ROMAN = List(
     "", "", " II", " III", " IV", " V",
@@ -308,7 +304,7 @@ object MebiusListener {
 
       val enchantmentToGive = {
         val candidateEnchantmentsToGive =
-          ENCHANT.filter { candidate =>
+          MebiusEnchantments.list.filter { candidate =>
             // 解放レベル以上かつ、未取得または上り幅があるエンチャント
             level >= candidate.unlockLevel.value && getCurrentLevelOf(candidate) < candidate.maxLevel
           }
