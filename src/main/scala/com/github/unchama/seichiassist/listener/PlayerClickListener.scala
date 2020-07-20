@@ -45,7 +45,12 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
-
+  
+  // TODO: ビンはいくつなげても一つなのでSingletonでよい (?)
+  private val bottleScope: SingleResourceScope[IO, ThrownExpBottle] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreateSingletonScope
+  }
   //アクティブスキル処理
   @EventHandler
   def onPlayerActiveSkillEvent(event: PlayerInteractEvent): Unit = {
@@ -431,10 +436,22 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
       val count = playerInventory.getItemInMainHand.getAmount
 
-      // TODO: ThrownExpBottleには経験値の量を操作するAPIが付随していない
-      // val proj = player.launchProjectile(classOf[ThrownExpBottle])
+      def resource[E <: Entity](loc: Location, runtimeClass: Class[E], onRelease: (E) => Unit): Resource[IO, E] = {
+            Resource.make(
+              IO(spawnLocation.getWorld.spawn(spawnLocation, tag))
+            )(e =>
+              IO(e.remove())
+            )
+      }
       // 一つに付きもたらされる経験値量は3..11。ソースはGamepedia
       val exp = (0 until count).map(_ => Random.nextInt(9 /* Exclusive */) + 3).sum
+      
+      val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
+      // TODO: これちゃんと解放される？
+      bottleScope.useTracked(location, classOf[ThrownExpBottle], e => resource(location, classOf[ExperienceOrb], orb => orb.setExperience(exp))) { proj => 
+          waitForCollision
+      }
+      
 
       // とりあえず経験値オーブをスポーンさせておく
       player.getWorld.spawn(player.getLocation, classOf[ExperienceOrb], { (_: ExperienceOrb).setExperience(exp) })
