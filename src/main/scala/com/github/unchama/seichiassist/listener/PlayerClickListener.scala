@@ -435,7 +435,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
 
       val count = playerInventory.getItemInMainHand.getAmount
-
+      import cats.effect.{IO, Resource}
       def resource[E <: Entity](loc: Location, runtimeClass: Class[E], onRelease: (E) => Unit): Resource[IO, E] = {
             Resource.make(
               IO(loc.getWorld.spawn(loc, runtimeClass))
@@ -449,8 +449,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
       // TODO: これちゃんと解放される？
       val location = player.getLocation
-      bottleScope.useTracked(location, classOf[ThrownExpBottle]) { e => 
-        e.remove
+      bottleScope.useTracked(BukkitResources.vanishingEntityResource(location, classOf[ThrownExpBottle])) { e => 
         resource(location, classOf[ExperienceOrb]) {orb => orb.setExperience(exp)}
       }
       
