@@ -446,6 +446,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       
       val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
       // TODO: これちゃんと解放される？
+      val location = player.getLocation
       bottleScope.useTracked(location, classOf[ThrownExpBottle], e => { 
         e.remove
         resource(location, classOf[ExperienceOrb], orb => orb.setExperience(exp))
