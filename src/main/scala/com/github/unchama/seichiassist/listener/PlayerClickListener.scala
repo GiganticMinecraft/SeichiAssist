@@ -18,13 +18,13 @@ import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.{ExperienceOrb, ThrownExpBottle}
+import org.bukkit.entity.{ExperienceOrb, ThrownExpBottle, Entity}
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
 import org.bukkit.metadata.{FixedMetadataValue, MetadataValue}
-import org.bukkit.{GameMode, Material, Sound}
+import org.bukkit.{GameMode, Material, Sound, Location}
 
 import scala.collection.mutable
 import scala.util.Random
