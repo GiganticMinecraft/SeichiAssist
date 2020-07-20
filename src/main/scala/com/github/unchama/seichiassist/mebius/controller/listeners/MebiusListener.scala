@@ -6,7 +6,6 @@ import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListene
 import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusMessages}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
-import com.github.unchama.util.external.ExternalPlugins
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{RED, RESET}
 import org.bukkit.enchantments.Enchantment
@@ -72,7 +71,7 @@ object MebiusListener {
   )
 
   // Mebiusドロップ率
-  private val dropPer = 50000
+  private val averageBlocksToBeBrokenPerMebiusDrop = 50000
 
   /** 見た目テーブル */
   private val APPEARANCE = new mutable.LinkedHashMap[Int, Material]() {}
@@ -391,14 +390,15 @@ class MebiusListener() extends Listener {
   // 壊れたとき
   @EventHandler def onBreak(event: PlayerItemBreakEvent): Unit = {
     val messages = MebiusMessages.onMebiusBreak
-    val item = event.getBrokenItem
+    val brokenItem = event.getBrokenItem
+
     // 壊れたアイテムがMEBIUSなら
-    if (MebiusListener.isMebius(item)) {
+    if (MebiusListener.isMebius(brokenItem)) {
       val player = event.getPlayer
       MebiusListener
         .getPlayerData(event.getPlayer).mebius
         .speak(MebiusListener.getMessage(messages, Objects.requireNonNull(MebiusListener.getNickname(player)), ""))
-      player.sendMessage(s"${MebiusListener.getName(item)}${RESET}が旅立ちました。")
+      player.sendMessage(s"${MebiusListener.getName(brokenItem)}${RESET}が旅立ちました。")
       // エンドラが叫ぶ
       player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
     }
@@ -408,36 +408,45 @@ class MebiusListener() extends Listener {
   @EventHandler def onKill(event: EntityDeathEvent): Unit = {
     val messages = MebiusMessages.onMonsterKill
 
-    val lived = event.getEntity
     // プレイヤーがモンスターを倒した場合以外は除外
-    if (lived == null) return
-    val player = lived.getKiller
-    if (player == null) return
-    val monsterName = lived.getName
-    if (!MebiusListener.isEquip(player)) return
+    val killedMonster = event.getEntity
+    if (killedMonster == null) return
+
+    val killerPlayer = killedMonster.getKiller
+    if (killerPlayer == null) return
+
+    if (!MebiusListener.isEquip(killerPlayer)) return
+
     //もしモンスター名が取れなければ除外
-    if (monsterName == "") return
-    val playerNick = MebiusListener.getNickname(player)
-    Objects.requireNonNull(playerNick)
-    MebiusListener.getPlayerData(player).mebius.speak(MebiusListener.getMessage(messages, playerNick, monsterName))
+    val killedMonsterName = killedMonster.getName
+    if (killedMonsterName == "") return
+
+    val mebiusNickname = MebiusListener.getNickname(killerPlayer)
+
+    Objects.requireNonNull(mebiusNickname)
+    getPlayerData(killerPlayer).mebius.speak(MebiusListener.getMessage(messages, mebiusNickname, killedMonsterName))
   }
 
   // 金床配置時（クリック）
-  @EventHandler def onRename(event: InventoryClickEvent): Unit = { // 金床を開いていない場合return
+  @EventHandler def onRenameOnAnvil(event: InventoryClickEvent): Unit = {
+    // 金床を開いていない場合return
     if (!event.getView.getTopInventory.isInstanceOf[AnvilInventory]) return
-    val inv = event.getClickedInventory
-    if (inv.isInstanceOf[AnvilInventory]) { // mebiusを選択中
+
+    val clickedInventory = event.getClickedInventory
+    if (clickedInventory.isInstanceOf[AnvilInventory]) {
+      // mebiusを選択中
       val item = event.getCursor
-      if (MebiusListener.isMebius(item)) { // mebiusを左枠に置いた場合はcancel
-        val rawSlot = event.getRawSlot
-        if (rawSlot == event.getView.convertSlot(rawSlot) && rawSlot == 0) {
+      if (MebiusListener.isMebius(item)) {
+        // mebiusを左枠に置いた場合はcancel
+        if (event.getView.convertSlot(0) == 0 && event.getRawSlot == 0) {
           event.setCancelled(true)
           event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
         }
       }
-    }
-    else { // mebiusをShiftクリックした場合
-      if (event.getClick.isShiftClick && MebiusListener.isMebius(event.getCurrentItem)) { // 左枠が空いている場合はcancel
+    } else {
+      // mebiusをShiftクリックした場合
+      if (event.getClick.isShiftClick && MebiusListener.isMebius(event.getCurrentItem)) {
+        // 左枠が空いている場合はcancel
         if (event.getView.getTopInventory.getItem(0) == null) {
           event.setCancelled(true)
           event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
@@ -447,19 +456,16 @@ class MebiusListener() extends Listener {
   }
 
   // 金床配置時（ドラッグ）
-  @EventHandler def onDrag(event: InventoryDragEvent): Unit = { // 金床じゃなければreturn
-    val inv = event.getInventory
-    if (!inv.isInstanceOf[AnvilInventory]) return
-    // mebiusを選択中じゃなければreturn
-    val item = event.getOldCursor
-    if (!MebiusListener.isMebius(item)) return
+  @EventHandler def onDragInAnvil(event: InventoryDragEvent): Unit = {
+    // 金床じゃなければreturn
+    if (!event.getInventory.isInstanceOf[AnvilInventory]) return
 
-    import scala.jdk.CollectionConverters._
-    for (rawSlot <- event.getRawSlots.asScala) {
-      if ((rawSlot.toInt == event.getView.convertSlot(rawSlot)) && (rawSlot == 0)) {
-        event.setCancelled(true)
-        event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
-      }
+    // mebiusを選択中じゃなければreturn
+    if (!MebiusListener.isMebius(event.getOldCursor)) return
+
+    if (event.getRawSlots.contains(0) && event.getView.convertSlot(0) == 0) {
+      event.setCancelled(true)
+      event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
     }
   }
 
@@ -467,26 +473,34 @@ class MebiusListener() extends Listener {
    * ブロックを破壊した時
    * 保護と重力値に問題無く、ブロックタイプがmateriallistに登録されていたらメッセージを送る。
    */
-  @EventHandler(priority = EventPriority.LOW)
-  def onBlockBreak(event: BlockBreakEvent): Unit = {
-    val block = event.getBlock
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+  def sendMebiusMessageOn(event: BlockBreakEvent): Unit = {
+    if (!MaterialSets.materials.contains(event.getBlock.getType)) return
 
-    //他人の保護がかかっている場合は処理を終了
-    if (!ExternalPlugins.getWorldGuard.canBuild(event.getPlayer, block.getLocation)) return
+    val player = event.getPlayer
+    if (isEquip(player)) {
+      val message = getMessage(MebiusMessages.onBlockBreak, Objects.requireNonNull(getNickname(player)), "")
+      getPlayerData(player).mebius.speak(message)
+    }
+  }
 
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
+    val player = event.getPlayer
+    if (isEquip(player)) {
+      if (isLevelUp(player)) {
+        levelUp(player)
+      }
+    }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  def tryMebiusDropOn(event: BlockBreakEvent): Unit = {
     if (!MaterialSets.materials.contains(event.getBlock.getType)) return
 
     val player = event.getPlayer
 
-    if (isEquip(player)) {
-      val pd = getPlayerData(player)
-      pd.mebius.speak(getMessage(MebiusMessages.onBlockBreak, Objects.requireNonNull(getNickname(player)), ""))
-      // Level UP☆
-      if (isLevelUp(player)) levelUp(player)
-    }
-
-    // Mebiusドロップ判定
-    if (Random.nextInt(dropPer) == 0) {
+    if (Random.nextInt(averageBlocksToBeBrokenPerMebiusDrop) == 0) {
       discovery(player)
     }
   }
