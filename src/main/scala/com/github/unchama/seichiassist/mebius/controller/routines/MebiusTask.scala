@@ -4,7 +4,7 @@ import java.util.{Objects, UUID}
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
-import com.github.unchama.seichiassist.mebius.domain.MebiusMessages
+import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{Bukkit, ChatColor, Sound}
 

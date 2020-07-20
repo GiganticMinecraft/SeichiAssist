@@ -3,7 +3,8 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 import java.util.Objects
 
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
-import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusMessages}
+import com.github.unchama.seichiassist.mebius.domain.MebiusEnchantment
+import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import de.tr7zw.itemnbtapi.NBTItem
