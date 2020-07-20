@@ -1,4 +1,6 @@
-package com.github.unchama.seichiassist.mebius.domain
+package com.github.unchama.seichiassist.mebius.domain.resources
+
+import com.github.unchama.seichiassist.mebius.domain.MebiusTalk
 
 object MebiusMessages {
 
