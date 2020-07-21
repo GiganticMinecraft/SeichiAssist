@@ -354,11 +354,10 @@ class PlayerClickListener extends Listener {
 
     if (player.getInventory.getItemInMainHand.getType != Material.STICK) return
 
-    event.setCancelled(true)
-
     // 右クリックの処理ではない
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
     if (event.getHand == EquipmentSlot.OFF_HAND) return
+    event.setCancelled(true)
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
