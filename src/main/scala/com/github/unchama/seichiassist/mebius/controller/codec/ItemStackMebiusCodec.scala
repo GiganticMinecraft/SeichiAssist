@@ -18,6 +18,8 @@ object ItemStackMebiusCodec extends MebiusCodec[ItemStack] {
     ""
   )
 
+  private val unbreakableLoreRow = s"$RESET${ChatColor.AQUA}耐久無限"
+
   private val mebiusNameDisplayPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.BOLD}"
 
   private val ownerLoreRowPrefix = s"$RESET${ChatColor.DARK_GREEN}所有者："
@@ -86,6 +88,8 @@ object ItemStackMebiusCodec extends MebiusCodec[ItemStack] {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
 
+        if (property.level.isMaximum) meta.setUnbreakable(true)
+
         meta.setLore {
           val previousLevelUpTalk = MebiusMessages.talkOnLevelUp(property.level.value)
 
@@ -97,6 +101,9 @@ object ItemStackMebiusCodec extends MebiusCodec[ItemStack] {
               s"",
               s"$ownerLoreRowPrefix${property.ownerName}"
             ))
+            .concat {
+              if (property.level.isMaximum) List(unbreakableLoreRow) else Nil
+            }
             .asJava
         }
       }

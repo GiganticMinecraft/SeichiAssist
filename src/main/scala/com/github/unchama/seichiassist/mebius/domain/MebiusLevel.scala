@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.mebius.domain
 
-class MebiusLevel private(val value: Int) extends AnyVal
+class MebiusLevel private(val value: Int) extends AnyVal {
+
+  def isMaximum: Boolean = value == MebiusLevel.max
+
+}
 
 object MebiusLevel {
 
