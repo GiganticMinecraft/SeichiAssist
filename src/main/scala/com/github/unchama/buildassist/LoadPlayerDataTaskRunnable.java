@@ -37,7 +37,6 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable {
         if (retryCount >= 7) {
             cancel();
             Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + p.getName() + "の建築系データが読み込めませんでした");
-            p.sendMessage(ChatColor.RED + "建築系データが読み込めませんでした。再接続をお願いします。改善されない場合はお手数ですがお問い合わせください");
             p.kickPlayer(ChatColor.RED + "建築系データが読み込めませんでした。再接続をお願いします。改善されない場合はお手数ですがお問い合わせください");
             return;
         }

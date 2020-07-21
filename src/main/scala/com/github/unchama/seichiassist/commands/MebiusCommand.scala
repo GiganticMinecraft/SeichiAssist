@@ -48,7 +48,7 @@ object MebiusCommand {
         )
       }
 
-    val permissionWarning: TargetedEffect[CommandSender] = MessageEffect(s"${RED}このコマンドは権限者のみが実行可能です.")
+    val permissionWarning: TargetedEffect[CommandSender] = MessageEffect(s"${RED}このコマンドは権限者のみが実行可能です。")
   }
 
   private object ChildExecutors {
@@ -83,7 +83,7 @@ object MebiusCommand {
         val newName = s"${context.args.parsed.head.asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
 
         if (!MebiusListener.setName(context.sender, newName)) {
-          IO(MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください."))
+          IO(MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください。"))
         } else IO(emptyEffect)
       }
       .build()
@@ -93,7 +93,7 @@ object MebiusCommand {
         .execution { context =>
           val message = MebiusListener.getNickname(context.sender)
             .ifNotNull(name => s"${GREEN}現在のメビウスからの呼び名 : $name")
-            .ifNull(s"${RED}呼び名の確認はMEBIUSを装着して行ってください.")
+            .ifNull(s"${RED}呼び名の確認はMEBIUSを装着して行ってください。")
 
           IO(MessageEffect(message))
         }
@@ -102,9 +102,9 @@ object MebiusCommand {
       private val resetNicknameExecutor = playerCommandBuilder
         .execution { context =>
           val message = if (MebiusListener.setNickname(context.sender, context.sender.getName)) {
-            s"${GREEN}メビウスからの呼び名を${context.sender.getName}にリセットしました."
+            s"${GREEN}メビウスからの呼び名を${context.sender.getName}にリセットしました。"
           } else {
-            s"${RED}呼び名のリセットはMEBIUSを装着して行ってください."
+            s"${RED}呼び名のリセットはMEBIUSを装着して行ってください。"
           }
 
           IO(MessageEffect(message))
@@ -116,9 +116,9 @@ object MebiusCommand {
         .execution { context =>
           val newName = s"${context.args.parsed.head.asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
           val message = if (!MebiusListener.setNickname(context.sender, newName)) {
-            s"${RED}呼び名の設定はMEBIUSを装着して行ってください."
+            s"${RED}呼び名の設定はMEBIUSを装着して行ってください。"
           } else {
-            s"${GREEN}メビウスからの呼び名を${newName}にセットしました."
+            s"${GREEN}メビウスからの呼び名を${newName}にセットしました。"
           }
 
           IO(MessageEffect(message))
