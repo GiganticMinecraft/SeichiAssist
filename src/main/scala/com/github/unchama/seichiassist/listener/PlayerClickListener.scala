@@ -353,7 +353,6 @@ class PlayerClickListener extends Listener {
 
     if (player.getInventory.getItemInMainHand.getType != Material.STICK) return
 
-    // PHYSICALだった場合はあえて判定しない  
     // 右クリックの処理ではない
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
     if (event.getHand == EquipmentSlot.OFF_HAND) return
