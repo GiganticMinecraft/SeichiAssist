@@ -5,9 +5,13 @@ package com.github.unchama.seichiassist.mebius.domain
  * @param enchantments  付与されるエンチャントメント
  * @param level         Mebiusのレベル
  * @param ownerNickname オーナーをMebiusがどう呼ぶか
+ * @param mebiusName    Mebius自体の名前
  */
-case class MebiusProperty(ownerName: String, enchantments: Map[MebiusEnchantment, Int],
-                          level: MebiusLevel, ownerNickname: Option[String]) {
+case class MebiusProperty(ownerName: String,
+                          enchantments: Map[MebiusEnchantment, Int],
+                          level: MebiusLevel,
+                          ownerNickname: Option[String],
+                          mebiusName: String = "MEBIUS") {
   require {
     enchantments.forall { case (MebiusEnchantment(_, unlockLevel, maxLevel, _), enchantmentLevel) =>
       unlockLevel.value >= level.value && 1 <= enchantmentLevel && enchantmentLevel <= maxLevel
