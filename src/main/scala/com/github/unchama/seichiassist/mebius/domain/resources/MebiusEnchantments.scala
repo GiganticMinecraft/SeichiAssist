@@ -13,4 +13,13 @@ object MebiusEnchantments {
     MebiusEnchantment(Enchantment.OXYGEN, MebiusLevel(15), 3, "水中呼吸"),
     MebiusEnchantment(Enchantment.WATER_WORKER, MebiusLevel(15), 1, "水中採掘"),
   )
+
+  assert({
+    (2 to MebiusLevel.max).forall { level =>
+      list
+        .filter(_.unlockLevel.value >= level)
+        .map(_.maxLevel)
+        .sum >= level
+    }
+  }, "各レベルにおいて、そのレベルで付与できるエンチャントが存在する")
 }

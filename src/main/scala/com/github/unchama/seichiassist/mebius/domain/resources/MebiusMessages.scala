@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius.domain.resources
 
-import com.github.unchama.seichiassist.mebius.domain.MebiusTalk
+import com.github.unchama.seichiassist.mebius.domain.{MebiusLevel, MebiusTalk}
 
 object MebiusMessages {
 
@@ -46,6 +46,9 @@ object MebiusMessages {
     MebiusTalk("育ててくれてありがとう！", "ある意味、最強のヘルメット。")
   )
 
+  assert(onLevelUps.size == MebiusLevel.max)
+
+  // TODO MebiusLevelを取るようにする
   def talkOnLevelUp(newLevel: Int): MebiusTalk = onLevelUps(newLevel - 1)
 
   val onMonsterKill = Set(
