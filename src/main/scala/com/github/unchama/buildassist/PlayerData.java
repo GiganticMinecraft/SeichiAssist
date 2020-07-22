@@ -154,7 +154,7 @@ public final class PlayerData {
     public void buildsave(final Player player) {
         final com.github.unchama.seichiassist.data.player.PlayerData playerData = SeichiAssist.playermap().getOrElse(uuid, () -> null);
         if (playerData == null) {
-            player.sendMessage(ChatColor.RED + "建築系データ保存失敗しました");
+            player.sendMessage(ChatColor.RED + "建築系データ保存失敗しました。お問い合わせフォームまたは整地鯖公式Discordサーバーにて報告してください。");
             return;
         }
 
