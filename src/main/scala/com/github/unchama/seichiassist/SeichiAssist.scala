@@ -27,7 +27,7 @@ import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.mebius.controller.PropertyModificationBukkitMessages
-import com.github.unchama.seichiassist.mebius.controller.listeners.{MebiusLevelUpTrialListener, MebiusListener}
+import com.github.unchama.seichiassist.mebius.controller.listeners.{MebiusDropTrialListener, MebiusInteractionResponder, MebiusLevelUpTrialListener, MebiusListener, MebiusRenamePreventionListener}
 import com.github.unchama.seichiassist.mebius.domain.PropertyModificationMessages
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -204,8 +204,10 @@ class SeichiAssist extends JavaPlugin() {
     val mebiusListeners = {
       implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
       Seq(
+        new MebiusDropTrialListener,
+        new MebiusInteractionResponder,
         new MebiusLevelUpTrialListener,
-        new MebiusListener
+        new MebiusRenamePreventionListener
       )
     }
 

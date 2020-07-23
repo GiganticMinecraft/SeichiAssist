@@ -28,25 +28,20 @@ object ItemStackMebiusCodec {
   private val levelUpMebiusMessageLoreRowPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.ITALIC}"
   private val levelUpPlayerMessageLoreRowPrefix = s"$RESET${ChatColor.GRAY}${ChatColor.ITALIC}"
 
+  def isMebius(itemStack: ItemStack): Boolean = {
+    val meta = itemStack.getItemMeta
+
+    meta.hasLore && {
+      val lore = meta.getLore.asScala
+      mebiusLoreHead.forall(lore.contains)
+    }
+  }
+
   /**
    * (必ずしも有効な`MebiusProperty`を持つとは限らない)実体から `ItemStack` をデコードする。
    */
   def decodeMebiusProperty(itemStack: ItemStack): Option[MebiusProperty] = {
-    val isMebius: Boolean = {
-      val meta = itemStack.getItemMeta
-
-      meta.hasLore && {
-        val lore = meta.getLore.asScala
-        mebiusLoreHead.forall(lore.contains)
-      }
-    }
-
-    val mebius =
-      if (!isMebius) {
-        return None
-      } else {
-        itemStack
-      }
+    val mebius = if (isMebius(itemStack)) itemStack else return None
 
     val nickname = {
       val nbtItem = new NBTItem(mebius)
