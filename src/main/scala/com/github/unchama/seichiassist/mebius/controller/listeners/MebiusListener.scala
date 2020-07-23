@@ -2,9 +2,11 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import java.util.Objects
 
+import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusMessages}
 import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel}
+import com.github.unchama.seichiassist.mebius.service.MebiusLevellingService
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import de.tr7zw.itemnbtapi.NBTItem
@@ -470,10 +472,13 @@ class MebiusListener() extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
-    if (isEquip(player)) {
-      if (isLevelUp(player)) {
-        levelUp(player)
-      }
+
+    val newMebiusProperty = ItemStackMebiusCodec
+      .decodeMebiusProperty(player.getInventory.getHelmet)
+      .map(MebiusLevellingService.attemptLevelUp(_).unsafeRunSync())
+
+    newMebiusProperty.foreach { property =>
+      player.getInventory.setHelmet(ItemStackMebiusCodec.materialize(property))
     }
   }
 
