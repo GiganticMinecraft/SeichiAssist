@@ -366,7 +366,7 @@ class MebiusListener() extends Listener {
     val newMebiusProperty = MebiusLevellingService.attemptLevelUp(oldMebiusProperty).unsafeRunSync()
 
     if (newMebiusProperty != oldMebiusProperty) {
-      val materialized = ItemStackMebiusCodec.materialize(newMebiusProperty)
+      val materialized = ItemStackMebiusCodec.materialize(newMebiusProperty, damageValue = 0)
       val mebiusDisplayName = materialized.getItemMeta.getDisplayName
 
       // レベルアップ通知
@@ -405,8 +405,6 @@ class MebiusListener() extends Listener {
           }
         }
       }
-
-      // TODO 耐久回復を明示する
 
       getPlayerData(player).mebius.speakForce(MebiusMessages.talkOnLevelUp(newMebiusProperty.level.value).mebiusMessage)
 
