@@ -7,7 +7,7 @@ import org.bukkit.ChatColor
 import org.bukkit.ChatColor.{RED, RESET}
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 
-object ItemStackMebiusCodec extends MebiusCodec[ItemStack] {
+object ItemStackMebiusCodec {
 
   import scala.jdk.CollectionConverters._
 
@@ -28,7 +28,10 @@ object ItemStackMebiusCodec extends MebiusCodec[ItemStack] {
   private val levelUpMebiusMessageLoreRowPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.ITALIC}"
   private val levelUpPlayerMessageLoreRowPrefix = s"$RESET${ChatColor.GRAY}${ChatColor.ITALIC}"
 
-  override def decodeMebiusProperty(itemStack: ItemStack): Option[MebiusProperty] = {
+  /**
+   * (必ずしも有効な`MebiusProperty`を持つとは限らない)実体から `ItemStack` をデコードする。
+   */
+  def decodeMebiusProperty(itemStack: ItemStack): Option[MebiusProperty] = {
     val isMebius: Boolean = {
       val meta = itemStack.getItemMeta
 
@@ -74,7 +77,14 @@ object ItemStackMebiusCodec extends MebiusCodec[ItemStack] {
     Some(MebiusProperty(ownerName, enchantments, mebiusLevel, nickname, mebiusName))
   }
 
-  override def materialize(property: MebiusProperty): ItemStack = {
+  /**
+   * 与えられた `MebiusProperty` を持つような実体を得る。
+   *
+   * `Some(property) == decodeMebiusProperty(materialize(property))`
+   *
+   * を満足する。
+   */
+  def materialize(property: MebiusProperty): ItemStack = {
     val material = AppearanceMaterialCodec.appearanceMaterialAt(property.level)
 
     import scala.util.chaining._
