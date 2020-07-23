@@ -1,8 +1,9 @@
 package com.github.unchama.seichiassist.mebius.controller.routines
 
-import java.util.{Objects, UUID}
+import java.util.UUID
 
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
 import org.bukkit.scheduler.BukkitRunnable
@@ -23,7 +24,12 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
   private val p = Bukkit.getPlayer(uuid)
 
   {
-    if (MebiusListener.isEquip(p)) speak("おかえり" + Objects.requireNonNull(MebiusListener.getNickname(p)) + "！待ってたよ！")
+    ItemStackMebiusCodec
+      .decodeMebiusProperty(p.getInventory.getHelmet)
+      .foreach { property =>
+        speak(s"おかえり${property.ownerNickname.getOrElse(p.getName)}！待ってたよ！")
+      }
+
     runTaskTimerAsynchronously(SeichiAssist.instance, 2400, 2400)
   }
 
@@ -34,14 +40,18 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
     // 前回喋って2分経過によりお喋り解禁
     silence = false
 
-    val no = Random.nextInt(MebiusMessages.tips.size + 1)
+    ItemStackMebiusCodec
+      .decodeMebiusProperty(p.getInventory.getHelmet)
+      .foreach { property =>
+        val no = Random.nextInt(MebiusMessages.tips.size + 1)
 
-    if (no == MebiusMessages.tips.size) {
-      speak(MebiusMessages.talkOnLevelUp(MebiusListener.getMebiusLevel(p.getInventory.getHelmet)).mebiusMessage)
-    } else {
-      // tipsの中身を設定
-      speak(MebiusMessages.tips(no))
-    }
+        if (no == MebiusMessages.tips.size) {
+          speak(MebiusMessages.talkOnLevelUp(property.level.value).mebiusMessage)
+        } else {
+          // tipsの中身を設定
+          speak(MebiusMessages.tips(no))
+        }
+      }
   }
 
   // silence OFFかつ50%でmessageを喋って、silence trueにする
