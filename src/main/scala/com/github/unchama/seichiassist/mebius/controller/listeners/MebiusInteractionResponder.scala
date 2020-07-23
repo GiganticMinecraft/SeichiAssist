@@ -62,7 +62,7 @@ class MebiusInteractionResponder extends Listener {
       .foreach { property =>
         SeichiAssist.playermap(event.getPlayer.getUniqueId).mebius
           .speak(getMessage(MebiusMessages.onMebiusBreak, property.ownerNickname, ""))
-        player.sendMessage(s"${MebiusListener.getName(brokenItem)}${RESET}が旅立ちました。")
+        player.sendMessage(s"${ItemStackMebiusCodec.displayNameOfMaterializedItem(property)}${RESET}が旅立ちました。")
         // エンドラが叫ぶ
         player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
       }
