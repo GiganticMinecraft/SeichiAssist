@@ -5,7 +5,6 @@ import java.util.Objects
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
 import com.github.unchama.seichiassist.mebius.domain.PropertyModificationMessages
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{RED, RESET}
@@ -13,10 +12,9 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Monster, Player}
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
-import org.bukkit.event.inventory.{InventoryClickEvent, InventoryDragEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
-import org.bukkit.inventory.{AnvilInventory, ItemFlag, ItemStack}
+import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, ChatColor, Material, Sound}
 
 import scala.collection.mutable
@@ -44,9 +42,6 @@ object MebiusListener {
   private val TALKHEAD = s"$RESET${ChatColor.GOLD}${ChatColor.ITALIC}"
   private val DESTHEAD = s"$RESET${ChatColor.GRAY}${ChatColor.ITALIC}"
   private val OWNERHEAD = s"$RESET${ChatColor.DARK_GREEN}所有者："
-
-  // Mebiusドロップ率
-  private val averageBlocksToBeBrokenPerMebiusDrop = 50000
 
   /** 見た目テーブル */
   private val APPEARANCE = Map(
@@ -121,27 +116,6 @@ object MebiusListener {
     meta.hasLore && {
       val lore = meta.getLore.asScala
       LOREFIRST2.forall(lore.contains)
-    }
-  }
-
-  // 新規Mebius発見処理(採掘時)
-  private def discovery(player: Player): Unit = {
-    val mebius = create(null, player)
-    player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}おめでとうございます。採掘中にMEBIUSを発見しました。")
-    player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}MEBIUSはプレイヤーと共に成長するヘルメットです。")
-    player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}あなただけのMEBIUSを育てましょう！")
-    Bukkit.getServer.getScheduler.runTaskLater(
-      SeichiAssist.instance,
-      () => getPlayerData(player).mebius
-        .speakForce(s"こんにちは、${player.getName}$RESET。僕は${getName(mebius)}$RESET！これからよろしくね！"),
-      10
-    )
-
-    player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-    if (!Util.isPlayerInventoryFull(player)) Util.addItem(player, mebius)
-    else {
-      player.sendMessage(s"$RESET$RED${ChatColor.BOLD}所持しきれないためMEBIUSをドロップしました。")
-      Util.dropItem(player, mebius)
     }
   }
 
@@ -292,47 +266,6 @@ class MebiusListener(implicit messages: PropertyModificationMessages) extends Li
     getPlayerData(killerPlayer).mebius.speak(MebiusListener.getMessage(messages, mebiusNickname, killedMonsterName))
   }
 
-  // 金床配置時（クリック）
-  @EventHandler def onRenameOnAnvil(event: InventoryClickEvent): Unit = {
-    // 金床を開いていない場合return
-    if (!event.getView.getTopInventory.isInstanceOf[AnvilInventory]) return
-
-    val clickedInventory = event.getClickedInventory
-    if (clickedInventory.isInstanceOf[AnvilInventory]) {
-      // mebiusを選択中
-      val item = event.getCursor
-      if (MebiusListener.isMebius(item)) {
-        // mebiusを左枠に置いた場合はcancel
-        if (event.getView.convertSlot(0) == 0 && event.getRawSlot == 0) {
-          event.setCancelled(true)
-          event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
-        }
-      }
-    } else {
-      // mebiusをShiftクリックした場合
-      if (event.getClick.isShiftClick && MebiusListener.isMebius(event.getCurrentItem)) {
-        // 左枠が空いている場合はcancel
-        if (event.getView.getTopInventory.getItem(0) == null) {
-          event.setCancelled(true)
-          event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
-        }
-      }
-    }
-  }
-
-  // 金床配置時（ドラッグ）
-  @EventHandler def onDragInAnvil(event: InventoryDragEvent): Unit = {
-    // 金床じゃなければreturn
-    if (!event.getInventory.isInstanceOf[AnvilInventory]) return
-
-    // mebiusを選択中じゃなければreturn
-    if (!MebiusListener.isMebius(event.getOldCursor)) return
-
-    if (event.getRawSlots.contains(0) && event.getView.convertSlot(0) == 0) {
-      event.setCancelled(true)
-      event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
-    }
-  }
 
   /**
    * ブロックを破壊した時
@@ -346,17 +279,6 @@ class MebiusListener(implicit messages: PropertyModificationMessages) extends Li
     if (isEquip(player)) {
       val message = getMessage(MebiusMessages.onBlockBreak, Objects.requireNonNull(getNickname(player)), "")
       getPlayerData(player).mebius.speak(message)
-    }
-  }
-
-  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-  def tryMebiusDropOn(event: BlockBreakEvent): Unit = {
-    if (!MaterialSets.materials.contains(event.getBlock.getType)) return
-
-    val player = event.getPlayer
-
-    if (Random.nextInt(averageBlocksToBeBrokenPerMebiusDrop) == 0) {
-      discovery(player)
     }
   }
 }

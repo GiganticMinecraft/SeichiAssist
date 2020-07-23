@@ -12,9 +12,9 @@ import scala.util.Random
  * @param mebiusName       Mebius自体の名前
  */
 case class MebiusProperty(ownerName: String,
-                          enchantmentLevel: Map[MebiusEnchantment, Int],
-                          level: MebiusLevel,
-                          ownerNickname: Option[String],
+                          enchantmentLevel: Map[MebiusEnchantment, Int] = Map(),
+                          level: MebiusLevel = MebiusLevel(1),
+                          ownerNickname: Option[String] = None,
                           mebiusName: String = "MEBIUS") {
   require {
     enchantmentLevel.forall { case (MebiusEnchantment(_, unlockLevel, maxLevel, _), enchantmentLevel) =>
