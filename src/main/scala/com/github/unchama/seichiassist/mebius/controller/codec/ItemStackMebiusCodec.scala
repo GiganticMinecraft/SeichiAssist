@@ -109,7 +109,7 @@ object ItemStackMebiusCodec extends MebiusCodec[ItemStack] {
       }
     }
 
-    property.enchantments.foreach { case (enchantment, level) =>
+    property.enchantmentLevel.foreach { case (enchantment, level) =>
       item.addUnsafeEnchantment(enchantment.enchantment, level)
     }
 

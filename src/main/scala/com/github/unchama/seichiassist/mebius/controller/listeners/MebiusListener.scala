@@ -396,7 +396,7 @@ class MebiusListener() extends Listener {
             " XVI", " XVII", " XVIII", " XIX", " XX"
           )
 
-          oldMebiusProperty.enchantments.get(modifiedEnchantment) match {
+          oldMebiusProperty.enchantmentLevel.get(modifiedEnchantment) match {
             case Some(previousLevel) =>
               s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
                 s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${romanSuffix(previousLevel + 1)}${RESET}に強化されました。"
