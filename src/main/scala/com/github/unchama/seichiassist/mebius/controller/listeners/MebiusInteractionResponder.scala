@@ -1,18 +1,15 @@
 package com.github.unchama.seichiassist.mebius.controller.listeners
 
-import java.util.Objects
-
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
-import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
-import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener.{getNickname, getPlayerData, isEquip}
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor.RESET
 import org.bukkit.Sound
 import org.bukkit.entity.{Monster, Player}
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import scala.util.Random
 
@@ -42,7 +39,7 @@ class MebiusInteractionResponder extends Listener {
           val dur = mebius.getDurability
           if (dur >= max - 10) {
             SeichiAssist.playermap(player.getUniqueId).mebius
-              .speak(getMessage(MebiusMessages.onDamageBreaking, Objects.requireNonNull(MebiusListener.getNickname(player)), ""))
+              .speak(getMessage(MebiusMessages.onDamageBreaking, MebiusListener.getNickname(player).get, ""))
           }
         }
         // モンスターからダメージを受けた場合
@@ -50,7 +47,7 @@ class MebiusInteractionResponder extends Listener {
           case monster: Monster =>
             // 対モンスターメッセージ
             SeichiAssist.playermap(player.getUniqueId).mebius
-              .speak(getMessage(MebiusMessages.onDamageWarnEnemy, Objects.requireNonNull(MebiusListener.getNickname(player)), monster.getName))
+              .speak(getMessage(MebiusMessages.onDamageWarnEnemy, MebiusListener.getNickname(player).get, monster.getName))
           case _ =>
         }
       case _ =>
@@ -66,7 +63,7 @@ class MebiusInteractionResponder extends Listener {
     if (ItemStackMebiusCodec.isMebius(brokenItem)) {
       val player = event.getPlayer
       SeichiAssist.playermap(event.getPlayer.getUniqueId).mebius
-        .speak(getMessage(messages, Objects.requireNonNull(MebiusListener.getNickname(player)), ""))
+        .speak(getMessage(messages, MebiusListener.getNickname(player).get, ""))
       player.sendMessage(s"${MebiusListener.getName(brokenItem)}${RESET}が旅立ちました。")
       // エンドラが叫ぶ
       player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
@@ -90,10 +87,8 @@ class MebiusInteractionResponder extends Listener {
     val killedMonsterName = killedMonster.getName
     if (killedMonsterName == "") return
 
-    val mebiusNickname = MebiusListener.getNickname(killerPlayer)
-
-    Objects.requireNonNull(mebiusNickname)
-    SeichiAssist.playermap(killerPlayer.getUniqueId).mebius.speak(getMessage(messages, mebiusNickname, killedMonsterName))
+    SeichiAssist.playermap(killerPlayer.getUniqueId).mebius
+      .speak(getMessage(messages, MebiusListener.getNickname(killerPlayer).get, killedMonsterName))
   }
 
   /**
@@ -105,8 +100,8 @@ class MebiusInteractionResponder extends Listener {
     if (!MaterialSets.materials.contains(event.getBlock.getType)) return
 
     val player = event.getPlayer
-    if (isEquip(player)) {
-      val message = getMessage(MebiusMessages.onBlockBreak, Objects.requireNonNull(getNickname(player)), "")
+    if (MebiusListener.isEquip(player)) {
+      val message = getMessage(MebiusMessages.onBlockBreak, MebiusListener.getNickname(player).get, "")
       SeichiAssist.playermap(player.getUniqueId).mebius.speak(message)
     }
   }
