@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import java.util.Objects
 
-import com.github.unchama.seichiassist.mebius.controller.PropertyModificationBukkitMessageGenerator
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
+import com.github.unchama.seichiassist.mebius.domain.PropertyModificationMessages
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
 import com.github.unchama.seichiassist.mebius.service.MebiusLevellingService
 import com.github.unchama.seichiassist.util.Util
@@ -223,7 +223,7 @@ object MebiusListener {
   }
 }
 
-class MebiusListener() extends Listener {
+class MebiusListener(implicit messages: PropertyModificationMessages) extends Listener {
 
   // ダメージを受けた時
   @EventHandler def onDamage(event: EntityDamageByEntityEvent): Unit = {
@@ -366,7 +366,7 @@ class MebiusListener() extends Listener {
 
     if (newMebiusProperty != oldMebiusProperty) {
       player.sendMessage {
-        PropertyModificationBukkitMessageGenerator.messagesOnLevelUp(oldMebiusProperty, newMebiusProperty).toArray
+        messages.onLevelUp(oldMebiusProperty, newMebiusProperty).toArray
       }
 
       getPlayerData(player).mebius.speakForce(MebiusMessages.talkOnLevelUp(newMebiusProperty.level.value).mebiusMessage)

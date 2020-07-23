@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.mebius.controller
 
 import com.github.unchama.seichiassist.mebius.controller.codec.{AppearanceMaterialCodec, ItemStackMebiusCodec}
-import com.github.unchama.seichiassist.mebius.domain.{MebiusProperty, PropertyModificationMessageGenerator}
+import com.github.unchama.seichiassist.mebius.domain.{MebiusProperty, PropertyModificationMessages}
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.RESET
 
-object PropertyModificationBukkitMessageGenerator extends PropertyModificationMessageGenerator[String] {
-  override def messagesOnLevelUp(oldMebiusProperty: MebiusProperty, newMebiusProperty: MebiusProperty): List[String] = {
+object PropertyModificationBukkitMessages extends PropertyModificationMessages {
+  override def onLevelUp(oldMebiusProperty: MebiusProperty, newMebiusProperty: MebiusProperty): List[String] = {
     val mebiusDisplayName = ItemStackMebiusCodec.mebiusNameDisplayPrefix + newMebiusProperty.mebiusName
 
     // レベルアップ通知

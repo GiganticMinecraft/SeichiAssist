@@ -26,7 +26,9 @@ import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiA
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
+import com.github.unchama.seichiassist.mebius.controller.PropertyModificationBukkitMessages
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
+import com.github.unchama.seichiassist.mebius.domain.PropertyModificationMessages
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
@@ -199,6 +201,11 @@ class SeichiAssist extends JavaPlugin() {
       assaultSkillRoutines
     )
 
+    val mebiusListeners = {
+      implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
+      Seq(new MebiusListener)
+    }
+
     import PluginExecutionContexts.asyncShift
     //リスナーの登録
     Seq(
@@ -211,13 +218,13 @@ class SeichiAssist extends JavaPlugin() {
       new PlayerPickupItemListener(),
       new PlayerDeathEventListener(),
       new GachaItemListener(),
-      new MebiusListener(),
       new RegionInventoryListener(),
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler()
     )
       .concat(repositories)
+      .concat(mebiusListeners)
       .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)

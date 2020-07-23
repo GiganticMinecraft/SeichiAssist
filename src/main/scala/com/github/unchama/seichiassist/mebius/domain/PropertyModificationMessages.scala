@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.mebius.domain
 
-trait PropertyModificationMessageGenerator[Message] {
+trait PropertyModificationMessages {
 
   /**
    * Mebiusのレベルアップに関するメッセージをプロパティの組から計算する
    */
-  def messagesOnLevelUp(oldProperty: MebiusProperty, newProperty: MebiusProperty): List[Message]
+  def onLevelUp(oldProperty: MebiusProperty, newProperty: MebiusProperty): List[String]
 
 }
