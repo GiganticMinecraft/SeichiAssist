@@ -46,7 +46,7 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
         val no = Random.nextInt(MebiusMessages.tips.size + 1)
 
         if (no == MebiusMessages.tips.size) {
-          speak(MebiusMessages.talkOnLevelUp(property.level.value).mebiusMessage)
+          speak(MebiusMessages.talkOnLevelUp(property.level).mebiusMessage)
         } else {
           // tipsの中身を設定
           speak(MebiusMessages.tips(no))

@@ -96,7 +96,7 @@ object ItemStackMebiusCodec {
         if (property.level.isMaximum) meta.setUnbreakable(true)
 
         meta.setLore {
-          val previousLevelUpTalk = MebiusMessages.talkOnLevelUp(property.level.value)
+          val previousLevelUpTalk = MebiusMessages.talkOnLevelUp(property.level)
 
           mebiusLoreHead
             .concat(List(

@@ -48,8 +48,7 @@ object MebiusMessages {
 
   assert(onLevelUps.size == MebiusLevel.max)
 
-  // TODO MebiusLevelを取るようにする
-  def talkOnLevelUp(newLevel: Int): MebiusTalk = onLevelUps(newLevel - 1)
+  def talkOnLevelUp(newLevel: MebiusLevel): MebiusTalk = onLevelUps(newLevel.value - 1)
 
   val onMonsterKill = Set(
     "さすが[str1]！[str2]なんて敵じゃないね！",

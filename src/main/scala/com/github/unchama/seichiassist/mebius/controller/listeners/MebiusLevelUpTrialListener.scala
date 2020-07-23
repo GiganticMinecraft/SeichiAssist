@@ -29,7 +29,7 @@ class MebiusLevelUpTrialListener(implicit messages: PropertyModificationMessages
       }
 
       SeichiAssist.playermap(player.getUniqueId).mebius
-        .speakForce(MebiusMessages.talkOnLevelUp(newMebiusProperty.level.value).mebiusMessage)
+        .speakForce(MebiusMessages.talkOnLevelUp(newMebiusProperty.level).mebiusMessage)
 
       playerInventory.setHelmet {
         ItemStackMebiusCodec.materialize(newMebiusProperty, damageValue = 0)
