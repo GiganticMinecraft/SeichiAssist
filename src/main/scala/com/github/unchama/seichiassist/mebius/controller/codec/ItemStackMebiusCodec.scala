@@ -20,7 +20,7 @@ object ItemStackMebiusCodec {
 
   private val unbreakableLoreRow = s"$RESET${ChatColor.AQUA}耐久無限"
 
-  val mebiusNameDisplayPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.BOLD}"
+  private val mebiusNameDisplayPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.BOLD}"
 
   private val ownerLoreRowPrefix = s"$RESET${ChatColor.DARK_GREEN}所有者："
   private val levelLoreRowPrefix = s"$RESET$RED${ChatColor.BOLD}アイテムLv. "
@@ -35,6 +35,10 @@ object ItemStackMebiusCodec {
       val lore = meta.getLore.asScala
       mebiusLoreHead.forall(lore.contains)
     }
+  }
+
+  def displayNameOfMaterializedItem(property: MebiusProperty): String = {
+    mebiusNameDisplayPrefix + property.mebiusName
   }
 
   /**
@@ -88,7 +92,7 @@ object ItemStackMebiusCodec {
 
     item.setItemMeta {
       item.getItemMeta.tap { meta =>
-        meta.setDisplayName(s"$mebiusNameDisplayPrefix${property.mebiusName}")
+        meta.setDisplayName(displayNameOfMaterializedItem(property))
 
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)

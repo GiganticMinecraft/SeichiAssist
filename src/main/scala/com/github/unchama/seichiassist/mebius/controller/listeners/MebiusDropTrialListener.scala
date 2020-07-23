@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
-import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener.getName
 import com.github.unchama.seichiassist.mebius.service.MebiusDroppingService
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
@@ -28,8 +27,11 @@ class MebiusDropTrialListener extends Listener {
     player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}あなただけのMEBIUSを育てましょう！")
     Bukkit.getServer.getScheduler.runTaskLater(
       SeichiAssist.instance,
-      () => SeichiAssist.playermap(player.getUniqueId).mebius
-        .speakForce(s"こんにちは、${player.getName}$RESET。僕は${getName(mebius)}$RESET！これからよろしくね！"),
+      () => SeichiAssist.playermap(player.getUniqueId).mebius.speakForce {
+        s"こんにちは、${player.getName}$RESET。" +
+          s"僕は${ItemStackMebiusCodec.displayNameOfMaterializedItem(droppedMebiusProperty)}" +
+          s"$RESET！これからよろしくね！"
+      },
       10
     )
 

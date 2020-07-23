@@ -4,13 +4,16 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import org.bukkit.ChatColor.{GREEN, RED}
+import org.bukkit.ChatColor.{GREEN, RED, RESET}
 import org.bukkit.command.{CommandSender, TabExecutor}
+import org.bukkit.entity.Player
 
 object MebiusCommand {
 
@@ -55,15 +58,53 @@ object MebiusCommand {
     val namingExecutor: ContextualExecutor = playerCommandBuilder
       .argumentsParsers(List(Parsers.identity))
       .execution { context =>
+        // TODO cleanup / do not use Boolean
+        def setName(player: Player, name: String): Boolean = {
+          val updatedProperty = ItemStackMebiusCodec
+            .decodeMebiusProperty(player.getInventory.getHelmet)
+            .map {
+              _.copy(mebiusName = name)
+            }
+
+          updatedProperty.foreach { newProperty =>
+            val newDisplayName = ItemStackMebiusCodec.displayNameOfMaterializedItem(newProperty)
+
+            player.sendMessage(s"$newDisplayName${RESET}に命名しました。")
+            SeichiAssist.playermap.apply(player.getUniqueId).mebius
+              .speakForce(s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！")
+
+            player.getInventory.setHelmet(ItemStackMebiusCodec.materialize(newProperty))
+          }
+
+          updatedProperty.nonEmpty
+        }
+
         val newName = s"${context.args.parsed.head.asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
 
-        if (!MebiusListener.setName(context.sender, newName)) {
+        if (!setName(context.sender, newName)) {
           IO(MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください."))
         } else IO(emptyEffect)
       }
       .build()
 
     object NicknameCommand {
+      // TODO cleanup / do not use Boolean
+      private def setNickname(player: Player, name: String): Boolean = {
+        val updatedProperty = ItemStackMebiusCodec
+          .decodeMebiusProperty(player.getInventory.getHelmet)
+          .map {
+            _.copy(ownerNickname = Some(name))
+          }
+
+        updatedProperty.foreach { newProperty =>
+          player.getInventory.setHelmet(ItemStackMebiusCodec.materialize(newProperty))
+          SeichiAssist.playermap.apply(player.getUniqueId).mebius
+            .speakForce(s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！")
+        }
+
+        updatedProperty.nonEmpty
+      }
+
       private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
           IO(MessageEffect {
@@ -79,7 +120,7 @@ object MebiusCommand {
 
       private val resetNicknameExecutor = playerCommandBuilder
         .execution { context =>
-          val message = if (MebiusListener.setNickname(context.sender, context.sender.getName)) {
+          val message = if (setNickname(context.sender, context.sender.getName)) {
             s"${GREEN}メビウスからの呼び名を${context.sender.getName}にリセットしました."
           } else {
             s"${RED}呼び名のリセットはMEBIUSを装着して行ってください."
@@ -93,7 +134,7 @@ object MebiusCommand {
         .argumentsParsers(List(Parsers.identity), onMissingArguments = printDescriptionExecutor)
         .execution { context =>
           val newName = s"${context.args.parsed.head.asInstanceOf[String]} ${context.args.yetToBeParsed.mkString(" ")}"
-          val message = if (!MebiusListener.setNickname(context.sender, newName)) {
+          val message = if (!setNickname(context.sender, newName)) {
             s"${RED}呼び名の設定はMEBIUSを装着して行ってください."
           } else {
             s"${GREEN}メビウスからの呼び名を${newName}にセットしました."

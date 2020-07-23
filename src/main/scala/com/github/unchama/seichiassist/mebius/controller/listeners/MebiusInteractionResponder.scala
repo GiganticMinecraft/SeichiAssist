@@ -25,13 +25,16 @@ class MebiusInteractionResponder extends Listener {
     msg
   }
 
+  /** Mebiusを装備しているか */
+  private def isEquip(player: Player): Boolean = ItemStackMebiusCodec.isMebius(player.getInventory.getHelmet)
+
   // ダメージを受けた時
   @EventHandler def onDamage(event: EntityDamageByEntityEvent): Unit = {
     // プレイヤーがダメージを受けた場合
     event.getEntity match {
       case player: Player =>
         // プレイヤーがMebiusを装備していない場合は除外
-        if (!MebiusListener.isEquip(player)) return
+        if (!isEquip(player)) return
         val mebius = player.getInventory.getHelmet
         // 耐久無限じゃない場合
         if (!mebius.getItemMeta.isUnbreakable) { // 耐久閾値を超えていたら破損警告
@@ -59,15 +62,16 @@ class MebiusInteractionResponder extends Listener {
     val messages = MebiusMessages.onMebiusBreak
     val brokenItem = event.getBrokenItem
 
-    // 壊れたアイテムがMEBIUSなら
-    if (ItemStackMebiusCodec.isMebius(brokenItem)) {
-      val player = event.getPlayer
-      SeichiAssist.playermap(event.getPlayer.getUniqueId).mebius
-        .speak(getMessage(messages, MebiusListener.getNickname(player).get, ""))
-      player.sendMessage(s"${MebiusListener.getName(brokenItem)}${RESET}が旅立ちました。")
-      // エンドラが叫ぶ
-      player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
-    }
+    ItemStackMebiusCodec
+      .decodeMebiusProperty(brokenItem)
+      .foreach { property =>
+        val player = event.getPlayer
+        SeichiAssist.playermap(event.getPlayer.getUniqueId).mebius
+          .speak(getMessage(messages, property.ownerNickname.getOrElse(event.getPlayer.getDisplayName), ""))
+        player.sendMessage(s"${MebiusListener.getName(brokenItem)}${RESET}が旅立ちました。")
+        // エンドラが叫ぶ
+        player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
+      }
   }
 
   // モンスターを倒した時
@@ -81,7 +85,7 @@ class MebiusInteractionResponder extends Listener {
     val killerPlayer = killedMonster.getKiller
     if (killerPlayer == null) return
 
-    if (!MebiusListener.isEquip(killerPlayer)) return
+    if (!isEquip(killerPlayer)) return
 
     //もしモンスター名が取れなければ除外
     val killedMonsterName = killedMonster.getName
@@ -100,7 +104,7 @@ class MebiusInteractionResponder extends Listener {
     if (!MaterialSets.materials.contains(event.getBlock.getType)) return
 
     val player = event.getPlayer
-    if (MebiusListener.isEquip(player)) {
+    if (isEquip(player)) {
       val message = getMessage(MebiusMessages.onBlockBreak, MebiusListener.getNickname(player).get, "")
       SeichiAssist.playermap(player.getUniqueId).mebius.speak(message)
     }

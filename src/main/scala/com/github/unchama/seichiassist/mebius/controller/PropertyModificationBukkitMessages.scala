@@ -7,7 +7,7 @@ import org.bukkit.ChatColor.RESET
 
 object PropertyModificationBukkitMessages extends PropertyModificationMessages {
   override def onLevelUp(oldMebiusProperty: MebiusProperty, newMebiusProperty: MebiusProperty): List[String] = {
-    val mebiusDisplayName = ItemStackMebiusCodec.mebiusNameDisplayPrefix + newMebiusProperty.mebiusName
+    val mebiusDisplayName = ItemStackMebiusCodec.displayNameOfMaterializedItem(newMebiusProperty)
 
     // レベルアップ通知
     val levelUpMessage = List(s"${newMebiusProperty.mebiusName}${RESET}がレベルアップしました。")
