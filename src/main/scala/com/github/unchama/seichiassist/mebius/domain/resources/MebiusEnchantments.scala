@@ -17,7 +17,7 @@ object MebiusEnchantments {
   assert({
     (2 to MebiusLevel.max).forall { level =>
       list
-        .filter(_.unlockLevel.value >= level)
+        .filter(_.unlockLevel.value <= level)
         .map(_.maxLevel)
         .sum >= level
     }
