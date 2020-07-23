@@ -15,7 +15,7 @@ object MebiusDroppingService {
 
   def tryForDrop(ownerName: String): IO[Option[MebiusProperty]] = IO {
     if (Random.nextInt(averageBlocksToBeBrokenPerMebiusDrop) == 0) {
-      Some(MebiusProperty.apply(ownerName))
+      Some(MebiusProperty(ownerName))
     } else {
       None
     }

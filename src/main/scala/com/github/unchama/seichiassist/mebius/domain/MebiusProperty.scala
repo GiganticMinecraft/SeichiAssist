@@ -5,13 +5,13 @@ import cats.effect.IO
 import scala.util.Random
 
 /**
- * @param ownerName        オーナーのプレーヤーID
+ * @param ownerPlayerId    オーナーのプレーヤーID
  * @param enchantmentLevel 付与されるエンチャントとレベルのMap
  * @param level            Mebiusのレベル
  * @param ownerNickname    オーナーをMebiusがどう呼ぶか
  * @param mebiusName       Mebius自体の名前
  */
-case class MebiusProperty(ownerName: String,
+case class MebiusProperty(ownerPlayerId: String,
                           enchantmentLevel: Map[MebiusEnchantment, Int] = Map(),
                           level: MebiusLevel = MebiusLevel(1),
                           ownerNickname: Option[String] = None,

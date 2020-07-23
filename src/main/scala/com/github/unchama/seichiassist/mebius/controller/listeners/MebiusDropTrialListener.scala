@@ -17,7 +17,7 @@ class MebiusDropTrialListener extends Listener {
     val player = event.getPlayer
 
     val droppedMebiusProperty = MebiusDroppingService
-      .tryForDrop(player.getPlayer.getDisplayName).unsafeRunSync()
+      .tryForDrop(player.getPlayer.getName).unsafeRunSync()
       .getOrElse(return)
 
     val mebius = ItemStackMebiusCodec.materialize(droppedMebiusProperty)

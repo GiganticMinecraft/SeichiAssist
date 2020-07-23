@@ -108,7 +108,7 @@ object ItemStackMebiusCodec {
               s"$levelUpMebiusMessageLoreRowPrefix${previousLevelUpTalk.mebiusMessage}",
               s"$levelUpPlayerMessageLoreRowPrefix${previousLevelUpTalk.playerMessage}",
               s"",
-              s"$ownerLoreRowPrefix${property.ownerName}"
+              s"$ownerLoreRowPrefix${property.ownerPlayerId}"
             ))
             .concat {
               if (property.level.isMaximum) List(unbreakableLoreRow) else Nil
