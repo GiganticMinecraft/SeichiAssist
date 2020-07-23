@@ -27,7 +27,8 @@ import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.mebius.controller.PropertyModificationBukkitMessages
-import com.github.unchama.seichiassist.mebius.controller.listeners.{MebiusDropTrialListener, MebiusInteractionResponder, MebiusLevelUpTrialListener, MebiusListener, MebiusRenamePreventionListener}
+import com.github.unchama.seichiassist.mebius.controller.command.MebiusCommand
+import com.github.unchama.seichiassist.mebius.controller.listeners.{MebiusDropTrialListener, MebiusInteractionResponder, MebiusLevelUpTrialListener, MebiusRenamePreventionListener}
 import com.github.unchama.seichiassist.mebius.domain.PropertyModificationMessages
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -183,7 +184,6 @@ class SeichiAssist extends JavaPlugin() {
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "shareinv" -> ShareInvCommand.executor,
-      "mebius" -> MebiusCommand.executor,
       "achievement" -> AchievementCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
       "event" -> EventCommand.executor,
@@ -191,7 +191,8 @@ class SeichiAssist extends JavaPlugin() {
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
-      "x-transfer" -> RegionOwnerTransferCommand.executor
+      "x-transfer" -> RegionOwnerTransferCommand.executor,
+      "mebius" -> MebiusCommand.executor
     ).foreach {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }

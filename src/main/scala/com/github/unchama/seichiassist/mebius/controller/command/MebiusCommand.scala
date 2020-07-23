@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.commands
+package com.github.unchama.seichiassist.mebius.controller.command
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.ContextualExecutor
@@ -9,13 +9,14 @@ import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListene
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import org.bukkit.ChatColor._
+import org.bukkit.ChatColor.{GREEN, RED}
 import org.bukkit.command.{CommandSender, TabExecutor}
 
 object MebiusCommand {
 
+  import ChildExecutors._
+
   val executor: TabExecutor = {
-    import com.github.unchama.seichiassist.commands.MebiusCommand.ChildExecutors._
 
     BranchedExecutor(
       Map(
@@ -46,7 +47,7 @@ object MebiusCommand {
       }
   }
 
-  private object ChildExecutors {
+  object ChildExecutors {
     val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution { _ => IO(Messages.commandDescription) }
       .build()
@@ -107,5 +108,7 @@ object MebiusCommand {
         "set" -> setNicknameExecutor
       ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
     }
+
   }
+
 }
