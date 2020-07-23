@@ -36,15 +36,15 @@ class MebiusInteractionResponder extends Listener {
         // プレイヤーがMebiusを装備していない場合は除外
         if (!isEquip(player)) return
         val mebius = player.getInventory.getHelmet
-        // 耐久無限じゃない場合
-        if (!mebius.getItemMeta.isUnbreakable) { // 耐久閾値を超えていたら破損警告
-          val max = mebius.getType.getMaxDurability
-          val dur = mebius.getDurability
-          if (dur >= max - 10) {
-            SeichiAssist.playermap(player.getUniqueId).mebius
-              .speak(getMessage(MebiusMessages.onDamageBreaking, MebiusListener.getNickname(player).get, ""))
-          }
+
+        val helmet = player.getInventory.getHelmet
+
+        // 耐久閾値を超えていたら破損警告
+        if (mebius.getDurability >= mebius.getType.getMaxDurability - 10) {
+          SeichiAssist.playermap(player.getUniqueId).mebius
+            .speak(getMessage(MebiusMessages.onDamageBreaking, MebiusListener.getNickname(player).get, ""))
         }
+
         // モンスターからダメージを受けた場合
         event.getDamager match {
           case monster: Monster =>
