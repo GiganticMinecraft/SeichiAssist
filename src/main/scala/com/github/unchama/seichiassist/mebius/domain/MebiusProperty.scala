@@ -24,7 +24,7 @@ case class MebiusProperty(ownerName: String,
 
   def incrementLevel: MebiusProperty = copy(level = level.increment)
 
-  def randomlyAugmentEnchantment(availableEnchantments: Set[MebiusEnchantment]): IO[MebiusProperty] = {
+  def randomlyUpgradeEnchantment(availableEnchantments: Set[MebiusEnchantment]): IO[MebiusProperty] = {
     val upgradableEnchantments = availableEnchantments.filter { mebiusEnchantment =>
       enchantmentLevel.get(mebiusEnchantment)
         .forall { currentLevel =>

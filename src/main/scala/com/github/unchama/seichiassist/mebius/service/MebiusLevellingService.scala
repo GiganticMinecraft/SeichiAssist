@@ -15,7 +15,7 @@ object MebiusLevellingService {
             // 最大レベルへの遷移ではunbreakableが付与されるため、追加でエンチャントを付与したくない
             currentProperty.incrementLevel
           } else {
-            currentProperty.incrementLevel.randomlyAugmentEnchantment(MebiusEnchantments.list.toSet)
+            currentProperty.incrementLevel.randomlyUpgradeEnchantment(MebiusEnchantments.list.toSet)
           }
         } else IO.pure {
           currentProperty
