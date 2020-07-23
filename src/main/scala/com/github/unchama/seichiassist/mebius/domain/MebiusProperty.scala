@@ -12,6 +12,7 @@ import scala.util.Random
  * @param mebiusName    Mebius自体の名前
  */
 case class MebiusProperty(ownerName: String,
+                          // FIXME rename to enchantmentLevels
                           enchantments: Map[MebiusEnchantment, Int],
                           level: MebiusLevel,
                           ownerNickname: Option[String],
@@ -40,4 +41,11 @@ case class MebiusProperty(ownerName: String,
       this.copy(enchantments = enchantments.updated(choice, newLevel))
     }
   }
+
+  /**
+   * `another` と異なる [[MebiusEnchantment]] を返す。
+   */
+  def enchantmentDifferentFrom(another: MebiusProperty): Option[MebiusEnchantment] =
+    another.enchantments.keySet.union(enchantments.keySet)
+      .find { e => another.enchantments.get(e) != enchantments.get(e) }
 }

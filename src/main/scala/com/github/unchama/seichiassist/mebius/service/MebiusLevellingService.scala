@@ -11,7 +11,12 @@ object MebiusLevellingService {
       levelUpAttempted <- currentProperty.level.attemptLevelUp
       updatedProperty <-
         if (levelUpAttempted != currentProperty.level) {
-          currentProperty.incrementLevel.randomlyAugmentEnchantment(MebiusEnchantments.list.toSet)
+          if (levelUpAttempted.isMaximum) IO.pure {
+            // 最大レベルへの遷移ではunbreakableが付与されるため、追加でエンチャントを付与したくない
+            currentProperty.incrementLevel
+          } else {
+            currentProperty.incrementLevel.randomlyAugmentEnchantment(MebiusEnchantments.list.toSet)
+          }
         } else IO.pure {
           currentProperty
         }

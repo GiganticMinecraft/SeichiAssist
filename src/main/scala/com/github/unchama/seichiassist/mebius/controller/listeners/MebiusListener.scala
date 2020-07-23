@@ -4,8 +4,7 @@ import java.util.Objects
 
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
-import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusMessages}
-import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel}
+import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
 import com.github.unchama.seichiassist.mebius.service.MebiusLevellingService
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
@@ -18,7 +17,6 @@ import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryDragEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
-import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.{AnvilInventory, ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, ChatColor, Material, Sound}
 
@@ -42,22 +40,11 @@ object MebiusListener {
   private val LV = 4
   private val TALK = 5
   private val DEST = 6
-  private val OWNER = 8
   private val NAMEHEAD = s"$RESET${ChatColor.GOLD}${ChatColor.BOLD}"
   private val ILHEAD = s"$RESET$RED${ChatColor.BOLD}アイテムLv. "
   private val TALKHEAD = s"$RESET${ChatColor.GOLD}${ChatColor.ITALIC}"
   private val DESTHEAD = s"$RESET${ChatColor.GRAY}${ChatColor.ITALIC}"
   private val OWNERHEAD = s"$RESET${ChatColor.DARK_GREEN}所有者："
-
-  /** レベルアップ確率テーブル */
-  private val lvPer = List(
-    500, 500, 500, 500, 800,
-    800, 800, 800, 800, 1700,
-    1700, 1700, 1700, 1700, 1800,
-    1800, 1800, 1800, 1800, 2200,
-    2200, 2200, 2200, 2200, 2600,
-    2600, 2600, 2600, 3000, 3000
-  )
 
   // Mebiusドロップ率
   private val averageBlocksToBeBrokenPerMebiusDrop = 50000
@@ -73,13 +60,6 @@ object MebiusListener {
 
   /** エンチャント別レベル制限 */
   private val UNBREAK = s"$RESET${ChatColor.AQUA}耐久無限"
-  private val ROMAN = List(
-    "", "", " II", " III", " IV", " V",
-    " VI", " VII", " VIII", " IX", " X",
-    " XI", " XII", " XIII", " XIV", " XV",
-    " XVI", " XVII", " XVIII", " XIX", " XX"
-  )
-
   /** Mebiusを装備しているか */
   def isEquip(player: Player): Boolean =
     try isMebius(player.getInventory.getHelmet)
@@ -173,58 +153,6 @@ object MebiusListener {
     mebius.getItemMeta.getLore.get(LV).replace(ILHEAD, "").toInt
   }
 
-  // MebiusのOwnerを取得
-  private def getOwner(mebius: ItemStack): String = {
-    mebius.getItemMeta.getLore.get(OWNER).replaceFirst(OWNERHEAD, "")
-  }
-
-  // MebiusLvアップ判定
-  private def isLevelUp(player: Player) = {
-    val chk = Random.nextInt(lvPer(getMebiusLevel(player.getInventory.getHelmet) - 1))
-    chk == 0
-  }
-
-  // Mebius更新処理
-  private def levelUp(player: Player): Unit = {
-    val mebius = player.getInventory.getHelmet
-
-    // 上限Lvチェック
-    var level = getMebiusLevel(mebius)
-    if (level == MebiusLevel.max) return
-
-    // 所有者が異なる場合…名前変更でもNG
-    if (player.getName.toLowerCase != getOwner(mebius)) return
-
-    // Level Up
-    level += 1
-
-    // レベルアップ通知
-    player.sendMessage(s"${getName(mebius)}${RESET}がレベルアップしました。")
-
-    val newMebius =
-      if (APPEARANCE.contains(level)) {
-        // ItemStack更新レベルなら新規アイテムに更新
-        create(mebius, player)
-      } else {
-        val cloned = mebius.clone()
-        cloned.setItemMeta {
-          val meta = cloned.getItemMeta
-          import meta._
-
-          setLore(updateTalkDest(meta.getLore.asScala, level).asJava)
-          setEnchant(meta, level, player)
-
-          meta
-        }
-        cloned
-      }
-
-    // 耐久を回復
-    newMebius.setDurability(0.toShort)
-    player.getInventory.setHelmet(newMebius)
-    getPlayerData(player).mebius.speakForce(MebiusMessages.talkOnLevelUp(level).mebiusMessage)
-  }
-
   // 新しいMebiusのひな形を作る
   def create(mebius: ItemStack, player: Player): ItemStack = {
     val (name, nickname, level, enchantments) =
@@ -283,51 +211,6 @@ object MebiusListener {
     currentLoreView(DEST) = s"$DESTHEAD${talk.playerMessage}"
 
     currentLoreView.toList
-  }
-
-  private def setEnchant(meta: ItemMeta, level: Int, player: Player): Unit = { // LvMAXなら無限とLoreをセット
-    if (level == MebiusLevel.max) {
-      meta.spigot.setUnbreakable(true)
-      val lore = meta.getLore
-      lore.add(UNBREAK)
-      meta.setLore(lore)
-
-      player.sendMessage(s"$RESET${ChatColor.GREEN}おめでとうございます。${meta.getDisplayName}$RESET${ChatColor.GREEN}のレベルが最大になりました。")
-      player.sendMessage(s"$UNBREAK${RESET}が付与されました。")
-    } else {
-      // その他はレベル別Enchantから設定
-      val currentEnchantments = Map.from(meta.getEnchants.asScala)
-
-      def getCurrentLevelOf(mebiusEnchantment: MebiusEnchantment): Int = {
-        currentEnchantments.get(mebiusEnchantment.enchantment).map(_.toInt).getOrElse(0)
-      }
-
-      val enchantmentToGive = {
-        val candidateEnchantmentsToGive =
-          MebiusEnchantments.list.filter { candidate =>
-            // 解放レベル以上かつ、未取得または上り幅があるエンチャント
-            level >= candidate.unlockLevel.value && getCurrentLevelOf(candidate) < candidate.maxLevel
-          }
-
-        candidateEnchantmentsToGive(Random.nextInt(candidateEnchantmentsToGive.size))
-      }
-
-      val previousLevel = getCurrentLevelOf(enchantmentToGive)
-      val newLevel = previousLevel + 1
-
-      // メッセージを生成
-      val message = if (previousLevel == 0) {
-        s"${ChatColor.GRAY}${enchantmentToGive.displayName}${RESET}が付与されました。"
-      } else {
-        s"${ChatColor.GRAY}${enchantmentToGive.displayName}${ROMAN(previousLevel)}${RESET}が" +
-          s"${ChatColor.GRAY}${enchantmentToGive.displayName}${ROMAN(newLevel)}${RESET}に強化されました。"
-      }
-
-      player.sendMessage(message)
-
-      meta.removeEnchant(enchantmentToGive.enchantment)
-      meta.addEnchant(enchantmentToGive.enchantment, newLevel, true)
-    }
   }
 
   // メッセージリストからランダムに取り出し、タグを置換する
@@ -472,13 +355,62 @@ class MebiusListener() extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
+    val playerInventory = player.getInventory
 
-    val newMebiusProperty = ItemStackMebiusCodec
-      .decodeMebiusProperty(player.getInventory.getHelmet)
-      .map(MebiusLevellingService.attemptLevelUp(_).unsafeRunSync())
+    val oldHelmet = {
+      val helmet = playerInventory.getHelmet
+      if (helmet == null || helmet.getType == Material.AIR) return else helmet
+    }
 
-    newMebiusProperty.foreach { property =>
-      player.getInventory.setHelmet(ItemStackMebiusCodec.materialize(property))
+    val oldMebiusProperty = ItemStackMebiusCodec.decodeMebiusProperty(oldHelmet).getOrElse(return)
+    val newMebiusProperty = MebiusLevellingService.attemptLevelUp(oldMebiusProperty).unsafeRunSync()
+
+    if (newMebiusProperty != oldMebiusProperty) {
+      val materialized = ItemStackMebiusCodec.materialize(newMebiusProperty)
+      val mebiusDisplayName = materialized.getItemMeta.getDisplayName
+
+      // レベルアップ通知
+      player.sendMessage(s"${newMebiusProperty.mebiusName}${RESET}がレベルアップしました。")
+
+      // 進化通知
+      if (materialized.getType != oldHelmet.getType) {
+        player.sendMessage(s"$mebiusDisplayName${RESET}の見た目が進化しました。")
+      }
+
+      // エンチャント効果変更通知
+      if (newMebiusProperty.level.isMaximum) {
+        player.sendMessage {
+          s"$RESET${ChatColor.GREEN}おめでとうございます。" +
+            s"$mebiusDisplayName$RESET${ChatColor.GREEN}のレベルが最大になりました。"
+        }
+        player.sendMessage(s"$UNBREAK${RESET}が付与されました。")
+      } else {
+        val modifiedEnchantment = newMebiusProperty.enchantmentDifferentFrom(oldMebiusProperty).get
+
+        // メッセージを生成
+        player.sendMessage {
+          val romanSuffix = List(
+            "", "", " II", " III", " IV", " V",
+            " VI", " VII", " VIII", " IX", " X",
+            " XI", " XII", " XIII", " XIV", " XV",
+            " XVI", " XVII", " XVIII", " XIX", " XX"
+          )
+
+          oldMebiusProperty.enchantments.get(modifiedEnchantment) match {
+            case Some(previousLevel) =>
+              s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
+                s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${romanSuffix(previousLevel + 1)}${RESET}に強化されました。"
+            case None =>
+              s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${RESET}が付与されました。"
+          }
+        }
+      }
+
+      // TODO 耐久回復を明示する
+
+      getPlayerData(player).mebius.speakForce(MebiusMessages.talkOnLevelUp(newMebiusProperty.level.value).mebiusMessage)
+
+      playerInventory.setHelmet(materialized)
     }
   }
 
