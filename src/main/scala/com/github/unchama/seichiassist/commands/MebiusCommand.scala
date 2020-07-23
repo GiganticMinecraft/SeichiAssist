@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListene
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.util.syntax.Nullability._
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 
@@ -66,11 +65,14 @@ object MebiusCommand {
     object NicknameCommand {
       private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
-          val message = MebiusListener.getNickname(context.sender)
-            .ifNotNull(name => s"${GREEN}現在のメビウスからの呼び名 : $name")
-            .ifNull(s"${RED}呼び名の確認はMEBIUSを装着して行ってください.")
-
-          IO(MessageEffect(message))
+          IO(MessageEffect {
+            MebiusListener.getNickname(context.sender)
+              .fold {
+                s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
+              } { name =>
+                s"${GREEN}現在のメビウスからの呼び名 : $name"
+              }
+          })
         }
         .build()
 

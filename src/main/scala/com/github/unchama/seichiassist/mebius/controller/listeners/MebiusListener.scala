@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
-import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -11,9 +10,6 @@ import org.bukkit.inventory.ItemStack
 object MebiusListener {
   private val defaultMebiusName = "MEBIUS"
   private val displayNamePrefix = s"$RESET$GOLD$BOLD"
-
-  // PlayerData取得
-  private def getPlayerData(player: Player) = SeichiAssist.playermap.apply(player.getUniqueId)
 
   /** Mebiusを装備しているか */
   def isEquip(player: Player): Boolean = ItemStackMebiusCodec.isMebius(player.getInventory.getHelmet)
@@ -28,35 +24,40 @@ object MebiusListener {
 
   /** MebiusのDisplayNameを設定 */
   def setName(player: Player, name: String): Boolean = {
-    if (isEquip(player)) {
-      val mebius = player.getInventory.getHelmet
-      val meta = mebius.getItemMeta
-      meta.setDisplayName(s"$displayNamePrefix$name")
-      player.sendMessage(s"${getName(mebius)}${RESET}に命名しました。")
-      mebius.setItemMeta(meta)
-      player.getInventory.setHelmet(mebius)
-      getPlayerData(player).mebius.speakForce(s"わーい、ありがとう！今日から僕は$displayNamePrefix$name${RESET}だ！")
-      return true
+    val updatedProperty = ItemStackMebiusCodec
+      .decodeMebiusProperty(player.getInventory.getHelmet)
+      .map {
+        _.copy(mebiusName = name)
+      }
+
+    updatedProperty.foreach { newProperty =>
+      player.sendMessage(s"$displayNamePrefix$name${RESET}に命名しました。")
+      player.getInventory.setHelmet(ItemStackMebiusCodec.materialize(newProperty))
+      SeichiAssist.playermap.apply(player.getUniqueId).mebius
+        .speakForce(s"わーい、ありがとう！今日から僕は$displayNamePrefix$name${RESET}だ！")
     }
-    false
+
+    updatedProperty.nonEmpty
   }
 
-  def setNickname(player: Player, name: String): Boolean =
-    if (!isEquip(player)) {
-      false
-    } else {
-      val mebius = player.getInventory.getHelmet
-      val nbtItem = new NBTItem(mebius)
-      nbtItem.setString("nickname", name)
-      player.getInventory.setHelmet(nbtItem.getItem)
-      getPlayerData(player).mebius.speakForce(s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！")
-      true
+  def setNickname(player: Player, name: String): Boolean = {
+    val updatedProperty = ItemStackMebiusCodec
+      .decodeMebiusProperty(player.getInventory.getHelmet)
+      .map {
+        _.copy(ownerNickname = Some(name))
+      }
+
+    updatedProperty.foreach { newProperty =>
+      player.getInventory.setHelmet(ItemStackMebiusCodec.materialize(newProperty))
+      SeichiAssist.playermap.apply(player.getUniqueId).mebius
+        .speakForce(s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！")
     }
 
-  // FIXME あの！ここはListenerクラスですよ！！
-  def getNickname(player: Player): String =
+    updatedProperty.nonEmpty
+  }
+
+  def getNickname(player: Player): Option[String] =
     ItemStackMebiusCodec
       .decodeMebiusProperty(player.getInventory.getHelmet)
       .map(_.ownerNickname.getOrElse(player.getDisplayName))
-      .orNull
 }
