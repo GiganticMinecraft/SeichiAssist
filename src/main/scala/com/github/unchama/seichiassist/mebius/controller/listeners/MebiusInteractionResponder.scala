@@ -25,6 +25,11 @@ class MebiusInteractionResponder extends Listener {
     msg
   }
 
+  private def getNickname(player: Player): Option[String] =
+    ItemStackMebiusCodec
+      .decodeMebiusProperty(player.getInventory.getHelmet)
+      .map(_.ownerNickname)
+
   /** Mebiusを装備しているか */
   private def isEquip(player: Player): Boolean = ItemStackMebiusCodec.isMebius(player.getInventory.getHelmet)
 
@@ -42,7 +47,7 @@ class MebiusInteractionResponder extends Listener {
         // 耐久閾値を超えていたら破損警告
         if (mebius.getDurability >= mebius.getType.getMaxDurability - 10) {
           SeichiAssist.playermap(player.getUniqueId).mebius
-            .speak(getMessage(MebiusMessages.onDamageBreaking, MebiusListener.getNickname(player).get, ""))
+            .speak(getMessage(MebiusMessages.onDamageBreaking, getNickname(player).get, ""))
         }
 
         // モンスターからダメージを受けた場合
@@ -50,7 +55,7 @@ class MebiusInteractionResponder extends Listener {
           case monster: Monster =>
             // 対モンスターメッセージ
             SeichiAssist.playermap(player.getUniqueId).mebius
-              .speak(getMessage(MebiusMessages.onDamageWarnEnemy, MebiusListener.getNickname(player).get, monster.getName))
+              .speak(getMessage(MebiusMessages.onDamageWarnEnemy, getNickname(player).get, monster.getName))
           case _ =>
         }
       case _ =>
@@ -67,7 +72,7 @@ class MebiusInteractionResponder extends Listener {
       .foreach { property =>
         val player = event.getPlayer
         SeichiAssist.playermap(event.getPlayer.getUniqueId).mebius
-          .speak(getMessage(messages, property.ownerNickname.getOrElse(event.getPlayer.getDisplayName), ""))
+          .speak(getMessage(messages, property.ownerNickname, ""))
         player.sendMessage(s"${MebiusListener.getName(brokenItem)}${RESET}が旅立ちました。")
         // エンドラが叫ぶ
         player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
@@ -92,7 +97,7 @@ class MebiusInteractionResponder extends Listener {
     if (killedMonsterName == "") return
 
     SeichiAssist.playermap(killerPlayer.getUniqueId).mebius
-      .speak(getMessage(messages, MebiusListener.getNickname(killerPlayer).get, killedMonsterName))
+      .speak(getMessage(messages, getNickname(killerPlayer).get, killedMonsterName))
   }
 
   /**
@@ -105,7 +110,7 @@ class MebiusInteractionResponder extends Listener {
 
     val player = event.getPlayer
     if (isEquip(player)) {
-      val message = getMessage(MebiusMessages.onBlockBreak, MebiusListener.getNickname(player).get, "")
+      val message = getMessage(MebiusMessages.onBlockBreak, getNickname(player).get, "")
       SeichiAssist.playermap(player.getUniqueId).mebius.speak(message)
     }
   }

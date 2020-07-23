@@ -125,7 +125,7 @@ object ItemStackMebiusCodec {
     {
       val nbtItem = new NBTItem(item)
 
-      property.ownerNickname match {
+      property.ownerNicknameOverride match {
         case Some(ownerNickname) => nbtItem.setString("nickname", ownerNickname)
         case None =>
       }

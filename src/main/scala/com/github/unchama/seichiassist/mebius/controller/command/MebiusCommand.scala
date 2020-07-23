@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.{TargetedEffect, player}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor.{GREEN, RED, RESET}
@@ -93,7 +93,7 @@ object MebiusCommand {
         val updatedProperty = ItemStackMebiusCodec
           .decodeMebiusProperty(player.getInventory.getHelmet)
           .map {
-            _.copy(ownerNickname = Some(name))
+            _.copy(ownerNicknameOverride = Some(name))
           }
 
         updatedProperty.foreach { newProperty =>
@@ -108,7 +108,9 @@ object MebiusCommand {
       private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
           IO(MessageEffect {
-            MebiusListener.getNickname(context.sender)
+            ItemStackMebiusCodec
+              .decodeMebiusProperty(context.sender.getInventory.getHelmet)
+              .map(_.ownerNickname)
               .fold {
                 s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
               } { name =>

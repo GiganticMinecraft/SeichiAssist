@@ -27,7 +27,7 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
     ItemStackMebiusCodec
       .decodeMebiusProperty(p.getInventory.getHelmet)
       .foreach { property =>
-        speak(s"おかえり${property.ownerNickname.getOrElse(p.getName)}！待ってたよ！")
+        speak(s"おかえり${property.ownerNickname}！待ってたよ！")
       }
 
     runTaskTimerAsynchronously(SeichiAssist.instance, 2400, 2400)

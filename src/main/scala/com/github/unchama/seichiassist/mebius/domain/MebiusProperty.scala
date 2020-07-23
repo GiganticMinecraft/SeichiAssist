@@ -5,16 +5,16 @@ import cats.effect.IO
 import scala.util.Random
 
 /**
- * @param ownerPlayerId    オーナーのプレーヤーID
- * @param enchantmentLevel 付与されるエンチャントとレベルのMap
- * @param level            Mebiusのレベル
- * @param ownerNickname    オーナーをMebiusがどう呼ぶか
- * @param mebiusName       Mebius自体の名前
+ * @param ownerPlayerId         オーナーのプレーヤーID
+ * @param enchantmentLevel      付与されるエンチャントとレベルのMap
+ * @param level                 Mebiusのレベル
+ * @param ownerNicknameOverride オーナーをMebiusがどう呼ぶか
+ * @param mebiusName            Mebius自体の名前
  */
 case class MebiusProperty(ownerPlayerId: String,
                           enchantmentLevel: Map[MebiusEnchantment, Int] = Map(),
                           level: MebiusLevel = MebiusLevel(1),
-                          ownerNickname: Option[String] = None,
+                          ownerNicknameOverride: Option[String] = None,
                           mebiusName: String = "MEBIUS") {
   require {
     enchantmentLevel.forall { case (MebiusEnchantment(_, unlockLevel, maxLevel, _), enchantmentLevel) =>
@@ -39,6 +39,8 @@ case class MebiusProperty(ownerPlayerId: String,
       this.copy(enchantmentLevel = enchantmentLevel.updated(choice, newLevel))
     }
   }
+
+  def ownerNickname: String = ownerNicknameOverride.getOrElse(ownerPlayerId)
 
   /**
    * `another` と異なる [[MebiusEnchantment]] を返す。
