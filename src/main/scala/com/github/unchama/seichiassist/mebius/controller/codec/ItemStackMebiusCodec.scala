@@ -28,7 +28,7 @@ object ItemStackMebiusCodec {
   private val levelUpMebiusMessageLoreRowPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.ITALIC}"
   private val levelUpPlayerMessageLoreRowPrefix = s"$RESET${ChatColor.GRAY}${ChatColor.ITALIC}"
 
-  def isMebius(itemStack: ItemStack): Boolean = {
+  private def isMebius(itemStack: ItemStack): Boolean = {
     val meta = if (itemStack != null) itemStack.getItemMeta else return false
 
     meta.hasLore && {
