@@ -20,7 +20,7 @@ object ItemStackMebiusCodec {
 
   private val unbreakableLoreRow = s"$RESET${ChatColor.AQUA}耐久無限"
 
-  private val mebiusNameDisplayPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.BOLD}"
+  val mebiusNameDisplayPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.BOLD}"
 
   private val ownerLoreRowPrefix = s"$RESET${ChatColor.DARK_GREEN}所有者："
   private val levelLoreRowPrefix = s"$RESET$RED${ChatColor.BOLD}アイテムLv. "

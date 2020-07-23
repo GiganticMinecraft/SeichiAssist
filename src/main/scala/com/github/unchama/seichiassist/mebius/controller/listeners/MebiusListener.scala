@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import java.util.Objects
 
+import com.github.unchama.seichiassist.mebius.controller.PropertyModificationBukkitMessageGenerator
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener._
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
@@ -58,8 +59,6 @@ object MebiusListener {
     25 -> Material.DIAMOND_HELMET
   )
 
-  /** エンチャント別レベル制限 */
-  private val UNBREAK = s"$RESET${ChatColor.AQUA}耐久無限"
   /** Mebiusを装備しているか */
   def isEquip(player: Player): Boolean =
     try isMebius(player.getInventory.getHelmet)
@@ -366,49 +365,13 @@ class MebiusListener() extends Listener {
     val newMebiusProperty = MebiusLevellingService.attemptLevelUp(oldMebiusProperty).unsafeRunSync()
 
     if (newMebiusProperty != oldMebiusProperty) {
-      val materialized = ItemStackMebiusCodec.materialize(newMebiusProperty, damageValue = 0)
-      val mebiusDisplayName = materialized.getItemMeta.getDisplayName
-
-      // レベルアップ通知
-      player.sendMessage(s"${newMebiusProperty.mebiusName}${RESET}がレベルアップしました。")
-
-      // 進化通知
-      if (materialized.getType != oldHelmet.getType) {
-        player.sendMessage(s"$mebiusDisplayName${RESET}の見た目が進化しました。")
-      }
-
-      // エンチャント効果変更通知
-      if (newMebiusProperty.level.isMaximum) {
-        player.sendMessage {
-          s"$RESET${ChatColor.GREEN}おめでとうございます。" +
-            s"$mebiusDisplayName$RESET${ChatColor.GREEN}のレベルが最大になりました。"
-        }
-        player.sendMessage(s"$UNBREAK${RESET}が付与されました。")
-      } else {
-        val modifiedEnchantment = newMebiusProperty.enchantmentDifferentFrom(oldMebiusProperty).get
-
-        // メッセージを生成
-        player.sendMessage {
-          val romanSuffix = List(
-            "", "", " II", " III", " IV", " V",
-            " VI", " VII", " VIII", " IX", " X",
-            " XI", " XII", " XIII", " XIV", " XV",
-            " XVI", " XVII", " XVIII", " XIX", " XX"
-          )
-
-          oldMebiusProperty.enchantmentLevel.get(modifiedEnchantment) match {
-            case Some(previousLevel) =>
-              s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
-                s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${romanSuffix(previousLevel + 1)}${RESET}に強化されました。"
-            case None =>
-              s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${RESET}が付与されました。"
-          }
-        }
+      player.sendMessage {
+        PropertyModificationBukkitMessageGenerator.messagesOnLevelUp(oldMebiusProperty, newMebiusProperty).toArray
       }
 
       getPlayerData(player).mebius.speakForce(MebiusMessages.talkOnLevelUp(newMebiusProperty.level.value).mebiusMessage)
 
-      playerInventory.setHelmet(materialized)
+      playerInventory.setHelmet(ItemStackMebiusCodec.materialize(newMebiusProperty, damageValue = 0))
     }
   }
 
