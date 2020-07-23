@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius.controller.codec
 
-import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusMessages}
+import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusMessages, MebiusTalks}
 import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel, MebiusProperty}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor
@@ -100,13 +100,13 @@ object ItemStackMebiusCodec {
         if (property.level.isMaximum) meta.setUnbreakable(true)
 
         meta.setLore {
-          val previousLevelUpTalk = MebiusMessages.talkOnLevelUp(property.level)
+          val talk = MebiusTalks.at(property.level)
 
           mebiusLoreHead
             .concat(List(
               s"$levelLoreRowPrefix${property.level.value}",
-              s"$levelUpMebiusMessageLoreRowPrefix${previousLevelUpTalk.mebiusMessage}",
-              s"$levelUpPlayerMessageLoreRowPrefix${previousLevelUpTalk.playerMessage}",
+              s"$levelUpMebiusMessageLoreRowPrefix${talk.mebiusMessage}",
+              s"$levelUpPlayerMessageLoreRowPrefix${talk.playerMessage}",
               s"",
               s"$ownerLoreRowPrefix${property.ownerPlayerId}"
             ))

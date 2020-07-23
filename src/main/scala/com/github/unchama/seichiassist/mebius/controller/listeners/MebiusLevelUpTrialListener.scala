@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.domain.PropertyModificationMessages
-import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
+import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
 import com.github.unchama.seichiassist.mebius.service.MebiusLevellingService
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -22,7 +22,7 @@ class MebiusLevelUpTrialListener(implicit messages: PropertyModificationMessages
       }
 
       SeichiAssist.playermap(player.getUniqueId).mebius
-        .speakForce(MebiusMessages.talkOnLevelUp(newMebiusProperty.level).mebiusMessage)
+        .speakForce(MebiusTalks.at(newMebiusProperty.level).mebiusMessage)
 
       player.getInventory.setHelmet {
         ItemStackMebiusCodec.materialize(newMebiusProperty, damageValue = 0)
