@@ -18,16 +18,6 @@ abstract class MebiusSpeechGateway[F[_] : Sync] {
 
   final def unblockSpeech(): F[Unit] = willBlockSpeech.set(false)
 
-  protected def sendMessage(property: MebiusProperty, message: String): F[Unit]
-
-  protected def playSpeechSound(strength: MebiusSpeechStrength): F[Unit]
-
-  final def speak(speakingMebiusProperty: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
-    import cats.implicits._
-
-    sendMessage(speakingMebiusProperty, speech.content) >> playSpeechSound(speech.strength)
-  }
-
   /**
    * `property` をプロパティとして持つMebiusに発話させる。
    *
@@ -51,11 +41,21 @@ abstract class MebiusSpeechGateway[F[_] : Sync] {
     } yield ()
   }
 
+  final def speak(speakingMebiusProperty: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
+    import cats.implicits._
+
+    sendMessage(speakingMebiusProperty, speech.content) >> playSpeechSound(speech.strength)
+  }
+
   /**
    * `property` をプロパティとして持つMebiusに強制的に発話させる。
    */
   def forceMakingSpeech(property: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
     speak(property, speech)
   }
+
+  protected def sendMessage(property: MebiusProperty, message: String): F[Unit]
+
+  protected def playSpeechSound(strength: MebiusSpeechStrength): F[Unit]
 
 }

@@ -29,19 +29,6 @@ object ItemStackMebiusCodec {
   private val levelUpMebiusMessageLoreRowPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.ITALIC}"
   private val levelUpPlayerMessageLoreRowPrefix = s"$RESET${ChatColor.GRAY}${ChatColor.ITALIC}"
 
-  private def isMebius(itemStack: ItemStack): Boolean = {
-    val meta = if (itemStack != null) itemStack.getItemMeta else return false
-
-    meta.hasLore && {
-      val lore = meta.getLore.asScala
-      mebiusLoreHead.forall(lore.contains)
-    }
-  }
-
-  def displayNameOfMaterializedItem(property: MebiusProperty): String = {
-    mebiusNameDisplayPrefix + property.mebiusName
-  }
-
   /**
    * (必ずしも有効な`MebiusProperty`を持つとは限らない)実体から `ItemStack` をデコードする。
    */
@@ -75,6 +62,15 @@ object ItemStackMebiusCodec {
     val mebiusName = mebius.getItemMeta.getDisplayName
 
     Some(MebiusProperty(ownerName, enchantments, mebiusLevel, nickname, mebiusName))
+  }
+
+  private def isMebius(itemStack: ItemStack): Boolean = {
+    val meta = if (itemStack != null) itemStack.getItemMeta else return false
+
+    meta.hasLore && {
+      val lore = meta.getLore.asScala
+      mebiusLoreHead.forall(lore.contains)
+    }
   }
 
   /**
@@ -133,6 +129,10 @@ object ItemStackMebiusCodec {
 
       nbtItem.getItem
     }
+  }
+
+  def displayNameOfMaterializedItem(property: MebiusProperty): String = {
+    mebiusNameDisplayPrefix + property.mebiusName
   }
 
   def ownershipMatches(player: Player)(property: MebiusProperty): Boolean =

@@ -34,6 +34,33 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
     val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution { _ => IO(Messages.commandDescription) }
       .build()
+    val namingExecutor: ContextualExecutor = playerCommandBuilder
+      .argumentsParsers(List(Parsers.identity))
+      .execution { context =>
+        val newName = concatHeadAndRemainingArgs(context.args)
+        val player = context.sender
+
+        MebiusInteractionTemplate(
+          MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください."),
+          _.copy(mebiusName = newName),
+          newProperty => {
+            val newDisplayName = ItemStackMebiusCodec.displayNameOfMaterializedItem(newProperty)
+            SequentialEffect(
+              MessageEffect(s"$newDisplayName${RESET}に命名しました。"),
+              Kleisli.liftF {
+                gatewayRepository(player).forceMakingSpeech(
+                  newProperty,
+                  MebiusSpeech(
+                    s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
+                    MebiusSpeechStrength.Loud
+                  )
+                )
+              }
+            )
+          }
+        ).effectOn(player)
+      }
+      .build()
 
     private def concatHeadAndRemainingArgs(args: PartiallyParsedArgs): String =
       s"${args.parsed.head.toString} ${args.yetToBeParsed.mkString(" ")}"
@@ -66,58 +93,11 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
         } yield effect
     }
 
-    val namingExecutor: ContextualExecutor = playerCommandBuilder
-      .argumentsParsers(List(Parsers.identity))
-      .execution { context =>
-        val newName = concatHeadAndRemainingArgs(context.args)
-        val player = context.sender
-
-        MebiusInteractionTemplate(
-          MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください."),
-          _.copy(mebiusName = newName),
-          newProperty => {
-            val newDisplayName = ItemStackMebiusCodec.displayNameOfMaterializedItem(newProperty)
-            SequentialEffect(
-              MessageEffect(s"$newDisplayName${RESET}に命名しました。"),
-              Kleisli.liftF {
-                gatewayRepository(player).forceMakingSpeech(
-                  newProperty,
-                  MebiusSpeech(
-                    s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
-                    MebiusSpeechStrength.Loud
-                  )
-                )
-              }
-            )
-          }
-        ).effectOn(player)
-      }
-      .build()
-
     object NicknameCommand {
-      private def setNicknameOverrideOnMebiusOn(player: Player,
-                                                name: String,
-                                                successMessage: String => String,
-                                                errorMessage: String): IO[TargetedEffect[Player]] = {
-
-        MebiusInteractionTemplate(
-          MessageEffect(errorMessage),
-          _.copy(ownerNicknameOverride = Some(name)),
-          newProperty => SequentialEffect(
-            MessageEffect(successMessage(name)),
-            Kleisli.liftF {
-              gatewayRepository(player).forceMakingSpeech(
-                newProperty,
-                MebiusSpeech(
-                  s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",
-                  MebiusSpeechStrength.Loud
-                )
-              )
-            }
-          )
-        ).effectOn(player)
-      }
-
+      val executor: BranchedExecutor = BranchedExecutor(Map(
+        "reset" -> resetNicknameExecutor,
+        "set" -> setNicknameExecutor
+      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
       private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
           IO(MessageEffect {
@@ -158,10 +138,28 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
         }
         .build()
 
-      val executor: BranchedExecutor = BranchedExecutor(Map(
-        "reset" -> resetNicknameExecutor,
-        "set" -> setNicknameExecutor
-      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
+      private def setNicknameOverrideOnMebiusOn(player: Player,
+                                                name: String,
+                                                successMessage: String => String,
+                                                errorMessage: String): IO[TargetedEffect[Player]] = {
+
+        MebiusInteractionTemplate(
+          MessageEffect(errorMessage),
+          _.copy(ownerNicknameOverride = Some(name)),
+          newProperty => SequentialEffect(
+            MessageEffect(successMessage(name)),
+            Kleisli.liftF {
+              gatewayRepository(player).forceMakingSpeech(
+                newProperty,
+                MebiusSpeech(
+                  s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",
+                  MebiusSpeechStrength.Loud
+                )
+              )
+            }
+          )
+        ).effectOn(player)
+      }
     }
 
   }

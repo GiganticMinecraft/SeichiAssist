@@ -8,13 +8,6 @@ import org.bukkit.inventory.{AnvilInventory, ItemStack}
 
 class MebiusRenamePreventionListener extends Listener {
 
-  private def isMebius(stack: ItemStack) = ItemStackMebiusCodec.decodeMebiusProperty(stack).nonEmpty
-
-  private def cancelEventAndNotifyTheAlternative(event: InventoryInteractEvent): Unit = {
-    event.setCancelled(true)
-    event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
-  }
-
   // 金床配置時（クリック）
   @EventHandler def onRenameOnAnvil(event: InventoryClickEvent): Unit = {
     // 金床を開いていない場合終了
@@ -33,6 +26,13 @@ class MebiusRenamePreventionListener extends Listener {
         cancelEventAndNotifyTheAlternative(event)
       }
     }
+  }
+
+  private def isMebius(stack: ItemStack) = ItemStackMebiusCodec.decodeMebiusProperty(stack).nonEmpty
+
+  private def cancelEventAndNotifyTheAlternative(event: InventoryInteractEvent): Unit = {
+    event.setCancelled(true)
+    event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
   }
 
   // 金床配置時（ドラッグ）

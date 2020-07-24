@@ -6,10 +6,6 @@ import scala.util.Random
 
 case class MebiusLevel private(value: Int) extends AnyVal {
 
-  def isMaximum: Boolean = value == MebiusLevel.max
-
-  def increment: MebiusLevel = MebiusLevel(value + 1)
-
   def attemptLevelUp: IO[MebiusLevel] =
     if (isMaximum) IO.pure(this)
     else IO {
@@ -20,6 +16,10 @@ case class MebiusLevel private(value: Int) extends AnyVal {
 
       if (willLevelUp) increment else this
     }
+
+  def isMaximum: Boolean = value == MebiusLevel.max
+
+  def increment: MebiusLevel = MebiusLevel(value + 1)
 }
 
 object MebiusLevel {

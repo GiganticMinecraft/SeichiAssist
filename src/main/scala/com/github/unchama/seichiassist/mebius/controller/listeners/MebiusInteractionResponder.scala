@@ -23,17 +23,6 @@ import scala.util.Random
 class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]],
                                  effectEnvironment: SeichiAssistEffectEnvironment)
   extends Listener {
-  // メッセージリストからランダムに取り出し、タグを置換する
-  // TODO 何らかのクラスに入れるべき
-  private def getMessage(messages: Set[String], str1: String, str2: String) = {
-    var msg = messages.toList(Random.nextInt(messages.size))
-
-    if (!str1.isEmpty) msg = msg.replace("[str1]", s"$str1$RESET")
-    if (!str2.isEmpty) msg = msg.replace("[str2]", s"$str2$RESET")
-
-    msg
-  }
-
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onDamage(event: EntityDamageByEntityEvent): Unit = {
     // プレイヤーがダメージを受けた場合
@@ -132,6 +121,17 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
         )
       )
     )
+  }
+
+  // メッセージリストからランダムに取り出し、タグを置換する
+  // TODO 何らかのクラスに入れるべき
+  private def getMessage(messages: Set[String], str1: String, str2: String) = {
+    var msg = messages.toList(Random.nextInt(messages.size))
+
+    if (!str1.isEmpty) msg = msg.replace("[str1]", s"$str1$RESET")
+    if (!str2.isEmpty) msg = msg.replace("[str2]", s"$str2$RESET")
+
+    msg
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
