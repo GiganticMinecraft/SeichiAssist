@@ -10,8 +10,7 @@ class MebiusRenamePreventionListener extends Listener {
 
   private def isMebius(stack: ItemStack) = ItemStackMebiusCodec.decodeMebiusProperty(stack).nonEmpty
 
-  // FIXME typo
-  private def cancelEventAndNotifyTheAnternative(event: InventoryInteractEvent): Unit = {
+  private def cancelEventAndNotifyTheAlternative(event: InventoryInteractEvent): Unit = {
     event.setCancelled(true)
     event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")
   }
@@ -25,13 +24,13 @@ class MebiusRenamePreventionListener extends Listener {
     if (clickedInventory.isInstanceOf[AnvilInventory]) {
       // mebiusを選択中、左枠に置いた場合はcancel
       if (isMebius(event.getCursor) && event.getView.convertSlot(0) == 0 && event.getRawSlot == 0) {
-        cancelEventAndNotifyTheAnternative(event)
+        cancelEventAndNotifyTheAlternative(event)
       }
     } else if (event.getClick.isShiftClick && isMebius(event.getCurrentItem)) {
       // mebiusをShiftクリックした場合
       // 金床の左枠が空いている場合はcancel
       if (event.getView.getTopInventory.getItem(0) == null) {
-        cancelEventAndNotifyTheAnternative(event)
+        cancelEventAndNotifyTheAlternative(event)
       }
     }
   }
@@ -45,7 +44,7 @@ class MebiusRenamePreventionListener extends Listener {
     if (!isMebius(event.getOldCursor)) return
 
     if (event.getRawSlots.contains(0) && event.getView.convertSlot(0) == 0) {
-      cancelEventAndNotifyTheAnternative(event)
+      cancelEventAndNotifyTheAlternative(event)
     }
   }
 }
