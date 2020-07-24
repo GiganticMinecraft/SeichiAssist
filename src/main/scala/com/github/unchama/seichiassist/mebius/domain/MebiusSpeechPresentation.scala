@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.domain
 
 import cats.Monad
 
-trait MebiusEffects[F[_]] {
+trait MebiusSpeechPresentation[F[_]] {
 
   protected implicit val F: Monad[F]
 
@@ -12,7 +12,7 @@ trait MebiusEffects[F[_]] {
 
   def playSpeechSound(strength: MebiusSpeechStrength): F[Unit]
 
-  final def speak(property: MebiusProperty, message: String, speechSoundStrength: MebiusSpeechStrength): F[Unit] =
-    sendMessage(property, message) >> playSpeechSound(speechSoundStrength)
+  final def speak(speakingMebiusProperty: MebiusProperty, speech: MebiusSpeech): F[Unit] =
+    sendMessage(speakingMebiusProperty, speech.content) >> playSpeechSound(speech.strength)
 
 }
