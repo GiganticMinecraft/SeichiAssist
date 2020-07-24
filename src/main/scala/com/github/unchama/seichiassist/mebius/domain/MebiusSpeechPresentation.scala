@@ -4,7 +4,7 @@ import cats.kernel.Semigroup
 
 trait MebiusSpeechPresentation[Effect] {
 
-  protected implicit val Effect: Semigroup[Effect]
+  val Effect: Semigroup[Effect]
 
   def sendMessage(property: MebiusProperty, message: String): Effect
 
