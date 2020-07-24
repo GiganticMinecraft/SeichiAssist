@@ -3,9 +3,7 @@ package com.github.unchama.seichiassist.mebius.controller.routines
 import java.util.UUID
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.listeners.MebiusListener
-import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusMessages, MebiusTalks}
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{Bukkit, ChatColor, Sound}
 
@@ -33,19 +31,6 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
   override def run(): Unit = {
     // 前回喋って2分経過によりお喋り解禁
     silence = false
-
-    ItemStackMebiusCodec
-      .decodeMebiusProperty(p.getInventory.getHelmet)
-      .foreach { property =>
-        val no = Random.nextInt(MebiusMessages.tips.size + 1)
-
-        if (no == MebiusMessages.tips.size) {
-          speak(MebiusTalks.at(property.level).mebiusMessage)
-        } else {
-          // tipsの中身を設定
-          speak(MebiusMessages.tips(no))
-        }
-      }
   }
 
   // silence OFFかつ50%でmessageを喋って、silence trueにする

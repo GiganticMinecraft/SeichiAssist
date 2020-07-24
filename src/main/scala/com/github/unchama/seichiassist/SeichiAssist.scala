@@ -40,7 +40,6 @@ import org.bukkit.{Bukkit, Material}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.concurrent.ExecutionContext
 
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
@@ -168,10 +167,11 @@ class SeichiAssist extends JavaPlugin() {
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistrs
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
 
+    import PluginExecutionContexts._
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
     implicit val effectEnvironment: SeichiAssistEffectEnvironment = DefaultEffectEnvironment
-    implicit val timer: Timer[IO] = IO.timer(PluginExecutionContexts.cachedThreadPool)
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val mebiusSystem = mebius.EntryPoints.wired
 
@@ -206,7 +206,6 @@ class SeichiAssist extends JavaPlugin() {
       assaultSkillRoutines
     )
 
-    import PluginExecutionContexts.asyncShift
     //リスナーの登録
     Seq(
       new PlayerJoinListener(),
