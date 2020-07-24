@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.mebius.controller.routines
+package com.github.unchama.seichiassist.mebius.bukkit.routines
 
 import cats.effect.IO
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
-import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
+import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusMessages, MebiusTalks}
 import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import org.bukkit.entity.Player
@@ -28,7 +28,7 @@ object PeriodicMebiusSpeechRoutine {
         player.getInventory.getHelmet
       }
       _ <- gateway.unblockSpeech()
-      _ <- ItemStackMebiusCodec.decodeMebiusProperty(helmet)
+      _ <- BukkitMebiusItemStackCodec.decodeMebiusProperty(helmet)
         .map { property =>
           val messagesCandidate = MebiusMessages.tips.appended(MebiusTalks.at(property.level).mebiusMessage)
           val message = messagesCandidate(Random.nextInt(messagesCandidate.size))

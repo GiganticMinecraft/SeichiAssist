@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.controller.repository
+package com.github.unchama.seichiassist.mebius.bukkit.repository
 
 import cats.effect.{IO, Sync}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository

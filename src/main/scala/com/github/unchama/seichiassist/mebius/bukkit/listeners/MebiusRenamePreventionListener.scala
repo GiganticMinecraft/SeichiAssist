@@ -1,6 +1,6 @@
-package com.github.unchama.seichiassist.mebius.controller.listeners
+package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
-import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
+import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import org.bukkit.ChatColor.{RED, RESET}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryDragEvent, InventoryInteractEvent}
 import org.bukkit.event.{EventHandler, Listener}
@@ -28,7 +28,7 @@ class MebiusRenamePreventionListener extends Listener {
     }
   }
 
-  private def isMebius(stack: ItemStack) = ItemStackMebiusCodec.decodeMebiusProperty(stack).nonEmpty
+  private def isMebius(stack: ItemStack) = BukkitMebiusItemStackCodec.decodeMebiusProperty(stack).nonEmpty
 
   private def cancelEventAndNotifyTheAlternative(event: InventoryInteractEvent): Unit = {
     event.setCancelled(true)

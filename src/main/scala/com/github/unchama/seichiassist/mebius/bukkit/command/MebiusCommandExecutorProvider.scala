@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.controller.command
+package com.github.unchama.seichiassist.mebius.bukkit.command
 
 import cats.data.Kleisli
 import cats.effect.IO
@@ -7,8 +7,8 @@ import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, PartiallyParsedArgs}
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
-import com.github.unchama.seichiassist.mebius.controller.command.MebiusCommandExecutorProvider.Messages
+import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
+import com.github.unchama.seichiassist.mebius.bukkit.command.MebiusCommandExecutorProvider.Messages
 import com.github.unchama.seichiassist.mebius.domain.{MebiusProperty, MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
@@ -44,7 +44,7 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
           MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください."),
           _.copy(mebiusName = newName),
           newProperty => {
-            val newDisplayName = ItemStackMebiusCodec.displayNameOfMaterializedItem(newProperty)
+            val newDisplayName = BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(newProperty)
             SequentialEffect(
               MessageEffect(s"$newDisplayName${RESET}に命名しました。"),
               Kleisli.liftF {
@@ -75,14 +75,14 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
             player.getInventory.getHelmet
           }
           effect <- IO.pure {
-            ItemStackMebiusCodec
+            BukkitMebiusItemStackCodec
               .decodeMebiusProperty(helmet)
               .map(propertyModifier) match {
               case Some(newProperty) =>
                 SequentialEffect(
                   UnfocusedEffect {
                     player.getInventory.setHelmet {
-                      ItemStackMebiusCodec.materialize(newProperty, damageValue = helmet.getDurability)
+                      BukkitMebiusItemStackCodec.materialize(newProperty, damageValue = helmet.getDurability)
                     }
                   },
                   additionalEffectsOnModification(newProperty)
@@ -101,7 +101,7 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
       private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
           IO(MessageEffect {
-            ItemStackMebiusCodec
+            BukkitMebiusItemStackCodec
               .decodeMebiusProperty(context.sender.getInventory.getHelmet)
               .map(_.ownerNickname)
               .fold {

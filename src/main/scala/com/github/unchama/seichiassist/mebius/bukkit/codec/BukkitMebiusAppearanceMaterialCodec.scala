@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.mebius.controller.codec
+package com.github.unchama.seichiassist.mebius.bukkit.codec
 
 import com.github.unchama.seichiassist.mebius.domain.MebiusLevel
 import org.bukkit.Material
 
-object AppearanceMaterialCodec {
+object BukkitMebiusAppearanceMaterialCodec {
 
   private val appearanceThresholds = List(
     1 -> Material.LEATHER_HELMET,

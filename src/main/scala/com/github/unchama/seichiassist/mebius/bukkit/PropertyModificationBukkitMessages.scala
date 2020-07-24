@@ -1,21 +1,21 @@
-package com.github.unchama.seichiassist.mebius.controller
+package com.github.unchama.seichiassist.mebius.bukkit
 
-import com.github.unchama.seichiassist.mebius.controller.codec.{AppearanceMaterialCodec, ItemStackMebiusCodec}
+import com.github.unchama.seichiassist.mebius.bukkit.codec.{BukkitMebiusAppearanceMaterialCodec, BukkitMebiusItemStackCodec}
 import com.github.unchama.seichiassist.mebius.domain.{MebiusProperty, PropertyModificationMessages}
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.RESET
 
 object PropertyModificationBukkitMessages extends PropertyModificationMessages {
   override def onLevelUp(oldMebiusProperty: MebiusProperty, newMebiusProperty: MebiusProperty): List[String] = {
-    val mebiusDisplayName = ItemStackMebiusCodec.displayNameOfMaterializedItem(newMebiusProperty)
+    val mebiusDisplayName = BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(newMebiusProperty)
 
     // レベルアップ通知
     val levelUpMessage = List(s"${newMebiusProperty.mebiusName}${RESET}がレベルアップしました。")
 
     // 進化通知
     val materialChangeMessage =
-      if (AppearanceMaterialCodec.appearanceMaterialAt(oldMebiusProperty.level) !=
-        AppearanceMaterialCodec.appearanceMaterialAt(newMebiusProperty.level)) List {
+      if (BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(oldMebiusProperty.level) !=
+        BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(newMebiusProperty.level)) List {
         s"$mebiusDisplayName${RESET}の見た目が進化しました。"
       } else Nil
 

@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.mebius.controller.listeners
+package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
 import cats.effect.IO
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
-import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
+import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
 import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength, PropertyModificationMessages}
 import com.github.unchama.seichiassist.mebius.service.MebiusLevellingService
@@ -19,15 +19,15 @@ class MebiusLevelUpTrialListener(implicit gatewayRepository: PlayerDataRepositor
   def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
 
-    val oldMebiusProperty = ItemStackMebiusCodec
+    val oldMebiusProperty = BukkitMebiusItemStackCodec
       .decodeMebiusProperty(player.getInventory.getHelmet)
-      .filter(ItemStackMebiusCodec.ownershipMatches(player))
+      .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
       .getOrElse(return)
     val newMebiusProperty = MebiusLevellingService.attemptLevelUp(oldMebiusProperty).unsafeRunSync()
 
     if (newMebiusProperty != oldMebiusProperty) {
       player.getInventory.setHelmet {
-        ItemStackMebiusCodec.materialize(newMebiusProperty, damageValue = 0)
+        BukkitMebiusItemStackCodec.materialize(newMebiusProperty, damageValue = 0)
       }
 
       import cats.implicits._

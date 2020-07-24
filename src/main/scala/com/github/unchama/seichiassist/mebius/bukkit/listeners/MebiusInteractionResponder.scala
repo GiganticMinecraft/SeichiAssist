@@ -1,10 +1,10 @@
-package com.github.unchama.seichiassist.mebius.controller.listeners
+package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
 import cats.effect.IO
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
-import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
+import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
 import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.targetedeffect.SequentialEffect
@@ -29,9 +29,9 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
     event.getEntity match {
       case player: Player =>
         val helmet = player.getInventory.getHelmet
-        val mebiusProperty = ItemStackMebiusCodec
+        val mebiusProperty = BukkitMebiusItemStackCodec
           .decodeMebiusProperty(helmet)
-          .filter(ItemStackMebiusCodec.ownershipMatches(player))
+          .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
           .getOrElse(return)
 
         val gateway = gatewayRepository(player)
@@ -68,9 +68,9 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
     val brokenItem = event.getBrokenItem
     val player = event.getPlayer
 
-    ItemStackMebiusCodec
+    BukkitMebiusItemStackCodec
       .decodeMebiusProperty(brokenItem)
-      .filter(ItemStackMebiusCodec.ownershipMatches(player))
+      .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
       .foreach { property =>
         val gateway = gatewayRepository(player)
 
@@ -85,7 +85,7 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
               MebiusSpeechStrength.Medium
             )
           ) >> SequentialEffect(
-            MessageEffect(s"${ItemStackMebiusCodec.displayNameOfMaterializedItem(property)}${RESET}が旅立ちました。"),
+            MessageEffect(s"${BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(property)}${RESET}が旅立ちました。"),
             FocusedSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
           ).run(player)
         )
@@ -104,9 +104,9 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
     if (killedMonsterName == "") return
 
     val mebiusProperty =
-      ItemStackMebiusCodec
+      BukkitMebiusItemStackCodec
         .decodeMebiusProperty(player.getInventory.getHelmet)
-        .filter(ItemStackMebiusCodec.ownershipMatches(player))
+        .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
         .getOrElse(return)
 
     val gateway = gatewayRepository(player)
@@ -140,9 +140,9 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
 
     val player = event.getPlayer
 
-    val mebiusProperty = ItemStackMebiusCodec
+    val mebiusProperty = BukkitMebiusItemStackCodec
       .decodeMebiusProperty(player.getInventory.getHelmet)
-      .filter(ItemStackMebiusCodec.ownershipMatches(player))
+      .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
       .getOrElse(return)
 
     val gateway = gatewayRepository(player)

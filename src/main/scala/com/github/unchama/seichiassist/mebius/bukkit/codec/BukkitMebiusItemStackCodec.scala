@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.controller.codec
+package com.github.unchama.seichiassist.mebius.bukkit.codec
 
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusTalks}
 import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel, MebiusProperty}
@@ -8,7 +8,7 @@ import org.bukkit.ChatColor.{RED, RESET}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 
-object ItemStackMebiusCodec {
+object BukkitMebiusItemStackCodec {
 
   import scala.jdk.CollectionConverters._
 
@@ -81,7 +81,7 @@ object ItemStackMebiusCodec {
    * を満足する。
    */
   def materialize(property: MebiusProperty, damageValue: Short): ItemStack = {
-    val material = AppearanceMaterialCodec.appearanceMaterialAt(property.level)
+    val material = BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
 
     import scala.util.chaining._
 

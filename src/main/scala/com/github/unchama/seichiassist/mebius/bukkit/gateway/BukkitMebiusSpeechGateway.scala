@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.gateway
+package com.github.unchama.seichiassist.mebius.bukkit.gateway
 
 import java.util.concurrent.TimeUnit
 

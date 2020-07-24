@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.controller.listeners
+package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
 import java.util.concurrent.TimeUnit
 
@@ -6,7 +6,7 @@ import cats.effect.{IO, Timer}
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
-import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
+import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.mebius.service.MebiusDroppingService
 import com.github.unchama.seichiassist.util.Util
@@ -33,7 +33,7 @@ class MebiusDropTrialListener(implicit gatewayRepository: PlayerDataRepository[M
       .tryForDrop(player.getPlayer.getName).unsafeRunSync()
       .getOrElse(return)
 
-    val mebius = ItemStackMebiusCodec.materialize(droppedMebiusProperty, damageValue = 0.toShort)
+    val mebius = BukkitMebiusItemStackCodec.materialize(droppedMebiusProperty, damageValue = 0.toShort)
 
     player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}おめでとうございます。採掘中にMEBIUSを発見しました。")
     player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}MEBIUSはプレイヤーと共に成長するヘルメットです。")
@@ -46,7 +46,7 @@ class MebiusDropTrialListener(implicit gatewayRepository: PlayerDataRepository[M
         droppedMebiusProperty,
         MebiusSpeech(
           s"こんにちは、${player.getName}$RESET。" +
-            s"僕は${ItemStackMebiusCodec.displayNameOfMaterializedItem(droppedMebiusProperty)}" +
+            s"僕は${BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(droppedMebiusProperty)}" +
             s"$RESET！これからよろしくね！",
           MebiusSpeechStrength.Loud
         )

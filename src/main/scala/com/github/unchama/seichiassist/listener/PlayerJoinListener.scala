@@ -5,7 +5,7 @@ import java.util.UUID
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
+import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.MebiusProperty
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.util.Util
@@ -117,7 +117,7 @@ class PlayerJoinListener extends Listener {
         new ItemStack(Material.LOG_2, 64, 1.toShort))
 
       //メビウスおひとつどうぞ
-      player.getInventory.setHelmet(ItemStackMebiusCodec.materialize(MebiusProperty(player.getDisplayName), damageValue = 0.toShort))
+      player.getInventory.setHelmet(BukkitMebiusItemStackCodec.materialize(MebiusProperty(player.getDisplayName), damageValue = 0.toShort))
 
       /* 期間限定ダイヤ配布.期間終了したので64→32に変更して恒久継続 */
       player.getInventory.addItem(new ItemStack(Material.DIAMOND, 32))
