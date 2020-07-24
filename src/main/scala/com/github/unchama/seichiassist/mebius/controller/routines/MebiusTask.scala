@@ -62,13 +62,6 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
     }
   }
 
-  // 無条件で喋らせる
-  def speakForce(message: String): Unit = {
-    val name = MebiusListener.getName(p.getInventory.getHelmet)
-    playSeForce()
-    p.sendMessage(s"${ChatColor.RESET}<$name${ChatColor.RESET}> $message")
-  }
-
   // 喋る時の効果音
   // HARPちゃんは聞こえんのだよ…
   private def playSe() = {
@@ -82,21 +75,4 @@ class MebiusTask(val uuid: UUID) extends BukkitRunnable {
     }, 2)
   }
 
-  // 強制時の効果音
-  private def playSeForce() = {
-    p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f)
-    p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f)
-    p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f)
-    p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f)
-    p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f)
-    p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 1.5f)
-    Bukkit.getServer.getScheduler.runTaskLater(SeichiAssist.instance, () => {
-      p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f)
-      p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f)
-      p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f)
-      p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f)
-      p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f)
-      p.playSound(p.getLocation, Sound.BLOCK_NOTE_HARP, 2.0f, 2.0f)
-    }, 2)
-  }
 }
