@@ -8,7 +8,7 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.{ChatColor, Sound}
 import org.bukkit.entity.Player
 
-class BukkitMebiusSpeechGateway(player: Player) extends MebiusSpeechGateway[IO[Unit]] {
+class BukkitMebiusSpeechGateway(player: Player) extends MebiusSpeechGateway[IO] {
 
   override protected def sendMessage(property: MebiusProperty, message: String): IO[Unit] = {
     MessageEffect(

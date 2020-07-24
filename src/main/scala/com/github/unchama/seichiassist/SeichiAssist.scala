@@ -40,6 +40,7 @@ import org.bukkit.{Bukkit, Material}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.concurrent.ExecutionContext
 
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
@@ -171,7 +172,10 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: SeichiAssistEffectEnvironment = DefaultEffectEnvironment
 
-    val mebiusSystem = mebius.EntryPoints.wired
+    val mebiusSystem = {
+      implicit val timerContext: ExecutionContext = PluginExecutionContexts.cachedThreadPool
+      mebius.EntryPoints.wired
+    }
 
     // コマンドの登録
     Map(
