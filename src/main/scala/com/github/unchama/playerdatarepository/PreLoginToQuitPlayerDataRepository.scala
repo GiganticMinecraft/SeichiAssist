@@ -5,15 +5,18 @@ import java.util.UUID
 import cats.effect.{IO, SyncIO}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerQuitEvent}
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 /**
- * ログインしているプレーヤーに追加のデータを関連付けるオンメモリデータリポジトリのクラス。
- * getで得られる値は、プレーヤーがログインしている間は不変であることが保証される。
+ * プレーヤーに値を関連付けるオンメモリデータリポジトリのクラス。
+ *
+ * [[AsyncPlayerPreLoginEvent]] の [[EventPriority.LOW]] から、
+ * [[PlayerQuitEvent]] の [[EventPriority.HIGHEST]] までのデータの取得を保証する。
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
-abstract class PlayerDataOnMemoryRepository[R] extends Listener {
+abstract class PreLoginToQuitPlayerDataRepository[R] extends PlayerDataRepository[R] with Listener {
+
   import scala.collection.mutable
 
   private val state: mutable.HashMap[UUID, R] = mutable.HashMap()
@@ -45,7 +48,8 @@ abstract class PlayerDataOnMemoryRepository[R] extends Listener {
    */
   final def apply(player: Player): R = state(player.getUniqueId)
 
-  @EventHandler final def onPlayerJoin(event: AsyncPlayerPreLoginEvent): Unit = {
+  @EventHandler(priority = EventPriority.LOWEST)
+  final def onPlayerJoin(event: AsyncPlayerPreLoginEvent): Unit = {
     loadData(event.getName, event.getUniqueId).unsafeRunSync() match {
       case Left(errorMessageOption) =>
         errorMessageOption.foreach(event.setKickMessage)
@@ -55,7 +59,8 @@ abstract class PlayerDataOnMemoryRepository[R] extends Listener {
     }
   }
 
-  @EventHandler final def onPlayerLeave(event: PlayerQuitEvent): Unit = {
+  @EventHandler(priority = EventPriority.MONITOR)
+  final def onPlayerLeave(event: PlayerQuitEvent): Unit = {
     val player = event.getPlayer
     val uuid = player.getUniqueId
 
