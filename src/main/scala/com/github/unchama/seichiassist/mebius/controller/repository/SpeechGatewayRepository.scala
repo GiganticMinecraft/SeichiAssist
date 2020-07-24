@@ -1,21 +1,14 @@
 package com.github.unchama.seichiassist.mebius.controller.repository
 
-import java.util.UUID
-
-import cats.effect.{IO, Sync, SyncIO}
-import com.github.unchama.playerdatarepository.PreLoginToQuitPlayerDataRepository
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeechGateway, MebiusSpeechPresentation}
+import cats.effect.{IO, Sync}
+import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
+import com.github.unchama.seichiassist.mebius.domain.MebiusSpeechGateway
 import org.bukkit.entity.Player
 
-class SpeechGatewayRepository[F[_] : Sync](implicit presentation: MebiusSpeechPresentation[F[Unit]])
-  extends PreLoginToQuitPlayerDataRepository[MebiusSpeechGateway[F]] {
+class SpeechGatewayRepository[F[_] : Sync](implicit gatewayProvider: Player => MebiusSpeechGateway[F])
+  extends JoinToQuitPlayerDataRepository[MebiusSpeechGateway[F]] {
 
-  override val loadData: (String, UUID) => SyncIO[Either[Option[String], MebiusSpeechGateway[F]]] =
-    (_, _) => SyncIO(Right {
-      new MebiusSpeechGateway()
-    })
+  override protected def initialValue(player: Player): MebiusSpeechGateway[F] = gatewayProvider(player)
 
-  override val unloadData: (Player, MebiusSpeechGateway[F]) => IO[Unit] =
-    (_, _) => IO.unit
-
+  override protected def unloadData(player: Player, r: MebiusSpeechGateway[F]): IO[Unit] = IO.unit
 }

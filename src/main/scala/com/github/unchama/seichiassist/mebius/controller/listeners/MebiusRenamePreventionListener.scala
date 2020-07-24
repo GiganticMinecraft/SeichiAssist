@@ -10,6 +10,7 @@ class MebiusRenamePreventionListener extends Listener {
 
   private def isMebius(stack: ItemStack) = ItemStackMebiusCodec.decodeMebiusProperty(stack).nonEmpty
 
+  // FIXME typo
   private def cancelEventAndNotifyTheAnternative(event: InventoryInteractEvent): Unit = {
     event.setCancelled(true)
     event.getWhoClicked.sendMessage(s"${RED}MEBIUSへの命名は$RESET/mebius naming <name>${RED}で行ってください。")

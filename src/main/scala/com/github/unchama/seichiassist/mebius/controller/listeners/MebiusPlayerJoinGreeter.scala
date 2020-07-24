@@ -1,17 +1,15 @@
 package com.github.unchama.seichiassist.mebius.controller.listeners
 
-import cats.data.Kleisli
-import cats.effect.Effect
+import cats.effect.{Effect, IO}
+import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
-import com.github.unchama.seichiassist.mebius.controller.repository.SpeechGatewayRepository
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechStrength}
-import org.bukkit.entity.Player
+import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: SeichiAssistEffectEnvironment,
-                                             speechGatewayRepository: SpeechGatewayRepository[Kleisli[F, Player, *]]
+                                             speechGatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]]
                                             ) extends Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -29,7 +27,6 @@ class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: SeichiA
               property,
               MebiusSpeech(s"おかえり${property.ownerNickname}！待ってたよ！", MebiusSpeechStrength.Medium)
             )
-            .run(event.getPlayer)
         )
       }
   }

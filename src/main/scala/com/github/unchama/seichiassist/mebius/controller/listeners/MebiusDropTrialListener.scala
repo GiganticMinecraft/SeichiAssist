@@ -2,26 +2,24 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import java.util.concurrent.TimeUnit
 
-import cats.data.Kleisli
 import cats.effect.{IO, Timer}
+import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
-import com.github.unchama.seichiassist.mebius.controller.repository.SpeechGatewayRepository
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.mebius.service.MebiusDroppingService
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, SequentialEffect}
 import org.bukkit.ChatColor.{RED, RESET}
-import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.{ChatColor, Sound}
 
 import scala.concurrent.duration.FiniteDuration
 
-class MebiusDropTrialListener(implicit gatewayRepository: SpeechGatewayRepository[Kleisli[IO, Player, *]],
+class MebiusDropTrialListener(implicit gatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]],
                               effectEnvironment: SeichiAssistEffectEnvironment,
                               ioTimer: Timer[IO]) extends Listener {
 
@@ -41,20 +39,20 @@ class MebiusDropTrialListener(implicit gatewayRepository: SpeechGatewayRepositor
     player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}MEBIUSはプレイヤーと共に成長するヘルメットです。")
     player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}あなただけのMEBIUSを育てましょう！")
 
+    import cats.implicits._
     effectEnvironment.runEffectAsync(
       "Mebiusのドロップ時メッセージを再生する",
-      SequentialEffect(
-        FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-        DelayEffect(FiniteDuration(500, TimeUnit.MILLISECONDS)),
-        gatewayRepository(player).forceMakingSpeech(
-          droppedMebiusProperty,
-          MebiusSpeech(
-            s"こんにちは、${player.getName}$RESET。" +
-              s"僕は${ItemStackMebiusCodec.displayNameOfMaterializedItem(droppedMebiusProperty)}" +
-              s"$RESET！これからよろしくね！",
-            MebiusSpeechStrength.Loud
-          )
+      gatewayRepository(player).forceMakingSpeech(
+        droppedMebiusProperty,
+        MebiusSpeech(
+          s"こんにちは、${player.getName}$RESET。" +
+            s"僕は${ItemStackMebiusCodec.displayNameOfMaterializedItem(droppedMebiusProperty)}" +
+            s"$RESET！これからよろしくね！",
+          MebiusSpeechStrength.Loud
         )
+      ) >> SequentialEffect(
+        FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+        DelayEffect(FiniteDuration(500, TimeUnit.MILLISECONDS))
       ).run(player)
     )
 

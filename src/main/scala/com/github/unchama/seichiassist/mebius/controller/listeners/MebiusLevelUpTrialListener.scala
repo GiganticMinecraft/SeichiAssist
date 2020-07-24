@@ -2,11 +2,12 @@ package com.github.unchama.seichiassist.mebius.controller.listeners
 
 import cats.data.Kleisli
 import cats.effect.IO
+import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.repository.SpeechGatewayRepository
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechStrength, PropertyModificationMessages}
+import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength, PropertyModificationMessages}
 import com.github.unchama.seichiassist.mebius.service.MebiusLevellingService
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
-class MebiusLevelUpTrialListener(implicit gatewayRepository: SpeechGatewayRepository[Kleisli[IO, Player, *]],
+class MebiusLevelUpTrialListener(implicit gatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]],
                                  effectEnvironment: SeichiAssistEffectEnvironment,
                                  messages: PropertyModificationMessages) extends Listener {
 
@@ -33,18 +34,16 @@ class MebiusLevelUpTrialListener(implicit gatewayRepository: SpeechGatewayReposi
         ItemStackMebiusCodec.materialize(newMebiusProperty, damageValue = 0)
       }
 
+      import cats.implicits._
       effectEnvironment.runEffectAsync(
         "Mebiusのレベルアップ時の通知を行う",
-        SequentialEffect(
-          MessageEffect(messages.onLevelUp(oldMebiusProperty, newMebiusProperty)),
-          gatewayRepository(player).forceMakingSpeech(
-            newMebiusProperty,
-            MebiusSpeech(
-              MebiusTalks.at(newMebiusProperty.level).mebiusMessage,
-              MebiusSpeechStrength.Loud
-            )
+        gatewayRepository(player).forceMakingSpeech(
+          newMebiusProperty,
+          MebiusSpeech(
+            MebiusTalks.at(newMebiusProperty.level).mebiusMessage,
+            MebiusSpeechStrength.Loud
           )
-        ).run(player)
+        ) >> MessageEffect(messages.onLevelUp(oldMebiusProperty, newMebiusProperty)).run(player)
       )
     }
   }

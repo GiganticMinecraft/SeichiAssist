@@ -1,26 +1,26 @@
 package com.github.unchama.seichiassist.mebius
 
-import cats.data.Kleisli
-import cats.effect.IO
+import cats.effect.{IO, Timer}
+import com.github.unchama.playerdatarepository.{JoinToQuitPlayerDataRepository, PlayerDataRepository}
 import com.github.unchama.seichiassist.SubsystemEntryPoints
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.controller.PropertyModificationBukkitMessages
 import com.github.unchama.seichiassist.mebius.controller.command.MebiusCommandExecutorProvider
 import com.github.unchama.seichiassist.mebius.controller.listeners._
 import com.github.unchama.seichiassist.mebius.controller.repository.SpeechGatewayRepository
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeechPresentation, PropertyModificationMessages}
-import com.github.unchama.seichiassist.mebius.presentation.BukkitMebiusSpeechPresentation
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeechGateway, PropertyModificationMessages}
+import com.github.unchama.seichiassist.mebius.gateway.BukkitMebiusSpeechGateway
 import org.bukkit.entity.Player
 
-object EntryPoints {
-  def wired(implicit effectEnvironment: SeichiAssistEffectEnvironment): SubsystemEntryPoints = {
-    implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
-    implicit val speechPresentation: MebiusSpeechPresentation[TargetedEffect[Player]] =
-      new BukkitMebiusSpeechPresentation
+import scala.concurrent.ExecutionContext
 
-    implicit val gatewayRepository: SpeechGatewayRepository[Kleisli[IO, Player, *]] =
-      new SpeechGatewayRepository[Kleisli[IO, Player, *]]()
+object EntryPoints {
+  def wired(implicit effectEnvironment: SeichiAssistEffectEnvironment,
+            timerContext: ExecutionContext): SubsystemEntryPoints = {
+    implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
+    implicit val gatewayProvider: Player => MebiusSpeechGateway[IO] = new BukkitMebiusSpeechGateway(_)
+    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechGateway[IO]] = new SpeechGatewayRepository[IO]
+    implicit val timer: Timer[IO] = IO.timer(timerContext)
 
     val listeners = Seq(
       new MebiusDropTrialListener,

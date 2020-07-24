@@ -5,18 +5,18 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, PartiallyParsedArgs}
+import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.mebius.controller.codec.ItemStackMebiusCodec
 import com.github.unchama.seichiassist.mebius.controller.command.MebiusCommandExecutorProvider.Messages
-import com.github.unchama.seichiassist.mebius.controller.repository.SpeechGatewayRepository
-import com.github.unchama.seichiassist.mebius.domain.{MebiusProperty, MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.{MebiusProperty, MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor.{GREEN, RED, RESET}
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 
-class MebiusCommandExecutorProvider(implicit gatewayRepository: SpeechGatewayRepository[Kleisli[IO, Player, *]]) {
+class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]]) {
 
   import ChildExecutors._
 
@@ -79,13 +79,15 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: SpeechGatewayRep
             val newDisplayName = ItemStackMebiusCodec.displayNameOfMaterializedItem(newProperty)
             SequentialEffect(
               MessageEffect(s"$newDisplayName${RESET}に命名しました。"),
-              gatewayRepository(player).forceMakingSpeech(
-                newProperty,
-                MebiusSpeech(
-                  s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
-                  MebiusSpeechStrength.Loud
+              Kleisli.liftF {
+                gatewayRepository(player).forceMakingSpeech(
+                  newProperty,
+                  MebiusSpeech(
+                    s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
+                    MebiusSpeechStrength.Loud
+                  )
                 )
-              )
+              }
             )
           }
         ).effectOn(player)
@@ -103,13 +105,15 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: SpeechGatewayRep
           _.copy(ownerNicknameOverride = Some(name)),
           newProperty => SequentialEffect(
             MessageEffect(successMessage(name)),
-            gatewayRepository(player).forceMakingSpeech(
-              newProperty,
-              MebiusSpeech(
-                s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",
-                MebiusSpeechStrength.Loud
+            Kleisli.liftF {
+              gatewayRepository(player).forceMakingSpeech(
+                newProperty,
+                MebiusSpeech(
+                  s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",
+                  MebiusSpeechStrength.Loud
+                )
               )
-            )
+            }
           )
         ).effectOn(player)
       }
