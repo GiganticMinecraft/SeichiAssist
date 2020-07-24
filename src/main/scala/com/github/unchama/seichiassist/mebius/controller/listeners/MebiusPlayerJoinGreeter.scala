@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.mebius.domain.{MebiusEffects, MebiusSpeec
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.event.player.PlayerJoinEvent
 
-case class MebiusPlayerJoinGreeter[F[_] : MebiusEffects : Effect](implicit val effectEnvironment: SeichiAssistEffectEnvironment) extends Listener {
+class MebiusPlayerJoinGreeter[F[_] : MebiusEffects : Effect](implicit val effectEnvironment: SeichiAssistEffectEnvironment) extends Listener {
   private val F = implicitly[MebiusEffects[F]]
 
   @EventHandler(priority = EventPriority.MONITOR)
