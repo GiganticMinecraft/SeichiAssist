@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
-import cats.effect.{Fiber, IO}
+import cats.effect.{Fiber, IO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
@@ -171,11 +171,9 @@ class SeichiAssist extends JavaPlugin() {
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
     implicit val effectEnvironment: SeichiAssistEffectEnvironment = DefaultEffectEnvironment
+    implicit val timer: Timer[IO] = IO.timer(PluginExecutionContexts.cachedThreadPool)
 
-    val mebiusSystem = {
-      implicit val timerContext: ExecutionContext = PluginExecutionContexts.cachedThreadPool
-      mebius.EntryPoints.wired
-    }
+    val mebiusSystem = mebius.EntryPoints.wired
 
     // コマンドの登録
     Map(
