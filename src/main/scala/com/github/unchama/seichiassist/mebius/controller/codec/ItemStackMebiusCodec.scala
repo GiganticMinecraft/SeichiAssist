@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius.controller.codec
 
-import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusMessages, MebiusTalks}
+import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusTalks}
 import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel, MebiusProperty}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor
