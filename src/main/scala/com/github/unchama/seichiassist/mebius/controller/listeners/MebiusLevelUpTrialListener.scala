@@ -22,7 +22,10 @@ class MebiusLevelUpTrialListener(implicit gatewayRepository: SpeechGatewayReposi
   def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
 
-    val oldMebiusProperty = ItemStackMebiusCodec.decodeMebiusProperty(player.getInventory.getHelmet).getOrElse(return)
+    val oldMebiusProperty = ItemStackMebiusCodec
+      .decodeMebiusProperty(player.getInventory.getHelmet)
+      .filter(ItemStackMebiusCodec.ownershipMatches(player))
+      .getOrElse(return)
     val newMebiusProperty = MebiusLevellingService.attemptLevelUp(oldMebiusProperty).unsafeRunSync()
 
     if (newMebiusProperty != oldMebiusProperty) {

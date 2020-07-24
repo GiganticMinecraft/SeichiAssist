@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusL
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.{RED, RESET}
+import org.bukkit.entity.Player
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 
 object ItemStackMebiusCodec {
@@ -133,5 +134,8 @@ object ItemStackMebiusCodec {
       nbtItem.getItem
     }
   }
+
+  def ownershipMatches(player: Player)(property: MebiusProperty): Boolean =
+    property.ownerPlayerId == player.getName
 
 }

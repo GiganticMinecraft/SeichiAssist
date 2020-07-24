@@ -16,8 +16,11 @@ class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: SeichiA
 
   @EventHandler(priority = EventPriority.MONITOR)
   def onJoin(event: PlayerJoinEvent): Unit = {
+    val player = event.getPlayer
+
     ItemStackMebiusCodec
-      .decodeMebiusProperty(event.getPlayer.getInventory.getHelmet)
+      .decodeMebiusProperty(player.getInventory.getHelmet)
+      .filter(ItemStackMebiusCodec.ownershipMatches(player))
       .foreach { property =>
         effectEnvironment.runEffectAsync(
           "参加時のMebiusのメッセージを送信する",

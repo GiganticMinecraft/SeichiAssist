@@ -14,8 +14,6 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import scala.util.Random
 
 class MebiusInteractionResponder extends Listener {
-  // TODO check owner
-
   // メッセージリストからランダムに取り出し、タグを置換する
   private def getMessage(messages: Set[String], str1: String, str2: String) = {
     var msg = messages.toList(Random.nextInt(messages.size))
@@ -32,7 +30,10 @@ class MebiusInteractionResponder extends Listener {
     event.getEntity match {
       case player: Player =>
         val helmet = player.getInventory.getHelmet
-        val mebiusProperty = ItemStackMebiusCodec.decodeMebiusProperty(helmet).getOrElse(return)
+        val mebiusProperty = ItemStackMebiusCodec
+          .decodeMebiusProperty(helmet)
+          .filter(ItemStackMebiusCodec.ownershipMatches(player))
+          .getOrElse(return)
 
         // 耐久閾値を超えていたら破損警告
         if (helmet.getDurability >= helmet.getType.getMaxDurability - 10) {
@@ -59,6 +60,7 @@ class MebiusInteractionResponder extends Listener {
 
     ItemStackMebiusCodec
       .decodeMebiusProperty(brokenItem)
+      .filter(ItemStackMebiusCodec.ownershipMatches(player))
       .foreach { property =>
         SeichiAssist.playermap(event.getPlayer.getUniqueId).mebius
           .speak(getMessage(MebiusMessages.onMebiusBreak, property.ownerNickname, ""))
@@ -86,6 +88,7 @@ class MebiusInteractionResponder extends Listener {
     val mebiusProperty =
       ItemStackMebiusCodec
         .decodeMebiusProperty(killerPlayer.getInventory.getHelmet)
+        .filter(ItemStackMebiusCodec.ownershipMatches(killerPlayer))
         .getOrElse(return)
 
     SeichiAssist.playermap(killerPlayer.getUniqueId).mebius
@@ -100,6 +103,7 @@ class MebiusInteractionResponder extends Listener {
 
     val mebiusProperty = ItemStackMebiusCodec
       .decodeMebiusProperty(player.getInventory.getHelmet)
+      .filter(ItemStackMebiusCodec.ownershipMatches(player))
       .getOrElse(return)
 
     SeichiAssist.playermap(player.getUniqueId).mebius
