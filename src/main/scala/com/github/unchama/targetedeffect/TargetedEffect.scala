@@ -63,3 +63,11 @@ object UnfocusedEffect {
 object DelayEffect {
   def apply(duration: FiniteDuration)(implicit timer: Timer[IO]): TargetedEffect[Any] = Kleisli.liftF(IO.sleep(duration))
 }
+
+object RepeatedEffect {
+
+  import cats.implicits._
+
+  def apply[T](times: Int)(effect: TargetedEffect[T]): TargetedEffect[T] =
+    Monoid[TargetedEffect[T]].combineN(effect, times)
+}
