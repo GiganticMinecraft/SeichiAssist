@@ -14,7 +14,6 @@ import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
-import com.github.unchama.seichiassist.mebius.controller.routines.MebiusTask
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
@@ -43,8 +42,6 @@ class PlayerData(
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
   import com.github.unchama.util.InventoryUtil._
-
-  lazy val mebius: MebiusTask = new MebiusTask(uuid)
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
