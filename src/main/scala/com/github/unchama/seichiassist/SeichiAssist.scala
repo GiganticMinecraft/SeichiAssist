@@ -172,6 +172,8 @@ class SeichiAssist extends JavaPlugin() {
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
+    val mebiusSystem = mebius.EntryPoints.wired
+
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
@@ -192,25 +194,16 @@ class SeichiAssist extends JavaPlugin() {
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
-      "mebius" -> MebiusCommand.executor
-    ).foreach {
-      case (commandName, executor) => getCommand(commandName).setExecutor(executor)
-    }
+    )
+      .concat(mebiusSystem.commandsToBeRegistered)
+      .foreach {
+        case (commandName, executor) => getCommand(commandName).setExecutor(executor)
+      }
 
     val repositories = Seq(
       activeSkillAvailability,
       assaultSkillRoutines
     )
-
-    val mebiusListeners = {
-      implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
-      Seq(
-        new MebiusDropTrialListener,
-        new MebiusInteractionResponder,
-        new MebiusLevelUpTrialListener,
-        new MebiusRenamePreventionListener
-      )
-    }
 
     import PluginExecutionContexts.asyncShift
     //リスナーの登録
@@ -230,7 +223,7 @@ class SeichiAssist extends JavaPlugin() {
       new MenuHandler()
     )
       .concat(repositories)
-      .concat(mebiusListeners)
+      .concat(mebiusSystem.listenersToBeRegistered)
       .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)
