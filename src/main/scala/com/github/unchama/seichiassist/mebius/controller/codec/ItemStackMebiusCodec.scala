@@ -83,7 +83,7 @@ object ItemStackMebiusCodec {
    *
    * を満足する。
    */
-  def materialize(property: MebiusProperty, damageValue: Short = 0.toShort): ItemStack = {
+  def materialize(property: MebiusProperty, damageValue: Short): ItemStack = {
     val material = AppearanceMaterialCodec.appearanceMaterialAt(property.level)
 
     import scala.util.chaining._

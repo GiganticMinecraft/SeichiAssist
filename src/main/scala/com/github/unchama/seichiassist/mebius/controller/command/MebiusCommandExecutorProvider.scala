@@ -54,7 +54,9 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: SpeechGatewayRep
               case Some(newProperty) =>
                 SequentialEffect(
                   UnfocusedEffect {
-                    player.getInventory.setHelmet(ItemStackMebiusCodec.materialize(newProperty))
+                    player.getInventory.setHelmet {
+                      ItemStackMebiusCodec.materialize(newProperty, damageValue = helmet.getDurability)
+                    }
                   },
                   additionalEffectsOnModification(newProperty)
                 )

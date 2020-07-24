@@ -35,7 +35,7 @@ class MebiusDropTrialListener(implicit gatewayRepository: SpeechGatewayRepositor
       .tryForDrop(player.getPlayer.getName).unsafeRunSync()
       .getOrElse(return)
 
-    val mebius = ItemStackMebiusCodec.materialize(droppedMebiusProperty)
+    val mebius = ItemStackMebiusCodec.materialize(droppedMebiusProperty, damageValue = 0.toShort)
 
     player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}おめでとうございます。採掘中にMEBIUSを発見しました。")
     player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}MEBIUSはプレイヤーと共に成長するヘルメットです。")
