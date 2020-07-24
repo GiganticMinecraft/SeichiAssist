@@ -21,14 +21,15 @@ object EntryPoints {
     implicit val gatewayProvider: Player => MebiusSpeechGateway[IO] = new BukkitMebiusSpeechGateway(_)
     implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechGateway[IO]] = new SpeechGatewayRepository[IO]
 
+    val speechRoutineFiberRepository = new PeriodicMebiusSpeechRoutineFiberRepository()
+
     val listeners = Seq(
       new MebiusDropTrialListener,
       new MebiusInteractionResponder,
       new MebiusLevelUpTrialListener,
       new MebiusPlayerJoinGreeter[IO],
       new MebiusRenamePreventionListener,
-      gatewayRepository,
-      new PeriodicMebiusSpeechRoutineFiberRepository()
+      gatewayRepository, speechRoutineFiberRepository
     )
 
     val commands = Map(
