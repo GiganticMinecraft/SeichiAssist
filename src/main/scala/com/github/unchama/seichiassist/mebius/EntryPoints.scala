@@ -5,8 +5,8 @@ import cats.effect.IO
 import com.github.unchama.seichiassist.SubsystemEntryPoints
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.controller.PropertyModificationBukkitMessages
-import com.github.unchama.seichiassist.mebius.controller.command.MebiusCommand
-import com.github.unchama.seichiassist.mebius.controller.listeners.{MebiusDropTrialListener, MebiusInteractionResponder, MebiusLevelUpTrialListener, MebiusPlayerJoinGreeter, MebiusRenamePreventionListener}
+import com.github.unchama.seichiassist.mebius.controller.command.MebiusCommandExecutorProvider
+import com.github.unchama.seichiassist.mebius.controller.listeners._
 import com.github.unchama.seichiassist.mebius.controller.repository.SpeechGatewayRepository
 import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeechPresentation, PropertyModificationMessages}
 import com.github.unchama.seichiassist.mebius.presentation.BukkitMebiusSpeechPresentation
@@ -32,7 +32,7 @@ object EntryPoints {
     )
 
     val commands = Map(
-      "mebius" -> MebiusCommand.executor
+      "mebius" -> new MebiusCommandExecutorProvider().executor
     )
 
     SubsystemEntryPoints(listeners, commands)
