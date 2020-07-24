@@ -10,7 +10,7 @@ import cats.effect.concurrent.Ref
  * `tryMakingSpeech` の結果、 `unblockSpeech` するまで
  * `tryMakingSpeech` は副作用を持たない(`Monad[F].unit`と等価)。
  */
-class MebiusSpeechGateway[F[_] : Sync](private implicit val effects: MebiusSpeechPresentation[F]) {
+class MebiusSpeechGateway[F[_] : Sync](private implicit val effects: MebiusSpeechPresentation[F[Unit]]) {
 
   private val willBlockSpeech: Ref[F, Boolean] = Ref.unsafe[F, Boolean](false)
 

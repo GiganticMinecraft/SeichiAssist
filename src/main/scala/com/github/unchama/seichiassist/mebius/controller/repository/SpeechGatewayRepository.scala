@@ -7,7 +7,8 @@ import com.github.unchama.playerdatarepository.PlayerDataOnMemoryRepository
 import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeechPresentation, MebiusSpeechGateway}
 import org.bukkit.entity.Player
 
-class SpeechGatewayRepository[F[_] : MebiusSpeechPresentation] extends PlayerDataOnMemoryRepository[MebiusSpeechGateway[F]] {
+class SpeechGatewayRepository[F[_]](implicit presentation: MebiusSpeechPresentation[F[Unit]])
+  extends PlayerDataOnMemoryRepository[MebiusSpeechGateway[F]] {
 
   override val loadData: (String, UUID) => SyncIO[Either[Option[String], MebiusSpeechGateway[F]]] =
     (_, _) => SyncIO {

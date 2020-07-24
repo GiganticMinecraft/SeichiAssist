@@ -1,13 +1,14 @@
 package com.github.unchama.seichiassist.mebius
 
 import com.github.unchama.seichiassist.SubsystemEntryPoints
+import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.controller.PropertyModificationBukkitMessages
 import com.github.unchama.seichiassist.mebius.controller.command.MebiusCommand
 import com.github.unchama.seichiassist.mebius.controller.listeners.{MebiusDropTrialListener, MebiusInteractionResponder, MebiusLevelUpTrialListener, MebiusRenamePreventionListener}
 import com.github.unchama.seichiassist.mebius.domain.PropertyModificationMessages
 
 object EntryPoints {
-  val wired: SubsystemEntryPoints = {
+  def wired(implicit effectEnvironment: SeichiAssistEffectEnvironment): SubsystemEntryPoints = {
     implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
     val listeners = Seq(
       new MebiusDropTrialListener,

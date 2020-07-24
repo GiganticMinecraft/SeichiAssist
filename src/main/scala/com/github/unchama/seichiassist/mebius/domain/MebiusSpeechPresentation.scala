@@ -1,18 +1,19 @@
 package com.github.unchama.seichiassist.mebius.domain
 
-import cats.Monad
+import cats.kernel.Semigroup
 
-trait MebiusSpeechPresentation[F[_]] {
+trait MebiusSpeechPresentation[Effect] {
 
-  protected implicit val F: Monad[F]
+  protected implicit val Effect: Semigroup[Effect]
 
-  import cats.implicits._
+  def sendMessage(property: MebiusProperty, message: String): Effect
 
-  def sendMessage(property: MebiusProperty, message: String): F[Unit]
+  def playSpeechSound(strength: MebiusSpeechStrength): Effect
 
-  def playSpeechSound(strength: MebiusSpeechStrength): F[Unit]
-
-  final def speak(speakingMebiusProperty: MebiusProperty, speech: MebiusSpeech): F[Unit] =
-    sendMessage(speakingMebiusProperty, speech.content) >> playSpeechSound(speech.strength)
+  final def speak(speakingMebiusProperty: MebiusProperty, speech: MebiusSpeech): Effect =
+    Effect.combine(
+      sendMessage(speakingMebiusProperty, speech.content),
+      playSpeechSound(speech.strength)
+    )
 
 }
