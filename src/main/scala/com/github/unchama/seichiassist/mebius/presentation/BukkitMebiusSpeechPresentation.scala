@@ -11,7 +11,7 @@ import org.bukkit.{ChatColor, Sound}
 class BukkitMebiusSpeechPresentation extends MebiusSpeechPresentation[TargetedEffect[Player]] {
   type Effect = TargetedEffect[Player]
 
-  override protected implicit val Effect: Monoid[Effect] = {
+  override val Effect: Monoid[Effect] = {
     import cats.implicits._
 
     // `TargetedEffect[Player]` は `Kleisli[IO, Player, Unit]` なので効果が結合できて `Monoid` にできる

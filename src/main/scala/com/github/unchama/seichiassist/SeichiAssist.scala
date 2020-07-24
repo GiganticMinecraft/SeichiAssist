@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
@@ -167,6 +168,8 @@ class SeichiAssist extends JavaPlugin() {
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
+
+    implicit val effectEnvironment: SeichiAssistEffectEnvironment = DefaultEffectEnvironment
 
     val mebiusSystem = mebius.EntryPoints.wired
 
