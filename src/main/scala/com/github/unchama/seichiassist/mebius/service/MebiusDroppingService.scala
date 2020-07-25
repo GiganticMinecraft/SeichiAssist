@@ -13,9 +13,9 @@ object MebiusDroppingService {
   // 平均 averageBlocksToBeBrokenPerMebiusDrop 回の試行でドロップすることになる。
   private val averageBlocksToBeBrokenPerMebiusDrop = 50000
 
-  def tryForDrop(ownerName: String): IO[Option[MebiusProperty]] = IO {
+  def tryForDrop(ownerName: String, ownerUuid: String): IO[Option[MebiusProperty]] = IO {
     if (Random.nextInt(averageBlocksToBeBrokenPerMebiusDrop) == 0) {
-      Some(MebiusProperty(ownerName))
+      Some(MebiusProperty(ownerName, ownerUuid))
     } else {
       None
     }

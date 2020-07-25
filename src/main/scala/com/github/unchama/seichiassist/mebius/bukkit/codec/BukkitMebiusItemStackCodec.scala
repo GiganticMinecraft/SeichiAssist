@@ -44,11 +44,11 @@ object BukkitMebiusItemStackCodec {
   def decodeMebiusProperty(itemStack: ItemStack): Option[MebiusProperty] = {
     val mebius = if (isMebius(itemStack)) itemStack else return None
 
-    val nickname = {
+    val (nickname, uuid) = {
       val nbtItem = new NBTItem(mebius)
       val nicknameField = nbtItem.getString("nickname")
 
-      if (nicknameField.isEmpty) None else Some(nicknameField)
+      (if (nicknameField.isEmpty) None else Some(nicknameField), nbtItem.getString("ownerUUID"))
     }
 
     val mebiusLevel = MebiusLevel {
@@ -70,7 +70,7 @@ object BukkitMebiusItemStackCodec {
 
     val mebiusName = mebius.getItemMeta.getDisplayName
 
-    Some(property.MebiusProperty(ownerName, enchantments, mebiusLevel, nickname, mebiusName))
+    Some(property.MebiusProperty(ownerName, uuid, enchantments, mebiusLevel, nickname, mebiusName))
   }
 
   /**
@@ -127,6 +127,8 @@ object BukkitMebiusItemStackCodec {
         case None =>
       }
 
+      nbtItem.setString("ownerUUID", property.ownerUuid)
+
       nbtItem.getItem
     }
   }
@@ -135,7 +137,7 @@ object BukkitMebiusItemStackCodec {
     mebiusNameDisplayPrefix + property.mebiusName
 
   def ownershipMatches(player: Player)(property: MebiusProperty): Boolean =
-    property.ownerPlayerId == player.getName
+    property.ownerUuid == player.getUniqueId.toString
 
   def decodePropertyOfOwnedMebius(player: Player)(itemStack: ItemStack): Option[MebiusProperty] =
     decodeMebiusProperty(itemStack).filter(ownershipMatches(player))

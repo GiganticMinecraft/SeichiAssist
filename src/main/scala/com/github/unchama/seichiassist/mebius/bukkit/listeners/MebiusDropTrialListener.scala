@@ -30,7 +30,7 @@ class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[M
     val player = event.getPlayer
 
     val droppedMebiusProperty = MebiusDroppingService
-      .tryForDrop(player.getPlayer.getName).unsafeRunSync()
+      .tryForDrop(player.getName, player.getUniqueId.toString).unsafeRunSync()
       .getOrElse(return)
 
     val mebius = BukkitMebiusItemStackCodec.materialize(droppedMebiusProperty, damageValue = 0.toShort)

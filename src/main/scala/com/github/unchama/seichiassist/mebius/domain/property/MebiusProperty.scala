@@ -6,12 +6,14 @@ import scala.util.Random
 
 /**
  * @param ownerPlayerId         オーナーのプレーヤーID
+ * @param ownerUuid             オーナーのUUID文字列
  * @param enchantmentLevel      付与されるエンチャントとレベルのMap
  * @param level                 Mebiusのレベル
  * @param ownerNicknameOverride オーナーをMebiusがどう呼ぶか
  * @param mebiusName            Mebius自体の名前
  */
 case class MebiusProperty(ownerPlayerId: String,
+                          ownerUuid: String,
                           enchantmentLevel: Map[MebiusEnchantment, Int] = Map(),
                           level: MebiusLevel = MebiusLevel(1),
                           ownerNicknameOverride: Option[String] = None,
