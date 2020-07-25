@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
-import cats.effect.{Fiber, IO}
+import cats.effect.{Fiber, IO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
@@ -166,7 +167,13 @@ class SeichiAssist extends JavaPlugin() {
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistrs
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
 
+    import PluginExecutionContexts._
     import SeichiAssist.Scopes.globalChatInterceptionScope
+
+    implicit val effectEnvironment: SeichiAssistEffectEnvironment = DefaultEffectEnvironment
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
+    val mebiusSystem = mebius.EntryPoints.wired
 
     // コマンドの登録
     Map(
@@ -180,7 +187,6 @@ class SeichiAssist extends JavaPlugin() {
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "shareinv" -> ShareInvCommand.executor,
-      "mebius" -> MebiusCommand.executor,
       "achievement" -> AchievementCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
       "event" -> EventCommand.executor,
@@ -188,17 +194,18 @@ class SeichiAssist extends JavaPlugin() {
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
-      "x-transfer" -> RegionOwnerTransferCommand.executor
-    ).foreach {
-      case (commandName, executor) => getCommand(commandName).setExecutor(executor)
-    }
+      "x-transfer" -> RegionOwnerTransferCommand.executor,
+    )
+      .concat(mebiusSystem.commandsToBeRegistered)
+      .foreach {
+        case (commandName, executor) => getCommand(commandName).setExecutor(executor)
+      }
 
     val repositories = Seq(
       activeSkillAvailability,
       assaultSkillRoutines
     )
 
-    import PluginExecutionContexts.asyncShift
     //リスナーの登録
     Seq(
       new PlayerJoinListener(),
@@ -210,13 +217,13 @@ class SeichiAssist extends JavaPlugin() {
       new PlayerPickupItemListener(),
       new PlayerDeathEventListener(),
       new GachaItemListener(),
-      new MebiusListener(),
       new RegionInventoryListener(),
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler()
     )
       .concat(repositories)
+      .concat(mebiusSystem.listenersToBeRegistered)
       .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)

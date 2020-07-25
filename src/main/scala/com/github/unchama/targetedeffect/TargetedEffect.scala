@@ -2,8 +2,10 @@ package com.github.unchama.targetedeffect
 
 import cats.FlatMap
 import cats.data.Kleisli
-import cats.effect.IO
+import cats.effect.{IO, Timer}
 import cats.kernel.Monoid
+
+import scala.concurrent.duration.FiniteDuration
 
 object TargetedEffect {
   /**
@@ -56,4 +58,16 @@ object ComputedEffect {
 
 object UnfocusedEffect {
   def apply(effect: => Unit): TargetedEffect[Any] = TargetedEffect.delay(_ => effect)
+}
+
+object DelayEffect {
+  def apply(duration: FiniteDuration)(implicit timer: Timer[IO]): TargetedEffect[Any] = Kleisli.liftF(IO.sleep(duration))
+}
+
+object RepeatedEffect {
+
+  import cats.implicits._
+
+  def apply[T](times: Int)(effect: TargetedEffect[T]): TargetedEffect[T] =
+    Monoid[TargetedEffect[T]].combineN(effect, times)
 }

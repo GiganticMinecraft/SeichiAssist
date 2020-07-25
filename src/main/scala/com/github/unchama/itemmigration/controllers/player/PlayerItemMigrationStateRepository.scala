@@ -9,7 +9,7 @@ import com.github.unchama.itemmigration.controllers.player.PlayerItemMigrationSt
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionRepository, ItemMigrations}
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.itemmigration.targets.PlayerInventoriesData
-import com.github.unchama.playerdatarepository.PlayerDataOnMemoryRepository
+import com.github.unchama.playerdatarepository.PreLoginToQuitPlayerDataRepository
 import org.bukkit.entity.Player
 
 /**
@@ -18,7 +18,7 @@ import org.bukkit.entity.Player
 class PlayerItemMigrationStateRepository(migrations: ItemMigrations,
                                          service: ItemMigrationService[IO, PlayerInventoriesData])
                                         (implicit concurrentIO: Concurrent[IO])
-  extends PlayerDataOnMemoryRepository[PlayerItemMigrationFiber] {
+  extends PreLoginToQuitPlayerDataRepository[PlayerItemMigrationFiber] {
 
   override val loadData: (String, UUID) => SyncIO[Either[Option[String], PlayerItemMigrationFiber]] =
     (_, _) => {

@@ -27,18 +27,6 @@ class PlayerBlockBreakListener extends Listener {
 
   import plugin.activeSkillAvailability
 
-  @EventHandler(priority = EventPriority.LOW)
-  def onPlayerBlockBreak(event: BlockBreakEvent): Unit = {
-    val block = event.getBlock
-
-    //他人の保護がかかっている場合は処理を終了
-    if (!ExternalPlugins.getWorldGuard.canBuild(event.getPlayer, block.getLocation)) return
-
-    // 保護と重力値に問題無く、ブロックタイプがmateriallistに登録されていたらMebiusListenerを呼び出す
-    if (MaterialSets.materials.contains(event.getBlock.getType))
-      MebiusListener.onBlockBreak(event)
-  }
-
   //アクティブスキルの実行
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
   def onPlayerActiveSkillEvent(event: BlockBreakEvent): Unit = {
