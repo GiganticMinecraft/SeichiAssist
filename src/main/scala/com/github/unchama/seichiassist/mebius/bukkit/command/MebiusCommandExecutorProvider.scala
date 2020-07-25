@@ -95,25 +95,6 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
     }
 
     object NicknameCommand {
-      val executor: BranchedExecutor = BranchedExecutor(Map(
-        "reset" -> resetNicknameExecutor,
-        "set" -> setNicknameExecutor
-      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
-      private val checkNicknameExecutor = playerCommandBuilder
-        .execution { context =>
-          IO(MessageEffect {
-            BukkitMebiusItemStackCodec
-              .decodeMebiusProperty(context.sender.getInventory.getHelmet)
-              .map(_.ownerNickname)
-              .fold {
-                s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
-              } { name =>
-                s"${GREEN}現在のメビウスからの呼び名 : $name"
-              }
-          })
-        }
-        .build()
-
       private val resetNicknameExecutor = playerCommandBuilder
         .execution { context =>
           val player = context.sender
@@ -161,6 +142,25 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
           )
         ).effectOn(player)
       }
+
+      val executor: BranchedExecutor = BranchedExecutor(Map(
+        "reset" -> resetNicknameExecutor,
+        "set" -> setNicknameExecutor
+      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
+      private val checkNicknameExecutor = playerCommandBuilder
+        .execution { context =>
+          IO(MessageEffect {
+            BukkitMebiusItemStackCodec
+              .decodeMebiusProperty(context.sender.getInventory.getHelmet)
+              .map(_.ownerNickname)
+              .fold {
+                s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
+              } { name =>
+                s"${GREEN}現在のメビウスからの呼び名 : $name"
+              }
+          })
+        }
+        .build()
     }
 
   }
