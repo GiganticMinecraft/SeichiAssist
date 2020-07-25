@@ -46,6 +46,8 @@ val dependenciesToEmbed = Seq(
   "eu.timepit" %% "refined" % "0.9.10",
   "com.beachape" %% "enumeratum" % "1.5.13",
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+  "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
+  "org.slf4j" % "slf4j-api" % "1.7.12"
 )
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
