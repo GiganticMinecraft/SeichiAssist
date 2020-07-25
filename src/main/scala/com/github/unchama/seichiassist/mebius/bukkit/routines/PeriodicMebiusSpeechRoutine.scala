@@ -28,7 +28,7 @@ object PeriodicMebiusSpeechRoutine {
       helmet <- IO {
         player.getInventory.getHelmet
       }
-      _ <- gateway.unblockSpeech()
+      _ <- gateway.blockageState.unblock()
       _ <- BukkitMebiusItemStackCodec.decodeMebiusProperty(helmet)
         .map { property =>
           val messageCandidates = new RandomizedCollection[String, IO](

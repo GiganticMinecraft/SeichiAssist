@@ -1,25 +1,18 @@
 package com.github.unchama.seichiassist.mebius.domain.speech
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
-
-import scala.util.Random
 
 /**
  * Mebiusからの発話を仲介するオブジェクトのクラス。
  *
- * 内部状態として発話を許可するかのBooleanを持っており、
- * `tryMakingSpeech` の結果、 `unblockSpeech` するまで
+ * 内部状態として発話を許可するかの[[MebiusSpeechBlockageState]]を持っており、
+ * `tryMakingSpeech` の結果、 `blockageState.unblock()` するまで
  * `tryMakingSpeech` は副作用を持たない(`Monad[F].unit`と等価)。
- *
- * TODO ゲートウェイに内部状態を持たせない
  */
 abstract class MebiusSpeechGateway[F[_] : Sync] {
 
-  private val willBlockSpeech: Ref[F, Boolean] = Ref.unsafe[F, Boolean](false)
-
-  final def unblockSpeech(): F[Unit] = willBlockSpeech.set(false)
+  val blockageState = new MebiusSpeechBlockageState[F](MebiusSpeechGateway.speechBlockProbability)
 
   /**
    * `property` をプロパティとして持つMebiusに発話させる。
@@ -33,16 +26,10 @@ abstract class MebiusSpeechGateway[F[_] : Sync] {
     import cats.implicits._
 
     for {
-      shouldBlockSpeechDueToFlag <- willBlockSpeech.get
-      shouldBlockSpeechDueToRandomness <- Sync[F].delay {
-        Random.nextDouble() < MebiusSpeechGateway.speechBlockProbability
-      }
+      block <- blockageState.shouldBlock()
       _ <-
-        if (!shouldBlockSpeechDueToFlag && !shouldBlockSpeechDueToRandomness) {
-          speak(property, speech) >> willBlockSpeech.set(true)
-        } else {
-          Sync[F].unit
-        }
+        if (!block) speak(property, speech) >> blockageState.block()
+        else Sync[F].unit
     } yield ()
   }
 
