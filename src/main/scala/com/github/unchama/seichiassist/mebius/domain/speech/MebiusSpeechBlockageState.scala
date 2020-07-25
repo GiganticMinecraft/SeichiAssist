@@ -16,6 +16,11 @@ final class MebiusSpeechBlockageState[F[_] : Sync] {
 
   def block: F[Unit] = willBlockSpeech.set(true)
 
+  /**
+   * Mebiusの発話を阻止するかどうかを決定する。
+   *
+   * `unblock` が実行されていれば、25%の確率で、そうでなければ0%の確率で発話する。
+   */
   def shouldBlock: F[Boolean] = {
     import cats.implicits._
 
