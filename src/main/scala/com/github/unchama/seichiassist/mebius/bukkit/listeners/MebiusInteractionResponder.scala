@@ -135,7 +135,7 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-  def sendMebiusMessageOn(event: BlockBreakEvent): Unit = {
+  def onBlockBreak(event: BlockBreakEvent): Unit = {
     if (!MaterialSets.materials.contains(event.getBlock.getType)) return
 
     val player = event.getPlayer
