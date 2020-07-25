@@ -1,5 +1,10 @@
 package com.github.unchama.seichiassist.mebius.domain.resources
 
+import cats.data.NonEmptyList
+import cats.effect.IO
+import com.github.unchama.seichiassist.mebius.domain.message.MebiusCombatMessage
+import com.github.unchama.util.collection.RandomizedCollection
+
 object MebiusMessages {
 
   val onBlockBreak = Set(
@@ -29,22 +34,26 @@ object MebiusMessages {
     "まだ平気…壊れるまでは、[str1]のことを守るんだ…"
   )
 
-  val onDamageWarnEnemy = Set(
-    "[str2]からの攻撃だ！気を付けて！",
-    "お前なんか余裕なんだからなー！さあ[str1]、やっちゃえ！",
-    "びっくりしたなー！人が休んでるときにー！",
-    "もーなんで今攻撃してくるのさあああ！",
-    "いったーいっ、今僕の小指踏んだなー！？",
-    "いてっ！やめろよー！僕を怒らせたら怖いぞー！"
+  val onDamageWarnEnemy: RandomizedCollection[MebiusCombatMessage, IO] = new RandomizedCollection(
+    NonEmptyList.of(
+      "[str2]からの攻撃だ！気を付けて！",
+      "お前なんか余裕なんだからなー！さあ[str1]、やっちゃえ！",
+      "びっくりしたなー！人が休んでるときにー！",
+      "もーなんで今攻撃してくるのさあああ！",
+      "いったーいっ、今僕の小指踏んだなー！？",
+      "いてっ！やめろよー！僕を怒らせたら怖いぞー！"
+    ).map(MebiusCombatMessage)
   )
 
-  val onMonsterKill = Set(
-    "さすが[str1]！[str2]なんて敵じゃないね！",
-    "僕にかかれば[str2]なんてこんなもんだよー！",
-    "モンスターってなんで人間を襲うんだろう…？",
-    "ねえ[str1]、今の僕のおかげだよね！ね？",
-    "たまにはやられてみたいもんだねー、ふふん！",
-    "[str2]なんて僕の力を出すまでもなかったね！"
+  val onMonsterKill: RandomizedCollection[MebiusCombatMessage, IO] = new RandomizedCollection(
+    NonEmptyList.of(
+      "さすが[str1]！[str2]なんて敵じゃないね！",
+      "僕にかかれば[str2]なんてこんなもんだよー！",
+      "モンスターってなんで人間を襲うんだろう…？",
+      "ねえ[str1]、今の僕のおかげだよね！ね？",
+      "たまにはやられてみたいもんだねー、ふふん！",
+      "[str2]なんて僕の力を出すまでもなかったね！"
+    ).map(MebiusCombatMessage)
   )
 
   val tips = List(
