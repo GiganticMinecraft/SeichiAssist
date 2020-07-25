@@ -34,7 +34,7 @@ class MebiusLevelUpTrialListener(implicit gatewayRepository: PlayerDataRepositor
       import cats.implicits._
       effectEnvironment.runEffectAsync(
         "Mebiusのレベルアップ時の通知を行う",
-        gatewayRepository(player).forceMakingSpeech(
+        gatewayRepository(player).makeSpeechIgnoringBlockage(
           newMebiusProperty,
           MebiusSpeech(
             MebiusTalks.at(newMebiusProperty.level).mebiusMessage,

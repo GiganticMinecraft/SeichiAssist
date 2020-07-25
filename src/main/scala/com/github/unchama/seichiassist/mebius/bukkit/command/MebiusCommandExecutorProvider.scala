@@ -49,7 +49,7 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
             SequentialEffect(
               MessageEffect(s"$newDisplayName${RESET}に命名しました。"),
               Kleisli.liftF {
-                gatewayRepository(player).forceMakingSpeech(
+                gatewayRepository(player).makeSpeechIgnoringBlockage(
                   newProperty,
                   MebiusSpeech(
                     s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
@@ -131,7 +131,7 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
           newProperty => SequentialEffect(
             MessageEffect(successMessage(name)),
             Kleisli.liftF {
-              gatewayRepository(player).forceMakingSpeech(
+              gatewayRepository(player).makeSpeechIgnoringBlockage(
                 newProperty,
                 MebiusSpeech(
                   s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",

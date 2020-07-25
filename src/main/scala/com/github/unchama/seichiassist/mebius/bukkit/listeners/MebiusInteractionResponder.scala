@@ -77,7 +77,7 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
         effectEnvironment.runEffectAsync(
           "Mebius破壊時のエフェクトを再生する",
           MebiusMessages.onMebiusBreak.pickOne.flatMap { message =>
-            gateway.forceMakingSpeech(
+            gateway.makeSpeechIgnoringBlockage(
               property,
               MebiusSpeech(message.interpolate(property.ownerNickname), MebiusSpeechStrength.Medium)
             ) >> SequentialEffect(

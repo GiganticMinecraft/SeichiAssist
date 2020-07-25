@@ -42,7 +42,7 @@ class MebiusDropTrialListener(implicit gatewayRepository: PlayerDataRepository[M
     import cats.implicits._
     effectEnvironment.runEffectAsync(
       "Mebiusのドロップ時メッセージを再生する",
-      gatewayRepository(player).forceMakingSpeech(
+      gatewayRepository(player).makeSpeechIgnoringBlockage(
         droppedMebiusProperty,
         MebiusSpeech(
           s"こんにちは、${player.getName}$RESET。" +

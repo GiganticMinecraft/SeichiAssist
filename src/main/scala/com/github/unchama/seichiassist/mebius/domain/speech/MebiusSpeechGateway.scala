@@ -28,22 +28,18 @@ abstract class MebiusSpeechGateway[F[_] : Sync] {
     for {
       block <- blockageState.shouldBlock()
       _ <-
-        if (!block) speak(property, speech) >> blockageState.block()
+        if (!block) makeSpeechIgnoringBlockage(property, speech) >> blockageState.block()
         else Sync[F].unit
     } yield ()
-  }
-
-  private def speak(speakingMebiusProperty: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
-    import cats.implicits._
-
-    sendMessage(speakingMebiusProperty, speech.content) >> playSpeechSound(speech.strength)
   }
 
   /**
    * `property` をプロパティとして持つMebiusに強制的に発話させる。
    */
-  def forceMakingSpeech(property: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
-    speak(property, speech)
+  def makeSpeechIgnoringBlockage(property: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
+    import cats.implicits._
+
+    sendMessage(property, speech.content) >> playSpeechSound(speech.strength)
   }
 
   protected def sendMessage(property: MebiusProperty, message: String): F[Unit]
