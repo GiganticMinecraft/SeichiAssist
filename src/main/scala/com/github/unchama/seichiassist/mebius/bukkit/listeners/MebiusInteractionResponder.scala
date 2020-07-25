@@ -38,7 +38,7 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
 
         val messageProgram = if (helmet.getDurability >= helmet.getType.getMaxDurability - 10) {
           // 耐久閾値を超えていたら破損警告
-          gateway.speak(
+          gateway.tryMakingSpeech(
             mebiusProperty,
             MebiusSpeech(
               getMessage(MebiusMessages.onDamageBreaking, mebiusProperty.ownerNickname, ""),
@@ -48,7 +48,7 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
         } else event.getDamager match {
           case monster: Monster =>
             // モンスターからダメージを受けた場合の対モンスターメッセージ
-            gateway.speak(
+            gateway.tryMakingSpeech(
               mebiusProperty,
               MebiusSpeech(
                 getMessage(MebiusMessages.onDamageWarnEnemy, mebiusProperty.ownerNickname, monster.getName),
@@ -113,7 +113,7 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
 
     effectEnvironment.runEffectAsync(
       "モンスターを倒した際のMebiusのメッセージを再生する",
-      gateway.speak(
+      gateway.tryMakingSpeech(
         mebiusProperty,
         MebiusSpeech(
           getMessage(MebiusMessages.onMonsterKill, mebiusProperty.ownerNickname, killedMonsterName),
@@ -149,7 +149,7 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
 
     effectEnvironment.runEffectAsync(
       "ブロック破壊時のMebiusのメッセージを再生する",
-      gateway.speak(
+      gateway.tryMakingSpeech(
         mebiusProperty,
         MebiusSpeech(
           getMessage(MebiusMessages.onBlockBreak, mebiusProperty.ownerNickname, ""),

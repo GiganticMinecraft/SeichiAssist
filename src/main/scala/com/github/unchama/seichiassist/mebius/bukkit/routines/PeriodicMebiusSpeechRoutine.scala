@@ -33,7 +33,7 @@ object PeriodicMebiusSpeechRoutine {
           val messagesCandidate = MebiusMessages.tips.appended(MebiusTalks.at(property.level).mebiusMessage)
           val message = messagesCandidate(Random.nextInt(messagesCandidate.size))
 
-          gateway.speak(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
+          gateway.tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
         }
         .getOrElse(IO.unit)
     } yield ()

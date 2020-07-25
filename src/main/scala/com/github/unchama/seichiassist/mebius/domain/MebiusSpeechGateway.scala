@@ -41,7 +41,7 @@ abstract class MebiusSpeechGateway[F[_] : Sync] {
     } yield ()
   }
 
-  final def speak(speakingMebiusProperty: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
+  private def speak(speakingMebiusProperty: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
     import cats.implicits._
 
     sendMessage(speakingMebiusProperty, speech.content) >> playSpeechSound(speech.strength)
