@@ -15,13 +15,13 @@ import scala.concurrent.duration.FiniteDuration
 
 class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO]) extends MebiusSpeechGateway[IO] {
 
-  override protected def sendMessage(property: MebiusProperty, message: String): IO[Unit] = {
+  override def sendMessage(property: MebiusProperty, message: String): IO[Unit] = {
     MessageEffect(
       s"${ChatColor.RESET}<${property.mebiusName}${ChatColor.RESET}> $message"
     ).run(player)
   }
 
-  override protected def playSpeechSound(strength: MebiusSpeechStrength): IO[Unit] = {
+  override def playSpeechSound(strength: MebiusSpeechStrength): IO[Unit] = {
     def playSoundsInSequence(firstSound: TargetedEffect[Player], secondSound: TargetedEffect[Player]): TargetedEffect[Player] =
       SequentialEffect(
         firstSound,

@@ -6,7 +6,8 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusMessages, MebiusTalks}
-import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import com.github.unchama.util.collection.RandomizedCollection
 import org.bukkit.entity.Player
 
@@ -14,7 +15,7 @@ import scala.concurrent.duration.FiniteDuration
 
 object PeriodicMebiusSpeechRoutine {
 
-  def start(player: Player)(implicit gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechGateway[IO]],
+  def start(player: Player)(implicit serviceRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]],
                             context: RepeatingTaskContext): IO[Nothing] = {
     val getRepeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
@@ -22,13 +23,13 @@ object PeriodicMebiusSpeechRoutine {
       1.minute
     }
 
-    val gateway = gatewayRepository(player)
+    val service = serviceRepository(player)
 
     val speakTipsOrMessageRandomly: IO[Unit] = for {
       helmet <- IO {
         player.getInventory.getHelmet
       }
-      _ <- gateway.blockageState.unblock()
+      _ <- service.unblockSpeech()
       _ <- BukkitMebiusItemStackCodec.decodeMebiusProperty(helmet)
         .map { property =>
           val messageCandidates = new RandomizedCollection[String, IO](
@@ -39,7 +40,7 @@ object PeriodicMebiusSpeechRoutine {
           )
 
           messageCandidates.pickOne.flatMap { message =>
-            gateway.tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
+            service.tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
           }
         }
         .getOrElse(IO.unit)

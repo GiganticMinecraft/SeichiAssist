@@ -4,10 +4,10 @@ import cats.effect.{Fiber, IO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.mebius.bukkit.routines.PeriodicMebiusSpeechRoutine
-import com.github.unchama.seichiassist.mebius.domain.speech.MebiusSpeechGateway
+import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import org.bukkit.entity.Player
 
-class PeriodicMebiusSpeechRoutineFiberRepository(implicit gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechGateway[IO]],
+class PeriodicMebiusSpeechRoutineFiberRepository(implicit serviceRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]],
                                                  repeatingTaskContext: RepeatingTaskContext)
   extends JoinToQuitPlayerDataRepository[Fiber[IO, Nothing]] {
 

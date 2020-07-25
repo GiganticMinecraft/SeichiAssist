@@ -9,18 +9,27 @@ import com.github.unchama.seichiassist.mebius.bukkit.PropertyModificationBukkitM
 import com.github.unchama.seichiassist.mebius.bukkit.command.MebiusCommandExecutorProvider
 import com.github.unchama.seichiassist.mebius.bukkit.gateway.BukkitMebiusSpeechGateway
 import com.github.unchama.seichiassist.mebius.bukkit.listeners._
-import com.github.unchama.seichiassist.mebius.bukkit.repository.{PeriodicMebiusSpeechRoutineFiberRepository, SpeechGatewayRepository}
+import com.github.unchama.seichiassist.mebius.bukkit.repository.{PeriodicMebiusSpeechRoutineFiberRepository, SpeechServiceRepository}
 import com.github.unchama.seichiassist.mebius.domain.message.PropertyModificationMessages
-import com.github.unchama.seichiassist.mebius.domain.speech.MebiusSpeechGateway
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeechBlockageState, MebiusSpeechGateway}
+import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import org.bukkit.entity.Player
 
 object EntryPoints {
   def wired(implicit effectEnvironment: SeichiAssistEffectEnvironment,
             timer: Timer[IO],
             repeatingTaskContext: RepeatingTaskContext): SubsystemEntryPoints = {
-    implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
-    implicit val gatewayProvider: Player => MebiusSpeechGateway[IO] = new BukkitMebiusSpeechGateway(_)
-    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechGateway[IO]] = new SpeechGatewayRepository[IO]
+    implicit val messages: PropertyModificationMessages =
+      PropertyModificationBukkitMessages
+
+    implicit val gatewayProvider: Player => MebiusSpeechGateway[IO] =
+      new BukkitMebiusSpeechGateway(_)
+
+    implicit val getFreshSpeechBlockageState: IO[MebiusSpeechBlockageState[IO]] =
+      IO(new MebiusSpeechBlockageState[IO](MebiusSpeechBlockageState.speechBlockProbability))
+
+    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]] =
+      new SpeechServiceRepository[IO]
 
     val speechRoutineFiberRepository = new PeriodicMebiusSpeechRoutineFiberRepository()
 

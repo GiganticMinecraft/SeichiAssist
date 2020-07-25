@@ -6,13 +6,13 @@ import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironme
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
-import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
-import com.github.unchama.seichiassist.mebius.service.MebiusLevellingService
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.service.{MebiusLevellingService, MebiusSpeechService}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
-class MebiusLevelUpTrialListener(implicit gatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]],
+class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[IO]],
                                  effectEnvironment: SeichiAssistEffectEnvironment,
                                  messages: PropertyModificationMessages) extends Listener {
 
@@ -34,7 +34,7 @@ class MebiusLevelUpTrialListener(implicit gatewayRepository: PlayerDataRepositor
       import cats.implicits._
       effectEnvironment.runEffectAsync(
         "Mebiusのレベルアップ時の通知を行う",
-        gatewayRepository(player).makeSpeechIgnoringBlockage(
+        serviceRepository(player).makeSpeechIgnoringBlockage(
           newMebiusProperty,
           MebiusSpeech(
             MebiusTalks.at(newMebiusProperty.level).mebiusMessage,

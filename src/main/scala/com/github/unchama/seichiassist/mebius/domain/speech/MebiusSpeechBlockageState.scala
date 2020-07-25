@@ -6,7 +6,7 @@ import cats.effect.concurrent.Ref
 import scala.util.Random
 
 /**
- * Mebiusの発話を阻止するかどうかの[[MebiusSpeechGateway]]の状態。
+ * Mebiusの発話を阻止するかどうかを決定するオブジェクトのクラス。
  *
  * @param speechBlockProbability ランダムで発話を止める確率
  */
@@ -24,9 +24,17 @@ final class MebiusSpeechBlockageState[F[_] : Sync](val speechBlockProbability: D
     for {
       shouldBlockSpeechDueToFlag <- willBlockSpeech.get
       shouldBlockSpeechDueToRandomness <- Sync[F].delay {
-        Random.nextDouble() < MebiusSpeechGateway.speechBlockProbability
+        Random.nextDouble() < speechBlockProbability
       }
     } yield shouldBlockSpeechDueToFlag || shouldBlockSpeechDueToRandomness
   }
 
+}
+
+object MebiusSpeechBlockageState {
+  /**
+   * [[com.github.unchama.seichiassist.mebius.service.MebiusSpeechService.tryMakingSpeech]]が
+   * 発話を不許可とする確率
+   */
+  val speechBlockProbability = 0.75
 }

@@ -10,14 +10,15 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.bukkit.command.MebiusCommandExecutorProvider.Messages
 import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
-import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor.{GREEN, RED, RESET}
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 
-class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]]) {
+class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[IO]]) {
 
   import ChildExecutors._
 
@@ -49,7 +50,7 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
             SequentialEffect(
               MessageEffect(s"$newDisplayName${RESET}に命名しました。"),
               Kleisli.liftF {
-                gatewayRepository(player).makeSpeechIgnoringBlockage(
+                serviceRepository(player).makeSpeechIgnoringBlockage(
                   newProperty,
                   MebiusSpeech(
                     s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
@@ -131,7 +132,7 @@ class MebiusCommandExecutorProvider(implicit gatewayRepository: PlayerDataReposi
           newProperty => SequentialEffect(
             MessageEffect(successMessage(name)),
             Kleisli.liftF {
-              gatewayRepository(player).makeSpeechIgnoringBlockage(
+              serviceRepository(player).makeSpeechIgnoringBlockage(
                 newProperty,
                 MebiusSpeech(
                   s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",

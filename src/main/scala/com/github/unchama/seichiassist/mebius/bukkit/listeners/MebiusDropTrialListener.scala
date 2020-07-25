@@ -7,8 +7,8 @@ import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
-import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
-import com.github.unchama.seichiassist.mebius.service.MebiusDroppingService
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.service.{MebiusDroppingService, MebiusSpeechService}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, SequentialEffect}
@@ -19,7 +19,7 @@ import org.bukkit.{ChatColor, Sound}
 
 import scala.concurrent.duration.FiniteDuration
 
-class MebiusDropTrialListener(implicit gatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]],
+class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[IO]],
                               effectEnvironment: SeichiAssistEffectEnvironment,
                               ioTimer: Timer[IO]) extends Listener {
 
@@ -42,7 +42,7 @@ class MebiusDropTrialListener(implicit gatewayRepository: PlayerDataRepository[M
     import cats.implicits._
     effectEnvironment.runEffectAsync(
       "Mebiusのドロップ時メッセージを再生する",
-      gatewayRepository(player).makeSpeechIgnoringBlockage(
+      serviceRepository(player).makeSpeechIgnoringBlockage(
         droppedMebiusProperty,
         MebiusSpeech(
           s"こんにちは、${player.getName}$RESET。" +

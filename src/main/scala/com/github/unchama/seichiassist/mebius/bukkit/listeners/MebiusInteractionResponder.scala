@@ -6,7 +6,8 @@ import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
-import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -18,7 +19,7 @@ import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
-class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepository[MebiusSpeechGateway[IO]],
+class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[IO]],
                                  effectEnvironment: SeichiAssistEffectEnvironment)
   extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -32,12 +33,12 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
           .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
           .getOrElse(return)
 
-        val gateway = gatewayRepository(player)
+        val speechService = serviceRepository(player)
 
         val messageProgram = if (helmet.getDurability >= helmet.getType.getMaxDurability - 10) {
           MebiusMessages.onDamageBreaking.pickOne.flatMap { message =>
             // 耐久閾値を超えていたら破損警告
-            gateway.tryMakingSpeech(
+            speechService.tryMakingSpeech(
               mebiusProperty,
               MebiusSpeech(message.interpolate(mebiusProperty.ownerNickname), MebiusSpeechStrength.Medium)
             )
@@ -46,7 +47,7 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
           case monster: Monster =>
             // モンスターからダメージを受けた場合の対モンスターメッセージ
             MebiusMessages.onDamageWarnEnemy.pickOne.flatMap { message =>
-              gateway.tryMakingSpeech(
+              speechService.tryMakingSpeech(
                 mebiusProperty,
                 MebiusSpeech(
                   message.interpolate(mebiusProperty.ownerNickname, monster.getName), MebiusSpeechStrength.Medium
@@ -70,14 +71,14 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
       .decodeMebiusProperty(brokenItem)
       .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
       .foreach { property =>
-        val gateway = gatewayRepository(player)
+        val speechService = serviceRepository(player)
 
         import cats.implicits._
 
         effectEnvironment.runEffectAsync(
           "Mebius破壊時のエフェクトを再生する",
           MebiusMessages.onMebiusBreak.pickOne.flatMap { message =>
-            gateway.makeSpeechIgnoringBlockage(
+            speechService.makeSpeechIgnoringBlockage(
               property,
               MebiusSpeech(message.interpolate(property.ownerNickname), MebiusSpeechStrength.Medium)
             ) >> SequentialEffect(
@@ -106,12 +107,12 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
         .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
         .getOrElse(return)
 
-    val gateway = gatewayRepository(player)
+    val speechService = serviceRepository(player)
 
     effectEnvironment.runEffectAsync(
       "モンスターを倒した際のMebiusのメッセージを再生する",
       MebiusMessages.onDamageWarnEnemy.pickOne.flatMap { message =>
-        gateway.tryMakingSpeech(
+        speechService.tryMakingSpeech(
           mebiusProperty,
           MebiusSpeech(
             message.interpolate(mebiusProperty.ownerNickname, killedMonsterName), MebiusSpeechStrength.Medium
@@ -132,12 +133,12 @@ class MebiusInteractionResponder(implicit gatewayRepository: PlayerDataRepositor
       .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
       .getOrElse(return)
 
-    val gateway = gatewayRepository(player)
+    val speechService = serviceRepository(player)
 
     effectEnvironment.runEffectAsync(
       "ブロック破壊時のMebiusのメッセージを再生する",
       MebiusMessages.onBlockBreak.pickOne.flatMap { message =>
-        gateway.tryMakingSpeech(
+        speechService.tryMakingSpeech(
           mebiusProperty,
           MebiusSpeech(message.interpolate(mebiusProperty.ownerNickname), MebiusSpeechStrength.Medium)
         )
