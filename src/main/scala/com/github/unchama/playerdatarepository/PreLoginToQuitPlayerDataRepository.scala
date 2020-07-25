@@ -4,7 +4,7 @@ import java.util.UUID
 
 import cats.effect.{IO, SyncIO}
 import org.bukkit.entity.Player
-import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerQuitEvent}
+import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 /**
@@ -55,6 +55,24 @@ abstract class PreLoginToQuitPlayerDataRepository[R] extends PlayerDataRepositor
         event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
       case Right(data) =>
         state(event.getUniqueId) = data
+    }
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  final def onPlayerJoin(event: PlayerJoinEvent): Unit = {
+    val player = event.getPlayer
+
+    if (!state.contains(player.getUniqueId)) {
+      val message =
+        s"""
+           |データの読み込みに失敗しました。
+           |再接続しても改善されない場合は、
+           |整地鯖公式Discordサーバーからお知らせ下さい。
+           |
+           |エラー： $getClass の初期化に失敗しています。
+           |""".stripMargin
+
+      player.kickPlayer(message)
     }
   }
 
