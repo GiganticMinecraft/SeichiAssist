@@ -16,17 +16,23 @@ import scala.collection.mutable
  */
 class JdbcBackedUuidRepository(implicit val logger: Logger) extends UuidRepository[IO] {
 
+  private var isDBCacheCreated = false
+  private var cache: mutable.Map[String, UUID] = mutable.Map()
+
+  import cats.implicits._
+
   val loadDBCache: IO[Unit] = IO {
     ???
 
     isDBCacheCreated = true
     logger.info(s"DBから${0}件の名前-UUIDペアを読み込みました。")
   }
-  private var isDBCacheCreated = false
 
-  import cats.implicits._
+  def resolveUuidUsingMojangApi(playerName: String): IO[Option[UUID]] = {
+    logger.warn(s"Mojangへ${playerName}のUUIDを問い合わせています...")
 
-  private var cache: mutable.Map[String, UUID] = mutable.Map()
+    ???
+  }
 
   override def getUuid(playerName: String): IO[Option[UUID]] = {
     for {
@@ -42,12 +48,5 @@ class JdbcBackedUuidRepository(implicit val logger: Logger) extends UuidReposito
       }
     } yield result
   }
-
-  def resolveUuidUsingMojangApi(playerName: String): IO[Option[UUID]] = {
-    logger.warn(s"Mojangへ${playerName}のUUIDを問い合わせています...")
-
-    ???
-  }
-
 }
 
