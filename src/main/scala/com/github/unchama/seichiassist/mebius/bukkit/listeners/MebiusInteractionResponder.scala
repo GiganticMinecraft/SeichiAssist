@@ -28,10 +28,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
     event.getEntity match {
       case player: Player =>
         val helmet = player.getInventory.getHelmet
-        val mebiusProperty = BukkitMebiusItemStackCodec
-          .decodeMebiusProperty(helmet)
-          .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
-          .getOrElse(return)
+        val mebiusProperty = BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(helmet).getOrElse(return)
 
         val speechService = serviceRepository(player)
 
@@ -64,12 +61,9 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onBreak(event: PlayerItemBreakEvent): Unit = {
-    val brokenItem = event.getBrokenItem
     val player = event.getPlayer
 
-    BukkitMebiusItemStackCodec
-      .decodeMebiusProperty(brokenItem)
-      .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
+    BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(event.getBrokenItem)
       .foreach { property =>
         val speechService = serviceRepository(player)
 
@@ -102,10 +96,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
     if (killedMonsterName == "") return
 
     val mebiusProperty =
-      BukkitMebiusItemStackCodec
-        .decodeMebiusProperty(player.getInventory.getHelmet)
-        .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
-        .getOrElse(return)
+      BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet).getOrElse(return)
 
     val speechService = serviceRepository(player)
 
@@ -128,10 +119,8 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
     val player = event.getPlayer
 
-    val mebiusProperty = BukkitMebiusItemStackCodec
-      .decodeMebiusProperty(player.getInventory.getHelmet)
-      .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
-      .getOrElse(return)
+    val mebiusProperty =
+      BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet).getOrElse(return)
 
     val speechService = serviceRepository(player)
 

@@ -20,10 +20,8 @@ class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepositor
   def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
 
-    val oldMebiusProperty = BukkitMebiusItemStackCodec
-      .decodeMebiusProperty(player.getInventory.getHelmet)
-      .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
-      .getOrElse(return)
+    val oldMebiusProperty =
+      BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet).getOrElse(return)
     val newMebiusProperty = MebiusLevellingService.attemptLevelUp(oldMebiusProperty).unsafeRunSync()
 
     if (newMebiusProperty != oldMebiusProperty) {

@@ -30,6 +30,15 @@ object BukkitMebiusItemStackCodec {
   private val levelUpMebiusMessageLoreRowPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.ITALIC}"
   private val levelUpPlayerMessageLoreRowPrefix = s"$RESET${ChatColor.GRAY}${ChatColor.ITALIC}"
 
+  def isMebius(itemStack: ItemStack): Boolean = {
+    val meta = if (itemStack != null) itemStack.getItemMeta else return false
+
+    meta.hasLore && {
+      val lore = meta.getLore.asScala
+      mebiusLoreHead.forall(lore.contains)
+    }
+  }
+
   /**
    * (必ずしも有効な`MebiusProperty`を持つとは限らない)実体から `ItemStack` をデコードする。
    */
@@ -63,15 +72,6 @@ object BukkitMebiusItemStackCodec {
     val mebiusName = mebius.getItemMeta.getDisplayName
 
     Some(property.MebiusProperty(ownerName, enchantments, mebiusLevel, nickname, mebiusName))
-  }
-
-  private def isMebius(itemStack: ItemStack): Boolean = {
-    val meta = if (itemStack != null) itemStack.getItemMeta else return false
-
-    meta.hasLore && {
-      val lore = meta.getLore.asScala
-      mebiusLoreHead.forall(lore.contains)
-    }
   }
 
   /**
@@ -132,11 +132,13 @@ object BukkitMebiusItemStackCodec {
     }
   }
 
-  def displayNameOfMaterializedItem(property: MebiusProperty): String = {
+  def displayNameOfMaterializedItem(property: MebiusProperty): String =
     mebiusNameDisplayPrefix + property.mebiusName
-  }
 
   def ownershipMatches(player: Player)(property: MebiusProperty): Boolean =
     property.ownerPlayerId == player.getName
+
+  def decodePropertyOfOwnedMebius(player: Player)(itemStack: ItemStack): Option[MebiusProperty] =
+    decodeMebiusProperty(itemStack).filter(ownershipMatches(player))
 
 }

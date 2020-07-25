@@ -77,9 +77,7 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
             player.getInventory.getHelmet
           }
           effect <- IO.pure {
-            BukkitMebiusItemStackCodec
-              .decodeMebiusProperty(helmet)
-              .map(propertyModifier) match {
+            BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(helmet).map(propertyModifier) match {
               case Some(newProperty) =>
                 SequentialEffect(
                   UnfocusedEffect {
@@ -144,15 +142,10 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
         ).effectOn(player)
       }
 
-      val executor: BranchedExecutor = BranchedExecutor(Map(
-        "reset" -> resetNicknameExecutor,
-        "set" -> setNicknameExecutor
-      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
       private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
           IO(MessageEffect {
-            BukkitMebiusItemStackCodec
-              .decodeMebiusProperty(context.sender.getInventory.getHelmet)
+            BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(context.sender)(context.sender.getInventory.getHelmet)
               .map(_.ownerNickname)
               .fold {
                 s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
@@ -162,6 +155,11 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
           })
         }
         .build()
+
+      val executor: BranchedExecutor = BranchedExecutor(Map(
+        "reset" -> resetNicknameExecutor,
+        "set" -> setNicknameExecutor
+      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
     }
 
   }

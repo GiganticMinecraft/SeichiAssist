@@ -30,7 +30,8 @@ object PeriodicMebiusSpeechRoutine {
         player.getInventory.getHelmet
       }
       _ <- service.unblockSpeech()
-      _ <- BukkitMebiusItemStackCodec.decodeMebiusProperty(helmet)
+      _ <- BukkitMebiusItemStackCodec
+        .decodePropertyOfOwnedMebius(player)(helmet)
         .map { property =>
           val messageCandidates = new RandomizedCollection[String, IO](
             NonEmptyList(

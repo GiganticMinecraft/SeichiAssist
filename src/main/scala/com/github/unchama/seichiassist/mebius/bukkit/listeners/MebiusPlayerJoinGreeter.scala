@@ -26,8 +26,7 @@ class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: SeichiA
     import cats.implicits._
 
     BukkitMebiusItemStackCodec
-      .decodeMebiusProperty(player.getInventory.getHelmet)
-      .filter(BukkitMebiusItemStackCodec.ownershipMatches(player))
+      .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
       .foreach { property =>
         effectEnvironment.runEffectAsync(
           "参加時のMebiusのメッセージを送信する",
