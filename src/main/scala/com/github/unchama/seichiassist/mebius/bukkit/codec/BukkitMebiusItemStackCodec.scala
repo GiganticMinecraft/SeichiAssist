@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.mebius.bukkit.codec
 
 import com.github.unchama.seichiassist.mebius.domain.property
-import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusProperty}
+import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusLevel, MebiusProperty}
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusTalks}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor
