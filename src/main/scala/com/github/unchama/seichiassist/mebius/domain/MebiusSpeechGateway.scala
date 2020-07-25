@@ -26,14 +26,16 @@ abstract class MebiusSpeechGateway[F[_] : Sync] {
    * 一度このアクションにてMebiusが発話された場合、 `unblockSpeech` が行われるまで
    * 次の `tryMakingSpeech` は `Monad[F].unit` と等価になる。
    *
-   * また、 `unblockSpeech` が事前に呼ばれていたとしても、50%の確率で発話は行われない。
+   * また、 `unblockSpeech` が事前に呼ばれていたとしても、[[MebiusSpeechGateway.speechBlockProbability]]の確率で発話は行われない。
    */
   def tryMakingSpeech(property: MebiusProperty, speech: MebiusSpeech): F[Unit] = {
     import cats.implicits._
 
     for {
       shouldBlockSpeechDueToFlag <- willBlockSpeech.get
-      shouldBlockSpeechDueToRandomness <- Sync[F].delay(Random.nextBoolean())
+      shouldBlockSpeechDueToRandomness <- Sync[F].delay {
+        Random.nextDouble() < MebiusSpeechGateway.speechBlockProbability
+      }
       _ <-
         if (!shouldBlockSpeechDueToFlag && !shouldBlockSpeechDueToRandomness) {
           speak(property, speech) >> willBlockSpeech.set(true)
@@ -60,4 +62,11 @@ abstract class MebiusSpeechGateway[F[_] : Sync] {
 
   protected def playSpeechSound(strength: MebiusSpeechStrength): F[Unit]
 
+}
+
+object MebiusSpeechGateway {
+  /**
+   * [[MebiusSpeechGateway.tryMakingSpeech]]が発話を不許可とする確率
+   */
+  val speechBlockProbability = 0.75
 }
