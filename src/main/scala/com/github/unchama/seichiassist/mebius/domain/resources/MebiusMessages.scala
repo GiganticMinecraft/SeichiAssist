@@ -62,7 +62,7 @@ object MebiusMessages {
     ).map(MebiusCombatMessage)
   )
 
-  val tips = List(
+  val tips: List[String] = List(
     "僕の名前は、/mebius naming <名前> コマンドで変更できるよ！<名前>の代わりに新しい名前を入れてね！",
     "僕は整地によって成長するんだー。アイテムレベル30まであるんだよ！",
     "僕たち兄弟のステータスはみんなバラバラなんだよー！",
