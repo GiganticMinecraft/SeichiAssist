@@ -32,7 +32,7 @@ class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: SeichiA
           "参加時のMebiusのメッセージを送信する",
           DelayEffect(FiniteDuration(500, TimeUnit.MILLISECONDS)).run(player) >>
             speechGatewayRepository(player)
-              .tryMakingSpeech(
+              .forceMakingSpeech(
                 property,
                 MebiusSpeech(s"おかえり${property.ownerNickname}！待ってたよ！", MebiusSpeechStrength.Medium)
               )
