@@ -2,36 +2,42 @@ package com.github.unchama.seichiassist.mebius.domain.resources
 
 import cats.data.NonEmptyList
 import cats.effect.IO
-import com.github.unchama.seichiassist.mebius.domain.message.MebiusCombatMessage
+import com.github.unchama.seichiassist.mebius.domain.message.{MebiusCombatMessage, MebiusPlayerMessage}
 import com.github.unchama.util.collection.RandomizedCollection
 
 object MebiusMessages {
 
-  val onBlockBreak = Set(
-    "ポコポコポコポコ…整地の音って、落ち着くねえ。",
-    "頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
-    "一生懸命掘ってると、いつの間にか無心になっちゃうよねえ…！",
-    "なんだか眠たくなってきちゃったー、[str1]は平気ー？",
-    "今日はどこまで掘るのかなー？",
-    "[str1]と一緒に整地するの、楽しいねえ！"
+  val onBlockBreak: RandomizedCollection[MebiusPlayerMessage, IO] = new RandomizedCollection(
+    NonEmptyList.of(
+      "ポコポコポコポコ…整地の音って、落ち着くねえ。",
+      "頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
+      "一生懸命掘ってると、いつの間にか無心になっちゃうよねえ…！",
+      "なんだか眠たくなってきちゃったー、[str1]は平気ー？",
+      "今日はどこまで掘るのかなー？",
+      "[str1]と一緒に整地するの、楽しいねえ！"
+    ).map(MebiusPlayerMessage)
   )
 
-  val onMebiusBreak = Set(
-    "ここまでかぁっ…[str1]と一緒に旅したこと、すごく楽しかったなぁ…",
-    "この先[str1]のこと、守ってあげられなくなっちゃった…ごめんね…",
-    "僕、少しは[str1]の役に立てたかなぁ…もしそうだったら、嬉しいなぁ",
-    "[str1]のおかげで最期まで防具としていられたんだぁ…使ってくれて、ありがとう。",
-    "最期まで[str1]の頭にいれたことって、すごく幸せなことだよ",
-    "もし生まれ変わっても、また[str1]と…"
+  val onMebiusBreak: RandomizedCollection[MebiusPlayerMessage, IO] = new RandomizedCollection(
+    NonEmptyList.of(
+      "ここまでかぁっ…[str1]と一緒に旅したこと、すごく楽しかったなぁ…",
+      "この先[str1]のこと、守ってあげられなくなっちゃった…ごめんね…",
+      "僕、少しは[str1]の役に立てたかなぁ…もしそうだったら、嬉しいなぁ",
+      "[str1]のおかげで最期まで防具としていられたんだぁ…使ってくれて、ありがとう。",
+      "最期まで[str1]の頭にいれたことって、すごく幸せなことだよ",
+      "もし生まれ変わっても、また[str1]と…"
+    ).map(MebiusPlayerMessage)
   )
 
-  val onDamageBreaking = Set(
-    "いたた…もうすぐ壊れちゃいそうだ…",
-    "もうダメかも…こんなところで、悔しいなぁ",
-    "お願い、修繕して欲しいよ…",
-    "ごめんね…これ以上は[str1]のこと、守ってあげられそうにないよ…",
-    "もっと[str1]と、旅したかったなぁ",
-    "まだ平気…壊れるまでは、[str1]のことを守るんだ…"
+  val onDamageBreaking: RandomizedCollection[MebiusPlayerMessage, IO] = new RandomizedCollection(
+    NonEmptyList.of(
+      "いたた…もうすぐ壊れちゃいそうだ…",
+      "もうダメかも…こんなところで、悔しいなぁ",
+      "お願い、修繕して欲しいよ…",
+      "ごめんね…これ以上は[str1]のこと、守ってあげられそうにないよ…",
+      "もっと[str1]と、旅したかったなぁ",
+      "まだ平気…壊れるまでは、[str1]のことを守るんだ…"
+    ).map(MebiusPlayerMessage)
   )
 
   val onDamageWarnEnemy: RandomizedCollection[MebiusCombatMessage, IO] = new RandomizedCollection(
