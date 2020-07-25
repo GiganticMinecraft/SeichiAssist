@@ -11,6 +11,8 @@ import scala.util.Random
  * 内部状態として発話を許可するかのBooleanを持っており、
  * `tryMakingSpeech` の結果、 `unblockSpeech` するまで
  * `tryMakingSpeech` は副作用を持たない(`Monad[F].unit`と等価)。
+ *
+ * TODO ゲートウェイに内部状態を持たせない
  */
 abstract class MebiusSpeechGateway[F[_] : Sync] {
 
