@@ -33,6 +33,32 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
   }
 
   object ChildExecutors {
+    private case class MebiusInteractionTemplate(effectIfMebiusIsNotWorn: TargetedEffect[Player],
+                                                 propertyModifier: MebiusProperty => MebiusProperty,
+                                                 additionalEffectsOnModification: MebiusProperty => TargetedEffect[Player]) {
+
+      def effectOn(player: Player): IO[TargetedEffect[Player]] =
+        for {
+          helmet <- IO {
+            player.getInventory.getHelmet
+          }
+          effect <- IO.pure {
+            BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(helmet).map(propertyModifier) match {
+              case Some(newProperty) =>
+                SequentialEffect(
+                  UnfocusedEffect {
+                    player.getInventory.setHelmet {
+                      BukkitMebiusItemStackCodec.materialize(newProperty, damageValue = helmet.getDurability)
+                    }
+                  },
+                  additionalEffectsOnModification(newProperty)
+                )
+              case None => effectIfMebiusIsNotWorn
+            }
+          }
+        } yield effect
+    }
+
     val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution { _ => IO(Messages.commandDescription) }
       .build()
@@ -66,32 +92,6 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
 
     private def concatHeadAndRemainingArgs(args: PartiallyParsedArgs): String =
       args.parsed.head.toString + " " + args.yetToBeParsed.mkString(" ")
-
-    private case class MebiusInteractionTemplate(effectIfMebiusIsNotWorn: TargetedEffect[Player],
-                                                 propertyModifier: MebiusProperty => MebiusProperty,
-                                                 additionalEffectsOnModification: MebiusProperty => TargetedEffect[Player]) {
-
-      def effectOn(player: Player): IO[TargetedEffect[Player]] =
-        for {
-          helmet <- IO {
-            player.getInventory.getHelmet
-          }
-          effect <- IO.pure {
-            BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(helmet).map(propertyModifier) match {
-              case Some(newProperty) =>
-                SequentialEffect(
-                  UnfocusedEffect {
-                    player.getInventory.setHelmet {
-                      BukkitMebiusItemStackCodec.materialize(newProperty, damageValue = helmet.getDurability)
-                    }
-                  },
-                  additionalEffectsOnModification(newProperty)
-                )
-              case None => effectIfMebiusIsNotWorn
-            }
-          }
-        } yield effect
-    }
 
     object NicknameCommand {
       private val resetNicknameExecutor = playerCommandBuilder
