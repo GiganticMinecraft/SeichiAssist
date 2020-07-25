@@ -1,12 +1,11 @@
 package com.github.unchama.seichiassist.mebius.domain.speech
 
-import cats.effect.Sync
 import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
 
 /**
- * Mebiusからの発話を仲介するオブジェクトのクラス。
+ * Mebiusからの発話を仲介するオブジェクトのtrait。
  */
-abstract class MebiusSpeechGateway[F[_] : Sync] {
+trait MebiusSpeechGateway[F[_]] {
 
   def sendMessage(property: MebiusProperty, message: String): F[Unit]
 

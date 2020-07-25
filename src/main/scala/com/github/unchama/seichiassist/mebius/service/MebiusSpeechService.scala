@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, Mebiu
 class MebiusSpeechService[F[_] : Sync](gateway: MebiusSpeechGateway[F],
                                        blockageState: MebiusSpeechBlockageState[F]) {
 
-  def unblockSpeech(): F[Unit] = blockageState.unblock()
+  def unblockSpeech(): F[Unit] = blockageState.unblock
 
   /**
    * `property` をプロパティとして持つMebiusに発話させる。
@@ -22,9 +22,9 @@ class MebiusSpeechService[F[_] : Sync](gateway: MebiusSpeechGateway[F],
     import cats.implicits._
 
     for {
-      block <- blockageState.shouldBlock()
+      block <- blockageState.shouldBlock
       _ <-
-        if (!block) makeSpeechIgnoringBlockage(property, speech) >> blockageState.block()
+        if (!block) makeSpeechIgnoringBlockage(property, speech) >> blockageState.block
         else Sync[F].unit
     } yield ()
   }

@@ -19,17 +19,10 @@ object EntryPoints {
   def wired(implicit effectEnvironment: SeichiAssistEffectEnvironment,
             timer: Timer[IO],
             repeatingTaskContext: RepeatingTaskContext): SubsystemEntryPoints = {
-    implicit val messages: PropertyModificationMessages =
-      PropertyModificationBukkitMessages
-
-    implicit val gatewayProvider: Player => MebiusSpeechGateway[IO] =
-      new BukkitMebiusSpeechGateway(_)
-
-    implicit val getFreshSpeechBlockageState: IO[MebiusSpeechBlockageState[IO]] =
-      IO(new MebiusSpeechBlockageState[IO](MebiusSpeechBlockageState.speechBlockProbability))
-
-    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]] =
-      new SpeechServiceRepository[IO]
+    implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
+    implicit val gatewayProvider: Player => MebiusSpeechGateway[IO] = new BukkitMebiusSpeechGateway(_)
+    implicit val getFreshSpeechBlockageState: IO[MebiusSpeechBlockageState[IO]] = IO(new MebiusSpeechBlockageState[IO])
+    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]] = new SpeechServiceRepository[IO]
 
     val speechRoutineFiberRepository = new PeriodicMebiusSpeechRoutineFiberRepository()
 
