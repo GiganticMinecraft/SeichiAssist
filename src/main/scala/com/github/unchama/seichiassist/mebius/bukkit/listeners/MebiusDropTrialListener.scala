@@ -12,10 +12,10 @@ import com.github.unchama.seichiassist.mebius.service.{MebiusDroppingService, Me
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, SequentialEffect}
-import org.bukkit.ChatColor.{RED, RESET}
+import org.bukkit.ChatColor._
+import org.bukkit.Sound
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
-import org.bukkit.{ChatColor, Sound}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -35,9 +35,9 @@ class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[M
 
     val mebius = BukkitMebiusItemStackCodec.materialize(droppedMebiusProperty, damageValue = 0.toShort)
 
-    player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}おめでとうございます。採掘中にMEBIUSを発見しました。")
-    player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}MEBIUSはプレイヤーと共に成長するヘルメットです。")
-    player.sendMessage(s"$RESET${ChatColor.YELLOW}${ChatColor.BOLD}あなただけのMEBIUSを育てましょう！")
+    player.sendMessage(s"$RESET$YELLOW${BOLD}おめでとうございます。採掘中にMEBIUSを発見しました。")
+    player.sendMessage(s"$RESET$YELLOW${BOLD}MEBIUSはプレイヤーと共に成長するヘルメットです。")
+    player.sendMessage(s"$RESET$YELLOW${BOLD}あなただけのMEBIUSを育てましょう！")
 
     import cats.implicits._
     effectEnvironment.runEffectAsync(
@@ -59,7 +59,7 @@ class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[M
     if (!Util.isPlayerInventoryFull(player)) {
       Util.addItem(player, mebius)
     } else {
-      player.sendMessage(s"$RESET$RED${ChatColor.BOLD}所持しきれないためMEBIUSをドロップしました。")
+      player.sendMessage(s"$RESET$RED${BOLD}所持しきれないためMEBIUSをドロップしました。")
       Util.dropItem(player, mebius)
     }
   }

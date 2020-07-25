@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import org.bukkit.ChatColor.RESET
+import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.{Monster, Player}
 import org.bukkit.event.block.BlockBreakEvent

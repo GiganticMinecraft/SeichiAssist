@@ -3,8 +3,7 @@ package com.github.unchama.seichiassist.mebius.bukkit
 import com.github.unchama.seichiassist.mebius.bukkit.codec.{BukkitMebiusAppearanceMaterialCodec, BukkitMebiusItemStackCodec}
 import com.github.unchama.seichiassist.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
-import org.bukkit.ChatColor
-import org.bukkit.ChatColor.RESET
+import org.bukkit.ChatColor._
 
 object PropertyModificationBukkitMessages extends PropertyModificationMessages {
   override def onLevelUp(oldMebiusProperty: MebiusProperty, newMebiusProperty: MebiusProperty): List[String] = {
@@ -23,8 +22,8 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
     // エンチャント効果変更通知
     val enchantmentChangeMessage =
       if (newMebiusProperty.level.isMaximum) List(
-        s"$RESET${ChatColor.GREEN}おめでとうございます。$mebiusDisplayName$RESET${ChatColor.GREEN}のレベルが最大になりました。",
-        s"$RESET${ChatColor.AQUA}耐久無限${RESET}が付与されました。"
+        s"$RESET${GREEN}おめでとうございます。$mebiusDisplayName$RESET${GREEN}のレベルが最大になりました。",
+        s"$RESET${AQUA}耐久無限${RESET}が付与されました。"
       ) else List({
         val modifiedEnchantment = newMebiusProperty.enchantmentDifferentFrom(oldMebiusProperty).get
 
@@ -37,10 +36,10 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
 
         oldMebiusProperty.enchantmentLevel.get(modifiedEnchantment) match {
           case Some(previousLevel) =>
-            s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
-              s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${romanSuffix(previousLevel + 1)}${RESET}に強化されました。"
+            s"$GRAY${modifiedEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
+              s"$GRAY${modifiedEnchantment.displayName}${romanSuffix(previousLevel + 1)}${RESET}に強化されました。"
           case None =>
-            s"${ChatColor.GRAY}${modifiedEnchantment.displayName}${RESET}が付与されました。"
+            s"$GRAY${modifiedEnchantment.displayName}${RESET}が付与されました。"
         }
       })
 

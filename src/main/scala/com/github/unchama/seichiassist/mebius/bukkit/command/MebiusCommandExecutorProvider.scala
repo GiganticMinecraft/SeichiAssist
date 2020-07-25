@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, Mebiu
 import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
-import org.bukkit.ChatColor.{GREEN, RED, RESET}
+import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 

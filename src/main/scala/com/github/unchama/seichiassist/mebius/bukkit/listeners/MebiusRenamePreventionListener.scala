@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
-import org.bukkit.ChatColor.{RED, RESET}
+import org.bukkit.ChatColor._
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryDragEvent, InventoryInteractEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.AnvilInventory

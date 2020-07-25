@@ -8,8 +8,9 @@ import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeechGateway
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, RepeatedEffect, SequentialEffect, TargetedEffect}
+import org.bukkit.ChatColor._
+import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.{ChatColor, Sound}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -17,7 +18,7 @@ class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO]) exten
 
   override def sendMessage(property: MebiusProperty, message: String): IO[Unit] = {
     MessageEffect(
-      s"${ChatColor.RESET}<${property.mebiusName}${ChatColor.RESET}> $message"
+      s"$RESET<${property.mebiusName}$RESET> $message"
     ).run(player)
   }
 

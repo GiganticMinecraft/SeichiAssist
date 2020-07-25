@@ -4,8 +4,7 @@ import com.github.unchama.seichiassist.mebius.domain.property
 import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusLevel, MebiusProperty}
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusTalks}
 import de.tr7zw.itemnbtapi.NBTItem
-import org.bukkit.ChatColor
-import org.bukkit.ChatColor.{RED, RESET}
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 
@@ -15,20 +14,20 @@ object BukkitMebiusItemStackCodec {
 
   private val mebiusLoreHead = List(
     s"$RESET",
-    s"$RESET${ChatColor.AQUA}初心者をサポートする不思議なヘルメット。",
-    s"$RESET${ChatColor.AQUA}整地により成長する。",
+    s"$RESET${AQUA}初心者をサポートする不思議なヘルメット。",
+    s"$RESET${AQUA}整地により成長する。",
     ""
   )
 
-  private val unbreakableLoreRow = s"$RESET${ChatColor.AQUA}耐久無限"
+  private val unbreakableLoreRow = s"$RESET${AQUA}耐久無限"
 
-  private val mebiusNameDisplayPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.BOLD}"
+  private val mebiusNameDisplayPrefix = s"$RESET$GOLD$BOLD"
 
-  private val ownerLoreRowPrefix = s"$RESET${ChatColor.DARK_GREEN}所有者："
-  private val levelLoreRowPrefix = s"$RESET$RED${ChatColor.BOLD}アイテムLv. "
+  private val ownerLoreRowPrefix = s"$RESET${DARK_GREEN}所有者："
+  private val levelLoreRowPrefix = s"$RESET$RED${BOLD}アイテムLv. "
 
-  private val levelUpMebiusMessageLoreRowPrefix = s"$RESET${ChatColor.GOLD}${ChatColor.ITALIC}"
-  private val levelUpPlayerMessageLoreRowPrefix = s"$RESET${ChatColor.GRAY}${ChatColor.ITALIC}"
+  private val levelUpMebiusMessageLoreRowPrefix = s"$RESET$GOLD$ITALIC"
+  private val levelUpPlayerMessageLoreRowPrefix = s"$RESET$GRAY$ITALIC"
 
   def isMebius(itemStack: ItemStack): Boolean = {
     val meta = if (itemStack != null) itemStack.getItemMeta else return false
