@@ -20,11 +20,13 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.infrastructure.migration.loggers.{PersistedItemsMigrationSlf4jLogger, PlayerItemsMigrationSlf4jLogger, WorldLevelMigrationSlf4jLogger}
 import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
+import com.github.unchama.seichiassist.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
@@ -38,6 +40,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
+import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 
 import scala.collection.JavaConverters._
@@ -76,7 +79,7 @@ class SeichiAssist extends JavaPlugin() {
 
   override def onEnable(): Unit = {
     val logger = getLogger
-    val slf4jLogger = new JDK14LoggerFactory().getLogger(logger.getName)
+    implicit val slf4jLogger = new JDK14LoggerFactory().getLogger(logger.getName)
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -133,7 +136,11 @@ class SeichiAssist extends JavaPlugin() {
       Bukkit.shutdown()
     }
 
-    val migrations: ItemMigrations = SeichiAssistItemMigrations.seq
+    val migrations: ItemMigrations = {
+      implicit val uuidRepository: UuidRepository[IO] = new JdbcBackedUuidRepository
+
+      SeichiAssistItemMigrations.seq
+    }
 
     {
       val itemMigrationBatches = List(
