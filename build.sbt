@@ -9,15 +9,16 @@ ThisBuild / organization := "click.seichi"
 ThisBuild / description      := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 resolvers ++= Seq(
-  "jitpack.io"             at "https://jitpack.io",
-  "maven.sk89q.com"        at "https://maven.sk89q.com/repo/",
-  "maven.playpro.com"      at "https://maven.playpro.com",
-  "repo.spring.io"         at "https://repo.spring.io/plugins-release/",
+  "jitpack.io" at "https://jitpack.io",
+  "maven.sk89q.com" at "https://maven.sk89q.com/repo/",
+  "maven.playpro.com" at "https://maven.playpro.com",
+  "repo.spring.io" at "https://repo.spring.io/plugins-release/",
   "repo.spongepowered.org" at "https://repo.spongepowered.org/maven",
-  "repo.maven.apache.org"  at "https://repo.maven.apache.org/maven2",
-  "hub.spigotmc.org"       at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
-  "oss.sonatype.org"       at "https://oss.sonatype.org/content/repositories/snapshots",
-  "nexus.okkero.com"       at "https://nexus.okkero.com/repository/maven-releases/"
+  "repo.maven.apache.org" at "https://repo.maven.apache.org/maven2",
+  "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
+  "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
+  "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
+  "maven.elmakers.com" at "http://maven.elmakers.com/repository/" // stouma915#5421の環境ではなぜかspigot-apiがダウンロードできないため一応追加
 )
 
 val providedDependencies = Seq(
