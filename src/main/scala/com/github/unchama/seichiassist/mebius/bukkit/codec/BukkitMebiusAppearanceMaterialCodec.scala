@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius.bukkit.codec
 
-import com.github.unchama.seichiassist.mebius.domain.MebiusLevel
+import com.github.unchama.seichiassist.mebius.domain.property.MebiusLevel
 import org.bukkit.Material
 
 object BukkitMebiusAppearanceMaterialCodec {

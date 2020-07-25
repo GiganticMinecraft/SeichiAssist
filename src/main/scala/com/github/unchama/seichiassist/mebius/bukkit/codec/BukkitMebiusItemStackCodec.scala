@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.mebius.bukkit.codec
 
+import com.github.unchama.seichiassist.mebius.domain.property
+import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusProperty}
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusTalks}
-import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel, MebiusProperty}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.{RED, RESET}
@@ -61,7 +62,7 @@ object BukkitMebiusItemStackCodec {
 
     val mebiusName = mebius.getItemMeta.getDisplayName
 
-    Some(MebiusProperty(ownerName, enchantments, mebiusLevel, nickname, mebiusName))
+    Some(property.MebiusProperty(ownerName, enchantments, mebiusLevel, nickname, mebiusName))
   }
 
   private def isMebius(itemStack: ItemStack): Boolean = {

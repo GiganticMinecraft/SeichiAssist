@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.domain
+package com.github.unchama.seichiassist.mebius.domain.property
 
 import cats.effect.IO
 

@@ -7,7 +7,7 @@ import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.mebius.service.MebiusDroppingService
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect

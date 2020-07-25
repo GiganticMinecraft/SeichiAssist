@@ -9,7 +9,8 @@ import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.bukkit.command.MebiusCommandExecutorProvider.Messages
-import com.github.unchama.seichiassist.mebius.domain.{MebiusProperty, MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor.{GREEN, RED, RESET}

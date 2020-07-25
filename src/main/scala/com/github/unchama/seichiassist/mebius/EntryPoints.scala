@@ -10,7 +10,8 @@ import com.github.unchama.seichiassist.mebius.bukkit.command.MebiusCommandExecut
 import com.github.unchama.seichiassist.mebius.bukkit.gateway.BukkitMebiusSpeechGateway
 import com.github.unchama.seichiassist.mebius.bukkit.listeners._
 import com.github.unchama.seichiassist.mebius.bukkit.repository.{PeriodicMebiusSpeechRoutineFiberRepository, SpeechGatewayRepository}
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeechGateway, PropertyModificationMessages}
+import com.github.unchama.seichiassist.mebius.domain.message.PropertyModificationMessages
+import com.github.unchama.seichiassist.mebius.domain.speech.MebiusSpeechGateway
 import org.bukkit.entity.Player
 
 object EntryPoints {

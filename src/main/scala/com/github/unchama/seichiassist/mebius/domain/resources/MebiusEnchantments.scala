@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius.domain.resources
 
-import com.github.unchama.seichiassist.mebius.domain.{MebiusEnchantment, MebiusLevel}
+import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusLevel}
 import org.bukkit.enchantments.Enchantment
 
 object MebiusEnchantments {

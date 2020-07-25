@@ -5,7 +5,7 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusMessages, MebiusTalks}
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration

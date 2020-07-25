@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.mebius.service
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.mebius.domain.MebiusProperty
+import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
 
 import scala.util.Random
 

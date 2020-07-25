@@ -6,7 +6,7 @@ import cats.effect.{Effect, IO, Timer}
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.targetedeffect.DelayEffect
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}

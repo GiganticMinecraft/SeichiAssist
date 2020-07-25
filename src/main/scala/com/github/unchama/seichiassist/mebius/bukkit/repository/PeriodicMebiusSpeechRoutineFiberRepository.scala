@@ -4,7 +4,7 @@ import cats.effect.{Fiber, IO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.mebius.bukkit.routines.PeriodicMebiusSpeechRoutine
-import com.github.unchama.seichiassist.mebius.domain.MebiusSpeechGateway
+import com.github.unchama.seichiassist.mebius.domain.speech.MebiusSpeechGateway
 import org.bukkit.entity.Player
 
 class PeriodicMebiusSpeechRoutineFiberRepository(implicit gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechGateway[IO]],

@@ -1,7 +1,8 @@
-package com.github.unchama.seichiassist.mebius.domain
+package com.github.unchama.seichiassist.mebius.domain.speech
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
 
 import scala.util.Random
 

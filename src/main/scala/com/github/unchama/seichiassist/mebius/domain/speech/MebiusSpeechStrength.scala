@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.domain
+package com.github.unchama.seichiassist.mebius.domain.speech
 
 sealed trait MebiusSpeechStrength
 

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.domain
+package com.github.unchama.seichiassist.mebius.domain.message
 
 /**
  * Mebiusとプレーヤー間のやり取り。
@@ -6,4 +6,4 @@ package com.github.unchama.seichiassist.mebius.domain
  * アイテムに書き込まれたり、レベルアップ時にMebiusとのやり取りが
  * チャットに表示されたりすることを想定している。
  */
-case class MebiusTalk(mebiusMessage: String, playerMessage: String)
+case class MebiusDialogue(mebiusMessage: String, playerMessage: String)

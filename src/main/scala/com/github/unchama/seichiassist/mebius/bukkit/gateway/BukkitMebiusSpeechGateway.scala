@@ -3,7 +3,8 @@ package com.github.unchama.seichiassist.mebius.bukkit.gateway
 import java.util.concurrent.TimeUnit
 
 import cats.effect.{IO, Timer}
-import com.github.unchama.seichiassist.mebius.domain.{MebiusProperty, MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, RepeatedEffect, SequentialEffect, TargetedEffect}

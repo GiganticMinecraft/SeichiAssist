@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit.repository
 
 import cats.effect.{IO, Sync}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
-import com.github.unchama.seichiassist.mebius.domain.MebiusSpeechGateway
+import com.github.unchama.seichiassist.mebius.domain.speech.MebiusSpeechGateway
 import org.bukkit.entity.Player
 
 class SpeechGatewayRepository[F[_] : Sync](implicit gatewayProvider: Player => MebiusSpeechGateway[F])

@@ -4,8 +4,9 @@ import cats.effect.IO
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
+import com.github.unchama.seichiassist.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
-import com.github.unchama.seichiassist.mebius.domain.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength, PropertyModificationMessages}
+import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.mebius.service.MebiusLevellingService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.event.block.BlockBreakEvent
