@@ -65,7 +65,7 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
       .build()
 
     private def concatHeadAndRemainingArgs(args: PartiallyParsedArgs): String =
-      s"${args.parsed.head.toString} ${args.yetToBeParsed.mkString(" ")}"
+      args.parsed.head.toString + " " + args.yetToBeParsed.mkString(" ")
 
     private case class MebiusInteractionTemplate(effectIfMebiusIsNotWorn: TargetedEffect[Player],
                                                  propertyModifier: MebiusProperty => MebiusProperty,
