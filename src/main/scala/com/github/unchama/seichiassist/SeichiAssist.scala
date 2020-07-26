@@ -79,7 +79,8 @@ class SeichiAssist extends JavaPlugin() {
 
   override def onEnable(): Unit = {
     val logger = getLogger
-    implicit val slf4jLogger = new JDK14LoggerFactory().getLogger(logger.getName)
+    // java.util.logging.Loggerの名前はJVM上で一意
+    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
