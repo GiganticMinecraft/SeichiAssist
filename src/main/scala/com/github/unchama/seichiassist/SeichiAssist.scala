@@ -7,7 +7,7 @@ import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
-import com.github.unchama.itemmigration._
+import com.github.unchama.itemmigration.{service, _}
 import com.github.unchama.itemmigration.domain.ItemMigrations
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.menuinventory.MenuHandler
@@ -22,6 +22,7 @@ import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, Ran
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
+import com.github.unchama.seichiassist.infrastructure.migration.loggers.{PersistedItemsMigrationSlf4jLogger, PlayerItemsMigrationSlf4jLogger, WorldLevelMigrationSlf4jLogger}
 import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
@@ -37,6 +38,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
+import org.slf4j.impl.JDK14LoggerFactory
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -74,6 +76,7 @@ class SeichiAssist extends JavaPlugin() {
 
   override def onEnable(): Unit = {
     val logger = getLogger
+    val slf4jLogger = new JDK14LoggerFactory().getLogger(logger.getName)
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -136,12 +139,14 @@ class SeichiAssist extends JavaPlugin() {
       val itemMigrationBatches = List(
         // DB内アイテムのマイグレーション
         ItemMigrationService(
-          new PersistedItemsMigrationVersionRepository()
+          new PersistedItemsMigrationVersionRepository(),
+          new PersistedItemsMigrationSlf4jLogger(slf4jLogger)
         ).runMigration(migrations)(SeichiAssistPersistedItems),
 
         // ワールド内アイテムのマイグレーション
-        ItemMigrationService(
-          new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId)
+        service.ItemMigrationService(
+          new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
+          new WorldLevelMigrationSlf4jLogger(slf4jLogger)
         ).runMigration(migrations)(SeichiAssistWorldLevelData),
       )
 
@@ -152,7 +157,10 @@ class SeichiAssist extends JavaPlugin() {
     // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナー
     val playerItemMigrationControllerListeners: Seq[Listener] = {
       import PluginExecutionContexts.asyncShift
-      val service = ItemMigrationService(new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId))
+      val service = ItemMigrationService(
+        new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
+        new PlayerItemsMigrationSlf4jLogger(slf4jLogger)
+      )
 
       new PlayerItemMigrationEntryPoints(migrations, service).listenersToBeRegistered
     }

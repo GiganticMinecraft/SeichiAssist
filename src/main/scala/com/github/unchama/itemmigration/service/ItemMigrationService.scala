@@ -1,9 +1,10 @@
 package com.github.unchama.itemmigration.service
 
 import cats.effect.Bracket
-import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemMigrationVersionRepository, ItemMigrations}
+import com.github.unchama.itemmigration.domain.{ItemMigrationLogger, ItemMigrationTarget, ItemMigrationVersionRepository, ItemMigrations}
 
-case class ItemMigrationService[F[_], -T <: ItemMigrationTarget[F]](persistence: ItemMigrationVersionRepository[F, T])
+case class ItemMigrationService[F[_], -T <: ItemMigrationTarget[F]](persistence: ItemMigrationVersionRepository[F, T],
+                                                                    logger: ItemMigrationLogger[F, T])
                                                                    (implicit F: Bracket[F, Throwable]) {
 
   def runMigration(migrations: ItemMigrations)(target: T): F[Unit] = {
@@ -13,6 +14,7 @@ case class ItemMigrationService[F[_], -T <: ItemMigrationTarget[F]](persistence:
       for {
         appliedVersions <- persistence.getVersionsAppliedTo(target)(lock)
         migrationsToApply = migrations.yetToBeApplied(appliedVersions)
+        _ <- logger.logMigrationsToBeApplied(migrationsToApply, target)
         _ <-
           if (migrationsToApply.isEmpty) F.unit
           else target.runMigration(migrationsToApply.toSingleConversion)
