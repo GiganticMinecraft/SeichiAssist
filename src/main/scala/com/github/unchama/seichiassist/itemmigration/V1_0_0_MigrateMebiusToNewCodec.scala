@@ -83,15 +83,15 @@ object V1_0_0_MigrateMebiusToNewCodec {
         // プレーヤーUUID解決は同期的な実行を待つ以外選択肢が無い
         .unsafeRunSync()
         .getOrElse {
-          // これは基本起きないはず
-          // 万が一DBからもMojangからも解決できなかった場合ItemStackにエラーを書き込む。
           logger.error(s"メビウス変換にて、${ownerPlayerId}のプレーヤーUUIDが解決できませんでした。")
 
+          // 解決できなかった場合ItemStackにエラーを書き込む。
           clone.setItemMeta {
             val meta = clone.getItemMeta
             meta.setLore {
-              meta.getLore
-                .asScala.append(s"$RESET${DARK_RED}エラー：オーナー名が解決できませんでした。").asJava
+              meta.getLore.asScala
+                .append(s"$RESET${DARK_RED}エラー：所有者が見つかりません。")
+                .asJava
             }
             meta
           }
