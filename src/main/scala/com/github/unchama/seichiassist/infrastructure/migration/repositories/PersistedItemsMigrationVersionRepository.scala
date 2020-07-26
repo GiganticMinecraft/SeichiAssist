@@ -36,7 +36,7 @@ class PersistedItemsMigrationVersionRepository extends ItemMigrationVersionRepos
   override def persistVersionsAppliedTo(target: PersistedItems,
                                         versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[PersistedItems] => IO[Unit] =
     implicit session => IO {
-      val batchParams = versions.map(version => Seq(ItemMigrationVersionNumber.convertToString(version)))
+      val batchParams = versions.map(version => Seq(version.versionString))
 
       sql"""
         insert into seichiassist.item_migration_on_database(version_string, completed_at)

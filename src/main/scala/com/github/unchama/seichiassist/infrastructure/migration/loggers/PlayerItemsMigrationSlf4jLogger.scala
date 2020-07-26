@@ -8,8 +8,7 @@ import org.slf4j.Logger
 class PlayerItemsMigrationSlf4jLogger(logger: Logger) extends ItemMigrationLogger[IO, PlayerInventoriesData] {
 
   override def logMigrationsToBeApplied(versions: ItemMigrations, target: PlayerInventoriesData): IO[Unit] = {
-    val versionsToBeApplied = versions.migrations.map(_.version.mkString("."))
-    val concatenatedVersionString = versionsToBeApplied.mkString(", ")
+    val concatenatedVersionString = versions.migrations.map(_.version.versionString).mkString(", ")
 
     IO {
       logger.info(s"${target.player.getName} (UUID: ${target.player.getUniqueId})のインベントリ内データ変換を適用します…")

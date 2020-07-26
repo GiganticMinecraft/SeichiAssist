@@ -36,7 +36,7 @@ class PlayerItemsMigrationVersionRepository(serverId: String) extends ItemMigrat
                                         versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => IO[Unit] =
     implicit session => IO {
       val batchParams = versions.map { version =>
-        Seq(target.player.getUniqueId.toString, serverId, ItemMigrationVersionNumber.convertToString(version))
+        Seq(target.player.getUniqueId.toString, serverId, version.versionString)
       }
 
       sql"""

@@ -8,8 +8,7 @@ import org.slf4j.Logger
 class PersistedItemsMigrationSlf4jLogger(logger: Logger) extends ItemMigrationLogger[IO, SeichiAssistPersistedItems.type] {
 
   override def logMigrationsToBeApplied(versions: ItemMigrations, target: SeichiAssistPersistedItems.type): IO[Unit] = {
-    val versionsToBeApplied = versions.migrations.map(_.version.mkString("."))
-    val concatenatedVersionString = versionsToBeApplied.mkString(", ")
+    val concatenatedVersionString = versions.migrations.map(_.version.versionString).mkString(", ")
 
     IO {
       logger.info("DBに保存されたインベントリにアイテム変換を適用します…")

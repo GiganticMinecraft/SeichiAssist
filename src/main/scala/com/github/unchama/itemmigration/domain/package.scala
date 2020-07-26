@@ -7,7 +7,5 @@ import org.bukkit.inventory.ItemStack
 package object domain {
   type ItemMigrationVersionComponent = Int Refined NonNegative
 
-  type ItemMigrationVersionNumber = IndexedSeq[ItemMigrationVersionComponent]
-
   type ItemStackConversion = ItemStack => ItemStack
 }
