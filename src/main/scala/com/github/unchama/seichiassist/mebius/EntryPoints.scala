@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius
 
-import cats.effect.{IO, Timer}
+import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingTaskContext}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.SubsystemEntryPoints
@@ -21,9 +21,9 @@ object EntryPoints {
             repeatingTaskContext: RepeatingTaskContext,
             bukkitSyncIOShift: BukkitSyncIOShift): SubsystemEntryPoints = {
     implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
-    implicit val gatewayProvider: Player => MebiusSpeechGateway[IO] = new BukkitMebiusSpeechGateway(_)
-    implicit val getFreshSpeechBlockageState: IO[MebiusSpeechBlockageState[IO]] = IO(new MebiusSpeechBlockageState[IO])
-    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]] = new SpeechServiceRepository[IO]
+    implicit val gatewayProvider: Player => MebiusSpeechGateway[SyncIO] = new BukkitMebiusSpeechGateway(_)
+    implicit val getFreshSpeechBlockageState: SyncIO[MebiusSpeechBlockageState[SyncIO]] = SyncIO(new MebiusSpeechBlockageState[SyncIO])
+    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[SyncIO]] = new SpeechServiceRepository[SyncIO]
 
     val speechRoutineFiberRepository = new PeriodicMebiusSpeechRoutineFiberRepository()
 

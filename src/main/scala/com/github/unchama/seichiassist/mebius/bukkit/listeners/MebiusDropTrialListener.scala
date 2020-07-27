@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
 import java.util.concurrent.TimeUnit
 
-import cats.effect.{IO, Timer}
+import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
@@ -19,7 +19,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import scala.concurrent.duration.FiniteDuration
 
-class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[IO]],
+class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
                               effectEnvironment: SeichiAssistEffectEnvironment,
                               ioTimer: Timer[IO]) extends Listener {
 
@@ -50,7 +50,7 @@ class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[M
             s"$RESET！これからよろしくね！",
           MebiusSpeechStrength.Loud
         )
-      ) >> SequentialEffect(
+      ).toIO >> SequentialEffect(
         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
         DelayEffect(FiniteDuration(500, TimeUnit.MILLISECONDS))
       ).run(player)
