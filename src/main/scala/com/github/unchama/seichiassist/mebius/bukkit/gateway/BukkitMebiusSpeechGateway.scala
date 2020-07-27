@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit.gateway
 
 import java.util.concurrent.TimeUnit
 
-import cats.effect.{ContextShift, IO, Timer}
+import cats.effect.{IO, Timer}
 import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
 import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -12,11 +12,9 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-class BukkitMebiusSpeechGateway(player: Player)
-                               (implicit soundPlayerContext: ExecutionContext) extends MebiusSpeechGateway[IO] {
+class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO]) extends MebiusSpeechGateway[IO] {
 
   override def sendMessage(property: MebiusProperty, message: String): IO[Unit] = {
     MessageEffect(
@@ -28,7 +26,7 @@ class BukkitMebiusSpeechGateway(player: Player)
     def playSoundsInSequence(firstSound: TargetedEffect[Player], secondSound: TargetedEffect[Player]): TargetedEffect[Player] =
       SequentialEffect(
         firstSound,
-        DelayEffect(FiniteDuration(100, TimeUnit.MILLISECONDS))(IO.timer(soundPlayerContext)),
+        DelayEffect(FiniteDuration(100, TimeUnit.MILLISECONDS)),
         secondSound
       )
 
@@ -45,8 +43,6 @@ class BukkitMebiusSpeechGateway(player: Player)
         )
     }
 
-    import cats.implicits._
-
-    effect.run(player).start(IO.contextShift(soundPlayerContext)).as(())
+    effect.run(player).runAsync(_ => IO.unit).toIO
   }
 }
