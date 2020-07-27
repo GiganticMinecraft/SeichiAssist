@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit.routines
 
 import cats.data.NonEmptyList
 import cats.effect.IO
-import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusMessages, MebiusTalks}
@@ -15,17 +15,17 @@ import scala.concurrent.duration.FiniteDuration
 
 object PeriodicMebiusSpeechRoutine {
 
-  def start(player: Player)(implicit serviceRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]],
-                            context: RepeatingTaskContext): IO[Nothing] = {
-    val getRepeatInterval: IO[FiniteDuration] = IO {
-      import scala.concurrent.duration._
+  val getRepeatInterval: IO[FiniteDuration] = IO {
+    import scala.concurrent.duration._
 
-      1.minute
-    }
+    1.minute
+  }
 
+  def unblockAndSpeakTipsOrMessageRandomly(player: Player)
+                                          (implicit serviceRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]]): IO[Unit] = {
     val service = serviceRepository(player)
 
-    val speakTipsOrMessageRandomly: IO[Unit] = for {
+    for {
       helmet <- IO {
         player.getInventory.getHelmet
       }
@@ -46,8 +46,18 @@ object PeriodicMebiusSpeechRoutine {
         }
         .getOrElse(IO.unit)
     } yield ()
+  }.uncancelable
 
-    RepeatingRoutine.permanentRoutine(getRepeatInterval, speakTipsOrMessageRandomly)
+  def start(player: Player)(implicit serviceRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]],
+                            context: RepeatingTaskContext,
+                            bukkitSyncIOShift: BukkitSyncIOShift): IO[Nothing] = {
+    import cats.implicits._
+
+    RepeatingRoutine.permanentRoutine(
+      getRepeatInterval,
+      // このタスクは同期的に実行しないとunblock -> speak -> blockの処理が入れ子になり二回走る可能性がある
+      bukkitSyncIOShift.shift >> unblockAndSpeakTipsOrMessageRandomly(player)
+    )
   }
 
 }
