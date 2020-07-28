@@ -1,5 +1,10 @@
 version: 2.1
 
+executors:
+  sbt-docker:
+    docker:
+      - image: circleci/openjdk:8u181-jdk
+
 commands:
   pull-submodules:
     description: "Pulls any submodules of the checked out repository"
@@ -11,10 +16,6 @@ commands:
             git submodule update --init
 
 anchors:
-  docker:
-    gradle_docker: &sbt_docker
-      docker:
-        - image: circleci/openjdk:8u181-jdk
   workspace:
     save_workspace: &save_workspace
       persist_to_workspace:
@@ -95,7 +96,7 @@ anchors:
 jobs:
   ## 同じブランチ上のビルドキャッシュを使ってビルドを行い、テストする
   incremental_build_and_test:
-    <<: *sbt_docker
+    executor: sbt-docker
     working_directory: ~/repo
     steps:
       - checkout
@@ -117,7 +118,7 @@ jobs:
       - *archive_build_cache
       - *save_build_cache
   full_build_and_test:
-    <<: *sbt_docker
+    executor: sbt-docker
     working_directory: ~/repo
     steps:
       - checkout
@@ -133,14 +134,14 @@ jobs:
       - *save_workspace
       - *save_dependencies
   deploy_debug:
-    <<: *sbt_docker
+    executor: sbt-docker
     working_directory: ~/repo
     steps:
       - *load_workspace
       - run: du -h --max-depth=2 /tmp/workspace/builds
       - run: scp -v -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST
   deploy_production:
-    <<: *sbt_docker
+    executor: sbt-docker
     working_directory: ~/repo
     steps:
       - *load_workspace
