@@ -1,5 +1,15 @@
 version: 2.1
 
+commands:
+  pull-submodules:
+    description: "Pulls any submodules of the checked out repository"
+    steps:
+      run:
+        name: "Pull Submodules"
+        command: |
+          git submodule sync
+          git submodule update --init
+
 anchors:
   docker:
     gradle_docker: &sbt_docker
@@ -14,13 +24,6 @@ anchors:
     load_workspace: &load_workspace
       attach_workspace:
         at: '/tmp/workspace'
-  commands:
-    pull_submodules: &pull_submodules
-      run:
-        name: "Pull Submodules"
-        command: |
-          git submodule sync
-          git submodule update --init
 
   cache:
     dependencies:
@@ -96,7 +99,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - *pull_submodules
+      - pull-submodules
       - *restore_dependencies
       - *restore_build_cache
       - *unarchive_build_cache
@@ -118,7 +121,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - *pull_submodules
+      - pull-submodules
       - *restore_dependencies
 
       - run: du -h --max-depth=2 ~
