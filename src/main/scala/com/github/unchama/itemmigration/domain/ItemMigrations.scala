@@ -17,7 +17,7 @@ case class ItemMigrations(migrations: IndexedSeq[ItemMigration]) {
   def sorted: ItemMigrations = {
     import Ordering.Implicits._
 
-    ItemMigrations(migrations.sortBy(_.version))
+    ItemMigrations(migrations.sortBy(_.version.components.toList.toSeq))
   }
 
   /**

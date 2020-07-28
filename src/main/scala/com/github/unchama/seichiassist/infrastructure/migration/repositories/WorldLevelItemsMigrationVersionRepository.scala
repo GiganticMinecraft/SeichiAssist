@@ -35,7 +35,7 @@ class WorldLevelItemsMigrationVersionRepository(serverId: String) extends ItemMi
                                         versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => IO[Unit] =
     implicit session => IO {
       val batchParams = versions.map { version =>
-        Seq(serverId, ItemMigrationVersionNumber.convertToString(version))
+        Seq(serverId, version.versionString)
       }.toSeq
 
       sql"""

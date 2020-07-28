@@ -40,12 +40,14 @@ val dependenciesToEmbed = Seq(
   "org.scala-lang.modules" %% "scala-collection-contrib" % "0.2.1",
   "org.flywaydb" % "flyway-core" % "5.2.4",
   "org.scalikejdbc" %% "scalikejdbc" % "3.4.2",
-  "ch.qos.logback" % "logback-classic" % "1.2.3",
   "org.typelevel" %% "cats-core" % "2.1.0",
   "org.typelevel" %% "cats-effect" % "2.1.0",
   "eu.timepit" %% "refined" % "0.9.10",
   "com.beachape" %% "enumeratum" % "1.5.13",
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+  "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
+  "org.slf4j" % "slf4j-api" % "1.7.28",
+  "org.slf4j" % "slf4j-jdk14" % "1.7.28",
 )
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)

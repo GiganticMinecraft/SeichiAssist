@@ -1,5 +1,13 @@
 package com.github.unchama.itemmigration.domain
 
+import cats.data.NonEmptyList
+
+case class ItemMigrationVersionNumber(components: NonEmptyList[ItemMigrationVersionComponent]) {
+
+  def versionString: String = components.map(_.value.toString).toList.mkString(".")
+
+}
+
 object ItemMigrationVersionNumber {
 
   import cats.implicits._
@@ -17,10 +25,10 @@ object ItemMigrationVersionNumber {
           .map(component => refineV[NonNegative](component))
           .sequence
           .toOption
-          .map(_.toIndexedSeq)
-      }
-
-  def convertToString(versionNumber: ItemMigrationVersionNumber): String =
-    versionNumber.map(c => c.value.toString).mkString(".")
+      }.flatMap { componentList =>
+      NonEmptyList
+        .fromList(componentList)
+        .map(ItemMigrationVersionNumber(_))
+    }
 
 }
