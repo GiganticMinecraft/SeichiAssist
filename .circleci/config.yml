@@ -124,7 +124,9 @@ commands:
     steps:
       - run: du -h --max-depth=2 /tmp/workspace/builds
       - run: |
-          scp -v -oStrictHostKeyChecking=no -P << parameters.server-port >> /tmp/workspace/builds/**.jar << parameters.server-host >>
+          scp -v -oStrictHostKeyChecking=no \\
+              -P ${<< parameters.server-port >>} \\
+              /tmp/workspace/builds/**.jar ${<< parameters.server-host >>}
 
 jobs:
   ## 同じブランチ上のビルドキャッシュを使ってビルドを行い、テストする
@@ -169,16 +171,16 @@ jobs:
     steps:
       - restore-tmp-workspace
       - deploy-to-servers
-        server-port: $HOST_PORT
-        server-host: $DEBUG_DEPLOY_TARGET_HOST
+        server-port: HOST_PORT
+        server-host: DEBUG_DEPLOY_TARGET_HOST
   deploy_production:
     executor: sbt-docker
     working_directory: ~/repo
     steps:
       - restore-tmp-workspace
       - deploy-to-servers
-        server-port: $HOST_PORT
-        server-host: $PRODUCTION_DEPLOY_TARGET_HOST
+        server-port: HOST_PORT
+        server-host: PRODUCTION_DEPLOY_TARGET_HOST
 
 workflows:
   version: 2
