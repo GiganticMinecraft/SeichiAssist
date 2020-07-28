@@ -96,6 +96,16 @@ commands:
               fi
             fi
 
+  build-artifact-and-copy-to-workspace:
+    steps:
+      - run: du -h --max-depth=2 ~
+      - run: |
+          ./sbt assembly
+          mkdir -p workspace/builds
+          cp target/build/**.jar workspace/builds
+
+
+
 jobs:
   ## 同じブランチ上のビルドキャッシュを使ってビルドを行い、テストする
   incremental_build_and_test:
@@ -109,11 +119,7 @@ jobs:
       - restore-build-cache
       - restore-local-dependencies-timestamps
 
-      - run: du -h --max-depth=2 ~
-      - run: |
-          ./sbt assembly
-          mkdir -p workspace/builds
-          cp target/build/**.jar workspace/builds
+      - build-artifact-and-copy-to-workspace
 
       - save-workspace
       - save-dependency-cache
@@ -124,13 +130,10 @@ jobs:
     steps:
       - checkout
       - pull-submodules
+
       - restore-dependency-cache
 
-      - run: du -h --max-depth=2 ~
-      - run: |
-          ./sbt assembly
-          mkdir -p workspace/builds
-          cp target/build/**.jar workspace/builds
+      - build-artifact-and-copy-to-workspace
 
       - save-workspace
       - save-dependency-cache
