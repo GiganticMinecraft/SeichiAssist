@@ -104,6 +104,17 @@ commands:
           mkdir -p /tmp/workspace/builds
           cp target/build/**.jar /tmp/workspace/builds
 
+  deploy-to-servers:
+    parameters:
+      server-port:
+        type: string
+      server-host:
+        type: string
+    steps:
+      - run: du -h --max-depth=2 /tmp/workspace/builds
+      - run: |
+          scp -v -oStrictHostKeyChecking=no -P << parameters.server-port >> /tmp/workspace/builds/**.jar << parameters.server-host >>
+
 jobs:
   ## 同じブランチ上のビルドキャッシュを使ってビルドを行い、テストする
   incremental_build_and_test:
@@ -140,15 +151,17 @@ jobs:
     working_directory: ~/repo
     steps:
       - restore-tmp-workspace
-      - run: du -h --max-depth=2 /tmp/workspace/builds
-      - run: scp -v -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST
+      - deploy-to-servers
+        server-port: $HOST_PORT
+        server-host: $DEBUG_DEPLOY_TARGET_HOST
   deploy_production:
     executor: sbt-docker
     working_directory: ~/repo
     steps:
       - restore-tmp-workspace
-      - run: du -h --max-depth=2 /tmp/workspace/builds
-      - run: scp -v -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $PRODUCTION_DEPLOY_TARGET_HOST
+      - deploy-to-servers
+        server-port: $HOST_PORT
+        server-host: $PRODUCTION_DEPLOY_TARGET_HOST
 
 workflows:
   version: 2
