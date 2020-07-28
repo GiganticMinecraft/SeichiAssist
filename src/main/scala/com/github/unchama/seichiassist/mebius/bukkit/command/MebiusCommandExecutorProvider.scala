@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.mebius.bukkit.command
 
 import cats.data.Kleisli
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, PartiallyParsedArgs}
@@ -18,7 +18,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 
-class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[IO]]) {
+class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]]) {
 
   import ChildExecutors._
 
@@ -82,7 +82,7 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
                     s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
                     MebiusSpeechStrength.Loud
                   )
-                )
+                ).toIO
               }
             )
           }
@@ -136,7 +136,7 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
                   s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",
                   MebiusSpeechStrength.Loud
                 )
-              )
+              ).toIO
             }
           )
         ).effectOn(player)

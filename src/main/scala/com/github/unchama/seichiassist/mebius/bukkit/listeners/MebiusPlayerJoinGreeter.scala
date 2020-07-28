@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
 import java.util.concurrent.TimeUnit
 
-import cats.effect.{Effect, IO, Timer}
+import cats.effect.{Effect, IO, SyncIO, Timer}
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -15,9 +15,8 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import scala.concurrent.duration.FiniteDuration
 
 class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: SeichiAssistEffectEnvironment,
-                                             speechServiceRepository: PlayerDataRepository[MebiusSpeechService[IO]],
-                                             timer: Timer[IO]
-                                            ) extends Listener {
+                                             speechServiceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
+                                             timer: Timer[IO]) extends Listener {
 
   @EventHandler(priority = EventPriority.MONITOR)
   def onJoin(event: PlayerJoinEvent): Unit = {
@@ -35,7 +34,7 @@ class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: SeichiA
               .makeSpeechIgnoringBlockage(
                 property,
                 MebiusSpeech(s"おかえり${property.ownerNickname}！待ってたよ！", MebiusSpeechStrength.Medium)
-              )
+              ).toIO
         )
       }
   }

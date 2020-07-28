@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
-import cats.effect.IO
+import cats.effect.SyncIO
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
@@ -19,7 +19,7 @@ import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
-class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[IO]],
+class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
                                  effectEnvironment: SeichiAssistEffectEnvironment)
   extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -51,10 +51,10 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
                 )
               )
             }
-          case _ => IO.unit
+          case _ => SyncIO.unit
         }
 
-        effectEnvironment.runEffectAsync("プレーヤー被攻撃時のMebiusのメッセージを再生する", messageProgram)
+        messageProgram.unsafeRunSync()
       case _ =>
     }
   }
@@ -71,11 +71,11 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
         effectEnvironment.runEffectAsync(
           "Mebius破壊時のエフェクトを再生する",
-          MebiusMessages.onMebiusBreak.pickOne.flatMap { message =>
+          MebiusMessages.onMebiusBreak.pickOne.toIO.flatMap { message =>
             speechService.makeSpeechIgnoringBlockage(
               property,
               MebiusSpeech(message.interpolate(property.ownerNickname), MebiusSpeechStrength.Medium)
-            ) >> SequentialEffect(
+            ).toIO >> SequentialEffect(
               MessageEffect(s"${BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(property)}${RESET}が旅立ちました。"),
               FocusedSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
             ).run(player)
@@ -100,17 +100,14 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
     val speechService = serviceRepository(player)
 
-    effectEnvironment.runEffectAsync(
-      "モンスターを倒した際のMebiusのメッセージを再生する",
-      MebiusMessages.onDamageWarnEnemy.pickOne.flatMap { message =>
-        speechService.tryMakingSpeech(
-          mebiusProperty,
-          MebiusSpeech(
-            message.interpolate(mebiusProperty.ownerNickname, killedMonsterName), MebiusSpeechStrength.Medium
-          )
+    MebiusMessages.onDamageWarnEnemy.pickOne.flatMap { message =>
+      speechService.tryMakingSpeech(
+        mebiusProperty,
+        MebiusSpeech(
+          message.interpolate(mebiusProperty.ownerNickname, killedMonsterName), MebiusSpeechStrength.Medium
         )
-      }
-    )
+      )
+    }.unsafeRunSync()
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
@@ -124,14 +121,11 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
     val speechService = serviceRepository(player)
 
-    effectEnvironment.runEffectAsync(
-      "ブロック破壊時のMebiusのメッセージを再生する",
-      MebiusMessages.onBlockBreak.pickOne.flatMap { message =>
-        speechService.tryMakingSpeech(
-          mebiusProperty,
-          MebiusSpeech(message.interpolate(mebiusProperty.ownerNickname), MebiusSpeechStrength.Medium)
-        )
-      }
-    )
+    MebiusMessages.onBlockBreak.pickOne.flatMap { message =>
+      speechService.tryMakingSpeech(
+        mebiusProperty,
+        MebiusSpeech(message.interpolate(mebiusProperty.ownerNickname), MebiusSpeechStrength.Medium)
+      )
+    }.unsafeRunSync()
   }
 }

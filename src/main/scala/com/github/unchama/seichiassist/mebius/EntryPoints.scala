@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.mebius
 
-import cats.effect.{IO, Timer}
-import com.github.unchama.concurrent.RepeatingTaskContext
+import cats.effect.{IO, SyncIO, Timer}
+import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingTaskContext}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.SubsystemEntryPoints
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
@@ -18,11 +18,12 @@ import org.bukkit.entity.Player
 object EntryPoints {
   def wired(implicit effectEnvironment: SeichiAssistEffectEnvironment,
             timer: Timer[IO],
-            repeatingTaskContext: RepeatingTaskContext): SubsystemEntryPoints = {
+            repeatingTaskContext: RepeatingTaskContext,
+            bukkitSyncIOShift: BukkitSyncIOShift): SubsystemEntryPoints = {
     implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
-    implicit val gatewayProvider: Player => MebiusSpeechGateway[IO] = new BukkitMebiusSpeechGateway(_)
-    implicit val getFreshSpeechBlockageState: IO[MebiusSpeechBlockageState[IO]] = IO(new MebiusSpeechBlockageState[IO])
-    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[IO]] = new SpeechServiceRepository[IO]
+    implicit val gatewayProvider: Player => MebiusSpeechGateway[SyncIO] = new BukkitMebiusSpeechGateway(_)
+    implicit val getFreshSpeechBlockageState: SyncIO[MebiusSpeechBlockageState[SyncIO]] = SyncIO(new MebiusSpeechBlockageState[SyncIO])
+    implicit val gatewayRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[SyncIO]] = new SpeechServiceRepository[SyncIO]
 
     val speechRoutineFiberRepository = new PeriodicMebiusSpeechRoutineFiberRepository()
 

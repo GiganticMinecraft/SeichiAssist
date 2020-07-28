@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit.gateway
 
 import java.util.concurrent.TimeUnit
 
-import cats.effect.{IO, Timer}
+import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
 import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeechGateway, MebiusSpeechStrength}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -14,15 +14,15 @@ import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration
 
-class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO]) extends MebiusSpeechGateway[IO] {
+class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO]) extends MebiusSpeechGateway[SyncIO] {
 
-  override def sendMessage(property: MebiusProperty, message: String): IO[Unit] = {
+  override def sendMessage(property: MebiusProperty, message: String): SyncIO[Unit] = {
     MessageEffect(
       s"$RESET<${property.mebiusName}$RESET> $message"
-    ).run(player)
+    ).run(player).runAsync(_ => IO.unit)
   }
 
-  override def playSpeechSound(strength: MebiusSpeechStrength): IO[Unit] = {
+  override def playSpeechSound(strength: MebiusSpeechStrength): SyncIO[Unit] = {
     def playSoundsInSequence(firstSound: TargetedEffect[Player], secondSound: TargetedEffect[Player]): TargetedEffect[Player] =
       SequentialEffect(
         firstSound,
@@ -43,6 +43,6 @@ class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO]) exten
         )
     }
 
-    effect.run(player)
+    effect.run(player).runAsync(_ => IO.unit)
   }
 }

@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
-import cats.effect.IO
+import cats.effect.SyncIO
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -12,7 +12,7 @@ import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
-class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[IO]],
+class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
                                  effectEnvironment: SeichiAssistEffectEnvironment,
                                  messages: PropertyModificationMessages) extends Listener {
 
@@ -38,7 +38,7 @@ class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepositor
             MebiusTalks.at(newMebiusProperty.level).mebiusMessage,
             MebiusSpeechStrength.Loud
           )
-        ) >> MessageEffect(messages.onLevelUp(oldMebiusProperty, newMebiusProperty)).run(player)
+        ).toIO >> MessageEffect(messages.onLevelUp(oldMebiusProperty, newMebiusProperty)).run(player)
       )
     }
   }

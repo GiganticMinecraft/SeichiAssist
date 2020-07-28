@@ -1,18 +1,18 @@
 package com.github.unchama.seichiassist.mebius.bukkit.repository
 
-import cats.effect.{Effect, IO}
+import cats.effect.{Effect, IO, Sync, SyncIO}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeechBlockageState, MebiusSpeechGateway}
 import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import org.bukkit.entity.Player
 
-class SpeechServiceRepository[F[_] : Effect](implicit
-                                             getFreshBlockageState: F[MebiusSpeechBlockageState[F]],
-                                             gatewayProvider: Player => MebiusSpeechGateway[F])
+class SpeechServiceRepository[F[_] : Sync](implicit
+                                           getFreshBlockageState: SyncIO[MebiusSpeechBlockageState[F]],
+                                           gatewayProvider: Player => MebiusSpeechGateway[F])
   extends JoinToQuitPlayerDataRepository[MebiusSpeechService[F]] {
 
   override protected def initialValue(player: Player): MebiusSpeechService[F] = {
-    val freshBlockingState = Effect[F].toIO(getFreshBlockageState).unsafeRunSync()
+    val freshBlockingState = getFreshBlockageState.unsafeRunSync()
     new MebiusSpeechService[F](gatewayProvider(player), freshBlockingState)
   }
 
