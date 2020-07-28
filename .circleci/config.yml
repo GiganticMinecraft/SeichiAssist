@@ -170,17 +170,17 @@ jobs:
     working_directory: ~/repo
     steps:
       - restore-tmp-workspace
-      - deploy-to-servers
-        server-port: HOST_PORT
-        server-host: DEBUG_DEPLOY_TARGET_HOST
+      - deploy-to-servers:
+          server-port: HOST_PORT
+          server-host: DEBUG_DEPLOY_TARGET_HOST
   deploy_production:
     executor: sbt-docker
     working_directory: ~/repo
     steps:
       - restore-tmp-workspace
-      - deploy-to-servers
-        server-port: HOST_PORT
-        server-host: PRODUCTION_DEPLOY_TARGET_HOST
+      - deploy-to-servers:
+          server-port: HOST_PORT
+          server-host: PRODUCTION_DEPLOY_TARGET_HOST
 
 workflows:
   version: 2
