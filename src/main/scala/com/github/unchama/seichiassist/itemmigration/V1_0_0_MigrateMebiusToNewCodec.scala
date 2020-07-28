@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.itemmigration
 
+import cats.data.NonEmptyList
 import cats.effect.IO
-import com.github.unchama.itemmigration.domain.ItemMigration
+import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.itemmigration.V1_0_0_MigrateMebiusToNewCodec.OldBukkitMebiusItemStackCodec.OldMebiusRawProperty
@@ -114,7 +115,7 @@ object V1_0_0_MigrateMebiusToNewCodec {
   }
 
   def migration(implicit uuidRepository: UuidRepository[IO], logger: Logger): ItemMigration = ItemMigration(
-    IndexedSeq(1, 0, 0),
+    ItemMigrationVersionNumber(NonEmptyList.of(1, 0, 0)),
     MigrationHelper.delegateConversionForContainers(migrationFunction)
   )
 }
