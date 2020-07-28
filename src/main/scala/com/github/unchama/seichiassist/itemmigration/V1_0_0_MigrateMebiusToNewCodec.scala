@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.itemmigration
 
-import cats.data.NonEmptyList
 import cats.effect.IO
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import com.github.unchama.itemmigration.util.MigrationHelper
@@ -115,7 +114,7 @@ object V1_0_0_MigrateMebiusToNewCodec {
   }
 
   def migration(implicit uuidRepository: UuidRepository[IO], logger: Logger): ItemMigration = ItemMigration(
-    ItemMigrationVersionNumber(NonEmptyList.of(1, 0, 0)),
+    ItemMigrationVersionNumber(1, 0, 0),
     MigrationHelper.delegateConversionForContainers(migrationFunction)
   )
 }
