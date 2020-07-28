@@ -14,6 +14,11 @@ object ItemMigrationVersionNumber {
   import eu.timepit.refined._
   import eu.timepit.refined.numeric.NonNegative
 
+  def apply(versionHead: ItemMigrationVersionComponent,
+            versionRest: ItemMigrationVersionComponent*): ItemMigrationVersionNumber = {
+    ItemMigrationVersionNumber(NonEmptyList.of(versionHead, versionRest: _*))
+  }
+
   def fromString(string: String): Option[ItemMigrationVersionNumber] =
     string
       .split('.')
