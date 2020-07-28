@@ -4,11 +4,11 @@ commands:
   pull-submodules:
     description: "Pulls any submodules of the checked out repository"
     steps:
-      run:
-        name: "Pull Submodules"
-        command: |
-          git submodule sync
-          git submodule update --init
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule sync
+            git submodule update --init
 
 anchors:
   docker:
