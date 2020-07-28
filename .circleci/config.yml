@@ -18,7 +18,7 @@ commands:
   save-workspace:
     steps:
       - persist_to_workspace:
-          root: ./workspace
+          root: /tmp/workspace
           paths:
             - '*'
   load-workspace:
@@ -101,10 +101,8 @@ commands:
       - run: du -h --max-depth=2 ~
       - run: |
           ./sbt assembly
-          mkdir -p workspace/builds
-          cp target/build/**.jar workspace/builds
-
-
+          mkdir -p /tmp/workspace/builds
+          cp target/build/**.jar /tmp/workspace/builds
 
 jobs:
   ## 同じブランチ上のビルドキャッシュを使ってビルドを行い、テストする
