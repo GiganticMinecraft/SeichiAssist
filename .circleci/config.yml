@@ -124,8 +124,8 @@ commands:
     steps:
       - run: du -h --max-depth=2 /tmp/workspace/builds
       - run: |
-          scp -v -oStrictHostKeyChecking=no \\
-              -P ${<< parameters.server-port >>} \\
+          scp -v -oStrictHostKeyChecking=no \
+              -P ${<< parameters.server-port >>} \
               /tmp/workspace/builds/**.jar ${<< parameters.server-host >>}
 
 jobs:
