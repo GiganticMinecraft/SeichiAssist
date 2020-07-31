@@ -1,6 +1,6 @@
 package com.github.unchama.util
 
-import cats.effect.IO
+import cats.effect.Sync
 
 class MillisecondTimer private() {
   private var startTime: Long = 0
@@ -25,17 +25,16 @@ object MillisecondTimer {
     timer
   }
 
-  def time[R](program: => R)(message: String): R = {
-    val t = getInitializedTimerInstance
-    val result = program
-    t.sendLapTimeMessage(message)
-    result
-  }
+  import cats.implicits._
 
-  def timeIO[R](program: IO[R])(message: String): IO[R] =
+  def timeF[F[_] : Sync, R](program: F[R])(message: String): F[R] =
     for {
-      t <- IO { getInitializedTimerInstance }
+      timer <- Sync[F].delay {
+        getInitializedTimerInstance
+      }
       result <- program
-      _ <- IO { t.sendLapTimeMessage(message) }
+      _ <- Sync[F].delay {
+        timer.sendLapTimeMessage(message)
+      }
     } yield result
 }

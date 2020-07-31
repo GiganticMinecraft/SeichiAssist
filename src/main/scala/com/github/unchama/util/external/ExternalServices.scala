@@ -10,7 +10,7 @@ object ExternalServices {
 
   def getChunkCoordinates(chunkSearchCommand: String)(world: World): IO[Seq[(Int, Int)]] =
   // 普通、この検索にはかなりの時間がかかるので要した時間をログに表示する
-    MillisecondTimer.timeIO(IO {
+    MillisecondTimer.timeF(IO {
       val command = s"$chunkSearchCommand ${WorldUtil.getAbsoluteWorldFolder(world)}"
       val result =
         SearchResult.parseFrom(Runtime.getRuntime.exec(command).getInputStream)
