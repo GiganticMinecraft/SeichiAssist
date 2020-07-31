@@ -12,31 +12,36 @@ object BukkitMebiusItemStackCodec {
 
   import scala.jdk.CollectionConverters._
 
-  private val mebiusLoreHead = List(
-    s"$RESET",
-    s"$RESET${AQUA}初心者をサポートする不思議なヘルメット。",
-    s"$RESET${AQUA}整地により成長する。",
-    ""
-  )
+  //noinspection DuplicatedCode
+  object LoreConstants {
+    val mebiusLoreHead = List(
+      s"$RESET",
+      s"$RESET${AQUA}初心者をサポートする不思議なヘルメット。",
+      s"$RESET${AQUA}整地により成長する。",
+      ""
+    )
 
-  private val unbreakableLoreRow = s"$RESET${AQUA}耐久無限"
+    val unbreakableLoreRow = s"$RESET${AQUA}耐久無限"
 
-  private val mebiusNameDisplayPrefix = s"$RESET$GOLD$BOLD"
+    val mebiusNameDisplayPrefix = s"$RESET$GOLD$BOLD"
 
-  private val ownerLoreRowPrefix = s"$RESET${DARK_GREEN}所有者："
-  private val levelLoreRowPrefix = s"$RESET$RED${BOLD}アイテムLv. "
+    val ownerLoreRowPrefix = s"$RESET${DARK_GREEN}所有者："
+    val levelLoreRowPrefix = s"$RESET$RED${BOLD}アイテムLv. "
 
-  private val levelUpMebiusMessageLoreRowPrefix = s"$RESET$GOLD$ITALIC"
-  private val levelUpPlayerMessageLoreRowPrefix = s"$RESET$GRAY$ITALIC"
-
-  def isMebius(itemStack: ItemStack): Boolean = {
-    val meta = if (itemStack != null) itemStack.getItemMeta else return false
-
-    meta.hasLore && {
-      val lore = meta.getLore.asScala
-      mebiusLoreHead.forall(lore.contains)
-    }
+    val levelUpMebiusMessageLoreRowPrefix = s"$RESET$GOLD$ITALIC"
+    val levelUpPlayerMessageLoreRowPrefix = s"$RESET$GRAY$ITALIC"
   }
+
+  object NBTTagConstants {
+    val typeIdTag = "mebiusTypeId"
+    val ownerNameTag = "mebiusOwnerName"
+    val ownerUuidTag = "mebiusOwnerUUID"
+    val levelTag = "mebiusLevel"
+    val ownerNicknameTag = "mebiusOwnerNickname"
+    val nameTag = "mebiusName"
+  }
+
+  def isMebius(itemStack: ItemStack): Boolean = new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) != 0
 
   /**
    * (必ずしも有効な`MebiusProperty`を持つとは限らない)実体から `ItemStack` をデコードする。
@@ -44,21 +49,12 @@ object BukkitMebiusItemStackCodec {
   def decodeMebiusProperty(itemStack: ItemStack): Option[MebiusProperty] = {
     val mebius = if (isMebius(itemStack)) itemStack else return None
 
-    val nickname = {
-      val nbtItem = new NBTItem(mebius)
-      val nicknameField = nbtItem.getString("nickname")
+    val nbtItem = new NBTItem(mebius)
 
-      if (nicknameField.isEmpty) None else Some(nicknameField)
-    }
+    import NBTTagConstants._
 
-    val mebiusLevel = MebiusLevel {
-      mebius.getItemMeta.getLore.get(4).replace(levelLoreRowPrefix, "").toInt
-    }
-
-    val ownerName = {
-      mebius.getItemMeta.getLore.get(8).replaceFirst(ownerLoreRowPrefix, "")
-    }
-
+    val ownerName = nbtItem.getString(ownerNameTag)
+    val ownerUuid = nbtItem.getString(ownerUuidTag)
     val enchantments = {
       MebiusEnchantments.list
         .map { case mebiusEnchantment@MebiusEnchantment(enchantment, _, _, _) =>
@@ -67,10 +63,11 @@ object BukkitMebiusItemStackCodec {
         .filter { case (e, l) => 1 <= l && l <= e.maxLevel }
         .toMap
     }
+    val mebiusLevel = MebiusLevel(nbtItem.getInteger(levelTag))
+    val ownerNickname = Some(nbtItem.getString(ownerNicknameTag)).filter(_.nonEmpty)
+    val mebiusName = nbtItem.getString(nameTag)
 
-    val mebiusName = mebius.getItemMeta.getDisplayName
-
-    Some(property.MebiusProperty(ownerName, enchantments, mebiusLevel, nickname, mebiusName))
+    Some(property.MebiusProperty(ownerName, ownerUuid, enchantments, mebiusLevel, ownerNickname, mebiusName))
   }
 
   /**
@@ -99,6 +96,8 @@ object BukkitMebiusItemStackCodec {
         meta.setLore {
           val talk = MebiusTalks.at(property.level)
 
+          import LoreConstants._
+
           mebiusLoreHead
             .concat(List(
               s"$levelLoreRowPrefix${property.level.value}",
@@ -122,20 +121,27 @@ object BukkitMebiusItemStackCodec {
     {
       val nbtItem = new NBTItem(item)
 
-      property.ownerNicknameOverride match {
-        case Some(ownerNickname) => nbtItem.setString("nickname", ownerNickname)
-        case None =>
-      }
+      import NBTTagConstants._
+
+      nbtItem.setByte(typeIdTag, 1.toByte)
+      nbtItem.setString(ownerNameTag, property.ownerPlayerId)
+      nbtItem.setString(ownerUuidTag, property.ownerUuid)
+      nbtItem.setInteger(levelTag, property.level.value)
+      property.ownerNicknameOverride.foreach(nbtItem.setString(ownerNicknameTag, _))
+      nbtItem.setString(nameTag, property.mebiusName)
 
       nbtItem.getItem
     }
   }
 
-  def displayNameOfMaterializedItem(property: MebiusProperty): String =
+  def displayNameOfMaterializedItem(property: MebiusProperty): String = {
+    import LoreConstants._
+
     mebiusNameDisplayPrefix + property.mebiusName
+  }
 
   def ownershipMatches(player: Player)(property: MebiusProperty): Boolean =
-    property.ownerPlayerId == player.getName
+    property.ownerUuid == player.getUniqueId.toString
 
   def decodePropertyOfOwnedMebius(player: Player)(itemStack: ItemStack): Option[MebiusProperty] =
     decodeMebiusProperty(itemStack).filter(ownershipMatches(player))
