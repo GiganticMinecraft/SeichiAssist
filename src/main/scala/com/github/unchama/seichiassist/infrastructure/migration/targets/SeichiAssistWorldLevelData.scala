@@ -20,10 +20,10 @@ private object DelegatedImpls {
     }
   }
 
-  val getWorldChunkCoordinates: World => IO[Seq[(Int, Int)]] =
+  def getWorldChunkCoordinates(implicit logger: Logger): World => IO[Seq[(Int, Int)]] =
     ExternalServices.getChunkCoordinates(SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
 }
 
-class SeichiAssistWorldLevelData(logger: Logger) extends WorldLevelData(
-  DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates, logger
+class SeichiAssistWorldLevelData(implicit logger: Logger) extends WorldLevelData(
+  DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates
 )

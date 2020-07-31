@@ -19,8 +19,8 @@ import org.slf4j.Logger
  * @param enumerateChunkCoordinates ワールド内で変換すべきチャンク座標を列挙するプログラム
  */
 case class WorldLevelData(getWorlds: IO[IndexedSeq[World]],
-                          enumerateChunkCoordinates: World => IO[Seq[(Int, Int)]],
-                          metricsLogger: Logger) extends ItemMigrationTarget[IO] {
+                          enumerateChunkCoordinates: World => IO[Seq[(Int, Int)]])
+                         (implicit metricsLogger: Logger) extends ItemMigrationTarget[IO] {
 
   override def runMigration(conversion: ItemStackConversion): IO[Unit] = {
     import cats.implicits._
