@@ -38,6 +38,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
+import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 
 import scala.collection.JavaConverters._
@@ -76,7 +77,7 @@ class SeichiAssist extends JavaPlugin() {
 
   override def onEnable(): Unit = {
     val logger = getLogger
-    val slf4jLogger = new JDK14LoggerFactory().getLogger(logger.getName)
+    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -147,7 +148,7 @@ class SeichiAssist extends JavaPlugin() {
         service.ItemMigrationService(
           new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
           new WorldLevelMigrationSlf4jLogger(slf4jLogger)
-        ).runMigration(migrations)(SeichiAssistWorldLevelData),
+        ).runMigration(migrations)(new SeichiAssistWorldLevelData()),
       )
 
       import cats.implicits._

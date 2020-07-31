@@ -5,12 +5,15 @@ import chunk_search.{Chunk, ChunkCoord, SearchResult}
 import com.github.unchama.util.MillisecondTimer
 import com.github.unchama.util.bukkit.WorldUtil
 import org.bukkit.World
+import org.slf4j.Logger
 
 object ExternalServices {
 
-  def getChunkCoordinates(chunkSearchCommand: String)(world: World): IO[Seq[(Int, Int)]] =
-  // 普通、この検索にはかなりの時間がかかるので要した時間をログに表示する
-    MillisecondTimer.timeIO(IO {
+  def getChunkCoordinates(chunkSearchCommand: String)
+                         (world: World)
+                         (implicit logger: Logger): IO[Seq[(Int, Int)]] = {
+    // 普通、この検索にはかなりの時間がかかるので要した時間をログに表示する
+    MillisecondTimer.timeF(IO {
       val command = s"$chunkSearchCommand ${WorldUtil.getAbsoluteWorldFolder(world)}"
       val result =
         SearchResult.parseFrom(Runtime.getRuntime.exec(command).getInputStream)
@@ -25,5 +28,6 @@ object ExternalServices {
           }
       result
     })(s"${world.getName}内のチャンクを検索しました。")
+  }
 
 }
