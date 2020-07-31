@@ -5,6 +5,7 @@ import com.github.unchama.itemmigration.targets.WorldLevelData
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.external.{ExternalPlugins, ExternalServices}
 import org.bukkit.World
+import org.slf4j.Logger
 
 private object DelegatedImpls {
   val getWorlds: IO[IndexedSeq[World]] = {
@@ -19,8 +20,10 @@ private object DelegatedImpls {
     }
   }
 
-  val getWorldChunkCoordinates: World => IO[Seq[(Int, Int)]] =
+  def getWorldChunkCoordinates(implicit logger: Logger): World => IO[Seq[(Int, Int)]] =
     ExternalServices.getChunkCoordinates(SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
 }
 
-object SeichiAssistWorldLevelData extends WorldLevelData(DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates)
+class SeichiAssistWorldLevelData(implicit logger: Logger) extends WorldLevelData(
+  DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates
+)

@@ -155,7 +155,7 @@ class SeichiAssist extends JavaPlugin() {
         service.ItemMigrationService(
           new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
           new WorldLevelMigrationSlf4jLogger(slf4jLogger)
-        ).runMigration(migrations)(SeichiAssistWorldLevelData),
+        ).runMigration(migrations)(new SeichiAssistWorldLevelData()),
       )
 
       import cats.implicits._
