@@ -42,6 +42,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
+import scalikejdbc.DB
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -143,7 +144,7 @@ class SeichiAssist extends JavaPlugin() {
       SeichiAssistItemMigrations.seq
     }
 
-    {
+    DB.localTx { implicit session =>
       val itemMigrationBatches = List(
         // DB内アイテムのマイグレーション
         ItemMigrationService(
