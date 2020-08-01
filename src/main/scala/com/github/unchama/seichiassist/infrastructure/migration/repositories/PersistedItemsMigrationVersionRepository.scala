@@ -10,16 +10,15 @@ class PersistedItemsMigrationVersionRepository(implicit dbSession: DBSession)
 
   private type PersistedItems = SeichiAssistPersistedItems.type
 
-  override type PersistenceLock[TInstance <: PersistedItems] = DBSession
+  override type PersistenceLock[TInstance <: PersistedItems] = Unit
 
   override def lockVersionPersistence(target: PersistedItems): Resource[IO, PersistenceLock[PersistedItems]] = {
     Resource.make(IO {
       // ロックを取得するときは利用するテーブルすべてをロックしなければならない
       sql"lock tables seichiassist.item_migration_on_database write, seichiassist.playerdata write".update().apply()
 
-      // 固定されたDBSessionであるdbSessionをリソースとして提供する
-      // これでgetVersionsAppliedTo等がこのセッション中でロックが有効な時に呼ばれるのが保証できるので良い
-      dbSession
+      // このリソースを使用する際にはロックが取れているというのを保証すればよいため、リソースの実体は無くて良い
+      ()
     })(_ => IO {
       sql"unlock tables".update().apply()
     })
