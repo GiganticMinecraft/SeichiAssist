@@ -16,22 +16,30 @@ object HatCommand {
     .execution { context =>
       val sender = context.sender
 
-      if (sender.isInstanceOf[Player]) {
-        val helmet = sender.getInventory.getHelmet
-        val itemInMainHand = sender.getInventory.getItemInMainHand
-        if (itemInMainHand == null || itemInMainHand.getType == Material.AIR)
-          MessageEffect(s"${RED}メインハンドにアイテムを持ってください。")
-        else {
-          if (helmet == null || helmet.getType == Material.AIR) {
-            sender.getInventory.setHelmet(itemInMainHand)
-            sender.getInventory.setItemInMainHand(new ItemStack(Material.AIR))
-          } else {
-            sender.getInventory.setHelmet(itemInMainHand)
-            sender.getInventory.setItemInMainHand(helmet)
-          }
-          MessageEffect(s"${GREEN}手に持っているアイテムをかぶりました。")
+      val helmet = sender.getInventory.getHelmet
+      val itemInMainHand = sender.getInventory.getItemInMainHand
+      if (itemInMainHand == null || itemInMainHand.getType == Material.AIR)
+        MessageEffect(s"${RED}メインハンドにアイテムを持ってください。")
+      else {
+        import com.github.unchama.targetedeffect._
+
+        if (helmet == null || helmet.getType == Material.AIR) {
+          val effect: IO[Unit] =
+            IO {
+              sender.getInventory.setHelmet(itemInMainHand)
+              sender.getInventory.setItemInMainHand(new ItemStack(Material.AIR))
+            }
+          IO.pure(effect)
+        } else {
+          val effect: IO[Unit] =
+            IO {
+              sender.getInventory.setHelmet(itemInMainHand)
+              sender.getInventory.setItemInMainHand(helmet)
+            }
+          IO.pure(effect)
         }
-      } else MessageEffect(s"${RED}コンソールからは実行できません。")
+        MessageEffect(s"${GREEN}手に持っているアイテムをかぶりました。")
+      }
 
       IO(TargetedEffect.emptyEffect)
     }
