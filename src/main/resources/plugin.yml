@@ -72,6 +72,11 @@ commands:
     usage: /<command> <finish/amount/endless>
     permission-message: *denied
     permission: multibuildplugin.build
+  hat:
+    description: Wear the item in hand
+    usage: /hat
+    permission-message: *denied
+    permission: multiseichiplugin.hat
 
 permissions:
   multiseichiplugin.*:
@@ -96,6 +101,7 @@ permissions:
       - multiseichiplugin.gtfever
       - multiseichiplugin.minehead
       - multiseichiplugin.x-transfer
+      - multiseichiplugin.hat
       - multibuildplugin.build
   multiseichiplugin.event:
     default: op
@@ -103,3 +109,6 @@ permissions:
     default: not op
   multiseichiplugin.mebius:
     default: not op
+  multiseichiplugin.hat:
+    description: Permission to use /hat
+    default: true

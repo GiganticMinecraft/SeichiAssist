@@ -212,6 +212,7 @@ class SeichiAssist extends JavaPlugin() {
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
+      "hat" -> HatCommand.executor
     )
       .concat(mebiusSystem.commandsToBeRegistered)
       .foreach {
