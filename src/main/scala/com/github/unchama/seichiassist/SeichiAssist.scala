@@ -33,13 +33,14 @@ import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
-import com.github.unchama.util.ActionStatus
+import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
+import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 import scalikejdbc.DB
@@ -112,30 +113,23 @@ class SeichiAssist extends JavaPlugin() {
       import config._
       ScalikeJDBCConfiguration.initializeConnectionPool(s"$getURL/$getDB", getID, getPW)
       ScalikeJDBCConfiguration.initializeGlobalConfigs()
-    }
 
-    try {
-      SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
-        SeichiAssist.seichiAssistConfig.getURL, SeichiAssist.seichiAssistConfig.getDB,
-        SeichiAssist.seichiAssistConfig.getID, SeichiAssist.seichiAssistConfig.getPW
+      /*
+       * Flywayクラスは、ロード時にstaticフィールドの初期化処理でJavaUtilLogCreatorをContextClassLoader経由で
+       * インスタンス化を試みるが、ClassNotFoundExceptionを吐いてしまう。これはSpigotが使用しているクラスローダーが
+       * ContextClassLoaderに指定されていないことに起因する。
+       *
+       * 明示的にプラグインクラスを読み込んだクラスローダーを使用することで正常に読み込みが完了する。
+       */
+      ClassUtils.withThreadContextClassLoaderAs(
+        classOf[SeichiAssist].getClassLoader,
+        () => Flyway.configure.dataSource(getURL, getID, getPW)
+          .baselineOnMigrate(true)
+          .locations("db/migration", "com/github/unchama/seichiassist/database/migrations")
+          .baselineVersion("1.0.0")
+          .schemas("flyway_managed_schema")
+          .load.migrate
       )
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-        logger.severe("データベース初期化に失敗しました。サーバーを停止します…")
-        Bukkit.shutdown()
-    }
-
-    //mysqlからガチャデータ読み込み
-    if (!SeichiAssist.databaseGateway.gachaDataManipulator.loadGachaData()) {
-      logger.severe("ガチャデータのロードに失敗しました")
-      Bukkit.shutdown()
-    }
-
-    //mysqlからMineStack用ガチャデータ読み込み
-    if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
-      logger.severe("MineStack用ガチャデータのロードに失敗しました")
-      Bukkit.shutdown()
     }
 
     val migrations: ItemMigrations = {
@@ -161,6 +155,30 @@ class SeichiAssist extends JavaPlugin() {
 
       import cats.implicits._
       itemMigrationBatches.sequence.unsafeRunSync()
+    }
+
+    try {
+      SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
+        SeichiAssist.seichiAssistConfig.getURL, SeichiAssist.seichiAssistConfig.getDB,
+        SeichiAssist.seichiAssistConfig.getID, SeichiAssist.seichiAssistConfig.getPW
+      )
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+        logger.severe("データベース初期化に失敗しました。サーバーを停止します…")
+        Bukkit.shutdown()
+    }
+
+    //mysqlからガチャデータ読み込み
+    if (!SeichiAssist.databaseGateway.gachaDataManipulator.loadGachaData()) {
+      logger.severe("ガチャデータのロードに失敗しました")
+      Bukkit.shutdown()
+    }
+
+    //mysqlからMineStack用ガチャデータ読み込み
+    if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
+      logger.severe("MineStack用ガチャデータのロードに失敗しました")
+      Bukkit.shutdown()
     }
 
     // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナー
