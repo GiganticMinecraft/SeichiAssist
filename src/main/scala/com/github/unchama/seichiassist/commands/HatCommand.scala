@@ -9,19 +9,18 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 import org.bukkit.Material
+import org.bukkit.entity.Player
 
 object HatCommand {
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val sender = context.sender
-      val args = context.args.yetToBeParsed
 
-      if (args.size != 0) sender.sendMessage(s"${RED}コマンドの使用法が間違っています。")
-      else {
-        val helmet: ItemStack = sender.getInventory.getHelmet
-        val itemInMainHand: ItemStack = sender.getInventory.getItemInMainHand
+      if (sender.isInstanceOf[Player]) {
+        val helmet = sender.getInventory.getHelmet
+        val itemInMainHand = sender.getInventory.getItemInMainHand
         if (itemInMainHand == null || itemInMainHand.getType == Material.AIR)
-          sender.sendMessage(s"${RED}メインハンドにアイテムを持ってください。")
+          MessageEffect(s"${RED}メインハンドにアイテムを持ってください。")
         else {
           if (helmet == null || helmet.getType == Material.AIR) {
             sender.getInventory.setHelmet(itemInMainHand)
@@ -30,9 +29,9 @@ object HatCommand {
             sender.getInventory.setHelmet(itemInMainHand)
             sender.getInventory.setItemInMainHand(helmet)
           }
-          sender.sendMessage(s"${GREEN}手に持っているアイテムをかぶりました。")
+          MessageEffect(s"${GREEN}手に持っているアイテムをかぶりました。")
         }
-      }
+      } else MessageEffect(s"${RED}コンソールからは実行できません。")
 
       IO(TargetedEffect.emptyEffect)
     }
