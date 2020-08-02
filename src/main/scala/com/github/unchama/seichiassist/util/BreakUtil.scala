@@ -89,7 +89,9 @@ object BreakUtil {
     checkTarget.getType match {
       case Material.CHEST | Material.TRAPPED_CHEST =>
         if (!SeichiAssist.playermap(player.getUniqueId).chestflag) {
-          player.sendMessage(s"${RED}スキルでのチェスト破壊は無効化されています")
+          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています")
+            .run(player)
+            .unsafeRunSync()
           true
         } else if (!ManagedWorld.fromBukkitWorld(player.getWorld).exists(_.isSeichi)) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です")
