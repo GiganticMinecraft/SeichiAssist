@@ -12,7 +12,7 @@ class WorldLevelItemsMigrationVersionRepository(serverId: String) extends ItemMi
     /**
      * サーバーIDが一意なら更新が一サーバーIDに対して一個しか走らないためロックは不要
      */
-    Resource.pure(())
+    Resource.pure[IO, Unit](())
   }
 
   override def getVersionsAppliedTo(target: WorldLevelData): PersistenceLock[target.type] => IO[Set[ItemMigrationVersionNumber]] =

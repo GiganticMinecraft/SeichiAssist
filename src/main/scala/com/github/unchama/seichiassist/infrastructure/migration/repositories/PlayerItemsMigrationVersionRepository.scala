@@ -12,7 +12,7 @@ class PlayerItemsMigrationVersionRepository(serverId: String) extends ItemMigrat
     /**
      * プレーヤーは単一サーバーに1人しか存在しないためロックは不要
      */
-    Resource.pure(())
+    Resource.pure[IO, Unit](())
   }
 
   override def getVersionsAppliedTo(target: PlayerInventoriesData): PersistenceLock[target.type] => IO[Set[ItemMigrationVersionNumber]] =

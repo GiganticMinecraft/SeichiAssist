@@ -6,9 +6,9 @@ import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAs
 import scalikejdbc._
 
 class PersistedItemsMigrationVersionRepository(implicit dbSession: DBSession)
-  extends ItemMigrationVersionRepository[IO, SeichiAssistPersistedItems.type] {
+  extends ItemMigrationVersionRepository[IO, SeichiAssistPersistedItems] {
 
-  private type PersistedItems = SeichiAssistPersistedItems.type
+  private type PersistedItems = SeichiAssistPersistedItems
 
   override type PersistenceLock[TInstance <: PersistedItems] = Unit
 

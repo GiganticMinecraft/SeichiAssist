@@ -5,10 +5,10 @@ import com.github.unchama.itemmigration.domain.{ItemMigrationLogger, ItemMigrati
 import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAssistPersistedItems
 import org.slf4j.Logger
 
-class PersistedItemsMigrationSlf4jLogger(logger: Logger) extends ItemMigrationLogger[IO, SeichiAssistPersistedItems.type] {
+class PersistedItemsMigrationSlf4jLogger(logger: Logger) extends ItemMigrationLogger[IO, SeichiAssistPersistedItems] {
 
   override def logMigrationVersionsToBeApplied(versions: IndexedSeq[ItemMigrationVersionNumber],
-                                               target: SeichiAssistPersistedItems.type): IO[Unit] = {
+                                               target: SeichiAssistPersistedItems): IO[Unit] = {
     val concatenatedVersionString = versions.map(_.versionString).mkString(", ")
 
     IO {
