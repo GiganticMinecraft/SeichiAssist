@@ -139,23 +139,22 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     DB.localTx { implicit session =>
-      val itemMigrationBatches = List(
-        // DB内アイテムのマイグレーション
-        ItemMigrationService(
-          new PersistedItemsMigrationVersionRepository(),
-          new PersistedItemsMigrationSlf4jLogger(slf4jLogger)
-        ).runMigration(migrations)(new SeichiAssistPersistedItems()),
-
-        // ワールド内アイテムのマイグレーション
-        service.ItemMigrationService(
-          new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
-          new WorldLevelMigrationSlf4jLogger(slf4jLogger)
-        ).runMigration(migrations)(new SeichiAssistWorldLevelData()),
+      // DB内アイテムのマイグレーション
+      ItemMigrationService(
+        new PersistedItemsMigrationVersionRepository(),
+        new PersistedItemsMigrationSlf4jLogger(slf4jLogger)
       )
-
-      import cats.implicits._
-      itemMigrationBatches.sequence.unsafeRunSync()
+        .runMigration(migrations)(new SeichiAssistPersistedItems())
+        .unsafeRunSync()
     }
+
+    // ワールド内アイテムのマイグレーション
+    service.ItemMigrationService(
+      new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
+      new WorldLevelMigrationSlf4jLogger(slf4jLogger)
+    )
+      .runMigration(migrations)(new SeichiAssistWorldLevelData())
+      .unsafeRunSync()
 
     try {
       SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
