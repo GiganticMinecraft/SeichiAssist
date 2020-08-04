@@ -144,7 +144,7 @@ class SeichiAssist extends JavaPlugin() {
         ItemMigrationService(
           new PersistedItemsMigrationVersionRepository(),
           new PersistedItemsMigrationSlf4jLogger(slf4jLogger)
-        ).runMigration(migrations)(SeichiAssistPersistedItems),
+        ).runMigration(migrations)(new SeichiAssistPersistedItems()),
 
         // ワールド内アイテムのマイグレーション
         service.ItemMigrationService(
