@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.infrastructure.migration.repositories
 
-import cats.effect.{IO, Resource}
+import cats.effect.ExitCase.Completed
+import cats.effect.{ExitCase, IO, Resource}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAssistPersistedItems
 import scalikejdbc._
@@ -13,15 +14,28 @@ class PersistedItemsMigrationVersionRepository(implicit dbSession: DBSession)
   override type PersistenceLock[TInstance <: PersistedItems] = Unit
 
   override def lockVersionPersistence(target: PersistedItems): Resource[IO, PersistenceLock[PersistedItems]] = {
-    Resource.make(IO {
+    Resource.makeCase(IO {
+      // トランザクション開始がここになる
+      // https://dev.mysql.com/doc/refman/5.6/ja/lock-tables-and-transactions.html
+      sql"set autocommit=0".update().apply()
+
       // ロックを取得するときは利用するテーブルすべてをロックしなければならない
       sql"lock tables seichiassist.item_migration_on_database write, seichiassist.playerdata write".update().apply()
 
       // このリソースを使用する際にはロックが取れているというのを保証すればよいため、リソースの実体は無くて良い
       ()
-    })(_ => IO {
-      sql"unlock tables".update().apply()
-    })
+    }) {
+      case (_, ExitCase.Completed) =>
+        IO {
+          sql"commit".update().apply()
+          sql"unlock tables".update().apply()
+        }
+      case _ =>
+        IO {
+          sql"rollback".update().apply()
+          sql"unlock tables".update().apply()
+        }
+    }
   }
 
   override def getVersionsAppliedTo(target: PersistedItems): PersistenceLock[target.type] => IO[Set[ItemMigrationVersionNumber]] =

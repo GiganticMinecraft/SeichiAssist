@@ -138,7 +138,7 @@ class SeichiAssist extends JavaPlugin() {
       SeichiAssistItemMigrations.seq
     }
 
-    DB.localTx { implicit session =>
+    DB.autoCommit { implicit session =>
       // DB内アイテムのマイグレーション
       ItemMigrationService(
         new PersistedItemsMigrationVersionRepository(),
