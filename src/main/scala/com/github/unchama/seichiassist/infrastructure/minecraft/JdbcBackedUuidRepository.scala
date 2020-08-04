@@ -6,7 +6,6 @@ import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
 import org.slf4j.Logger
-import scalikejdbc.DBSession
 
 object JdbcBackedUuidRepository {
   /**
@@ -21,10 +20,10 @@ object JdbcBackedUuidRepository {
    *
    * このことから、最後にSeichiAssistが導入されていたサーバーで入った名前のみからUUIDを割り出すことにしている。
    */
-  def initializeInstance[F[_] : Sync, G[_] : Applicative](implicit logger: Logger, session: DBSession): F[UuidRepository[G]] = Sync[F].delay {
+  def initializeInstance[F[_] : Sync, G[_] : Applicative](implicit logger: Logger): F[UuidRepository[G]] = Sync[F].delay {
     import scalikejdbc._
 
-    val databaseEntries =
+    val databaseEntries = DB.readOnly { implicit session =>
       sql"select uuid, name from seichiassist.playerdata"
         .map { rs =>
           // プレーヤー名はcase-insensitive
@@ -33,6 +32,7 @@ object JdbcBackedUuidRepository {
         .list()
         .apply()
         .toMap
+    }
 
     (playerName: String) => Applicative[G].pure(databaseEntries.get(playerName))
   }

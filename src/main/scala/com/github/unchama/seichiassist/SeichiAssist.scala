@@ -134,9 +134,7 @@ class SeichiAssist extends JavaPlugin() {
 
     val migrations: ItemMigrations = {
       implicit val uuidRepository: UuidRepository[IO] =
-        DB.readOnly { implicit session =>
-          JdbcBackedUuidRepository.initializeInstance[SyncIO, IO].unsafeRunSync()
-        }
+        JdbcBackedUuidRepository.initializeInstance[SyncIO, IO].unsafeRunSync()
 
       SeichiAssistItemMigrations.seq
     }
