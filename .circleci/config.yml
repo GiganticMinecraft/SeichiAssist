@@ -140,7 +140,7 @@ jobs:
       - restore-dependency-cache:
           dependency-cache-version: v4
       - restore-build-cache:
-          build-cache-version: v5
+          build-cache-version: v6
       - restore-local-dependencies-timestamps
 
       - build-artifact-and-copy-to-workspace
@@ -149,7 +149,7 @@ jobs:
       - save-dependency-cache:
           dependency-cache-version: v4
       - save-build-cache:
-          build-cache-version: v5
+          build-cache-version: v6
   full_build_and_test:
     executor: sbt-docker
     working_directory: ~/repo
