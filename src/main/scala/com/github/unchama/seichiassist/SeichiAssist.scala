@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
-import cats.effect.{Fiber, IO, Timer}
+import cats.effect.{Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
@@ -133,7 +133,10 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     val migrations: ItemMigrations = {
-      implicit val uuidRepository: UuidRepository[IO] = new JdbcBackedUuidRepository
+      implicit val uuidRepository: UuidRepository[IO] =
+        DB.readOnly { implicit session =>
+          JdbcBackedUuidRepository.initializeInstance[SyncIO, IO].unsafeRunSync()
+        }
 
       SeichiAssistItemMigrations.seq
     }
