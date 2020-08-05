@@ -184,7 +184,7 @@ class SeichiAssist extends JavaPlugin() {
     // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナー
     val playerItemMigrationControllerListeners: Seq[Listener] = {
       import PluginExecutionContexts.asyncShift
-      val service = ItemMigrationService(
+      val service = ItemMigrationService.inContextOf[IO](
         new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
         new PlayerItemsMigrationSlf4jLogger(slf4jLogger)
       )
