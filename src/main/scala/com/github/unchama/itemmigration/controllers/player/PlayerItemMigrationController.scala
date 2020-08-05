@@ -1,5 +1,10 @@
 package com.github.unchama.itemmigration.controllers.player
 
+import cats.effect.IO
+import cats.effect.concurrent.TryableDeferred
+import com.github.unchama.itemmigration.domain.ItemMigrations
+import com.github.unchama.itemmigration.service.ItemMigrationService
+import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 import com.github.unchama.playerdatarepository.PreLoginToQuitPlayerDataRepository
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
@@ -11,11 +16,13 @@ import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
  * プレーヤーのアイテムマイグレーション処理中に、
  * 該当プレーヤーの行動を制御するためのリスナオブジェクトのクラス
  */
-class PlayerItemMigrationController(private val migrationState: PreLoginToQuitPlayerDataRepository[PlayerItemMigrationFiber])
+class PlayerItemMigrationController(migrationState: PreLoginToQuitPlayerDataRepository[TryableDeferred[IO, Unit]],
+                                    migrations: ItemMigrations,
+                                    service: ItemMigrationService[IO, PlayerInventoriesData[IO]])
   extends Listener {
 
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
-    if (!migrationState(player).fiber.isComplete.unsafeRunSync()) {
+    if (migrationState(player).tryGet.unsafeRunSync().isEmpty) {
       event.setCancelled(true)
     }
   }
@@ -43,6 +50,10 @@ class PlayerItemMigrationController(private val migrationState: PreLoginToQuitPl
   @EventHandler(priority = EventPriority.LOWEST)
   def onJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
-    migrationState(player).resumeWith(player).unsafeRunSync()
-  }
+
+    for {
+      _ <- service.runMigration(migrations)(PlayerInventoriesData(player))
+      _ <- migrationState(player).complete(())
+    } yield ()
+  }.unsafeRunAsyncAndForget()
 }

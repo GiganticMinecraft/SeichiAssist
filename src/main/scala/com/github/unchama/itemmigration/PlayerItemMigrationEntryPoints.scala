@@ -13,8 +13,8 @@ class PlayerItemMigrationEntryPoints(migrations: ItemMigrations,
                                      service: ItemMigrationService[IO, PlayerInventoriesData[IO]])
                                     (implicit concurrentIO: Concurrent[IO]) {
 
-  private val repository = new PlayerItemMigrationStateRepository(migrations, service)
-  private val controller = new PlayerItemMigrationController(repository)
+  private val repository = new PlayerItemMigrationStateRepository
+  private val controller = new PlayerItemMigrationController(repository, migrations, service)
 
   val listenersToBeRegistered = Seq(
     repository,
