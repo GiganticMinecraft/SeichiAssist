@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
  * 各プレーヤーのマイグレーション処理の状態を保持するオブジェクトのクラス。
  */
 class PlayerItemMigrationStateRepository(migrations: ItemMigrations,
-                                         service: ItemMigrationService[IO, PlayerInventoriesData])
+                                         service: ItemMigrationService[IO, PlayerInventoriesData[IO]])
                                         (implicit concurrentIO: Concurrent[IO])
   extends PreLoginToQuitPlayerDataRepository[PlayerItemMigrationFiber] {
 

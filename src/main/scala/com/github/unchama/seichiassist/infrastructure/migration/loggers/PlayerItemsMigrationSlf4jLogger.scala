@@ -5,10 +5,10 @@ import com.github.unchama.itemmigration.domain.{ItemMigrationLogger, ItemMigrati
 import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 import org.slf4j.Logger
 
-class PlayerItemsMigrationSlf4jLogger[F[_] : Sync](logger: Logger) extends ItemMigrationLogger[F, PlayerInventoriesData] {
+class PlayerItemsMigrationSlf4jLogger[F[_] : Sync](logger: Logger) extends ItemMigrationLogger[F, PlayerInventoriesData[F]] {
 
   override def logMigrationVersionsToBeApplied(versions: IndexedSeq[ItemMigrationVersionNumber],
-                                               target: PlayerInventoriesData): F[Unit] = {
+                                               target: PlayerInventoriesData[F]): F[Unit] = {
     val concatenatedVersionString = versions.map(_.versionString).mkString(", ")
 
     Sync[F].delay {

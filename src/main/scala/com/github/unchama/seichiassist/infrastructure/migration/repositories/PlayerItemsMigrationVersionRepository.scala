@@ -6,18 +6,18 @@ import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 import scalikejdbc._
 
 class PlayerItemsMigrationVersionRepository[F[_]](serverId: String)(implicit F: Sync[F])
-  extends ItemMigrationVersionRepository[F, PlayerInventoriesData] {
+  extends ItemMigrationVersionRepository[F, PlayerInventoriesData[F]] {
 
-  override type PersistenceLock[TInstance <: PlayerInventoriesData] = Unit
+  override type PersistenceLock[TInstance <: PlayerInventoriesData[F]] = Unit
 
-  override def lockVersionPersistence(target: PlayerInventoriesData): Resource[F, PersistenceLock[target.type]] = {
+  override def lockVersionPersistence(target: PlayerInventoriesData[F]): Resource[F, PersistenceLock[target.type]] = {
     /**
      * プレーヤーは単一サーバーに1人しか存在しないためロックは不要
      */
     Resource.pure[F, Unit](())
   }
 
-  override def getVersionsAppliedTo(target: PlayerInventoriesData): PersistenceLock[target.type] => F[Set[ItemMigrationVersionNumber]] =
+  override def getVersionsAppliedTo(target: PlayerInventoriesData[F]): PersistenceLock[target.type] => F[Set[ItemMigrationVersionNumber]] =
     _ => F.delay {
       DB.localTx { implicit session =>
         sql"""
@@ -31,7 +31,7 @@ class PlayerItemsMigrationVersionRepository[F[_]](serverId: String)(implicit F: 
       }
     }
 
-  override def persistVersionsAppliedTo(target: PlayerInventoriesData,
+  override def persistVersionsAppliedTo(target: PlayerInventoriesData[F],
                                         versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => F[Unit] =
     _ => F.delay {
       val batchParams = versions.map { version =>

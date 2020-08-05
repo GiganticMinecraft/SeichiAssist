@@ -10,7 +10,7 @@ import com.github.unchama.itemmigration.targets.PlayerInventoriesData
  * プレーヤーのインベントリのマイグレーションを行うために必要なリスナー等のオブジェクトを提供するオブジェクトのクラス。
  */
 class PlayerItemMigrationEntryPoints(migrations: ItemMigrations,
-                                     service: ItemMigrationService[IO, PlayerInventoriesData])
+                                     service: ItemMigrationService[IO, PlayerInventoriesData[IO]])
                                     (implicit concurrentIO: Concurrent[IO]) {
 
   private val repository = new PlayerItemMigrationStateRepository(migrations, service)
