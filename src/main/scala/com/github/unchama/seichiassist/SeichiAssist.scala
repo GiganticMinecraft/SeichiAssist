@@ -141,7 +141,7 @@ class SeichiAssist extends JavaPlugin() {
 
     DB.autoCommit { implicit session =>
       // DB内アイテムのマイグレーション
-      ItemMigrationService(
+      ItemMigrationService.inContextOf[SyncIO](
         new PersistedItemsMigrationVersionRepository(),
         new PersistedItemsMigrationSlf4jLogger(slf4jLogger)
       )
