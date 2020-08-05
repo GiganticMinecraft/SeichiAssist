@@ -5,8 +5,7 @@ import java.util.UUID
 import cats.effect.concurrent.Deferred
 import cats.effect.{Concurrent, IO, SyncIO}
 import com.github.unchama.generic.effect.TryableFiber
-import com.github.unchama.itemmigration.controllers.player.PlayerItemMigrationStateRepository.PlayerItemMigrationFiber
-import com.github.unchama.itemmigration.domain.{ItemMigrationVersionRepository, ItemMigrations}
+import com.github.unchama.itemmigration.domain.ItemMigrations
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 import com.github.unchama.playerdatarepository.PreLoginToQuitPlayerDataRepository
@@ -44,27 +43,5 @@ class PlayerItemMigrationStateRepository(migrations: ItemMigrations,
     }
 
   override val unloadData: (Player, PlayerItemMigrationFiber) => IO[Unit] = (_, f) => f.fiber.cancel
-
-}
-
-object PlayerItemMigrationStateRepository {
-
-  /**
-   * プレーヤーのアイテムマイグレーションのプロセスそのものへの参照。
-   *
-   * このtraitを持つオブジェクトは、往々にして`Player` のインスタンスがあって初めて処理を続行できる。
-   * `resumeWith` にて、処理を続行するために必要な `Player` をプロセスに渡すことができる。
-   */
-  trait PlayerItemMigrationFiber {
-    /**
-     * マイグレーション処理を `player` にて続行する `IO` を返す。
-     */
-    def resumeWith(player: Player): IO[Unit]
-
-    /**
-     * マイグレーション処理への参照
-     */
-    val fiber: TryableFiber[IO, Unit]
-  }
 
 }
