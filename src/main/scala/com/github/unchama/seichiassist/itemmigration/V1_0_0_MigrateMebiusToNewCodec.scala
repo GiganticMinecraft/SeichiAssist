@@ -52,7 +52,7 @@ object V1_0_0_MigrateMebiusToNewCodec {
     def isMebius(itemStack: ItemStack): Boolean = {
       val meta = if (itemStack != null) itemStack.getItemMeta else return false
 
-      meta.hasLore && {
+      meta != null && meta.hasLore && {
         val lore = meta.getLore.asScala
         mebiusLoreHead.forall(lore.contains)
       }
