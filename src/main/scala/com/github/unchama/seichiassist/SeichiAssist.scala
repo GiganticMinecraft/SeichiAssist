@@ -133,8 +133,8 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     val migrations: ItemMigrations = {
-      implicit val uuidRepository: UuidRepository[IO] =
-        JdbcBackedUuidRepository.initializeInstance[SyncIO, IO].unsafeRunSync()
+      implicit val uuidRepository: UuidRepository[SyncIO] =
+        JdbcBackedUuidRepository.initializeInstance[SyncIO].unsafeRunSync()
 
       SeichiAssistItemMigrations.seq
     }

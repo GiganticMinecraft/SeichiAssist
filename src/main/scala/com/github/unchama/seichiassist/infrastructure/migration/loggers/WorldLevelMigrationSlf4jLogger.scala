@@ -5,8 +5,7 @@ import com.github.unchama.itemmigration.domain.{ItemMigrationLogger, ItemMigrati
 import com.github.unchama.itemmigration.targets.WorldLevelData
 import org.slf4j.Logger
 
-class WorldLevelMigrationSlf4jLogger[F[_]](logger: Logger)
-                                          (implicit val F: Sync[F])
+class WorldLevelMigrationSlf4jLogger[F[_]](logger: Logger)(implicit val F: Sync[F])
   extends ItemMigrationLogger[F, WorldLevelData[F]] {
 
   override def logMigrationVersionsToBeApplied(versions: IndexedSeq[ItemMigrationVersionNumber],
