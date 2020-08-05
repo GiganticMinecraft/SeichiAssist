@@ -1,6 +1,6 @@
 package com.github.unchama.itemmigration.targets
 
-import cats.effect.{IO, Sync}
+import cats.effect.Sync
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.util.MillisecondTimer
