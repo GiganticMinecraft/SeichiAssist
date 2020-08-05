@@ -133,15 +133,15 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     val migrations: ItemMigrations = {
-      implicit val uuidRepository: UuidRepository[IO] =
-        JdbcBackedUuidRepository.initializeInstance[SyncIO, IO].unsafeRunSync()
+      implicit val uuidRepository: UuidRepository[SyncIO] =
+        JdbcBackedUuidRepository.initializeInstance[SyncIO].unsafeRunSync()
 
       SeichiAssistItemMigrations.seq
     }
 
     DB.autoCommit { implicit session =>
       // DB内アイテムのマイグレーション
-      ItemMigrationService(
+      ItemMigrationService.inContextOf[SyncIO](
         new PersistedItemsMigrationVersionRepository(),
         new PersistedItemsMigrationSlf4jLogger(slf4jLogger)
       )
@@ -150,7 +150,7 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     // ワールド内アイテムのマイグレーション
-    service.ItemMigrationService(
+    service.ItemMigrationService.inContextOf[SyncIO](
       new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
       new WorldLevelMigrationSlf4jLogger(slf4jLogger)
     )
@@ -184,7 +184,7 @@ class SeichiAssist extends JavaPlugin() {
     // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナー
     val playerItemMigrationControllerListeners: Seq[Listener] = {
       import PluginExecutionContexts.asyncShift
-      val service = ItemMigrationService(
+      val service = ItemMigrationService.inContextOf[IO](
         new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
         new PlayerItemsMigrationSlf4jLogger(slf4jLogger)
       )

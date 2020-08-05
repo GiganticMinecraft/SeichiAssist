@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.infrastructure.migration.targets
 
-import cats.effect.IO
+import cats.effect.Sync
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.seichiassist.util.{BukkitSerialization, ItemListSerialization}
 import org.bukkit.Material
 import scalikejdbc._
 
-class SeichiAssistPersistedItems(implicit dBSession: DBSession) extends ItemMigrationTarget[IO] {
+class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]) extends ItemMigrationTarget[F] {
 
   import scala.jdk.CollectionConverters._
 
@@ -37,7 +37,7 @@ class SeichiAssistPersistedItems(implicit dBSession: DBSession) extends ItemMigr
     }
   }
 
-  override def runMigration(conversion: ItemStackConversion): IO[Unit] = IO {
+  override def runMigration(conversion: ItemStackConversion): F[Unit] = F.delay {
     val triples = sql"select uuid, shareinv, inventory from seichiassist.playerdata"
       .map { rs =>
         (rs.string("uuid"), rs.stringOpt("shareinv"), rs.stringOpt("inventory"))

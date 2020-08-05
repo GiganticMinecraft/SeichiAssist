@@ -24,3 +24,20 @@ case class ItemMigrationService[F[_], -T <: ItemMigrationTarget[F]](persistence:
   }
 
 }
+
+object ItemMigrationService {
+
+  /**
+   * Uses the [[http://typelevel.org/cats/guidelines.html#partially-applied-type-params Partially Applied Type Params technique]] for ergonomics.
+   */
+  //noinspection ScalaUnusedSymbol
+  final private[service] class ItemMigrationServicePartiallyApplied[F[_]](private val dummy: Boolean = true) extends AnyVal {
+    def apply[T <: ItemMigrationTarget[F]](persistence: ItemMigrationVersionRepository[F, T],
+                                           logger: ItemMigrationLogger[F, T])
+                                          (implicit F: Bracket[F, Throwable]): ItemMigrationService[F, T] = {
+      ItemMigrationService[F, T](persistence, logger)
+    }
+  }
+
+  def inContextOf[F[_]]: ItemMigrationServicePartiallyApplied[F] = new ItemMigrationServicePartiallyApplied[F]
+}

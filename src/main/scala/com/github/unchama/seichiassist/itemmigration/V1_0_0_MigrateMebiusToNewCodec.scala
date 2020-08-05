@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.itemmigration
 
-import cats.effect.IO
+import cats.effect.SyncIO
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
@@ -68,7 +68,7 @@ object V1_0_0_MigrateMebiusToNewCodec {
   import eu.timepit.refined.auto._
 
   def migrationFunction(itemStack: ItemStack)(implicit
-                                              repository: UuidRepository[IO],
+                                              repository: UuidRepository[SyncIO],
                                               logger: Logger): ItemStack = {
     val OldMebiusRawProperty(ownerPlayerId, level, ownerNicknameOverride, mebiusName) =
       OldBukkitMebiusItemStackCodec
@@ -113,7 +113,7 @@ object V1_0_0_MigrateMebiusToNewCodec {
     nbtItem.getItem
   }
 
-  def migration(implicit uuidRepository: UuidRepository[IO], logger: Logger): ItemMigration = ItemMigration(
+  def migration(implicit uuidRepository: UuidRepository[SyncIO], logger: Logger): ItemMigration = ItemMigration(
     ItemMigrationVersionNumber(1, 0, 0),
     MigrationHelper.delegateConversionForContainers(migrationFunction)
   )

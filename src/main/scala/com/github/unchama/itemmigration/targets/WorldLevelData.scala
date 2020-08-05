@@ -1,6 +1,6 @@
 package com.github.unchama.itemmigration.targets
 
-import cats.effect.IO
+import cats.effect.{IO, Sync}
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.util.MillisecondTimer
@@ -18,19 +18,19 @@ import org.slf4j.Logger
  * @param getWorlds                 変換対象であるワールドを列挙するプログラム
  * @param enumerateChunkCoordinates ワールド内で変換すべきチャンク座標を列挙するプログラム
  */
-case class WorldLevelData(getWorlds: IO[IndexedSeq[World]],
-                          enumerateChunkCoordinates: World => IO[Seq[(Int, Int)]])
-                         (implicit metricsLogger: Logger) extends ItemMigrationTarget[IO] {
+case class WorldLevelData[F[_]](getWorlds: F[IndexedSeq[World]],
+                                enumerateChunkCoordinates: World => F[Seq[(Int, Int)]])
+                               (implicit metricsLogger: Logger, F: Sync[F]) extends ItemMigrationTarget[F] {
 
-  override def runMigration(conversion: ItemStackConversion): IO[Unit] = {
+  override def runMigration(conversion: ItemStackConversion): F[Unit] = {
     import cats.implicits._
 
-    def convertWorld(world: World): IO[Unit] =
+    def convertWorld(world: World): F[Unit] =
       MillisecondTimer.timeF {
         for {
           coords <- enumerateChunkCoordinates(world)
           _ <- WorldLevelData.convertChunkWise(world, coords, conversion)
-          _ <- IO {
+          _ <- F.delay {
             metricsLogger.info(s"$world 内のアイテム変換済みチャンク数： ${coords.size}")
           }
         } yield ()
@@ -45,25 +45,27 @@ case class WorldLevelData(getWorlds: IO[IndexedSeq[World]],
 }
 
 object WorldLevelData {
-  def convertChunkWise(world: World, targetChunks: Seq[(Int, Int)], conversion: ItemStack => ItemStack): IO[Unit] = IO {
-    for {(chunkX, chunkZ) <- targetChunks} {
-      val chunk = world.getChunkAt(chunkX, chunkZ)
+  def convertChunkWise[F[_]](world: World, targetChunks: Seq[(Int, Int)], conversion: ItemStack => ItemStack)
+                            (implicit F: Sync[F]): F[Unit] =
+    F.delay {
+      for {(chunkX, chunkZ) <- targetChunks} {
+        val chunk = world.getChunkAt(chunkX, chunkZ)
 
-      chunk.getTileEntities.foreach {
-        case containerState: Container =>
-          MigrationHelper.convertEachStackIn(containerState.getInventory)(conversion)
-        case _ =>
-      }
+        chunk.getTileEntities.foreach {
+          case containerState: Container =>
+            MigrationHelper.convertEachStackIn(containerState.getInventory)(conversion)
+          case _ =>
+        }
 
-      chunk.getEntities.foreach {
-        case inventoryHolder: InventoryHolder =>
-          MigrationHelper.convertEachStackIn(inventoryHolder.getInventory)(conversion)
-        case item: Item =>
-          item.setItemStack(conversion(item.getItemStack))
-        case frame: ItemFrame =>
-          frame.setItem(conversion(frame.getItem))
-        case _ =>
+        chunk.getEntities.foreach {
+          case inventoryHolder: InventoryHolder =>
+            MigrationHelper.convertEachStackIn(inventoryHolder.getInventory)(conversion)
+          case item: Item =>
+            item.setItemStack(conversion(item.getItemStack))
+          case frame: ItemFrame =>
+            frame.setItem(conversion(frame.getItem))
+          case _ =>
+        }
       }
     }
-  }
 }

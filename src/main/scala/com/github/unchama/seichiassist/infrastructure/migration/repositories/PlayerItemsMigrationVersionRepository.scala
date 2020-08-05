@@ -1,22 +1,24 @@
 package com.github.unchama.seichiassist.infrastructure.migration.repositories
 
-import cats.effect.{IO, Resource}
+import cats.effect.{Resource, Sync}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
 import com.github.unchama.itemmigration.targets.PlayerInventoriesData
 import scalikejdbc._
 
-class PlayerItemsMigrationVersionRepository(serverId: String) extends ItemMigrationVersionRepository[IO, PlayerInventoriesData] {
+class PlayerItemsMigrationVersionRepository[F[_]](serverId: String)(implicit F: Sync[F])
+  extends ItemMigrationVersionRepository[F, PlayerInventoriesData] {
+
   override type PersistenceLock[TInstance <: PlayerInventoriesData] = Unit
 
-  override def lockVersionPersistence(target: PlayerInventoriesData): Resource[IO, PersistenceLock[target.type]] = {
+  override def lockVersionPersistence(target: PlayerInventoriesData): Resource[F, PersistenceLock[target.type]] = {
     /**
      * プレーヤーは単一サーバーに1人しか存在しないためロックは不要
      */
-    Resource.pure[IO, Unit](())
+    Resource.pure[F, Unit](())
   }
 
-  override def getVersionsAppliedTo(target: PlayerInventoriesData): PersistenceLock[target.type] => IO[Set[ItemMigrationVersionNumber]] =
-    _ => IO {
+  override def getVersionsAppliedTo(target: PlayerInventoriesData): PersistenceLock[target.type] => F[Set[ItemMigrationVersionNumber]] =
+    _ => F.delay {
       DB.localTx { implicit session =>
         sql"""
           select version_string from seichiassist.player_in_server_item_migration
@@ -30,8 +32,8 @@ class PlayerItemsMigrationVersionRepository(serverId: String) extends ItemMigrat
     }
 
   override def persistVersionsAppliedTo(target: PlayerInventoriesData,
-                                        versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => IO[Unit] =
-    _ => IO {
+                                        versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => F[Unit] =
+    _ => F.delay {
       val batchParams = versions.map { version =>
         Seq(target.player.getUniqueId.toString, serverId, version.versionString)
       }

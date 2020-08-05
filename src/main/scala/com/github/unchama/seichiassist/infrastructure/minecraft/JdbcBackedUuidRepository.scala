@@ -20,7 +20,7 @@ object JdbcBackedUuidRepository {
    *
    * このことから、最後にSeichiAssistが導入されていたサーバーで入った名前のみからUUIDを割り出すことにしている。
    */
-  def initializeInstance[F[_] : Sync, G[_] : Applicative](implicit logger: Logger): F[UuidRepository[G]] = Sync[F].delay {
+  def initializeInstanceIn[F[_] : Sync, G[_] : Applicative](implicit logger: Logger): F[UuidRepository[G]] = Sync[F].delay {
     import scalikejdbc._
 
     val databaseEntries = DB.readOnly { implicit session =>
@@ -36,4 +36,6 @@ object JdbcBackedUuidRepository {
 
     (playerName: String) => Applicative[G].pure(databaseEntries.get(playerName))
   }
+
+  def initializeInstance[F[_] : Sync](implicit logger: Logger): F[UuidRepository[F]] = initializeInstanceIn[F, F]
 }
