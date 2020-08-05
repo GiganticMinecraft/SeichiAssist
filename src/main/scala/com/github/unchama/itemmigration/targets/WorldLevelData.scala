@@ -66,6 +66,9 @@ object WorldLevelData {
             frame.setItem(conversion(frame.getItem))
           case _ =>
         }
+
+        // メモリ解放を促す
+        world.unloadChunk(chunk)
       }
     }
 }
