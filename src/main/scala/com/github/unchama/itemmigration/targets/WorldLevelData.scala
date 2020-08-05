@@ -68,7 +68,9 @@ object WorldLevelData {
         }
 
         // メモリ解放を促す
-        world.unloadChunk(chunk)
+        if (!world.unloadChunk(chunk)) {
+          println(s"チャンク(${chunk.getX}, ${chunk.getZ})はアンロードされませんでした。")
+        }
       }
     }
 }
