@@ -150,7 +150,7 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     // ワールド内アイテムのマイグレーション
-    service.ItemMigrationService(
+    service.ItemMigrationService.inContextOf[SyncIO](
       new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
       new WorldLevelMigrationSlf4jLogger(slf4jLogger)
     )

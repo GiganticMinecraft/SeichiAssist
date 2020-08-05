@@ -1,22 +1,24 @@
 package com.github.unchama.seichiassist.infrastructure.migration.repositories
 
-import cats.effect.{IO, Resource}
+import cats.effect.{Resource, Sync}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
 import com.github.unchama.itemmigration.targets.WorldLevelData
-import scalikejdbc.{AutoSession, DBSession, _}
+import scalikejdbc._
 
-class WorldLevelItemsMigrationVersionRepository(serverId: String) extends ItemMigrationVersionRepository[IO, WorldLevelData] {
-  override type PersistenceLock[TInstance <: WorldLevelData] = Unit
+class WorldLevelItemsMigrationVersionRepository[F[_]](serverId: String)(implicit F: Sync[F])
+  extends ItemMigrationVersionRepository[F, WorldLevelData[F]] {
 
-  override def lockVersionPersistence(target: WorldLevelData): Resource[IO, PersistenceLock[target.type]] = {
+  override type PersistenceLock[TInstance <: WorldLevelData[F]] = Unit
+
+  override def lockVersionPersistence(target: WorldLevelData[F]): Resource[F, PersistenceLock[target.type]] = {
     /**
      * サーバーIDが一意なら更新が一サーバーIDに対して一個しか走らないためロックは不要
      */
-    Resource.pure[IO, Unit](())
+    Resource.pure[F, Unit](())
   }
 
-  override def getVersionsAppliedTo(target: WorldLevelData): PersistenceLock[target.type] => IO[Set[ItemMigrationVersionNumber]] =
-    _ => IO {
+  override def getVersionsAppliedTo(target: WorldLevelData[F]): PersistenceLock[target.type] => F[Set[ItemMigrationVersionNumber]] =
+    _ => F.delay {
       DB.localTx { implicit session =>
         sql"""
           select version_string from seichiassist.item_migration_in_server_world_levels where server_id = $serverId
@@ -27,14 +29,14 @@ class WorldLevelItemsMigrationVersionRepository(serverId: String) extends ItemMi
       }
     }
 
-  override def persistVersionsAppliedTo(target: WorldLevelData,
-                                        versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => IO[Unit] =
+  override def persistVersionsAppliedTo(target: WorldLevelData[F],
+                                        versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[target.type] => F[Unit] =
     _ => {
       val batchParams = versions.map { version =>
         Seq(serverId, version.versionString)
       }.toSeq
 
-      IO {
+      F.delay {
         DB.localTx { implicit session =>
           sql"""
           insert into seichiassist.item_migration_in_server_world_levels(server_id, version_string, completed_at)

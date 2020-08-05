@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.infrastructure.migration.targets
 
-import cats.effect.IO
+import cats.effect.Sync
 import com.github.unchama.itemmigration.targets.WorldLevelData
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.external.{ExternalPlugins, ExternalServices}
@@ -8,22 +8,21 @@ import org.bukkit.World
 import org.slf4j.Logger
 
 private object DelegatedImpls {
-  val getWorlds: IO[IndexedSeq[World]] = {
+  def getWorlds[F[_] : Sync]: F[IndexedSeq[World]] = {
     val multiverseCore = ExternalPlugins.getMultiverseCore
 
     import scala.jdk.CollectionConverters._
 
-    IO {
+    Sync[F].delay {
       multiverseCore.getMVWorldManager
         .getMVWorlds.asScala
         .map(_.getCBWorld).toIndexedSeq
     }
   }
 
-  def getWorldChunkCoordinates(implicit logger: Logger): World => IO[Seq[(Int, Int)]] =
-    ExternalServices.getChunkCoordinates(SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
+  def getWorldChunkCoordinates[F[_] : Sync](implicit logger: Logger): World => F[Seq[(Int, Int)]] =
+    ExternalServices.getChunkCoordinates[F](SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
 }
 
-class SeichiAssistWorldLevelData(implicit logger: Logger) extends WorldLevelData(
-  DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates
-)
+class SeichiAssistWorldLevelData[F[_]](implicit metricsLogger: Logger, F: Sync[F])
+  extends WorldLevelData[F](DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates)

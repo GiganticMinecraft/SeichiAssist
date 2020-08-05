@@ -1,6 +1,6 @@
 package com.github.unchama.util.external
 
-import cats.effect.IO
+import cats.effect.Sync
 import chunk_search.{Chunk, ChunkCoord, SearchResult}
 import com.github.unchama.util.MillisecondTimer
 import com.github.unchama.util.bukkit.WorldUtil
@@ -9,11 +9,11 @@ import org.slf4j.Logger
 
 object ExternalServices {
 
-  def getChunkCoordinates(chunkSearchCommand: String)
-                         (world: World)
-                         (implicit logger: Logger): IO[Seq[(Int, Int)]] = {
+  def getChunkCoordinates[F[_] : Sync](chunkSearchCommand: String)
+                                      (world: World)
+                                      (implicit logger: Logger): F[Seq[(Int, Int)]] = {
     // 普通、この検索にはかなりの時間がかかるので要した時間をログに表示する
-    MillisecondTimer.timeF(IO {
+    MillisecondTimer.timeF(Sync[F].delay {
       val command = s"$chunkSearchCommand ${WorldUtil.getAbsoluteWorldFolder(world)}"
       val result =
         SearchResult.parseFrom(Runtime.getRuntime.exec(command).getInputStream)
