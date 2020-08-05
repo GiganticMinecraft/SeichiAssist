@@ -10,18 +10,18 @@ import org.bukkit.entity.Player
 /**
  * 各プレーヤーのマイグレーション処理の状態を保持するオブジェクトのクラス。
  */
-class PlayerItemMigrationStateRepository(implicit concurrentIO: Concurrent[IO])
-  extends PreLoginToQuitPlayerDataRepository[TryableDeferred[IO, Unit]] {
+class PlayerItemMigrationStateRepository[F[_]](implicit F: Concurrent[F])
+  extends PreLoginToQuitPlayerDataRepository[TryableDeferred[F, Unit]] {
 
-  override val loadData: (String, UUID) => SyncIO[Either[Option[String], TryableDeferred[IO, Unit]]] =
+  override val loadData: (String, UUID) => SyncIO[Either[Option[String], TryableDeferred[F, Unit]]] =
     (_, _) => {
       SyncIO {
-        Deferred.unsafe[IO, Unit]
+        Deferred.unsafe[F, Unit]
       }.map {
-        promise => Right(promise.asInstanceOf[TryableDeferred[IO, Unit]])
+        promise => Right(promise.asInstanceOf[TryableDeferred[F, Unit]])
       }
     }
 
-  override val unloadData: (Player, TryableDeferred[IO, Unit]) => IO[Unit] = (_, _) => IO.unit
+  override val unloadData: (Player, TryableDeferred[F, Unit]) => IO[Unit] = (_, _) => IO.unit
 
 }
