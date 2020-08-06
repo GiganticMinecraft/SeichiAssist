@@ -206,3 +206,4 @@ workflows:
             branches:
               only:
                 - develop
+                - debug/test-chunk-unloading
