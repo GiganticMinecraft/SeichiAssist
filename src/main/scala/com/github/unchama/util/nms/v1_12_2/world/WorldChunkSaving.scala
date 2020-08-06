@@ -50,8 +50,8 @@ object WorldChunkSaving {
   /**
    * In a running minecraft server, there is an internal queue which is used in controlling and limiting chunk saves.
    *
-   * When many chunks are loaded onto the memory,
-   * chunk unloading may be too slow, limited by the internal queue,
+   * When chunk load happens a lot in a very short period of time,
+   * default chunk unloading may be too slow, throttled by the internal queue,
    * hence there is a danger of OutOfMemoryError being thrown.
    *
    * This action is helpful in such a situation; it starts a fiber,
