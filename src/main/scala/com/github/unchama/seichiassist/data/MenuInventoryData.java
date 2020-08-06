@@ -122,8 +122,11 @@ public final class MenuInventoryData {
                 break;
             }
 
+            final String stars = rankdata.level == LevelThresholds.levelExpThresholds().size() // 最大レベルまで達している？
+                    ? "☆" + SeichiAssist.playermap().apply(Bukkit.getOfflinePlayer(rankdata.name).getUniqueId()).starLevels().fromBreakAmount()
+                    : "";
             final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "整地レベル:" + rankdata.level,
+                    ChatColor.RESET + "" + ChatColor.GREEN + "整地レベル:" + rankdata.level + stars,
                     ChatColor.RESET + "" + ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum
             );
 
