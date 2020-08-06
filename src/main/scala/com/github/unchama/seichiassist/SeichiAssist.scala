@@ -149,8 +149,10 @@ class SeichiAssist extends JavaPlugin() {
         .unsafeRunSync()
     }
 
+    import PluginExecutionContexts._
+
     // ワールド内アイテムのマイグレーション
-    service.ItemMigrationService.inContextOf[SyncIO](
+    service.ItemMigrationService.inContextOf[IO](
       new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
       new WorldLevelMigrationSlf4jLogger(slf4jLogger)
     )
@@ -203,7 +205,6 @@ class SeichiAssist extends JavaPlugin() {
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistrs
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
 
-    import PluginExecutionContexts._
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
     implicit val effectEnvironment: SeichiAssistEffectEnvironment = DefaultEffectEnvironment

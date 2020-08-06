@@ -1,6 +1,6 @@
 package com.github.unchama.itemmigration.targets
 
-import cats.effect.Sync
+import cats.effect.Concurrent
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.util.MillisecondTimer
@@ -20,7 +20,7 @@ import org.slf4j.Logger
  */
 case class WorldLevelData[F[_]](getWorlds: F[IndexedSeq[World]],
                                 enumerateChunkCoordinates: World => F[Seq[(Int, Int)]])
-                               (implicit metricsLogger: Logger, F: Sync[F]) extends ItemMigrationTarget[F] {
+                               (implicit metricsLogger: Logger, F: Concurrent[F]) extends ItemMigrationTarget[F] {
 
   override def runMigration(conversion: ItemStackConversion): F[Unit] = {
     import cats.implicits._
@@ -46,9 +46,12 @@ case class WorldLevelData[F[_]](getWorlds: F[IndexedSeq[World]],
 
 object WorldLevelData {
   def convertChunkWise[F[_]](world: World, targetChunks: Seq[(Int, Int)], conversion: ItemStack => ItemStack)
-                            (implicit F: Sync[F]): F[Unit] =
-    F.delay {
-      for {(chunkX, chunkZ) <- targetChunks} {
+                            (implicit F: Concurrent[F]): F[Unit] = {
+
+    val chunkConversionEffects =
+      for {
+        (chunkX, chunkZ) <- targetChunks.toList
+      } yield F.delay {
         val chunk = world.getChunkAt(chunkX, chunkZ)
 
         chunk.getTileEntities.foreach {
@@ -72,5 +75,25 @@ object WorldLevelData {
           println(s"チャンク(${chunk.getX}, ${chunk.getZ})はアンロードされませんでした。")
         }
       }
-    }
+
+    import cats.implicits._
+
+    val queueChunkSaverFlush =
+      com.github.unchama.util.nms.v1_12_2.world
+        .WorldChunkSaving
+        .flushChunkSaverQueue[F]
+        .as(())
+
+    val chunkSaverQueueFlushInterval = 500
+
+    chunkConversionEffects
+      .mapWithIndex { case (effect, index) =>
+        if (index % chunkSaverQueueFlushInterval == 0)
+          effect >> queueChunkSaverFlush
+        else
+          effect
+      }
+      .sequence
+      .as(())
+  }
 }
