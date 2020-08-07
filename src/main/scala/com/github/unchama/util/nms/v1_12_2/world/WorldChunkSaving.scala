@@ -31,6 +31,7 @@ object WorldChunkSaving {
    */
   private def relaxFileIOThreadThrottle[F[_] : Sync]: F[Unit] = Sync[F].delay {
     Reflection.relaxFileIOThreadThrottleMethod.invoke(Reflection.fileIOThreadInstance)
+    println("FileIOThread throttle relaxed")
   }
 
   /**
@@ -43,6 +44,7 @@ object WorldChunkSaving {
   private def forceFileIOThreadLoopThroughSavers[F[_] : Sync]: F[Unit] = Sync[F].delay {
     Reflection.forceFileIOThreadLoopThroughSaversMethod.setAccessible(true)
     Reflection.forceFileIOThreadLoopThroughSaversMethod.invoke(Reflection.fileIOThreadInstance)
+    println("FileIOThread looped through savers")
   }
 
   import cats.implicits._
