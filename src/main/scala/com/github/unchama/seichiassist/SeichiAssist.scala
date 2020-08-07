@@ -149,14 +149,15 @@ class SeichiAssist extends JavaPlugin() {
         .unsafeRunSync()
     }
 
-    import PluginExecutionContexts._
-
     // ワールド内アイテムのマイグレーション
     service.ItemMigrationService.inContextOf[IO](
       new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
       new WorldLevelMigrationSlf4jLogger(slf4jLogger)
     )
-      .runMigration(migrations)(new SeichiAssistWorldLevelData())
+      .runMigration(migrations) {
+        import PluginExecutionContexts.asyncShift
+        new SeichiAssistWorldLevelData()
+      }
       .unsafeRunSync()
 
     try {
@@ -194,6 +195,8 @@ class SeichiAssist extends JavaPlugin() {
 
       new PlayerItemMigrationEntryPoints(migrations, service).listenersToBeRegistered
     }
+
+    import PluginExecutionContexts._
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
 
