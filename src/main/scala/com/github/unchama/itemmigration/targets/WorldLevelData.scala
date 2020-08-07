@@ -82,8 +82,7 @@ object WorldLevelData {
       com.github.unchama.util.nms.v1_12_2.world
         .WorldChunkSaving
         .flushChunkSaverQueue[F]
-        .as(())
-    }
+    }.as(())
 
     val chunkSaverQueueFlushInterval = 1000
 
