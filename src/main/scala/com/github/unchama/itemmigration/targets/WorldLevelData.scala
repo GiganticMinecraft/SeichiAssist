@@ -46,7 +46,7 @@ case class WorldLevelData[F[_]](getWorlds: F[IndexedSeq[World]],
 
 object WorldLevelData {
   def convertChunkWise[F[_]](world: World, targetChunks: Seq[(Int, Int)], conversion: ItemStack => ItemStack)
-                            (implicit F: Concurrent[F]): F[Unit] = {
+                            (implicit F: Concurrent[F], logger: Logger): F[Unit] = {
 
     val chunkConversionEffects =
       for {
@@ -78,13 +78,14 @@ object WorldLevelData {
 
     import cats.implicits._
 
-    val queueChunkSaverFlush =
+    val queueChunkSaverFlush = F.start {
       com.github.unchama.util.nms.v1_12_2.world
         .WorldChunkSaving
         .flushChunkSaverQueue[F]
         .as(())
+    }
 
-    val chunkSaverQueueFlushInterval = 500
+    val chunkSaverQueueFlushInterval = 1000
 
     chunkConversionEffects
       .mapWithIndex { case (effect, index) =>

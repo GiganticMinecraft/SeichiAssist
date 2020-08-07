@@ -2,7 +2,8 @@ package com.github.unchama.util.nms.v1_12_2.world
 
 import java.lang.reflect.Method
 
-import cats.effect.{Concurrent, Fiber, Sync}
+import cats.effect.{Concurrent, Sync}
+import org.slf4j.Logger
 
 
 object WorldChunkSaving {
@@ -31,7 +32,6 @@ object WorldChunkSaving {
    */
   private def relaxFileIOThreadThrottle[F[_] : Sync]: F[Unit] = Sync[F].delay {
     Reflection.relaxFileIOThreadThrottleMethod.invoke(Reflection.fileIOThreadInstance)
-    println("FileIOThread throttle relaxed")
   }
 
   /**
@@ -42,9 +42,10 @@ object WorldChunkSaving {
    * invokes `IAsyncChunkSaver`s' pop-and-process method.
    */
   private def forceFileIOThreadLoopThroughSavers[F[_] : Sync]: F[Unit] = Sync[F].delay {
-    Reflection.forceFileIOThreadLoopThroughSaversMethod.setAccessible(true)
-    Reflection.forceFileIOThreadLoopThroughSaversMethod.invoke(Reflection.fileIOThreadInstance)
-    println("FileIOThread looped through savers")
+    Reflection.fileIOThreadInstance.synchronized {
+      Reflection.forceFileIOThreadLoopThroughSaversMethod.setAccessible(true)
+      Reflection.forceFileIOThreadLoopThroughSaversMethod.invoke(Reflection.fileIOThreadInstance)
+    }
   }
 
   import cats.implicits._
@@ -59,12 +60,15 @@ object WorldChunkSaving {
    * This action is helpful in such a situation; it starts a fiber,
    * within which any unloaded unsaved chunks will be forced to be saved.
    */
-  def flushChunkSaverQueue[F[_]](implicit F: Concurrent[F]): F[Fiber[F, Unit]] =
-    F.start {
-      F.race(
-        relaxFileIOThreadThrottle[F],
-        F.foreverM(forceFileIOThreadLoopThroughSavers)
-      ).as(())
-    }
+  def flushChunkSaverQueue[F[_]](implicit F: Concurrent[F], logger: Logger): F[Unit] = {
+    F.delay(println("Save queue flushing started..."))
+  } >> {
+    F.race(
+      relaxFileIOThreadThrottle[F],
+      F.foreverM(forceFileIOThreadLoopThroughSavers)
+    ).as(())
+  } >> {
+    F.delay(println("Save queue flushing done!"))
+  }
 
 }
