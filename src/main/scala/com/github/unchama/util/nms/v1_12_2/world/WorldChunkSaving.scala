@@ -9,19 +9,25 @@ import org.slf4j.Logger
 object WorldChunkSaving {
 
   private object Reflection {
-    lazy val fileIOThreadClass: Class[_] = Class.forName("net.minecraft.server.v1_12_R1.FileIOThread")
 
-    // public static FileIOThread method()
-    lazy val fileIOThreadInstanceProvider: Method = fileIOThreadClass.getDeclaredMethod("a")
+    object FileIOThread {
+      lazy val clazz: Class[_] = Class.forName("net.minecraft.server.v1_12_R1.FileIOThread")
 
-    lazy val fileIOThreadInstance: AnyRef = fileIOThreadInstanceProvider.invoke(null)
+      // public static FileIOThread method()
+      lazy val getInstance: Method = clazz.getDeclaredMethod("a")
 
-    // public void method()
-    lazy val relaxFileIOThreadThrottleMethod: Method = fileIOThreadInstance.getClass.getDeclaredMethod("b")
+      lazy val instance: AnyRef = getInstance.invoke(null)
 
-    // private void method()
-    lazy val forceFileIOThreadLoopThroughSaversMethod: Method = fileIOThreadInstance.getClass.getDeclaredMethod("c")
+      // public void method()
+      lazy val relaxThrottle: Method = instance.getClass.getDeclaredMethod("b")
+
+      // private void method()
+      lazy val forceLoopThroughSavers: Method = instance.getClass.getDeclaredMethod("c")
+    }
+
   }
+
+  import Reflection._
 
   /**
    * FileIOThread is a gateway object to handle chunk saves,
@@ -31,7 +37,7 @@ object WorldChunkSaving {
    * This action completes when there are no more chunks to be saved.
    */
   private def relaxFileIOThreadThrottle[F[_] : Sync]: F[Unit] = Sync[F].delay {
-    Reflection.relaxFileIOThreadThrottleMethod.invoke(Reflection.fileIOThreadInstance)
+    FileIOThread.relaxThrottle.invoke(FileIOThread.instance)
   }
 
   /**
@@ -42,9 +48,9 @@ object WorldChunkSaving {
    * invokes `IAsyncChunkSaver`s' pop-and-process method.
    */
   private def forceFileIOThreadLoopThroughSavers[F[_] : Sync]: F[Unit] = Sync[F].delay {
-    Reflection.fileIOThreadInstance.synchronized {
-      Reflection.forceFileIOThreadLoopThroughSaversMethod.setAccessible(true)
-      Reflection.forceFileIOThreadLoopThroughSaversMethod.invoke(Reflection.fileIOThreadInstance)
+    FileIOThread.instance.synchronized {
+      FileIOThread.forceLoopThroughSavers.setAccessible(true)
+      FileIOThread.forceLoopThroughSavers.invoke(FileIOThread.instance)
     }
   }
 
