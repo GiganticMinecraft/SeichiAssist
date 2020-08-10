@@ -9,20 +9,35 @@ import org.slf4j.Logger
 object WorldChunkSaving {
 
   private object Reflection {
+    val nmsPackage_1_12_R1 = "net.minecraft.server.v1_12_R1"
 
     object FileIOThread {
-      lazy val clazz: Class[_] = Class.forName("net.minecraft.server.v1_12_R1.FileIOThread")
+      lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.FileIOThread")
 
       // public static FileIOThread method()
-      lazy val getInstance: Method = clazz.getDeclaredMethod("a")
+      lazy val getInstance: Unit => AnyRef = {
+        val method = clazz.getDeclaredMethod("a")
+        _ => method.invoke(null)
+      }
 
-      lazy val instance: AnyRef = getInstance.invoke(null)
+      lazy val instance: AnyRef = getInstance()
 
       // public void method()
-      lazy val relaxThrottle: Method = instance.getClass.getDeclaredMethod("b")
+      lazy val relaxThrottle: AnyRef => Unit => Unit = {
+        val method = clazz.getDeclaredMethod("b")
+        receiver => _ => method.invoke(receiver)
+      }
 
+      // public void method()
+      // originally
       // private void method()
-      lazy val forceLoopThroughSavers: Method = instance.getClass.getDeclaredMethod("c")
+      lazy val forceLoopThroughSavers: AnyRef => Unit => Unit = {
+        val method = instance.getClass.getDeclaredMethod("c")
+
+        method.setAccessible(true)
+
+        receiver => _ => method.invoke(receiver)
+      }
     }
 
   }
@@ -37,7 +52,7 @@ object WorldChunkSaving {
    * This action completes when there are no more chunks to be saved.
    */
   private def relaxFileIOThreadThrottle[F[_] : Sync]: F[Unit] = Sync[F].delay {
-    FileIOThread.relaxThrottle.invoke(FileIOThread.instance)
+    FileIOThread.relaxThrottle(FileIOThread.instance)()
   }
 
   /**
@@ -49,8 +64,7 @@ object WorldChunkSaving {
    */
   private def forceFileIOThreadLoopThroughSavers[F[_] : Sync]: F[Unit] = Sync[F].delay {
     FileIOThread.instance.synchronized {
-      FileIOThread.forceLoopThroughSavers.setAccessible(true)
-      FileIOThread.forceLoopThroughSavers.invoke(FileIOThread.instance)
+      FileIOThread.forceLoopThroughSavers(FileIOThread.instance)()
     }
   }
 
