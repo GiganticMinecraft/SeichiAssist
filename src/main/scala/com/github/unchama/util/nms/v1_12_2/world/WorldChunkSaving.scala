@@ -1,6 +1,7 @@
 package com.github.unchama.util.nms.v1_12_2.world
 
 import cats.effect.{Concurrent, Sync}
+import com.github.unchama.util.nms.v1_12_2.world.WorldChunkSaving.Reflection.WorldServer.clazz
 import org.slf4j.Logger
 
 
@@ -112,27 +113,18 @@ object WorldChunkSaving {
           case (x, z) => method.invoke(receiver, x, z)
         }
       }
-    }
-
-    object ChunkProviderServer {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.ChunkProviderServer")
 
       // public boolean method(int, int)
+      // originally
+      // protected boolean method(int, int, boolean)
       lazy val isChunkLoaded: AnyRef => (Int, Int) => Boolean = {
-        val method = clazz.getDeclaredMethod("isLoaded", Integer.TYPE, Integer.TYPE)
+        val method = clazz.getDeclaredMethod("isChunkLoaded", Integer.TYPE, Integer.TYPE, java.lang.Boolean.TYPE)
+
+        method.setAccessible(true)
+
         receiver => {
-          case (x, z) => method.invoke(receiver, x, z).asInstanceOf[java.lang.Boolean]
+          case (x, z) => method.invoke(receiver, x, z, true).asInstanceOf[java.lang.Boolean]
         }
-      }
-    }
-
-    object WorldServer {
-      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.WorldServer")
-
-      // public ChunkProviderServer method(int, int)
-      lazy val getChunkProviderServer: AnyRef => () => AnyRef = {
-        val method = clazz.getDeclaredMethod("getChunkProviderServer")
-        receiver => () => method.invoke(receiver)
       }
     }
 
@@ -212,15 +204,10 @@ object WorldChunkSaving {
       val entityChunkX = Entity.chunkX(entity)
       val entityChunkZ = Entity.chunkZ(entity)
 
-      if (Entity.loadedToAChunk(entity)) {
-        val chunkProviderServer = WorldServer.getChunkProviderServer(nmsWorldServer)
-        val isChunkLoaded = ChunkProviderServer.isChunkLoaded(chunkProviderServer)(entityChunkX, entityChunkZ)
+      if (Entity.loadedToAChunk(entity) && World.isChunkLoaded(nmsWorldServer)(entityChunkX, entityChunkZ)) {
+        val chunk = World.getChunkAtCoordinate(world)(entityChunkX, entityChunkZ)
 
-        if (isChunkLoaded) {
-          val chunk = World.getChunkAtCoordinate(world)(entityChunkX, entityChunkZ)
-
-          Chunk.untrackEntity(chunk)(entity)
-        }
+        Chunk.untrackEntity(chunk)(entity)
       }
 
       World.untrackEntity(nmsWorldServer)
