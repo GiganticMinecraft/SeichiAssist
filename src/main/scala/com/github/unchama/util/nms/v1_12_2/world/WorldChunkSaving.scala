@@ -119,7 +119,7 @@ object WorldChunkSaving {
 
       // public boolean method(int, int)
       lazy val isChunkLoaded: AnyRef => (Int, Int) => Boolean = {
-        val method = clazz.getDeclaredMethod("isLoaded", classOf[Integer], classOf[Integer])
+        val method = clazz.getDeclaredMethod("isLoaded", Integer.TYPE, Integer.TYPE)
         receiver => {
           case (x, z) => method.invoke(receiver, x, z).asInstanceOf[java.lang.Boolean]
         }
