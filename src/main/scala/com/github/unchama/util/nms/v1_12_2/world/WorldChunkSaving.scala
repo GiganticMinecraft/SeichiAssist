@@ -1,6 +1,7 @@
 package com.github.unchama.util.nms.v1_12_2.world
 
 import cats.effect.{Concurrent, Sync}
+import com.github.unchama.util.nms.v1_12_2.world.WorldChunkSaving.Reflection.World.clazz
 import org.slf4j.Logger
 
 
@@ -112,10 +113,14 @@ object WorldChunkSaving {
           case (x, z) => method.invoke(receiver, x, z)
         }
       }
+    }
 
-      // public bool method(int, int)
+    object WorldServer {
+      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.WorldServer")
+
+      // public boolean method(int, int)
       // originally
-      // protected bool method(int, int, bool)
+      // protected boolean method(int, int, boolean)
       lazy val isChunkLoaded: AnyRef => (Int, Int) => Boolean = {
         val method = clazz.getDeclaredMethod("isChunkLoaded", classOf[Integer], classOf[Integer], classOf[java.lang.Boolean])
         method.setAccessible(true)
@@ -123,6 +128,7 @@ object WorldChunkSaving {
           case (x, z) => method.invoke(receiver, x, z, true).asInstanceOf[Boolean]
         }
       }
+
     }
 
     object CraftWorld {
@@ -192,22 +198,22 @@ object WorldChunkSaving {
   }
 
   def flushEntityRemovalQueue[F[_]](world: org.bukkit.World)(implicit F: Sync[F]): F[Unit] = F.delay {
-    val nmsWorld = CraftWorld.nmsWorld(world)
-    val removalQueueAlias = World.entityRemovalQueue(nmsWorld)
+    val nmsWorldServer = CraftWorld.nmsWorld(world)
+    val removalQueueAlias = World.entityRemovalQueue(nmsWorldServer)
 
-    World.entityList(nmsWorld).removeAll(removalQueueAlias)
+    World.entityList(nmsWorldServer).removeAll(removalQueueAlias)
 
     removalQueueAlias.asScala.foreach { entity =>
       val entityChunkX = Entity.chunkX(entity)
       val entityChunkZ = Entity.chunkZ(entity)
 
-      if (Entity.loadedToAChunk(entity) && World.isChunkLoaded(nmsWorld)(entityChunkX, entityChunkZ)) {
+      if (Entity.loadedToAChunk(entity) && WorldServer.isChunkLoaded(nmsWorldServer)(entityChunkX, entityChunkZ)) {
         val chunk = World.getChunkAtCoordinate(world)(entityChunkX, entityChunkZ)
 
         Chunk.untrackEntity(chunk)(entity)
       }
 
-      World.untrackEntity(nmsWorld)
+      World.untrackEntity(nmsWorldServer)
     }
 
     removalQueueAlias.clear()
