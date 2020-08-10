@@ -80,18 +80,18 @@ object WorldChunkSaving {
       private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.World")
 
       // public final List<Entity> field
-      lazy val entityList: AnyRef => java.util.List[Object] = {
+      lazy val entityList: AnyRef => java.util.List[_ <: AnyRef] = {
         val field = clazz.getDeclaredField("entityList")
-        receiver => field.get(receiver).asInstanceOf
+        receiver => field.get(receiver).asInstanceOf[java.util.List[_ <: AnyRef]]
       }
 
       // public final List<Entity> field
       // originally
       // protected final List<Entity> field
-      lazy val entityRemovalQueue: AnyRef => java.util.List[Object] = {
+      lazy val entityRemovalQueue: AnyRef => java.util.List[_ <: AnyRef] = {
         val field = clazz.getDeclaredField("f")
         field.setAccessible(true)
-        receiver => field.get(receiver).asInstanceOf
+        receiver => field.get(receiver).asInstanceOf[java.util.List[_ <: AnyRef]]
       }
 
       // public void method(Entity)
