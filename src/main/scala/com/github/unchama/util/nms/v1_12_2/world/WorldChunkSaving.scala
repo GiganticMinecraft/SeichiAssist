@@ -1,18 +1,20 @@
 package com.github.unchama.util.nms.v1_12_2.world
 
-import java.lang.reflect.Method
-
 import cats.effect.{Concurrent, Sync}
+import org.bukkit.World
 import org.slf4j.Logger
 
 
 object WorldChunkSaving {
 
+  import scala.jdk.CollectionConverters._
+
   private object Reflection {
-    val nmsPackage_1_12_R1 = "net.minecraft.server.v1_12_R1"
+    private val nmsPackage_1_12_R1 = "net.minecraft.server.v1_12_R1"
+    private val craftBukkitPackage_1_12_R1 = "org.bukkit.craftbukkit.v1_12_R1"
 
     object FileIOThread {
-      lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.FileIOThread")
+      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.FileIOThread")
 
       // public static FileIOThread method()
       lazy val getInstance: Unit => AnyRef = {
@@ -37,6 +39,104 @@ object WorldChunkSaving {
         method.setAccessible(true)
 
         receiver => _ => method.invoke(receiver)
+      }
+    }
+
+    object Entity {
+      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.Entity")
+
+      // public int field
+      lazy val chunkX: AnyRef => Int = {
+        val field = clazz.getDeclaredField("ab")
+        field.getInt(_)
+      }
+
+      // public int field
+      lazy val chunkZ: AnyRef => Int = {
+        val field = clazz.getDeclaredField("ad")
+        field.getInt(_)
+      }
+
+      // public boolean field
+      lazy val loadedToAChunk: AnyRef => Boolean = {
+        // NOTE: it is not clear what this field is doing, but given that this field is used in
+        // switching chunk processing, it seems to indicate if the entity is loaded into a chunk
+        val field = clazz.getDeclaredField("aa")
+        field.getBoolean(_)
+      }
+    }
+
+    object Chunk {
+      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.Chunk")
+
+      // public void method(Entity)
+      lazy val untrackEntity: AnyRef => AnyRef => Unit = {
+        val method = clazz.getDeclaredMethod("b", Entity.clazz)
+        receiver => entity => method.invoke(receiver, entity)
+      }
+    }
+
+    object World {
+      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.World")
+
+      // public final List<Entity> field
+      lazy val entityList: AnyRef => java.util.List[Object] = {
+        val field = clazz.getDeclaredField("entityList")
+        receiver => field.get(receiver).asInstanceOf
+      }
+
+      // public final List<Entity> field
+      // originally
+      // protected final List<Entity> field
+      lazy val entityRemovalQueue: AnyRef => java.util.List[Object] = {
+        val field = clazz.getDeclaredField("f")
+        field.setAccessible(true)
+        receiver => field.get(receiver).asInstanceOf
+      }
+
+      // public void method(Entity)
+      // originally
+      // protected void method(Entity)
+      lazy val untrackEntity: AnyRef => AnyRef => Unit = {
+        val method = clazz.getDeclaredMethod("c", Entity.clazz)
+
+        method.setAccessible(true)
+
+        receiver => entity => method.invoke(receiver, entity)
+      }
+
+      // public Chunk method(int, int)
+      lazy val getChunkAtCoordinate: AnyRef => (Int, Int) => AnyRef = {
+        val method = clazz.getDeclaredMethod("getChunkAt", classOf[Integer], classOf[Integer])
+        receiver => {
+          case (x, z) => method.invoke(receiver, x, z)
+        }
+      }
+
+      // public bool method(int, int)
+      // originally
+      // protected bool method(int, int, bool)
+      lazy val isChunkLoaded: AnyRef => (Int, Int) => Boolean = {
+        val method = clazz.getDeclaredMethod("isChunkLoaded", classOf[Integer], classOf[Integer])
+        method.setAccessible(true)
+        receiver => {
+          case (x, z) => method.invoke(receiver, x, z, true).asInstanceOf[Boolean]
+        }
+      }
+    }
+
+    object CraftWorld {
+      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$craftBukkitPackage_1_12_R1.CraftWorld")
+
+      // public final nms.WorldServer (<: nms.World)
+      // originally
+      // private final nms.WorldServer
+      lazy val nmsWorld: World => AnyRef = {
+        val field = clazz.getDeclaredField("world")
+
+        field.setAccessible(true)
+
+        receiver => field.get(receiver)
       }
     }
 
@@ -91,4 +191,25 @@ object WorldChunkSaving {
     F.delay(println("Save queue flushing done!"))
   }
 
+  def flushEntityRemovalQueue[F[_]](world: World)(implicit F: Sync[F]): F[Unit] = F.delay {
+    val nmsWorld = CraftWorld.nmsWorld(world)
+    val removalQueueAlias = World.entityRemovalQueue(nmsWorld)
+
+    World.entityList(nmsWorld).removeAll(removalQueueAlias)
+
+    removalQueueAlias.asScala.foreach { entity =>
+      val entityChunkX = Entity.chunkX(entity)
+      val entityChunkZ = Entity.chunkZ(entity)
+
+      if (Entity.loadedToAChunk(entity) && World.isChunkLoaded(nmsWorld)(entityChunkX, entityChunkZ)) {
+        val chunk = World.getChunkAtCoordinate(world)(entityChunkX, entityChunkZ)
+
+        Chunk.untrackEntity(chunk)(entity)
+      }
+
+      World.untrackEntity(nmsWorld)
+    }
+
+    removalQueueAlias.clear()
+  }
 }
