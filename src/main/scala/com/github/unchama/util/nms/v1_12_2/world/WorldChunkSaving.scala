@@ -1,7 +1,6 @@
 package com.github.unchama.util.nms.v1_12_2.world
 
 import cats.effect.{Concurrent, Sync}
-import com.github.unchama.util.nms.v1_12_2.world.WorldChunkSaving.Reflection.World.clazz
 import org.slf4j.Logger
 
 
