@@ -84,12 +84,17 @@ object WorldLevelData {
         .flushChunkSaverQueue[F]
     }.as(())
 
+    val flushEntityRemovalQueue =
+      com.github.unchama.util.nms.v1_12_2.world
+        .WorldChunkSaving
+        .flushEntityRemovalQueue(world)
+
     val chunkSaverQueueFlushInterval = 1000
 
     chunkConversionEffects
       .mapWithIndex { case (effect, index) =>
         if (index % chunkSaverQueueFlushInterval == 0)
-          effect >> queueChunkSaverFlush
+          effect >> flushEntityRemovalQueue >> queueChunkSaverFlush
         else
           effect
       }
