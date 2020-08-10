@@ -1,7 +1,6 @@
 package com.github.unchama.util.nms.v1_12_2.world
 
 import cats.effect.{Concurrent, Sync}
-import org.bukkit.World
 import org.slf4j.Logger
 
 
@@ -14,36 +13,37 @@ object WorldChunkSaving {
     private val craftBukkitPackage_1_12_R1 = "org.bukkit.craftbukkit.v1_12_R1"
 
     object FileIOThread {
-      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.FileIOThread")
+      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.FileIOThread")
 
       // public static FileIOThread method()
-      lazy val getInstance: Unit => AnyRef = {
+      lazy val getInstance: () => AnyRef = {
         val method = clazz.getDeclaredMethod("a")
-        _ => method.invoke(null)
+
+        () => method.invoke(null)
       }
 
       lazy val instance: AnyRef = getInstance()
 
       // public void method()
-      lazy val relaxThrottle: AnyRef => Unit => Unit = {
+      lazy val relaxThrottle: AnyRef => () => Unit = {
         val method = clazz.getDeclaredMethod("b")
-        receiver => _ => method.invoke(receiver)
+        receiver => () => method.invoke(receiver)
       }
 
       // public void method()
       // originally
       // private void method()
-      lazy val forceLoopThroughSavers: AnyRef => Unit => Unit = {
+      lazy val forceLoopThroughSavers: AnyRef => () => Unit = {
         val method = instance.getClass.getDeclaredMethod("c")
 
         method.setAccessible(true)
 
-        receiver => _ => method.invoke(receiver)
+        receiver => () => method.invoke(receiver)
       }
     }
 
     object Entity {
-      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.Entity")
+      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.Entity")
 
       // public int field
       lazy val chunkX: AnyRef => Int = {
@@ -67,7 +67,7 @@ object WorldChunkSaving {
     }
 
     object Chunk {
-      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.Chunk")
+      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.Chunk")
 
       // public void method(Entity)
       lazy val untrackEntity: AnyRef => AnyRef => Unit = {
@@ -77,7 +77,7 @@ object WorldChunkSaving {
     }
 
     object World {
-      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.World")
+      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$nmsPackage_1_12_R1.World")
 
       // public final List<Entity> field
       lazy val entityList: AnyRef => java.util.List[Object] = {
@@ -126,12 +126,12 @@ object WorldChunkSaving {
     }
 
     object CraftWorld {
-      private[Reflection$] lazy val clazz: Class[_] = Class.forName(s"$craftBukkitPackage_1_12_R1.CraftWorld")
+      private[Reflection] lazy val clazz: Class[_] = Class.forName(s"$craftBukkitPackage_1_12_R1.CraftWorld")
 
       // public final nms.WorldServer (<: nms.World)
       // originally
       // private final nms.WorldServer
-      lazy val nmsWorld: World => AnyRef = {
+      lazy val nmsWorld: org.bukkit.World => AnyRef = {
         val field = clazz.getDeclaredField("world")
 
         field.setAccessible(true)
@@ -191,7 +191,7 @@ object WorldChunkSaving {
     F.delay(println("Save queue flushing done!"))
   }
 
-  def flushEntityRemovalQueue[F[_]](world: World)(implicit F: Sync[F]): F[Unit] = F.delay {
+  def flushEntityRemovalQueue[F[_]](world: org.bukkit.World)(implicit F: Sync[F]): F[Unit] = F.delay {
     val nmsWorld = CraftWorld.nmsWorld(world)
     val removalQueueAlias = World.entityRemovalQueue(nmsWorld)
 
