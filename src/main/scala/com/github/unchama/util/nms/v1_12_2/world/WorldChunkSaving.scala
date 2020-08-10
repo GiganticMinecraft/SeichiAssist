@@ -107,7 +107,7 @@ object WorldChunkSaving {
 
       // public Chunk method(int, int)
       lazy val getChunkAtCoordinate: AnyRef => (Int, Int) => AnyRef = {
-        val method = clazz.getDeclaredMethod("getChunkAt", classOf[Integer], classOf[Integer])
+        val method = clazz.getDeclaredMethod("getChunkAt", Integer.TYPE, Integer.TYPE)
         receiver => {
           case (x, z) => method.invoke(receiver, x, z)
         }
