@@ -92,10 +92,6 @@ object WorldLevelData {
       WorldChunkSaving.flushEntityRemovalQueue(world)
     }
 
-    val logWorldStatistics = worldRef.get >>= { world =>
-      WorldChunkSaving.debugWorldStatistics(world)
-    }
-
     val chunkSaverQueueFlushInterval = 1000
     val reloadWorldInterval = 15000
 
@@ -111,7 +107,7 @@ object WorldLevelData {
     chunkConversionEffects
       .mapWithIndex { case (effect, index) =>
         if (index % chunkSaverQueueFlushInterval == 0)
-          effect >> logWorldStatistics >> flushEntityRemovalQueue >> queueChunkSaverFlush
+          effect >> flushEntityRemovalQueue >> queueChunkSaverFlush
         else
           effect
       }
