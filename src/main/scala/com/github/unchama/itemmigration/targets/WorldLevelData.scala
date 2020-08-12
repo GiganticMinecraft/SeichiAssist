@@ -2,14 +2,13 @@ package com.github.unchama.itemmigration.targets
 
 import cats.effect.Concurrent
 import cats.effect.concurrent.Ref
-import cats.effect.syntax.effect
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.block.Container
 import org.bukkit.entity.{Item, ItemFrame}
 import org.bukkit.inventory.{InventoryHolder, ItemStack}
-import org.bukkit.{Bukkit, Chunk, World, WorldCreator}
+import org.bukkit.{Bukkit, World, WorldCreator}
 import org.slf4j.Logger
 
 /**
