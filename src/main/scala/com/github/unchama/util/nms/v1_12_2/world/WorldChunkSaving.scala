@@ -209,7 +209,7 @@ object WorldChunkSaving {
         Chunk.untrackEntity(chunk)(entity)
       }
 
-      World.untrackEntity(nmsWorldServer)
+      World.untrackEntity(nmsWorldServer)(entity)
     }
 
     removalQueueAlias.clear()
