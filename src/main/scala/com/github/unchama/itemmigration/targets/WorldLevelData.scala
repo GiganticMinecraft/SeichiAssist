@@ -92,7 +92,7 @@ object WorldLevelData {
     }
 
     val chunkSaverQueueFlushInterval = 1000
-    val reloadWorldInterval = 15000
+    val reloadWorldInterval = 5000
 
     val reloadWorld = {
       worldRef.get >>= { world =>
