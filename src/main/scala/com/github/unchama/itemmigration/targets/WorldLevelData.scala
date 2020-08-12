@@ -2,13 +2,14 @@ package com.github.unchama.itemmigration.targets
 
 import cats.effect.Concurrent
 import cats.effect.concurrent.Ref
+import cats.effect.syntax.effect
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.block.Container
 import org.bukkit.entity.{Item, ItemFrame}
 import org.bukkit.inventory.{InventoryHolder, ItemStack}
-import org.bukkit.{Bukkit, World, WorldCreator}
+import org.bukkit.{Bukkit, Chunk, World, WorldCreator}
 import org.slf4j.Logger
 
 /**
@@ -52,6 +53,7 @@ object WorldLevelData {
     val worldRef = Ref.unsafe(originalWorld)
 
     import cats.implicits._
+    import com.github.unchama.util.nms.v1_12_2.world.WorldChunkSaving
 
     val migrateChunk: World => ((Int, Int)) => F[Unit] = world => chunkCoordinate => F.delay {
       val chunk = world.getChunkAt(chunkCoordinate._1, chunkCoordinate._2)
@@ -71,6 +73,11 @@ object WorldLevelData {
           frame.setItem(conversion(frame.getItem))
         case _ =>
       }
+
+      // メモリ解放を促す
+      if (!world.unloadChunk(chunk)) {
+        println(s"チャンク(${chunk.getX}, ${chunk.getZ})はアンロードされませんでした。")
+      }
     }
 
     val chunkConversionEffects: List[F[Unit]] =
@@ -78,6 +85,19 @@ object WorldLevelData {
         worldRef.get >>=
           (migrateChunk(_)(chunkCoordinate))
       }
+
+    val queueChunkSaverFlush = F.start(WorldChunkSaving.flushChunkSaverQueue[F]).as(())
+
+    val flushEntityRemovalQueue = worldRef.get >>= { world =>
+      WorldChunkSaving.flushEntityRemovalQueue(world)
+    }
+
+    val logWorldStatistics = worldRef.get >>= { world =>
+      WorldChunkSaving.debugWorldStatistics(world)
+    }
+
+    val chunkSaverQueueFlushInterval = 1000
+    val reloadWorldInterval = 15000
 
     val reloadWorld =
       worldRef.get >>= { world =>
@@ -88,9 +108,13 @@ object WorldLevelData {
         }
       } >>= worldRef.set
 
-    val reloadWorldInterval = 2500
-
     chunkConversionEffects
+      .mapWithIndex { case (effect, index) =>
+        if (index % chunkSaverQueueFlushInterval == 0)
+          effect >> logWorldStatistics >> flushEntityRemovalQueue >> queueChunkSaverFlush
+        else
+          effect
+      }
       .mapWithIndex { case (effect, index) =>
         if (index % reloadWorldInterval == 0)
           effect >> reloadWorld
