@@ -1,13 +1,14 @@
 package com.github.unchama.itemmigration.targets
 
 import cats.effect.Concurrent
+import cats.effect.concurrent.Ref
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
 import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.util.MillisecondTimer
-import org.bukkit.World
 import org.bukkit.block.Container
 import org.bukkit.entity.{Item, ItemFrame}
 import org.bukkit.inventory.{InventoryHolder, ItemStack}
+import org.bukkit.{Bukkit, World, WorldCreator}
 import org.slf4j.Logger
 
 /**
@@ -45,60 +46,57 @@ case class WorldLevelData[F[_]](getWorlds: F[IndexedSeq[World]],
 }
 
 object WorldLevelData {
-  def convertChunkWise[F[_]](world: World, targetChunks: Seq[(Int, Int)], conversion: ItemStack => ItemStack)
+  def convertChunkWise[F[_]](originalWorld: World, targetChunks: Seq[(Int, Int)], conversion: ItemStack => ItemStack)
                             (implicit F: Concurrent[F], logger: Logger): F[Unit] = {
 
-    val chunkConversionEffects =
-      for {
-        (chunkX, chunkZ) <- targetChunks.toList
-      } yield F.delay {
-        val chunk = world.getChunkAt(chunkX, chunkZ)
-
-        chunk.getTileEntities.foreach {
-          case containerState: Container =>
-            MigrationHelper.convertEachStackIn(containerState.getInventory)(conversion)
-          case _ =>
-        }
-
-        chunk.getEntities.foreach {
-          case inventoryHolder: InventoryHolder =>
-            MigrationHelper.convertEachStackIn(inventoryHolder.getInventory)(conversion)
-          case item: Item =>
-            item.setItemStack(conversion(item.getItemStack))
-          case frame: ItemFrame =>
-            frame.setItem(conversion(frame.getItem))
-          case _ =>
-        }
-
-        // メモリ解放を促す
-        if (!world.unloadChunk(chunk)) {
-          println(s"チャンク(${chunk.getX}, ${chunk.getZ})はアンロードされませんでした。")
-        }
-      }
+    val worldRef = Ref.unsafe(originalWorld)
 
     import cats.implicits._
 
-    val queueChunkSaverFlush = F.start {
-      com.github.unchama.util.nms.v1_12_2.world
-        .WorldChunkSaving
-        .flushChunkSaverQueue[F]
-    }.as(())
+    val migrateChunk: World => ((Int, Int)) => F[Unit] = world => chunkCoordinate => F.delay {
+      val chunk = world.getChunkAt(chunkCoordinate._1, chunkCoordinate._2)
 
-    val flushEntityRemovalQueue =
-      com.github.unchama.util.nms.v1_12_2.world
-        .WorldChunkSaving
-        .flushEntityRemovalQueue(world)
+      chunk.getTileEntities.foreach {
+        case containerState: Container =>
+          MigrationHelper.convertEachStackIn(containerState.getInventory)(conversion)
+        case _ =>
+      }
 
-    val chunkSaverQueueFlushInterval = 1000
+      chunk.getEntities.foreach {
+        case inventoryHolder: InventoryHolder =>
+          MigrationHelper.convertEachStackIn(inventoryHolder.getInventory)(conversion)
+        case item: Item =>
+          item.setItemStack(conversion(item.getItemStack))
+        case frame: ItemFrame =>
+          frame.setItem(conversion(frame.getItem))
+        case _ =>
+      }
+    }
+
+    val chunkConversionEffects: List[F[Unit]] =
+      targetChunks.toList.map { chunkCoordinate =>
+        worldRef.get >>=
+          (migrateChunk(_)(chunkCoordinate))
+      }
+
+    val reloadWorld =
+      worldRef.get >>= { world =>
+        F.delay {
+          val creator = WorldCreator.name(world.getName).copy(world)
+          Bukkit.unloadWorld(world, true)
+          Bukkit.createWorld(creator)
+        }
+      } >>= worldRef.set
+
+    val reloadWorldInterval = 2500
 
     chunkConversionEffects
       .mapWithIndex { case (effect, index) =>
-        if (index % chunkSaverQueueFlushInterval == 0)
-          effect >> flushEntityRemovalQueue >> queueChunkSaverFlush
+        if (index % reloadWorldInterval == 0)
+          effect >> reloadWorld
         else
           effect
       }
-      .sequence
-      .as(())
+      .sequence >> reloadWorld
   }
 }
