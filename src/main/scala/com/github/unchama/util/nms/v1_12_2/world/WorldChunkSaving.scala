@@ -182,16 +182,12 @@ object WorldChunkSaving {
    * This action is helpful in such a situation; it starts a fiber,
    * within which any unloaded unsaved chunks will be forced to be saved.
    */
-  def flushChunkSaverQueue[F[_]](implicit F: Concurrent[F], logger: Logger): F[Unit] = {
-    F.delay(println("Save queue flushing started..."))
-  } >> {
+  def flushChunkSaverQueue[F[_]](implicit F: Concurrent[F]): F[Unit] = {
     F.race(
       relaxFileIOThreadThrottle[F],
       F.foreverM(forceFileIOThreadLoopThroughSavers)
-    ).as(())
-  } >> {
-    F.delay(println("Save queue flushing done!"))
-  }
+    )
+  }.as(())
 
   def flushEntityRemovalQueue[F[_]](world: org.bukkit.World)(implicit F: Sync[F]): F[Unit] = F.delay {
     val nmsWorldServer = CraftWorld.nmsWorld(world)

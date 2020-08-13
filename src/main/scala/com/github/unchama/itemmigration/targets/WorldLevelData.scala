@@ -85,7 +85,14 @@ object WorldLevelData {
           (migrateChunk(_)(chunkCoordinate))
       }
 
-    val queueChunkSaverFlush = F.start(WorldChunkSaving.flushChunkSaverQueue[F]).as(())
+    val queueChunkSaverFlush =
+      F.delay {
+        logger.info("チャンクの保存キューの処理を要求します…")
+      } >> F.start {
+        WorldChunkSaving.flushChunkSaverQueue[F] >> F.delay {
+          logger.info("チャンクの保存キューが処理されました")
+        }
+      }
 
     val flushEntityRemovalQueue = worldRef.get >>= { world =>
       WorldChunkSaving.flushEntityRemovalQueue(world)
