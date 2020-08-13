@@ -2,6 +2,7 @@ package com.github.unchama.generic.effect
 
 import cats.effect.{ContextShift, IO, Resource, Timer}
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
+import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -81,14 +82,20 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }
 
       import cats.implicits._
-      import scala.concurrent.duration._
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            IO { impureFunction(o) } >> IO.never
+            //noinspection ZeroIndexToHead
+            IO {
+              impureFunction(o)
+            } >>
+              blockerList(0).await() >>
+              IO.never
           }.start
-        _ <- IO.sleep(1.second) >> firstResourceScope.release(NumberedObject(0))
+        _ <- blockerList(1).await()
+        _ <- firstResourceScope.release(NumberedObject(0))
         _ <- IO(impureFunction2(()))
       } yield ()
 
@@ -109,14 +116,20 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }
 
       import cats.implicits._
-      import scala.concurrent.duration._
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            IO { impureFunction(o) } >> IO.never
+            //noinspection ZeroIndexToHead
+            IO {
+              impureFunction(o)
+            } >>
+              blockerList(0).await >>
+              IO.never
           }.start
-        _ <- IO.sleep(1.second) >> firstResourceScope.releaseAll
+        _ <- blockerList(1).await()
+        _ <- firstResourceScope.releaseAll
         _ <- IO(impureFunction2(()))
       } yield ()
 
@@ -207,14 +220,20 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }
 
       import cats.implicits._
-      import scala.concurrent.duration._
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            IO { impureFunction(o) } >> IO.never
+            //noinspection ZeroIndexToHead
+            IO {
+              impureFunction(o)
+            } >>
+              blockerList(0).await >>
+              IO.never
           }.start
-        _ <- IO.sleep(1.second) >> firstResourceScope.releaseSome(NumberedObject(0))
+        _ <- blockerList(1).await()
+        _ <- firstResourceScope.releaseSome(NumberedObject(0))
         _ <- IO(impureFunction2(()))
       } yield ()
 
@@ -235,14 +254,20 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }
 
       import cats.implicits._
-      import scala.concurrent.duration._
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            IO { impureFunction(o) } >> IO.never
+            //noinspection ZeroIndexToHead
+            IO {
+              impureFunction(o)
+            } >>
+              blockerList(0).await() >>
+              IO.never
           }.start
-        _ <- IO.sleep(1.second) >> firstResourceScope.releaseAll.value
+        _ <- blockerList(1).await()
+        _ <- firstResourceScope.releaseAll.value
         _ <- IO(impureFunction2(()))
       } yield ()
 
