@@ -39,17 +39,17 @@ object LinkedSequencer {
   }
 
   case class LinkedBlocker[F[_] : Async](previous: Option[LinkedBlocker[F]],
-                                         blockedBlocker: CompletableBlocker[F]) extends Blocker[F] {
+                                         internalBlocker: CompletableBlocker[F]) extends Blocker[F] {
 
     /**
      * awaitが返す計算は、実行された時次の事後条件を満たす：
-     *  - [[previous]] が空でない場合、中にある [[previous]] の [[blockedBlocker]] が完了している
-     *  - このオブジェクトの [[blockedBlocker]] が完了している
+     *  - [[previous]] が空でない場合、中にある [[previous]] の [[internalBlocker]] が完了している
+     *  - このオブジェクトの [[internalBlocker]] が完了している
      */
     override def await(): F[Unit] = {
-      val waitPrevious = previous.map(_.blockedBlocker.await())
+      val waitPrevious = previous.map(_.internalBlocker.await())
 
-      waitPrevious.getOrElse(Sync[F].unit) >> blockedBlocker.complete
+      waitPrevious.getOrElse(Sync[F].unit) >> internalBlocker.complete
     }
   }
 
