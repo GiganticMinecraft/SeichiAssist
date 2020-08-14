@@ -92,7 +92,7 @@ object WorldLevelData {
         WorldChunkSaving.flushChunkSaverQueue[F] >> F.delay {
           logger.info("チャンクの保存キューが処理されました")
         }
-      }
+      }.as(())
 
     val flushEntityRemovalQueue = worldRef.get >>= { world =>
       WorldChunkSaving.flushEntityRemovalQueue(world)
