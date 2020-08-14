@@ -30,21 +30,21 @@ class SequencerSpec extends AnyWordSpec {
 
         val program = for {
           blockerList <- sequencer.newBlockerList
-          programList =
-          blockerList
-            .take(randomizedProgramListSize * 2)
-            .toList
-            .grouped(2)
-            .zipWithIndex
-            .map { case (adjacentBlockers, index) =>
-              val List(pre, post) = adjacentBlockers
+          indexedPrograms = {
+            blockerList
+              .take(randomizedProgramListSize * 2)
+              .toList
+              .grouped(2)
+              .zipWithIndex
+              .map { case (adjacentBlockers, index) =>
+                val List(pre, post) = adjacentBlockers
 
-              pre.await() >> IO(queue.add(index)) >> post.await()
-            }
-            .toList
-          scrambledPrograms = Random.shuffle(programList)
-          startedFibers <- scrambledPrograms.map(_.start).sequence
-          _ <- startedFibers.map(_.join).sequence
+                pre.await() >> IO(queue.add(index)) >> post.await()
+              }
+          }
+          scrambledPrograms = Random.shuffle(indexedPrograms).toList
+          startedFibers <- scrambledPrograms.traverse(_.start)
+          _ <- startedFibers.traverse(_.join)
         } yield ()
 
         program.unsafeRunSync()
