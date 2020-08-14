@@ -52,6 +52,7 @@ class SequencerSpec extends AnyWordSpec {
         val completionOrder = queue.asScala.toList
 
         assert(completionOrder == completionOrder.sorted)
+        assert(completionOrder.size == randomizedProgramListSize)
       }
     }
   }
