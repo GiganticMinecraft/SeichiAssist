@@ -83,20 +83,22 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       import cats.implicits._
 
+      def runImpureFunction(o: NumberedObject) = IO(impureFunction(o))
+
+      val runImpureFunction2 = IO(impureFunction2())
+
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
             //noinspection ZeroIndexToHead
-            IO {
-              impureFunction(o)
-            } >>
+            runImpureFunction(o) >>
               blockerList(0).await() >>
               IO.never
           }.start
         _ <- blockerList(1).await()
         _ <- firstResourceScope.release(NumberedObject(0))
-        _ <- IO(impureFunction2(()))
+        _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
@@ -117,20 +119,22 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       import cats.implicits._
 
+      def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
+
+      val runImpureFunction2 = IO(impureFunction2())
+
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
             //noinspection ZeroIndexToHead
-            IO {
-              impureFunction(o)
-            } >>
+            runImpureFunction(o) >>
               blockerList(0).await >>
               IO.never
           }.start
         _ <- blockerList(1).await()
         _ <- firstResourceScope.releaseAll
-        _ <- IO(impureFunction2(()))
+        _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
@@ -198,11 +202,13 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       impureFunction.expects(NumberedObject(0)).once()
       impureFunction.expects(NumberedObject(1)).never()
 
+      def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
+
       useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o0 =>
         for {
-          _ <- IO { impureFunction(o0) }
+          _ <- runImpureFunction(o0)
           _ <- useTrackedForSome(firstResourceScope, NumberedObject(1), finalizer) { o1 =>
-            IO { impureFunction(o1) }
+            runImpureFunction(o1)
           }
         } yield ()
       }.unsafeRunSync()
@@ -221,20 +227,22 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       import cats.implicits._
 
+      def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
+
+      val runImpureFunction2 = IO(impureFunction2())
+
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
             //noinspection ZeroIndexToHead
-            IO {
-              impureFunction(o)
-            } >>
+            runImpureFunction(o) >>
               blockerList(0).await >>
               IO.never
           }.start
         _ <- blockerList(1).await()
         _ <- firstResourceScope.releaseSome(NumberedObject(0))
-        _ <- IO(impureFunction2(()))
+        _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
@@ -255,20 +263,22 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       import cats.implicits._
 
+      def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
+
+      val runImpureFunction2 = IO(impureFunction2())
+
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
             //noinspection ZeroIndexToHead
-            IO {
-              impureFunction(o)
-            } >>
+            runImpureFunction(o) >>
               blockerList(0).await() >>
               IO.never
           }.start
         _ <- blockerList(1).await()
         _ <- firstResourceScope.releaseAll.value
-        _ <- IO(impureFunction2(()))
+        _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()

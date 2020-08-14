@@ -27,8 +27,8 @@ class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
         finalizer.expects().once()
       }
 
-      val callSubProcessFinalizer = IO(subProcessFinalizer())
-      val callFinalizer = IO(finalizer())
+      val runSubProcessFinalizer = IO(subProcessFinalizer())
+      val runFinalizer = IO(finalizer())
 
       import cats.implicits._
 
@@ -42,14 +42,14 @@ class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
             _ <- {
               blockerList(0).await() >> IO.never
             }.guarantee {
-              callSubProcessFinalizer
+              runSubProcessFinalizer
             }
           } yield ()
         }.start
         returnedCancelToken <- promise.get
         _ <- blockerList(1).await() // let started fiber reach IO.never
         _ <- returnedCancelToken // subProcessFinalizer should be called
-        _ <- callFinalizer
+        _ <- runFinalizer
       } yield ()
 
       program.unsafeRunSync()
