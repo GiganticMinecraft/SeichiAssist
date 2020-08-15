@@ -87,7 +87,7 @@ object WorldLevelData {
 
       // メモリ解放を促す
       if (!world.unloadChunk(chunk)) {
-        println(s"チャンク(${chunk.getX}, ${chunk.getZ})はアンロードされませんでした。")
+        logger.warn(s"チャンク(${chunk.getX}, ${chunk.getZ})はアンロードされませんでした。")
       }
     }
 
@@ -120,7 +120,9 @@ object WorldLevelData {
           logger.info(s"${world.getName}を再読み込みします…")
 
           val creator = WorldCreator.name(world.getName).copy(world)
-          Bukkit.unloadWorld(world, true)
+          if (!Bukkit.unloadWorld(world, true)) {
+            logger.warn(s"${world.getName}はアンロードされませんでした。")
+          }
           Bukkit.createWorld(creator)
         }.flatTap {
           newWorld => F.delay(logger.info(s"${newWorld.getName}を再読み込みしました"))
