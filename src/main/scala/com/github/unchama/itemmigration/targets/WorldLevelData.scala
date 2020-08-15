@@ -112,23 +112,6 @@ object WorldLevelData {
 
     val chunkSaverQueueFlushInterval = 1000
     val progressLogInterval = 1000
-    val reloadWorldInterval = 5000
-
-    val reloadWorld = {
-      worldRef.get >>= { world =>
-        F.delay {
-          logger.info(s"${world.getName}を再読み込みします…")
-
-          val creator = WorldCreator.name(world.getName).copy(world)
-          if (!Bukkit.unloadWorld(world, true)) {
-            logger.warn(s"${world.getName}はアンロードされませんでした。")
-          }
-          Bukkit.createWorld(creator)
-        }.flatTap {
-          newWorld => F.delay(logger.info(s"${newWorld.getName}を再読み込みしました"))
-        }
-      } >>= worldRef.set
-    }
 
     def logProgress(chunkIndex: Int): F[Unit] = worldRef.get >>= { world =>
       F.delay {
@@ -140,7 +123,7 @@ object WorldLevelData {
     chunkConversionEffects
       .modifyEvery(chunkSaverQueueFlushInterval)(_ => flushEntityRemovalQueue >> queueChunkSaverFlush)
       .modifyEvery(progressLogInterval)(logProgress)
-      .modifyEvery(reloadWorldInterval)(_ => reloadWorld)
-      .sequence >> reloadWorld
+      .sequence
+      .as(())
   }
 }
