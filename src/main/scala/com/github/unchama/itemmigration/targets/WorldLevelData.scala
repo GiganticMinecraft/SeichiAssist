@@ -89,7 +89,7 @@ object WorldLevelData {
       F.delay {
         logger.info("チャンクの保存キューの処理を要求します…")
       } >> F.start {
-        WorldChunkSaving.flushChunkSaverQueue[F] >> F.delay {
+        WorldChunkSaving.relaxFileIOThreadThrottle[F] >> F.delay {
           logger.info("チャンクの保存キューが処理されました")
         }
       }.as(())
