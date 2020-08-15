@@ -144,6 +144,10 @@ object WorldChunkSaving {
     FileIOThread.relaxThrottle(FileIOThread.instance)()
   }
 
+  /**
+   * Every world has its internal queue to remove entities or tile-entities.
+   * They are normally only cleared when ticking the world, but this method forces to cleanup these queues.
+   */
   def flushEntityRemovalQueue[F[_]](world: org.bukkit.World)(implicit F: Sync[F]): F[Unit] = F.delay {
     val nmsWorldServer = CraftWorld.nmsWorld(world)
     val removalQueueAlias = World.entityRemovalQueue(nmsWorldServer)

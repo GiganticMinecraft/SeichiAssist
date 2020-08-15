@@ -112,6 +112,23 @@ object WorldLevelData {
 
     val chunkSaverQueueFlushInterval = 1000
     val progressLogInterval = 1000
+    val reloadWorldInterval = 10000
+
+    val reloadWorld = {
+      worldRef.get >>= { world =>
+        F.delay {
+          logger.info(s"${world.getName}を再読み込みします…")
+
+          val creator = WorldCreator.name(world.getName).copy(world)
+          if (!Bukkit.unloadWorld(world, true)) {
+            logger.warn(s"${world.getName}はアンロードされませんでした。")
+          }
+          Bukkit.createWorld(creator)
+        }.flatTap {
+          newWorld => F.delay(logger.info(s"${newWorld.getName}を再読み込みしました"))
+        }
+      } >>= worldRef.set
+    }
 
     def logProgress(chunkIndex: Int): F[Unit] = worldRef.get >>= { world =>
       F.delay {
@@ -120,10 +137,22 @@ object WorldLevelData {
       }
     }
 
+    /*
+     * flushEntityRemovalQueue及びqueueChunkSaverFlushが短期的なメモリ確保、
+     * reloadWorldが長期的な(複数ワールド処理の範疇での)メモリ確保に寄与する。
+     *
+     * reloadWorldには比較的時間が掛かるので少なめ、しかし変換が終わると必ず実行するようにした。
+     *
+     * 同時に導入するプラグインによっては、チャンクやワールドのロード/アンロードのハンドラ内で
+     * ワールドに対する参照を直接持ち、アンロード時のGCを妨げるものがある。
+     *
+     * OutOfMemoryErrorが観測された際には、プロファイラで残留しているワールドのインスタンスを確認し、
+     * GC Rootからの参照パスを特定することを推奨する。
+     */
     chunkConversionEffects
       .modifyEvery(chunkSaverQueueFlushInterval)(_ => flushEntityRemovalQueue >> queueChunkSaverFlush)
       .modifyEvery(progressLogInterval)(logProgress)
-      .sequence
-      .as(())
+      .modifyEvery(reloadWorldInterval)(_ => reloadWorld)
+      .sequence >> reloadWorld
   }
 }
