@@ -1,5 +1,6 @@
 package com.github.unchama.itemmigration.targets
 
+import cats.Monad
 import cats.effect.Concurrent
 import cats.effect.concurrent.Ref
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
@@ -46,6 +47,17 @@ case class WorldLevelData[F[_]](getWorlds: F[IndexedSeq[World]],
 }
 
 object WorldLevelData {
+
+  private implicit class ListHasModifyEvery[F[_]](val list: List[F[Unit]]) extends AnyVal {
+    def modifyEvery(n: Int)(m: Int => F[Unit])(implicit F: Monad[F]): List[F[Unit]] = {
+      import cats.implicits._
+
+      list.mapWithIndex { case (x, index) =>
+        if (index % n == 0) x >> m(index) else x
+      }
+    }
+  }
+
   def convertChunkWise[F[_]](originalWorld: World, targetChunks: Seq[(Int, Int)], conversion: ItemStack => ItemStack)
                             (implicit F: Concurrent[F], logger: Logger): F[Unit] = {
 
@@ -99,6 +111,7 @@ object WorldLevelData {
     }
 
     val chunkSaverQueueFlushInterval = 1000
+    val progressLogInterval = 1000
     val reloadWorldInterval = 5000
 
     val reloadWorld = {
@@ -115,19 +128,17 @@ object WorldLevelData {
       } >>= worldRef.set
     }
 
+    def logProgress(chunkIndex: Int): F[Unit] = worldRef.get >>= { world =>
+      F.delay {
+        val processed = chunkIndex + 1
+        logger.info(s"${world.getName} のマイグレーション: $processed / ${targetChunks.size} 完了")
+      }
+    }
+
     chunkConversionEffects
-      .mapWithIndex { case (effect, index) =>
-        if (index % chunkSaverQueueFlushInterval == 0)
-          effect >> flushEntityRemovalQueue >> queueChunkSaverFlush
-        else
-          effect
-      }
-      .mapWithIndex { case (effect, index) =>
-        if (index % reloadWorldInterval == 0)
-          effect >> reloadWorld
-        else
-          effect
-      }
+      .modifyEvery(chunkSaverQueueFlushInterval)(_ => flushEntityRemovalQueue >> queueChunkSaverFlush)
+      .modifyEvery(progressLogInterval)(logProgress)
+      .modifyEvery(reloadWorldInterval)(_ => reloadWorld)
       .sequence >> reloadWorld
   }
 }
