@@ -4,8 +4,10 @@ version: @version@
 
 softdepend: [WorldGuard, CoreProtect]
 
-# Shopkeepers: ワールドマイグレーション時にShopkeeperのタスクによりデータのGCが行われなくなる
-loadbefore: [Shopkeepers]
+loadbefore:
+  # ワールドマイグレーション時にこれらプラグインのタスクがworldへの参照を持ちデータのGCが行われなくなる
+  - Shopkeepers
+  - WeatherRestrictions
 
 default-permission-message: &denied You don't have <permission>
 commands:
