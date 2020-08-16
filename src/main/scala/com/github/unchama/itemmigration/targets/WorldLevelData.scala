@@ -49,11 +49,11 @@ case class WorldLevelData[F[_]](getWorlds: F[IndexedSeq[World]],
 object WorldLevelData {
 
   private implicit class ListHasModifyEvery[F[_]](val list: List[F[Unit]]) extends AnyVal {
-    def modifyEvery(n: Int)(m: Int => F[Unit])(implicit F: Monad[F]): List[F[Unit]] = {
+    def atEvery(interval: Int)(actionAt: Int => F[Unit])(implicit F: Monad[F]): List[F[Unit]] = {
       import cats.implicits._
 
       list.mapWithIndex { case (x, index) =>
-        if (index % n == 0) x >> m(index) else x
+        if ((index + 1) % interval == 0) x >> actionAt(index) else x
       }
     }
   }
@@ -150,9 +150,9 @@ object WorldLevelData {
      * GC Rootからの参照パスを特定することを推奨する。
      */
     chunkConversionEffects
-      .modifyEvery(chunkSaverQueueFlushInterval)(_ => flushEntityRemovalQueue >> queueChunkSaverFlush)
-      .modifyEvery(progressLogInterval)(logProgress)
-      .modifyEvery(reloadWorldInterval)(_ => reloadWorld)
+      .atEvery(chunkSaverQueueFlushInterval)(_ => flushEntityRemovalQueue >> queueChunkSaverFlush)
+      .atEvery(progressLogInterval)(logProgress)
+      .atEvery(reloadWorldInterval)(_ => reloadWorld)
       .sequence >> reloadWorld
   }
 }
