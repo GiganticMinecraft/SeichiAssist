@@ -116,7 +116,7 @@ object WorldLevelData {
   private def flushEntityRemovalQueue[F[_] : Sync](worldRef: Ref[F, World]): F[Unit] = {
     import com.github.unchama.util.nms.v1_12_2.world.WorldChunkSaving
 
-    worldRef.get >>= WorldChunkSaving.flushEntityRemovalQueue
+    worldRef.get >>= WorldChunkSaving.flushEntityRemovalQueue[F]
   }
 
   private def logProgress[F[_]](chunkIndex: Int, totalChunks: Int)(worldRef: Ref[F, World])
@@ -141,7 +141,7 @@ object WorldLevelData {
       val chunkConversionEffects: List[F[Unit]] = {
         targetChunks
           .map { chunkCoordinate =>
-            worldRef.get >>= migrateChunk(conversion, chunkCoordinate)
+            worldRef.get >>= migrateChunk[F](conversion, chunkCoordinate)
           }
           .toList
       }
