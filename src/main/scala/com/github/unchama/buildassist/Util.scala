@@ -11,11 +11,7 @@ import org.jetbrains.annotations.Nullable
 import java.math.BigDecimal
 
 object Util {
-  def toInt(s: String): Int = s.toInt
-
   def getName(p: Player): String = p.getName.toLowerCase
-
-  def getName(name: String): String = name.toLowerCase
 
   //ワールドガードAPIを返す
   def getWorldGuard: WorldGuardPlugin = {

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 final class PlayerData(val player: Player) {
   //初期値を設定
 
-  var name: String = Util.getName(player)
+  var name: String = player.getName
   var uuid: UUID = player.getUniqueId
   var level = 1
   /**
