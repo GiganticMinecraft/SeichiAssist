@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.util.typeclass.HasMinimum
 
 case class BuildExpAmount private(amount: BigDecimal) extends AnyVal
 
-abstract private class SeichiExpAmountInstances {
+private[explevel] abstract class SeichiExpAmountInstances {
   implicit val ordering: Ordering[BuildExpAmount] = Ordering.by(_.amount)
 
   implicit val hasMinimum: HasMinimum[BuildExpAmount] = HasMinimum.as(BuildExpAmount.ofNonNegative(0))

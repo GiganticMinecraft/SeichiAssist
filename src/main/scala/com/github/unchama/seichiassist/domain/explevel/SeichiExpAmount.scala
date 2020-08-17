@@ -14,7 +14,7 @@ case class SeichiExpAmount private(amount: BigInt) extends AnyVal {
   @Deprecated def toLong: Long = amount.toLong
 }
 
-abstract private class SeichiExpAmountInstances {
+private[explevel] abstract class SeichiExpAmountInstances {
   implicit val ordering: Ordering[SeichiExpAmount] = Ordering.by(_.amount)
 
   implicit val hasMinimum: HasMinimum[SeichiExpAmount] = HasMinimum.as(SeichiExpAmount.ofNonNegative(0))

@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.domain.explevel.Level
 
 case class BuildLevel private(level: Int) extends AnyVal
 
-private abstract class SeichiLevelInstances {
+private[explevel] abstract class SeichiLevelInstances {
   implicit val level: Level[BuildLevel] = (rawLevel: Int) => {
     require(rawLevel >= 1)
     BuildLevel(rawLevel)
