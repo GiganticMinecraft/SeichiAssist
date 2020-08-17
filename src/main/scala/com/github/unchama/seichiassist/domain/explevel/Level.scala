@@ -11,5 +11,5 @@ import simulacrum.typeclass
    *
    * @param rawLevel 正のレベル値
    */
-  def wrap(rawLevel: Int): T
+  def wrapPositive(rawLevel: Int): T
 }

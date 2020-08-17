@@ -13,6 +13,6 @@ private[explevel] abstract class SeichiLevelInstances {
 
 object BuildLevel extends SeichiLevelInstances {
 
-  def ofPositive(rawLevel: Int): BuildLevel = level.wrap(rawLevel)
+  def ofPositive(rawLevel: Int): BuildLevel = level.wrapPositive(rawLevel)
 
 }

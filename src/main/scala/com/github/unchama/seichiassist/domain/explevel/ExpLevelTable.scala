@@ -21,15 +21,17 @@ class ExpLevelTable[L: Level, ExpAmount: Ordering : HasMinimum](private val inte
     }
   }, "internalTable must be sorted")
 
+  require(internalTable.nonEmpty)
+
   require({
     internalTable.head == HasMinimum[ExpAmount].minimum
   }, "first element of the table must be the minimum amount")
 
-  def levelAt(expAmount: ExpAmount): L = Level[L].wrap {
+  def levelAt(expAmount: ExpAmount): L = Level[L].wrapPositive {
     internalTable.lastIndexWhere(_ <= expAmount) + 1
   }
 
-  def maxLevel: L = Level[L].wrap {
+  def maxLevel: L = Level[L].wrapPositive {
     internalTable.size
   }
 
