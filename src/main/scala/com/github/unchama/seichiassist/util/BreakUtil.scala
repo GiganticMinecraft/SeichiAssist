@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
+import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
@@ -88,10 +89,14 @@ object BreakUtil {
     checkTarget.getType match {
       case Material.CHEST | Material.TRAPPED_CHEST =>
         if (!SeichiAssist.playermap(player.getUniqueId).chestflag) {
-          player.sendMessage(s"${RED}スキルでのチェスト破壊は無効化されています")
+          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は無効化されています")
+            .run(player)
+            .unsafeRunSync()
           true
         } else if (!ManagedWorld.fromBukkitWorld(player.getWorld).exists(_.isSeichi)) {
-          player.sendMessage(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です")
+          ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です")
+            .run(player)
+            .unsafeRunSync()
           true
         } else {
           false

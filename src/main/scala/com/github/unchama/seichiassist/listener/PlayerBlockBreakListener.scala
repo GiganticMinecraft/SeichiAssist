@@ -27,18 +27,6 @@ class PlayerBlockBreakListener extends Listener {
 
   import plugin.activeSkillAvailability
 
-  @EventHandler(priority = EventPriority.LOW)
-  def onPlayerBlockBreak(event: BlockBreakEvent): Unit = {
-    val block = event.getBlock
-
-    //他人の保護がかかっている場合は処理を終了
-    if (!ExternalPlugins.getWorldGuard.canBuild(event.getPlayer, block.getLocation)) return
-
-    // 保護と重力値に問題無く、ブロックタイプがmateriallistに登録されていたらMebiusListenerを呼び出す
-    if (MaterialSets.materials.contains(event.getBlock.getType))
-      MebiusListener.onBlockBreak(event)
-  }
-
   //アクティブスキルの実行
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
   def onPlayerActiveSkillEvent(event: BlockBreakEvent): Unit = {
@@ -198,18 +186,19 @@ class PlayerBlockBreakListener extends Listener {
         //壊したブロック数に応じてクールダウンを発生させる
         val availabilityFlagManipulation = {
           val brokenBlockNum = multiBreakList.map(_.size).sum
-          val coolDownTicks = selectedSkill.maxCoolDownTicks.getOrElse(0) * brokenBlockNum / totalBreakRangeVolume
+          val coolDownTicks =
+            (selectedSkill.maxCoolDownTicks.getOrElse(0).toDouble * brokenBlockNum / totalBreakRangeVolume)
+              .ceil
+              .toInt
 
-          if (coolDownTicks >= 5) {
-            val reference = SeichiAssist.instance.activeSkillAvailability(player)
+          val reference = SeichiAssist.instance.activeSkillAvailability(player)
 
-            for {
-              _ <- reference.set(false)
-              _ <- IO.timer(PluginExecutionContexts.sleepAndRoutineContext).sleep(coolDownTicks.ticks)
-              _ <- reference.set(true)
-              _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
-            } yield ()
-          } else IO.unit
+          for {
+            _ <- reference.set(false)
+            _ <- IO.timer(PluginExecutionContexts.sleepAndRoutineContext).sleep(coolDownTicks.ticks)
+            _ <- reference.set(true)
+            _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
+          } yield ()
         }
 
         // マナやツールの耐久値を減らす
@@ -224,7 +213,7 @@ class PlayerBlockBreakListener extends Listener {
         )
         com.github.unchama.seichiassist.unsafe.runIOAsync(
           "複数破壊エフェクトの後処理を実行する",
-          adjustManaAndDurability >> availabilityFlagManipulation.start
+          adjustManaAndDurability >> availabilityFlagManipulation
         )
       }
     }

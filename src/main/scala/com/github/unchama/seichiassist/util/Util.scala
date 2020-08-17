@@ -329,6 +329,9 @@ object Util {
 
     val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
 
+    if (!skullMeta.hasLore) return false
+    if (!skullMeta.getLore.contains(s"$RESET${GREEN}右クリックで使えます")) return false
+
     // オーナーがunchamaか？
     skullMeta.hasOwner && skullMeta.getOwner == "unchama"
   }
@@ -509,7 +512,7 @@ object Util {
   def getTimeZone(cal: Calendar): String = {
     val date = cal.getTime
     val format = new SimpleDateFormat("HH")
-    val n = TypeConverter.toInt(format.format(date))
+    val n = Integer.parseInt(format.format(date))
     if (4 <= n && n < 10)
       "morning"
     else if (10 <= n && n < 18)

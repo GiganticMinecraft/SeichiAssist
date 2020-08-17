@@ -135,7 +135,7 @@ public class RegionMenuData {
         gridInv.setItem(7, menuicon7);
 
         //8マス目
-        if (!config.isGridProtectionEnabled(player)) {
+        if (!config.isGridProtectionEnabled(player.getWorld())) {
             List<String> lore8 = new ArrayList<>();
             lore8.add(ChatColor.RED + "" + ChatColor.UNDERLINE + "このワールドでは保護を作成できません");
             ItemStack menuicon8 = Util.getMenuIcon(Material.WOOL, 1, 14, ChatColor.RED + "保護作成",

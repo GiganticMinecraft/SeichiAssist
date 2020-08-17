@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist
+package com.github.unchama.seichiassist.effects.player
 
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect

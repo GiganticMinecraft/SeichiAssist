@@ -7,17 +7,17 @@ import com.github.unchama.generic.effect.{Mutex, TryableFiber}
 import com.github.unchama.playerdatarepository.TryableFiberRepository.MFiber
 import org.bukkit.entity.Player
 
-class TryableFiberRepository(implicit shift: ContextShift[IO]) extends PlayerDataOnMemoryRepository[MFiber] {
+class TryableFiberRepository(implicit shift: ContextShift[IO]) extends PreLoginToQuitPlayerDataRepository[MFiber] {
 
   override val loadData: (String, UUID) => SyncIO[Either[Option[String], MFiber]] =
     (_, _) => Mutex.of[SyncIO, IO, TryableFiber[IO, Unit]](TryableFiber.unit[IO]).map(Right.apply)
 
   override val unloadData: (Player, MFiber) => IO[Unit] = (_, mf) =>
-      mf.lockAndModify { fiber =>
-        for {
-          _ <- fiber.cancel
-        } yield (fiber, ())
-      }.start.map(_ => ())
+    mf.lockAndModify { fiber =>
+      for {
+        _ <- fiber.cancel
+      } yield (fiber, ())
+    }.start.map(_ => ())
 
   /**
    * 与えられたプレーヤーに対して、
