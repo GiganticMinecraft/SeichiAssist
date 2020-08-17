@@ -5,7 +5,7 @@ import simulacrum.typeclass
 /**
  * 半順序付けされており最小値が定義されているような型の型クラス
  */
-@typeclass trait HasMinimum[T] {
+@typeclass trait HasMinimum[T] extends AnyRef {
   val ordering: PartialOrdering[T]
 
   val minimum: T
