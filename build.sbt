@@ -27,7 +27,10 @@ val providedDependencies = Seq(
   "commons-codec" % "commons-codec" % "1.12",
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
-  "net.coreprotect" % "coreprotect" % "2.14.2"
+  "net.coreprotect" % "coreprotect" % "2.14.2",
+
+  // no runtime
+  "org.typelevel" %% "simulacrum" % "1.0.0"
 ).map(_ % "provided")
 
 val testDependencies = Seq(
@@ -110,6 +113,7 @@ lazy val root = (project in file("."))
       "-language:higherKinds",
       "-deprecation",
       "-Ypatmat-exhaust-depth", "320",
+      "-Ymacro-annotations",
     ),
     javacOptions ++= Seq("-encoding", "utf8")
   )
