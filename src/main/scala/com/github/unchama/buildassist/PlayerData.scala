@@ -79,38 +79,11 @@ final class PlayerData(val player: Player) {
    */
   private[buildassist] def buildload(player: Player): Boolean = {
     val playerdata_s = SeichiAssist.playermap.getOrElse(player.getUniqueId, return false)
-    val server_num = SeichiAssist.seichiAssistConfig.getServerNum
-    val oldBuildCount = playerdata_s.buildCount
 
     totalbuildnum = playerdata_s.buildCount.count
-
-    //ブロック設置カウントが統合されてない場合は統合する
-    if (server_num >= 1 && server_num <= 3) {
-      var f = playerdata_s.buildCount.migrationFlag
-      if ((f & (0x01 << server_num)) == 0) {
-
-        totalbuildnum = if (f == 0) {
-          // 初回は加算じゃなくベースとして代入にする
-          BuildBlock.calcBuildBlock(player)
-        } else {
-          totalbuildnum.add(BuildBlock.calcBuildBlock(player))
-        }
-
-        f = (f | (0x01 << server_num)).toByte
-
-        val updatedBuildCount = playerdata_s.buildCount.copy(oldBuildCount.lv, totalbuildnum, f)
-
-        playerdata_s.buildCount = updatedBuildCount
-
-        player.sendMessage(GREEN + "サーバー" + server_num + "の建築データを統合しました")
-
-        if (f == 0x0E) {
-          player.sendMessage(GREEN + "全サーバーの建築データを統合しました")
-        }
-      }
-    }
     level = playerdata_s.buildCount.lv
     updateLevel(player)
+
     true
   }
 
