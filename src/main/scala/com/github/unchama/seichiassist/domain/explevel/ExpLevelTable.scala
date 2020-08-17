@@ -25,13 +25,8 @@ class ExpLevelTable[L: Level, ExpAmount: Ordering : HasMinimum](private val inte
     internalTable.head == HasMinimum[ExpAmount].minimum
   }, "first element of the table must be the minimum amount")
 
-  def levelAt(expAmount: ExpAmount): L = {
-    internalTable
-      .zipWithIndex
-      .find(expAmount <= _._1)
-      .map(_._2 + 1)
-      .map(Level[L].wrap)
-      .getOrElse(maxLevel)
+  def levelAt(expAmount: ExpAmount): L = Level[L].wrap {
+    internalTable.lastIndexWhere(_ <= expAmount) + 1
   }
 
   def maxLevel: L = Level[L].wrap {
