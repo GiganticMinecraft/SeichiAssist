@@ -22,6 +22,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
+import com.github.unchama.seichiassist.expbottlestack.bukkit.listeners.ExpBottleStackUsageController
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.infrastructure.migration.loggers.{PersistedItemsMigrationSlf4jLogger, PlayerItemsMigrationSlf4jLogger, WorldLevelMigrationSlf4jLogger}
 import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
@@ -63,7 +64,7 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreateSingletonScope
   }
 
-  val thrownExpBottleScope: ResourceScope[IO, ThrownExpBottle] = {
+  implicit val thrownExpBottleScope: ResourceScope[IO, ThrownExpBottle] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
@@ -218,7 +219,10 @@ class SeichiAssist extends JavaPlugin() {
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
-    val mebiusSystem = mebius.EntryPoints.wired
+    val subsystems = Seq(
+      mebius.EntryPoints.wired,
+      expbottlestack.EntryPoints.wired
+    )
 
     // コマンドの登録
     Map(
@@ -241,7 +245,7 @@ class SeichiAssist extends JavaPlugin() {
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
     )
-      .concat(mebiusSystem.commandsToBeRegistered)
+      .concat(subsystems.flatMap(_.commandsToBeRegistered))
       .foreach {
         case (commandName, executor) => getCommand(commandName).setExecutor(executor)
       }
@@ -256,7 +260,6 @@ class SeichiAssist extends JavaPlugin() {
       new PlayerJoinListener(),
       new PlayerQuitListener(),
       new PlayerClickListener(),
-      new ExpBottleStackUsageController(thrownExpBottleScope),
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
       new EntityListener(),
@@ -269,7 +272,7 @@ class SeichiAssist extends JavaPlugin() {
       new MenuHandler()
     )
       .concat(repositories)
-      .concat(mebiusSystem.listenersToBeRegistered)
+      .concat(subsystems.flatMap(_.listenersToBeRegistered))
       .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)

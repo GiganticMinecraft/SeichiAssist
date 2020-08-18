@@ -1,20 +1,21 @@
-package com.github.unchama.seichiassist.listener
+package com.github.unchama.seichiassist.expbottlestack.bukkit.listeners
 
 import cats.effect.{IO, Resource}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import org.bukkit.{Location, Material}
 import org.bukkit.entity.{ExperienceOrb, ThrownExpBottle}
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.ExpBottleEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
+import org.bukkit.{Location, Material}
 
 import scala.util.Random
 
-class ExpBottleStackUsageController(managedBottleScope: ResourceScope[IO, ThrownExpBottle])
-                                   (implicit effectEnvironment: EffectEnvironment) extends Listener {
+class ExpBottleStackUsageController(implicit managedBottleScope: ResourceScope[IO, ThrownExpBottle],
+                                    effectEnvironment: EffectEnvironment) extends Listener {
+
   @EventHandler
   def onExpBottleHitBlock(event: ExpBottleEvent): Unit = {
     managedBottleScope.release(event.getEntity).unsafeRunSync()
