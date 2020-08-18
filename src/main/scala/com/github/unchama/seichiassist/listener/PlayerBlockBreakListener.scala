@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{Fiber, IO}
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
@@ -22,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
-class PlayerBlockBreakListener extends Listener {
+class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
   private val plugin = SeichiAssist.instance
 
   import plugin.activeSkillAvailability
@@ -207,11 +208,11 @@ class PlayerBlockBreakListener extends Listener {
           if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
         }
 
-        com.github.unchama.seichiassist.unsafe.runIOAsync(
+        effectEnvironment.runEffectAsync(
           "複数破壊エフェクトを実行する",
           effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
         )
-        com.github.unchama.seichiassist.unsafe.runIOAsync(
+        effectEnvironment.runEffectAsync(
           "複数破壊エフェクトの後処理を実行する",
           adjustManaAndDurability >> availabilityFlagManipulation
         )

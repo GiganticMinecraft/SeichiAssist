@@ -8,7 +8,7 @@ import cats.data
 import cats.effect.IO
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.minestack.MineStackObj
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import net.md_5.bungee.api.chat.BaseComponent
@@ -93,7 +93,8 @@ object Util {
    * @deprecated use [[grantItemStacksEffect]]
    */
   @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
+    // Javaから呼ばれているのでimplicitが使いづらい　grantItemStacksEffectに置き換えたい
+    DefaultEffectEnvironment.runEffectAsync(
       "アイテムスタックを付与する",
       grantItemStacksEffect(itemStack).run(player)
     )

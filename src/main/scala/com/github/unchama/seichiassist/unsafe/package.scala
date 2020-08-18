@@ -30,6 +30,12 @@ package object unsafe {
    * @tparam T レシーバの型
    * @deprecated use [[EffectEnvironment]]
    */
-  @deprecated def runAsyncTargetedEffect[T](receiver: T)(effect: TargetedEffect[T], context: String): Unit =
-    runIOAsync(context, effect(receiver))
+  @deprecated def runAsyncTargetedEffect[T](receiver: T)(effect: TargetedEffect[T], context: String): Unit = {
+    effect(receiver).unsafeRunAsync {
+      case Left(error) =>
+        println(s"${context}最中にエラーが発生しました。")
+        error.printStackTrace()
+      case Right(_) =>
+    }
+  }
 }

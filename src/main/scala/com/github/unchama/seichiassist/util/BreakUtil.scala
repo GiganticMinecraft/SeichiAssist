@@ -4,6 +4,7 @@ import java.util.Random
 import java.util.stream.IntStream
 
 import cats.effect.IO
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -116,8 +117,9 @@ object BreakUtil {
                  targetBlock: BlockBreakableBySkill,
                  dropLocation: Location,
                  tool: BreakTool,
-                 shouldPlayBreakSound: Boolean): Unit =
-    unsafe.runIOAsync(
+                 shouldPlayBreakSound: Boolean)
+                (implicit effectEnvironment: EffectEnvironment): Unit =
+    effectEnvironment.runEffectAsync(
       "単一ブロックを破壊する",
       massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
     )

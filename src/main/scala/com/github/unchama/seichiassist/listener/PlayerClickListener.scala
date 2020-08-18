@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
 import com.github.unchama.generic.effect.TryableFiber
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
@@ -27,7 +28,7 @@ import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerClickListener extends Listener {
+class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
   import com.github.unchama.targetedeffect._
@@ -98,8 +99,8 @@ class PlayerClickListener extends Listener {
 
           val arrowEffect = playerData.skillEffectState.selection.arrowEffect(player)
 
-          seichiassist.unsafe.runIOAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
-          seichiassist.unsafe.runIOAsync("ArrowEffectを非同期で実行する", arrowEffect)
+          effectEnvironment.runEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
+          effectEnvironment.runEffectAsync("ArrowEffectを非同期で実行する", arrowEffect)
         case _ =>
       }
     }
@@ -361,7 +362,7 @@ class PlayerClickListener extends Listener {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-    seichiassist.unsafe.runAsyncTargetedEffect(player)(
+    effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open
