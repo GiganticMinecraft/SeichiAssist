@@ -36,7 +36,7 @@ import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, Play
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandSender}
-import org.bukkit.entity.Entity
+import org.bukkit.entity.{Entity, ThrownExpBottle}
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
@@ -61,6 +61,11 @@ class SeichiAssist extends JavaPlugin() {
   val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
+  }
+
+  val thrownExpBottleScope: ResourceScope[IO, ThrownExpBottle] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreate
   }
 
   /**
@@ -250,7 +255,7 @@ class SeichiAssist extends JavaPlugin() {
     Seq(
       new PlayerJoinListener(),
       new PlayerQuitListener(),
-      new PlayerClickListener(),
+      new PlayerClickListener(thrownExpBottleScope),
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
       new EntityListener(),
@@ -336,6 +341,7 @@ class SeichiAssist extends JavaPlugin() {
     lockedBlockChunkScope.releaseAll.unsafeRunSync()
     arrowSkillProjectileScope.releaseAll.unsafeRunSync()
     magicEffectEntityScope.releaseAll.value.unsafeRunSync()
+    thrownExpBottleScope.releaseAll.unsafeRunSync()
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()

@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.IO
-import com.github.unchama.generic.effect.TryableFiber
+import cats.effect.{IO, Resource}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.generic.effect.{ResourceScope, TryableFiber}
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -18,18 +18,19 @@ import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.{ExperienceOrb, ThrownExpBottle, Entity}
+import org.bukkit.entity.{ExperienceOrb, ThrownExpBottle}
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.ExpBottleEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.{EquipmentSlot, ItemStack}
-import org.bukkit.metadata.{FixedMetadataValue, MetadataValue}
-import org.bukkit.{GameMode, Material, Sound, Location}
+import org.bukkit.{GameMode, Location, Material, Sound}
 
 import scala.collection.mutable
 import scala.util.Random
 
-class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class PlayerClickListener(managedBottleScope: ResourceScope[IO, ThrownExpBottle])
+                         (implicit effectEnvironment: EffectEnvironment) extends Listener {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
   import com.github.unchama.targetedeffect._
@@ -44,13 +45,6 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
   
-  // TODO: ビンはいくつなげても一つなのでSingletonでよい (?)
-  import com.github.unchama.generic.effect.ResourceScope
-  import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
-  private val bottleScope: SingleResourceScope[IO, ThrownExpBottle] = {
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
-    ResourceScope.unsafeCreateSingletonScope
-  }
   //アクティブスキル処理
   @EventHandler
   def onPlayerActiveSkillEvent(event: PlayerInteractEvent): Unit = {
@@ -421,6 +415,11 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     }
   }
 
+  @EventHandler
+  def onExpBottleHitBlock(event: ExpBottleEvent): Unit = {
+    managedBottleScope.release(event.getEntity).unsafeRunSync()
+  }
+
   //　経験値瓶を持った状態でのShift右クリック…一括使用
   @EventHandler
   def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent): Unit = {
@@ -434,27 +433,36 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       && playerInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
 
-      val count = playerInventory.getItemInMainHand.getAmount
-      import cats.effect.{IO, Resource}
-      def resource[E <: Entity](loc: Location, runtimeClass: Class[E], onRelease: (E) => Unit): Resource[IO, E] = {
-            Resource.make(
-              IO(loc.getWorld.spawn(loc, runtimeClass))
-            )(e =>
-              IO(onRelease(e))
-            )
-      }
       // 一つに付きもたらされる経験値量は3..11。ソースはGamepedia
-      val exp = (0 until count).map(_ => Random.nextInt(9 /* Exclusive */) + 3).sum
-      
-      val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
-      // TODO: これちゃんと解放される？
-      val location = player.getLocation
-      bottleScope.useTracked(BukkitResources.vanishingEntityResource(location, classOf[ThrownExpBottle])) { e => 
-        resource(location, classOf[ExperienceOrb]) {orb => orb.setExperience(exp)}
+      val exp = {
+        val expBottleAmount = playerInventory.getItemInMainHand.getAmount
+        (0 until expBottleAmount).map(_ => Random.nextInt(9 /* Exclusive */) + 3).sum
       }
-      
-      playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
 
+      def spawnOrbAt(location: Location): IO[Unit] = IO {
+        val orb = location.getWorld.spawn(
+          location,
+          classOf[ExperienceOrb]
+        )
+        orb.setExperience(exp)
+      }
+
+      def bottleResourceSpawningAt(loc: Location): Resource[IO, ThrownExpBottle] = {
+        import cats.implicits._
+        Resource
+          .make(
+            IO(loc.getWorld.spawn(loc, classOf[ThrownExpBottle]))
+          ) { e =>
+            spawnOrbAt(e.getLocation) >> IO(e.remove())
+          }
+      }
+
+      effectEnvironment.runEffectAsync(
+        "経験値瓶の消費を待つ",
+        managedBottleScope.useTracked(bottleResourceSpawningAt(player.getLocation)) { _ => IO.never }
+      )
+
+      playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
       event.setCancelled(true)
     }
   }
