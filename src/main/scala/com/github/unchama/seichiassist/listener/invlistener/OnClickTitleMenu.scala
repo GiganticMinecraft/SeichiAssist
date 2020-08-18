@@ -1,17 +1,15 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
-import org.bukkit.event.Listener
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}

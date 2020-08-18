@@ -1,7 +1,6 @@
 package com.github.unchama.buildassist
 
 import com.github.unchama.seichiassist.util.TypeConverter
-import org.bukkit.ChatColor
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.entity.Player

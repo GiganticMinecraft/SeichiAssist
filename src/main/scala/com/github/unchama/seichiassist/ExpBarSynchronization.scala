@@ -9,8 +9,6 @@ import scala.collection.mutable
 
 class ExpBarSynchronization {
 
-  import com.github.unchama.util.syntax._
-
   private val managedExpBars: mutable.HashMap[Player, BossBar] = mutable.HashMap()
 
   def synchronizeFor(player: Player): Unit = {

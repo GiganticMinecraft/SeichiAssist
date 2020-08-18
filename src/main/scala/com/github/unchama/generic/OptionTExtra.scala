@@ -1,7 +1,7 @@
 package com.github.unchama.generic
 
+import cats.Applicative
 import cats.data.OptionT
-import cats.{Applicative, ~>}
 
 object OptionTExtra {
   /**

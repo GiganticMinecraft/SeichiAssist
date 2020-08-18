@@ -4,8 +4,8 @@ import java.math.BigDecimal
 import java.util.UUID
 
 import com.github.unchama.buildassist.domain.explevel.{BuildAssistExpTable, BuildExpAmount}
-import com.github.unchama.seichiassist.{PackagePrivate, SeichiAssist}
 import com.github.unchama.seichiassist.data.player.BuildCount
+import com.github.unchama.seichiassist.{PackagePrivate, SeichiAssist}
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player

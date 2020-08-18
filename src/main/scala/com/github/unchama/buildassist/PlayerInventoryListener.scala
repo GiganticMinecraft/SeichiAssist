@@ -4,7 +4,6 @@ import java.util.UUID
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}

@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.util;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.math.BigDecimal;
 
 public final class TypeConverter {

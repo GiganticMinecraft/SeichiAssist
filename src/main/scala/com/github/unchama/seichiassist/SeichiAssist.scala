@@ -8,9 +8,9 @@ import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.itemmigration.{service, _}
 import com.github.unchama.itemmigration.domain.ItemMigrations
 import com.github.unchama.itemmigration.service.ItemMigrationService
+import com.github.unchama.itemmigration.{service, _}
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill

@@ -1,14 +1,12 @@
 package com.github.unchama.buildassist
 
-import com.github.unchama.seichiassist.MineStackObjectList
-import com.github.unchama.seichiassist.SeichiAssist
+import java.math.BigDecimal
+
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.bukkit.plugin.Plugin
-import org.jetbrains.annotations.Nullable
-import java.math.BigDecimal
 
 object Util {
   def getName(p: Player): String = p.getName.toLowerCase
