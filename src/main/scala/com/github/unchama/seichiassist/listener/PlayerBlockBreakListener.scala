@@ -256,6 +256,6 @@ class PlayerBlockBreakListener extends Listener {
     if (!world.getName.toLowerCase.startsWith(SeichiAssist.SEICHIWORLDNAME)) return
     if (data.canBreakHalfBlock) return
     event.setCancelled(true)
-    p.sendMessage(s"${RED}Y5に敷かれたハーフブロックは破壊不可能です.")
+    p.sendMessage(s"${RED}Y5に敷かれたハーフブロックは破壊不可能です。")
   }
 }

@@ -87,13 +87,13 @@ class SeichiAssist extends JavaPlugin() {
 
     if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
       //debugmode=1の時は最初からデバッグモードで鯖を起動
-      logger.info(s"${RED}seichiassistをデバッグモードで起動します")
+      logger.info(s"${RED}SeichiAssistをデバッグモードで起動します")
       logger.info(s"${RED}コンソールから/seichi debugmode")
-      logger.info(s"${RED}を実行するといつでもONOFFを切り替えられます")
+      logger.info(s"${RED}を実行するといつでもON/OFFを切り替えられます")
       SeichiAssist.DEBUG = true
     } else {
       //debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
-      logger.info(s"${GREEN}seichiassistを通常モードで起動します")
+      logger.info(s"${GREEN}SeichiAssistを通常モードで起動します")
       logger.info(s"${GREEN}デバッグモードを使用する場合は")
       logger.info(s"${GREEN}config.ymlの設定値を書き換えて再起動してください")
     }
@@ -119,13 +119,13 @@ class SeichiAssist extends JavaPlugin() {
 
     //mysqlからガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.gachaDataManipulator.loadGachaData()) {
-      logger.severe("ガチャデータのロードに失敗しました")
+      logger.severe("ガチャデータのロードに失敗しました。サーバーを停止します…")
       Bukkit.shutdown()
     }
 
     //mysqlからMineStack用ガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
-      logger.severe("MineStack用ガチャデータのロードに失敗しました")
+      logger.severe("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
       Bukkit.shutdown()
     }
 
@@ -240,7 +240,7 @@ class SeichiAssist extends JavaPlugin() {
 
     //ランキングリストを最新情報に更新する
     if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
-      logger.info("ランキングデータの作成に失敗しました")
+      logger.info("ランキングデータの作成に失敗しました。サーバーを停止します…")
       Bukkit.shutdown()
     }
 
@@ -299,9 +299,9 @@ class SeichiAssist extends JavaPlugin() {
       val playerdata = SeichiAssist.playermap(uuid)
       //念のためエラー分岐
       if (playerdata == null) {
-        p.sendMessage(s"${RED}playerdataの保存に失敗しました。管理者に報告してください")
-        getServer.getConsoleSender.sendMessage(s"${RED}SeichiAssist[Ondisable処理]でエラー発生")
-        logger.warning(s"${p.getName}のplayerdataの保存失敗。開発者に報告してください")
+        p.sendMessage(s"${RED}プレイヤーデータの保存に失敗しました。管理者に報告してください")
+        getServer.getConsoleSender.sendMessage(s"${RED}SeichiAssist[onDisable処理]でエラー発生")
+        logger.warning(s"${p.getName}のプレイヤーデータの保存失敗。開発者に報告してください")
         return
       }
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
