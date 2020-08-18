@@ -1,24 +1,10 @@
 package com.github.unchama.seichiassist
 
-import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.targetedeffect.TargetedEffect
 
 package object unsafe {
 
-  /**
-   * unsafeRunAsyncメソッドに例外ロギングのコールバックを渡すようなラッパメソッド。
-   *
-   * @deprecated use [[EffectEnvironment]]
-   */
-  @deprecated def runIOAsync(context: String, program: IO[Any]): Unit = {
-    program.unsafeRunAsync {
-      case Left(error) =>
-        println(s"${context}最中にエラーが発生しました。")
-        error.printStackTrace()
-      case Right(_) =>
-    }
-  }
 
   /**
    * `receiver`を`effect`に適用して得られる`IO`を例外を補足して実行する。
