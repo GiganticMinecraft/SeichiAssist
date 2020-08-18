@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.expbottlestack.bukkit.listeners
 import cats.effect.{IO, Resource}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.expbottlestack.domain.BottleCount
 import org.bukkit.entity.{ExperienceOrb, ThrownExpBottle}
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.ExpBottleEvent
@@ -11,10 +12,26 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Location, Material}
 
-import scala.util.Random
-
 class ExpBottleStackUsageController(implicit managedBottleScope: ResourceScope[IO, ThrownExpBottle],
                                     effectEnvironment: EffectEnvironment) extends Listener {
+
+  private def spawnOrbAt(location: Location)(expAmount: Int): IO[Unit] = IO {
+    val orb = location.getWorld.spawn(location, classOf[ExperienceOrb])
+    orb.setExperience(expAmount)
+  }
+
+  private def bottleResourceSpawningAt(loc: Location, originalCount: BottleCount): Resource[IO, ThrownExpBottle] = {
+    Resource
+      .make(
+        IO(loc.getWorld.spawn(loc, classOf[ThrownExpBottle]))
+      ) { e =>
+        for {
+          expAmount <- originalCount.randomlyGenerateExpAmount[IO]
+          _ <- spawnOrbAt(loc)(expAmount)
+          _ <- IO(e.remove())
+        } yield ()
+      }
+  }
 
   @EventHandler
   def onExpBottleHitBlock(event: ExpBottleEvent): Unit = {
@@ -34,33 +51,12 @@ class ExpBottleStackUsageController(implicit managedBottleScope: ResourceScope[I
       && playerInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
 
-      // 一つに付きもたらされる経験値量は3..11。ソースはGamepedia
-      val exp = {
-        val expBottleAmount = playerInventory.getItemInMainHand.getAmount
-        (0 until expBottleAmount).map(_ => Random.nextInt(9 /* Exclusive */) + 3).sum
-      }
-
-      def spawnOrbAt(location: Location): IO[Unit] = IO {
-        val orb = location.getWorld.spawn(
-          location,
-          classOf[ExperienceOrb]
-        )
-        orb.setExperience(exp)
-      }
-
-      def bottleResourceSpawningAt(loc: Location): Resource[IO, ThrownExpBottle] = {
-        import cats.implicits._
-        Resource
-          .make(
-            IO(loc.getWorld.spawn(loc, classOf[ThrownExpBottle]))
-          ) { e =>
-            spawnOrbAt(e.getLocation) >> IO(e.remove())
-          }
-      }
+      val bottleCount = BottleCount(playerInventory.getItemInMainHand.getAmount)
+      val bottleResource = bottleResourceSpawningAt(player.getLocation, bottleCount)
 
       effectEnvironment.runEffectAsync(
         "経験値瓶の消費を待つ",
-        managedBottleScope.useTracked(bottleResourceSpawningAt(player.getLocation)) { _ => IO.never }
+        managedBottleScope.useTracked(bottleResource) { _ => IO.never }
       )
 
       playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
