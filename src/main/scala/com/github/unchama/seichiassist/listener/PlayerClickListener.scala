@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener
 import cats.effect.IO
 import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu

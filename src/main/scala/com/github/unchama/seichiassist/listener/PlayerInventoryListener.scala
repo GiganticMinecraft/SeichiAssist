@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-import com.github.unchama.seichiassist
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
@@ -22,7 +22,7 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
 
-class PlayerInventoryListener extends Listener {
+class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
@@ -81,7 +81,7 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowLeft" =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-            seichiassist.unsafe.runAsyncTargetedEffect(player)(
+            effectEnvironment.runAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
@@ -158,7 +158,7 @@ class PlayerInventoryListener extends Listener {
       if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+        effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
@@ -233,7 +233,7 @@ class PlayerInventoryListener extends Listener {
           case "MHF_ArrowLeft" =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
-            seichiassist.unsafe.runAsyncTargetedEffect(player)(
+            effectEnvironment.runAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 StickMenu.firstPage.open
@@ -455,7 +455,7 @@ class PlayerInventoryListener extends Listener {
     val ticketsToGive = Seq.fill(ticketAmount)(exchangeTicket)
 
     if (ticketsToGive.nonEmpty) {
-      unsafe.runAsyncTargetedEffect(player)(
+      effectEnvironment.runAsyncTargetedEffect(player)(
         SequentialEffect(
           Util.grantItemStacksEffect(ticketsToGive: _*),
           FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
@@ -480,7 +480,7 @@ class PlayerInventoryListener extends Listener {
         }.++(rejectedItems)
 
     //返却処理
-    unsafe.runAsyncTargetedEffect(player)(
+    effectEnvironment.runAsyncTargetedEffect(player)(
       Util.grantItemStacksEffect(itemStacksToReturn: _*),
       "鉱石交換でのアイテム返却を行う"
     )
@@ -737,7 +737,7 @@ class PlayerInventoryListener extends Listener {
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+        effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open

@@ -4,10 +4,9 @@ import cats.effect.{ExitCase, IO}
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.data.Mana
-import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
-import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -141,7 +140,7 @@ object AssaultRoutine {
       // ブロックを書き換える
       if (shouldBreakAllBlocks) {
         (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
-        com.github.unchama.seichiassist.unsafe.runIOAsync(
+        DefaultEffectEnvironment.runEffectAsync(
           "ブロックを大量破壊する",
           BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, toolToBeUsed, shouldPlayBreakSound = false)
         )

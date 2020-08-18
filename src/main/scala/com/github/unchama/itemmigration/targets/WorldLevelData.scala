@@ -1,6 +1,6 @@
 package com.github.unchama.itemmigration.targets
 
-import cats.{Monad, Monoid}
+import cats.Monad
 import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, Sync}
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}

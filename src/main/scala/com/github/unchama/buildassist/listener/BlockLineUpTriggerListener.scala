@@ -1,8 +1,8 @@
 package com.github.unchama.buildassist.listener
 
-import com.github.unchama.util.external.ExternalPlugins
 import com.github.unchama.buildassist.{BuildAssist, Util}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}

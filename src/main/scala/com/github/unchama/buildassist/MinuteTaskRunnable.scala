@@ -1,15 +1,10 @@
 package com.github.unchama.buildassist
 
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.exp.IExperienceManager
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
-import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitRunnable
-import scala.collection.mutable
-import scala.runtime.BoxedUnit
 import java.math.BigDecimal
-import java.util.UUID
+
+import com.github.unchama.seichiassist.SeichiAssist
+import org.bukkit.{Bukkit, ChatColor}
+import org.bukkit.scheduler.BukkitRunnable
 
 class MinuteTaskRunnable extends BukkitRunnable {
 

@@ -1,6 +1,5 @@
 package com.github.unchama.util.external;
 
-import com.github.unchama.util.external.ExternalPlugins;
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.World;
