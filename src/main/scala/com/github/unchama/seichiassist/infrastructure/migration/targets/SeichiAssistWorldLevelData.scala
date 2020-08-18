@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.infrastructure.migration.targets
 
-import cats.effect.Sync
+import cats.effect.{Concurrent, Sync}
 import com.github.unchama.itemmigration.targets.WorldLevelData
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.external.{ExternalPlugins, ExternalServices}
@@ -24,5 +24,5 @@ private object DelegatedImpls {
     ExternalServices.getChunkCoordinates[F](SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
 }
 
-class SeichiAssistWorldLevelData[F[_]](implicit metricsLogger: Logger, F: Sync[F])
+class SeichiAssistWorldLevelData[F[_]](implicit metricsLogger: Logger, F: Concurrent[F])
   extends WorldLevelData[F](DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates)
