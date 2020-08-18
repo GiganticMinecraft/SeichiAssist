@@ -255,7 +255,8 @@ class SeichiAssist extends JavaPlugin() {
     Seq(
       new PlayerJoinListener(),
       new PlayerQuitListener(),
-      new PlayerClickListener(thrownExpBottleScope),
+      new PlayerClickListener(),
+      new ExpBottleStackUsageController(thrownExpBottleScope),
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
       new EntityListener(),
