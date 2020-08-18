@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
@@ -15,10 +16,11 @@ import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Material, Sound}
 
-object OnClickTitleMenu extends Listener {
+object OnClickTitleMenu {
+
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
-  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
+  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(implicit effectEnvironment: EffectEnvironment): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
       return
@@ -115,7 +117,7 @@ object OnClickTitleMenu extends Listener {
       if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+        effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             StickMenu.firstPage.open
