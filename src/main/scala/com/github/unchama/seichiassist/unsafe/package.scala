@@ -6,22 +6,11 @@ import com.github.unchama.targetedeffect.TargetedEffect
 package object unsafe {
 
   /**
-   * `cs`に実行をシフトしてから、シフト後のコンテキストで`program`を実行する。
-   *
-   * このメソッドは呼び出し箇所での実行を「ブロックしない」。
-   * メソッドを呼び出すときに掛かるブロック時間は、純粋にコンテキストを切り替えるコストのみになる。
-   *
-   * @param context エラーログ出力に用いられる実行内容の説明文
-   */
-  def fireShiftAndRunAsync(context: String, program: IO[Any])
-                          (implicit cs: ContextShift[IO]): Unit = {
-    runIOAsync(context, cs.shift.flatMap(_ => program))
-  }
-
-  /**
    * unsafeRunAsyncメソッドに例外ロギングのコールバックを渡すようなラッパメソッド。
+   *
+   * @deprecated use [[com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment]]
    */
-  def runIOAsync(context: String, program: IO[Any]): Unit = {
+  @deprecated def runIOAsync(context: String, program: IO[Any]): Unit = {
     program.unsafeRunAsync {
       case Left(error) =>
         println(s"${context}最中にエラーが発生しました。")
@@ -38,7 +27,8 @@ package object unsafe {
    *
    * @param context effectが何をすることを期待しているかの記述
    * @tparam T レシーバの型
+   * @deprecated use [[com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment]]
    */
-  def runAsyncTargetedEffect[T](receiver: T)(effect: TargetedEffect[T], context: String): Unit =
+  @deprecated def runAsyncTargetedEffect[T](receiver: T)(effect: TargetedEffect[T], context: String): Unit =
     runIOAsync(context, effect(receiver))
 }
