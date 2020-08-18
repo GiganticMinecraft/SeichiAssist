@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.targetedeffect.TargetedEffect
 
 package object unsafe {
@@ -8,7 +9,7 @@ package object unsafe {
   /**
    * unsafeRunAsyncメソッドに例外ロギングのコールバックを渡すようなラッパメソッド。
    *
-   * @deprecated use [[com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment]]
+   * @deprecated use [[EffectEnvironment]]
    */
   @deprecated def runIOAsync(context: String, program: IO[Any]): Unit = {
     program.unsafeRunAsync {
@@ -27,7 +28,7 @@ package object unsafe {
    *
    * @param context effectが何をすることを期待しているかの記述
    * @tparam T レシーバの型
-   * @deprecated use [[com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment]]
+   * @deprecated use [[EffectEnvironment]]
    */
   @deprecated def runAsyncTargetedEffect[T](receiver: T)(effect: TargetedEffect[T], context: String): Unit =
     runIOAsync(context, effect(receiver))

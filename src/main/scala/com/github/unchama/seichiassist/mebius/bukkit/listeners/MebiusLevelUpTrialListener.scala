@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
 import cats.effect.SyncIO
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.playerdatarepository.PlayerDataRepository
-import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
@@ -13,7 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-                                 effectEnvironment: SeichiAssistEffectEnvironment,
+                                 effectEnvironment: EffectEnvironment,
                                  messages: PropertyModificationMessages) extends Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

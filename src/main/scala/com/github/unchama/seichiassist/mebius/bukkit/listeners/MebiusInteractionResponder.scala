@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.mebius.bukkit.listeners
 
 import cats.effect.SyncIO
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
-import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusMessages
 import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-                                 effectEnvironment: SeichiAssistEffectEnvironment)
+                                 effectEnvironment: EffectEnvironment)
   extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onDamage(event: EntityDamageByEntityEvent): Unit = {

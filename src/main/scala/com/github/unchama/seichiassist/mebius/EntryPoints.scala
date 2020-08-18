@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.mebius
 
 import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingTaskContext}
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.SubsystemEntryPoints
-import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
 import com.github.unchama.seichiassist.mebius.bukkit.PropertyModificationBukkitMessages
 import com.github.unchama.seichiassist.mebius.bukkit.command.MebiusCommandExecutorProvider
 import com.github.unchama.seichiassist.mebius.bukkit.gateway.BukkitMebiusSpeechGateway
@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import org.bukkit.entity.Player
 
 object EntryPoints {
-  def wired(implicit effectEnvironment: SeichiAssistEffectEnvironment,
+  def wired(implicit effectEnvironment: EffectEnvironment,
             timer: Timer[IO],
             repeatingTaskContext: RepeatingTaskContext,
             bukkitSyncIOShift: BukkitSyncIOShift): SubsystemEntryPoints = {

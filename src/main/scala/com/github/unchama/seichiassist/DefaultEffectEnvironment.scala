@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist
 
 import cats.effect.{Effect, IO}
-import com.github.unchama.seichiassist.domain.unsafe.SeichiAssistEffectEnvironment
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 
 // the error log should report that the error comes from SeichiAssist. To achieve this,
 // TODO prepare alternative environment that uses dedicated Logger for effect execution
-object DefaultEffectEnvironment extends SeichiAssistEffectEnvironment {
+object DefaultEffectEnvironment extends EffectEnvironment {
 
   override def runEffectAsync[U, F[_] : Effect](context: String, program: F[U]): Unit = {
     import cats.effect.implicits._
