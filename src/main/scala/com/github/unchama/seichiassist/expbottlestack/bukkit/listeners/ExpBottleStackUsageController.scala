@@ -35,7 +35,12 @@ class ExpBottleStackUsageController(implicit managedBottleScope: ResourceScope[I
 
   @EventHandler
   def onExpBottleHitBlock(event: ExpBottleEvent): Unit = {
-    managedBottleScope.release(event.getEntity).unsafeRunSync()
+    val bottle = event.getEntity
+
+    if (managedBottleScope.isTracked(bottle).unsafeRunSync()) {
+      event.setExperience(0)
+      managedBottleScope.release(event.getEntity).unsafeRunSync()
+    }
   }
 
   //　経験値瓶を持った状態でのShift右クリック…一括使用
