@@ -74,7 +74,7 @@ object BuildMainMenu extends Menu {
             /* 小数点以下一桁で表示。
              * https://github.com/GiganticMinecraft/SeichiAssist/issues/540 対策。
              */
-            s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.setScale(1).toPlainString}",
+            s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.setScale(1, RoundingMode.HALF_UP).toPlainString}",
             s"$RESET$DARK_GRAY※1分毎に更新"
           )
           .build()

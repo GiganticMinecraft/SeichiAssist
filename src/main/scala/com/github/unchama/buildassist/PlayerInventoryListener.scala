@@ -3,8 +3,8 @@ package com.github.unchama.buildassist
 import java.util.UUID
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
-import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist.CommonSoundEffects
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -13,7 +13,7 @@ import org.bukkit.{Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerInventoryListener extends Listener {
+class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
   val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
 
   import com.github.unchama.targetedeffect._
@@ -64,7 +64,7 @@ class PlayerInventoryListener extends Listener {
         //ホームメニューへ帰還
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
-        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+        effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             BuildMainMenu.open

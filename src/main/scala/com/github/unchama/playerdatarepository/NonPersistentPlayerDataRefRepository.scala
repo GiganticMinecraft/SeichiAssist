@@ -5,7 +5,7 @@ import cats.effect.concurrent.Ref
 import cats.effect.{IO, SyncIO}
 import org.bukkit.entity.Player
 
-class NonPersistentPlayerDataRefRepository[D](initial: D) extends PlayerDataOnMemoryRepository[Ref[IO, D]] {
+class NonPersistentPlayerDataRefRepository[D](initial: D) extends PreLoginToQuitPlayerDataRepository[Ref[IO, D]] {
   override val loadData: (String, UUID) => SyncIO[Either[Option[String], Ref[IO, D]]] =
     (_, _) => Ref.in[SyncIO, IO, D](initial).map(Right(_))
 

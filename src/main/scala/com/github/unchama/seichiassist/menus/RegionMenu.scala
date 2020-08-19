@@ -60,7 +60,6 @@ override val frame: MenuFrame =
       val canMakeRegion = playerHasPermission && !isSelectionNull && selectionHasEnoughSpace
 
       val iconItemStack = {
-        import com.github.unchama.util.syntax._
 
         val lore = {
           if (!playerHasPermission)

@@ -6,11 +6,9 @@ import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulato
 import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
 import com.github.unchama.util.ActionStatus;
-import com.github.unchama.util.ClassUtils;
 import com.github.unchama.util.failable.FailableAction;
 import com.github.unchama.util.failable.Try;
 import com.github.unchama.util.unit.Unit;
-import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
@@ -58,24 +56,6 @@ public class DatabaseGateway {
                                                             @NotNull String databaseName,
                                                             @NotNull String loginId,
                                                             @NotNull String password) {
-        /*
-         * Flywayクラスは、ロード時にstaticフィールドの初期化処理でJavaUtilLogCreatorをContextClassLoader経由で
-         * インスタンス化を試みるが、ClassNotFoundExceptionを吐いてしまう。これはSpigotが使用しているクラスローダーが
-         * ContextClassLoaderに指定されていないことに起因する。
-         *
-         * 明示的にプラグインクラスを読み込んだクラスローダーを使用することで正常に読み込みが完了する。
-         */
-        ClassUtils.withThreadContextClassLoaderAs(
-                SeichiAssist.class.getClassLoader(),
-                () -> Flyway.configure()
-                        .dataSource(databaseUrl, loginId, password)
-                        .baselineOnMigrate(true)
-                        .locations("db/migration", "com/github/unchama/seichiassist/database/migrations")
-                        .baselineVersion("1.0.0")
-                        .schemas("flyway_managed_schema")
-                        .load().migrate()
-        );
-
         final DatabaseGateway instance = new DatabaseGateway(databaseUrl, databaseName, loginId, password);
 
         if (instance.connectToDatabase() == Fail) {

@@ -1,6 +1,7 @@
 package com.github.unchama.menuinventory
 
 import cats.effect.{ContextShift, IO}
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -11,7 +12,7 @@ import org.bukkit.event.{EventHandler, Listener}
  *
  * @author karayuu
  */
-class MenuHandler(implicit val cs: ContextShift[IO]) extends Listener {
+class MenuHandler(implicit val cs: ContextShift[IO], env: EffectEnvironment) extends Listener {
   @EventHandler(ignoreCancelled = true)
   def onInventoryClick(event: InventoryClickEvent): Unit = {
     val whoClicked = event.getWhoClicked match {
@@ -35,7 +36,7 @@ class MenuHandler(implicit val cs: ContextShift[IO]) extends Listener {
       return
     }
 
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
+    env.runEffectAsync(
       "メニューのクリックを非同期で処理する",
       for {
         currentLayout <- holder.currentLayout.get

@@ -22,6 +22,10 @@ object PluginExecutionContexts {
 
   implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
+  // syncShiftの方がspecificな型であるという理由から、
+  // syncShiftとasyncShiftが同時にスコープにある場合は
+  // syncShiftの方が優先されてしまう模様。これは望ましくなく、エラーになるべきなので、
+  // TODO ContextShift[IO]よりも具体的な型にする
   implicit val asyncShift: ContextShift[IO] = IO.contextShift(cachedThreadPool)
 
   implicit val layoutPreparationContext: LayoutPreparationContext =

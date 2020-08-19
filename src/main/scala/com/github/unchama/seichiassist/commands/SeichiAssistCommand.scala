@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.commands
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.{ConsoleCommandSender, TabExecutor}
@@ -23,7 +23,7 @@ object SeichiAssistCommand {
   private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()
     .execution { _ =>
       IO {
-        SeichiAssist.seichiAssistConfig.reloadConfig()
+        SeichiAssist.seichiAssistConfig = Config.loadFrom(SeichiAssist.instance)
         MessageEffect("config.ymlの設定値を再読み込みしました")
       }
     }

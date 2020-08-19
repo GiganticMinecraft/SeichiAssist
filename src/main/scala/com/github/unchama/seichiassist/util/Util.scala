@@ -8,7 +8,7 @@ import cats.data
 import cats.effect.IO
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.minestack.MineStackObj
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
 import net.md_5.bungee.api.chat.BaseComponent
@@ -93,7 +93,8 @@ object Util {
    * @deprecated use [[grantItemStacksEffect]]
    */
   @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
+    // Javaから呼ばれているのでimplicitが使いづらい　grantItemStacksEffectに置き換えたい
+    DefaultEffectEnvironment.runEffectAsync(
       "アイテムスタックを付与する",
       grantItemStacksEffect(itemStack).run(player)
     )
@@ -329,6 +330,9 @@ object Util {
 
     val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
 
+    if (!skullMeta.hasLore) return false
+    if (!skullMeta.getLore.contains(s"$RESET${GREEN}右クリックで使えます")) return false
+
     // オーナーがunchamaか？
     skullMeta.hasOwner && skullMeta.getOwner == "unchama"
   }
@@ -509,7 +513,7 @@ object Util {
   def getTimeZone(cal: Calendar): String = {
     val date = cal.getTime
     val format = new SimpleDateFormat("HH")
-    val n = TypeConverter.toInt(format.format(date))
+    val n = Integer.parseInt(format.format(date))
     if (4 <= n && n < 10)
       "morning"
     else if (10 <= n && n < 18)

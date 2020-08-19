@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
@@ -11,7 +12,7 @@ import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
 
-class EntityListener extends Listener {
+class EntityListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
   private val playermap = SeichiAssist.playermap
 
   @EventHandler def onPlayerActiveSkillEvent(event: ProjectileHitEvent): Unit = { //矢を取得する
@@ -142,7 +143,7 @@ class EntityListener extends Listener {
     //元ブロックの真ん中の位置
     val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
 
-    com.github.unchama.seichiassist.unsafe.runIOAsync(
+    effectEnvironment.runEffectAsync(
       "破壊エフェクトを再生する",
       playerData.skillEffectState.selection
         .runBreakEffect(player, selectedSkill, tool, breakBlocks.toSet, breakArea, centerOfBlock)

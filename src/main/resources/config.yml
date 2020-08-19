@@ -11,6 +11,10 @@ pw: ''
 # サーバ識別設定
 # 複数サーバ構成にする場合はこの値をサーバごとに変更します
 servernum: '1'
+server-id: ''
+
+# アイテム変換するチャンク座標を検索してprotobufにて吐き出すコマンド
+chunk-search-command-base: "chunk-search-rs --protobuf --threads 12"
 
 # 色々な設定、説明は割愛
 defaultmineamount: '3'

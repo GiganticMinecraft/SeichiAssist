@@ -1,86 +1,207 @@
 version: 2.1
 
-anchors:
-  docker:
-    gradle_docker: &sbt_docker
-      docker:
-        - image: circleci/openjdk:8u181-jdk
-  workspace:
-    save_workspace: &save_workspace
-      persist_to_workspace:
-        root: ./workspace
-        paths:
-          - '*'
-    load_workspace: &load_workspace
-      attach_workspace:
-        at: '/tmp/workspace'
+executors:
+  sbt-docker:
+    docker:
+      - image: circleci/openjdk:8u181-jdk
 
-jobs:
-  build_and_test:
-    <<: *sbt_docker
-    working_directory: ~/repo
+commands:
+  pull-submodules:
+    description: "Pulls any submodules of the checked out repository"
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
-            - sbt-repo-v3-{{ .Branch }}-
-            - sbt-repo-v3-
-      - restore_cache:
-          keys:
-            - build-cache-v3-{{ .Branch }}-
-            - build-cache-v3-
-      - run: du -h --max-depth=2 ~
-      ## ビルド結果が残っている可能性があるのでクリアする
-      - run: rm -rf target/build
-      - run: ./sbt assembly
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule sync
+            git submodule update --init
+
+  persist-tmp-workspace:
+    steps:
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - '*'
+  restore-tmp-workspace:
+    steps:
+      - attach_workspace:
+          at: '/tmp/workspace'
+
+  restore-dependency-cache:
+    parameters:
+      dependency-cache-version:
+        type: string
+    steps:
       - save_cache:
           paths:
             - ~/.ivy2/cache
             - ~/.m2
             - ~/.cache/coursier/v1
             - ~/.sbt
-          key: sbt-repo-v3-{{ .Branch }}-{{ checksum "build.sbt" }}
+          key: sbt-repo-<< parameters.dependency-cache-version >>-{{ .Branch }}-{{ checksum "build.sbt" }}
+  save-dependency-cache:
+    parameters:
+      dependency-cache-version:
+        type: string
+    steps:
+      - restore_cache:
+          keys:
+            - sbt-repo-<< parameters.dependency-cache-version >>-{{ .Branch }}-{{ checksum "build.sbt" }}
+            - sbt-repo-<< parameters.dependency-cache-version >>-{{ .Branch }}-
+            - sbt-repo-<< parameters.dependency-cache-version >>-
+
+  ## CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
+  ## そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
+  ## 不要なインクリメンタルコンパイルが走る
+  ## タイムスタンプをコミット時刻に設定することでこれが回避できる
+  restore-local-dependencies-timestamps:
+    steps:
+      - run:
+          name: Restore timestamps of files in localDependencies
+          ## 参考
+          ## https://qiita.com/tomlla/items/219cea9dd071c8a9e147
+          command: |
+            for jar in localDependencies/*.jar; do
+              timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
+              touch -t "$timestamp" $jar
+            done
+
+  restore-build-cache:
+    parameters:
+      build-cache-version:
+        type: string
+    steps:
+      - restore_cache:
+          ## ブランチ間でのビルドキャッシュ共有は行わない
+          keys:
+            - build-cache-<< parameters.build-cache-version >>-{{ .Branch }}-
+      - run:
+          name: Unarchive build cache
+          command: |
+            if [ -e ~/.build_cache ]; then
+              if test -n "$(find ~/.build_cache -name 'cache_*.tar')"; then
+                cat ~/.build_cache/cache_*.tar | tar xvf - -i > /dev/null
+              fi
+            fi
+  save-build-cache:
+    parameters:
+      build-cache-version:
+        type: string
+    steps:
+      - run: rm -rf target/build
+      - run:
+          ## 圧縮時にタイムスタンプが丸められるため、
+          ## オプション付きで圧縮をしたものをキャッシュとして保存しないと
+          ## コンパイルがインクリメンタルになってくれない
+          ## https://kurochan-note.hatenablog.jp/entry/2018/03/21/162929
+          name: Archive build cache
+          command: |
+            mkdir -p ~/.build_cache
+            tar --format posix -cvf ~/.build_cache/cache_target.tar target/ > /dev/null
+            tar --format posix -cvf ~/.build_cache/cache_project_target.tar project/target/ > /dev/null
+            tar --format posix -cvf ~/.build_cache/cache_project_project_target.tar project/project/target > /dev/null
       - save_cache:
           ## 毎回ビルド結果をキャッシュする。次のビルドにて
           ##  build-cache-v3-{{ .Branch }}
           ## までが等しい最新のキャッシュが使われるから、コンパイルはインクリメンタルになる。
           paths:
-            - ~/repo/target
-            - ~/repo/project/target
-          key: build-cache-v3-{{ .Branch }}-{{ epoch }}
-      - run: mkdir -p workspace/builds && cp target/build/**.jar workspace/builds
-      - *save_workspace
+            - ~/.build_cache
+          key: build-cache-<< parameters.build-cache-version >>-{{ .Branch }}-{{ epoch }}
+
+  build-artifact-and-copy-to-workspace:
+    steps:
+      - run: du -h --max-depth=2 ~
+      - run: |
+          ./sbt assembly
+          mkdir -p /tmp/workspace/builds
+          cp target/build/**.jar /tmp/workspace/builds
+
+  deploy-to-servers:
+    parameters:
+      server-port:
+        type: string
+      server-host:
+        type: string
+    steps:
+      - run: du -h --max-depth=2 /tmp/workspace/builds
+      - run: |
+          scp -v -oStrictHostKeyChecking=no \
+              -P ${<< parameters.server-port >>} \
+              /tmp/workspace/builds/**.jar ${<< parameters.server-host >>}
+
+jobs:
+  ## 同じブランチ上のビルドキャッシュを使ってビルドを行い、テストする
+  incremental_build_and_test:
+    executor: sbt-docker
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - pull-submodules
+
+      - restore-dependency-cache:
+          dependency-cache-version: v4
+      - restore-build-cache:
+          build-cache-version: v6
+      - restore-local-dependencies-timestamps
+
+      - build-artifact-and-copy-to-workspace
+
+      - persist-tmp-workspace
+      - save-dependency-cache:
+          dependency-cache-version: v4
+      - save-build-cache:
+          build-cache-version: v6
+  full_build_and_test:
+    executor: sbt-docker
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - pull-submodules
+
+      - restore-dependency-cache:
+          dependency-cache-version: v4
+
+      - build-artifact-and-copy-to-workspace
+
+      - persist-tmp-workspace
+      - save-dependency-cache:
+          dependency-cache-version: v4
   deploy_debug:
-    <<: *sbt_docker
+    executor: sbt-docker
     working_directory: ~/repo
     steps:
-      - *load_workspace
-      - run: du -h --max-depth=2 /tmp/workspace/builds
-      - run: scp -v -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $DEBUG_DEPLOY_TARGET_HOST
+      - restore-tmp-workspace
+      - deploy-to-servers:
+          server-port: HOST_PORT
+          server-host: DEBUG_DEPLOY_TARGET_HOST
   deploy_production:
-    <<: *sbt_docker
+    executor: sbt-docker
     working_directory: ~/repo
     steps:
-      - *load_workspace
-      - run: du -h --max-depth=2 /tmp/workspace/builds
-      - run: scp -v -oStrictHostKeyChecking=no -P $HOST_PORT /tmp/workspace/builds/**.jar $PRODUCTION_DEPLOY_TARGET_HOST
+      - restore-tmp-workspace
+      - deploy-to-servers:
+          server-port: HOST_PORT
+          server-host: PRODUCTION_DEPLOY_TARGET_HOST
 
 workflows:
   version: 2
   test_and_build:
     jobs:
-      - build_and_test
-      - deploy_production:
-          requires:
-            - build_and_test
+      - incremental_build_and_test:
+          filters:
+            branches:
+              ignore:
+                - master
+      - full_build_and_test:
           filters:
             branches:
               only:
                 - master
+      - deploy_production:
+          requires:
+            - full_build_and_test
       - deploy_debug:
           requires:
-            - build_and_test
+            - incremental_build_and_test
           filters:
             branches:
               only:

@@ -1,15 +1,15 @@
 package com.github.unchama.buildassist.listener
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
-import com.github.unchama.seichiassist
-import com.github.unchama.seichiassist.CommonSoundEffects
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import org.bukkit.Material
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
-object PlayerLeftClickListener extends Listener {
+class PlayerLeftClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
 
   import com.github.unchama.targetedeffect._
 
@@ -31,7 +31,7 @@ object PlayerLeftClickListener extends Listener {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
-    seichiassist.unsafe.runAsyncTargetedEffect(player)(
+    effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         BuildMainMenu.open

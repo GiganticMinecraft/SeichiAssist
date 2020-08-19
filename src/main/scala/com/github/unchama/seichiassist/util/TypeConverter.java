@@ -1,23 +1,11 @@
 package com.github.unchama.seichiassist.util;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.math.BigDecimal;
 
 public final class TypeConverter {
     // 不必要なインスタンス化を防ぐため封印
     private TypeConverter() {
 
-    }
-
-    //String -> double
-    public static double toDouble(String s) {
-        return Double.parseDouble(s);
-    }
-
-    //String -> int
-    public static int toInt(String s) {
-        return Integer.parseInt(s);
     }
 
     //double -> .1double
@@ -30,26 +18,12 @@ public final class TypeConverter {
         return _tick / 20;
     }
 
-    public static String toTimeString(int second) {
-        final int minute;
-        final int hour;
-        String time = "";
-        // Math.floor は double を返す
-        hour = (int) Math.floor(second / 3600);
-        second -= hour * 3600;
-        minute = Math.round(second / 60);
-        if (hour != 0) {
-            time = hour + "時間";
-        }
-        if (minute != 0) {
-            time += minute + "分";
-        }
-		/*
-		if(second != 0){
-			time = time + second + "秒";
-		}
-		*/
-        return time;
+    public static String toTimeString(int seconds) {
+        final int totalMinutes = Math.round(seconds / 60);
+        final int hours = totalMinutes / 60;
+        final int minutes = totalMinutes % 60;
+
+        return (hours == 0 ? "" : hours + "時間") + minutes + "分";
     }
 
     /**
@@ -61,17 +35,11 @@ public final class TypeConverter {
      */
     public static boolean isParsableToInteger(final String string) {
         try {
-            toInt(string);
+            Integer.parseInt(string);
             return true;
         } catch (NumberFormatException e) {
             return false;
         }
     }
 
-    public @Nullable
-    static Integer toIntSafe(final String string) {
-        if (isParsableToInteger(string)) return toInt(string);
-
-        return null;
-    }
 }
