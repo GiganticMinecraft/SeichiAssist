@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusTalks}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 
@@ -41,7 +42,13 @@ object BukkitMebiusItemStackCodec {
     val nameTag = "mebiusName"
   }
 
-  def isMebius(itemStack: ItemStack): Boolean = new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) != 0
+  def isMebius(itemStack: ItemStack): Boolean = {
+    if (itemStack != null && itemStack.getType != Material.AIR) {
+      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) != 0
+    } else {
+      false
+    }
+  }
 
   /**
    * (必ずしも有効な`MebiusProperty`を持つとは限らない)実体から `ItemStack` をデコードする。
