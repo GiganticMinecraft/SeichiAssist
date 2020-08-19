@@ -24,6 +24,8 @@ case class MebiusLevel private(value: Int) extends AnyVal {
 
 object MebiusLevel {
 
+  implicit val mebiusLevelOrder: Ordering[MebiusLevel] = Ordering.by(_.value)
+
   val max = 30
 
   private val averageAttemptsToLevelUp = List(

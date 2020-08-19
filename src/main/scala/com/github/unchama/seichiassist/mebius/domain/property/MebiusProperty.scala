@@ -18,9 +18,12 @@ case class MebiusProperty(ownerPlayerId: String,
                           level: MebiusLevel = MebiusLevel(1),
                           ownerNicknameOverride: Option[String] = None,
                           mebiusName: String = "MEBIUS") {
+
+  import MebiusLevel.mebiusLevelOrder._
+
   require {
     enchantmentLevel.forall { case (MebiusEnchantment(_, unlockLevel, maxLevel, _), enchantmentLevel) =>
-      unlockLevel.value >= level.value && 1 <= enchantmentLevel && enchantmentLevel <= maxLevel
+      unlockLevel <= level && 1 <= enchantmentLevel && enchantmentLevel <= maxLevel
     }
   }
 
