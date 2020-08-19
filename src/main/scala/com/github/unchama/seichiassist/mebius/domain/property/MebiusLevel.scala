@@ -38,7 +38,7 @@ object MebiusLevel {
   )
 
   def apply(level: Int): MebiusLevel = {
-    require(1 <= level && level < max)
+    require(1 <= level && level <= max)
 
     new MebiusLevel(level)
   }
