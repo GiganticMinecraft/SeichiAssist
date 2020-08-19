@@ -36,7 +36,7 @@ import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, Play
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandSender}
-import org.bukkit.entity.Entity
+import org.bukkit.entity.{Entity, ThrownExpBottle}
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
@@ -61,6 +61,11 @@ class SeichiAssist extends JavaPlugin() {
   val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
+  }
+
+  implicit val thrownExpBottleScope: ResourceScope[IO, ThrownExpBottle] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreate
   }
 
   /**
@@ -213,7 +218,10 @@ class SeichiAssist extends JavaPlugin() {
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
-    val mebiusSystem = mebius.EntryPoints.wired
+    val subsystems = Seq(
+      mebius.EntryPoints.wired,
+      expbottlestack.EntryPoints.wired
+    )
 
     // コマンドの登録
     Map(
@@ -236,7 +244,7 @@ class SeichiAssist extends JavaPlugin() {
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
     )
-      .concat(mebiusSystem.commandsToBeRegistered)
+      .concat(subsystems.flatMap(_.commandsToBeRegistered))
       .foreach {
         case (commandName, executor) => getCommand(commandName).setExecutor(executor)
       }
@@ -263,7 +271,7 @@ class SeichiAssist extends JavaPlugin() {
       new MenuHandler()
     )
       .concat(repositories)
-      .concat(mebiusSystem.listenersToBeRegistered)
+      .concat(subsystems.flatMap(_.listenersToBeRegistered))
       .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)
@@ -336,6 +344,7 @@ class SeichiAssist extends JavaPlugin() {
     lockedBlockChunkScope.releaseAll.unsafeRunSync()
     arrowSkillProjectileScope.releaseAll.unsafeRunSync()
     magicEffectEntityScope.releaseAll.value.unsafeRunSync()
+    thrownExpBottleScope.releaseAll.unsafeRunSync()
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
