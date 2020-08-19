@@ -15,9 +15,11 @@ case class SeichiExpAmount private(amount: BigInt) extends AnyVal {
 }
 
 private[explevel] abstract class SeichiExpAmountInstances {
-  implicit val ordering: Ordering[SeichiExpAmount] = Ordering.by(_.amount)
+  implicit lazy val ordering: Ordering[SeichiExpAmount] = Ordering.by(_.amount)
 
-  implicit val hasMinimum: HasMinimum[SeichiExpAmount] = HasMinimum.as(SeichiExpAmount.ofNonNegative(0))
+  implicit lazy val hasMinimum: HasMinimum[SeichiExpAmount] = {
+    HasMinimum.as(SeichiExpAmount.ofNonNegative(0))
+  }
 }
 
 object SeichiExpAmount extends SeichiExpAmountInstances {
