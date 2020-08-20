@@ -18,7 +18,11 @@ case class MebiusLevel private(value: Int) extends AnyVal {
 
   def isMaximum: Boolean = this == MebiusLevel.max
 
-  def increment: MebiusLevel = MebiusLevel(value + 1)
+  def increment: Option[MebiusLevel] =
+    if (isMaximum)
+      None
+    else
+      Some(MebiusLevel(value + 1))
 }
 
 object MebiusLevel {

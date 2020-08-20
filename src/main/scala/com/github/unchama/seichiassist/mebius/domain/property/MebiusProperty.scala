@@ -32,36 +32,39 @@ case class MebiusProperty(ownerPlayerId: String,
   }
 
   val upgradeByOneLevel: IO[MebiusProperty] = {
-    val levelUpdatedProperty = copy(level = level.increment)
-    val newLevel = levelUpdatedProperty.level
+    level.increment match {
+      case Some(newLevel) =>
+        val levelUpdatedProperty = copy(level = newLevel)
 
-    if (newLevel.isMaximum) {
-      IO.pure {
-        levelUpdatedProperty.copy(
-          enchantmentLevel = enchantmentLevel.updated(MebiusEnchantment.Unbreakable, 1)
-        )
-      }
-    } else {
-      val upgradableEnchantments = MebiusEnchantment
-        .values
-        .filter { mebiusEnchantment =>
-          val upgradable = enchantmentLevel
-            .get(mebiusEnchantment)
-            .forall { currentLevel =>
-              currentLevel < mebiusEnchantment.maxLevel
+        if (newLevel.isMaximum) {
+          IO.pure {
+            levelUpdatedProperty.copy(
+              enchantmentLevel = enchantmentLevel.updated(MebiusEnchantment.Unbreakable, 1)
+            )
+          }
+        } else {
+          val upgradableEnchantments = MebiusEnchantment
+            .values
+            .filter { mebiusEnchantment =>
+              val upgradable = enchantmentLevel
+                .get(mebiusEnchantment)
+                .forall { currentLevel =>
+                  currentLevel < mebiusEnchantment.maxLevel
+                }
+
+              val possiblyGrantedNewly = mebiusEnchantment.unlockLevel <= newLevel
+
+              upgradable || possiblyGrantedNewly
             }
 
-          val possiblyGrantedNewly = mebiusEnchantment.unlockLevel <= newLevel
+          IO {
+            val choice = upgradableEnchantments(Random.nextInt(upgradableEnchantments.size))
+            val newLevel = enchantmentLevel.get(choice).map(_ + 1).getOrElse(1)
 
-          upgradable || possiblyGrantedNewly
+            this.copy(enchantmentLevel = enchantmentLevel.updated(choice, newLevel))
+          }
         }
-
-      IO {
-        val choice = upgradableEnchantments(Random.nextInt(upgradableEnchantments.size))
-        val newLevel = enchantmentLevel.get(choice).map(_ + 1).getOrElse(1)
-
-        this.copy(enchantmentLevel = enchantmentLevel.updated(choice, newLevel))
-      }
+      case None => IO.raiseError(new IllegalStateException("Level cannot be upgraded from maximum"))
     }
   }
 
