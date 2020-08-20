@@ -31,36 +31,37 @@ case class MebiusProperty(ownerPlayerId: String,
     }, s"$enchantmentLevel is in [1, $maxLevel] for $m")
   }
 
-  def upgradeByOneLevel: IO[MebiusProperty] = {
-    val levelUpdated = copy(level = level.increment)
+  val upgradeByOneLevel: IO[MebiusProperty] = {
+    val levelUpdatedProperty = copy(level = level.increment)
+    val newLevel = levelUpdatedProperty.level
 
-    if (levelUpdated.level.isMaximum) IO.pure {
-      levelUpdated.copy(
-        enchantmentLevel = enchantmentLevel.updated(MebiusEnchantment.Unbreakable, 1)
-      )
+    if (newLevel.isMaximum) {
+      IO.pure {
+        levelUpdatedProperty.copy(
+          enchantmentLevel = enchantmentLevel.updated(MebiusEnchantment.Unbreakable, 1)
+        )
+      }
     } else {
-      levelUpdated.randomlyAugmentEnchantment
-    }
-  }
-
-  // TODO should probably be inlined to upgradeByOneLevel
-  private val randomlyAugmentEnchantment: IO[MebiusProperty] = {
-    val upgradableEnchantments = {
-      MebiusEnchantment.values
+      val upgradableEnchantments = MebiusEnchantment
+        .values
         .filter { mebiusEnchantment =>
-          enchantmentLevel
+          val upgradable = enchantmentLevel
             .get(mebiusEnchantment)
             .forall { currentLevel =>
               currentLevel < mebiusEnchantment.maxLevel
             }
+
+          val possiblyGrantedNewly = mebiusEnchantment.unlockLevel <= newLevel
+
+          upgradable || possiblyGrantedNewly
         }
-    }
 
-    IO {
-      val choice = upgradableEnchantments(Random.nextInt(upgradableEnchantments.size))
-      val newLevel = enchantmentLevel.get(choice).map(_ + 1).getOrElse(1)
+      IO {
+        val choice = upgradableEnchantments(Random.nextInt(upgradableEnchantments.size))
+        val newLevel = enchantmentLevel.get(choice).map(_ + 1).getOrElse(1)
 
-      this.copy(enchantmentLevel = enchantmentLevel.updated(choice, newLevel))
+        this.copy(enchantmentLevel = enchantmentLevel.updated(choice, newLevel))
+      }
     }
   }
 
