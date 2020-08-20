@@ -31,7 +31,7 @@ case class MebiusProperty(ownerPlayerId: String,
     }, s"$enchantmentLevel is in [1, $maxLevel] for $m")
   }
 
-  val upgradeByOneLevel: IO[MebiusProperty] = {
+  lazy val upgradeByOneLevel: IO[MebiusProperty] = {
     level.increment match {
       case Some(newLevel) =>
         val levelUpdatedProperty = copy(level = newLevel)
@@ -68,7 +68,7 @@ case class MebiusProperty(ownerPlayerId: String,
     }
   }
 
-  val tryUpgradeByOneLevel: IO[MebiusProperty] = {
+  lazy val tryUpgradeByOneLevel: IO[MebiusProperty] = {
     for {
       levelUpHappened <- level.attemptLevelUp
       updatedProperty <- {
@@ -81,7 +81,7 @@ case class MebiusProperty(ownerPlayerId: String,
     } yield updatedProperty
   }
 
-  def ownerNickname: String = ownerNicknameOverride.getOrElse(ownerPlayerId)
+  lazy val ownerNickname: String = ownerNicknameOverride.getOrElse(ownerPlayerId)
 
   /**
    * `another` と異なる [[MebiusEnchantment]] を返す。
