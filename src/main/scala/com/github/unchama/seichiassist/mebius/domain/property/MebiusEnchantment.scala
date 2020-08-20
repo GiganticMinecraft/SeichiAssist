@@ -31,6 +31,8 @@ object MebiusEnchantment extends Enum[MebiusEnchantment] {
 
   case object WaterAffinity extends MebiusEnchantment(MebiusLevel(15), 1, "水中採掘")
 
+  case object Unbreakable extends MebiusEnchantment(MebiusLevel(MebiusLevel.max), 1, "耐久無限")
+
   def unapply(mebiusEnchantment: MebiusEnchantment): Some[(MebiusLevel, Int, String)] = {
     import mebiusEnchantment._
     Some((unlockLevel, maxLevel, displayName))

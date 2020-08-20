@@ -27,6 +27,14 @@ object BukkitMebiusEnchantmentCodec {
       case ExplosionProtection => unsafeEnchantmentAdded(Enchantment.PROTECTION_EXPLOSIONS)
       case Respiration => unsafeEnchantmentAdded(Enchantment.OXYGEN)
       case WaterAffinity => unsafeEnchantmentAdded(Enchantment.WATER_WORKER)
+      case Unbreakable =>
+        itemStack.tap { _ =>
+          itemStack.setItemMeta {
+            itemStack.getItemMeta.tap { meta =>
+              meta.setUnbreakable(true)
+            }
+          }
+        }
     }
   }
 
@@ -40,6 +48,7 @@ object BukkitMebiusEnchantmentCodec {
       case ExplosionProtection => itemStack.getEnchantmentLevel(Enchantment.PROTECTION_EXPLOSIONS)
       case Respiration => itemStack.getEnchantmentLevel(Enchantment.OXYGEN)
       case WaterAffinity => itemStack.getEnchantmentLevel(Enchantment.WATER_WORKER)
+      case Unbreakable => if (itemStack.getItemMeta.isUnbreakable) 1 else 0
     }
   }
 
