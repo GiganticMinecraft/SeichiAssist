@@ -68,6 +68,19 @@ case class MebiusProperty(ownerPlayerId: String,
     }
   }
 
+  val tryUpgradeByOneLevel: IO[MebiusProperty] = {
+    for {
+      levelUpHappened <- level.attemptLevelUp
+      updatedProperty <- {
+        if (levelUpHappened) {
+          upgradeByOneLevel
+        } else IO.pure {
+          this
+        }
+      }
+    } yield updatedProperty
+  }
+
   def ownerNickname: String = ownerNicknameOverride.getOrElse(ownerPlayerId)
 
   /**
