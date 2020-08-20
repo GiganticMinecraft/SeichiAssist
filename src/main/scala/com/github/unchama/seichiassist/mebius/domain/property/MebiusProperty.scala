@@ -14,6 +14,7 @@ import scala.util.Random
  */
 case class MebiusProperty(ownerPlayerId: String,
                           ownerUuid: String,
+                          // TODO do not expose map; replace with a verified object
                           enchantmentLevel: Map[MebiusEnchantment, Int] = Map(),
                           level: MebiusLevel = MebiusLevel(1),
                           ownerNicknameOverride: Option[String] = None,
@@ -64,7 +65,8 @@ case class MebiusProperty(ownerPlayerId: String,
             this.copy(enchantmentLevel = enchantmentLevel.updated(choice, newLevel))
           }
         }
-      case None => IO.raiseError(new IllegalStateException("Level cannot be upgraded from maximum"))
+      case None =>
+        IO.raiseError(new IllegalStateException("Level cannot be upgraded from maximum"))
     }
   }
 
