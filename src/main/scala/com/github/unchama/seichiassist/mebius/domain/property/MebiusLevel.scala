@@ -29,7 +29,7 @@ object MebiusLevel {
 
   implicit val mebiusLevelOrder: Ordering[MebiusLevel] = Ordering.by(_.value)
 
-  val max: MebiusLevel = MebiusLevel(30)
+  val max: MebiusLevel = new MebiusLevel(30)
 
   private val averageAttemptsToLevelUp = List(
     500, 500, 500, 500, // 5
