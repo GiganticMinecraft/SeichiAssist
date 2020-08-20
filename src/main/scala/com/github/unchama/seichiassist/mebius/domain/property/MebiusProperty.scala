@@ -58,3 +58,14 @@ case class MebiusProperty(ownerPlayerId: String,
     another.enchantmentLevel.keySet.union(enchantmentLevel.keySet)
       .find { e => another.enchantmentLevel.get(e) != enchantmentLevel.get(e) }
 }
+
+object MebiusProperty {
+  def initialProperty(ownerPlayerId: String, ownerUuid: String): MebiusProperty = {
+    MebiusProperty(
+      ownerPlayerId,
+      ownerUuid,
+      enchantmentLevel = Map(
+      )
+    )
+  }
+}

@@ -118,7 +118,7 @@ class PlayerJoinListener extends Listener {
 
       //メビウスおひとつどうぞ
       player.getInventory.setHelmet(BukkitMebiusItemStackCodec.materialize(
-        MebiusProperty(player.getDisplayName, player.getUniqueId.toString),
+        MebiusProperty.initialProperty(player.getDisplayName, player.getUniqueId.toString),
         damageValue = 0.toShort
       ))
 
