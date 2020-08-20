@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.mebius.service
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
-import com.github.unchama.seichiassist.mebius.domain.resources.MebiusEnchantments
+import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusProperty}
 
 object MebiusLevellingService {
 
@@ -15,7 +14,7 @@ object MebiusLevellingService {
             // 最大レベルへの遷移ではunbreakableが付与されるため、追加でエンチャントを付与したくない
             currentProperty.incrementLevel
           } else {
-            currentProperty.incrementLevel.randomlyUpgradeEnchantment(MebiusEnchantments.list.toSet)
+            currentProperty.incrementLevel.randomlyUpgradeEnchantment(MebiusEnchantment.values.toSet)
           }
         } else IO.pure {
           currentProperty

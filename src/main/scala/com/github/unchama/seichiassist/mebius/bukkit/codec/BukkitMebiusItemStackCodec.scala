@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit.codec
 
 import com.github.unchama.seichiassist.mebius.domain.property
 import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusLevel, MebiusProperty}
-import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusEnchantments, MebiusTalks}
+import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Material
@@ -63,7 +63,7 @@ object BukkitMebiusItemStackCodec {
     val ownerName = nbtItem.getString(ownerNameTag)
     val ownerUuid = nbtItem.getString(ownerUuidTag)
     val enchantments = {
-      MebiusEnchantments.list
+      MebiusEnchantment.values
         .map { case mebiusEnchantment@MebiusEnchantment(enchantment, _, _, _) =>
           mebiusEnchantment -> mebius.getEnchantmentLevel(enchantment)
         }
