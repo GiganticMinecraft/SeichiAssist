@@ -23,7 +23,7 @@ class MebiusPropertySpec extends AnyWordSpec {
           .iterateWhileM {
             MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
           } {
-            _.incrementLevel.randomlyUpgradeEnchantment(MebiusEnchantment.values.toSet)
+            _.incrementLevel.randomlyUpgradeEnchantment
           } {
             !_.level.isMaximum
           }.unsafeRunSync()

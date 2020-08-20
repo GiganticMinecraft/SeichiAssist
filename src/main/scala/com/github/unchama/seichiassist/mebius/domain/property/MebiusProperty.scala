@@ -33,13 +33,17 @@ case class MebiusProperty(ownerPlayerId: String,
 
   def incrementLevel: MebiusProperty = copy(level = level.increment)
 
-  def randomlyUpgradeEnchantment(availableEnchantments: Set[MebiusEnchantment]): IO[MebiusProperty] = {
-    val upgradableEnchantments = availableEnchantments.filter { mebiusEnchantment =>
-      enchantmentLevel.get(mebiusEnchantment)
-        .forall { currentLevel =>
-          currentLevel < mebiusEnchantment.maxLevel
+  val randomlyUpgradeEnchantment: IO[MebiusProperty] = {
+    val upgradableEnchantments = {
+      MebiusEnchantment.values
+        .filter { mebiusEnchantment =>
+          enchantmentLevel
+            .get(mebiusEnchantment)
+            .forall { currentLevel =>
+              currentLevel < mebiusEnchantment.maxLevel
+            }
         }
-    }.toSeq
+    }
 
     IO {
       val choice = upgradableEnchantments(Random.nextInt(upgradableEnchantments.size))
