@@ -310,15 +310,7 @@ object Util {
   //ガチャアイテムを含んでいるか調べる
   def containsGachaTicket(player: Player): Boolean = {
     player.getInventory.getStorageContents.foreach { itemStack =>
-      val material = itemStack.getType
-      if (material == Material.SKULL_ITEM) {
-        val skullmeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
-        if (skullmeta.hasOwner) {
-          if (skullmeta.getOwner == "unchama") {
-            return true
-          }
-        }
-      }
+      if (isGachaTicket(itemStack)) return true
     }
 
     false
@@ -330,7 +322,8 @@ object Util {
     val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
 
     if (!skullMeta.hasLore) return false
-    if (!skullMeta.getLore.contains(s"$RESET${GREEN}右クリックで使えます")) return false
+    for (lore <- skullMeta.getLore.asScala)
+      if (lore.contains(s"${GREEN}右クリックで使えます")) return true
 
     // オーナーがunchamaか？
     skullMeta.hasOwner && skullMeta.getOwner == "unchama"
