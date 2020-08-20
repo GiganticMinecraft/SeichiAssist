@@ -21,7 +21,7 @@ case class MebiusProperty(ownerPlayerId: String,
 
   import MebiusLevel.mebiusLevelOrder._
 
-  enchantmentLevel.foreach { case m@(MebiusEnchantment(_, unlockLevel, maxLevel, _), enchantmentLevel) =>
+  enchantmentLevel.foreach { case m@(MebiusEnchantment(unlockLevel, maxLevel, _), enchantmentLevel) =>
     require({
       unlockLevel <= level
     }, s"unlockLevel = $unlockLevel <= $level = level for $m")

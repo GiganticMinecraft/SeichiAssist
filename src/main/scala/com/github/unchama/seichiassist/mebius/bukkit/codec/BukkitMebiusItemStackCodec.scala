@@ -64,8 +64,8 @@ object BukkitMebiusItemStackCodec {
     val ownerUuid = nbtItem.getString(ownerUuidTag)
     val enchantments = {
       MebiusEnchantment.values
-        .map { case mebiusEnchantment@MebiusEnchantment(enchantment, _, _, _) =>
-          mebiusEnchantment -> mebius.getEnchantmentLevel(enchantment)
+        .map { mebiusEnchantment =>
+          mebiusEnchantment -> BukkitMebiusEnchantmentCodec.getLevelOf(mebiusEnchantment)(itemStack)
         }
         .filter { case (e, l) => 1 <= l && l <= e.maxLevel }
         .toMap
@@ -122,7 +122,7 @@ object BukkitMebiusItemStackCodec {
     }
 
     property.enchantmentLevel.foreach { case (enchantment, level) =>
-      BukkitMebiusEnchantmentMapping.applyEnchantment(enchantment, level)(item)
+      BukkitMebiusEnchantmentCodec.applyEnchantment(enchantment, level)(item)
     }
 
     {
