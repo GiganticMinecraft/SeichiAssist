@@ -122,7 +122,7 @@ object BukkitMebiusItemStackCodec {
     }
 
     property.enchantmentLevel.foreach { case (enchantment, level) =>
-      item.addUnsafeEnchantment(enchantment.enchantment, level)
+      BukkitMebiusEnchantmentMapping.applyEnchantment(enchantment, level)(item)
     }
 
     {
