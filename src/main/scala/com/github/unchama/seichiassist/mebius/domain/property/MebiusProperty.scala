@@ -21,10 +21,14 @@ case class MebiusProperty(ownerPlayerId: String,
 
   import MebiusLevel.mebiusLevelOrder._
 
-  require {
-    enchantmentLevel.forall { case (MebiusEnchantment(_, unlockLevel, maxLevel, _), enchantmentLevel) =>
-      unlockLevel <= level && 1 <= enchantmentLevel && enchantmentLevel <= maxLevel
-    }
+  enchantmentLevel.foreach { case (MebiusEnchantment(_, unlockLevel, maxLevel, _), enchantmentLevel) =>
+    require({
+      unlockLevel <= level
+    }, s"unlockLevel = $unlockLevel <= $level = level")
+
+    require({
+      1 <= enchantmentLevel && enchantmentLevel <= maxLevel
+    }, s"$enchantmentLevel is in [1, $maxLevel]")
   }
 
   def incrementLevel: MebiusProperty = copy(level = level.increment)
