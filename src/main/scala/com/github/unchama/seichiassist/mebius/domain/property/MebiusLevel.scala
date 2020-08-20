@@ -16,7 +16,7 @@ case class MebiusLevel private(value: Int) extends AnyVal {
       Random.nextInt(MebiusLevel.averageAttemptsToLevelUp(value - 1)) == 0
     }
 
-  def isMaximum: Boolean = value == MebiusLevel.max
+  def isMaximum: Boolean = this == MebiusLevel.max
 
   def increment: MebiusLevel = MebiusLevel(value + 1)
 }
@@ -25,8 +25,7 @@ object MebiusLevel {
 
   implicit val mebiusLevelOrder: Ordering[MebiusLevel] = Ordering.by(_.value)
 
-  // TODO should be wrapped
-  val max = 30
+  val max: MebiusLevel = MebiusLevel(30)
 
   private val averageAttemptsToLevelUp = List(
     500, 500, 500, 500, // 5
@@ -38,7 +37,7 @@ object MebiusLevel {
   )
 
   def apply(level: Int): MebiusLevel = {
-    require(1 <= level && level <= max)
+    require(1 <= level && level <= max.value)
 
     new MebiusLevel(level)
   }

@@ -9,7 +9,8 @@ sealed abstract class MebiusEnchantment(val unlockLevel: MebiusLevel,
                                         val maxLevel: Int,
                                         val displayName: String) extends EnumEntry {
   require {
-    unlockLevel.value <= MebiusLevel.max && maxLevel >= 1
+    import MebiusLevel.mebiusLevelOrder._
+    unlockLevel <= MebiusLevel.max && maxLevel >= 1
   }
 }
 
@@ -31,7 +32,7 @@ object MebiusEnchantment extends Enum[MebiusEnchantment] {
 
   case object WaterAffinity extends MebiusEnchantment(MebiusLevel(15), 1, "水中採掘")
 
-  case object Unbreakable extends MebiusEnchantment(MebiusLevel(MebiusLevel.max), 1, "耐久無限")
+  case object Unbreakable extends MebiusEnchantment(MebiusLevel.max, 1, "耐久無限")
 
   def unapply(mebiusEnchantment: MebiusEnchantment): Some[(MebiusLevel, Int, String)] = {
     import mebiusEnchantment._
