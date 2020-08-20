@@ -65,6 +65,8 @@ object MebiusProperty {
       ownerPlayerId,
       ownerUuid,
       enchantmentLevel = Map(
+        MebiusEnchantment.Durability -> 3,
+        MebiusEnchantment.Mending -> 1
       )
     )
   }
