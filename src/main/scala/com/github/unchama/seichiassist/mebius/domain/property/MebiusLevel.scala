@@ -6,15 +6,14 @@ import scala.util.Random
 
 case class MebiusLevel private(value: Int) extends AnyVal {
 
-  def attemptLevelUp: IO[MebiusLevel] =
-    if (isMaximum) IO.pure(this)
-    else IO {
+  def attemptLevelUp: IO[Boolean] =
+    if (isMaximum) {
+      IO.pure(false)
+    } else IO {
       // パラメータpの幾何分布の平均は1/pであるから、
       // 1ブロック壊すごとに 1 / averageAttemptsToLevelUp の確率でレベルアップが起これば
       // 平均 averageAttemptsToLevelUp 回の試行でレベルアップすることになる。
-      val willLevelUp = Random.nextInt(MebiusLevel.averageAttemptsToLevelUp(value - 1)) == 0
-
-      if (willLevelUp) increment else this
+      Random.nextInt(MebiusLevel.averageAttemptsToLevelUp(value - 1)) == 0
     }
 
   def isMaximum: Boolean = value == MebiusLevel.max
@@ -26,6 +25,7 @@ object MebiusLevel {
 
   implicit val mebiusLevelOrder: Ordering[MebiusLevel] = Ordering.by(_.value)
 
+  // TODO should be wrapped
   val max = 30
 
   private val averageAttemptsToLevelUp = List(

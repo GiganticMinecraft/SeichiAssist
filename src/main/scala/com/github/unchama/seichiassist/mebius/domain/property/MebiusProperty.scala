@@ -31,9 +31,20 @@ case class MebiusProperty(ownerPlayerId: String,
     }, s"$enchantmentLevel is in [1, $maxLevel] for $m")
   }
 
-  def incrementLevel: MebiusProperty = copy(level = level.increment)
+  def upgradeByOneLevel: IO[MebiusProperty] = {
+    val levelUpdated = copy(level = level.increment)
 
-  val randomlyUpgradeEnchantment: IO[MebiusProperty] = {
+    if (levelUpdated.level.isMaximum) IO.pure {
+      levelUpdated.copy(
+        enchantmentLevel = enchantmentLevel.updated(MebiusEnchantment.Unbreakable, 1)
+      )
+    } else {
+      levelUpdated.randomlyAugmentEnchantment
+    }
+  }
+
+  // TODO should probably be inlined to upgradeByOneLevel
+  private val randomlyAugmentEnchantment: IO[MebiusProperty] = {
     val upgradableEnchantments = {
       MebiusEnchantment.values
         .filter { mebiusEnchantment =>

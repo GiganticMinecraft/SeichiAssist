@@ -19,14 +19,11 @@ class MebiusPropertySpec extends AnyWordSpec {
 
     "be able to be upgraded all the way to the maximum level" in {
       val upgradedToMaximum = {
+        val initialProperty = MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
+
         Monad[IO]
-          .iterateWhileM {
-            MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
-          } {
-            _.incrementLevel.randomlyUpgradeEnchantment
-          } {
-            !_.level.isMaximum
-          }.unsafeRunSync()
+          .iterateWhileM(initialProperty)(_.upgradeByOneLevel)(!_.level.isMaximum)
+          .unsafeRunSync()
       }
 
       assert(upgradedToMaximum.level.isMaximum)

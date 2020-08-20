@@ -7,18 +7,14 @@ object MebiusLevellingService {
 
   def attemptLevelUp(currentProperty: MebiusProperty): IO[MebiusProperty] = {
     for {
-      levelUpAttempted <- currentProperty.level.attemptLevelUp
-      updatedProperty <-
-        if (levelUpAttempted != currentProperty.level) {
-          if (levelUpAttempted.isMaximum) IO.pure {
-            // 最大レベルへの遷移ではunbreakableが付与されるため、追加でエンチャントを付与したくない
-            currentProperty.incrementLevel
-          } else {
-            currentProperty.incrementLevel.randomlyUpgradeEnchantment
-          }
+      levelUpHappened <- currentProperty.level.attemptLevelUp
+      updatedProperty <- {
+        if (levelUpHappened) {
+          currentProperty.upgradeByOneLevel
         } else IO.pure {
           currentProperty
         }
+      }
     } yield updatedProperty
   }
 }
