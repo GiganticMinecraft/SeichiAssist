@@ -34,12 +34,11 @@ case class MebiusProperty(ownerPlayerId: String,
 
   lazy val upgradeByOneLevel: IO[MebiusProperty] = {
     level.increment match {
-      case Some(newLevel) =>
-        val levelUpdatedProperty = copy(level = newLevel)
-
-        if (newLevel.isMaximum) {
+      case Some(newMebiusLevel) =>
+        if (newMebiusLevel.isMaximum) {
           IO.pure {
-            levelUpdatedProperty.copy(
+            this.copy(
+              level = newMebiusLevel,
               enchantmentLevel = enchantmentLevel.updated(MebiusEnchantment.Unbreakable, 1)
             )
           }
@@ -53,16 +52,19 @@ case class MebiusProperty(ownerPlayerId: String,
                   currentLevel < mebiusEnchantment.maxLevel
                 }
 
-              val possiblyGrantedNewly = mebiusEnchantment.unlockLevel <= newLevel
+              val possiblyGrantedNewly = mebiusEnchantment.unlockLevel <= newMebiusLevel
 
               upgradable || possiblyGrantedNewly
             }
 
           IO {
             val choice = upgradableEnchantments(Random.nextInt(upgradableEnchantments.size))
-            val newLevel = enchantmentLevel.get(choice).map(_ + 1).getOrElse(1)
+            val upgradedEnchantmentLevel = enchantmentLevel.get(choice).map(_ + 1).getOrElse(1)
 
-            this.copy(enchantmentLevel = enchantmentLevel.updated(choice, newLevel))
+            this.copy(
+              level = newMebiusLevel,
+              enchantmentLevel = enchantmentLevel.updated(choice, upgradedEnchantmentLevel)
+            )
           }
         }
       case None =>
