@@ -310,31 +310,23 @@ object Util {
 
   //ガチャアイテムを含んでいるか調べる
   def containsGachaTicket(player: Player): Boolean = {
-    player.getInventory.getStorageContents.foreach { itemStack =>
-      val material = itemStack.getType
-      if (material == Material.SKULL_ITEM) {
-        val skullmeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
-        if (skullmeta.hasOwner) {
-          if (skullmeta.getOwner == "unchama") {
-            return true
-          }
-        }
-      }
-    }
+    player.getInventory.getStorageContents.exists(isGachaTicket)
 
     false
   }
+
+  def containsRightClickMessage(string: String): Boolean = string.contains(s"${GREEN}右クリックで使えます")
 
   def isGachaTicket(itemstack: ItemStack): Boolean = {
     if (itemstack.getType != Material.SKULL_ITEM) return false
 
     val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
 
-    if (!skullMeta.hasLore) return false
-    if (!skullMeta.getLore.contains(s"$RESET${GREEN}右クリックで使えます")) return false
+    if (!(skullMeta.hasOwner && skullMeta.getOwner == "unchama")) return false
 
-    // オーナーがunchamaか？
-    skullMeta.hasOwner && skullMeta.getOwner == "unchama"
+    if (!skullMeta.hasLore) return false
+    skullMeta.getLore.asScala.exists(containsRightClickMessage)
+
   }
 
   def removeItemfromPlayerInventory(inventory: PlayerInventory,
