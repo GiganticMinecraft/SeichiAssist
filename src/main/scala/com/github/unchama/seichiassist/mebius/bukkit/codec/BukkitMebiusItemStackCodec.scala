@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.mebius.bukkit.codec
 
 import com.github.unchama.seichiassist.mebius.domain.property
-import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusLevel, MebiusProperty}
+import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantmentLevels, MebiusLevel, MebiusProperty}
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
@@ -62,14 +62,9 @@ object BukkitMebiusItemStackCodec {
 
     val ownerName = nbtItem.getString(ownerNameTag)
     val ownerUuid = nbtItem.getString(ownerUuidTag)
-    val enchantments = {
-      MebiusEnchantment.values
-        .map { mebiusEnchantment =>
-          mebiusEnchantment -> BukkitMebiusEnchantmentCodec.getLevelOf(mebiusEnchantment)(itemStack)
-        }
-        .filter { case (e, l) => 1 <= l && l <= e.maxLevel }
-        .toMap
-    }
+    val enchantments = MebiusEnchantmentLevels.fromUnsafeCounts(
+      BukkitMebiusEnchantmentCodec.getLevelOf(_)(itemStack)
+    )
     val mebiusLevel = MebiusLevel(nbtItem.getInteger(levelTag))
     val ownerNickname = Some(nbtItem.getString(ownerNicknameTag)).filter(_.nonEmpty)
     val mebiusName = nbtItem.getString(nameTag)
@@ -121,7 +116,7 @@ object BukkitMebiusItemStackCodec {
       }
     }
 
-    property.enchantmentLevel.foreach { case (enchantment, level) =>
+    property.enchantmentLevels.mapping.foreach { case (enchantment, level) =>
       BukkitMebiusEnchantmentCodec.applyEnchantment(enchantment, level)(item)
     }
 

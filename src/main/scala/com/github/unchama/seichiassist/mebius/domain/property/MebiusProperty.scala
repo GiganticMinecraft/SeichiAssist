@@ -2,70 +2,38 @@ package com.github.unchama.seichiassist.mebius.domain.property
 
 import cats.effect.IO
 
-import scala.util.Random
-
 /**
  * @param ownerPlayerId         オーナーのプレーヤーID
  * @param ownerUuid             オーナーのUUID文字列
- * @param enchantmentLevel      付与されるエンチャントとレベルのMap
+ * @param enchantmentLevels     付与されるエンチャントのレベル
  * @param level                 Mebiusのレベル
  * @param ownerNicknameOverride オーナーをMebiusがどう呼ぶか
  * @param mebiusName            Mebius自体の名前
  */
 case class MebiusProperty(ownerPlayerId: String,
                           ownerUuid: String,
-                          // TODO do not expose map; replace with a verified object
-                          enchantmentLevel: Map[MebiusEnchantment, Int] = Map(),
+                          enchantmentLevels: MebiusEnchantmentLevels,
                           level: MebiusLevel = MebiusLevel(1),
                           ownerNicknameOverride: Option[String] = None,
                           mebiusName: String = "MEBIUS") {
 
-  import MebiusLevel.mebiusLevelOrder._
-
-  enchantmentLevel.foreach { case m@(MebiusEnchantment(unlockLevel, maxLevel, _), enchantmentLevel) =>
-    require({
-      unlockLevel <= level
-    }, s"unlockLevel = $unlockLevel <= $level = level for $m")
-
-    require({
-      1 <= enchantmentLevel && enchantmentLevel <= maxLevel
-    }, s"$enchantmentLevel is in [1, $maxLevel] for $m")
-  }
+  require(enchantmentLevels.isValidAt(level))
 
   lazy val upgradeByOneLevel: IO[MebiusProperty] = {
     level.increment match {
       case Some(newMebiusLevel) =>
-        if (newMebiusLevel.isMaximum) {
-          IO.pure {
-            this.copy(
-              level = newMebiusLevel,
-              enchantmentLevel = enchantmentLevel.updated(MebiusEnchantment.Unbreakable, 1)
-            )
+        val upgradeEnchantmentLevels =
+          if (newMebiusLevel.isMaximum) IO.pure {
+            enchantmentLevels.addNew(MebiusEnchantment.Unbreakable)
+          } else {
+            enchantmentLevels.randomlyUpgradeAt[IO](newMebiusLevel)
           }
-        } else {
-          val upgradableEnchantments = MebiusEnchantment
-            .values
-            .filter { mebiusEnchantment =>
-              val upgradable = enchantmentLevel
-                .get(mebiusEnchantment)
-                .forall { currentLevel =>
-                  currentLevel < mebiusEnchantment.maxLevel
-                }
 
-              val possiblyGrantedNewly = mebiusEnchantment.unlockLevel <= newMebiusLevel
-
-              upgradable || possiblyGrantedNewly
-            }
-
-          IO {
-            val choice = upgradableEnchantments(Random.nextInt(upgradableEnchantments.size))
-            val upgradedEnchantmentLevel = enchantmentLevel.get(choice).map(_ + 1).getOrElse(1)
-
-            this.copy(
-              level = newMebiusLevel,
-              enchantmentLevel = enchantmentLevel.updated(choice, upgradedEnchantmentLevel)
-            )
-          }
+        upgradeEnchantmentLevels.map { upgradeEnchantmnetLevels =>
+          this.copy(
+            level = newMebiusLevel,
+            enchantmentLevels = upgradeEnchantmnetLevels
+          )
         }
       case None =>
         IO.raiseError(new IllegalStateException("Level cannot be upgraded from maximum"))
@@ -87,12 +55,6 @@ case class MebiusProperty(ownerPlayerId: String,
 
   lazy val ownerNickname: String = ownerNicknameOverride.getOrElse(ownerPlayerId)
 
-  /**
-   * `another` と異なる [[MebiusEnchantment]] を返す。
-   */
-  def enchantmentDifferentFrom(another: MebiusProperty): Option[MebiusEnchantment] =
-    another.enchantmentLevel.keySet.union(enchantmentLevel.keySet)
-      .find { e => another.enchantmentLevel.get(e) != enchantmentLevel.get(e) }
 }
 
 object MebiusProperty {
@@ -100,7 +62,7 @@ object MebiusProperty {
     MebiusProperty(
       ownerPlayerId,
       ownerUuid,
-      enchantmentLevel = Map(
+      enchantmentLevels = MebiusEnchantmentLevels(
         MebiusEnchantment.Durability -> 3,
         MebiusEnchantment.Mending -> 1
       )
