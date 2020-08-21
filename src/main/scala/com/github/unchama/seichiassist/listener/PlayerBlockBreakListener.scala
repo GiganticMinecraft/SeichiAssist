@@ -194,12 +194,16 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
 
           val reference = SeichiAssist.instance.activeSkillAvailability(player)
 
-          for {
-            _ <- reference.set(false)
-            _ <- IO.timer(PluginExecutionContexts.sleepAndRoutineContext).sleep(coolDownTicks.ticks)
-            _ <- reference.set(true)
-            _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
-          } yield ()
+          if (coolDownTicks != 0) {
+            for {
+              _ <- reference.set(false)
+              _ <- IO.timer(PluginExecutionContexts.sleepAndRoutineContext).sleep(coolDownTicks.ticks)
+              _ <- reference.set(true)
+              _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
+            } yield ()
+          } else {
+            IO.unit
+          }
         }
 
         // マナやツールの耐久値を減らす
