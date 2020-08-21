@@ -38,7 +38,7 @@ object MebiusTalks {
     MebiusDialogue("育ててくれてありがとう！", "ある意味、最強のヘルメット。")
   )
 
-  assert(talkList.size == MebiusLevel.max)
+  assert(talkList.size == MebiusLevel.max.value)
 
   def at(level: MebiusLevel): MebiusDialogue = talkList(level.value - 1)
 

@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStack
 import com.github.unchama.seichiassist.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.mebius.domain.resources.MebiusTalks
 import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
-import com.github.unchama.seichiassist.mebius.service.{MebiusLevellingService, MebiusSpeechService}
+import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -22,7 +22,7 @@ class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepositor
 
     val oldMebiusProperty =
       BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet).getOrElse(return)
-    val newMebiusProperty = MebiusLevellingService.attemptLevelUp(oldMebiusProperty).unsafeRunSync()
+    val newMebiusProperty = oldMebiusProperty.tryUpgradeByOneLevel.unsafeRunSync()
 
     if (newMebiusProperty != oldMebiusProperty) {
       player.getInventory.setHelmet {
