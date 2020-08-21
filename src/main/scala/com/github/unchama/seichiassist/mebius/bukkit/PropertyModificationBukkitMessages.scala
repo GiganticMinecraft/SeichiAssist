@@ -42,11 +42,13 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
         )
 
         oldMebiusProperty.enchantmentLevels.of(givenEnchantment) match {
-          case 1 =>
+          case 0 =>
             s"$GRAY${givenEnchantment.displayName}${RESET}が付与されました。"
           case previousLevel =>
+            val newLevel = newMebiusProperty.enchantmentLevels.of(givenEnchantment)
+
             s"$GRAY${givenEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
-              s"$GRAY${givenEnchantment.displayName}${romanSuffix(previousLevel + 1)}${RESET}に強化されました。"
+              s"$GRAY${givenEnchantment.displayName}${romanSuffix(newLevel)}${RESET}に強化されました。"
         }
       }
     }
