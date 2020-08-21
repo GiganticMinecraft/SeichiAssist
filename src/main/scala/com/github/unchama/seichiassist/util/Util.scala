@@ -324,9 +324,7 @@ object Util {
     if (!(skullMeta.hasOwner && skullMeta.getOwner == "unchama")) return false
 
     if (!skullMeta.hasLore) return false
-    if (skullMeta.getLore.asScala.exists(containsRightClickMessage)) return true
-
-    false
+    skullMeta.getLore.asScala.exists(containsRightClickMessage)
 
   }
 
