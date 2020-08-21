@@ -18,10 +18,12 @@ object BukkitMebiusAppearanceMaterialCodec {
     levelThresholds == levelThresholds.sorted
   }
 
+  assert(appearanceThresholds.head._1 == 1)
+
   def appearanceMaterialAt(level: MebiusLevel): Material = {
     appearanceThresholds
-      .find { case (threshold, _) => level.value <= threshold }
-      .get // level.value >= 1
+      .find { case (threshold, _) => threshold <= level.value }
+      .get
       ._2
   }
 
