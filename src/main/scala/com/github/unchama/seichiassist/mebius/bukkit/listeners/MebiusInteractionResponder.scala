@@ -33,7 +33,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
         val speechService = serviceRepository(player)
 
         val messageProgram = if (helmet.getDurability >= helmet.getType.getMaxDurability - 10) {
-          MebiusMessages.onDamageBreaking.pickOne.flatMap { message =>
+          MebiusMessages.onDamageBreaking.pickOne[SyncIO].flatMap { message =>
             // 耐久閾値を超えていたら破損警告
             speechService.tryMakingSpeech(
               mebiusProperty,
@@ -43,7 +43,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
         } else event.getDamager match {
           case monster: Monster =>
             // モンスターからダメージを受けた場合の対モンスターメッセージ
-            MebiusMessages.onDamageWarnEnemy.pickOne.flatMap { message =>
+            MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
               speechService.tryMakingSpeech(
                 mebiusProperty,
                 MebiusSpeech(
@@ -71,7 +71,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
         effectEnvironment.runEffectAsync(
           "Mebius破壊時のエフェクトを再生する",
-          MebiusMessages.onMebiusBreak.pickOne.toIO.flatMap { message =>
+          MebiusMessages.onMebiusBreak.pickOne[SyncIO].toIO.flatMap { message =>
             speechService.makeSpeechIgnoringBlockage(
               property,
               MebiusSpeech(message.interpolate(property.ownerNickname), MebiusSpeechStrength.Medium)
@@ -100,7 +100,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
     val speechService = serviceRepository(player)
 
-    MebiusMessages.onDamageWarnEnemy.pickOne.flatMap { message =>
+    MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
       speechService.tryMakingSpeech(
         mebiusProperty,
         MebiusSpeech(
@@ -121,7 +121,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
     val speechService = serviceRepository(player)
 
-    MebiusMessages.onBlockBreak.pickOne.flatMap { message =>
+    MebiusMessages.onBlockBreak.pickOne[SyncIO].flatMap { message =>
       speechService.tryMakingSpeech(
         mebiusProperty,
         MebiusSpeech(message.interpolate(mebiusProperty.ownerNickname), MebiusSpeechStrength.Medium)

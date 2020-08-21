@@ -1,13 +1,12 @@
 package com.github.unchama.seichiassist.mebius.domain.resources
 
 import cats.data.NonEmptyList
-import cats.effect.SyncIO
 import com.github.unchama.seichiassist.mebius.domain.message.{MebiusCombatMessage, MebiusPlayerMessage}
 import com.github.unchama.util.collection.RandomizedCollection
 
 object MebiusMessages {
 
-  val onBlockBreak: RandomizedCollection[MebiusPlayerMessage, SyncIO] = new RandomizedCollection(
+  val onBlockBreak: RandomizedCollection[MebiusPlayerMessage] = new RandomizedCollection(
     NonEmptyList.of(
       "ポコポコポコポコ…整地の音って、落ち着くねえ。",
       "頑張れー！頑張れー！そこをまっすぐ！左にも石があるよー！…うるさい？",
@@ -18,7 +17,7 @@ object MebiusMessages {
     ).map(MebiusPlayerMessage)
   )
 
-  val onMebiusBreak: RandomizedCollection[MebiusPlayerMessage, SyncIO] = new RandomizedCollection(
+  val onMebiusBreak: RandomizedCollection[MebiusPlayerMessage] = new RandomizedCollection(
     NonEmptyList.of(
       "ここまでかぁっ…[str1]と一緒に旅したこと、すごく楽しかったなぁ…",
       "この先[str1]のこと、守ってあげられなくなっちゃった…ごめんね…",
@@ -29,7 +28,7 @@ object MebiusMessages {
     ).map(MebiusPlayerMessage)
   )
 
-  val onDamageBreaking: RandomizedCollection[MebiusPlayerMessage, SyncIO] = new RandomizedCollection(
+  val onDamageBreaking: RandomizedCollection[MebiusPlayerMessage] = new RandomizedCollection(
     NonEmptyList.of(
       "いたた…もうすぐ壊れちゃいそうだ…",
       "もうダメかも…こんなところで、悔しいなぁ",
@@ -40,7 +39,7 @@ object MebiusMessages {
     ).map(MebiusPlayerMessage)
   )
 
-  val onDamageWarnEnemy: RandomizedCollection[MebiusCombatMessage, SyncIO] = new RandomizedCollection(
+  val onDamageWarnEnemy: RandomizedCollection[MebiusCombatMessage] = new RandomizedCollection(
     NonEmptyList.of(
       "[str2]からの攻撃だ！気を付けて！",
       "お前なんか余裕なんだからなー！さあ[str1]、やっちゃえ！",
@@ -51,7 +50,7 @@ object MebiusMessages {
     ).map(MebiusCombatMessage)
   )
 
-  val onMonsterKill: RandomizedCollection[MebiusCombatMessage, SyncIO] = new RandomizedCollection(
+  val onMonsterKill: RandomizedCollection[MebiusCombatMessage] = new RandomizedCollection(
     NonEmptyList.of(
       "さすが[str1]！[str2]なんて敵じゃないね！",
       "僕にかかれば[str2]なんてこんなもんだよー！",

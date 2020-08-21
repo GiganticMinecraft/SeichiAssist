@@ -33,14 +33,14 @@ object PeriodicMebiusSpeechRoutine {
       _ <- BukkitMebiusItemStackCodec
         .decodePropertyOfOwnedMebius(player)(helmet)
         .map { property =>
-          val messageCandidates = new RandomizedCollection[String, SyncIO](
+          val messageCandidates = new RandomizedCollection[String](
             NonEmptyList(
               MebiusTalks.at(property.level).mebiusMessage,
               MebiusMessages.tips
             )
           )
 
-          messageCandidates.pickOne.flatMap { message =>
+          messageCandidates.pickOne[SyncIO].flatMap { message =>
             service.tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
           }
         }
