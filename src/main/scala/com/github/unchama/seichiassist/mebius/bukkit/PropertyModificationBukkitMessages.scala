@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit
 
 import com.github.unchama.seichiassist.mebius.bukkit.codec.{BukkitMebiusAppearanceMaterialCodec, BukkitMebiusItemStackCodec}
 import com.github.unchama.seichiassist.mebius.domain.message.PropertyModificationMessages
-import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
+import com.github.unchama.seichiassist.mebius.domain.property.{MebiusEnchantment, MebiusProperty}
 import org.bukkit.ChatColor._
 
 object PropertyModificationBukkitMessages extends PropertyModificationMessages {
@@ -10,7 +10,12 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
     val mebiusDisplayName = BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(newMebiusProperty)
 
     // レベルアップ通知
-    val levelUpMessage = List(s"${newMebiusProperty.mebiusName}${RESET}がレベルアップしました。")
+    val levelUpMessage =
+      if (newMebiusProperty.level.isMaximum) {
+        List(s"$RESET${GREEN}おめでとうございます。$mebiusDisplayName$RESET${GREEN}のレベルが最大になりました。")
+      } else {
+        List(s"${newMebiusProperty.mebiusName}${RESET}がレベルアップしました。")
+      }
 
     // 進化通知
     val materialChangeMessage =
@@ -20,13 +25,15 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
       } else Nil
 
     // エンチャント効果変更通知
-    val enchantmentChangeMessage =
-      if (newMebiusProperty.level.isMaximum) List(
-        s"$RESET${GREEN}おめでとうございます。$mebiusDisplayName$RESET${GREEN}のレベルが最大になりました。",
-        s"$RESET${AQUA}耐久無限${RESET}が付与されました。"
-      ) else List({
-        val modifiedEnchantment = newMebiusProperty.enchantmentDifferentFrom(oldMebiusProperty).get
+    val givenEnchantments = {
+      newMebiusProperty.enchantmentLevels.differenceFrom(oldMebiusProperty.enchantmentLevels)
+    }
 
+    val enchantmentChangeMessages = givenEnchantments.toList.map { givenEnchantment =>
+
+      if (givenEnchantment == MebiusEnchantment.Unbreakable) {
+        s"$RESET${AQUA}耐久無限${RESET}が付与されました。"
+      } else {
         val romanSuffix = List(
           "", "", " II", " III", " IV", " V",
           " VI", " VII", " VIII", " IX", " X",
@@ -34,15 +41,18 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
           " XVI", " XVII", " XVIII", " XIX", " XX"
         )
 
-        oldMebiusProperty.enchantmentLevel.get(modifiedEnchantment) match {
-          case Some(previousLevel) =>
-            s"$GRAY${modifiedEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
-              s"$GRAY${modifiedEnchantment.displayName}${romanSuffix(previousLevel + 1)}${RESET}に強化されました。"
-          case None =>
-            s"$GRAY${modifiedEnchantment.displayName}${RESET}が付与されました。"
-        }
-      })
+        oldMebiusProperty.enchantmentLevels.of(givenEnchantment) match {
+          case 0 =>
+            s"$GRAY${givenEnchantment.displayName}${RESET}が付与されました。"
+          case previousLevel =>
+            val newLevel = newMebiusProperty.enchantmentLevels.of(givenEnchantment)
 
-    levelUpMessage ++ materialChangeMessage ++ enchantmentChangeMessage
+            s"$GRAY${givenEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
+              s"$GRAY${givenEnchantment.displayName}${romanSuffix(newLevel)}${RESET}に強化されました。"
+        }
+      }
+    }
+
+    levelUpMessage ++ materialChangeMessage ++ enchantmentChangeMessages
   }
 }

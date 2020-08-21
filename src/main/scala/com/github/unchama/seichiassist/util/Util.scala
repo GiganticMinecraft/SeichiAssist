@@ -310,31 +310,21 @@ object Util {
 
   //ガチャアイテムを含んでいるか調べる
   def containsGachaTicket(player: Player): Boolean = {
-    player.getInventory.getStorageContents.foreach { itemStack =>
-      val material = itemStack.getType
-      if (material == Material.SKULL_ITEM) {
-        val skullmeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
-        if (skullmeta.hasOwner) {
-          if (skullmeta.getOwner == "unchama") {
-            return true
-          }
-        }
-      }
-    }
+    player.getInventory.getStorageContents.exists(isGachaTicket)
 
     false
   }
 
-  def isGachaTicket(itemstack: ItemStack): Boolean = {
-    if (itemstack.getType != Material.SKULL_ITEM) return false
+  def isGachaTicket(itemStack: ItemStack): Boolean = {
+    val containsRightClickMessage: String => Boolean = _.contains(s"${GREEN}右クリックで使えます")
 
-    val skullMeta = itemstack.getItemMeta.asInstanceOf[SkullMeta]
+    if (itemStack.getType != Material.SKULL_ITEM) return false
 
-    if (!skullMeta.hasLore) return false
-    if (!skullMeta.getLore.contains(s"$RESET${GREEN}右クリックで使えます")) return false
+    val skullMeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
 
-    // オーナーがunchamaか？
-    skullMeta.hasOwner && skullMeta.getOwner == "unchama"
+    if (!(skullMeta.hasOwner && skullMeta.getOwner == "unchama")) return false
+
+    skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
   }
 
   def removeItemfromPlayerInventory(inventory: PlayerInventory,

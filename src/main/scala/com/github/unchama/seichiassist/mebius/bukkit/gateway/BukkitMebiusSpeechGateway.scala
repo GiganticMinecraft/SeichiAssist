@@ -18,7 +18,7 @@ class BukkitMebiusSpeechGateway(player: Player)(implicit timer: Timer[IO]) exten
 
   override def sendMessage(property: MebiusProperty, message: String): SyncIO[Unit] = {
     MessageEffect(
-      s"$RESET<${property.mebiusName}$RESET> $message"
+      s"$RESET$GRAY<$GOLD$BOLD${property.mebiusName}$RESET$GRAY>$RESET $message"
     ).run(player).runAsync(_ => IO.unit)
   }
 
