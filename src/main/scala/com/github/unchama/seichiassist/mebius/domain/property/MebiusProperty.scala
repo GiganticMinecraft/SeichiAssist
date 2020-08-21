@@ -10,12 +10,12 @@ import cats.effect.IO
  * @param ownerNicknameOverride オーナーをMebiusがどう呼ぶか
  * @param mebiusName            Mebius自体の名前
  */
-case class MebiusProperty(ownerPlayerId: String,
-                          ownerUuid: String,
-                          enchantmentLevels: MebiusEnchantmentLevels,
-                          level: MebiusLevel = MebiusLevel(1),
-                          ownerNicknameOverride: Option[String] = None,
-                          mebiusName: String = "MEBIUS") {
+case class MebiusProperty private(ownerPlayerId: String,
+                                  ownerUuid: String,
+                                  enchantmentLevels: MebiusEnchantmentLevels,
+                                  level: MebiusLevel = MebiusLevel(1),
+                                  ownerNicknameOverride: Option[String] = None,
+                                  mebiusName: String = "MEBIUS") {
 
   require(enchantmentLevels.isValidAt(level))
 
