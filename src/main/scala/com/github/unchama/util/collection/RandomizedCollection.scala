@@ -5,9 +5,10 @@ import cats.effect.Sync
 
 import scala.util.Random
 
-class RandomizedCollection[Element, F[_] : Sync](collection: NonEmptyList[Element]) {
+class RandomizedCollection[Element](collection: NonEmptyList[Element]) {
 
-  // TODO pickOneを多相化してRandomizedCollectionにFが現れないようにする
-  val pickOne: F[Element] = Sync[F].delay(collection.toList(Random.nextInt(collection.size)))
+  def pickOne[F[_] : Sync]: F[Element] = Sync[F].delay {
+    collection.toList(Random.nextInt(collection.size))
+  }
 
 }

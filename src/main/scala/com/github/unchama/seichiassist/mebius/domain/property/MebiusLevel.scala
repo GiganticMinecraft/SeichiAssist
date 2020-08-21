@@ -1,15 +1,14 @@
 package com.github.unchama.seichiassist.mebius.domain.property
 
-import cats.effect.IO
+import cats.effect.Sync
 
 import scala.util.Random
 
 case class MebiusLevel private(value: Int) extends AnyVal {
 
-  def attemptLevelUp: IO[Boolean] =
-    if (isMaximum) {
-      IO.pure(false)
-    } else IO {
+  def attemptLevelUp[F[_]](implicit F: Sync[F]): F[Boolean] =
+    if (isMaximum) F.pure(false)
+    else F.delay {
       // パラメータpの幾何分布の平均は1/pであるから、
       // 1ブロック壊すごとに 1 / averageAttemptsToLevelUp の確率でレベルアップが起これば
       // 平均 averageAttemptsToLevelUp 回の試行でレベルアップすることになる。

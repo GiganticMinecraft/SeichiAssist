@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.mebius.domain.property
 import java.util.UUID
 
 import cats.Monad
-import cats.effect.IO
+import cats.effect.SyncIO
 import org.scalatest.wordspec.AnyWordSpec
 
 class MebiusPropertySpec extends AnyWordSpec {
@@ -21,8 +21,8 @@ class MebiusPropertySpec extends AnyWordSpec {
       val upgradedToMaximum = {
         val initialProperty = MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
 
-        Monad[IO]
-          .iterateWhileM(initialProperty)(_.upgradeByOneLevel)(!_.level.isMaximum)
+        Monad[SyncIO]
+          .iterateWhileM(initialProperty)(_.upgradeByOneLevel[SyncIO])(!_.level.isMaximum)
           .unsafeRunSync()
       }
 
@@ -35,8 +35,8 @@ class MebiusPropertySpec extends AnyWordSpec {
       val upgradedToMaximum = {
         val initialProperty = MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
 
-        Monad[IO]
-          .iterateWhileM(initialProperty)(_.upgradeByOneLevel)(!_.level.isMaximum)
+        Monad[SyncIO]
+          .iterateWhileM(initialProperty)(_.upgradeByOneLevel[SyncIO])(!_.level.isMaximum)
           .unsafeRunSync()
       }
 
@@ -53,10 +53,10 @@ class MebiusPropertySpec extends AnyWordSpec {
 
         import cats.implicits._
 
-        Monad[IO]
+        Monad[SyncIO]
           .iterateWhileM(initialProperty) { property =>
-            property.upgradeByOneLevel.flatTap { upgraded =>
-              IO {
+            property.upgradeByOneLevel[SyncIO].flatTap { upgraded =>
+              SyncIO {
                 val oldLevels = property.enchantmentLevels
                 val newLevels = upgraded.enchantmentLevels
 
