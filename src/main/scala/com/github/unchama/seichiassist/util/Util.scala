@@ -314,6 +314,8 @@ object Util {
     false
   }
 
+  def containsRightClickMessage(string: String): Boolean = string.contains(s"${GREEN}右クリックで使えます")
+
   def isGachaTicket(itemstack: ItemStack): Boolean = {
     if (itemstack.getType != Material.SKULL_ITEM) return false
 
@@ -322,8 +324,7 @@ object Util {
     if (!(skullMeta.hasOwner && skullMeta.getOwner == "unchama")) return false
 
     if (!skullMeta.hasLore) return false
-    for (lore <- skullMeta.getLore.asScala)
-      if (lore.contains(s"${GREEN}右クリックで使えます")) return true
+    if (skullMeta.getLore.asScala.exists(containsRightClickMessage)) return true
 
     false
 
