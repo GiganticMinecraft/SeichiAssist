@@ -25,14 +25,15 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
       } else Nil
 
     // エンチャント効果変更通知
-    val givenEnchantment = newMebiusProperty.enchantmentLevels
-      .differenceFrom(oldMebiusProperty.enchantmentLevels)
-      .head
+    val givenEnchantments = {
+      newMebiusProperty.enchantmentLevels.differenceFrom(oldMebiusProperty.enchantmentLevels)
+    }
 
-    val enchantmentChangeMessage =
+    val enchantmentChangeMessages = givenEnchantments.toList.map { givenEnchantment =>
+
       if (givenEnchantment == MebiusEnchantment.Unbreakable) {
-        List(s"$RESET${AQUA}耐久無限${RESET}が付与されました。")
-      } else List({
+        s"$RESET${AQUA}耐久無限${RESET}が付与されました。"
+      } else {
         val romanSuffix = List(
           "", "", " II", " III", " IV", " V",
           " VI", " VII", " VIII", " IX", " X",
@@ -47,8 +48,9 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
             s"$GRAY${givenEnchantment.displayName}${romanSuffix(previousLevel)}${RESET}が" +
               s"$GRAY${givenEnchantment.displayName}${romanSuffix(previousLevel + 1)}${RESET}に強化されました。"
         }
-      })
+      }
+    }
 
-    levelUpMessage ++ materialChangeMessage ++ enchantmentChangeMessage
+    levelUpMessage ++ materialChangeMessage ++ enchantmentChangeMessages
   }
 }
