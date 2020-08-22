@@ -1,6 +1,7 @@
 package com.github.unchama.menuinventory
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.entity.Player
@@ -12,7 +13,7 @@ import org.bukkit.event.{EventHandler, Listener}
  *
  * @author karayuu
  */
-class MenuHandler(implicit val cs: ContextShift[IO], env: EffectEnvironment) extends Listener {
+class MenuHandler(implicit val cs: NonServerThreadContextShift[IO], env: EffectEnvironment) extends Listener {
   @EventHandler(ignoreCancelled = true)
   def onInventoryClick(event: InventoryClickEvent): Unit = {
     val whoClicked = event.getWhoClicked match {

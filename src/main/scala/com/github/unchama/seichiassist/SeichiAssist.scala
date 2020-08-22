@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
+import cats.Parallel.Aux
+import cats.effect
 import cats.effect.{Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
@@ -320,12 +322,13 @@ class SeichiAssist extends JavaPlugin() {
         ) ++
           Option.unless(
             SeichiAssist.seichiAssistConfig.getServerNum == 7
-            || SeichiAssist.seichiAssistConfig.getServerNum == 8
+              || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
             HalfHourRankingRoutine()
           ).toList
 
-      programs.parSequence.start
+      implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
+      programs.parSequence.start(asyncShift)
     }
 
     repeatedTaskFiber = Some(startTask.unsafeRunSync())
