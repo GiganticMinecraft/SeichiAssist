@@ -7,8 +7,9 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
+import com.github.unchama.seichiassist.mebius.domain.MebiusDrop
 import com.github.unchama.seichiassist.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
-import com.github.unchama.seichiassist.mebius.service.{MebiusDroppingService, MebiusSpeechService}
+import com.github.unchama.seichiassist.mebius.service.MebiusSpeechService
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, SequentialEffect}
@@ -29,8 +30,9 @@ class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[M
 
     val player = event.getPlayer
 
-    val droppedMebiusProperty = MebiusDroppingService
-      .tryForDrop[SyncIO](player.getName, player.getUniqueId.toString).unsafeRunSync()
+    val droppedMebiusProperty = MebiusDrop
+      .tryOnce[SyncIO](player.getName, player.getUniqueId.toString)
+      .unsafeRunSync()
       .getOrElse(return)
 
     val mebius = BukkitMebiusItemStackCodec.materialize(droppedMebiusProperty, damageValue = 0.toShort)
