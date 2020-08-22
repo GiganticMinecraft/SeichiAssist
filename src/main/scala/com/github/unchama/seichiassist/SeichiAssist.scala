@@ -86,7 +86,15 @@ class SeichiAssist extends JavaPlugin() {
     new TryableFiberRepository()
   }
 
+  private val kickAllPlayersDueToInitialization: SyncIO[Unit] = SyncIO {
+    getServer.getOnlinePlayers.asScala.foreach { player =>
+      player.kickPlayer("プラグインを初期化しています。時間を置いて再接続してください。")
+    }
+  }
+
   override def onEnable(): Unit = {
+    kickAllPlayersDueToInitialization.unsafeRunSync()
+
     val logger = getLogger
     // java.util.logging.Loggerの名前はJVM上で一意
     implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
@@ -307,6 +315,8 @@ class SeichiAssist extends JavaPlugin() {
 
     SeichiAssist.buildAssist = new BuildAssist(this)
     SeichiAssist.buildAssist.onEnable()
+
+    kickAllPlayersDueToInitialization.unsafeRunSync()
   }
 
   private def startRepeatedJobs(): Unit = {
