@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.database.migrations;
 
 import com.github.unchama.seichiassist.PackagePrivate;
-import com.github.unchama.util.collection.SetFactory;
+import com.github.unchama.seichiassist.database.migrations.v1_1_0.SetFactory;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
