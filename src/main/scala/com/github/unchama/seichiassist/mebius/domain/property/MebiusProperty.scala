@@ -31,10 +31,10 @@ case class MebiusProperty private(ownerPlayerId: String,
             enchantmentLevels.randomlyUpgradeAt[F](newMebiusLevel)
           }
 
-        upgradeEnchantmentLevels.map { upgradeEnchantmentLevels =>
+        upgradeEnchantmentLevels.map { upgradedEnchantmentLevels =>
           this.copy(
             level = newMebiusLevel,
-            enchantmentLevels = upgradeEnchantmentLevels
+            enchantmentLevels = upgradedEnchantmentLevels
           )
         }
       case None =>

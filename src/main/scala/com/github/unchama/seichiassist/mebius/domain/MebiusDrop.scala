@@ -1,11 +1,11 @@
-package com.github.unchama.seichiassist.mebius.service
+package com.github.unchama.seichiassist.mebius.domain
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.mebius.domain.property.MebiusProperty
 
 import scala.util.Random
 
-object MebiusDroppingService {
+object MebiusDrop {
 
   // Mebiusドロップ率
   // パラメータpの幾何分布の平均は1/pであるから、
@@ -13,7 +13,7 @@ object MebiusDroppingService {
   // 平均 averageBlocksToBeBrokenPerMebiusDrop 回の試行でドロップすることになる。
   private val averageBlocksToBeBrokenPerMebiusDrop = 50000
 
-  def tryForDrop[F[_] : Sync](ownerName: String, ownerUuid: String): F[Option[MebiusProperty]] = {
+  def tryOnce[F[_] : Sync](ownerName: String, ownerUuid: String): F[Option[MebiusProperty]] = {
     Sync[F].delay {
       if (Random.nextInt(averageBlocksToBeBrokenPerMebiusDrop) == 0) {
         Some(MebiusProperty.initialProperty(ownerName, ownerUuid))

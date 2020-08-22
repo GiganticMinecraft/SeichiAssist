@@ -93,8 +93,6 @@ object BukkitMebiusItemStackCodec {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE)
 
-        if (property.level.isMaximum) meta.setUnbreakable(true)
-
         meta.setLore {
           val talk = MebiusTalks.at(property.level)
 
