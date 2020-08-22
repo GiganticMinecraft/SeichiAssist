@@ -33,15 +33,27 @@ import scala.concurrent.ExecutionContext
  * キューしたタスクもろともキャンセルするような実装になっている。
  */
 class BukkitServerThreadIOShift(implicit hostPlugin: JavaPlugin) extends MinecraftServerThreadIOShift {
-  override def shift: IO[Unit] =
-    IO.cancelable { cb =>
-      val run = new Runnable {
-        def run(): Unit = cb(Right(()))
+  override def shift: IO[Unit] = {
+    for {
+      isPrimaryThread <- IO {
+        hostPlugin.getServer.isPrimaryThread
       }
-      val scheduledTask = Bukkit.getScheduler.runTask(hostPlugin, run)
+      _ <- {
+        if (isPrimaryThread) {
+          // 既にメインスレッドに居る場合何もしない
+          IO.unit
+        } else {
+          IO.cancelable[Unit] { cb =>
+            val run: Runnable = () => cb(Right(()))
 
-      IO(scheduledTask.cancel())
-    }
+            val scheduledTask = Bukkit.getScheduler.runTask(hostPlugin, run)
+
+            IO(scheduledTask.cancel())
+          }
+        }
+      }
+    } yield ()
+  }
 
   override def evalOn[A](ec: ExecutionContext)(fa: IO[A]): IO[A] =
     IO.shift(ec).bracket(_ => fa)(_ => shift)
