@@ -16,6 +16,18 @@ class BukkitMebiusAppearanceMaterialCodecSpec extends AnyWordSpec {
           assert(appearanceMaterialAt(mebiusLevel) != Material.AIR)
         }
     }
+
+    "assign leather helmet to level 1 mebius" in {
+      assert {
+        appearanceMaterialAt(MebiusLevel(1)) == Material.LEATHER_HELMET
+      }
+    }
+
+    "assign diamond helmet to the maximum leven mebius" in {
+      assert {
+        appearanceMaterialAt(MebiusLevel.max) == Material.DIAMOND_HELMET
+      }
+    }
   }
 
 }
