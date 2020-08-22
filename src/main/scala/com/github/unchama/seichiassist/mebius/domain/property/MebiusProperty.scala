@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.mebius.domain.property
 
-import cats.effect.IO
+import cats.effect.Sync
 
 /**
  * @param ownerPlayerId         オーナーのプレーヤーID
@@ -19,35 +19,37 @@ case class MebiusProperty private(ownerPlayerId: String,
 
   require(enchantmentLevels.isValidAt(level))
 
-  lazy val upgradeByOneLevel: IO[MebiusProperty] = {
+  import cats.implicits._
+
+  def upgradeByOneLevel[F[_]](implicit F: Sync[F]): F[MebiusProperty] = {
     level.increment match {
       case Some(newMebiusLevel) =>
         val upgradeEnchantmentLevels =
-          if (newMebiusLevel.isMaximum) IO.pure {
+          if (newMebiusLevel.isMaximum) F.pure {
             enchantmentLevels.addNew(MebiusEnchantment.Unbreakable)
           } else {
-            enchantmentLevels.randomlyUpgradeAt[IO](newMebiusLevel)
+            enchantmentLevels.randomlyUpgradeAt[F](newMebiusLevel)
           }
 
-        upgradeEnchantmentLevels.map { upgradeEnchantmnetLevels =>
+        upgradeEnchantmentLevels.map { upgradeEnchantmentLevels =>
           this.copy(
             level = newMebiusLevel,
-            enchantmentLevels = upgradeEnchantmnetLevels
+            enchantmentLevels = upgradeEnchantmentLevels
           )
         }
       case None =>
-        IO.raiseError(new IllegalStateException("Level cannot be upgraded from maximum"))
+        F.raiseError(new IllegalStateException("Level cannot be upgraded from maximum"))
     }
   }
 
-  lazy val tryUpgradeByOneLevel: IO[MebiusProperty] = {
+  def tryUpgradeByOneLevel[F[_] : Sync]: F[MebiusProperty] = {
     for {
-      levelUpHappened <- level.attemptLevelUp
+      levelUpHappened <- level.attemptLevelUp[F]
       updatedProperty <- {
         if (levelUpHappened) {
           upgradeByOneLevel
-        } else IO.pure {
-          this
+        } else {
+          Sync[F].pure(this)
         }
       }
     } yield updatedProperty

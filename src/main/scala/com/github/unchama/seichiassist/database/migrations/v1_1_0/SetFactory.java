@@ -1,4 +1,4 @@
-package com.github.unchama.util.collection;
+package com.github.unchama.seichiassist.database.migrations.v1_1_0;
 
 import java.util.Collections;
 import java.util.HashSet;
