@@ -5,9 +5,11 @@ import cats.effect.IO
 object Execution {
   /**
    * 与えられた`IO`をサーバーメインスレッドで実行するように予約する。
+   *
    * @return
    */
-  def onServerMainThread(program: IO[Any])(implicit sync: BukkitSyncIOShift): IO[Unit] = {
+  def onServerMainThread(program: IO[Any])
+                        (implicit sync: MinecraftServerThreadIOShift): IO[Unit] = {
     val asyncProgram = for {
       _ <- sync.shift
       _ <- program

@@ -1,13 +1,14 @@
-package com.github.unchama.concurrent
+package com.github.unchama.concurrent.bukkit
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
+import com.github.unchama.concurrent.MinecraftServerThreadIOShift
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
 import scala.concurrent.ExecutionContext
 
 /**
- * Bukkitのメインスレッドへ実行をシフトするような `ContextShift[IO]` の実装。
+ * Bukkitのメインスレッドへ実行をシフトするような `MinecraftMainServerThreadShift` の実装。
  *
  * Bukkitのスケジューラにタスクを投げるような `ExecutionContext` から
  * `ContextShift[IO]` を作ることはできるが、この実装だと一つ問題がある。
@@ -31,20 +32,29 @@ import scala.concurrent.ExecutionContext
  * shiftの実行時点でキャンセルが入ったときはBukkitのスケジューラ上で
  * キューしたタスクもろともキャンセルするような実装になっている。
  */
-sealed trait BukkitSyncIOShift extends ContextShift[IO]
+class BukkitServerThreadIOShift(implicit hostPlugin: JavaPlugin) extends MinecraftServerThreadIOShift {
+  override def shift: IO[Unit] = {
+    for {
+      isPrimaryThread <- IO {
+        hostPlugin.getServer.isPrimaryThread
+      }
+      _ <- {
+        if (isPrimaryThread) {
+          // 既にメインスレッドに居る場合何もしない
+          IO.unit
+        } else {
+          IO.cancelable[Unit] { cb =>
+            val run: Runnable = () => cb(Right(()))
 
-object BukkitSyncIOShift {
-  def apply()(implicit hostPlugin: JavaPlugin): BukkitSyncIOShift =
-    new BukkitSyncIOShift {
-      override def shift: IO[Unit] =
-        IO.cancelable { cb =>
-          val run = new Runnable { def run(): Unit = cb(Right(())) }
-          val scheduledTask = Bukkit.getScheduler.runTask(hostPlugin, run)
+            val scheduledTask = Bukkit.getScheduler.runTask(hostPlugin, run)
 
-          IO(scheduledTask.cancel())
+            IO(scheduledTask.cancel())
+          }
         }
+      }
+    } yield ()
+  }
 
-      override def evalOn[A](ec: ExecutionContext)(fa: IO[A]): IO[A] =
-        IO.shift(ec).bracket(_ => fa)(_ => shift)
-    }
+  override def evalOn[A](ec: ExecutionContext)(fa: IO[A]): IO[A] =
+    IO.shift(ec).bracket(_ => fa)(_ => shift)
 }
