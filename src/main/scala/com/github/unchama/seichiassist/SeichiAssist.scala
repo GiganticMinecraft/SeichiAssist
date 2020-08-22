@@ -354,28 +354,23 @@ class SeichiAssist extends JavaPlugin() {
     getServer.getOnlinePlayers.asScala.foreach { p =>
       //UUIDを取得
       val uuid = p.getUniqueId
+
       //プレイヤーデータ取得
-      val playerdata = SeichiAssist.playermap(uuid)
-      //念のためエラー分岐
-      if (playerdata == null) {
-        p.sendMessage(s"${RED}playerdataの保存に失敗しました。管理者に報告してください")
-        getServer.getConsoleSender.sendMessage(s"${RED}SeichiAssist[Ondisable処理]でエラー発生")
-        logger.warning(s"${p.getName}のplayerdataの保存失敗。開発者に報告してください")
-        return
-      }
+      val playerData = SeichiAssist.playermap(uuid)
+
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
-      playerdata.updateOnQuit()
+      playerData.updateOnQuit()
 
-      PlayerDataSaveTask.savePlayerData(playerdata)
-
-      if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
-        logger.info("データベース切断に失敗しました")
-      }
-
-      logger.info("SeichiAssist is Disabled!")
-
-      SeichiAssist.buildAssist.onDisable()
+      PlayerDataSaveTask.savePlayerData(playerData)
     }
+
+    if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
+      logger.info("データベース切断に失敗しました")
+    }
+
+    logger.info("SeichiAssist is Disabled!")
+
+    SeichiAssist.buildAssist.onDisable()
   }
 
   override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean
