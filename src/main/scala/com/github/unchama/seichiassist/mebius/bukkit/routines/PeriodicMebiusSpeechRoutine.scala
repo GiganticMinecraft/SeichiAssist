@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.mebius.bukkit.routines
 
 import cats.data.NonEmptyList
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.{MinecraftServerThreadIOShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.mebius.domain.resources.{MebiusMessages, MebiusTalks}
@@ -50,7 +50,7 @@ object PeriodicMebiusSpeechRoutine {
 
   def start(player: Player)(implicit serviceRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[SyncIO]],
                             context: RepeatingTaskContext,
-                            bukkitSyncIOShift: BukkitSyncIOShift): IO[Nothing] = {
+                            bukkitSyncIOShift: MinecraftServerThreadIOShift): IO[Nothing] = {
     import cats.implicits._
 
     RepeatingRoutine.permanentRoutine(

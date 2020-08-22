@@ -4,6 +4,7 @@ import java.util.concurrent.Executors
 
 import cats.effect.{ContextShift, IO, Timer}
 import com.github.unchama.concurrent._
+import com.github.unchama.concurrent.bukkit.BukkitServerThreadIOShift
 import com.github.unchama.generic
 import com.github.unchama.generic.tag.tag
 import com.github.unchama.menuinventory.LayoutPreparationContext
@@ -17,7 +18,7 @@ object PluginExecutionContexts {
 
   implicit val pluginInstance: JavaPlugin = SeichiAssist.instance
 
-  implicit val syncShift: BukkitSyncIOShift = BukkitSyncIOShift()
+  implicit val syncShift: MinecraftServerThreadIOShift = new BukkitServerThreadIOShift()
 
   val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 
