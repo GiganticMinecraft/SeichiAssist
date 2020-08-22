@@ -93,6 +93,14 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   override def onEnable(): Unit = {
+    /**
+     * Spigotサーバーが開始されるときにはまだPreLoginEventがcatchされない等色々な不都合があるので、
+     * SeichiAssistの初期化はプレーヤーが居ないことを前提として進めることとする。
+     *
+     * NOTE:
+     * PreLoginToQuitPlayerDataRepository に関してはJoinEventさえcatchできれば弾けるので、
+     * 接続を試みているプレーヤーは弾かないで良さそう、と言うか弾く術がない
+     */
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
     val logger = getLogger
