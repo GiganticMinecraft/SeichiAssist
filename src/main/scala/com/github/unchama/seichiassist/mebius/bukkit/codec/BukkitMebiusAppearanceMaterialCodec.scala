@@ -22,7 +22,7 @@ object BukkitMebiusAppearanceMaterialCodec {
 
   def appearanceMaterialAt(level: MebiusLevel): Material = {
     appearanceThresholds
-      .find { case (threshold, _) => threshold <= level.value }
+      .findLast { case (threshold, _) => threshold <= level.value }
       .get
       ._2
   }

@@ -86,7 +86,23 @@ class SeichiAssist extends JavaPlugin() {
     new TryableFiberRepository()
   }
 
+  private val kickAllPlayersDueToInitialization: SyncIO[Unit] = SyncIO {
+    getServer.getOnlinePlayers.asScala.foreach { player =>
+      player.kickPlayer("プラグインを初期化しています。時間を置いて再接続してください。")
+    }
+  }
+
   override def onEnable(): Unit = {
+    /**
+     * Spigotサーバーが開始されるときにはまだPreLoginEventがcatchされない等色々な不都合があるので、
+     * SeichiAssistの初期化はプレーヤーが居ないことを前提として進めることとする。
+     *
+     * NOTE:
+     * PreLoginToQuitPlayerDataRepository に関してはJoinEventさえcatchできれば弾けるので、
+     * 接続を試みているプレーヤーは弾かないで良さそう、と言うか弾く術がない
+     */
+    kickAllPlayersDueToInitialization.unsafeRunSync()
+
     val logger = getLogger
     // java.util.logging.Loggerの名前はJVM上で一意
     implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
@@ -307,6 +323,8 @@ class SeichiAssist extends JavaPlugin() {
 
     SeichiAssist.buildAssist = new BuildAssist(this)
     SeichiAssist.buildAssist.onEnable()
+
+    kickAllPlayersDueToInitialization.unsafeRunSync()
   }
 
   private def startRepeatedJobs(): Unit = {
@@ -354,28 +372,23 @@ class SeichiAssist extends JavaPlugin() {
     getServer.getOnlinePlayers.asScala.foreach { p =>
       //UUIDを取得
       val uuid = p.getUniqueId
+
       //プレイヤーデータ取得
-      val playerdata = SeichiAssist.playermap(uuid)
-      //念のためエラー分岐
-      if (playerdata == null) {
-        p.sendMessage(s"${RED}playerdataの保存に失敗しました。管理者に報告してください")
-        getServer.getConsoleSender.sendMessage(s"${RED}SeichiAssist[Ondisable処理]でエラー発生")
-        logger.warning(s"${p.getName}のplayerdataの保存失敗。開発者に報告してください")
-        return
-      }
+      val playerData = SeichiAssist.playermap(uuid)
+
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
-      playerdata.updateOnQuit()
+      playerData.updateOnQuit()
 
-      PlayerDataSaveTask.savePlayerData(playerdata)
-
-      if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
-        logger.info("データベース切断に失敗しました")
-      }
-
-      logger.info("SeichiAssist is Disabled!")
-
-      SeichiAssist.buildAssist.onDisable()
+      PlayerDataSaveTask.savePlayerData(playerData)
     }
+
+    if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
+      logger.info("データベース切断に失敗しました")
+    }
+
+    logger.info("SeichiAssist is Disabled!")
+
+    SeichiAssist.buildAssist.onDisable()
   }
 
   override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean
