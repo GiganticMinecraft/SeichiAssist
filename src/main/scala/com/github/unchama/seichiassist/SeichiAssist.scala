@@ -55,6 +55,8 @@ import scala.collection.mutable
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
 
+  private var hasBeenLoadedAlready = false
+
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
@@ -108,6 +110,11 @@ class SeichiAssist extends JavaPlugin() {
     val logger = getLogger
     // java.util.logging.Loggerの名前はJVM上で一意
     implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
+
+    if (hasBeenLoadedAlready) {
+      slf4jLogger.error("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
+      return Bukkit.shutdown()
+    }
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -326,6 +333,7 @@ class SeichiAssist extends JavaPlugin() {
     SeichiAssist.buildAssist = new BuildAssist(this)
     SeichiAssist.buildAssist.onEnable()
 
+    hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
   }
 
