@@ -14,7 +14,7 @@ object PropertyModificationBukkitMessages extends PropertyModificationMessages {
       if (newMebiusProperty.level.isMaximum) {
         List(s"$RESET${GREEN}おめでとうございます。$mebiusDisplayName$RESET${GREEN}のレベルが最大になりました。")
       } else {
-        List(s"${newMebiusProperty.mebiusName}${RESET}がレベルアップしました。")
+        List(s"$mebiusDisplayName${RESET}がレベルアップしました。")
       }
 
     // 進化通知
