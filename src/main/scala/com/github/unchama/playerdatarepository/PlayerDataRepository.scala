@@ -1,5 +1,6 @@
 package com.github.unchama.playerdatarepository
 
+import cats.Functor
 import org.bukkit.entity.Player
 
 /**
@@ -18,3 +19,17 @@ trait PlayerDataRepository[R] {
   def apply(player: Player): R
 
 }
+
+private[playerdatarepository] abstract class PlayerDataRepositoryInstances {
+
+  implicit val playerDataRepositoryFunctor: Functor[PlayerDataRepository] = {
+    new Functor[PlayerDataRepository] {
+      override def map[A, B](fa: PlayerDataRepository[A])(f: A => B): PlayerDataRepository[B] = {
+        (player: Player) => f(fa.apply(player))
+      }
+    }
+  }
+
+}
+
+object PlayerDataRepository extends PlayerDataRepositoryInstances
