@@ -113,7 +113,8 @@ class SeichiAssist extends JavaPlugin() {
 
     if (hasBeenLoadedAlready) {
       slf4jLogger.error("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
-      return Bukkit.shutdown()
+      Bukkit.shutdown()
+      return
     }
 
     //チャンネルを追加
