@@ -101,7 +101,7 @@ object BukkitMebiusItemStackCodec {
           mebiusLoreHead
             .concat(List(
               s"$levelLoreRowPrefix${property.level.value}",
-              s"$levelUpMebiusMessageLoreRowPrefix${talk.mebiusMessage}",
+              s"$levelUpMebiusMessageLoreRowPrefix「${talk.mebiusMessage}」",
               s"$levelUpPlayerMessageLoreRowPrefix${talk.playerMessage}",
               s"",
               s"$ownerLoreRowPrefix${property.ownerPlayerId}"
