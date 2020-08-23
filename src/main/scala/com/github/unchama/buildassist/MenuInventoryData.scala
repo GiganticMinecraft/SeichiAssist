@@ -161,7 +161,7 @@ object MenuInventoryData {
     lore = List(
       s"$RESET${GRAY}スキルでブロックを並べるとき",
       s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-      s"$RESET${GRAY}建築LV${BuildAssist.config.getZoneskillMinestacklevel}以上で利用可能",
+      s"$RESET${GRAY}建築Lv${BuildAssist.config.getZoneskillMinestacklevel}以上で利用可能",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)
@@ -200,7 +200,7 @@ object MenuInventoryData {
     lore = List(
       s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
       s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-      s"$RESET${GRAY}建築LV${BuildAssist.config.getblocklineuplevel()}以上で利用可能",
+      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel()}以上で利用可能",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)
@@ -239,7 +239,7 @@ object MenuInventoryData {
     lore = List(
       s"$RESET${GRAY}スキルでブロックを並べるとき",
       s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-      s"$RESET${GRAY}建築LV${BuildAssist.config.getblocklineupMinestacklevel()}以上で利用可能",
+      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineupMinestacklevel()}以上で利用可能",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)

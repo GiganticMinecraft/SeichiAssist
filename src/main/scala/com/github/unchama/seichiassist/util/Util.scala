@@ -28,7 +28,7 @@ object Util {
 
   def sendPlayerDataNullMessage(player: Player): Unit = {
     player.sendMessage(RED.toString + "初回ログイン時の読み込み中か、読み込みに失敗しています")
-    player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームからお知らせ下さい")
+    player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
   }
 
   def seichiSkillsAllowedIn(world: World): Boolean = {

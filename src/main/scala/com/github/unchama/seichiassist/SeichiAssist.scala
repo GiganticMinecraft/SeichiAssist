@@ -120,13 +120,13 @@ class SeichiAssist extends JavaPlugin() {
 
     if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
       //debugmode=1の時は最初からデバッグモードで鯖を起動
-      logger.info(s"${RED}seichiassistをデバッグモードで起動します")
+      logger.info(s"${RED}SeichiAssistをデバッグモードで起動します")
       logger.info(s"${RED}コンソールから/seichi debugmode")
-      logger.info(s"${RED}を実行するといつでもONOFFを切り替えられます")
+      logger.info(s"${RED}を実行するといつでもON/OFFを切り替えられます")
       SeichiAssist.DEBUG = true
     } else {
       //debugmode=0の時は/seichi debugmodeによる変更コマンドも使えない
-      logger.info(s"${GREEN}seichiassistを通常モードで起動します")
+      logger.info(s"${GREEN}SeichiAssistを通常モードで起動します")
       logger.info(s"${GREEN}デバッグモードを使用する場合は")
       logger.info(s"${GREEN}config.ymlの設定値を書き換えて再起動してください")
     }
@@ -197,13 +197,13 @@ class SeichiAssist extends JavaPlugin() {
 
     //mysqlからガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.gachaDataManipulator.loadGachaData()) {
-      logger.severe("ガチャデータのロードに失敗しました")
+      logger.severe("ガチャデータのロードに失敗しました。サーバーを停止します…")
       Bukkit.shutdown()
     }
 
     //mysqlからMineStack用ガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
-      logger.severe("MineStack用ガチャデータのロードに失敗しました")
+      logger.severe("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
       Bukkit.shutdown()
     }
 
@@ -313,7 +313,7 @@ class SeichiAssist extends JavaPlugin() {
 
     //ランキングリストを最新情報に更新する
     if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
-      logger.info("ランキングデータの作成に失敗しました")
+      logger.info("ランキングデータの作成に失敗しました。サーバーを停止します…")
       Bukkit.shutdown()
     }
 
