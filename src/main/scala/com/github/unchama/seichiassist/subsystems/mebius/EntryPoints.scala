@@ -4,7 +4,7 @@ import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{MinecraftServerThreadIOShift, RepeatingTaskContext}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
-import com.github.unchama.seichiassist.SubsystemEntryPoints
+import com.github.unchama.seichiassist.meta.StatelessSubsystemEntryPoints
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.PropertyModificationBukkitMessages
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.gateway.BukkitMebiusSpeechGateway
@@ -19,7 +19,7 @@ object EntryPoints {
   def wired(implicit effectEnvironment: EffectEnvironment,
             timer: Timer[IO],
             repeatingTaskContext: RepeatingTaskContext,
-            bukkitSyncIOShift: MinecraftServerThreadIOShift): SubsystemEntryPoints = {
+            bukkitSyncIOShift: MinecraftServerThreadIOShift): StatelessSubsystemEntryPoints = {
     implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
     implicit val gatewayProvider: Player => MebiusSpeechGateway[SyncIO] = new BukkitMebiusSpeechGateway(_)
     implicit val getFreshSpeechBlockageState: SyncIO[MebiusSpeechBlockageState[SyncIO]] = SyncIO(new MebiusSpeechBlockageState[SyncIO])
@@ -40,6 +40,6 @@ object EntryPoints {
       "mebius" -> new MebiusCommandExecutorProvider().executor
     )
 
-    SubsystemEntryPoints(listeners, commands)
+    StatelessSubsystemEntryPoints(listeners, commands)
   }
 }
