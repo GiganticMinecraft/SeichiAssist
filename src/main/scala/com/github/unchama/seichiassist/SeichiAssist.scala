@@ -272,7 +272,7 @@ class SeichiAssist extends JavaPlugin() {
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
     )
-      .concat(subsystems.flatMap(_.commandsToBeRegistered))
+      .concat(subsystems.flatMap(_.commands))
       .foreach {
         case (commandName, executor) => getCommand(commandName).setExecutor(executor)
       }
@@ -299,7 +299,7 @@ class SeichiAssist extends JavaPlugin() {
       new MenuHandler()
     )
       .concat(repositories)
-      .concat(subsystems.flatMap(_.listenersToBeRegistered))
+      .concat(subsystems.flatMap(_.listeners))
       .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)
