@@ -2,6 +2,7 @@ package com.github.unchama.generic.effect
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{CancelToken, ContextShift, IO, Timer}
+import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -26,20 +27,29 @@ class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
         finalizer.expects().once()
       }
 
-      import scala.concurrent.duration._
+      val runSubProcessFinalizer = IO(subProcessFinalizer())
+      val runFinalizer = IO(finalizer())
+
+      import cats.implicits._
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         promise <- Deferred[IO, CancelToken[IO]]
         _ <- ConcurrentExtra.withSelfCancellation[IO, Unit] { cancelToken =>
           for {
             _ <- promise.complete(cancelToken)
-            _ <- IO.never.guarantee(IO(subProcessFinalizer()))
+            //noinspection ZeroIndexToHead
+            _ <- {
+              blockerList(0).await() >> IO.never
+            }.guarantee {
+              runSubProcessFinalizer
+            }
           } yield ()
         }.start
         returnedCancelToken <- promise.get
-        _ <- IO.sleep(1.second) // let started fiber reach IO.never
+        _ <- blockerList(1).await() // let started fiber reach IO.never
         _ <- returnedCancelToken // subProcessFinalizer should be called
-        _ <- IO(finalizer())
+        _ <- runFinalizer
       } yield ()
 
       program.unsafeRunSync()

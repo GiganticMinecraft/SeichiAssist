@@ -1,30 +1,44 @@
 package com.github.unchama.seichiassist.infrastructure.migration.repositories
 
-import cats.effect.{IO, Resource}
+import cats.effect.{ExitCase, Resource, Sync}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAssistPersistedItems
 import scalikejdbc._
 
-class PersistedItemsMigrationVersionRepository extends ItemMigrationVersionRepository[IO, SeichiAssistPersistedItems.type] {
-  private type PersistedItems = SeichiAssistPersistedItems.type
+class PersistedItemsMigrationVersionRepository[F[_]](implicit dbSession: DBSession, F: Sync[F])
+  extends ItemMigrationVersionRepository[F, SeichiAssistPersistedItems[F]] {
 
-  override type PersistenceLock[TInstance <: PersistedItems] = DBSession
+  private type PersistedItems = SeichiAssistPersistedItems[F]
 
-  override def lockVersionPersistence(target: PersistedItems): Resource[IO, PersistenceLock[PersistedItems]] = {
-    Resource.make(IO {
-      implicit val session: DBSession = AutoSession
+  override type PersistenceLock[TInstance <: PersistedItems] = Unit
+
+  override def lockVersionPersistence(target: PersistedItems): Resource[F, PersistenceLock[PersistedItems]] = {
+    Resource.makeCase(F.delay {
+      // トランザクション開始がここになる
+      // https://dev.mysql.com/doc/refman/5.6/ja/lock-tables-and-transactions.html
+      sql"set autocommit=0".update().apply()
 
       // ロックを取得するときは利用するテーブルすべてをロックしなければならない
       sql"lock tables seichiassist.item_migration_on_database write, seichiassist.playerdata write".update().apply()
 
-      session
-    })(implicit session => IO {
-      sql"unlock tables".update().apply()
-    })
+      // このリソースを使用する際にはロックが取れているというのを保証すればよいため、リソースの実体は無くて良い
+      ()
+    }) {
+      case (_, ExitCase.Completed) =>
+        F.delay {
+          sql"commit".update().apply()
+          sql"unlock tables".update().apply()
+        }
+      case _ =>
+        F.delay {
+          sql"rollback".update().apply()
+          sql"unlock tables".update().apply()
+        }
+    }
   }
 
-  override def getVersionsAppliedTo(target: PersistedItems): PersistenceLock[target.type] => IO[Set[ItemMigrationVersionNumber]] =
-    implicit session => IO {
+  override def getVersionsAppliedTo(target: PersistedItems): PersistenceLock[target.type] => F[Set[ItemMigrationVersionNumber]] =
+    _ => F.delay {
       sql"""
         select version_string from seichiassist.item_migration_on_database
       """
@@ -34,9 +48,9 @@ class PersistedItemsMigrationVersionRepository extends ItemMigrationVersionRepos
     }
 
   override def persistVersionsAppliedTo(target: PersistedItems,
-                                        versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[PersistedItems] => IO[Unit] =
-    implicit session => IO {
-      val batchParams = versions.map(version => Seq(ItemMigrationVersionNumber.convertToString(version)))
+                                        versions: Iterable[ItemMigrationVersionNumber]): PersistenceLock[PersistedItems] => F[Unit] =
+    _ => F.delay {
+      val batchParams = versions.map(version => Seq(version.versionString))
 
       sql"""
         insert into seichiassist.item_migration_on_database(version_string, completed_at)

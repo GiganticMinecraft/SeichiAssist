@@ -2,14 +2,17 @@ package com.github.unchama.seichiassist
 
 import java.util.UUID
 
-import cats.effect.{Fiber, IO}
+import cats.Parallel.Aux
+import cats.effect
+import cats.effect.{Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
-import com.github.unchama.itemmigration._
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.itemmigration.domain.ItemMigrations
 import com.github.unchama.itemmigration.service.ItemMigrationService
+import com.github.unchama.itemmigration.{service, _}
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -20,22 +23,29 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
+import com.github.unchama.seichiassist.infrastructure.migration.loggers.{PersistedItemsMigrationSlf4jLogger, PlayerItemsMigrationSlf4jLogger, WorldLevelMigrationSlf4jLogger}
 import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
 import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
+import com.github.unchama.seichiassist.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
-import com.github.unchama.util.ActionStatus
+import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandSender}
-import org.bukkit.entity.Entity
+import org.bukkit.entity.{Entity, ThrownExpBottle}
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
+import org.flywaydb.core.Flyway
+import org.slf4j.Logger
+import org.slf4j.impl.JDK14LoggerFactory
+import scalikejdbc.DB
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -55,6 +65,11 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreateSingletonScope
   }
 
+  implicit val thrownExpBottleScope: ResourceScope[IO, ThrownExpBottle] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreate
+  }
+
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
    */
@@ -71,8 +86,26 @@ class SeichiAssist extends JavaPlugin() {
     new TryableFiberRepository()
   }
 
+  private val kickAllPlayersDueToInitialization: SyncIO[Unit] = SyncIO {
+    getServer.getOnlinePlayers.asScala.foreach { player =>
+      player.kickPlayer("プラグインを初期化しています。時間を置いて再接続してください。")
+    }
+  }
+
   override def onEnable(): Unit = {
+    /**
+     * Spigotサーバーが開始されるときにはまだPreLoginEventがcatchされない等色々な不都合があるので、
+     * SeichiAssistの初期化はプレーヤーが居ないことを前提として進めることとする。
+     *
+     * NOTE:
+     * PreLoginToQuitPlayerDataRepository に関してはJoinEventさえcatchできれば弾けるので、
+     * 接続を試みているプレーヤーは弾かないで良さそう、と言うか弾く術がない
+     */
+    kickAllPlayersDueToInitialization.unsafeRunSync()
+
     val logger = getLogger
+    // java.util.logging.Loggerの名前はJVM上で一意
+    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -103,7 +136,52 @@ class SeichiAssist extends JavaPlugin() {
       import config._
       ScalikeJDBCConfiguration.initializeConnectionPool(s"$getURL/$getDB", getID, getPW)
       ScalikeJDBCConfiguration.initializeGlobalConfigs()
+
+      /*
+       * Flywayクラスは、ロード時にstaticフィールドの初期化処理でJavaUtilLogCreatorをContextClassLoader経由で
+       * インスタンス化を試みるが、ClassNotFoundExceptionを吐いてしまう。これはSpigotが使用しているクラスローダーが
+       * ContextClassLoaderに指定されていないことに起因する。
+       *
+       * 明示的にプラグインクラスを読み込んだクラスローダーを使用することで正常に読み込みが完了する。
+       */
+      ClassUtils.withThreadContextClassLoaderAs(
+        classOf[SeichiAssist].getClassLoader,
+        () => Flyway.configure.dataSource(getURL, getID, getPW)
+          .baselineOnMigrate(true)
+          .locations("db/migration", "com/github/unchama/seichiassist/database/migrations")
+          .baselineVersion("1.0.0")
+          .schemas("flyway_managed_schema")
+          .load.migrate
+      )
     }
+
+    val migrations: ItemMigrations = {
+      implicit val uuidRepository: UuidRepository[SyncIO] =
+        JdbcBackedUuidRepository.initializeInstance[SyncIO].unsafeRunSync()
+
+      SeichiAssistItemMigrations.seq
+    }
+
+    DB.autoCommit { implicit session =>
+      // DB内アイテムのマイグレーション
+      ItemMigrationService.inContextOf[SyncIO](
+        new PersistedItemsMigrationVersionRepository(),
+        new PersistedItemsMigrationSlf4jLogger(slf4jLogger)
+      )
+        .runMigration(migrations)(new SeichiAssistPersistedItems())
+        .unsafeRunSync()
+    }
+
+    // ワールド内アイテムのマイグレーション
+    service.ItemMigrationService.inContextOf[IO](
+      new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
+      new WorldLevelMigrationSlf4jLogger(slf4jLogger)
+    )
+      .runMigration(migrations) {
+        import PluginExecutionContexts.asyncShift
+        new SeichiAssistWorldLevelData()
+      }
+      .unsafeRunSync()
 
     try {
       SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
@@ -129,32 +207,19 @@ class SeichiAssist extends JavaPlugin() {
       Bukkit.shutdown()
     }
 
-    val migrations: ItemMigrations = SeichiAssistItemMigrations.seq
-
-    {
-      val itemMigrationBatches = List(
-        // DB内アイテムのマイグレーション
-        ItemMigrationService(
-          new PersistedItemsMigrationVersionRepository()
-        ).runMigration(migrations)(SeichiAssistPersistedItems),
-
-        // ワールド内アイテムのマイグレーション
-        ItemMigrationService(
-          new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId)
-        ).runMigration(migrations)(SeichiAssistWorldLevelData),
-      )
-
-      import cats.implicits._
-      itemMigrationBatches.sequence.unsafeRunSync()
-    }
-
     // プレーヤーインベントリ内アイテムのマイグレーション処理のコントローラであるリスナー
     val playerItemMigrationControllerListeners: Seq[Listener] = {
       import PluginExecutionContexts.asyncShift
-      val service = ItemMigrationService(new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId))
+
+      val service = ItemMigrationService.inContextOf[IO](
+        new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
+        new PlayerItemsMigrationSlf4jLogger(slf4jLogger)
+      )
 
       new PlayerItemMigrationEntryPoints(migrations, service).listenersToBeRegistered
     }
+
+    import PluginExecutionContexts._
 
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
 
@@ -168,6 +233,14 @@ class SeichiAssist extends JavaPlugin() {
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
+    val subsystems = Seq(
+      mebius.EntryPoints.wired,
+      expbottlestack.EntryPoints.wired
+    )
+
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
@@ -180,7 +253,6 @@ class SeichiAssist extends JavaPlugin() {
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "shareinv" -> ShareInvCommand.executor,
-      "mebius" -> MebiusCommand.executor,
       "achievement" -> AchievementCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
       "event" -> EventCommand.executor,
@@ -188,17 +260,18 @@ class SeichiAssist extends JavaPlugin() {
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
-      "x-transfer" -> RegionOwnerTransferCommand.executor
-    ).foreach {
-      case (commandName, executor) => getCommand(commandName).setExecutor(executor)
-    }
+      "x-transfer" -> RegionOwnerTransferCommand.executor,
+    )
+      .concat(subsystems.flatMap(_.commandsToBeRegistered))
+      .foreach {
+        case (commandName, executor) => getCommand(commandName).setExecutor(executor)
+      }
 
     val repositories = Seq(
       activeSkillAvailability,
       assaultSkillRoutines
     )
 
-    import PluginExecutionContexts.asyncShift
     //リスナーの登録
     Seq(
       new PlayerJoinListener(),
@@ -210,13 +283,13 @@ class SeichiAssist extends JavaPlugin() {
       new PlayerPickupItemListener(),
       new PlayerDeathEventListener(),
       new GachaItemListener(),
-      new MebiusListener(),
       new RegionInventoryListener(),
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler()
     )
       .concat(repositories)
+      .concat(subsystems.flatMap(_.listenersToBeRegistered))
       .concat(playerItemMigrationControllerListeners)
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)
@@ -250,6 +323,8 @@ class SeichiAssist extends JavaPlugin() {
 
     SeichiAssist.buildAssist = new BuildAssist(this)
     SeichiAssist.buildAssist.onEnable()
+
+    kickAllPlayersDueToInitialization.unsafeRunSync()
   }
 
   private def startRepeatedJobs(): Unit = {
@@ -265,12 +340,13 @@ class SeichiAssist extends JavaPlugin() {
         ) ++
           Option.unless(
             SeichiAssist.seichiAssistConfig.getServerNum == 7
-            || SeichiAssist.seichiAssistConfig.getServerNum == 8
+              || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
             HalfHourRankingRoutine()
           ).toList
 
-      programs.parSequence.start
+      implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
+      programs.parSequence.start(asyncShift)
     }
 
     repeatedTaskFiber = Some(startTask.unsafeRunSync())
@@ -289,34 +365,30 @@ class SeichiAssist extends JavaPlugin() {
     lockedBlockChunkScope.releaseAll.unsafeRunSync()
     arrowSkillProjectileScope.releaseAll.unsafeRunSync()
     magicEffectEntityScope.releaseAll.value.unsafeRunSync()
+    thrownExpBottleScope.releaseAll.unsafeRunSync()
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
     getServer.getOnlinePlayers.asScala.foreach { p =>
       //UUIDを取得
       val uuid = p.getUniqueId
+
       //プレイヤーデータ取得
-      val playerdata = SeichiAssist.playermap(uuid)
-      //念のためエラー分岐
-      if (playerdata == null) {
-        p.sendMessage(s"${RED}プレイヤーデータの保存に失敗しました。管理者に報告してください")
-        getServer.getConsoleSender.sendMessage(s"${RED}SeichiAssist[onDisable処理]でエラー発生")
-        logger.warning(s"${p.getName}のプレイヤーデータの保存失敗。開発者に報告してください")
-        return
-      }
+      val playerData = SeichiAssist.playermap(uuid)
+
       //quit時とondisable時、プレイヤーデータを最新の状態に更新
-      playerdata.updateOnQuit()
+      playerData.updateOnQuit()
 
-      PlayerDataSaveTask.savePlayerData(playerdata)
-
-      if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
-        logger.info("データベース切断に失敗しました")
-      }
-
-      logger.info("SeichiAssist is Disabled!")
-
-      SeichiAssist.buildAssist.onDisable()
+      PlayerDataSaveTask.savePlayerData(playerData)
     }
+
+    if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
+      logger.info("データベース切断に失敗しました")
+    }
+
+    logger.info("SeichiAssist is Disabled!")
+
+    SeichiAssist.buildAssist.onDisable()
   }
 
   override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean

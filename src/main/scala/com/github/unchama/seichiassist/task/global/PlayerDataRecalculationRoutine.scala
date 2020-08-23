@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.task.global
 
 import cats.effect.IO
-import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.{MinecraftServerThreadIOShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
@@ -16,7 +16,7 @@ import scala.concurrent.duration.FiniteDuration
 object PlayerDataRecalculationRoutine {
   import cats.implicits._
 
-  def apply()(implicit syncContext: BukkitSyncIOShift, context: RepeatingTaskContext): IO[Nothing] = {
+  def apply()(implicit syncContext: MinecraftServerThreadIOShift, context: RepeatingTaskContext): IO[Nothing] = {
     val getRepeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
 

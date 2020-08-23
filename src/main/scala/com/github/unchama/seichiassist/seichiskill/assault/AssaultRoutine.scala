@@ -1,13 +1,12 @@
 package com.github.unchama.seichiassist.seichiskill.assault
 
 import cats.effect.{ExitCase, IO}
-import com.github.unchama.concurrent.{BukkitSyncIOShift, RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.{MinecraftServerThreadIOShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.data.Mana
-import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
-import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -22,20 +21,24 @@ object AssaultRoutine {
   }
 
   def tryStart(player: Player, skill: AssaultSkill)
-              (implicit syncShift: BukkitSyncIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
+              (implicit syncShift: MinecraftServerThreadIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
     for {
-      offHandTool <- IO { player.getInventory.getItemInOffHand }
+      offHandTool <- IO {
+        player.getInventory.getItemInOffHand
+      }
       refinedTool = MaterialSets.refineItemStack(offHandTool, MaterialSets.breakToolMaterials)
       _ <- refinedTool match {
         case Some(tool) => AssaultRoutine(player, tool, skill)
-        case None => IO { player.sendMessage(s"${GREEN}使うツールをオフハンドにセット(fキー)してください") }
+        case None => IO {
+          player.sendMessage(s"${GREEN}使うツールをオフハンドにセット(fキー)してください")
+        }
       }
     } yield ()
   }
 
 
   def apply(player: Player, toolToBeUsed: BreakTool, skill: AssaultSkill)
-           (implicit syncShift: BukkitSyncIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
+           (implicit syncShift: MinecraftServerThreadIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
     val idleCountLimit = 20
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -141,7 +144,7 @@ object AssaultRoutine {
       // ブロックを書き換える
       if (shouldBreakAllBlocks) {
         (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
-        com.github.unchama.seichiassist.unsafe.runIOAsync(
+        DefaultEffectEnvironment.runEffectAsync(
           "ブロックを大量破壊する",
           BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, toolToBeUsed, shouldPlayBreakSound = false)
         )

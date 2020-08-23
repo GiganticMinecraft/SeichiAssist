@@ -1,6 +1,7 @@
 package com.github.unchama.util
 
-import cats.effect.IO
+import cats.effect.Sync
+import org.slf4j.Logger
 
 class MillisecondTimer private() {
   private var startTime: Long = 0
@@ -9,10 +10,21 @@ class MillisecondTimer private() {
     startTime = System.nanoTime()
   }
 
-  def sendLapTimeMessage(message: String): Unit = {
+  /**
+   * @deprecated use [[sendLapTimeMessageWithLogger]]
+   */
+  @Deprecated() def sendLapTimeMessage(message: String): Unit = {
     val recordedNanoSecondDuration = System.nanoTime() - startTime
 
     println(s"$message(time: ${recordedNanoSecondDuration / 1000000L} ms)")
+
+    startTime = System.nanoTime()
+  }
+
+  def sendLapTimeMessageWithLogger(message: String)(implicit logger: Logger): Unit = {
+    val recordedNanoSecondDuration = System.nanoTime() - startTime
+
+    logger.info(s"$message(time: ${recordedNanoSecondDuration / 1000000L} ms)")
 
     startTime = System.nanoTime()
   }
@@ -25,17 +37,16 @@ object MillisecondTimer {
     timer
   }
 
-  def time[R](program: => R)(message: String): R = {
-    val t = getInitializedTimerInstance
-    val result = program
-    t.sendLapTimeMessage(message)
-    result
-  }
+  import cats.implicits._
 
-  def timeIO[R](program: IO[R])(message: String): IO[R] =
+  def timeF[F[_] : Sync, R](program: F[R])(message: String)(implicit logger: Logger): F[R] =
     for {
-      t <- IO { getInitializedTimerInstance }
+      timer <- Sync[F].delay {
+        getInitializedTimerInstance
+      }
       result <- program
-      _ <- IO { t.sendLapTimeMessage(message) }
+      _ <- Sync[F].delay {
+        timer.sendLapTimeMessageWithLogger(message)
+      }
     } yield result
 }

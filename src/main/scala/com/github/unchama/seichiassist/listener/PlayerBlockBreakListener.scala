@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{Fiber, IO}
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
@@ -22,22 +23,10 @@ import org.bukkit.inventory.ItemStack
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
-class PlayerBlockBreakListener extends Listener {
+class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
   private val plugin = SeichiAssist.instance
 
   import plugin.activeSkillAvailability
-
-  @EventHandler(priority = EventPriority.LOW)
-  def onPlayerBlockBreak(event: BlockBreakEvent): Unit = {
-    val block = event.getBlock
-
-    //他人の保護がかかっている場合は処理を終了
-    if (!ExternalPlugins.getWorldGuard.canBuild(event.getPlayer, block.getLocation)) return
-
-    // 保護と重力値に問題無く、ブロックタイプがmateriallistに登録されていたらMebiusListenerを呼び出す
-    if (MaterialSets.materials.contains(event.getBlock.getType))
-      MebiusListener.onBlockBreak(event)
-  }
 
   //アクティブスキルの実行
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
@@ -198,18 +187,23 @@ class PlayerBlockBreakListener extends Listener {
         //壊したブロック数に応じてクールダウンを発生させる
         val availabilityFlagManipulation = {
           val brokenBlockNum = multiBreakList.map(_.size).sum
-          val coolDownTicks = selectedSkill.maxCoolDownTicks.getOrElse(0) * brokenBlockNum / totalBreakRangeVolume
+          val coolDownTicks =
+            (selectedSkill.maxCoolDownTicks.getOrElse(0).toDouble * brokenBlockNum / totalBreakRangeVolume)
+              .ceil
+              .toInt
 
-          if (coolDownTicks >= 5) {
-            val reference = SeichiAssist.instance.activeSkillAvailability(player)
+          val reference = SeichiAssist.instance.activeSkillAvailability(player)
 
+          if (coolDownTicks != 0) {
             for {
               _ <- reference.set(false)
               _ <- IO.timer(PluginExecutionContexts.sleepAndRoutineContext).sleep(coolDownTicks.ticks)
               _ <- reference.set(true)
               _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
             } yield ()
-          } else IO.unit
+          } else {
+            IO.unit
+          }
         }
 
         // マナやツールの耐久値を減らす
@@ -218,13 +212,13 @@ class PlayerBlockBreakListener extends Listener {
           if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
         }
 
-        com.github.unchama.seichiassist.unsafe.runIOAsync(
+        effectEnvironment.runEffectAsync(
           "複数破壊エフェクトを実行する",
           effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
         )
-        com.github.unchama.seichiassist.unsafe.runIOAsync(
+        effectEnvironment.runEffectAsync(
           "複数破壊エフェクトの後処理を実行する",
-          adjustManaAndDurability >> availabilityFlagManipulation.start
+          adjustManaAndDurability >> availabilityFlagManipulation
         )
       }
     }

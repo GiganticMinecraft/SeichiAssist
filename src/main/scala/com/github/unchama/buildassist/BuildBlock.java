@@ -1,12 +1,11 @@
 package com.github.unchama.buildassist;
 
+import com.github.unchama.seichiassist.PackagePrivate;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
-
-import com.github.unchama.seichiassist.PackagePrivate;
 
 @PackagePrivate
 class BuildBlock {

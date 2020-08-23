@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
 import com.github.unchama.generic.effect.TryableFiber
-import com.github.unchama.seichiassist
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -18,16 +18,15 @@ import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.ThrownExpBottle
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.{EquipmentSlot, ItemStack}
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerClickListener extends Listener {
+class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
   import com.github.unchama.targetedeffect._
@@ -41,7 +40,7 @@ class PlayerClickListener extends Listener {
 
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
-
+  
   //アクティブスキル処理
   @EventHandler
   def onPlayerActiveSkillEvent(event: PlayerInteractEvent): Unit = {
@@ -98,8 +97,8 @@ class PlayerClickListener extends Listener {
 
           val arrowEffect = playerData.skillEffectState.selection.arrowEffect(player)
 
-          seichiassist.unsafe.runIOAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
-          seichiassist.unsafe.runIOAsync("ArrowEffectを非同期で実行する", arrowEffect)
+          effectEnvironment.runEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
+          effectEnvironment.runEffectAsync("ArrowEffectを非同期で実行する", arrowEffect)
         case _ =>
       }
     }
@@ -361,7 +360,7 @@ class PlayerClickListener extends Listener {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-    seichiassist.unsafe.runAsyncTargetedEffect(player)(
+    effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open
@@ -409,28 +408,6 @@ class PlayerClickListener extends Listener {
         //インベントリを開く
         player.openInventory(playerdata.pocketInventory)
       }
-    }
-  }
-
-  //　経験値瓶を持った状態でのShift右クリック…一括使用
-  @EventHandler
-  def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent): Unit = {
-    val player = event.getPlayer
-    val playerInventory = player.getInventory
-    val action = event.getAction
-
-    // 経験値瓶を持った状態でShift右クリックをした場合
-    if (player.isSneaking
-      && playerInventory.getItemInMainHand != null
-      && playerInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
-      && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
-
-      val count = playerInventory.getItemInMainHand.getAmount
-
-      (0 until count).foreach { _ => player.launchProjectile(classOf[ThrownExpBottle]) }
-
-      playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
-      event.setCancelled(true)
     }
   }
 
