@@ -33,6 +33,8 @@ import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
+import com.github.unchama.seichiassist.subsystems.expbottlestack
+import com.github.unchama.seichiassist.subsystems.mebius.EntryPoints
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -237,7 +239,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val subsystems = Seq(
-      mebius.EntryPoints.wired,
+      EntryPoints.wired,
       expbottlestack.EntryPoints.wired
     )
 

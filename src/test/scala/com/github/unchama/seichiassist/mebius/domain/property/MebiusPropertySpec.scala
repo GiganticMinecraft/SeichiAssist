@@ -4,6 +4,7 @@ import java.util.UUID
 
 import cats.Monad
 import cats.effect.SyncIO
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusEnchantment, MebiusProperty}
 import org.scalatest.wordspec.AnyWordSpec
 
 class MebiusPropertySpec extends AnyWordSpec {
