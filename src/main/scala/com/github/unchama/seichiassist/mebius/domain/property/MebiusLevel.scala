@@ -40,7 +40,10 @@ object MebiusLevel {
   )
 
   def apply(level: Int): MebiusLevel = {
-    require(1 <= level && level <= max.value)
+    require(
+      1 <= level && level <= max.value,
+      s"$level in [1, ${max.value}]"
+    )
 
     new MebiusLevel(level)
   }
