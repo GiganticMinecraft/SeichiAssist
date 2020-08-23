@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.listeners.ExpBottleStackUsageController
 import org.bukkit.entity.ThrownExpBottle
 
-object EntryPoints {
+object System {
   def wired(implicit managedBottleScope: ResourceScope[IO, ThrownExpBottle],
             effectEnvironment: EffectEnvironment): Subsystem = {
     Subsystem(

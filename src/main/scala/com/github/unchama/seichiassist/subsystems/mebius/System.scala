@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSp
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import org.bukkit.entity.Player
 
-object EntryPoints {
+object System {
   def wired(implicit effectEnvironment: EffectEnvironment,
             timer: Timer[IO],
             repeatingTaskContext: RepeatingTaskContext,
