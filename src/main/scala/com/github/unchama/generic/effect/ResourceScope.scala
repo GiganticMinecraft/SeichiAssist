@@ -78,10 +78,16 @@ object ResourceScope {
    *
    * 参照透明性が無いためunsafe-接頭語がつけられている。
    * 実際、`unsafeCreate` を二回呼んだ時には異なるスコープが作成される。
+   *
    * @tparam F リソースを扱う計算
    * @tparam R リソースハンドラの型
    */
-  def unsafeCreate[F[_]: Concurrent, R]: ResourceScope[F, R] = new TrieMapResourceScope()
+  def unsafeCreate[F[_] : Concurrent, R]: ResourceScope[F, R] = new TrieMapResourceScope()
+
+  /**
+   * 新たな資源スコープを作成する計算。
+   */
+  def create[F[_] : Concurrent, R]: F[ResourceScope[F, R]] = Concurrent[F].delay(unsafeCreate[F, R])
 
   /**
    * 新たな資源スコープを作成する。
@@ -89,6 +95,7 @@ object ResourceScope {
    *
    * 参照透明性が無いためunsafe-接頭語がつけられている。
    * 実際、`unsafeCreateSingletonScope` を二回呼んだ時には異なるスコープが作成される。
+   *
    * @tparam F リソースを扱う計算
    * @tparam R リソースハンドラの型
    */
