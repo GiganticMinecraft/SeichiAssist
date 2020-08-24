@@ -32,6 +32,7 @@ import com.github.unchama.seichiassist.infrastructure.minecraft.JdbcBackedUuidRe
 import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
+import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -39,7 +40,7 @@ import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, Play
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandSender}
-import org.bukkit.entity.{Entity, ThrownExpBottle}
+import org.bukkit.entity.Entity
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
@@ -68,10 +69,12 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreateSingletonScope
   }
 
-  implicit val thrownExpBottleScope: ResourceScope[IO, ThrownExpBottle] = {
+  lazy val expBottleStackSystem: StatefulSubsystem[subsystems.expbottlestack.InternalState[IO]] = {
     import PluginExecutionContexts.asyncShift
-    ResourceScope.unsafeCreate
-  }
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
+    subsystems.expbottlestack.System.wired[IO]
+  }.unsafeRunSync()
 
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
@@ -247,7 +250,7 @@ class SeichiAssist extends JavaPlugin() {
 
     val subsystems = Seq(
       mebius.System.wired,
-      expbottlestack.System.wired
+      expBottleStackSystem
     )
 
     // コマンドの登録
@@ -375,7 +378,8 @@ class SeichiAssist extends JavaPlugin() {
     lockedBlockChunkScope.releaseAll.unsafeRunSync()
     arrowSkillProjectileScope.releaseAll.unsafeRunSync()
     magicEffectEntityScope.releaseAll.value.unsafeRunSync()
-    thrownExpBottleScope.releaseAll.unsafeRunSync()
+
+    expBottleStackSystem.state.managedBottleScope.releaseAll.unsafeRunSync()
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
