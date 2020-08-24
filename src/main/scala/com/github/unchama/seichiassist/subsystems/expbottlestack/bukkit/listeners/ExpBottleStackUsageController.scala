@@ -1,37 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.listeners
 
-import cats.effect.{IO, Resource}
+import cats.effect.IO
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.Resources
 import com.github.unchama.seichiassist.subsystems.expbottlestack.domain.BottleCount
-import org.bukkit.entity.{ExperienceOrb, ThrownExpBottle}
+import org.bukkit.Material
+import org.bukkit.entity.ThrownExpBottle
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.ExpBottleEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
-import org.bukkit.{Location, Material}
 
 class ExpBottleStackUsageController(implicit managedBottleScope: ResourceScope[IO, ThrownExpBottle],
                                     effectEnvironment: EffectEnvironment) extends Listener {
-
-  private def spawnOrbAt(location: Location)(expAmount: Int): IO[Unit] = IO {
-    val orb = location.getWorld.spawn(location, classOf[ExperienceOrb])
-    orb.setExperience(expAmount)
-  }
-
-  private def bottleResourceSpawningAt(loc: Location, originalCount: BottleCount): Resource[IO, ThrownExpBottle] = {
-    Resource
-      .make(
-        IO(loc.getWorld.spawn(loc, classOf[ThrownExpBottle]))
-      ) { e =>
-        for {
-          expAmount <- originalCount.randomlyGenerateExpAmount[IO]
-          _ <- spawnOrbAt(loc)(expAmount)
-          _ <- IO(e.remove())
-        } yield ()
-      }
-  }
 
   @EventHandler
   def onExpBottleHitBlock(event: ExpBottleEvent): Unit = {
@@ -57,7 +40,7 @@ class ExpBottleStackUsageController(implicit managedBottleScope: ResourceScope[I
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
 
       val bottleCount = BottleCount(playerInventory.getItemInMainHand.getAmount)
-      val bottleResource = bottleResourceSpawningAt(player.getLocation, bottleCount)
+      val bottleResource = Resources.bottleResourceSpawningAt(player.getLocation, bottleCount)
 
       effectEnvironment.runEffectAsync(
         "経験値瓶の消費を待つ",
