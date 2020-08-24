@@ -73,7 +73,7 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    subsystems.expbottlestack.System.wired
+    subsystems.expbottlestack.System.wired[IO]
   }.unsafeRunSync()
 
   /**

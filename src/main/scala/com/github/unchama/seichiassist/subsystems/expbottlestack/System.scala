@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.expbottlestack
 
-import cats.effect.{Concurrent, IO}
+import cats.effect.ConcurrentEffect
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
@@ -8,19 +8,20 @@ import com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.listener
 import org.bukkit.entity.ThrownExpBottle
 
 object System {
-  def wired(implicit effectEnvironment: EffectEnvironment,
-            ioConcurrent: Concurrent[IO]): IO[StatefulSubsystem[InternalState[IO]]] = {
+  def wired[F[_] : ConcurrentEffect](implicit effectEnvironment: EffectEnvironment): F[StatefulSubsystem[InternalState[F]]] = {
+    import cats.implicits._
+
     for {
-      managedExpBottleScope <- ResourceScope.create[IO, ThrownExpBottle]
+      managedExpBottleScope <- ResourceScope.create[F, ThrownExpBottle]
     } yield {
-      implicit val scope: ResourceScope[IO, ThrownExpBottle] = managedExpBottleScope
+      implicit val scope: ResourceScope[F, ThrownExpBottle] = managedExpBottleScope
 
       StatefulSubsystem(
         listenersToBeRegistered = Seq(
-          new ExpBottleStackUsageController()
+          new ExpBottleStackUsageController[F]()
         ),
         commandsToBeRegistered = Map(),
-        stateToExpose = InternalState[IO](scope)
+        stateToExpose = InternalState[F](scope)
       )
     }
   }

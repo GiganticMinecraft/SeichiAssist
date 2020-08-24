@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.listeners
 
-import cats.effect.IO
+import cats.effect.Effect
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.Resources
@@ -13,16 +13,17 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class ExpBottleStackUsageController(implicit managedBottleScope: ResourceScope[IO, ThrownExpBottle],
-                                    effectEnvironment: EffectEnvironment) extends Listener {
+class ExpBottleStackUsageController[F[_]](implicit managedBottleScope: ResourceScope[F, ThrownExpBottle],
+                                          effectEnvironment: EffectEnvironment,
+                                          F: Effect[F]) extends Listener {
 
   @EventHandler
   def onExpBottleHitBlock(event: ExpBottleEvent): Unit = {
     val bottle = event.getEntity
 
-    if (managedBottleScope.isTracked(bottle).unsafeRunSync()) {
+    if (F.toIO(managedBottleScope.isTracked(bottle)).unsafeRunSync()) {
       event.setExperience(0)
-      managedBottleScope.release(event.getEntity).unsafeRunSync()
+      F.toIO(managedBottleScope.release(event.getEntity)).unsafeRunSync()
     }
   }
 
@@ -40,11 +41,11 @@ class ExpBottleStackUsageController(implicit managedBottleScope: ResourceScope[I
       && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
 
       val bottleCount = BottleCount(playerInventory.getItemInMainHand.getAmount)
-      val bottleResource = Resources.bottleResourceSpawningAt(player.getLocation, bottleCount)
+      val bottleResource = Resources.bottleResourceSpawningAt[F](player.getLocation, bottleCount)
 
       effectEnvironment.runEffectAsync(
         "経験値瓶の消費を待つ",
-        managedBottleScope.useTracked(bottleResource) { _ => IO.never }
+        managedBottleScope.useTracked[ThrownExpBottle, Nothing](bottleResource) { _ => F.never }
       )
 
       playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
