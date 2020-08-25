@@ -69,11 +69,11 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreateSingletonScope
   }
 
-  lazy val expBottleStackSystem: StatefulSubsystem[subsystems.expbottlestack.InternalState[IO]] = {
+  lazy val expBottleStackSystem: StatefulSubsystem[subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    subsystems.expbottlestack.System.wired[IO]
+    subsystems.expbottlestack.System.wired[IO, SyncIO]
   }.unsafeRunSync()
 
   /**

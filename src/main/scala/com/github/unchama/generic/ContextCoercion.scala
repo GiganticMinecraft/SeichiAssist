@@ -1,6 +1,7 @@
 package com.github.unchama.generic
 
 import cats.arrow.FunctionK
+import cats.effect.{IO, SyncIO}
 import cats.~>
 
 /**
@@ -22,5 +23,9 @@ object ContextCoercion {
   }
 
   implicit def identityCoercion[F[_]]: ContextCoercion[F, F] = fromFunctionK(FunctionK.id)
+
+  implicit val catsEffectSyncIOToIOCoercion: ContextCoercion[SyncIO, IO] = fromFunctionK {
+    λ[SyncIO ~> IO](_.toIO)
+  }
 
 }
