@@ -8,9 +8,7 @@ import cats.~>
  * [[cats.arrow.FunctionK]] と同じだが、より自明な、
  * 例えば [[cats.effect.SyncIO]] から [[cats.effect.IO]] のような変換を与えるオブジェクトとして機能する。
  */
-trait ContextCoercion[F[_], G[_]] {
-  def apply[A](fa: F[A]): G[A]
-}
+trait ContextCoercion[F[_], G[_]] extends (F ~> G)
 
 object ContextCoercion {
 
