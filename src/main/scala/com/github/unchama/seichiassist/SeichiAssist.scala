@@ -60,26 +60,30 @@ class SeichiAssist extends JavaPlugin() {
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
-  val arrowSkillProjectileScope: ResourceScope[IO, Entity] = {
+  // TODO: `ResourceScope[IO, SyncIO, Projectile]` にしたい
+  val arrowSkillProjectileScope: ResourceScope[IO, IO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
+  // TODO: `ResourceScope[IO, SyncIO, Entity]` にしたい
   val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
 
-  lazy val expBottleStackSystem: StatefulSubsystem[subsystems.expbottlestack.InternalState[IO]] = {
+  lazy val expBottleStackSystem: StatefulSubsystem[subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    subsystems.expbottlestack.System.wired[IO]
+    subsystems.expbottlestack.System.wired[IO, SyncIO]
   }.unsafeRunSync()
 
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
+   *
+   * TODO: `ResourceScope[IO, SyncIO, Set[BlockBreakableBySkill]]` にしたい
    */
-  val lockedBlockChunkScope: ResourceScope[IO, Set[BlockBreakableBySkill]] = {
+  val lockedBlockChunkScope: ResourceScope[IO, IO, Set[BlockBreakableBySkill]] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
@@ -375,11 +379,11 @@ class SeichiAssist extends JavaPlugin() {
     // ファイナライザはunsafeRunSyncによってこのスレッドで同期的に実行されるため
     // onDisable内で呼び出して問題はない。
     // https://scastie.scala-lang.org/NqT4BFw0TiyfjycWvzRIuQ
-    lockedBlockChunkScope.releaseAll.unsafeRunSync()
-    arrowSkillProjectileScope.releaseAll.unsafeRunSync()
-    magicEffectEntityScope.releaseAll.value.unsafeRunSync()
+    lockedBlockChunkScope.getReleaseAllAction.unsafeRunSync().unsafeRunSync()
+    arrowSkillProjectileScope.getReleaseAllAction.unsafeRunSync().unsafeRunSync()
+    magicEffectEntityScope.getReleaseAllAction.unsafeRunSync().value.unsafeRunSync()
 
-    expBottleStackSystem.state.managedBottleScope.releaseAll.unsafeRunSync()
+    expBottleStackSystem.state.managedBottleScope.getReleaseAllAction.unsafeRunSync().unsafeRunSync()
 
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
