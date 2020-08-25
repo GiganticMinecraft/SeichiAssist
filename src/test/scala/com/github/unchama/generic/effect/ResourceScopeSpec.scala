@@ -17,10 +17,10 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
     implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
-    val firstResourceScope: ResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreate
-    val secondResourceScope: ResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreate
+    val firstResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
+    val secondResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
 
-    def useTracked[A](scope: ResourceScope[IO, NumberedObject],
+    def useTracked[A](scope: ResourceScope[IO, IO, NumberedObject],
                       obj: NumberedObject,
                       impureFinalizer: NumberedObject => Unit = _ => ())
                      (use: NumberedObject => IO[A]): IO[A] = {
@@ -97,7 +97,8 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
               IO.never
           }.start
         _ <- blockerList(1).await()
-        _ <- firstResourceScope.release(NumberedObject(0))
+        releaseAction <- firstResourceScope.getReleaseAction(NumberedObject(0))
+        _ <- releaseAction
         _ <- runImpureFunction2
       } yield ()
 
@@ -133,7 +134,8 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
               IO.never
           }.start
         _ <- blockerList(1).await()
-        _ <- firstResourceScope.releaseAll
+        releaseAction <- firstResourceScope.getReleaseAllAction
+        _ <- releaseAction
         _ <- runImpureFunction2
       } yield ()
 
@@ -160,19 +162,19 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
     }
 
     "recognize acquisition precisely in tracked scopes" in {
-      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
 
       useTrackedForSome(firstResourceScope, NumberedObject(0)) { _ =>
         IO {
-          firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe true
+          firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe true
 
-          firstResourceScope.isTrackedUnlifted(NumberedObject(1)).unsafeRunSync() mustBe false
+          firstResourceScope.isTracked(NumberedObject(1)).unsafeRunSync() mustBe false
 
-          secondResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+          secondResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
         }
       }.unsafeRunSync()
 
-      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
     }
 
     "not interrupt the usage of the resource" in {
@@ -241,13 +243,14 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
               IO.never
           }.start
         _ <- blockerList(1).await()
-        _ <- firstResourceScope.releaseSome(NumberedObject(0))
+        releaseAction <- firstResourceScope.getReleaseAction(NumberedObject(0))
+        _ <- releaseAction.value
         _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
 
-      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
     }
 
     "be coherent with external cancellation by releaseAll" in {
@@ -277,13 +280,14 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
               IO.never
           }.start
         _ <- blockerList(1).await()
-        _ <- firstResourceScope.releaseAll.value
+        releaseAction <- firstResourceScope.getReleaseAllAction
+        _ <- releaseAction.value
         _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
 
-      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
     }
   }
 }

@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 
-class ExpBottleStackUsageController[F[_]](implicit managedBottleScope: ResourceScope[F, ThrownExpBottle],
+class ExpBottleStackUsageController[F[_]](implicit managedBottleScope: ResourceScope[F, F, ThrownExpBottle],
                                           effectEnvironment: EffectEnvironment,
                                           F: Effect[F]) extends Listener {
 
@@ -23,7 +23,7 @@ class ExpBottleStackUsageController[F[_]](implicit managedBottleScope: ResourceS
 
     if (F.toIO(managedBottleScope.isTracked(bottle)).unsafeRunSync()) {
       event.setExperience(0)
-      F.toIO(managedBottleScope.release(event.getEntity)).unsafeRunSync()
+      F.toIO(managedBottleScope.getReleaseAction(event.getEntity)).unsafeRunSync()
     }
   }
 

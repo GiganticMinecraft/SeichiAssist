@@ -12,9 +12,9 @@ object System {
     import cats.implicits._
 
     for {
-      managedExpBottleScope <- ResourceScope.create[F, ThrownExpBottle]
+      managedExpBottleScope <- ResourceScope.create[F, F, ThrownExpBottle]
     } yield {
-      implicit val scope: ResourceScope[F, ThrownExpBottle] = managedExpBottleScope
+      implicit val scope: ResourceScope[F, F, ThrownExpBottle] = managedExpBottleScope
 
       StatefulSubsystem(
         listenersToBeRegistered = Seq(

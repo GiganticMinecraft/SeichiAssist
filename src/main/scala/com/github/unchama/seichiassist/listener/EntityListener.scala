@@ -20,7 +20,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment) extends List
 
     if (!SeichiAssist.instance.arrowSkillProjectileScope.isTracked(projectile).unsafeRunSync()) return
 
-    SeichiAssist.instance.arrowSkillProjectileScope.release(projectile).unsafeRunSync()
+    SeichiAssist.instance.arrowSkillProjectileScope.getReleaseAction(projectile).unsafeRunSync()
 
     val player = projectile.getShooter match {
       case p: Player => p

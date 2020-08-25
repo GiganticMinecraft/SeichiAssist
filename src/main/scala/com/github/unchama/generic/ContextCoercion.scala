@@ -1,5 +1,6 @@
 package com.github.unchama.generic
 
+import cats.arrow.FunctionK
 import cats.~>
 
 /**
@@ -19,4 +20,7 @@ object ContextCoercion {
       def apply[A](fa: F[A]): G[A] = functionK(fa)
     }
   }
+
+  implicit def identityCoercion[F[_]]: ContextCoercion[F, F] = fromFunctionK(FunctionK.id)
+
 }
