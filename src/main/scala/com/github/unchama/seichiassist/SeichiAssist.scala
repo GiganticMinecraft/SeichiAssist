@@ -60,10 +60,12 @@ class SeichiAssist extends JavaPlugin() {
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
+  // TODO: `ResourceScope[IO, SyncIO, Projectile]` にしたい
   val arrowSkillProjectileScope: ResourceScope[IO, IO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
+  // TODO: `ResourceScope[IO, SyncIO, Entity]` にしたい
   val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
@@ -78,6 +80,8 @@ class SeichiAssist extends JavaPlugin() {
 
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
+   *
+   * TODO: `ResourceScope[IO, SyncIO, Set[BlockBreakableBySkill]]` にしたい
    */
   val lockedBlockChunkScope: ResourceScope[IO, IO, Set[BlockBreakableBySkill]] = {
     import PluginExecutionContexts.asyncShift
