@@ -12,7 +12,18 @@ import cats.~>
  */
 trait ContextCoercion[F[_], G[_]] extends (F ~> G)
 
-object ContextCoercion {
+final class CoercibleComputation[F[_], A](val fa: F[A]) extends AnyVal {
+  def coerceTo[G[_]](implicit coercion: ContextCoercion[F, G]): G[A] = coercion(fa)
+}
+
+private[generic] abstract class ContextCoercionOps {
+
+  import scala.language.implicitConversions
+
+  implicit def coercibleComputation[F[_], A](fa: F[A]): CoercibleComputation[F, A] = new CoercibleComputation(fa)
+}
+
+object ContextCoercion extends ContextCoercionOps {
 
   def apply[F[_], G[_], A](fa: F[A])(implicit coercion: ContextCoercion[F, G]): G[A] = coercion(fa)
 
