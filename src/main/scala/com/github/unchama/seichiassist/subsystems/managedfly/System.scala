@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.managedfly
 
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 
 /**
@@ -8,10 +9,13 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
  * SeichiAssist直属のサブシステムとして扱う。
  */
 object System {
-  def wired: Subsystem = {
+
+  import cats.implicits._
+
+  def wired[F[_] : ConcurrentEffect, G[_] : SyncEffect]: F[Subsystem] = {
     Subsystem(
       listenersToBeRegistered = Seq(),
       commandsToBeRegistered = Map()
-    )
+    ).pure[F]
   }
 }
