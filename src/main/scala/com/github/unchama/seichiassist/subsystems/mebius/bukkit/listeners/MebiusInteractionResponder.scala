@@ -100,7 +100,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
     val speechService = serviceRepository(player)
 
-    MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
+    MebiusMessages.onMonsterKill.pickOne[SyncIO].flatMap { message =>
       speechService.tryMakingSpeech(
         mebiusProperty,
         MebiusSpeech(
