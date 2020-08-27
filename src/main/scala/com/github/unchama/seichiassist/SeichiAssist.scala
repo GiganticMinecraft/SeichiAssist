@@ -178,8 +178,8 @@ class SeichiAssist extends JavaPlugin() {
       )
     }
 
-    itemmigration.System.runDatabaseMigration[SyncIO].unsafeRunSync()
-    itemmigration.System.runWorldMigration[SyncIO].unsafeRunSync()
+    itemMigrationSystem.state.entryPoints.runDatabaseMigration[SyncIO].unsafeRunSync()
+    itemMigrationSystem.state.entryPoints.runWorldMigration.unsafeRunSync()
 
     try {
       SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
