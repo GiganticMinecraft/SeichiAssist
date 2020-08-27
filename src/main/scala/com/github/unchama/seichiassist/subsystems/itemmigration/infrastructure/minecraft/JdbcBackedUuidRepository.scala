@@ -1,10 +1,10 @@
-package com.github.unchama.seichiassist.infrastructure.minecraft
+package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft
 
 import java.util.UUID
 
 import cats.Applicative
 import cats.effect.Sync
-import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
+import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import org.slf4j.Logger
 
 object JdbcBackedUuidRepository {

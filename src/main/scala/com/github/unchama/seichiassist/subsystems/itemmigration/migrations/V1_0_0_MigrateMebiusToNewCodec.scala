@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 import cats.effect.SyncIO
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import com.github.unchama.itemmigration.util.MigrationHelper
-import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
+import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.migrations.V1_0_0_MigrateMebiusToNewCodec.OldBukkitMebiusItemStackCodec.OldMebiusRawProperty
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._

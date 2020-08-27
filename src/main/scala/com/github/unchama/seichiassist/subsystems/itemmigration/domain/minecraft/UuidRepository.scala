@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.domain.minecraft
+package com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft
 
 import java.util.UUID
 
