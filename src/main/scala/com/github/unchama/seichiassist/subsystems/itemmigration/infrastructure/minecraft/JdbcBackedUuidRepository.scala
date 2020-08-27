@@ -9,7 +9,7 @@ import org.slf4j.Logger
 
 object JdbcBackedUuidRepository {
 
-  trait ApplicableUuidRepository {
+  trait ApplicativeUuidRepository {
     def apply[F[_] : Applicative]: UuidRepository[F]
   }
 
@@ -25,7 +25,7 @@ object JdbcBackedUuidRepository {
    *
    * このことから、最後にSeichiAssistが導入されていたサーバーで入った名前のみからUUIDを割り出すことにしている。
    */
-  def initializeStaticInstance[F[_] : Sync](implicit logger: Logger): F[ApplicableUuidRepository] = Sync[F].delay {
+  def initializeStaticInstance[F[_] : Sync](implicit logger: Logger): F[ApplicativeUuidRepository] = Sync[F].delay {
     import scalikejdbc._
 
     val databaseEntries = DB.readOnly { implicit session =>
@@ -39,7 +39,7 @@ object JdbcBackedUuidRepository {
         .toMap
     }
 
-    new ApplicableUuidRepository {
+    new ApplicativeUuidRepository {
       override def apply[G[_] : Applicative]: UuidRepository[G] = {
         (playerName: String) => Applicative[G].pure(databaseEntries.get(playerName))
       }

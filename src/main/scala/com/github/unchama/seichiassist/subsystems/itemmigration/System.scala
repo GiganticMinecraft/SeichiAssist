@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.loggers.{PersistedItemsMigrationSlf4jLogger, PlayerItemsMigrationSlf4jLogger, WorldLevelMigrationSlf4jLogger}
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository.ApplicativeUuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
 import com.github.unchama.seichiassist.subsystems.itemmigration.migrations.SeichiAssistItemMigrations
@@ -22,9 +23,14 @@ object System {
 
   import cats.effect.implicits._
 
+  private var cachedUuidRepository: ApplicativeUuidRepository = _
+
   private def migrations(implicit logger: Logger) = {
-    implicit val uuidRepository: UuidRepository[SyncIO] =
-      JdbcBackedUuidRepository.initializeInstance[SyncIO].unsafeRunSync()
+    if (cachedUuidRepository == null) {
+      cachedUuidRepository = JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync()
+    }
+
+    implicit val syncIOUuidRepository: UuidRepository[SyncIO] = cachedUuidRepository.apply[SyncIO]
 
     SeichiAssistItemMigrations.seq
   }
