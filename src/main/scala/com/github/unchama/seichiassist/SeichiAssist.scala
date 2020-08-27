@@ -17,6 +17,7 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.cachedThreadPool
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -126,6 +127,9 @@ class SeichiAssist extends JavaPlugin() {
       return
     }
 
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
@@ -214,9 +218,6 @@ class SeichiAssist extends JavaPlugin() {
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
-
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val subsystems = Seq(
       mebius.System.wired,
