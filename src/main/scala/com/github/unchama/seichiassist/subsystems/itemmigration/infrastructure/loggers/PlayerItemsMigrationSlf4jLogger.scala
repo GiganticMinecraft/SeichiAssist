@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.infrastructure.migration.loggers
+package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.loggers
 
 import cats.effect.Sync
 import com.github.unchama.itemmigration.domain.{ItemMigrationLogger, ItemMigrationVersionNumber}

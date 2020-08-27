@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.infrastructure.migration.loggers
+package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.loggers
 
 import cats.effect.Sync
 import com.github.unchama.itemmigration.domain.{ItemMigrationLogger, ItemMigrationVersionNumber}
-import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAssistPersistedItems
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets.SeichiAssistPersistedItems
 import org.slf4j.Logger
 
 class PersistedItemsMigrationSlf4jLogger[F[_]](logger: Logger)(implicit F: Sync[F])

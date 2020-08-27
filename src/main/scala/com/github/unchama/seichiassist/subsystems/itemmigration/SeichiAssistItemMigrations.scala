@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.itemmigration
+package com.github.unchama.seichiassist.subsystems.itemmigration
 
 import cats.effect.SyncIO
 import com.github.unchama.itemmigration.domain.ItemMigrations

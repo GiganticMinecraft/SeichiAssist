@@ -25,16 +25,16 @@ import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, Ran
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
-import com.github.unchama.seichiassist.infrastructure.migration.loggers.{PersistedItemsMigrationSlf4jLogger, PlayerItemsMigrationSlf4jLogger, WorldLevelMigrationSlf4jLogger}
-import com.github.unchama.seichiassist.infrastructure.migration.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
-import com.github.unchama.seichiassist.infrastructure.migration.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
 import com.github.unchama.seichiassist.infrastructure.minecraft.JdbcBackedUuidRepository
-import com.github.unchama.seichiassist.itemmigration.SeichiAssistItemMigrations
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.itemmigration.SeichiAssistItemMigrations
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.loggers.{PersistedItemsMigrationSlf4jLogger, PlayerItemsMigrationSlf4jLogger, WorldLevelMigrationSlf4jLogger}
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories.{PersistedItemsMigrationVersionRepository, PlayerItemsMigrationVersionRepository, WorldLevelItemsMigrationVersionRepository}
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets.{SeichiAssistPersistedItems, SeichiAssistWorldLevelData}
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
 import com.github.unchama.util.{ActionStatus, ClassUtils}
