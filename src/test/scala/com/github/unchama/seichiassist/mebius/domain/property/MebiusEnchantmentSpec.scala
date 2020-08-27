@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.mebius.domain.property
 
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusEnchantment, MebiusLevel}
 import org.scalatest.wordspec.AnyWordSpec
 
 class MebiusEnchantmentSpec extends AnyWordSpec {

@@ -3,25 +3,36 @@ package com.github.unchama.itemmigration.controllers.player
 import java.util.UUID
 
 import cats.effect.concurrent.{Deferred, TryableDeferred}
-import cats.effect.{Concurrent, IO, SyncIO}
+import cats.effect.{Concurrent, ConcurrentEffect, ContextShift, SyncEffect}
+import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.playerdatarepository.PreLoginToQuitPlayerDataRepository
 import org.bukkit.entity.Player
 
 /**
  * 各プレーヤーのマイグレーション処理の状態を保持するオブジェクトのクラス。
  */
-class PlayerItemMigrationStateRepository[F[_]](implicit F: Concurrent[F])
-  extends PreLoginToQuitPlayerDataRepository[TryableDeferred[F, Unit]] {
+class PlayerItemMigrationStateRepository[
+  AsyncContext[_] : ConcurrentEffect : ContextShift,
+  SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
+  DeferredContext[_] : Concurrent
+](implicit environment: EffectEnvironment)
+  extends PreLoginToQuitPlayerDataRepository[AsyncContext, SyncContext, TryableDeferred[DeferredContext, Unit]] {
 
-  override val loadData: (String, UUID) => SyncIO[Either[Option[String], TryableDeferred[F, Unit]]] =
-    (_, _) => {
-      SyncIO {
-        Deferred.unsafe[F, Unit]
-      }.map {
-        promise => Right(promise.asInstanceOf[TryableDeferred[F, Unit]])
-      }
-    }
+  import cats.implicits._
 
-  override val unloadData: (Player, TryableDeferred[F, Unit]) => IO[Unit] = (_, _) => IO.unit
+  override val loadData: (String, UUID) => SyncContext[Either[Option[String], TryableDeferred[DeferredContext, Unit]]] =
+    (_, _) =>
+      SyncEffect[SyncContext]
+        .delay {
+          Deferred
+            .unsafe[DeferredContext, Unit]
+            .asInstanceOf[TryableDeferred[DeferredContext, Unit]]
+        }
+        .map(Right.apply)
+
+  override val unloadData: (Player, TryableDeferred[DeferredContext, Unit]) => SyncContext[Unit] = {
+    (_, _) => SyncEffect[SyncContext].unit
+  }
 
 }

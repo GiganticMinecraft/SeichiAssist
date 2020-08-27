@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.mebius.bukkit.codec
 
-import com.github.unchama.seichiassist.mebius.domain.property.MebiusLevel
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusLevel
 import org.bukkit.Material
 import org.scalatest.wordspec.AnyWordSpec
 
 class BukkitMebiusAppearanceMaterialCodecSpec extends AnyWordSpec {
 
-  import BukkitMebiusAppearanceMaterialCodec._
+  import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusAppearanceMaterialCodec._
 
   "Appearance Codec" should {
     "return some non-air material for all levels" in {
