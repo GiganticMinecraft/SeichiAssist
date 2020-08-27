@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.infrastructure.migration.repositories
+package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories
 
 import cats.effect.{ExitCase, Resource, Sync}
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
-import com.github.unchama.seichiassist.infrastructure.migration.targets.SeichiAssistPersistedItems
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets.SeichiAssistPersistedItems
 import scalikejdbc._
 
 class PersistedItemsMigrationVersionRepository[F[_]](implicit dbSession: DBSession, F: Sync[F])

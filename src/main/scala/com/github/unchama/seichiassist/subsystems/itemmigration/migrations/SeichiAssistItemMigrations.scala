@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.itemmigration
+package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 
 import cats.effect.SyncIO
 import com.github.unchama.itemmigration.domain.ItemMigrations
-import com.github.unchama.seichiassist.domain.minecraft.UuidRepository
+import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import org.slf4j.Logger
 
 object SeichiAssistItemMigrations {

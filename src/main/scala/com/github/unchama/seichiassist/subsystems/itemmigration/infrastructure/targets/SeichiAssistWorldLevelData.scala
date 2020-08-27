@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.infrastructure.migration.targets
+package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets
 
 import cats.effect.{Concurrent, Sync}
 import com.github.unchama.itemmigration.targets.WorldLevelData
