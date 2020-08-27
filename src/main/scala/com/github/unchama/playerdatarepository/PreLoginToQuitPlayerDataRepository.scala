@@ -2,7 +2,9 @@ package com.github.unchama.playerdatarepository
 
 import java.util.UUID
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.{ConcurrentEffect, ContextShift, SyncEffect, SyncIO}
+import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -15,7 +17,11 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
-abstract class PreLoginToQuitPlayerDataRepository[R] extends PlayerDataRepository[R] with Listener {
+abstract class PreLoginToQuitPlayerDataRepository[
+  AsyncContext[_] : ConcurrentEffect : ContextShift,
+  SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
+  R
+](implicit environment: EffectEnvironment) extends PlayerDataRepository[R] with Listener {
 
   import scala.collection.mutable
 
@@ -38,18 +44,22 @@ abstract class PreLoginToQuitPlayerDataRepository[R] extends PlayerDataRepositor
    *
    * [[Player]] を使って初期化する必要があるケースでは [[PreLoginToQuitPlayerDataRepository]] の使用を検討せよ。
    */
-  protected val loadData: (String, UUID) => SyncIO[Either[Option[String], R]]
+  protected val loadData: (String, UUID) => SyncContext[Either[Option[String], R]]
 
   /**
    * プレーヤーが退出したときに、格納されたデータをもとに終了処理を行う。
    */
-  protected val unloadData: (Player, R) => IO[Unit]
+  protected val unloadData: (Player, R) => SyncContext[Unit]
 
   final def apply(player: Player): R = state(player.getUniqueId)
 
+  import ContextCoercion._
+  import cats.effect.implicits._
+  import cats.implicits._
+
   @EventHandler(priority = EventPriority.LOWEST)
   final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
-    loadData(event.getName, event.getUniqueId).unsafeRunSync() match {
+    loadData(event.getName, event.getUniqueId).runSync[SyncIO].unsafeRunSync() match {
       case Left(errorMessageOption) =>
         errorMessageOption.foreach(event.setKickMessage)
         event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
@@ -82,10 +92,10 @@ abstract class PreLoginToQuitPlayerDataRepository[R] extends PlayerDataRepositor
     val uuid = player.getUniqueId
     val storedValue = state.remove(uuid).get
 
-    unloadData(player, storedValue).unsafeRunAsync {
-      case Left(error) => error.printStackTrace()
-      case Right(_) => ()
-    }
+    environment.runEffectAsync(
+      s"プレーヤー退出時にデータをアンロードする(${getClass.getName})",
+      ContextShift[AsyncContext].shift >> unloadData(player, storedValue).coerceTo[AsyncContext]
+    )
   }
 
 }

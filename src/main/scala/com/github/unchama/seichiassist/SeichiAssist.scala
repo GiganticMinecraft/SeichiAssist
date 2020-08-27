@@ -88,12 +88,18 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreate
   }
 
-  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[Boolean] =
-    new NonPersistentPlayerDataRefRepository(true)
-
-  val assaultSkillRoutines: TryableFiberRepository = {
+  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[SyncIO, IO, SyncIO, Boolean] = {
     import PluginExecutionContexts.asyncShift
-    new TryableFiberRepository()
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
+    new NonPersistentPlayerDataRefRepository[SyncIO, IO, SyncIO, Boolean](true)
+  }
+
+  val assaultSkillRoutines: TryableFiberRepository[IO, SyncIO] = {
+    import PluginExecutionContexts.asyncShift
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
+    new TryableFiberRepository[IO, SyncIO]()
   }
 
   private val kickAllPlayersDueToInitialization: SyncIO[Unit] = SyncIO {
@@ -227,12 +233,14 @@ class SeichiAssist extends JavaPlugin() {
     val playerItemMigrationControllerListeners: Seq[Listener] = {
       import PluginExecutionContexts.asyncShift
 
+      implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
       val service = ItemMigrationService.inContextOf[IO](
         new PlayerItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
         new PlayerItemsMigrationSlf4jLogger(slf4jLogger)
       )
 
-      new PlayerItemMigrationEntryPoints(migrations, service).listenersToBeRegistered
+      new PlayerItemMigrationEntryPoints[IO, SyncIO](migrations, service).listenersToBeRegistered
     }
 
     import PluginExecutionContexts._
