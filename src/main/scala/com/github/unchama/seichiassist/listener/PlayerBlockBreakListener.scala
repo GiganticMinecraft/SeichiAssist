@@ -164,6 +164,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
         // スキルの処理
         import cats.implicits._
         import com.github.unchama.concurrent.syntax._
+        import com.github.unchama.generic.ContextCoercion._
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
 
         val effectPrograms = for {
@@ -196,9 +197,9 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
 
           if (coolDownTicks != 0) {
             for {
-              _ <- reference.set(false)
+              _ <- reference.set(false).coerceTo[IO]
               _ <- IO.timer(PluginExecutionContexts.sleepAndRoutineContext).sleep(coolDownTicks.ticks)
-              _ <- reference.set(true)
+              _ <- reference.set(true).coerceTo[IO]
               _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
             } yield ()
           } else {

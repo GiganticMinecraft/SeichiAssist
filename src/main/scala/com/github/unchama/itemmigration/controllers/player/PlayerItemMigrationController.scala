@@ -1,7 +1,7 @@
 package com.github.unchama.itemmigration.controllers.player
 
-import cats.effect.Effect
 import cats.effect.concurrent.TryableDeferred
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.itemmigration.domain.ItemMigrations
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.itemmigration.targets.PlayerInventoriesData
@@ -16,14 +16,17 @@ import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
  * プレーヤーのアイテムマイグレーション処理中に、
  * 該当プレーヤーの行動を制御するためのリスナオブジェクトのクラス
  */
-class PlayerItemMigrationController[F[_]](migrationState: PreLoginToQuitPlayerDataRepository[TryableDeferred[F, Unit]],
-                                          migrations: ItemMigrations,
-                                          service: ItemMigrationService[F, PlayerInventoriesData[F]])
-                                         (implicit F: Effect[F])
+class PlayerItemMigrationController[
+  F[_] : ConcurrentEffect,
+  G[_] : SyncEffect
+](migrationState: PreLoginToQuitPlayerDataRepository[F, G, TryableDeferred[F, Unit]],
+  migrations: ItemMigrations, service: ItemMigrationService[F, PlayerInventoriesData[F]])
   extends Listener {
 
+  import cats.effect.implicits._
+
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
-    if (F.toIO(migrationState(player).tryGet).unsafeRunSync().isEmpty) {
+    if (migrationState(player).tryGet.toIO.unsafeRunSync().isEmpty) {
       event.setCancelled(true)
     }
   }
@@ -49,7 +52,7 @@ class PlayerItemMigrationController[F[_]](migrationState: PreLoginToQuitPlayerDa
   def onItemConsume(e: PlayerItemConsumeEvent): Unit = cancelIfLockActive(e)
 
   @EventHandler(priority = EventPriority.LOWEST)
-  def onJoin(event: PlayerJoinEvent): Unit = F.toIO {
+  def onJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
 
     import cats.implicits._
@@ -58,5 +61,5 @@ class PlayerItemMigrationController[F[_]](migrationState: PreLoginToQuitPlayerDa
       _ <- service.runMigration(migrations)(PlayerInventoriesData(player))
       _ <- migrationState(player).complete(())
     } yield ()
-  }.unsafeRunAsyncAndForget()
+  }.toIO.unsafeRunAsyncAndForget()
 }

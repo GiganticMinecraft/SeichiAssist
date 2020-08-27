@@ -28,6 +28,7 @@ import scala.collection.mutable
 
 class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
 
+  import com.github.unchama.generic.ContextCoercion._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
@@ -40,7 +41,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
-  
+
   //アクティブスキル処理
   @EventHandler
   def onPlayerActiveSkillEvent(event: PlayerInteractEvent): Unit = {
@@ -89,10 +90,10 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
               IO.unit
 
           val controlSkillAvailability =
-            activeSkillAvailability(player).set(false) >>
+            activeSkillAvailability(player).set(false).coerceTo[IO] >>
               IO.sleep(coolDownTicks.ticks) >>
               syncShift.shift >>
-              activeSkillAvailability(player).set(true) >>
+              activeSkillAvailability(player).set(true).coerceTo[IO] >>
               soundEffectAfterCoolDown
 
           val arrowEffect = playerData.skillEffectState.selection.arrowEffect(player)
