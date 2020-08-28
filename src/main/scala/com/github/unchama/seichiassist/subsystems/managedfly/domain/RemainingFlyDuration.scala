@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.domain
 
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration.Minutes.fromNonNegative
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration.PositiveMinutes.fromPositive
 
 sealed trait RemainingFlyDuration {
 
@@ -21,20 +21,20 @@ object RemainingFlyDuration {
     override val tickOneMinute: Option[RemainingFlyDuration] = Some(this)
   }
 
-  case class Minutes private(value: Int) extends RemainingFlyDuration {
+  case class PositiveMinutes private(value: Int) extends RemainingFlyDuration {
     override lazy val tickOneMinute: Option[RemainingFlyDuration] = {
       value match {
-        case 0 => None
-        case _ => Some(fromNonNegative(value - 1))
+        case 1 => None
+        case _ => Some(fromPositive(value - 1))
       }
     }
   }
 
-  object Minutes {
-    def fromNonNegative(unsafeValue: Int): Minutes = {
-      require(unsafeValue >= 0)
+  object PositiveMinutes {
+    def fromPositive(unsafeValue: Int): PositiveMinutes = {
+      require(unsafeValue > 0)
 
-      Minutes(unsafeValue)
+      PositiveMinutes(unsafeValue)
     }
   }
 
