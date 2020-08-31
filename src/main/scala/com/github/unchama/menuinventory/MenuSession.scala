@@ -3,7 +3,7 @@ package com.github.unchama.menuinventory
 import cats.Eq
 import cats.effect.concurrent.Ref
 import cats.effect.{ContextShift, IO}
-import com.github.unchama.concurrent.MinecraftServerThreadIOShift
+import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects
@@ -23,7 +23,7 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
   /**
    * このセッションが持つ共有インベントリを同期スレッドで開く[TargetedEffect]を返します.
    */
-  def openInventory(implicit context: MinecraftServerThreadIOShift): TargetedEffect[Player] =
+  def openInventory(implicit context: MinecraftServerThreadShift[IO]): TargetedEffect[Player] =
     PlayerEffects.openInventoryEffect(sessionInventory)
 
   def overwriteViewWith(newLayout: MenuSlotLayout)(implicit ctx: LayoutPreparationContext): IO[Unit] = {

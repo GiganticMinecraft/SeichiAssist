@@ -9,7 +9,7 @@ object Execution {
    * @return
    */
   def onServerMainThread(program: IO[Any])
-                        (implicit sync: MinecraftServerThreadIOShift): IO[Unit] = {
+                        (implicit sync: MinecraftServerThreadShift[IO]): IO[Unit] = {
     val asyncProgram = for {
       _ <- sync.shift
       _ <- program

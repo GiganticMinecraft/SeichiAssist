@@ -1,8 +1,8 @@
 package com.github.unchama.concurrent
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.ContextShift
 
 /**
  * マインクラフトサーバーが走るスレッドへの `ContextShift`
  */
-trait MinecraftServerThreadIOShift extends ContextShift[IO]
+trait MinecraftServerThreadShift[F[_]] extends ContextShift[F]

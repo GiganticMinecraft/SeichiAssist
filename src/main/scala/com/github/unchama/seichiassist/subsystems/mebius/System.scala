@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.mebius
 
 import cats.effect.{IO, SyncIO, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadIOShift, RepeatingTaskContext}
+import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingTaskContext}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -19,7 +19,7 @@ object System {
   def wired(implicit effectEnvironment: EffectEnvironment,
             timer: Timer[IO],
             repeatingTaskContext: RepeatingTaskContext,
-            bukkitSyncIOShift: MinecraftServerThreadIOShift): Subsystem = {
+            bukkitSyncIOShift: MinecraftServerThreadShift[IO]): Subsystem = {
     implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
     implicit val gatewayProvider: Player => MebiusSpeechGateway[SyncIO] = new BukkitMebiusSpeechGateway(_)
     implicit val getFreshSpeechBlockageState: SyncIO[MebiusSpeechBlockageState[SyncIO]] = SyncIO(new MebiusSpeechBlockageState[SyncIO])
