@@ -1,4 +1,4 @@
-package com.github.unchama.playerdatarepository
+package com.github.unchama.datarepository.bukkit.player
 
 import java.util.UUID
 

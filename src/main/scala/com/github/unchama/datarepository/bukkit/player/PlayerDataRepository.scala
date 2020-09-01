@@ -1,5 +1,6 @@
-package com.github.unchama.playerdatarepository
+package com.github.unchama.datarepository.bukkit.player
 
+import com.github.unchama.datarepository.KeyedDataRepository
 import org.bukkit.entity.Player
 
 /**

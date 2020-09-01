@@ -4,8 +4,8 @@ import cats.Monad
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.concurrent.MinecraftServerThreadShift
+import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.subsystems.managedfly.application.FlyStatusSynchronizer
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus}
 import org.bukkit.entity.Player

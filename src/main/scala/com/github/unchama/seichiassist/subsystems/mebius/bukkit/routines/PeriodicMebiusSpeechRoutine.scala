@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.routines
 import cats.data.NonEmptyList
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingRoutine, RepeatingTaskContext}
-import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
+import com.github.unchama.datarepository.bukkit.player.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.{MebiusMessages, MebiusTalks}
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}

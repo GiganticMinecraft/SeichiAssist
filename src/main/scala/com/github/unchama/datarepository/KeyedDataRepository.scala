@@ -1,4 +1,4 @@
-package com.github.unchama.playerdatarepository
+package com.github.unchama.datarepository
 
 /**
  * `K` => `V` の関数オブジェクトのうち、リポジトリとして考えることができるオブジェクトのtrait。

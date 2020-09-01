@@ -7,11 +7,11 @@ import cats.effect
 import cats.effect.{Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
+import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
-import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._

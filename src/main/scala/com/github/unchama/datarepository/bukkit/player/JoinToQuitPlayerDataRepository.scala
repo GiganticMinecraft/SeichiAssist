@@ -1,4 +1,4 @@
-package com.github.unchama.playerdatarepository
+package com.github.unchama.datarepository.bukkit.player
 
 import cats.effect.IO
 import org.bukkit.entity.Player
