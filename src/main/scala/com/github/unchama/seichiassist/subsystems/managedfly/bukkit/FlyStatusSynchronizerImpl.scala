@@ -14,14 +14,13 @@ class FlyStatusSynchronizerImpl[
   AsyncContext[_] : Monad : MinecraftServerThreadShift,
   SyncContext[_] : ContextCoercion[*[_], AsyncContext] : Sync
 ](implicit repository: PlayerDataRepository[Ref[SyncContext, PlayerFlyStatus]])
-  extends FlyStatusSynchronizer[AsyncContext, Player] {
+  extends FlyStatusSynchronizer[AsyncContext, SyncContext, Player] {
 
   import ContextCoercion._
   import cats.implicits._
 
-  override def setFlyStatus(player: Player, status: PlayerFlyStatus): AsyncContext[Unit] = {
+  override def applyFlyStatusToMinecraftEntity(player: Player, status: PlayerFlyStatus): AsyncContext[Unit] = {
     for {
-      _ <- repository(player).set(status).coerceTo[AsyncContext]
       _ <- MinecraftServerThreadShift[AsyncContext].shift
       _ <- Sync[SyncContext].delay {
         status match {
@@ -35,5 +34,4 @@ class FlyStatusSynchronizerImpl[
       }.coerceTo[AsyncContext]
     } yield ()
   }
-
 }
