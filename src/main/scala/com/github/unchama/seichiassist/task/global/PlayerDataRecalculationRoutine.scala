@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task.global
 
-import cats.effect.IO
+import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
@@ -184,6 +184,8 @@ object PlayerDataRecalculationRoutine {
 
       }
     }
+
+    implicit val timer: Timer[IO] = IO.timer(context)
 
     RepeatingRoutine.permanentRoutine(getRepeatInterval, syncContext.shift >> routineOnMainThread)
   }
