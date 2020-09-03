@@ -1,9 +1,11 @@
 package com.github.unchama.buildassist
 
 import java.util
-import java.util.{ArrayList, EnumSet, UUID}
+import java.util.UUID
 
-import com.github.unchama.buildassist.listener.{BlockLineUpTriggerListener, BlockPlaceEventListener, EntityListener, PlayerJoinListener, PlayerLeftClickListener, PlayerQuitListener, TilingSkillTriggerListener}
+import com.github.unchama.buildassist.listener._
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.DefaultEffectEnvironment
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
@@ -28,6 +30,7 @@ class BuildAssist(plugin: Plugin) {
     BuildAssist.config = new BuildAssistConfig(plugin)
     BuildAssist.config.loadConfig()
 
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     //コマンドの登録
     commandlist = mutable.HashMap()
@@ -35,7 +38,7 @@ class BuildAssist(plugin: Plugin) {
 
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new EntityListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(PlayerLeftClickListener, plugin)
+    Bukkit.getServer.getPluginManager.registerEvents(new PlayerLeftClickListener(), plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
     Bukkit.getServer.getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
@@ -72,30 +75,7 @@ class BuildAssist(plugin: Plugin) {
 object BuildAssist {
   //Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap[UUID, PlayerData]()
-  //lvの閾値
-  val levellist: Seq[Int] = Seq(
-    0, 50, 100, 200, 300,
-    450, 600, 900, 1200, 1600, //10
-    2000, 2500, 3000, 3600, 4300,
-    5100, 6000, 7000, 8200, 9400, //20
-    10800, 12200, 13800, 15400, 17200,
-    19000, 21000, 23000, 25250, 27500, //30
-    30000, 32500, 35500, 38500, 42000,
-    45500, 49500, 54000, 59000, 64000, //40
-    70000, 76000, 83000, 90000, 98000,
-    106000, 115000, 124000, 133000, 143000, //50
-    153000, 163000, 174000, 185000, 196000,
-    208000, 220000, 232000, 245000, 258000, //60
-    271000, 285000, 299000, 313000, 328000,
-    343000, 358000, 374000, 390000, 406000, //70
-    423000, 440000, 457000, 475000, 493000,
-    511000, 530000, 549000, 568000, 588000, //80
-    608000, 628000, 648000, 668000, 688000,
-    708000, 728000, 748000, 768000, 788000, //90
-    808000, 828000, 848000, 868000, 888000,
-    908000, 928000, 948000, 968000, 1000000, //100
-    5000000
-  )
+
   //範囲設置ブロックの対象リスト
   val materiallist: java.util.Set[Material] = util.EnumSet.of(
 

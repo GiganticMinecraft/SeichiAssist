@@ -3,67 +3,92 @@ main: com.github.unchama.seichiassist.SeichiAssist
 version: @version@
 
 softdepend: [WorldGuard, CoreProtect]
+
+loadbefore:
+  # ワールドマイグレーション時にこれらプラグインのタスクがworldへの参照を持ちデータのGCが行われなくなる
+  - Shopkeepers
+  - WeatherRestrictions
+
 default-permission-message: &denied You don't have <permission>
 commands:
   gacha:
+    description: Gacha operation command.
     permission: multiseichiplugin.seichi
     permission-message: *denied
   seichihaste:
+    description: Mining speed operation command.
     permission: multiseichiplugin.seichihaste
     permission-message: *denied
   seichiassist:
+    description: SeichiAssist command.
     permission: multiseichiplugin.seichiassist
     permission-message: *denied
   openpocket:
+    description: Open pocket.
     permission: multiseichiplugin.openpocket
     permission-message: *denied
   ef:
+    description: Effect operation command.
     permission: multiseichiplugin.ef
     permission-message: *denied
     aliases:
       - effect
   lastquit:
+    description: Show last logout.
     permission: multiseichiplugin.lastquit
     permission-message: *denied
   rmp:
+    description: Delete unused Regions.
     permission: multiseichiplugin.rmp
     permission-message: *denied
   map:
+    description: Show map URL.
     permission: multiseichiplugin.map
     permission-message: *denied
 
   stick:
+    description: Get a stick.
     permission: multiseichiplugin.stick
     permission-message: *denied
   shareinv:
+    description: Share inventory.
     permission: multiseichiplugin.shareinv
     permission-message: *denied
   mebius:
+    description: MEBIUS operation command.
     permission: multiseichiplugin.mebius
     permission-message: *denied
   achievement:
+    description: Achievement operation command.
     usage: /<command> <操作> <実績No> <スコープ指定子>
     permission: multiseichiplugin.achievement
     permission-message: *denied
   halfguard:
+    description: Toggle half block protection.
     permission: multiseichiplugin.halfguard
     permission-message: *denied
   event:
+    description: Event command.
     permission: multiseichiplugin.event
     permission-message: *denied
   contribute:
+    description: Contribution operation command.
     permission: multiseichiplugin.contribute
     permission-message: *denied
   subhome:
+    description: Subhome operation command.
     permission: multiseichiplugin.subhome
     permission-message: *denied
   gtfever:
+    description: GiganticFever start command.
     permission: multiseichiplugin.gtfever
     permission-message: *denied
   minehead:
+    description: Minehead command.
     permission: multiseichiplugin.minehead
     permission-message: *denied
   x-transfer:
+    description: Command to change the owner of a Region.
     usage: /<command> [region name] [new owner name]
     permission: multiseichiplugin.x-transfer
     permission-message: *denied

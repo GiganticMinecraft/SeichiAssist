@@ -65,7 +65,7 @@ public class NewYearsEvent implements Listener {
             }
         } catch (ParseException e) {
             e.printStackTrace();
-            Bukkit.getLogger().warning(ChatColor.RED + "[正月イベント]Configの日付設定は年4桁-月2桁-日2桁で設定してください。");
+            Bukkit.getLogger().warning(ChatColor.RED + "[正月イベント] Configの日付設定は年4桁-月2桁-日2桁で設定してください。");
         }
     }
 
@@ -110,7 +110,7 @@ public class NewYearsEvent implements Listener {
         }
 
         if (Util.isPlayerInventoryFull(player)) {
-            player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリが一杯のため,アイテムが入手できませんでした。");
+            player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリがいっぱいのため,アイテムが入手できませんでした。");
             player.sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "インベントリに空きを作ってから再度サーバーに参加してください。");
             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f);
         } else {

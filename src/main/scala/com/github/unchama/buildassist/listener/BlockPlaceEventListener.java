@@ -23,6 +23,9 @@ public class BlockPlaceEventListener implements TypedEventListener<BlockPlaceEve
             return;
         }
 
+        //設置がキャンセルされていたら終了
+        if (event.isCancelled()) return;
+
         final UUID uuid = player.getUniqueId();
         final PlayerData playerdata = playermap.getOrElse(uuid, () -> null);
 

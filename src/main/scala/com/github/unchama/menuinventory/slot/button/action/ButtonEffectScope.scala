@@ -1,9 +1,8 @@
 package com.github.unchama.menuinventory.slot.button.action
 
 import cats.effect.IO
-import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.menuinventory.{MenuSlotLayout, MenuSession}
+import com.github.unchama.menuinventory.{LayoutPreparationContext, MenuSession, MenuSlotLayout}
 import org.bukkit.event.inventory.InventoryClickEvent
 
 /**

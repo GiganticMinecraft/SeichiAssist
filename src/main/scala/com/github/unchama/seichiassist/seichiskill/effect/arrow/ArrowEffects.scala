@@ -21,7 +21,6 @@ object ArrowEffects {
   import cats.implicits._
   import com.github.unchama.concurrent.syntax._
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.util.syntax._
 
   implicit val plugin: JavaPlugin = SeichiAssist.instance
 

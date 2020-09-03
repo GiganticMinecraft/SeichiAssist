@@ -93,7 +93,7 @@ object MineStackMassCraftMenu {
             List(loreHeading),
             possessionDisplayBlock,
             List(
-              s"$RESET${GRAY}建築LV${requiredBuildLevel}以上で利用可能",
+              s"$RESET${GRAY}建築Lv${requiredBuildLevel}以上で利用可能",
               s"$RESET$DARK_RED${UNDERLINE}クリックで変換"
             )
           ).flatten
@@ -126,7 +126,7 @@ object MineStackMassCraftMenu {
 
             _ <-
               if (buildAssistPlayerData.level < requiredBuildLevel) {
-                MessageEffect(s"${RED}建築レベルが足りません")(player)
+                MessageEffect(s"${RED}建築Lvが足りません")(player)
               } else {
                 syncShift.shift >> {
                   val allIngredientsAvailable =

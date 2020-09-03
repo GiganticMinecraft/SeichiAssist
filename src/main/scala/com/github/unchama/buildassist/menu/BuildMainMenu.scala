@@ -74,7 +74,7 @@ object BuildMainMenu extends Menu {
             /* 小数点以下一桁で表示。
              * https://github.com/GiganticMinecraft/SeichiAssist/issues/540 対策。
              */
-            s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.setScale(1).toPlainString}",
+            s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.setScale(1, RoundingMode.HALF_UP).toPlainString}",
             s"$RESET$DARK_GRAY※1分毎に更新"
           )
           .build()
@@ -86,10 +86,10 @@ object BuildMainMenu extends Menu {
     def computeButtonToShowStateOfFlying(): IO[Button] = IO {
       val openerData = BuildAssist.playermap(getUniqueId)
       val iconItemStack = new IconItemStackBuilder(Material.COOKED_CHICKEN)
-        .title(s"$YELLOW${EMPHASIZE}fly機能 情報表示")
+        .title(s"$YELLOW${EMPHASIZE}Fly機能 情報表示")
         .lore(
-          s"$RESET${AQUA}fly 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
-          s"$RESET${AQUA}fly 残り時間: ${if (openerData.endlessfly) "∞" else openerData.flytime}"
+          s"$RESET${AQUA}Fly 効果: ${if (openerData.flyflag) "ON" else "OFF"}",
+          s"$RESET${AQUA}Fly 残り時間: ${if (openerData.endlessfly) "∞" else openerData.flytime}"
         )
         .build()
 
@@ -117,7 +117,7 @@ object BuildMainMenu extends Menu {
               DeferredEffect {
                 IO {
                   if (openerData.level < BuildAssist.config.getZoneSetSkillLevel) {
-                    MessageEffect(s"${RED}建築LVが足りません")
+                    MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
                     if (openerData.ZoneSetSkillFlag) SequentialEffect(
                       UnfocusedEffect {
@@ -157,7 +157,7 @@ object BuildMainMenu extends Menu {
             DeferredEffect {
               IO {
                 if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
-                  MessageEffect(s"${RED}建築LVが足りません")
+                  MessageEffect(s"${RED}建築Lvが足りません")
                 } else {
                   BlockPlacementSkillMenu.open
                 }
@@ -185,7 +185,7 @@ object BuildMainMenu extends Menu {
             DeferredEffect {
               IO {
                 if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
-                  MessageEffect(s"${RED}建築LVが足りません")
+                  MessageEffect(s"${RED}建築Lvが足りません")
                 } else {
                   SequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
@@ -251,10 +251,10 @@ object BuildMainMenu extends Menu {
     val buttonToFlyFor1Minute: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
         .amount(1)
-        .title(s"$YELLOW${EMPHASIZE}fly機能、ON$AQUA$EMPHASIZE(1分)")
+        .title(s"$YELLOW${EMPHASIZE}Fly機能、ON$AQUA$EMPHASIZE(1分)")
         .lore(
           s"$RESET${YELLOW}クリックすると以降1分間に渡り",
-          s"$RESET${YELLOW}経験値を消費しつつflyが可能になります。",
+          s"$RESET${YELLOW}経験値を消費しつつFlyが可能になります。",
           s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
         )
         .build()
@@ -274,10 +274,10 @@ object BuildMainMenu extends Menu {
     val buttonToFlyFor5Minutes: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
         .amount(5)
-        .title(s"$YELLOW${EMPHASIZE}fly機能、ON$AQUA$EMPHASIZE(5分)")
+        .title(s"$YELLOW${EMPHASIZE}Fly機能、ON$AQUA$EMPHASIZE(5分)")
         .lore(
           s"$RESET${YELLOW}クリックすると以降5分間に渡り",
-          s"$RESET${YELLOW}経験値を消費しつつflyが可能になります。",
+          s"$RESET${YELLOW}経験値を消費しつつFlyが可能になります。",
           s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
         )
         .build()
@@ -296,10 +296,10 @@ object BuildMainMenu extends Menu {
 
     val buttonToFlyEndlessly: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.ELYTRA)
-        .title(s"$YELLOW${EMPHASIZE}fly機能、ON$RED$EMPHASIZE(無制限)")
+        .title(s"$YELLOW${EMPHASIZE}Fly機能、ON$RED$EMPHASIZE(無制限)")
         .lore(
           s"$RESET${YELLOW}クリックすると以降OFFにするまで",
-          s"$RESET${YELLOW}経験値を消費しつつflyが可能になります。",
+          s"$RESET${YELLOW}経験値を消費しつつFlyが可能になります。",
           s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
         )
         .build()
@@ -318,10 +318,10 @@ object BuildMainMenu extends Menu {
 
     val buttonToTerminateFlight: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.CHAINMAIL_BOOTS)
-        .title(s"$YELLOW${EMPHASIZE}fly機能、OFF")
+        .title(s"$YELLOW${EMPHASIZE}Fly機能、OFF")
         .lore(
           s"$RESET${RED}クリックすると、残り時間にかかわらず",
-          s"$RESET${RED}flyを終了します。"
+          s"$RESET${RED}Flyを終了します。"
         )
         .flagged(ItemFlag.HIDE_ATTRIBUTES)
         .build()

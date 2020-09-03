@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
 import com.github.unchama.generic.effect.TryableFiber
-import com.github.unchama.seichiassist
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -15,19 +15,20 @@ import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
+import com.github.unchama.util.external.ExternalPlugins
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.ThrownExpBottle
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.{EquipmentSlot, ItemStack}
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerClickListener extends Listener {
+class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
 
+  import com.github.unchama.generic.ContextCoercion._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
@@ -89,16 +90,16 @@ class PlayerClickListener extends Listener {
               IO.unit
 
           val controlSkillAvailability =
-            activeSkillAvailability(player).set(false) >>
+            activeSkillAvailability(player).set(false).coerceTo[IO] >>
               IO.sleep(coolDownTicks.ticks) >>
               syncShift.shift >>
-              activeSkillAvailability(player).set(true) >>
+              activeSkillAvailability(player).set(true).coerceTo[IO] >>
               soundEffectAfterCoolDown
 
           val arrowEffect = playerData.skillEffectState.selection.arrowEffect(player)
 
-          seichiassist.unsafe.runIOAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
-          seichiassist.unsafe.runIOAsync("ArrowEffectを非同期で実行する", arrowEffect)
+          effectEnvironment.runEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
+          effectEnvironment.runEffectAsync("ArrowEffectを非同期で実行する", arrowEffect)
         case _ =>
       }
     }
@@ -353,15 +354,14 @@ class PlayerClickListener extends Listener {
 
     if (player.getInventory.getItemInMainHand.getType != Material.STICK) return
 
-    event.setCancelled(true)
-
     // 右クリックの処理ではない
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
     if (event.getHand == EquipmentSlot.OFF_HAND) return
+    event.setCancelled(true)
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
-    seichiassist.unsafe.runAsyncTargetedEffect(player)(
+    effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         StickMenu.firstPage.open
@@ -412,28 +412,6 @@ class PlayerClickListener extends Listener {
     }
   }
 
-  //　経験値瓶を持った状態でのShift右クリック…一括使用
-  @EventHandler
-  def onPlayerRightClickExpBottleEvent(event: PlayerInteractEvent): Unit = {
-    val player = event.getPlayer
-    val playerInventory = player.getInventory
-    val action = event.getAction
-
-    // 経験値瓶を持った状態でShift右クリックをした場合
-    if (player.isSneaking
-      && playerInventory.getItemInMainHand != null
-      && playerInventory.getItemInMainHand.getType == Material.EXP_BOTTLE
-      && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
-
-      val count = playerInventory.getItemInMainHand.getAmount
-
-      (0 until count).foreach { _ => player.launchProjectile(classOf[ThrownExpBottle]) }
-
-      playerInventory.setItemInMainHand(new ItemStack(Material.AIR))
-      event.setCancelled(true)
-    }
-  }
-
   //頭の即時回収
   @EventHandler
   def onPlayerRightClickMineHeadEvent(e: PlayerInteractEvent): Unit = {
@@ -470,6 +448,9 @@ class PlayerClickListener extends Listener {
 
     //頭を付与
     p.getInventory.addItem(Util.getSkullDataFromBlock(targetBlock))
+    if (!ExternalPlugins.getCoreProtectWrapper.queueBlockRemoval(p, targetBlock)) {
+      SeichiAssist.instance.getLogger.warning(s"Logging in skull break: Failed Location: ${targetBlock.getLocation}, Player:$p")
+    }
     //ブロックを空気で置き換える
     targetBlock.setType(Material.AIR)
     //音を鳴らしておく

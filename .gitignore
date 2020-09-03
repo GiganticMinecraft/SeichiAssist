@@ -3,9 +3,9 @@
 *.iml
 
 # SBT
-project/target
-project/project
-target
+/project/target
+/project/project
+/target
 
 # Local files
 deployLocal.sh

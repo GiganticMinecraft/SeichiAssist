@@ -70,7 +70,6 @@ object SecondPage extends Menu {
   private case class ButtonComputations(player: Player) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-    import com.github.unchama.util.syntax._
     import player._
 
     val computeHeadSummoningButton: IO[Button] = RecomputedButton(IO {

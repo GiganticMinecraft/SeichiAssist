@@ -2,8 +2,7 @@ package com.github.unchama.menuinventory
 
 import cats.data
 import cats.effect.IO
-import com.github.unchama.concurrent.BukkitSyncIOShift
-import com.github.unchama.menuinventory.LayoutPreparationContext
+import com.github.unchama.concurrent.MinecraftServerThreadIOShift
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 
@@ -28,7 +27,7 @@ trait Menu {
   /**
    * メニューを[Player]に開かせる[TargetedEffect].
    */
-  def open(implicit ctx: LayoutPreparationContext, syncCtx: BukkitSyncIOShift): TargetedEffect[Player] = data.Kleisli { player =>
+  def open(implicit ctx: LayoutPreparationContext, syncCtx: MinecraftServerThreadIOShift): TargetedEffect[Player] = data.Kleisli { player =>
     for {
       session <- frame.createNewSession()
       _ <- session.openInventory.run(player)

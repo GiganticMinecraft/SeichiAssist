@@ -2,6 +2,7 @@ package com.github.unchama.generic.effect
 
 import cats.effect.{ContextShift, IO, Resource, Timer}
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
+import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -16,10 +17,10 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
     implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
-    val firstResourceScope: ResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreate
-    val secondResourceScope: ResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreate
+    val firstResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
+    val secondResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
 
-    def useTracked[A](scope: ResourceScope[IO, NumberedObject],
+    def useTracked[A](scope: ResourceScope[IO, IO, NumberedObject],
                       obj: NumberedObject,
                       impureFinalizer: NumberedObject => Unit = _ => ())
                      (use: NumberedObject => IO[A]): IO[A] = {
@@ -81,15 +82,24 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }
 
       import cats.implicits._
-      import scala.concurrent.duration._
+
+      def runImpureFunction(o: NumberedObject) = IO(impureFunction(o))
+
+      val runImpureFunction2 = IO(impureFunction2())
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            IO { impureFunction(o) } >> IO.never
+            //noinspection ZeroIndexToHead
+            runImpureFunction(o) >>
+              blockerList(0).await() >>
+              IO.never
           }.start
-        _ <- IO.sleep(1.second) >> firstResourceScope.release(NumberedObject(0))
-        _ <- IO(impureFunction2(()))
+        _ <- blockerList(1).await()
+        releaseAction <- firstResourceScope.getReleaseAction(NumberedObject(0))
+        _ <- releaseAction
+        _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
@@ -109,15 +119,24 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }
 
       import cats.implicits._
-      import scala.concurrent.duration._
+
+      def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
+
+      val runImpureFunction2 = IO(impureFunction2())
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTracked(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            IO { impureFunction(o) } >> IO.never
+            //noinspection ZeroIndexToHead
+            runImpureFunction(o) >>
+              blockerList(0).await >>
+              IO.never
           }.start
-        _ <- IO.sleep(1.second) >> firstResourceScope.releaseAll
-        _ <- IO(impureFunction2(()))
+        _ <- blockerList(1).await()
+        releaseAction <- firstResourceScope.getReleaseAllAction
+        _ <- releaseAction
+        _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
@@ -143,19 +162,19 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
     }
 
     "recognize acquisition precisely in tracked scopes" in {
-      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
 
       useTrackedForSome(firstResourceScope, NumberedObject(0)) { _ =>
         IO {
-          firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe true
+          firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe true
 
-          firstResourceScope.isTrackedUnlifted(NumberedObject(1)).unsafeRunSync() mustBe false
+          firstResourceScope.isTracked(NumberedObject(1)).unsafeRunSync() mustBe false
 
-          secondResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+          secondResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
         }
       }.unsafeRunSync()
 
-      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
     }
 
     "not interrupt the usage of the resource" in {
@@ -185,11 +204,13 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       impureFunction.expects(NumberedObject(0)).once()
       impureFunction.expects(NumberedObject(1)).never()
 
+      def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
+
       useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o0 =>
         for {
-          _ <- IO { impureFunction(o0) }
+          _ <- runImpureFunction(o0)
           _ <- useTrackedForSome(firstResourceScope, NumberedObject(1), finalizer) { o1 =>
-            IO { impureFunction(o1) }
+            runImpureFunction(o1)
           }
         } yield ()
       }.unsafeRunSync()
@@ -207,20 +228,29 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }
 
       import cats.implicits._
-      import scala.concurrent.duration._
+
+      def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
+
+      val runImpureFunction2 = IO(impureFunction2())
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            IO { impureFunction(o) } >> IO.never
+            //noinspection ZeroIndexToHead
+            runImpureFunction(o) >>
+              blockerList(0).await >>
+              IO.never
           }.start
-        _ <- IO.sleep(1.second) >> firstResourceScope.releaseSome(NumberedObject(0))
-        _ <- IO(impureFunction2(()))
+        _ <- blockerList(1).await()
+        releaseAction <- firstResourceScope.getReleaseAction(NumberedObject(0))
+        _ <- releaseAction.value
+        _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
 
-      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
     }
 
     "be coherent with external cancellation by releaseAll" in {
@@ -235,20 +265,29 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
       }
 
       import cats.implicits._
-      import scala.concurrent.duration._
+
+      def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
+
+      val runImpureFunction2 = IO(impureFunction2())
 
       val program = for {
+        blockerList <- LinkedSequencer[IO].newBlockerList
         _ <-
           useTrackedForSome(firstResourceScope, NumberedObject(0), finalizer) { o =>
-            IO { impureFunction(o) } >> IO.never
+            //noinspection ZeroIndexToHead
+            runImpureFunction(o) >>
+              blockerList(0).await() >>
+              IO.never
           }.start
-        _ <- IO.sleep(1.second) >> firstResourceScope.releaseAll.value
-        _ <- IO(impureFunction2(()))
+        _ <- blockerList(1).await()
+        releaseAction <- firstResourceScope.getReleaseAllAction
+        _ <- releaseAction.value
+        _ <- runImpureFunction2
       } yield ()
 
       program.unsafeRunSync()
 
-      firstResourceScope.isTrackedUnlifted(NumberedObject(0)).unsafeRunSync() mustBe false
+      firstResourceScope.isTracked(NumberedObject(0)).unsafeRunSync() mustBe false
     }
   }
 }

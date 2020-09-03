@@ -29,7 +29,7 @@ public class PlayerQuitListener implements TypedEventListener<PlayerQuitEvent> {
 
         //念のためエラー分岐
         if (playerdata == null) {
-            Bukkit.getLogger().warning(player.getName() + " -> のplayerdataロスト");
+            Bukkit.getLogger().warning(player.getName() + " -> のプレイヤーデータロスト");
             Bukkit.getLogger().warning("BuildAssist.PlayerQuitListener.onplayerQuitEvent");
             return;
         }

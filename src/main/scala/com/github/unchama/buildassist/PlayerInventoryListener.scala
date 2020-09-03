@@ -3,7 +3,7 @@ package com.github.unchama.buildassist
 import java.util.UUID
 
 import com.github.unchama.buildassist.menu.BuildMainMenu
-import com.github.unchama.seichiassist
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
@@ -13,7 +13,7 @@ import org.bukkit.{Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerInventoryListener extends Listener {
+class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
   val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
 
   import com.github.unchama.targetedeffect._
@@ -64,7 +64,7 @@ class PlayerInventoryListener extends Listener {
         //ホームメニューへ帰還
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
-        seichiassist.unsafe.runAsyncTargetedEffect(player)(
+        effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             BuildMainMenu.open
@@ -74,7 +74,7 @@ class PlayerInventoryListener extends Listener {
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //ブロックを並べるスキル設定
         if (playerdata.level < BuildAssist.config.getblocklineuplevel()) {
-          player.sendMessage(RED.toString + "建築LVが足りません")
+          player.sendMessage(RED.toString + "建築Lvが足りません")
         } else {
           playerdata.line_up_flg = (playerdata.line_up_flg + 1) % 3
 
@@ -103,7 +103,7 @@ class PlayerInventoryListener extends Listener {
       } else if (itemstackcurrent.getType == Material.CHEST) {
         //マインスタックの方を優先して消費する設定
         if (playerdata.level < BuildAssist.config.getblocklineupMinestacklevel()) {
-          player.sendMessage(s"${RED.toString}建築LVが足りません")
+          player.sendMessage(s"${RED.toString}建築Lvが足りません")
         } else {
           playerdata.line_up_minestack_flg = if (playerdata.line_up_minestack_flg == 0) 1 else 0
           player.sendMessage(GREEN.toString + "マインスタック優先設定 ：" + BuildAssist.line_up_off_on_str(playerdata.line_up_minestack_flg))

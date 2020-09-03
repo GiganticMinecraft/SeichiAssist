@@ -1,5 +1,6 @@
 package com.github.unchama.util.external;
 
+import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import net.coreprotect.CoreProtect;
@@ -55,6 +56,16 @@ public final class ExternalPlugins {
         }
 
         return (WorldGuardPlugin) plugin;
+    }
+
+    public static MultiverseCore getMultiverseCore() {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("Multiverse-Core");
+
+        if (!(plugin instanceof MultiverseCore)) {
+            throw new IllegalStateException("Multiverse-Coreが見つかりませんでした。");
+        }
+
+        return (MultiverseCore) plugin;
     }
 
     //ワールドエディットAPIを返す

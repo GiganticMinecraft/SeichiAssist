@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.menus
 
-import com.github.unchama.concurrent.BukkitSyncIOShift
+import com.github.unchama.concurrent.MinecraftServerThreadIOShift
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu}
-import com.github.unchama.seichiassist.menus.ColorScheme.{clickResultDescription, navigation}
-import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.ColorScheme.{clickResultDescription, navigation}
+import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 
 /**
  * メニューUIに頻繁に現れるような[Button]を生成する、または定数として持っているオブジェクト.
@@ -20,7 +20,7 @@ object CommonButtons {
                      transferDescription: String,
                      target: Menu,
                      actionDescription: String = "クリックで移動")
-                    (implicit layoutPreparationContext: LayoutPreparationContext, syncCtx: BukkitSyncIOShift): Button =
+                    (implicit layoutPreparationContext: LayoutPreparationContext, syncCtx: MinecraftServerThreadIOShift): Button =
     Button(
       partialBuilder
         .title(navigation(transferDescription))

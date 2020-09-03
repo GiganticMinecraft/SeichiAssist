@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
-import com.github.unchama.seichiassist.task.{MebiusTask, VotingFairyTask}
+import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
@@ -30,7 +30,6 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
-import scala.util.control.Breaks
 
 /**
  * @deprecated PlayerDataはuuidに依存するべきではない
@@ -43,8 +42,6 @@ class PlayerData(
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
   import com.github.unchama.util.InventoryUtil._
-
-  lazy val mebius: MebiusTask = new MebiusTask(uuid)
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
@@ -481,8 +478,6 @@ class PlayerData(
 
     manaState.hide()
 
-    mebius.cancel()
-
     //クライアント経験値をサーバー保管
     saveTotalExp()
   }
@@ -535,7 +530,7 @@ class PlayerData(
 
     val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
     val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
+    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0	
 
     amount * materialFactor * swMult * sw01PenaltyMult
   }
