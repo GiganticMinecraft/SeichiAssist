@@ -5,7 +5,7 @@ import com.github.unchama.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.concurrent.AsymmetricTryableFiber
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus, RemainingFlyDuration}
 
-case class PlayerFlySession[
+class PlayerFlySession[
   AsyncContext[_],
   SyncContext[_] : Sync
 ](sessionFiber: AsymmetricTryableFiber[AsyncContext, Nothing],
@@ -29,5 +29,4 @@ case class PlayerFlySession[
           Sync[SyncContext].pure(NotFlying)
     } yield latestFlyStatus
   }
-
 }
