@@ -11,6 +11,8 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
  * [[PlayerJoinEvent]] の [[EventPriority.LOW]] から、
  * [[PlayerQuitEvent]] の [[EventPriority.HIGHEST]] までのデータの取得を保証する。
  *
+ * TODO TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, (), R]にできる
+ *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
 abstract class JoinToQuitPlayerDataRepository[R] extends PlayerDataRepository[R] with Listener {
