@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.Monad
+import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ExitCase, Sync, Timer}
+import com.github.unchama.concurrent.ReadOnlyRef
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.AsymmetricTryableFiber
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus, RemainingFlyDuration}
 
@@ -12,6 +15,7 @@ abstract class PlayerFlySessionFactory[AsyncContext[_] : Timer : Concurrent] {
 
   import cats.effect.implicits._
   import cats.implicits._
+  import com.github.unchama.generic.ContextCoercion._
 
   import scala.concurrent.duration._
 
@@ -41,18 +45,29 @@ abstract class PlayerFlySessionFactory[AsyncContext[_] : Timer : Concurrent] {
       tickDuration(duration)
   }
 
-  def start(totalDuration: RemainingFlyDuration): AsyncContext[AsymmetricTryableFiber[AsyncContext, Nothing]] = {
-    AsymmetricTryableFiber.start[AsyncContext, Nothing] {
-      {
-        ensurePlayerExp >>
-          synchronizeFlyStatus(Flying(totalDuration)) >>
-          totalDuration.iterateForeverM(doOneMinuteCycle)
-      }.guaranteeCase {
-        case ExitCase.Error(e: InternalException) => handleInterruptions(e)
-        case _ => Monad[AsyncContext].unit
-      }.guarantee {
-        synchronizeFlyStatus(NotFlying)
+  def start[
+    SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
+  ](totalDuration: RemainingFlyDuration): AsyncContext[PlayerFlySession[AsyncContext, SyncContext]] = {
+    for {
+      currentRemainingDurationRef <- Ref.of[SyncContext, RemainingFlyDuration](totalDuration).coerceTo[AsyncContext]
+      fiber <- AsymmetricTryableFiber.start[AsyncContext, Nothing] {
+        {
+          ensurePlayerExp >>
+            synchronizeFlyStatus(Flying(totalDuration)) >>
+            totalDuration.iterateForeverM { duration =>
+              doOneMinuteCycle(duration).flatTap { updatedDuration =>
+                currentRemainingDurationRef.set(updatedDuration).coerceTo[AsyncContext]
+              }
+            }
+        }.guaranteeCase {
+          case ExitCase.Error(e: InternalException) => handleInterruptions(e)
+          case _ => Monad[AsyncContext].unit
+        }.guarantee {
+          synchronizeFlyStatus(NotFlying)
+        }
       }
+    } yield {
+      PlayerFlySession(fiber, ReadOnlyRef.fromRef(currentRemainingDurationRef))
     }
   }
 }
