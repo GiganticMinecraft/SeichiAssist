@@ -18,29 +18,28 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlySta
  */
 object System {
 
-  import cats.implicits._
-
   def wired[
     AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : Timer,
     SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
-  ](configuration: SystemConfiguration)
-   (implicit effectEnvironment: EffectEnvironment): AsyncContext[StatefulSubsystem[InternalState[SyncContext]]] = {
-    implicit val _configuration: SystemConfiguration = configuration
+  ](configuration: SystemConfiguration)(implicit effectEnvironment: EffectEnvironment)
+  : SyncContext[StatefulSubsystem[InternalState[SyncContext]]] =
+    SyncEffect[SyncContext].delay {
+      implicit val _configuration: SystemConfiguration = configuration
 
-    val repository: BukkitFlySessionRepository[AsyncContext, SyncContext] = {
-      new BukkitFlySessionRepository[AsyncContext, SyncContext]()
-    }
-
-    val exposedRepository: PlayerDataRepository[ReadOnlyRef[SyncContext, PlayerFlyStatus]] = {
-      Monad[PlayerDataRepository].map(repository) { sessionRef =>
-        ReadOnlyRef.fromAnySource(sessionRef.getLatestFlyStatus)
+      val repository: BukkitFlySessionRepository[AsyncContext, SyncContext] = {
+        new BukkitFlySessionRepository[AsyncContext, SyncContext]()
       }
-    }
 
-    StatefulSubsystem(
-      listenersToBeRegistered = Seq(repository),
-      commandsToBeRegistered = Map(),
-      stateToExpose = InternalState(exposedRepository)
-    ).pure[AsyncContext]
-  }
+      val exposedRepository: PlayerDataRepository[ReadOnlyRef[SyncContext, PlayerFlyStatus]] = {
+        Monad[PlayerDataRepository].map(repository) { sessionRef =>
+          ReadOnlyRef.fromAnySource(sessionRef.getLatestFlyStatus)
+        }
+      }
+
+      StatefulSubsystem(
+        listenersToBeRegistered = Seq(repository),
+        commandsToBeRegistered = Map(),
+        stateToExpose = InternalState(exposedRepository)
+      )
+    }
 }
