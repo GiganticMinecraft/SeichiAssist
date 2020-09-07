@@ -8,7 +8,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application.SystemConfiguration
-import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.repository.BukkitFlySessionRepository
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitFlySessionRepository
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
 
 /**

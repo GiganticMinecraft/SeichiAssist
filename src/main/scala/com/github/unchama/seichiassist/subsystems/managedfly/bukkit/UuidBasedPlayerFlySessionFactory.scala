@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.managedfly.bukkit.application
+package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 
 import java.util.UUID
 

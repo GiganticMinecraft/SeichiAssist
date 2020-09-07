@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.managedfly.bukkit.repository
+package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 
 import java.util.UUID
 
@@ -9,7 +9,6 @@ import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataReposi
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{PlayerFlySession, PlayerFlySessionGateway, SystemConfiguration}
-import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.application.UuidBasedPlayerFlySessionFactory
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
 import org.bukkit.entity.Player
 
