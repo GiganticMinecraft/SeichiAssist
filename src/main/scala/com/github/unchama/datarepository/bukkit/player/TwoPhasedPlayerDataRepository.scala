@@ -20,20 +20,23 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
  * [[PlayerQuitEvent]] の [[EventPriority.HIGHEST]] までのデータの取得を保証する。
  *
  * @tparam R プレーヤーに関連付けられるデータの型
- * @tparam T 中間データの型
  */
 abstract class TwoPhasedPlayerDataRepository[
   AsyncContext[_] : ConcurrentEffect : ContextShift,
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
-  T,
   R
 ](implicit environment: EffectEnvironment) extends PlayerDataRepository[R] with Listener {
 
   import scala.collection.mutable
 
+  /**
+   * 中間データの型
+   */
+  protected type TemporaryData
+
   private val state: mutable.HashMap[UUID, R] = mutable.HashMap()
 
-  protected val temporaryState: mutable.HashMap[UUID, T] = mutable.HashMap()
+  protected val temporaryState: mutable.HashMap[UUID, TemporaryData] = mutable.HashMap()
 
   /**
    * 名前が[[String]]、UUIDが[[UUID]]にて識別されるプレーヤーがサーバーに参加したときに、
@@ -41,16 +44,16 @@ abstract class TwoPhasedPlayerDataRepository[
    *
    * 計算は `Either[String, Data]` を返し、`Left[Option[String]]` は
    * 読み込みに失敗したことをエラーメッセージ付きで、
-   * `Right[Data]` は[[T]]の読み込みに成功したことを示す。
+   * `Right[Data]` は[[TemporaryData]]の読み込みに成功したことを示す。
    *
    * 読み込み処理が失敗した、つまり`Left[Option[String]]`が計算結果として返った場合は、
    * エラーメッセージをキックメッセージとして参加したプレーヤーをキックする。
    *
    * この計算は必ず同期的に実行される。
    * 何故なら、プレーヤーのjoin処理が終了した時点で
-   * このリポジトリはそのプレーヤーに関する[[T]]を格納している必要があるからである。
+   * このリポジトリはそのプレーヤーに関する[[TemporaryData]]を格納している必要があるからである。
    */
-  protected val loadTemporaryData: (String, UUID) => SyncContext[Either[Option[String], T]]
+  protected val loadTemporaryData: (String, UUID) => SyncContext[Either[Option[String], TemporaryData]]
 
   /**
    * [[Player]] がサーバーに参加し終えた時、レポジトリが持つべきデータを計算する。
@@ -58,9 +61,9 @@ abstract class TwoPhasedPlayerDataRepository[
    * このメソッドは[[onPlayerJoin()]]により同期的に実行されるため、
    * ここで重い処理を行うとサーバーのパフォーマンスに悪影響を及ぼす。
    *
-   * DBアクセス等の処理を行う必要がある場合 [[loadTemporaryData]] で[[T]]をロードすることを検討せよ。
+   * DBアクセス等の処理を行う必要がある場合 [[loadTemporaryData]] で[[TemporaryData]]をロードすることを検討せよ。
    */
-  protected def initializeValue(player: Player, temporaryData: T): SyncContext[R]
+  protected def initializeValue(player: Player, temporaryData: TemporaryData): SyncContext[R]
 
   /**
    * プレーヤーが退出したときに、格納されたデータをもとに終了処理を行う。

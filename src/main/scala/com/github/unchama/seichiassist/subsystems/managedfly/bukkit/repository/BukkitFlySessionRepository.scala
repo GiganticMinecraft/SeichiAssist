@@ -17,12 +17,9 @@ class BukkitFlySessionRepository[
   AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : Timer,
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
 ](implicit effectEnvironment: EffectEnvironment, configuration: SystemConfiguration)
-  extends TwoPhasedPlayerDataRepository[
-    AsyncContext,
-    SyncContext,
-    Option[RemainingFlyDuration],
-    PlayerFlySessionRef[AsyncContext, SyncContext]
-  ] {
+  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, PlayerFlySessionRef[AsyncContext, SyncContext]] {
+
+  override protected type TemporaryData = Option[RemainingFlyDuration]
 
   // TODO DBに永続化した値を読み込む
   override protected val loadTemporaryData: (String, UUID) => SyncContext[Either[Option[String], Option[RemainingFlyDuration]]] = {

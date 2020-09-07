@@ -22,7 +22,9 @@ abstract class PreLoginToQuitPlayerDataRepository[
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
   R
 ](implicit environment: EffectEnvironment)
-  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, R, R] with Listener {
+  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, R] with Listener {
+
+  override protected type TemporaryData = R
 
   protected val loadData: (String, UUID) => SyncContext[Either[Option[String], R]]
 
