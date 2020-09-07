@@ -11,8 +11,6 @@ sealed trait RemainingFlyDuration {
    */
   val tickOneMinute: Option[RemainingFlyDuration]
 
-  lazy val hasExpired: Boolean = tickOneMinute.isEmpty
-
 }
 
 object RemainingFlyDuration {
