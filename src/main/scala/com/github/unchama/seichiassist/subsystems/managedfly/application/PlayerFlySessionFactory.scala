@@ -66,8 +66,6 @@ abstract class PlayerFlySessionFactory[AsyncContext[_] : Timer : Concurrent] {
           synchronizeFlyStatus(NotFlying)
         }
       }
-    } yield {
-      PlayerFlySession(fiber, ReadOnlyRef.fromRef(currentRemainingDurationRef))
-    }
+    } yield new PlayerFlySession(fiber, ReadOnlyRef.fromRef(currentRemainingDurationRef))
   }
 }

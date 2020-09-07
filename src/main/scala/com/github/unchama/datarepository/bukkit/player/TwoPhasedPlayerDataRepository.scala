@@ -60,7 +60,7 @@ abstract class TwoPhasedPlayerDataRepository[
    *
    * DBアクセス等の処理を行う必要がある場合 [[loadTemporaryData]] で[[T]]をロードすることを検討せよ。
    */
-  protected def initialValue(player: Player, temporaryData: T): R
+  protected def initializeValue(player: Player, temporaryData: T): SyncContext[R]
 
   /**
    * プレーヤーが退出したときに、格納されたデータをもとに終了処理を行う。
@@ -101,7 +101,9 @@ abstract class TwoPhasedPlayerDataRepository[
       player.kickPlayer(message)
     }
 
-    state(player.getUniqueId) = initialValue(player, temporaryState(player.getUniqueId))
+    state(player.getUniqueId) = initializeValue(player, temporaryState(player.getUniqueId))
+      .runSync[SyncIO]
+      .unsafeRunSync()
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
