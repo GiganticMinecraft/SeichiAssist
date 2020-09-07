@@ -35,7 +35,8 @@ val providedDependencies = Seq(
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "4.4.0",
-  "org.scalatest" %% "scalatest" % "3.2.0"
+  "org.scalatest" %% "scalatest" % "3.2.2",
+  "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0"
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
