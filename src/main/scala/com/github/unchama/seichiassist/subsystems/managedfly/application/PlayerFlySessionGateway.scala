@@ -5,7 +5,7 @@ import cats.effect.{Concurrent, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, PlayerFlyStatus, RemainingFlyDuration}
 
-class PlayerFlySessionRef[
+class PlayerFlySessionGateway[
   AsyncContext[_] : Concurrent,
   SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
 ](private val sessionRef: Ref[SyncContext, Option[PlayerFlySession[AsyncContext, SyncContext]]],
@@ -24,7 +24,7 @@ class PlayerFlySessionRef[
   def stopAnyRunningSession: AsyncContext[Unit] =
     sessionRef.getAndSet(None).coerceTo[AsyncContext] >>= finishSessionIfPresent
 
-  def getCurrentStatus: SyncContext[PlayerFlyStatus] =
+  def getLatestFlyStatus: SyncContext[PlayerFlyStatus] =
     for {
       sessionOption <- sessionRef.get
       status <- sessionOption match {
@@ -35,7 +35,7 @@ class PlayerFlySessionRef[
 
   def startNewSessionOfDuration(duration: RemainingFlyDuration): AsyncContext[Unit] =
     for {
-      newSession <- factory.start[SyncContext](duration).coerceTo[AsyncContext]
+      newSession <- factory.start[SyncContext](duration)
       oldSessionOption <- sessionRef.getAndSet(Some(newSession)).coerceTo[AsyncContext]
       _ <- finishSessionIfPresent(oldSessionOption)
     } yield ()

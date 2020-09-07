@@ -33,7 +33,7 @@ object System {
 
     val exposedRepository: PlayerDataRepository[ReadOnlyRef[SyncContext, PlayerFlyStatus]] = {
       Monad[PlayerDataRepository].map(repository) { sessionRef =>
-        ReadOnlyRef.fromAnySource(sessionRef.getCurrentStatus)
+        ReadOnlyRef.fromAnySource(sessionRef.getLatestFlyStatus)
       }
     }
 
