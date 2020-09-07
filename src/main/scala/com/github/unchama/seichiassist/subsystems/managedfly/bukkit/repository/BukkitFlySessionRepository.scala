@@ -9,7 +9,7 @@ import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataReposi
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{PlayerFlySession, PlayerFlySessionRef, SystemConfiguration}
-import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.UuidBasedPlayerFlySessionFactory
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.application.UuidBasedPlayerFlySessionFactory
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
 import org.bukkit.entity.Player
 
