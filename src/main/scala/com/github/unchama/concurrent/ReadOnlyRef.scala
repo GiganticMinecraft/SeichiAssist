@@ -13,8 +13,10 @@ trait ReadOnlyRef[F[_], A] {
 
 object ReadOnlyRef {
 
-  def fromRef[F[_], A](ref: Ref[F, A]): ReadOnlyRef[F, A] = new ReadOnlyRef[F, A] {
-    override def read: F[A] = ref.get
+  def fromAnySource[F[_], A](fa: F[A]): ReadOnlyRef[F, A] = new ReadOnlyRef[F, A] {
+    override def read: F[A] = fa
   }
+
+  def fromRef[F[_], A](ref: Ref[F, A]): ReadOnlyRef[F, A] = fromAnySource(ref.get)
 
 }

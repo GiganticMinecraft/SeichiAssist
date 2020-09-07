@@ -1,7 +1,10 @@
 package com.github.unchama.datarepository.bukkit.player
 
+import cats.Monad
 import com.github.unchama.datarepository.KeyedDataRepository
 import org.bukkit.entity.Player
+
+import scala.annotation.tailrec
 
 /**
  * ログイン中の[[Player]]に対して必ず `R` を返せるようなリポジトリ。
@@ -17,5 +20,30 @@ import org.bukkit.entity.Player
 trait PlayerDataRepository[R] extends KeyedDataRepository[Player, R] {
 
   override def apply(player: Player): R
+
+}
+
+object PlayerDataRepository {
+
+  def fromFunction[R](f: Player => R): PlayerDataRepository[R] = (player: Player) => f(player)
+
+  implicit def playerDataRefRepositoryMonad: Monad[PlayerDataRepository] = new Monad[PlayerDataRepository] {
+    override def pure[A](x: A): PlayerDataRepository[A] = (_: Player) => x
+
+    override def flatMap[A, B](fa: PlayerDataRepository[A])(f: A => PlayerDataRepository[B]): PlayerDataRepository[B] =
+      player => f(fa(player))(player)
+
+    override def tailRecM[A, B](a: A)(f: A => PlayerDataRepository[Either[A, B]]): PlayerDataRepository[B] = {
+      player => {
+        @tailrec
+        def go(current: A): B = f(current)(player) match {
+          case Left(nextA) => go(nextA)
+          case Right(value) => value
+        }
+
+        go(a)
+      }
+    }
+  }
 
 }

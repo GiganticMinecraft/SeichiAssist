@@ -1,7 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.managedfly
 
-import cats.effect.{ConcurrentEffect, SyncEffect}
-import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import cats.Monad
+import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
+import com.github.unchama.concurrent.{MinecraftServerThreadShift, ReadOnlyRef}
+import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
+import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.subsystems.managedfly.application.SystemConfiguration
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.repository.BukkitFlySessionRepository
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
 
 /**
  * NOTE: このサブシステム(managedfly)は本来BuildAssist側に属するが、
@@ -12,10 +20,27 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_] : ConcurrentEffect, G[_] : SyncEffect]: F[Subsystem] = {
-    Subsystem(
-      listenersToBeRegistered = Seq(),
-      commandsToBeRegistered = Map()
-    ).pure[F]
+  def wired[
+    AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : Timer,
+    SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
+  ](configuration: SystemConfiguration)
+   (implicit effectEnvironment: EffectEnvironment): AsyncContext[StatefulSubsystem[InternalState[SyncContext]]] = {
+    implicit val _configuration: SystemConfiguration = configuration
+
+    val repository: BukkitFlySessionRepository[AsyncContext, SyncContext] = {
+      new BukkitFlySessionRepository[AsyncContext, SyncContext]()
+    }
+
+    val exposedRepository: PlayerDataRepository[ReadOnlyRef[SyncContext, PlayerFlyStatus]] = {
+      Monad[PlayerDataRepository].map(repository) { sessionRef =>
+        ReadOnlyRef.fromAnySource(sessionRef.getCurrentStatus)
+      }
+    }
+
+    StatefulSubsystem(
+      listenersToBeRegistered = Seq(repository),
+      commandsToBeRegistered = Map(),
+      stateToExpose = InternalState(exposedRepository)
+    ).pure[AsyncContext]
   }
 }
