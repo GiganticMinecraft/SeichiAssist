@@ -8,7 +8,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application.SystemConfiguration
-import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitFlySessionRepository
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitFlySessionGatewayRepository
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
 
 /**
@@ -26,8 +26,8 @@ object System {
     SyncEffect[SyncContext].delay {
       implicit val _configuration: SystemConfiguration = configuration
 
-      val repository: BukkitFlySessionRepository[AsyncContext, SyncContext] = {
-        new BukkitFlySessionRepository[AsyncContext, SyncContext]()
+      val repository: BukkitFlySessionGatewayRepository[AsyncContext, SyncContext] = {
+        new BukkitFlySessionGatewayRepository[AsyncContext, SyncContext]()
       }
 
       val exposedRepository: PlayerDataRepository[ReadOnlyRef[SyncContext, PlayerFlyStatus]] = {

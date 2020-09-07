@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.managedfly.application.{Player
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
 import org.bukkit.entity.Player
 
-class BukkitFlySessionRepository[
+class BukkitFlySessionGatewayRepository[
   AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : Timer,
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
 ](implicit effectEnvironment: EffectEnvironment, configuration: SystemConfiguration)
