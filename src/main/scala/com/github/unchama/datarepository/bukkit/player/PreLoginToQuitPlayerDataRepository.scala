@@ -28,7 +28,7 @@ abstract class PreLoginToQuitPlayerDataRepository[
 
   protected val loadData: (String, UUID) => SyncContext[Either[Option[String], R]]
 
-  protected final override val loadTemporaryData: (String, UUID) => SyncContext[Either[Option[String], R]] = loadData
+  protected final override lazy val loadTemporaryData: (String, UUID) => SyncContext[Either[Option[String], R]] = loadData
 
   protected final override def initializeValue(player: Player, temporaryData: R): SyncContext[R] = {
     SyncEffect[SyncContext].pure(temporaryData)

@@ -34,10 +34,6 @@ abstract class TwoPhasedPlayerDataRepository[
    */
   protected type TemporaryData
 
-  private val state: mutable.HashMap[UUID, R] = mutable.HashMap()
-
-  protected val temporaryState: mutable.HashMap[UUID, TemporaryData] = mutable.HashMap()
-
   /**
    * 名前が[[String]]、UUIDが[[UUID]]にて識別されるプレーヤーがサーバーに参加したときに、
    * リポジトリに一時的に格納するデータを計算する。
@@ -70,6 +66,10 @@ abstract class TwoPhasedPlayerDataRepository[
    */
   protected val unloadData: (Player, R) => SyncContext[Unit]
 
+  private val state: mutable.HashMap[UUID, R] = mutable.HashMap()
+
+  protected val temporaryState: mutable.HashMap[UUID, TemporaryData] = mutable.HashMap()
+
   def apply(player: Player): R = state(player.getUniqueId)
 
   import ContextCoercion._
@@ -78,7 +78,9 @@ abstract class TwoPhasedPlayerDataRepository[
 
   @EventHandler(priority = EventPriority.LOWEST)
   final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
-    loadTemporaryData(event.getName, event.getUniqueId).runSync[SyncIO].unsafeRunSync() match {
+    loadTemporaryData(event.getName, event.getUniqueId)
+      .runSync[SyncIO]
+      .unsafeRunSync() match {
       case Left(errorMessageOption) =>
         errorMessageOption.foreach(event.setKickMessage)
         event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
@@ -91,7 +93,7 @@ abstract class TwoPhasedPlayerDataRepository[
   final def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
 
-    if (!state.contains(player.getUniqueId)) {
+    if (!temporaryState.contains(player.getUniqueId)) {
       val message =
         s"""
            |データの読み込みに失敗しました。
