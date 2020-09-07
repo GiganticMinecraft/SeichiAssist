@@ -4,7 +4,7 @@ import java.util.UUID
 
 import cats.Parallel.Aux
 import cats.effect
-import cats.effect.{Fiber, IO, SyncIO, Timer}
+import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
@@ -13,6 +13,7 @@ import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
+import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
@@ -75,6 +76,20 @@ class SeichiAssist extends JavaPlugin() {
 
     subsystems.itemmigration.System.wired[IO, SyncIO]
   }.unsafeRunSync()
+
+  lazy val managedFlySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]] = {
+    import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
+
+    implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
+    val configuration = subsystems.managedfly.application.SystemConfiguration(
+      expConsumptionAmount = seichiAssistConfig.getFlyExp
+    )
+
+    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
+  }
 
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
@@ -222,7 +237,8 @@ class SeichiAssist extends JavaPlugin() {
     val subsystems = Seq(
       mebius.System.wired,
       expBottleStackSystem,
-      itemMigrationSystem
+      itemMigrationSystem,
+      managedFlySystem
     )
 
     // コマンドの登録
