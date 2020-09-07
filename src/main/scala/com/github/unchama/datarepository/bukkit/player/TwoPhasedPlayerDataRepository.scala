@@ -93,22 +93,22 @@ abstract class TwoPhasedPlayerDataRepository[
   final def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
 
-    if (!temporaryState.contains(player.getUniqueId)) {
-      val message =
-        s"""
-           |データの読み込みに失敗しました。
-           |再接続しても改善されない場合は、
-           |整地鯖公式Discordサーバーからお知らせ下さい。
-           |
-           |エラー： $getClass の初期化に失敗しています。
-           |""".stripMargin
+    temporaryState.get(player.getUniqueId) match {
+      case Some(temporaryData) =>
+        state(player.getUniqueId) = initializeValue(player, temporaryData).runSync[SyncIO].unsafeRunSync()
 
-      player.kickPlayer(message)
+      case None =>
+        val message =
+          s"""
+             |データの読み込みに失敗しました。
+             |再接続しても改善されない場合は、
+             |整地鯖公式Discordサーバーからお知らせ下さい。
+             |
+             |エラー： $getClass の初期化に失敗しています。
+             |""".stripMargin
+
+        player.kickPlayer(message)
     }
-
-    state(player.getUniqueId) = initializeValue(player, temporaryState(player.getUniqueId))
-      .runSync[SyncIO]
-      .unsafeRunSync()
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
