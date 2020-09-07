@@ -285,7 +285,7 @@ object BlockPlacementSkillMenu extends Menu {
           .lore(
             s"$RESET${GRAY}スキルでブロックを並べるとき",
             s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-            s"$RESET${GRAY}建築LV ${BuildAssist.config.getblocklineupMinestacklevel()} 以上で利用可能",
+            s"$RESET${GRAY}建築Lv ${BuildAssist.config.getblocklineupMinestacklevel()} 以上で利用可能",
             s"$RESET${GRAY}クリックで切り替え"
           )
           .build()
@@ -297,7 +297,7 @@ object BlockPlacementSkillMenu extends Menu {
             DeferredEffect {
               IO {
                 if (playerData.level < BuildAssist.config.getZoneskillMinestacklevel)
-                  MessageEffect(s"${RED}建築LVが足りません")
+                  MessageEffect(s"${RED}建築Lvが足りません")
                 else
                   SequentialEffect(
                     targetedeffect.UnfocusedEffect {

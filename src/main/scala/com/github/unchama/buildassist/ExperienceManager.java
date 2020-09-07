@@ -13,11 +13,11 @@ import java.util.Arrays;
  * <p>
  * Adapted from ExperienceUtils code originally in ScrollingMenuSign.
  * <p>
- * Credit to nisovin (http://forums.bukkit.org/threads/experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/#post-1067480)
+ * Credit to nisovin (https://forums.bukkit.org/threads/experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/#post-1067480)
  * for an implementation that avoids the problems of getTotalExperience(), which doesn't work properly after a player has enchanted something.
  * <p>
  * Credit to comphenix for further contributions:
- * See http://forums.bukkit.org/threads/experiencemanager-was-experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/page-3#post-1273622
+ * See https://forums.bukkit.org/threads/experiencemanager-was-experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/page-3#post-1273622
  */
 public class ExperienceManager implements IExperienceManager {
     // this is to stop the lookup table growing without control
@@ -65,7 +65,7 @@ public class ExperienceManager implements IExperienceManager {
     }
 
     /**
-     * Initialize the XP lookup table. See http://minecraft.gamepedia.com/Experience
+     * Initialize the XP lookup table. See https://minecraft.gamepedia.com/Experience
      *
      * @param maxLevel The highest level handled by the lookup tables
      */
