@@ -24,6 +24,9 @@ class BukkitFlySessionGatewayRepository[
     (_, _) => SyncEffect[SyncContext].pure(Right(None))
   }
 
+  import cats.effect.implicits._
+  import cats.implicits._
+
   override protected def initializeValue(player: Player,
                                          temporaryData: Option[RemainingFlyDuration]
                                         ): SyncContext[PlayerFlySessionGateway[AsyncContext, SyncContext]] = {
