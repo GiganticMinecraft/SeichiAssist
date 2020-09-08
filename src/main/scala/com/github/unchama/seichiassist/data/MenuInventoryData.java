@@ -123,7 +123,7 @@ public final class MenuInventoryData {
             }
 
             final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "整地レベル:" + rankdata.level,
+                    ChatColor.RESET + "" + ChatColor.GREEN + "整地Lv:" + rankdata.level,
                     ChatColor.RESET + "" + ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum
             );
 

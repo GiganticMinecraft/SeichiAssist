@@ -184,12 +184,12 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
           Util.addItem(player, givenItem)
           ""
         } else {
-          //アイテムがスタックでき、かつ整地レベルがマインスタックの開放レベルに足りているとき...
+          //アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
           if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack) && SeichiAssist.playermap(player.getUniqueId).level >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)) {
             // ...格納した！
             s"${AQUA}景品をマインスタックに収納しました。"
           } else {
-            // スタックできないか、整地レベルがマインスタックの開放レベルに足りていないとき...
+            // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
             // ...ドロップする
             Util.dropItem(player, givenItem)
             s"${AQUA}景品がドロップしました。"
@@ -396,7 +396,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       }
       //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
       if (playerdata.level < SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel) {
-        player.sendMessage(GREEN.toString + "4次元ポケットを入手するには整地レベルが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
+        player.sendMessage(GREEN.toString + "4次元ポケットを入手するには整地Lvが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
         return
       }
       if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {

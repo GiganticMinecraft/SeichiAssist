@@ -70,7 +70,7 @@ object BuildMainMenu extends Menu {
           .enchanted()
           .title(s"$YELLOW$EMPHASIZE${openerData.name}の建築データ")
           .lore(
-            s"$RESET${AQUA}建築レベル: ${openerData.level}",
+            s"$RESET${AQUA}建築Lv: ${openerData.level}",
             /* 小数点以下一桁で表示。
              * https://github.com/GiganticMinecraft/SeichiAssist/issues/540 対策。
              */
