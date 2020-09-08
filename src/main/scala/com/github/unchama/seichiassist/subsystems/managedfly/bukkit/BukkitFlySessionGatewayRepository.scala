@@ -2,13 +2,12 @@ package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 
 import java.util.UUID
 
-import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
 import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{PlayerFlySession, PlayerFlySessionGateway, SystemConfiguration}
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{PlayerFlySessionGateway, SystemConfiguration}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
 import org.bukkit.entity.Player
 
@@ -25,32 +24,20 @@ class BukkitFlySessionGatewayRepository[
     (_, _) => SyncEffect[SyncContext].pure(Right(None))
   }
 
-  import cats.effect.implicits._
-  import cats.implicits._
-
   override protected def initializeValue(player: Player,
                                          temporaryData: Option[RemainingFlyDuration]
                                         ): SyncContext[PlayerFlySessionGateway[AsyncContext, SyncContext]] = {
-    val factory: UuidBasedPlayerFlySessionFactory[AsyncContext] = {
+    val factory: UuidBasedPlayerFlySessionFactory[AsyncContext] =
       new UuidBasedPlayerFlySessionFactory[AsyncContext](player.getUniqueId, configuration.expConsumptionAmount)
-    }
 
-    val createSessionRef: SyncContext[PlayerFlySessionGateway[AsyncContext, SyncContext]] =
-      for {
-        ref <- Ref[SyncContext].of[Option[PlayerFlySession[AsyncContext, SyncContext]]](None)
-      } yield new PlayerFlySessionGateway(ref, factory)
-
-    for {
-      sessionRef <- createSessionRef
-      _ <- temporaryData match {
-        case Some(duration) =>
-          sessionRef
-            .startNewSessionOfDuration(duration)
-            .runAsync(_ => IO.unit).runSync[SyncContext]
-        case None =>
-          SyncEffect[SyncContext].unit
+    PlayerFlySessionGateway
+      .createNew[AsyncContext, SyncContext](factory)
+      .flatTap { gateway =>
+        temporaryData match {
+          case Some(duration) => gateway.startNewSessionAndForget(duration)
+          case None => SyncEffect[SyncContext].unit
+        }
       }
-    } yield sessionRef
   }
 
   // TODO DBに永続化する値を書き込む
