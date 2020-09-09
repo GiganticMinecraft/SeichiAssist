@@ -8,15 +8,15 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, 
 /**
  * プレーヤーの飛行セッションの参照
  */
-class PlayerFlySessionReference[
+class ActiveSessionReference[
   AsyncContext[_] : ConcurrentEffect,
   SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-](private val sessionRef: Ref[SyncContext, Option[PlayerFlySession[AsyncContext, SyncContext]]]) {
+](private val sessionRef: Ref[SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]]) {
 
   import ContextCoercion._
   import cats.implicits._
 
-  private def finishSessionIfPresent(sessionOption: Option[PlayerFlySession[AsyncContext, SyncContext]]): AsyncContext[Unit] = {
+  private def finishSessionIfPresent(sessionOption: Option[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Unit] = {
     sessionOption match {
       case Some(session) => session.finish
       case None => Concurrent[AsyncContext].unit
@@ -26,7 +26,7 @@ class PlayerFlySessionReference[
   def stopAnyRunningSession: AsyncContext[Unit] =
     sessionRef.getAndSet(None).coerceTo[AsyncContext] >>= finishSessionIfPresent
 
-  def replaceSessionWith(newSession: PlayerFlySession[AsyncContext, SyncContext]): AsyncContext[Unit] = {
+  def replaceSessionWith(newSession: ActiveSession[AsyncContext, SyncContext]): AsyncContext[Unit] = {
     for {
       oldSessionOption <- sessionRef.getAndSet(Some(newSession)).coerceTo[AsyncContext]
       _ <- finishSessionIfPresent(oldSessionOption)
@@ -43,17 +43,17 @@ class PlayerFlySessionReference[
     } yield status
 }
 
-object PlayerFlySessionReference {
+object ActiveSessionReference {
 
   import cats.implicits._
 
   def createNew[
     AsyncContext[_] : ConcurrentEffect,
     SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-  ]: SyncContext[PlayerFlySessionReference[AsyncContext, SyncContext]] = {
+  ]: SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
     for {
-      ref <- Ref[SyncContext].of[Option[PlayerFlySession[AsyncContext, SyncContext]]](None)
-    } yield new PlayerFlySessionReference(ref)
+      ref <- Ref[SyncContext].of[Option[ActiveSession[AsyncContext, SyncContext]]](None)
+    } yield new ActiveSessionReference(ref)
   }
 
 }

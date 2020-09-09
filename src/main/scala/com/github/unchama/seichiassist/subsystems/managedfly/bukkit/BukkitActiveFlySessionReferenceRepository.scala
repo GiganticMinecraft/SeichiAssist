@@ -7,17 +7,17 @@ import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{PlayerFlySessionFactory, PlayerFlySessionReference, SystemConfiguration}
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference, SystemConfiguration}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
 import org.bukkit.entity.Player
 
-class BukkitFlySessionReferenceRepository[
+class BukkitActiveFlySessionReferenceRepository[
   AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : Timer,
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
 ](implicit effectEnvironment: EffectEnvironment,
   configuration: SystemConfiguration,
-  factory: PlayerFlySessionFactory[AsyncContext, Player])
-  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, PlayerFlySessionReference[AsyncContext, SyncContext]] {
+  factory: ActiveSessionFactory[AsyncContext, Player])
+  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, ActiveSessionReference[AsyncContext, SyncContext]] {
 
   override protected type TemporaryData = Option[RemainingFlyDuration]
 
@@ -31,8 +31,8 @@ class BukkitFlySessionReferenceRepository[
 
   override protected def initializeValue(player: Player,
                                          temporaryData: Option[RemainingFlyDuration]
-                                        ): SyncContext[PlayerFlySessionReference[AsyncContext, SyncContext]] = {
-    PlayerFlySessionReference
+                                        ): SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
+    ActiveSessionReference
       .createNew[AsyncContext, SyncContext]
       .flatTap { reference =>
         temporaryData match {
@@ -48,7 +48,7 @@ class BukkitFlySessionReferenceRepository[
   }
 
   // TODO DBに永続化する値を書き込む
-  override protected val unloadData: (Player, PlayerFlySessionReference[AsyncContext, SyncContext]) => SyncContext[Unit] = {
+  override protected val unloadData: (Player, ActiveSessionReference[AsyncContext, SyncContext]) => SyncContext[Unit] = {
     (_, sessionRef) =>
       sessionRef.stopAnyRunningSession
         .runAsync(_ => IO.unit)

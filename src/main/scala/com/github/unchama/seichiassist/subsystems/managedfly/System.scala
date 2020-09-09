@@ -8,8 +8,8 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{PlayerFlySessionFactory, PlayerFlyStatusManipulation, SystemConfiguration}
-import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.{BukkitFlySessionReferenceRepository, BukkitPlayerFlyStatusManipulation}
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, PlayerFlyStatusManipulation, SystemConfiguration}
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.{BukkitActiveFlySessionReferenceRepository, BukkitPlayerFlyStatusManipulation}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
 import org.bukkit.entity.Player
 
@@ -30,12 +30,12 @@ object System {
     implicit val _playerKleisliManipulation: PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] =
       new BukkitPlayerFlyStatusManipulation[AsyncContext]
 
-    implicit val _factory: PlayerFlySessionFactory[AsyncContext, Player] =
-      new PlayerFlySessionFactory[AsyncContext, Player]()
+    implicit val _factory: ActiveSessionFactory[AsyncContext, Player] =
+      new ActiveSessionFactory[AsyncContext, Player]()
 
     SyncEffect[SyncContext].delay {
-      implicit val _stateRepository: BukkitFlySessionReferenceRepository[AsyncContext, SyncContext] =
-        new BukkitFlySessionReferenceRepository[AsyncContext, SyncContext]()
+      implicit val _stateRepository: BukkitActiveFlySessionReferenceRepository[AsyncContext, SyncContext] =
+        new BukkitActiveFlySessionReferenceRepository[AsyncContext, SyncContext]()
 
       val exposedRepository: PlayerDataRepository[ReadOnlyRef[SyncContext, PlayerFlyStatus]] = {
         Monad[PlayerDataRepository].map(_stateRepository) { sessionRef =>
