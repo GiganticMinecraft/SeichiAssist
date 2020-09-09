@@ -24,16 +24,16 @@ object System {
     AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : NonServerThreadContextShift : Timer,
     SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
   ](configuration: SystemConfiguration)(implicit effectEnvironment: EffectEnvironment)
-  : SyncContext[StatefulSubsystem[InternalState[SyncContext]]] =
+  : SyncContext[StatefulSubsystem[InternalState[SyncContext]]] = {
+    implicit val _configuration: SystemConfiguration = configuration
+
+    implicit val _playerKleisliManipulation: PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] =
+      new BukkitPlayerFlyStatusManipulation[AsyncContext]
+
+    implicit val _factory: PlayerFlySessionFactory[AsyncContext, Player] =
+      new PlayerFlySessionFactory[AsyncContext, Player]()
+
     SyncEffect[SyncContext].delay {
-      implicit val _configuration: SystemConfiguration = configuration
-
-      implicit val _manipulation: PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] =
-        new BukkitPlayerFlyStatusManipulation[AsyncContext]
-
-      implicit val _factory: PlayerFlySessionFactory[AsyncContext, Player] =
-        new PlayerFlySessionFactory[AsyncContext, Player]()
-
       implicit val _stateRepository: BukkitFlySessionReferenceRepository[AsyncContext, SyncContext] =
         new BukkitFlySessionReferenceRepository[AsyncContext, SyncContext]()
 
@@ -49,4 +49,5 @@ object System {
         stateToExpose = InternalState(exposedRepository)
       )
     }
+  }
 }
