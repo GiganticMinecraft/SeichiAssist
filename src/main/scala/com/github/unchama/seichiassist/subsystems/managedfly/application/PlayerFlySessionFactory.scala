@@ -40,28 +40,30 @@ class PlayerFlySessionFactory[
 
   def start[
     SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-  ](totalDuration: RemainingFlyDuration, player: Player): AsyncContext[PlayerFlySession[AsyncContext, SyncContext]] = {
-    for {
-      currentRemainingDurationRef <-
-        Ref
-          .of[SyncContext, RemainingFlyDuration](totalDuration)
-          .coerceTo[AsyncContext]
-      fiber <- AsymmetricTryableFiber.start[AsyncContext, Nothing] {
-        {
-          ensurePlayerExp.run(player) >>
-            synchronizeFlyStatus(Flying(totalDuration)).run(player) >>
-            totalDuration.iterateForeverM { duration =>
-              doOneMinuteCycle(duration).run(player).flatTap { updatedDuration =>
-                currentRemainingDurationRef.set(updatedDuration).coerceTo[AsyncContext]
+  ](totalDuration: RemainingFlyDuration): KleisliAsyncContext[PlayerFlySession[AsyncContext, SyncContext]] = {
+    Kleisli { player =>
+      for {
+        currentRemainingDurationRef <-
+          Ref
+            .of[SyncContext, RemainingFlyDuration](totalDuration)
+            .coerceTo[AsyncContext]
+        fiber <- AsymmetricTryableFiber.start[AsyncContext, Nothing] {
+          {
+            ensurePlayerExp.run(player) >>
+              synchronizeFlyStatus(Flying(totalDuration)).run(player) >>
+              totalDuration.iterateForeverM { duration =>
+                doOneMinuteCycle(duration).run(player).flatTap { updatedDuration =>
+                  currentRemainingDurationRef.set(updatedDuration).coerceTo[AsyncContext]
+                }
               }
-            }
-        }.guaranteeCase {
-          case ExitCase.Error(e: InternalInterruption) => sendNotificationsOnInterruption(e).run(player)
-          case _ => Monad[AsyncContext].unit
-        }.guarantee {
-          synchronizeFlyStatus(NotFlying).run(player)
+          }.guaranteeCase {
+            case ExitCase.Error(e: InternalInterruption) => sendNotificationsOnInterruption(e).run(player)
+            case _ => Monad[AsyncContext].unit
+          }.guarantee {
+            synchronizeFlyStatus(NotFlying).run(player)
+          }
         }
-      }
-    } yield new PlayerFlySession(fiber, ReadOnlyRef.fromRef(currentRemainingDurationRef))
+      } yield new PlayerFlySession(fiber, ReadOnlyRef.fromRef(currentRemainingDurationRef))
+    }
   }
 }

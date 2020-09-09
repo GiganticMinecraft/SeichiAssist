@@ -38,7 +38,7 @@ class BukkitFlySessionReferenceRepository[
         temporaryData match {
           case Some(duration) => {
             for {
-              newSession <- factory.start[SyncContext](duration, player)
+              newSession <- factory.start[SyncContext](duration).run(player)
               _ <- reference.replaceSessionWith(newSession)
             } yield ()
           }.runAsync(_ => IO.unit).runSync[SyncContext]
