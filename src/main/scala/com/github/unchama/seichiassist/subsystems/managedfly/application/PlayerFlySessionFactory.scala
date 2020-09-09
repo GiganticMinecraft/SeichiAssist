@@ -19,7 +19,6 @@ class PlayerFlySessionFactory[
 
   type KleisliAsyncContext[A] = Kleisli[AsyncContext, Player, A]
 
-  import KleisliAsyncContext._
   import cats.effect.implicits._
   import cats.implicits._
   import com.github.unchama.generic.ContextCoercion._
@@ -32,6 +31,8 @@ class PlayerFlySessionFactory[
       case None => F.raiseError(FlyDurationExpired)
     }
 
+  import KleisliAsyncContext._
+
   private def doOneMinuteCycle(duration: RemainingFlyDuration): KleisliAsyncContext[RemainingFlyDuration] = {
     Timer[KleisliAsyncContext].sleep(1.minute) >>
       isPlayerIdle.ifM(Sync[KleisliAsyncContext].unit, consumePlayerExp) >>
@@ -41,29 +42,32 @@ class PlayerFlySessionFactory[
   def start[
     SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
   ](totalDuration: RemainingFlyDuration): KleisliAsyncContext[PlayerFlySession[AsyncContext, SyncContext]] = {
-    Kleisli { player =>
-      for {
-        currentRemainingDurationRef <-
-          Ref
-            .of[SyncContext, RemainingFlyDuration](totalDuration)
-            .coerceTo[AsyncContext]
-        fiber <- AsymmetricTryableFiber.start[AsyncContext, Nothing] {
+    for {
+      currentRemainingDurationRef <-
+        Ref.in[KleisliAsyncContext, SyncContext, RemainingFlyDuration](totalDuration)
+
+      kleisliAsyncUpdateRef = { duration: RemainingFlyDuration =>
+        Kleisli.liftF {
+          currentRemainingDurationRef.set(duration).coerceTo[AsyncContext]
+        }
+      }
+
+      fiber <- Kleisli { player: Player =>
+        AsymmetricTryableFiber.start[AsyncContext, Nothing] {
           {
-            ensurePlayerExp.run(player) >>
-              synchronizeFlyStatus(Flying(totalDuration)).run(player) >>
+            ensurePlayerExp >>
+              synchronizeFlyStatus(Flying(totalDuration)) >>
               totalDuration.iterateForeverM { duration =>
-                doOneMinuteCycle(duration).run(player).flatTap { updatedDuration =>
-                  currentRemainingDurationRef.set(updatedDuration).coerceTo[AsyncContext]
-                }
+                doOneMinuteCycle(duration).flatTap(kleisliAsyncUpdateRef)
               }
           }.guaranteeCase {
-            case ExitCase.Error(e: InternalInterruption) => sendNotificationsOnInterruption(e).run(player)
-            case _ => Monad[AsyncContext].unit
+            case ExitCase.Error(e: InternalInterruption) => sendNotificationsOnInterruption(e)
+            case _ => Monad[KleisliAsyncContext].unit
           }.guarantee {
-            synchronizeFlyStatus(NotFlying).run(player)
-          }
+            synchronizeFlyStatus(NotFlying)
+          }.run(player)
         }
-      } yield new PlayerFlySession(fiber, ReadOnlyRef.fromRef(currentRemainingDurationRef))
-    }
+      }
+    } yield new PlayerFlySession(fiber, ReadOnlyRef.fromRef(currentRemainingDurationRef))
   }
 }
