@@ -7,15 +7,17 @@ import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{PlayerFlySessionGateway, SystemConfiguration}
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{PlayerFlySessionFactory, PlayerFlySessionReference, SystemConfiguration}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
 import org.bukkit.entity.Player
 
-class BukkitFlySessionGatewayRepository[
+class BukkitFlySessionReferenceRepository[
   AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : Timer,
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
-](implicit effectEnvironment: EffectEnvironment, configuration: SystemConfiguration)
-  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, PlayerFlySessionGateway[AsyncContext, SyncContext]] {
+](implicit effectEnvironment: EffectEnvironment,
+  configuration: SystemConfiguration,
+  factory: PlayerFlySessionFactory[AsyncContext, Player])
+  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, PlayerFlySessionReference[AsyncContext, SyncContext]] {
 
   override protected type TemporaryData = Option[RemainingFlyDuration]
 
@@ -29,22 +31,24 @@ class BukkitFlySessionGatewayRepository[
 
   override protected def initializeValue(player: Player,
                                          temporaryData: Option[RemainingFlyDuration]
-                                        ): SyncContext[PlayerFlySessionGateway[AsyncContext, SyncContext]] = {
-    val factory: UuidBasedPlayerFlySessionFactory[AsyncContext] =
-      new UuidBasedPlayerFlySessionFactory[AsyncContext](player.getUniqueId, configuration.expConsumptionAmount)
-
-    PlayerFlySessionGateway
-      .createNew[AsyncContext, SyncContext](factory)
-      .flatTap { gateway =>
+                                        ): SyncContext[PlayerFlySessionReference[AsyncContext, SyncContext]] = {
+    PlayerFlySessionReference
+      .createNew[AsyncContext, SyncContext]
+      .flatTap { reference =>
         temporaryData match {
-          case Some(duration) => gateway.startNewSessionAndForget(duration)
+          case Some(duration) => {
+            for {
+              newSession <- factory.start[SyncContext](duration, player)
+              _ <- reference.replaceSessionWith(newSession)
+            } yield ()
+          }.runAsync(_ => IO.unit).runSync[SyncContext]
           case None => SyncEffect[SyncContext].unit
         }
       }
   }
 
   // TODO DBに永続化する値を書き込む
-  override protected val unloadData: (Player, PlayerFlySessionGateway[AsyncContext, SyncContext]) => SyncContext[Unit] = {
+  override protected val unloadData: (Player, PlayerFlySessionReference[AsyncContext, SyncContext]) => SyncContext[Unit] = {
     (_, sessionRef) =>
       sessionRef.stopAnyRunningSession
         .runAsync(_ => IO.unit)

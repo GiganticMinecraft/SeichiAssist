@@ -1,18 +1,19 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.effect.concurrent.Ref
-import cats.effect.{Concurrent, ConcurrentEffect, IO, Sync}
+import cats.effect.{Concurrent, ConcurrentEffect, Sync}
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, PlayerFlyStatus, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, PlayerFlyStatus}
 
-class PlayerFlySessionGateway[
+/**
+ * プレーヤーの飛行セッションの参照
+ */
+class PlayerFlySessionReference[
   AsyncContext[_] : ConcurrentEffect,
   SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-](private val sessionRef: Ref[SyncContext, Option[PlayerFlySession[AsyncContext, SyncContext]]],
-  private val factory: PlayerFlySessionFactory[AsyncContext]) {
+](private val sessionRef: Ref[SyncContext, Option[PlayerFlySession[AsyncContext, SyncContext]]]) {
 
   import ContextCoercion._
-  import cats.effect.implicits._
   import cats.implicits._
 
   private def finishSessionIfPresent(sessionOption: Option[PlayerFlySession[AsyncContext, SyncContext]]): AsyncContext[Unit] = {
@@ -25,6 +26,13 @@ class PlayerFlySessionGateway[
   def stopAnyRunningSession: AsyncContext[Unit] =
     sessionRef.getAndSet(None).coerceTo[AsyncContext] >>= finishSessionIfPresent
 
+  def replaceSessionWith(newSession: PlayerFlySession[AsyncContext, SyncContext]): AsyncContext[Unit] = {
+    for {
+      oldSessionOption <- sessionRef.getAndSet(Some(newSession)).coerceTo[AsyncContext]
+      _ <- finishSessionIfPresent(oldSessionOption)
+    } yield ()
+  }
+
   def getLatestFlyStatus: SyncContext[PlayerFlyStatus] =
     for {
       sessionOption <- sessionRef.get
@@ -33,29 +41,19 @@ class PlayerFlySessionGateway[
         case None => Sync[SyncContext].pure(NotFlying)
       }
     } yield status
-
-  def startNewSessionOfDuration(duration: RemainingFlyDuration): AsyncContext[Unit] =
-    for {
-      newSession <- factory.start[SyncContext](duration)
-      oldSessionOption <- sessionRef.getAndSet(Some(newSession)).coerceTo[AsyncContext]
-      _ <- finishSessionIfPresent(oldSessionOption)
-    } yield ()
-
-  def startNewSessionAndForget(duration: RemainingFlyDuration): SyncContext[Unit] =
-    startNewSessionOfDuration(duration).runAsync(_ => IO.unit).runSync[SyncContext]
 }
 
-object PlayerFlySessionGateway {
+object PlayerFlySessionReference {
 
   import cats.implicits._
 
   def createNew[
     AsyncContext[_] : ConcurrentEffect,
     SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-  ](factory: PlayerFlySessionFactory[AsyncContext]): SyncContext[PlayerFlySessionGateway[AsyncContext, SyncContext]] = {
+  ]: SyncContext[PlayerFlySessionReference[AsyncContext, SyncContext]] = {
     for {
       ref <- Ref[SyncContext].of[Option[PlayerFlySession[AsyncContext, SyncContext]]](None)
-    } yield new PlayerFlySessionGateway(ref, factory)
+    } yield new PlayerFlySessionReference(ref)
   }
 
 }
