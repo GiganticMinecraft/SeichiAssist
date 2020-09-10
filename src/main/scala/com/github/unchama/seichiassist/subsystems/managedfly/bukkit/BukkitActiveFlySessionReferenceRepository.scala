@@ -26,9 +26,6 @@ class BukkitActiveFlySessionReferenceRepository[
     (_, _) => SyncEffect[SyncContext].pure(Right(None))
   }
 
-  import cats.effect.implicits._
-  import cats.implicits._
-
   override protected def initializeValue(player: Player,
                                          temporaryData: Option[RemainingFlyDuration]
                                         ): SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
@@ -36,12 +33,11 @@ class BukkitActiveFlySessionReferenceRepository[
       .createNew[AsyncContext, SyncContext]
       .flatTap { reference =>
         temporaryData match {
-          case Some(duration) => {
-            for {
-              newSession <- factory.start[SyncContext](duration).run(player)
-              _ <- reference.replaceSessionWith(newSession)
-            } yield ()
-          }.runAsync(_ => IO.unit).runSync[SyncContext]
+          case Some(duration) =>
+            reference
+              .replaceSession(factory.start[SyncContext](duration).run(player))
+              .runAsync(_ => IO.unit)
+              .runSync[SyncContext]
           case None => SyncEffect[SyncContext].unit
         }
       }

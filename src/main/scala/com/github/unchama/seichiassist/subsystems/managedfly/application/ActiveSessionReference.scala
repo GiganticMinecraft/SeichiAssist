@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
-import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ConcurrentEffect, Sync}
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.Mutex
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, PlayerFlyStatus}
 
 /**
@@ -11,9 +11,8 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, 
 class ActiveSessionReference[
   AsyncContext[_] : ConcurrentEffect,
   SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-](private val sessionRef: Ref[SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]]) {
+](private val sessionMutexRef: Mutex[AsyncContext, SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]]) {
 
-  import ContextCoercion._
   import cats.implicits._
 
   private def finishSessionIfPresent(sessionOption: Option[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Unit] = {
@@ -24,18 +23,18 @@ class ActiveSessionReference[
   }
 
   def stopAnyRunningSession: AsyncContext[Unit] =
-    sessionRef.getAndSet(None).coerceTo[AsyncContext] >>= finishSessionIfPresent
+    sessionMutexRef.lockAndModify(finishSessionIfPresent(_).as(None))
 
-  def replaceSessionWith(newSession: ActiveSession[AsyncContext, SyncContext]): AsyncContext[Unit] = {
-    for {
-      oldSessionOption <- sessionRef.getAndSet(Some(newSession)).coerceTo[AsyncContext]
-      _ <- finishSessionIfPresent(oldSessionOption)
-    } yield ()
-  }
+  def replaceSession(createSession: AsyncContext[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Unit] =
+    sessionMutexRef.lockAndModify { sessionOption =>
+      for {
+        session <- finishSessionIfPresent(sessionOption) >> createSession
+      } yield Some(session)
+    }
 
   def getLatestFlyStatus: SyncContext[PlayerFlyStatus] =
     for {
-      sessionOption <- sessionRef.get
+      sessionOption <- sessionMutexRef.readLatest
       status <- sessionOption match {
         case Some(session) => session.latestFlyStatus
         case None => Sync[SyncContext].pure(NotFlying)
@@ -52,8 +51,8 @@ object ActiveSessionReference {
     SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
   ]: SyncContext[ActiveSessionReference[AsyncContext, SyncContext]] = {
     for {
-      ref <- Ref[SyncContext].of[Option[ActiveSession[AsyncContext, SyncContext]]](None)
-    } yield new ActiveSessionReference(ref)
+      mutex <- Mutex.of[AsyncContext, SyncContext, Option[ActiveSession[AsyncContext, SyncContext]]](None)
+    } yield new ActiveSessionReference(mutex)
   }
 
 }
