@@ -23,13 +23,13 @@ class ActiveSessionReference[
   }
 
   def stopAnyRunningSession: AsyncContext[Unit] =
-    sessionMutexRef.lockAndModify(finishSessionIfPresent(_).as(None))
+    sessionMutexRef.lockAndModify(finishSessionIfPresent(_).as(None, ()))
 
   def replaceSession(createSession: AsyncContext[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Unit] =
     sessionMutexRef.lockAndModify { sessionOption =>
       for {
         session <- finishSessionIfPresent(sessionOption) >> createSession
-      } yield Some(session)
+      } yield (Some(session), ())
     }
 
   def getLatestFlyStatus: SyncContext[PlayerFlyStatus] =
