@@ -156,11 +156,11 @@ private[managedfly] class ActiveSessionFactoryMock[
       override val synchronizeFlyStatus: PlayerFlyStatus => PlayerAsyncKleisli[Unit] = {
         case Flying(_) =>
           Kleisli { player: PlayerMockReference =>
-            player.isFlyingMutex.lockAndUpdate(_ => Monad[AsyncContext].pure(false)).as(())
+            player.isFlyingMutex.lockAndUpdate(_ => Monad[AsyncContext].pure(true)).as(())
           }
         case NotFlying =>
           Kleisli { player: PlayerMockReference =>
-            player.isFlyingMutex.lockAndUpdate(_ => Monad[AsyncContext].pure(true)).as(())
+            player.isFlyingMutex.lockAndUpdate(_ => Monad[AsyncContext].pure(false)).as(())
           }
       }
 
