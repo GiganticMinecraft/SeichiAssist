@@ -1,11 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
+import java.util.concurrent.Executors
+
 import cats.Monad
 import cats.data.Kleisli
-import cats.effect.{Async, Concurrent, ContextShift, IO, Sync, SyncIO}
+import cats.effect.{Async, Concurrent, ContextShift, IO, Sync, SyncIO, Timer}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.Mutex
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus, RemainingFlyDuration}
+import monix.catnap.SchedulerEffect
+import monix.execution.schedulers.TestScheduler
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
@@ -13,9 +17,18 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import scala.concurrent.ExecutionContext
 
 class ActiveSessionFactorySpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
-  implicit val ec: ExecutionContext = ExecutionContext.global
-  implicit val shift: ContextShift[IO] = IO.contextShift(ec)
-  val mock = new ActiveSessionFactoryMock[IO, SyncIO]
+  val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
+  implicit val shift: ContextShift[IO] = IO.contextShift(cachedThreadPool)
+
+  val monixScheduler: TestScheduler = TestScheduler()
+  implicit val monixTimer: Timer[IO] = SchedulerEffect.timer(monixScheduler)
+  val realTimeTimer: Timer[IO] = IO.timer(cachedThreadPool)
+
+  val mock = new Mock[IO, SyncIO]
+
+  import mock._
+
+  import scala.concurrent.duration._
 
   "Fly session" should {
     "synchronize player's fly status once started" in {
@@ -57,35 +70,35 @@ class ActiveSessionFactorySpec extends AnyWordSpec with ScalaCheckPropertyChecks
   }
 }
 
-private[managedfly] class ActiveSessionFactoryMock[
+private[managedfly] class Mock[
   AsyncContext[_] : Concurrent,
   SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
 ] {
 
-  private[managedfly] sealed trait ExperienceMock {
+  sealed trait ExperienceMock {
     def consume(amount: BigInt): Option[ExperienceMock]
   }
 
-  private[managedfly] case class FiniteNonNegativeExperience(internalAmount: BigInt) extends ExperienceMock {
+  case class FiniteNonNegativeExperience(internalAmount: BigInt) extends ExperienceMock {
     require(internalAmount >= 0)
 
     override def consume(amount: BigInt): Option[ExperienceMock] =
       if (amount <= internalAmount) Some(FiniteNonNegativeExperience(internalAmount - amount)) else None
   }
 
-  private[managedfly] case object InfiniteExperience extends ExperienceMock {
+  case object InfiniteExperience extends ExperienceMock {
     override def consume(amount: BigInt): Option[ExperienceMock] = Some(InfiniteExperience)
   }
 
-  private[managedfly] case class MessageMock(interruption: InternalInterruption)
+  case class MessageMock(interruption: InternalInterruption)
 
   import ContextCoercion._
   import cats.implicits._
 
-  private[managedfly] case class PlayerMockReference(isFlyingMutex: Mutex[AsyncContext, SyncContext, Boolean],
-                                                     experienceMutex: Mutex[AsyncContext, SyncContext, ExperienceMock],
-                                                     isIdleMutex: Mutex[AsyncContext, SyncContext, Boolean],
-                                                     messageLog: Mutex[AsyncContext, SyncContext, Vector[MessageMock]]) {
+  case class PlayerMockReference(isFlyingMutex: Mutex[AsyncContext, SyncContext, Boolean],
+                                 experienceMutex: Mutex[AsyncContext, SyncContext, ExperienceMock],
+                                 isIdleMutex: Mutex[AsyncContext, SyncContext, Boolean],
+                                 messageLog: Mutex[AsyncContext, SyncContext, Vector[MessageMock]]) {
     def sendMessage(message: MessageMock): AsyncContext[Unit] = {
       messageLog
         .lockAndUpdate { current =>
@@ -95,7 +108,7 @@ private[managedfly] class ActiveSessionFactoryMock[
     }
   }
 
-  private[managedfly] object PlayerMockReference {
+  object PlayerMockReference {
     def apply(initiallyFlying: Boolean,
               initialExperience: ExperienceMock,
               initiallyIdle: Boolean): SyncContext[PlayerMockReference] =
