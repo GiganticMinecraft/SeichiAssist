@@ -462,7 +462,7 @@ class ActiveSessionFactorySpec
         // then
         _ <- IO {
           eventually {
-            playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(PlayerExpNotEnough)
+            playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(PlayerExpNotEnough))
           }
         }
       } yield ()
@@ -550,7 +550,7 @@ class ActiveSessionFactorySpec
         // then
         _ <- IO {
           eventually {
-            playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(FlyDurationExpired)
+            playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(FlyDurationExpired))
           }
         }
       } yield ()
