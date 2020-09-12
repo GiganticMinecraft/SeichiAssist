@@ -374,7 +374,6 @@ class ActiveSessionFactorySpec
 
     "terminate when player's experience is below per-minute experience consumption" in {
       val originalExp = 10000
-      val minutesToWait = 100
 
       // given
       implicit val configuration: SystemConfiguration =
