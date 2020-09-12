@@ -26,7 +26,7 @@ trait AsymmetricTryableFiber[F[_], A] extends Fiber[F, A] {
    * A computation that cancels the fiber if it is still running,
    * returning whether the cancellation happened or not.
    */
-  def cancelIfPending: F[Boolean]
+  def cancelIfRunning: F[Boolean]
 
   import cats.implicits._
 
@@ -73,7 +73,7 @@ object AsymmetricTryableFiber {
         }
       }
     } yield new AsymmetricTryableFiber[F, A] {
-      override def cancelIfPending: F[Boolean] = fiber.cancel >> {
+      override def cancelIfRunning: F[Boolean] = fiber.cancel >> {
         completionPromise.complete(Cancelled).as(true).recover {
           case _: IllegalStateException =>
             // When `complete` was impossible
@@ -89,7 +89,7 @@ object AsymmetricTryableFiber {
         }
       }
 
-      override def cancel: CancelToken[F] = fiber.cancel
+      override def cancel: CancelToken[F] = cancelIfRunning.as(())
 
       override def join: F[A] = fiber.join
     }
@@ -102,7 +102,7 @@ object AsymmetricTryableFiber {
     new AsymmetricTryableFiber[F, A] {
       override def getCurrentStatus[G[_] : Sync]: G[FiberStatus[A]] = Sync[G].pure(Completed(a))
 
-      override def cancelIfPending: F[Boolean] = F.pure(false)
+      override def cancelIfRunning: F[Boolean] = F.pure(false)
 
       override def cancel: CancelToken[F] = F.unit
 
