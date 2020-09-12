@@ -383,7 +383,7 @@ class ActiveSessionFactorySpec
         )
 
       // 消費は丁度10回でき、11回目の経験値チェックで飛行セッションが閉じるべきなので、
-      // 最初の30秒のスリープと合わせて11分30秒の経過を期待する。
+      // 11分の経過を期待する。
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
@@ -406,19 +406,14 @@ class ActiveSessionFactorySpec
             session.isActive.unsafeRunSync() shouldBe true
           }
         }
-        _ <- monixTimer.sleep(30.seconds)
-        _ <- Monad[IO].iterateWhileM(0) { sleptMinute =>
-          for {
-            _ <- monixTimer.sleep(1.minute)
-          } yield sleptMinute + 1
-        }(_ < minutesToWait)
+
         _ <- session.waitForCompletion
 
         // then
         endTime <- monixTimer.clock.realTime(SECONDS)
 
         _ <- IO {
-          endTime - initialTime shouldBe (11.minutes + 30.seconds).toSeconds
+          (endTime - initialTime) shouldBe 11.minutes.toSeconds
         }
       } yield ()
 
@@ -427,7 +422,6 @@ class ActiveSessionFactorySpec
       val future = programs.unsafeToFuture()
 
       // FIXME Thread.sleepは各FiberがmonixTimer.sleepに到達するのを待っている。これを除去できるか？
-      monixScheduler.tick(30.seconds)
       Thread.sleep(200)
       for (_ <- 1 to 11) {
         monixScheduler.tick(1.minute)
