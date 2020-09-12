@@ -15,7 +15,7 @@ class ActiveSession[
 
   def finish: AsyncContext[Unit] = sessionFiber.cancel
 
-  def isActive: SyncContext[Boolean] = sessionFiber.isIncomplete[SyncContext]
+  def isActive: SyncContext[Boolean] = sessionFiber.isRunning[SyncContext]
 
   def latestFlyStatus: SyncContext[PlayerFlyStatus] = {
     for {

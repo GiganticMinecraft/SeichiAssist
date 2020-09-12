@@ -1,8 +1,7 @@
 package com.github.unchama.generic.effect.concurrent
 
+import cats.Monad
 import cats.effect.{CancelToken, Concurrent, Fiber, Sync}
-import cats.{FlatMap, Monad}
-import com.github.unchama.generic.ContextCoercion
 
 /**
  * We can think of a [[cats.effect.concurrent.Deferred]] as a "mutable" Promise to which
@@ -15,68 +14,104 @@ import com.github.unchama.generic.ContextCoercion
  * @tparam F the context in which the fiber is run
  */
 trait AsymmetricTryableFiber[F[_], A] extends Fiber[F, A] {
-  implicit val fFMap: FlatMap[F]
+
+  import AsymmetricTryableFiber._
 
   /**
-   * Obtains the current value of the `Fiber`, or None if it hasn't completed.
+   * Obtains the current status of the `Fiber`
    */
-  def tryJoin[G[_] : Sync]: G[Option[A]]
-
-  import ContextCoercion._
-  import cats.implicits._
-
-  def isComplete[G[_] : Sync]: G[Boolean] = tryJoin[G] map (_.nonEmpty)
-
-  def isIncomplete[G[_] : Sync]: G[Boolean] = isComplete map (!_)
+  def getCurrentStatus[G[_] : Sync]: G[FiberStatus[A]]
 
   /**
-   * A computation that cancels the fiber if it is not complete,
+   * A computation that cancels the fiber if it is still running,
    * returning whether the cancellation happened or not.
    */
-  def cancelIfIncomplete[G[_] : Sync : ContextCoercion[*[_], F]]: F[Boolean] = {
-    // cancellation does not alter completion status;
-    // if it has been complete then nothing occurs,
-    // or else cancellation is performed and tryJoin would be empty.
-    cancel >> isIncomplete[G].coerceTo[F]
+  def cancelIfPending: F[Boolean]
+
+  import cats.implicits._
+
+  def isRunning[G[_] : Sync]: G[Boolean] = getCurrentStatus[G] map {
+    case Running => true
+    case _ => false
   }
+
+  def isNotRunning[G[_] : Sync]: G[Boolean] = isRunning map (!_)
+
+  def isComplete[G[_] : Sync]: G[Boolean] = getCurrentStatus[G] map {
+    case Completed(_) => true
+    case _ => false
+  }
+
+  def isIncomplete[G[_] : Sync]: G[Boolean] = isComplete map (!_)
 }
 
 object AsymmetricTryableFiber {
+
+  sealed trait FiberStatus[+A]
+
+  case object Running extends FiberStatus[Nothing]
+
+  sealed trait FiberResult[+A] extends FiberStatus[A]
+
+  case class Completed[+A](a: A) extends FiberResult[A]
+
+  case object Cancelled extends FiberResult[Nothing]
+
   /**
    * Start concurrent execution of the source suspended in `F`.
    *
    * @return a [[AsymmetricTryableFiber]] which can be used to cancel, join or tryJoin the result
    */
-  def start[F[_], A](fa: F[A])
-                    (implicit fConc: Concurrent[F]): F[AsymmetricTryableFiber[F, A]] = {
+  def start[F[_], A](fa: F[A])(implicit F: Concurrent[F]): F[AsymmetricTryableFiber[F, A]] = {
     import cats.implicits._
 
     for {
-      promise <- AsymmetricTryableDeferred.concurrent[F, A]
-      fiber <- fConc.start(fa >>= promise.complete)
+      completionPromise <- AsymmetricTryableDeferred.concurrent[F, FiberResult[A]]
+      fiber <- F.start {
+        fa >>= { a =>
+          completionPromise.complete(Completed(a)).as(a)
+        }
+      }
     } yield new AsymmetricTryableFiber[F, A] {
-      override implicit val fFMap: Concurrent[F] = fConc
+      override def cancelIfPending: F[Boolean] = fiber.cancel >> {
+        completionPromise.complete(Cancelled).as(true).recover {
+          case _: IllegalStateException =>
+            // When `complete` was impossible
+            false
+          // otherwise rethrow
+        }
+      }
 
-      override def tryJoin[G[_] : Sync]: G[Option[A]] = promise.tryGet[G]
+      override def getCurrentStatus[G[_] : Sync]: G[FiberStatus[A]] = {
+        completionPromise.tryGet[G] map {
+          case Some(value) => value
+          case None => Running
+        }
+      }
 
       override def cancel: CancelToken[F] = fiber.cancel
 
-      override def join: F[A] = promise.get
+      override def join: F[A] = fiber.join
     }
   }
 
   /**
-   * Creates a trivial value of TryableFiber which is always complete.
+   * Creates a trivial value of [[AsymmetricTryableFiber]] which is always complete.
    */
-  def unit[F[_]](implicit F: Monad[F]): AsymmetricTryableFiber[F, Unit] = {
-    new AsymmetricTryableFiber[F, Unit] {
-      override implicit val fFMap: Monad[F] = F
+  def completed[F[_], A](a: A)(implicit F: Monad[F]): AsymmetricTryableFiber[F, A] = {
+    new AsymmetricTryableFiber[F, A] {
+      override def getCurrentStatus[G[_] : Sync]: G[FiberStatus[A]] = Sync[G].pure(Completed(a))
 
-      override def tryJoin[G[_] : Sync]: G[Option[Unit]] = Sync[G].pure(Some(()))
+      override def cancelIfPending: F[Boolean] = F.pure(false)
 
       override def cancel: CancelToken[F] = F.unit
 
-      override def join: F[Unit] = F.unit
+      override def join: F[A] = F.pure(a)
     }
   }
+
+  /**
+   * Creates a trivial value of [[AsymmetricTryableFiber]] which is always complete.
+   */
+  def unit[F[_]](implicit F: Monad[F]): AsymmetricTryableFiber[F, Unit] = completed[F, Unit](())
 }
