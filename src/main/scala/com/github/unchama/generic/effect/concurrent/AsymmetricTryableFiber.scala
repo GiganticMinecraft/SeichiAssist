@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect.concurrent
 
 import cats.effect.{CancelToken, Concurrent, Fiber, Sync}
-import cats.{FlatMap, Monad}
+import cats.{Functor, Monad}
 
 /**
  * We can think of a [[cats.effect.concurrent.Deferred]] as a "mutable" Promise to which
@@ -13,7 +13,7 @@ import cats.{FlatMap, Monad}
  *
  * @tparam F the context in which the fiber is run
  */
-abstract class AsymmetricTryableFiber[F[_] : FlatMap, A] extends Fiber[F, A] {
+abstract class AsymmetricTryableFiber[F[_] : Functor, A] extends Fiber[F, A] {
 
   import AsymmetricTryableFiber._
 
@@ -27,6 +27,11 @@ abstract class AsymmetricTryableFiber[F[_] : FlatMap, A] extends Fiber[F, A] {
    * returning whether the cancellation happened or not.
    */
   def cancelIfRunning: F[Boolean]
+
+  /**
+   * Wait until a [[FiberResult]] is available, and then yield the result.
+   */
+  def waitForResult: F[FiberResult[A]]
 
   import cats.implicits._
 
@@ -91,6 +96,8 @@ object AsymmetricTryableFiber {
         }
       }
 
+      override def waitForResult: F[FiberResult[A]] = completionPromise.get
+
       override def join: F[A] = fiber.join
     }
   }
@@ -104,7 +111,10 @@ object AsymmetricTryableFiber {
 
       override def cancelIfRunning: F[Boolean] = F.pure(false)
 
+      override def waitForResult: F[FiberResult[A]] = F.pure(Completed(a))
+
       override def join: F[A] = F.pure(a)
+
     }
   }
 

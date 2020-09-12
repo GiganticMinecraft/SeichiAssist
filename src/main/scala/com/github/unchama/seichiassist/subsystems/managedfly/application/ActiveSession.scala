@@ -6,7 +6,7 @@ import com.github.unchama.generic.effect.concurrent.AsymmetricTryableFiber
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus, RemainingFlyDuration}
 
 class ActiveSession[
-  AsyncContext[_],
+  AsyncContext[_] : Sync,
   SyncContext[_] : Sync
 ](sessionFiber: AsymmetricTryableFiber[AsyncContext, Nothing],
   latestRemainingDurationRef: ReadOnlyRef[SyncContext, RemainingFlyDuration]) {
@@ -14,6 +14,8 @@ class ActiveSession[
   import cats.implicits._
 
   def finish: AsyncContext[Unit] = sessionFiber.cancel
+
+  def waitForCompletion: AsyncContext[Unit] = sessionFiber.waitForResult.as(())
 
   def isActive: SyncContext[Boolean] = sessionFiber.isRunning[SyncContext]
 
