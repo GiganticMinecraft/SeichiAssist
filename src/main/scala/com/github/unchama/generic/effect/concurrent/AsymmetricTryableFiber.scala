@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.Monad
 import cats.effect.{CancelToken, Concurrent, Fiber, Sync}
+import cats.{FlatMap, Monad}
 
 /**
  * We can think of a [[cats.effect.concurrent.Deferred]] as a "mutable" Promise to which
@@ -13,12 +13,12 @@ import cats.effect.{CancelToken, Concurrent, Fiber, Sync}
  *
  * @tparam F the context in which the fiber is run
  */
-trait AsymmetricTryableFiber[F[_], A] extends Fiber[F, A] {
+abstract class AsymmetricTryableFiber[F[_] : FlatMap, A] extends Fiber[F, A] {
 
   import AsymmetricTryableFiber._
 
   /**
-   * Obtains the current status of the `Fiber`
+   * Obtains the current status of the `Fiber`.
    */
   def getCurrentStatus[G[_] : Sync]: G[FiberStatus[A]]
 
@@ -29,6 +29,8 @@ trait AsymmetricTryableFiber[F[_], A] extends Fiber[F, A] {
   def cancelIfRunning: F[Boolean]
 
   import cats.implicits._
+
+  override def cancel: CancelToken[F] = cancelIfRunning.as(())
 
   def isRunning[G[_] : Sync]: G[Boolean] = getCurrentStatus[G] map {
     case Running => true
@@ -89,8 +91,6 @@ object AsymmetricTryableFiber {
         }
       }
 
-      override def cancel: CancelToken[F] = cancelIfRunning.as(())
-
       override def join: F[A] = fiber.join
     }
   }
@@ -103,8 +103,6 @@ object AsymmetricTryableFiber {
       override def getCurrentStatus[G[_] : Sync]: G[FiberStatus[A]] = Sync[G].pure(Completed(a))
 
       override def cancelIfRunning: F[Boolean] = F.pure(false)
-
-      override def cancel: CancelToken[F] = F.unit
 
       override def join: F[A] = F.pure(a)
     }
