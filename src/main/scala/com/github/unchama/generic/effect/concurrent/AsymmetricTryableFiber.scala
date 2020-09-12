@@ -1,6 +1,6 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.effect.{CancelToken, Concurrent, Fiber, Sync}
+import cats.effect.{CancelToken, Concurrent, ExitCase, Fiber, Sync}
 import cats.{Functor, Monad}
 
 /**
@@ -62,6 +62,7 @@ object AsymmetricTryableFiber {
 
   case class Completed[+A](a: A) extends FiberResult[A]
 
+  case class Error(e: Throwable) extends FiberResult[Nothing]
   case object Cancelled extends FiberResult[Nothing]
 
   /**
@@ -70,13 +71,21 @@ object AsymmetricTryableFiber {
    * @return a [[AsymmetricTryableFiber]] which can be used to cancel, join or tryJoin the result
    */
   def start[F[_], A](fa: F[A])(implicit F: Concurrent[F]): F[AsymmetricTryableFiber[F, A]] = {
+    import cats.effect.implicits._
     import cats.implicits._
 
     for {
       completionPromise <- AsymmetricTryableDeferred.concurrent[F, FiberResult[A]]
       fiber <- F.start {
-        fa >>= { a =>
-          completionPromise.complete(Completed(a)).as(a)
+        {
+          fa >>= { a =>
+            completionPromise.complete(Completed(a)).as(a)
+          }
+        }.guaranteeCase {
+          case ExitCase.Error(e) =>
+            // when the action fa threw an error
+            completionPromise.complete(Error(e))
+          case _ => F.unit
         }
       }
     } yield new AsymmetricTryableFiber[F, A] {
