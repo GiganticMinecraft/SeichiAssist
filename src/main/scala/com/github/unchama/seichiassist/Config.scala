@@ -37,7 +37,7 @@ class Config private(val config: FileConfiguration) {
 
   def getDokodemoEnderlevel: Int = getIntFailSafe("dokodemoenderlevel")
 
-  def getMineStacklevel(i: Integer): Integer = getIntFailSafe("minestacklevel" + i)
+  def getMineStacklevel(i: Int): Int = getIntFailSafe("minestacklevel" + i)
 
   def getDB: String = config.getString("db")
 
