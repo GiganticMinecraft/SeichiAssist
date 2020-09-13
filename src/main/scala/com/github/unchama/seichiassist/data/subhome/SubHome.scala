@@ -8,6 +8,6 @@ import org.jetbrains.annotations.Nullable
 /**
  * サブホームオブジェクトのクラス
  */
-class SubHome(val location: Location, val name: String) {
+case class SubHome(val location: Location, val name: String) {
   def getLocation: Location = location.clone // BukkitのLocationはミュータブルなのでコピーして返す必要がある
 }
