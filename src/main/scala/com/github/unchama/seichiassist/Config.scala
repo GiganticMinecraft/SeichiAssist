@@ -120,7 +120,8 @@ class Config private(val config: FileConfiguration) {
 
   def getDropNewYearBagEndDay: String = config.getString("NewYearEvent.DropNewYearBagEndDay")
 
-  def getNewYearDropProbability: Integer = getIntFailSafe("NewYearEvent.NewYearBagDropProbability")
+  def getNewYearDropProbability: Int = 
+    getIntFailSafe("NewYearEvent.NewYearBagDropProbability")
 
   def getNewYear: String = config.getString("NewYearEvent.NewYear")
 
