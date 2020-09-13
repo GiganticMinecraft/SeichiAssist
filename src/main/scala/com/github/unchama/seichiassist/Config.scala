@@ -27,7 +27,7 @@ class Config private(val config: FileConfiguration) {
 
   def getGachaPresentInterval: Int = getIntFailSafe("presentinterval")
 
-  def getDualBreaklevel: Integer = getIntFailSafe("dualbreaklevel")
+  def getDualBreaklevel: Int = getIntFailSafe("dualbreaklevel")
 
   def getMultipleIDBlockBreaklevel: Integer = getIntFailSafe("multipleidblockbreaklevel")
 
