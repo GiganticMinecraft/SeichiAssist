@@ -25,7 +25,7 @@ class Config private(val config: FileConfiguration) {
 
   def getLoginPlayerMineSpeed: Double = getDoubleFailSafe("onlineplayersamount")
 
-  def getGachaPresentInterval: Integer = getIntFailSafe("presentinterval")
+  def getGachaPresentInterval: Int = getIntFailSafe("presentinterval")
 
   def getDualBreaklevel: Integer = getIntFailSafe("dualbreaklevel")
 
