@@ -1,39 +1,38 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
-import java.util.concurrent.Executors
-
 import cats.Monad
-import cats.effect.{ContextShift, IO, SyncIO, Timer}
+import cats.effect.{SyncIO, Timer}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
-import com.github.unchama.testutil.concurrent.ParallelIOTest
+import com.github.unchama.testutil.concurrent.tests.{EventuallyF, ParallelEffectTest}
 import monix.catnap.SchedulerEffect
+import monix.eval.Task
 import monix.execution.schedulers.TestScheduler
-import org.scalatest.concurrent.{Eventually, ScalaFutures}
+import org.scalatest.Assertion
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.Await
 
 class ActiveSessionFactorySpec
   extends AnyWordSpec
     with ScalaCheckPropertyChecks
-    with Matchers with ScalaFutures with Eventually
-    with ParallelIOTest {
-  val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
-  implicit val shift: ContextShift[IO] = IO.contextShift(cachedThreadPool)
+    with Matchers with ScalaFutures with EventuallyF
+    with ParallelEffectTest {
 
-  val monixScheduler: TestScheduler = TestScheduler()
-  implicit val monixTimer: Timer[IO] = SchedulerEffect.timer(monixScheduler)
-  val realTimeTimer: Timer[IO] = IO.timer(cachedThreadPool)
-
-  val mock = new Mock[IO, SyncIO]
-
-  import mock._
+  import com.github.unchama.generic.ContextCoercion._
 
   import scala.concurrent.duration._
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
+
+  implicit val monixScheduler: TestScheduler = TestScheduler()
+  implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
+
+  val mock = new Mock[Task, SyncIO]
+
+  import mock._
 
   "Fly session" should {
     "be able to tell if it is active or not" in {
@@ -44,7 +43,7 @@ class ActiveSessionFactorySpec
         )
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -52,28 +51,24 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // then
-        _ <- IO {
-          eventually {
-            session.isActive.unsafeRunSync() shouldBe true
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          session.isActive.unsafeRunSync() shouldBe true
         }
 
         // when
         _ <- session.finish
         // then
-        _ <- IO {
-          eventually {
-            session.isActive.unsafeRunSync() shouldBe false
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          session.isActive.unsafeRunSync() shouldBe false
         }
       } yield ()
 
-      runParallel(10)(program).unsafeRunSync()
+      program.runToFuture.futureValue
     }
 
     "synchronize player's fly status once started" in {
@@ -84,7 +79,7 @@ class ActiveSessionFactorySpec
         )
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -92,23 +87,21 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
 
         // then
-        _ <- IO {
-          eventually {
-            playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe true
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe true
         }
 
         // cleanup
         _ <- session.finish
       } yield ()
 
-      runParallel(10)(program).unsafeRunSync()
+      program.runToFuture.futureValue
     }
 
     "synchronize player's fly status when cancelled or complete" in {
@@ -119,7 +112,7 @@ class ActiveSessionFactorySpec
         )
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -127,21 +120,19 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         _ <- session.finish
 
         // then
-        _ <- IO {
-          eventually {
-            playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe false
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe false
         }
       } yield ()
 
-      runParallel(10)(program).unsafeRunSync()
+      program.runToFuture.futureValue
     }
 
     "terminate immediately if the player does not have enough experience" in {
@@ -152,7 +143,7 @@ class ActiveSessionFactorySpec
         )
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -160,20 +151,18 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           FiniteNonNegativeExperience(99),
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
 
         // then
-        _ <- IO {
-          eventually {
-            session.isActive.unsafeRunSync() shouldBe false
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          session.isActive.unsafeRunSync() shouldBe false
         }
       } yield ()
 
-      runParallel(10)(program).unsafeRunSync()
+      program.runToFuture.futureValue
     }
 
     "not consume player experience in first 1 minute even if terminated" in {
@@ -186,7 +175,7 @@ class ActiveSessionFactorySpec
         )
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -194,27 +183,23 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           initialExperience = originalExp,
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // セッションが有効になるまで待つ
-        _ <- IO {
-          eventually {
-            session.isActive.unsafeRunSync() shouldBe true
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          session.isActive.unsafeRunSync() shouldBe true
         }
         _ <- session.finish
 
         // then
-        _ <- IO {
-          eventually {
-            playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe originalExp
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe originalExp
         }
       } yield ()
 
-      runParallel(10)(program).unsafeRunSync()
+      program.runToFuture.futureValue
     }
 
     "consume player experience every minute as specified by the configuration" in {
@@ -228,7 +213,7 @@ class ActiveSessionFactorySpec
         )
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -236,27 +221,23 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           FiniteNonNegativeExperience(originalExp),
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // セッションが有効になるまで待つ
-        _ <- IO {
-          eventually {
-            session.isActive.unsafeRunSync() shouldBe true
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          session.isActive.unsafeRunSync() shouldBe true
         }
 
         // then
         _ <- monixTimer.sleep(30.seconds)
-        _ <- Monad[IO].iterateWhileM(0) { sleptMinute =>
+        _ <- Monad[Task].iterateWhileM(0) { sleptMinute =>
           val expectedExperience = FiniteNonNegativeExperience(originalExp - sleptMinute * 100)
 
           for {
-            _ <- IO {
-              eventually {
-                playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
-              }
+            _ <- eventuallyF[Task, Assertion] {
+              playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
             }
             _ <- monixTimer.sleep(1.minute)
           } yield sleptMinute + 1
@@ -266,17 +247,13 @@ class ActiveSessionFactorySpec
         _ <- session.finish
       } yield ()
 
-      val programs = runParallel(10)(program)
+      val programs = program
 
-      val future = programs.unsafeToFuture()
+      val future = programs.runToFuture
 
-
-      // FIXME Thread.sleepは各FiberがmonixTimer.sleepに到達するのを待っている。これを除去できるか？
       monixScheduler.tick(30.seconds)
-      Thread.sleep(200)
       for (_ <- 0 to minutesToWait) {
         monixScheduler.tick(1.minute)
-        Thread.sleep(20)
       }
 
       Await.result(future, 30.seconds)
@@ -293,7 +270,7 @@ class ActiveSessionFactorySpec
         )
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -301,53 +278,45 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           FiniteNonNegativeExperience(originalExp),
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // セッションが有効になるまで待つ
-        _ <- IO {
-          eventually {
-            session.isActive.unsafeRunSync() shouldBe true
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          session.isActive.unsafeRunSync() shouldBe true
         }
 
         // then
         _ <- monixTimer.sleep(30.seconds)
-        _ <- Monad[IO].iterateWhileM(0) { sleptMinute =>
+        _ <- Monad[Task].iterateWhileM(0) { sleptMinute =>
           val expectedExperience = FiniteNonNegativeExperience(originalExp - sleptMinute * 100)
 
           for {
-            _ <- IO {
-              eventually {
-                playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
-              }
+            _ <- eventuallyF[Task, Assertion] {
+              playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
             }
             _ <- monixTimer.sleep(1.minute)
           } yield sleptMinute + 1
         }(_ < minutesToWait)
-        _ <- playerRef.isIdleMutex.lockAndUpdate(_ => IO.pure(true))
-        _ <- Monad[IO].iterateWhileM(0) { sleptMinute =>
+        _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(true))
+        _ <- Monad[Task].iterateWhileM(0) { sleptMinute =>
           val expectedExperience = FiniteNonNegativeExperience(originalExp - minutesToWait * 100)
 
           for {
-            _ <- IO {
-              eventually {
-                playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
-              }
+            _ <- eventuallyF[Task, Assertion] {
+              playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
             }
             _ <- monixTimer.sleep(1.minute)
           } yield sleptMinute + 1
         }(_ < minutesToWait)
-        _ <- playerRef.isIdleMutex.lockAndUpdate(_ => IO.pure(false))
-        _ <- Monad[IO].iterateWhileM(0) { sleptMinute =>
+        _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(false))
+        _ <- Monad[Task].iterateWhileM(0) { sleptMinute =>
           val expectedExperience = FiniteNonNegativeExperience(originalExp - (minutesToWait + sleptMinute) * 100)
 
           for {
-            _ <- IO {
-              eventually {
-                playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
-              }
+            _ <- eventuallyF[Task, Assertion] {
+              playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
             }
             _ <- monixTimer.sleep(1.minute)
           } yield sleptMinute + 1
@@ -357,16 +326,13 @@ class ActiveSessionFactorySpec
         _ <- session.finish
       } yield ()
 
-      val programs = runParallel(10)(program)
+      val programs = program
 
-      val future = programs.unsafeToFuture()
+      val future = programs.runToFuture
 
-      // FIXME Thread.sleepは各FiberがmonixTimer.sleepに到達するのを待っている。これを除去できるか？
       monixScheduler.tick(30.seconds)
-      Thread.sleep(200)
       for (_ <- 0 to minutesToWait * 3) {
         monixScheduler.tick(1.minute)
-        Thread.sleep(20)
       }
 
       Await.result(future, 30.seconds)
@@ -385,7 +351,7 @@ class ActiveSessionFactorySpec
       // 11分の経過を期待する。
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -393,17 +359,15 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           FiniteNonNegativeExperience(originalExp),
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         initialTime <- monixTimer.clock.realTime(SECONDS)
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // セッションが有効になるまで待つ
-        _ <- IO {
-          eventually {
-            session.isActive.unsafeRunSync() shouldBe true
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          session.isActive.unsafeRunSync() shouldBe true
         }
 
         _ <- session.waitForCompletion
@@ -411,20 +375,17 @@ class ActiveSessionFactorySpec
         // then
         endTime <- monixTimer.clock.realTime(SECONDS)
 
-        _ <- IO {
+        _ <- Task {
           (endTime - initialTime) shouldBe 11.minutes.toSeconds
         }
       } yield ()
 
-      val programs = runParallel(10)(program)
+      val programs = program
 
-      val future = programs.unsafeToFuture()
+      val future = programs.runToFuture
 
-      // FIXME Thread.sleepは各FiberがmonixTimer.sleepに到達するのを待っている。これを除去できるか？
-      Thread.sleep(200)
       for (_ <- 1 to 11) {
         monixScheduler.tick(1.minute)
-        Thread.sleep(20)
       }
 
       Await.result(future, 30.seconds)
@@ -438,7 +399,7 @@ class ActiveSessionFactorySpec
         )
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -446,21 +407,19 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           FiniteNonNegativeExperience(99),
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         _ <- session.waitForCompletion
 
         // then
-        _ <- IO {
-          eventually {
-            playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(PlayerExpNotEnough))
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(PlayerExpNotEnough))
         }
       } yield ()
 
-      runParallel(10)(program).unsafeRunSync()
+      program.runToFuture.futureValue
     }
   }
 
@@ -476,7 +435,7 @@ class ActiveSessionFactorySpec
       val originalSessionLength = RemainingFlyDuration.PositiveMinutes.fromPositive(sessionLengthInMinutes)
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -484,7 +443,7 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         session <- factory.start[SyncIO](originalSessionLength).run(playerRef)
@@ -492,23 +451,18 @@ class ActiveSessionFactorySpec
         _ <- monixTimer.sleep(sessionLengthInMinutes.minutes + 30.seconds)
 
         // then
-        _ <- IO {
-          eventually {
-            session.isActive.unsafeRunSync() shouldBe false
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          session.isActive.unsafeRunSync() shouldBe false
         }
       } yield ()
 
-      val programs = runParallel(10)(program)
+      val programs = program
 
-      val future = programs.unsafeToFuture()
+      val future = programs.runToFuture
 
-      // FIXME Thread.sleepは各FiberがmonixTimer.sleepに到達するのを待っている。これを除去できるか？
       monixScheduler.tick(30.seconds)
-      Thread.sleep(200)
       for (_ <- 1 to 11) {
         monixScheduler.tick(1.minute)
-        Thread.sleep(20)
       }
 
       Await.result(future, 30.seconds)
@@ -525,7 +479,7 @@ class ActiveSessionFactorySpec
       val originalSessionLength = RemainingFlyDuration.PositiveMinutes.fromPositive(sessionLengthInMinutes)
 
       implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
-      val factory = new ActiveSessionFactory[IO, PlayerMockReference]()
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
         // given
@@ -533,7 +487,7 @@ class ActiveSessionFactorySpec
           initiallyFlying = false,
           InfiniteExperience,
           initiallyIdle = false
-        ).toIO
+        ).coerceTo[Task]
 
         // when
         _ <- factory.start[SyncIO](originalSessionLength).run(playerRef)
@@ -541,23 +495,18 @@ class ActiveSessionFactorySpec
         _ <- monixTimer.sleep(sessionLengthInMinutes.minutes + 30.seconds)
 
         // then
-        _ <- IO {
-          eventually {
-            playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(FlyDurationExpired))
-          }
+        _ <- eventuallyF[Task, Assertion] {
+          playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(FlyDurationExpired))
         }
       } yield ()
 
-      val programs = runParallel(10)(program)
+      val programs = program
 
-      val future = programs.unsafeToFuture()
+      val future = programs.runToFuture
 
-      // FIXME Thread.sleepは各FiberがmonixTimer.sleepに到達するのを待っている。これを除去できるか？
       monixScheduler.tick(30.seconds)
-      Thread.sleep(200)
       for (_ <- 1 to 11) {
         monixScheduler.tick(1.minute)
-        Thread.sleep(20)
       }
 
       Await.result(future, 30.seconds)
