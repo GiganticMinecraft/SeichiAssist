@@ -17,7 +17,7 @@ class Config private(val config: FileConfiguration) {
   // NOTE:
   //   config.getInt/config.getDoubleはnull値の場合0を返す
   //   getIntFailSafe/getDoubleFailSafeはNumberFormatExceptionを投げる
-  private def getIntFailSafe(path: String): Integer = Integer.parseInt(config.getString(path))
+  private def getIntFailSafe(path: String): Int = Integer.parseInt(config.getString(path))
 
   private def getDoubleFailSafe(path: String): java.lang.Double = java.lang.Double.parseDouble(config.getString(path))
 
