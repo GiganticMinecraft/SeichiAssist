@@ -11,7 +11,7 @@ import java.util
  * @author karayuu
  *         2017/9/11
  */
-class GridTemplate(var aheadAmount: Int, var behindAmount: Int, var rightAmount: Int, var leftAmount: Int) //コンストラクタ
+class GridTemplate(val aheadAmount: Int, val behindAmount: Int, val rightAmount: Int, val leftAmount: Int)
 {
   //ゲッター
   def getAheadAmount: Int = aheadAmount
