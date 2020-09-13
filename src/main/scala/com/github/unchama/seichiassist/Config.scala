@@ -35,7 +35,7 @@ class Config private(val config: FileConfiguration) {
 
   def getPassivePortalInventorylevel: Int = getIntFailSafe("passiveportalinventorylevel")
 
-  def getDokodemoEnderlevel: Integer = getIntFailSafe("dokodemoenderlevel")
+  def getDokodemoEnderlevel: Int = getIntFailSafe("dokodemoenderlevel")
 
   def getMineStacklevel(i: Integer): Integer = getIntFailSafe("minestacklevel" + i)
 
