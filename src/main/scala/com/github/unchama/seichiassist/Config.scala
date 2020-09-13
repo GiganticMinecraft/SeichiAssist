@@ -33,7 +33,7 @@ class Config private(val config: FileConfiguration) {
 
   def getDropExplevel(i: Integer): Double = getDoubleFailSafe("dropexplevel" + i)
 
-  def getPassivePortalInventorylevel: Integer = getIntFailSafe("passiveportalinventorylevel")
+  def getPassivePortalInventorylevel: Int = getIntFailSafe("passiveportalinventorylevel")
 
   def getDokodemoEnderlevel: Integer = getIntFailSafe("dokodemoenderlevel")
 
