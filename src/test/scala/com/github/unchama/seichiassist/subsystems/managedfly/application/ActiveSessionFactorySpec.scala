@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.managedfly.application
 import cats.Monad
 import cats.effect.{SyncIO, Timer}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
-import com.github.unchama.testutil.concurrent.tests.{ParallelEffectTest, TaskDiscreteEventually}
+import com.github.unchama.testutil.concurrent.tests.{ConcurrentEffectTest, TaskDiscreteEventually}
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.catnap.SchedulerEffect
 import monix.eval.Task
@@ -17,7 +17,7 @@ class ActiveSessionFactorySpec
     with ScalaCheckPropertyChecks
     with Matchers
     with TaskDiscreteEventually
-    with ParallelEffectTest
+    with ConcurrentEffectTest
     with MonixTestSchedulerTests {
 
   import com.github.unchama.generic.ContextCoercion._
@@ -72,7 +72,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), 30.seconds)
+      awaitForProgram(runConcurrent(program)(100), 30.seconds)
     }
 
     "synchronize player's fly status once started" in {
@@ -107,7 +107,7 @@ class ActiveSessionFactorySpec
         _ <- session.finish
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), 1.second)
+      awaitForProgram(runConcurrent(program)(100), 1.second)
     }
 
     "synchronize player's fly status when cancelled or complete" in {
@@ -140,7 +140,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), 1.second)
+      awaitForProgram(runConcurrent(program)(100), 1.second)
     }
 
     "terminate immediately if the player does not have enough experience" in {
@@ -172,7 +172,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), 1.second)
+      awaitForProgram(runConcurrent(program)(100), 1.second)
     }
 
     "not consume player experience in first 1 minute even if terminated" in {
@@ -213,7 +213,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), 1.minute)
+      awaitForProgram(runConcurrent(program)(100), 1.minute)
     }
 
     "consume player experience every minute as specified by the configuration" in {
@@ -265,7 +265,7 @@ class ActiveSessionFactorySpec
         _ <- session.finish
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), minutesToWait.minutes + 30.seconds)
+      awaitForProgram(runConcurrent(program)(100), minutesToWait.minutes + 30.seconds)
     }
 
     "not consume player experience whenever player is idle" in {
@@ -343,7 +343,7 @@ class ActiveSessionFactorySpec
         _ <- session.finish
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), (minutesToWait * 3).minutes + 30.seconds)
+      awaitForProgram(runConcurrent(program)(100), (minutesToWait * 3).minutes + 30.seconds)
     }
 
     "terminate when player's experience is below per-minute experience consumption" in {
@@ -390,7 +390,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), 11.minutes)
+      awaitForProgram(runConcurrent(program)(100), 11.minutes)
     }
 
     "send appropriate notification when player does not have enough experience" in {
@@ -423,7 +423,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), 1.second)
+      awaitForProgram(runConcurrent(program)(100), 1.second)
     }
   }
 
@@ -462,7 +462,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), sessionLengthInMinutes.minutes + 30.seconds)
+      awaitForProgram(runConcurrent(program)(100), sessionLengthInMinutes.minutes + 30.seconds)
     }
 
     "send appropriate notification when a session expires" in {
@@ -499,7 +499,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), sessionLengthInMinutes.minutes + 30.seconds)
+      awaitForProgram(runConcurrent(program)(100), sessionLengthInMinutes.minutes + 30.seconds)
     }
   }
 }

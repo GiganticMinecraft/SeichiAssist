@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.effect.{SyncIO, Timer}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
-import com.github.unchama.testutil.concurrent.tests.{ParallelEffectTest, TaskDiscreteEventually}
+import com.github.unchama.testutil.concurrent.tests.{ConcurrentEffectTest, TaskDiscreteEventually}
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.catnap.SchedulerEffect
 import monix.eval.Task
@@ -16,7 +16,7 @@ class ActiveSessionReferenceSpec
     with ScalaCheckPropertyChecks
     with Matchers
     with TaskDiscreteEventually
-    with ParallelEffectTest
+    with ConcurrentEffectTest
     with MonixTestSchedulerTests {
 
   import com.github.unchama.generic.ContextCoercion._
@@ -90,7 +90,7 @@ class ActiveSessionReferenceSpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), sessionLengthInMinutes.minutes)
+      awaitForProgram(runConcurrent(program)(100), sessionLengthInMinutes.minutes)
     }
 
     "be able to stop a running session" in {
@@ -131,7 +131,7 @@ class ActiveSessionReferenceSpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), 1.minute)
+      awaitForProgram(runConcurrent(program)(100), 1.minute)
     }
 
     "be able to replace a session" in {
@@ -173,7 +173,7 @@ class ActiveSessionReferenceSpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), targetSessionLength.minutes)
+      awaitForProgram(runConcurrent(program)(100), targetSessionLength.minutes)
     }
 
     "not allow more than one session to be present" in {
@@ -232,7 +232,7 @@ class ActiveSessionReferenceSpec
         }
       } yield ()
 
-      awaitForProgram(runParallel(program)(100), secondSessionLength.minutes)
+      awaitForProgram(runConcurrent(program)(100), secondSessionLength.minutes)
     }
   }
 

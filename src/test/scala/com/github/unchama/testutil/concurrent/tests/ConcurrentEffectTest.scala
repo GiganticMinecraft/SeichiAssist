@@ -2,14 +2,14 @@ package com.github.unchama.testutil.concurrent.tests
 
 import cats.effect.{Concurrent, ContextShift}
 
-trait ParallelEffectTest {
+trait ConcurrentEffectTest {
 
   import cats.effect.implicits._
   import cats.implicits._
 
-  def runParallel[F[_] : Concurrent, R](program: F[R])(parallelism: Int)(implicit shift: ContextShift[F]): F[List[R]] = {
+  def runConcurrent[F[_] : Concurrent, R](program: F[R])(concurrency: Int)(implicit shift: ContextShift[F]): F[List[R]] = {
     for {
-      startedFibers <- List.fill(parallelism)(program)
+      startedFibers <- List.fill(concurrency)(program)
         .map(_.start)
         .sequence
 
@@ -19,4 +19,4 @@ trait ParallelEffectTest {
 
 }
 
-object ParallelEffectTest extends ParallelEffectTest
+object ConcurrentEffectTest extends ConcurrentEffectTest
