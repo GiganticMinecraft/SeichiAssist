@@ -7,7 +7,6 @@ import com.github.unchama.testutil.concurrent.tests.{ParallelEffectTest, TaskDis
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.catnap.SchedulerEffect
 import monix.eval.Task
-import monix.execution.ExecutionModel
 import monix.execution.schedulers.TestScheduler
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -26,8 +25,9 @@ class ActiveSessionFactorySpec
   import scala.concurrent.duration._
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
+  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig = DiscreteEventuallyConfig(1000000)
 
-  implicit val monixScheduler: TestScheduler = TestScheduler(ExecutionModel.AlwaysAsyncExecution)
+  implicit val monixScheduler: TestScheduler = TestScheduler()
   implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
 
   val mock = new Mock[Task, SyncIO]
@@ -72,8 +72,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      // FIXME 1分は長くない？
-      awaitForProgram(program, 1.minute)
+      awaitForProgram(program, 30.seconds)
     }
 
     "synchronize player's fly status once started" in {
