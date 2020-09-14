@@ -3,23 +3,23 @@ package com.github.unchama.seichiassist.subsystems.managedfly.application
 import cats.Monad
 import cats.effect.{SyncIO, Timer}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
-import com.github.unchama.testutil.concurrent.tests.{EventuallyF, ParallelEffectTest}
+import com.github.unchama.testutil.concurrent.tests.{ParallelEffectTest, TaskDiscreteEventually}
+import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.catnap.SchedulerEffect
 import monix.eval.Task
+import monix.execution.ExecutionModel
 import monix.execution.schedulers.TestScheduler
-import org.scalatest.Assertion
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-import scala.concurrent.Await
-
 class ActiveSessionFactorySpec
   extends AnyWordSpec
     with ScalaCheckPropertyChecks
-    with Matchers with ScalaFutures with EventuallyF
-    with ParallelEffectTest {
+    with Matchers
+    with TaskDiscreteEventually
+    with ParallelEffectTest
+    with MonixTestSchedulerTests {
 
   import com.github.unchama.generic.ContextCoercion._
 
@@ -27,7 +27,7 @@ class ActiveSessionFactorySpec
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
 
-  implicit val monixScheduler: TestScheduler = TestScheduler()
+  implicit val monixScheduler: TestScheduler = TestScheduler(ExecutionModel.AlwaysAsyncExecution)
   implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
 
   val mock = new Mock[Task, SyncIO]
@@ -56,19 +56,24 @@ class ActiveSessionFactorySpec
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          session.isActive.unsafeRunSync() shouldBe true
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe true
+          }
         }
 
         // when
         _ <- session.finish
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          session.isActive.unsafeRunSync() shouldBe false
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe false
+          }
         }
       } yield ()
 
-      program.runToFuture.futureValue
+      // FIXME 1分は長くない？
+      awaitForProgram(program, 1.minute)
     }
 
     "synchronize player's fly status once started" in {
@@ -93,15 +98,17 @@ class ActiveSessionFactorySpec
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
 
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe true
+        _ <- discreteEventually {
+          Task {
+            playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe true
+          }
         }
 
         // cleanup
         _ <- session.finish
       } yield ()
 
-      program.runToFuture.futureValue
+      awaitForProgram(program, 1.second)
     }
 
     "synchronize player's fly status when cancelled or complete" in {
@@ -127,12 +134,14 @@ class ActiveSessionFactorySpec
         _ <- session.finish
 
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe false
+        _ <- discreteEventually {
+          Task {
+            playerRef.isFlyingMutex.readLatest.unsafeRunSync() shouldBe false
+          }
         }
       } yield ()
 
-      program.runToFuture.futureValue
+      awaitForProgram(program, 1.second)
     }
 
     "terminate immediately if the player does not have enough experience" in {
@@ -157,12 +166,14 @@ class ActiveSessionFactorySpec
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
 
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          session.isActive.unsafeRunSync() shouldBe false
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe false
+          }
         }
       } yield ()
 
-      program.runToFuture.futureValue
+      awaitForProgram(program, 1.second)
     }
 
     "not consume player experience in first 1 minute even if terminated" in {
@@ -188,18 +199,22 @@ class ActiveSessionFactorySpec
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // セッションが有効になるまで待つ
-        _ <- eventuallyF[Task, Assertion] {
-          session.isActive.unsafeRunSync() shouldBe true
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe true
+          }
         }
         _ <- session.finish
 
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe originalExp
+        _ <- discreteEventually {
+          Task {
+            playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe originalExp
+          }
         }
       } yield ()
 
-      program.runToFuture.futureValue
+      awaitForProgram(program, 1.minute)
     }
 
     "consume player experience every minute as specified by the configuration" in {
@@ -226,8 +241,10 @@ class ActiveSessionFactorySpec
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // セッションが有効になるまで待つ
-        _ <- eventuallyF[Task, Assertion] {
-          session.isActive.unsafeRunSync() shouldBe true
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe true
+          }
         }
 
         // then
@@ -236,8 +253,10 @@ class ActiveSessionFactorySpec
           val expectedExperience = FiniteNonNegativeExperience(originalExp - sleptMinute * 100)
 
           for {
-            _ <- eventuallyF[Task, Assertion] {
-              playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
+            _ <- discreteEventually {
+              Task {
+                playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
+              }
             }
             _ <- monixTimer.sleep(1.minute)
           } yield sleptMinute + 1
@@ -247,16 +266,7 @@ class ActiveSessionFactorySpec
         _ <- session.finish
       } yield ()
 
-      val programs = program
-
-      val future = programs.runToFuture
-
-      monixScheduler.tick(30.seconds)
-      for (_ <- 0 to minutesToWait) {
-        monixScheduler.tick(1.minute)
-      }
-
-      Await.result(future, 30.seconds)
+      awaitForProgram(program, minutesToWait.minutes + 30.seconds)
     }
 
     "not consume player experience whenever player is idle" in {
@@ -283,8 +293,10 @@ class ActiveSessionFactorySpec
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // セッションが有効になるまで待つ
-        _ <- eventuallyF[Task, Assertion] {
-          session.isActive.unsafeRunSync() shouldBe true
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe true
+          }
         }
 
         // then
@@ -293,8 +305,10 @@ class ActiveSessionFactorySpec
           val expectedExperience = FiniteNonNegativeExperience(originalExp - sleptMinute * 100)
 
           for {
-            _ <- eventuallyF[Task, Assertion] {
-              playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
+            _ <- discreteEventually {
+              Task {
+                playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
+              }
             }
             _ <- monixTimer.sleep(1.minute)
           } yield sleptMinute + 1
@@ -304,8 +318,10 @@ class ActiveSessionFactorySpec
           val expectedExperience = FiniteNonNegativeExperience(originalExp - minutesToWait * 100)
 
           for {
-            _ <- eventuallyF[Task, Assertion] {
-              playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
+            _ <- discreteEventually {
+              Task {
+                playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
+              }
             }
             _ <- monixTimer.sleep(1.minute)
           } yield sleptMinute + 1
@@ -315,8 +331,10 @@ class ActiveSessionFactorySpec
           val expectedExperience = FiniteNonNegativeExperience(originalExp - (minutesToWait + sleptMinute) * 100)
 
           for {
-            _ <- eventuallyF[Task, Assertion] {
-              playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
+            _ <- discreteEventually {
+              Task {
+                playerRef.experienceMutex.readLatest.unsafeRunSync() shouldBe expectedExperience
+              }
             }
             _ <- monixTimer.sleep(1.minute)
           } yield sleptMinute + 1
@@ -326,16 +344,7 @@ class ActiveSessionFactorySpec
         _ <- session.finish
       } yield ()
 
-      val programs = program
-
-      val future = programs.runToFuture
-
-      monixScheduler.tick(30.seconds)
-      for (_ <- 0 to minutesToWait * 3) {
-        monixScheduler.tick(1.minute)
-      }
-
-      Await.result(future, 30.seconds)
+      awaitForProgram(program, (minutesToWait * 3).minutes + 30.seconds)
     }
 
     "terminate when player's experience is below per-minute experience consumption" in {
@@ -366,8 +375,10 @@ class ActiveSessionFactorySpec
         // when
         session <- factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
         // セッションが有効になるまで待つ
-        _ <- eventuallyF[Task, Assertion] {
-          session.isActive.unsafeRunSync() shouldBe true
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe true
+          }
         }
 
         _ <- session.waitForCompletion
@@ -380,15 +391,7 @@ class ActiveSessionFactorySpec
         }
       } yield ()
 
-      val programs = program
-
-      val future = programs.runToFuture
-
-      for (_ <- 1 to 11) {
-        monixScheduler.tick(1.minute)
-      }
-
-      Await.result(future, 30.seconds)
+      awaitForProgram(program, 11.minutes)
     }
 
     "send appropriate notification when player does not have enough experience" in {
@@ -414,12 +417,14 @@ class ActiveSessionFactorySpec
         _ <- session.waitForCompletion
 
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(PlayerExpNotEnough))
+        _ <- discreteEventually {
+          Task {
+            playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(PlayerExpNotEnough))
+          }
         }
       } yield ()
 
-      program.runToFuture.futureValue
+      awaitForProgram(program, 1.second)
     }
   }
 
@@ -451,21 +456,14 @@ class ActiveSessionFactorySpec
         _ <- monixTimer.sleep(sessionLengthInMinutes.minutes + 30.seconds)
 
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          session.isActive.unsafeRunSync() shouldBe false
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe false
+          }
         }
       } yield ()
 
-      val programs = program
-
-      val future = programs.runToFuture
-
-      monixScheduler.tick(30.seconds)
-      for (_ <- 1 to 11) {
-        monixScheduler.tick(1.minute)
-      }
-
-      Await.result(future, 30.seconds)
+      awaitForProgram(program, sessionLengthInMinutes.minutes + 30.seconds)
     }
 
     "send appropriate notification when a session expires" in {
@@ -495,21 +493,14 @@ class ActiveSessionFactorySpec
         _ <- monixTimer.sleep(sessionLengthInMinutes.minutes + 30.seconds)
 
         // then
-        _ <- eventuallyF[Task, Assertion] {
-          playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(FlyDurationExpired))
+        _ <- discreteEventually {
+          Task {
+            playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(MessageMock(FlyDurationExpired))
+          }
         }
       } yield ()
 
-      val programs = program
-
-      val future = programs.runToFuture
-
-      monixScheduler.tick(30.seconds)
-      for (_ <- 1 to 11) {
-        monixScheduler.tick(1.minute)
-      }
-
-      Await.result(future, 30.seconds)
+      awaitForProgram(program, sessionLengthInMinutes.minutes + 30.seconds)
     }
   }
 }
