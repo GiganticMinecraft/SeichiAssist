@@ -395,7 +395,7 @@ class ActiveSessionFactorySpec
         }
 
         // when
-        _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(true))
+        _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(false))
         _ <- monixTimer.sleep(50.minutes)
 
         // then
