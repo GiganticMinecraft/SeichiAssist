@@ -35,8 +35,10 @@ class ActiveSessionFactory[
 
   private def doOneMinuteCycle(duration: RemainingFlyDuration): KleisliAsyncContext[RemainingFlyDuration] = {
     Timer[KleisliAsyncContext].sleep(1.minute) >>
-      isPlayerIdle.ifM(Sync[KleisliAsyncContext].unit, consumePlayerExp) >>
-      tickDuration[KleisliAsyncContext](duration)
+      isPlayerIdle.ifM(
+        Kleisli.pure(duration),
+        consumePlayerExp >> tickDuration[KleisliAsyncContext](duration)
+      )
   }
 
   def start[
