@@ -25,7 +25,7 @@ class ActiveSessionFactorySpec
   import scala.concurrent.duration._
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig = DiscreteEventuallyConfig(1000000)
+  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig = DiscreteEventuallyConfig(10000)
 
   implicit val monixScheduler: TestScheduler = TestScheduler()
   implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
