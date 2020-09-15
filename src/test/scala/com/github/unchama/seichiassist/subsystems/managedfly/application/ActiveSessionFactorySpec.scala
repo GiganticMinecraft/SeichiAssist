@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.Monad
 import cats.effect.{SyncIO, Timer}
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, RemainingFlyDuration}
 import com.github.unchama.testutil.concurrent.tests.{ConcurrentEffectTest, TaskDiscreteEventually}
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.catnap.SchedulerEffect
@@ -344,6 +344,69 @@ class ActiveSessionFactorySpec
       } yield ()
 
       awaitForProgram(runConcurrent(program)(100), (minutesToWait * 3).minutes + 30.seconds)
+    }
+
+
+    "not tick whenever player is idle" in {
+      // given
+      implicit val configuration: SystemConfiguration =
+        SystemConfiguration(
+          expConsumptionAmount = 0
+        )
+
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
+
+      val program = for {
+        // given
+        playerRef <- PlayerMockReference(
+          initiallyFlying = false,
+          InfiniteExperience,
+          initiallyIdle = false
+        ).coerceTo[Task]
+        session <- factory.start[SyncIO](RemainingFlyDuration.PositiveMinutes.fromPositive(100)).run(playerRef)
+
+        // セッションが有効になるまで待つ
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe true
+          }
+        }
+
+        // when
+        _ <- monixTimer.sleep(50.minutes)
+
+        // then
+        _ <- discreteEventually {
+          Task {
+            session.latestFlyStatus.unsafeRunSync() shouldBe Flying(RemainingFlyDuration.PositiveMinutes.fromPositive(50))
+          }
+        }
+
+        // when
+        _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(true))
+        _ <- monixTimer.sleep(50.minutes)
+
+        // then
+        _ <- discreteEventually {
+          Task {
+            session.latestFlyStatus.unsafeRunSync() shouldBe Flying(RemainingFlyDuration.PositiveMinutes.fromPositive(50))
+          }
+        }
+
+        // when
+        _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(true))
+        _ <- monixTimer.sleep(50.minutes)
+
+        // then
+        _ <- discreteEventually {
+          Task {
+            session.isActive.unsafeRunSync() shouldBe false
+          }
+        }
+      } yield ()
+
+      awaitForProgram(runConcurrent(program)(100), 150.minutes)
     }
 
     "terminate when player's experience is below per-minute experience consumption" in {
