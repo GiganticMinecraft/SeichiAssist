@@ -9,7 +9,8 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, PlayerFlyStatusManipulation, SystemConfiguration}
-import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.{BukkitActiveFlySessionReferenceRepository, BukkitPlayerFlyStatusManipulation}
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitPlayerFlyStatusManipulation
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers.BukkitActiveFlySessionReferenceRepository
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
 import org.bukkit.entity.Player
 
