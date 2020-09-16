@@ -32,7 +32,6 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
-import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
@@ -391,9 +390,6 @@ class SeichiAssist extends JavaPlugin() {
 
     SeichiAssist.buildAssist.onDisable()
   }
-
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean
-  = SeichiAssist.buildAssist.onCommand(sender, command, label, args)
 
   def restartRepeatedJobs(): Unit = {
     cancelRepeatedJobs()
