@@ -10,7 +10,7 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, PlayerFlyStatusManipulation, SystemConfiguration}
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitPlayerFlyStatusManipulation
-import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers.BukkitActiveFlySessionReferenceRepository
+import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers.{BukkitActiveFlySessionReferenceRepository, BukkitFlyCommand}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
 import org.bukkit.entity.Player
 
@@ -46,7 +46,9 @@ object System {
 
       StatefulSubsystem(
         listenersToBeRegistered = Seq(_stateRepository),
-        commandsToBeRegistered = Map(),
+        commandsToBeRegistered = Map(
+          "fly" -> BukkitFlyCommand.executor[AsyncContext, SyncContext]
+        ),
         stateToExpose = InternalState(exposedRepository)
       )
     }
