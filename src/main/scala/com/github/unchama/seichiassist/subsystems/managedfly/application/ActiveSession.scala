@@ -13,7 +13,7 @@ class ActiveSession[
 
   import cats.implicits._
 
-  def finish: AsyncContext[Unit] = sessionFiber.cancel
+  def finish: AsyncContext[Boolean] = sessionFiber.cancelIfRunning
 
   def waitForCompletion: AsyncContext[Unit] = sessionFiber.waitForResult.as(())
 

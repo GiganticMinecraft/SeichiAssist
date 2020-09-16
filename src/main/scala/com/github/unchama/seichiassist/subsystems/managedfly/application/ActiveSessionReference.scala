@@ -15,15 +15,15 @@ class ActiveSessionReference[
 
   import cats.implicits._
 
-  private def finishSessionIfPresent(sessionOption: Option[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Unit] = {
+  private def finishSessionIfPresent(sessionOption: Option[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Boolean] = {
     sessionOption match {
       case Some(session) => session.finish
-      case None => Concurrent[AsyncContext].unit
+      case None => Concurrent[AsyncContext].pure(false)
     }
   }
 
-  def stopAnyRunningSession: AsyncContext[Unit] =
-    sessionMutexRef.lockAndModify(finishSessionIfPresent(_).as(None, ()))
+  def stopAnyRunningSession: AsyncContext[Boolean] =
+    sessionMutexRef.lockAndModify(finishSessionIfPresent(_).map(finished => (None, finished)))
 
   def replaceSession(createSession: AsyncContext[ActiveSession[AsyncContext, SyncContext]]): AsyncContext[Unit] =
     sessionMutexRef.lockAndModify { sessionOption =>
