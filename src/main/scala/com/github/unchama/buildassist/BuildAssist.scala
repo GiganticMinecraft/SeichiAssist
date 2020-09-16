@@ -3,16 +3,19 @@ package com.github.unchama.buildassist
 import java.util
 import java.util.UUID
 
+import cats.effect.SyncIO
 import com.github.unchama.buildassist.listener._
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.DefaultEffectEnvironment
+import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Bukkit, Material}
 
 import scala.collection.mutable
 
-class BuildAssist(plugin: Plugin) {
+class BuildAssist(plugin: Plugin)
+                 (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) {
 
   import collection.JavaConverters._
 

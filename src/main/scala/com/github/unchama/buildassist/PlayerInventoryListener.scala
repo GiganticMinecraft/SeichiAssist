@@ -2,9 +2,12 @@ package com.github.unchama.buildassist
 
 import java.util.UUID
 
+import cats.effect.SyncIO
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.subsystems
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -13,7 +16,8 @@ import org.bukkit.{Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
+                              flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
   val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
 
   import com.github.unchama.targetedeffect._
@@ -67,7 +71,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
-            BuildMainMenu.open
+            new BuildMainMenu().open
           ),
           "BuildMainMenuを開く"
         )

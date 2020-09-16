@@ -21,11 +21,6 @@ final class PlayerData(val player: Player) {
    */
   var totalbuildnum: BigDecimal = BigDecimal.ZERO
 
-  // TODO flyサブシステムから露出された状態で置き換える
-  var flyflag = false
-  var flytime = 0
-  var endlessfly = false
-
   var ZoneSetSkillFlag = false
   var zsSkillDirtFlag = false
   // TODO: こいつは殺す

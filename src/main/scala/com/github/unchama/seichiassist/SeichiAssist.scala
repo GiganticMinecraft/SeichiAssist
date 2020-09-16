@@ -28,6 +28,7 @@ import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -319,7 +320,10 @@ class SeichiAssist extends JavaPlugin() {
 
     logger.info("SeichiAssist is Enabled!")
 
-    SeichiAssist.buildAssist = new BuildAssist(this)
+    SeichiAssist.buildAssist = {
+      implicit val flySystem: StatefulSubsystem[InternalState[SyncIO]] = managedFlySystem
+      new BuildAssist(this)
+    }
     SeichiAssist.buildAssist.onEnable()
 
     hasBeenLoadedAlready = true
