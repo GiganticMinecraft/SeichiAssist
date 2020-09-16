@@ -252,7 +252,7 @@ private object ConstantButtons {
         SequentialEffect(
           closeInventoryEffect,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          CommandEffect("fly 1")
+          CommandEffect("fly start limited 1")
         )
       }
     )
@@ -275,7 +275,7 @@ private object ConstantButtons {
         SequentialEffect(
           closeInventoryEffect,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          CommandEffect("fly 5")
+          CommandEffect("fly start limited 5")
         )
       }
     )
@@ -297,7 +297,7 @@ private object ConstantButtons {
         SequentialEffect(
           closeInventoryEffect,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          CommandEffect("fly endless")
+          CommandEffect("fly start endless")
         )
       }
     )
