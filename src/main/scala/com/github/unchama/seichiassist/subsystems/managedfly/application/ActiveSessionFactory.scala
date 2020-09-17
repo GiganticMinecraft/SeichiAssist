@@ -7,7 +7,7 @@ import cats.effect.{Concurrent, ExitCase, Sync, Timer}
 import com.github.unchama.concurrent.ReadOnlyRef
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.AsymmetricTryableFiber
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 
 /**
  * プレーヤーに紐づいたFlyセッションを作成できるオブジェクト。
@@ -35,10 +35,12 @@ class ActiveSessionFactory[
 
   private def doOneMinuteCycle(duration: RemainingFlyDuration): KleisliAsyncContext[RemainingFlyDuration] = {
     Timer[KleisliAsyncContext].sleep(1.minute) >>
-      isPlayerIdle.ifM(
-        Kleisli.pure(duration),
+      isPlayerIdle >>= {
+      case Idle =>
+        Kleisli.pure(duration)
+      case HasMovedRecently =>
         consumePlayerExp >> tickDuration[KleisliAsyncContext](duration)
-      )
+    }
   }
 
   def start[

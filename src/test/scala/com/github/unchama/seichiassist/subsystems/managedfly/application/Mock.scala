@@ -5,7 +5,7 @@ import cats.data.Kleisli
 import cats.effect.{Concurrent, Sync}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.Mutex
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 
 private[managedfly] class Mock[
   AsyncContext[_] : Concurrent,
@@ -87,8 +87,10 @@ private[managedfly] class Mock[
           .as(())
       }
 
-      override val isPlayerIdle: PlayerAsyncKleisli[Boolean] = Kleisli { player: PlayerMockReference =>
-        player.isIdleMutex.readLatest.coerceTo[AsyncContext]
+      override val isPlayerIdle: PlayerAsyncKleisli[IdleStatus] = Kleisli { player: PlayerMockReference =>
+        player.isIdleMutex.readLatest.coerceTo[AsyncContext].map {
+          if (_) Idle else HasMovedRecently
+        }
       }
 
       override val synchronizeFlyStatus: PlayerFlyStatus => PlayerAsyncKleisli[Unit] = {

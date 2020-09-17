@@ -5,7 +5,7 @@ import cats.effect.{Concurrent, Sync, Timer}
 import com.github.unchama.concurrent.{MinecraftServerThreadShift, NonServerThreadContextShift}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import org.bukkit.ChatColor.{GREEN, RED}
 import org.bukkit.entity.Player
@@ -60,9 +60,11 @@ class BukkitPlayerFlyStatusManipulation[
   /**
    * プレーヤーがアイドル状態であるかを判定するアクション。
    */
-  override val isPlayerIdle: Kleisli[AsyncContext, Player, Boolean] = Kleisli { player: Player =>
+  override val isPlayerIdle: Kleisli[AsyncContext, Player, IdleStatus] = Kleisli { player: Player =>
     Sync[AsyncContext].delay {
       SeichiAssist.playermap(player.getUniqueId).idleMinute >= 10
+    }.map {
+      if (_) Idle else HasMovedRecently
     }
   }
 

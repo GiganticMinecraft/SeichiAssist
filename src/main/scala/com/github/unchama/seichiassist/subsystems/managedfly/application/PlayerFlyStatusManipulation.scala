@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{IdleStatus, PlayerFlyStatus}
 import simulacrum.typeclass
 
 /**
@@ -24,7 +24,7 @@ import simulacrum.typeclass
   /**
    * プレーヤーがアイドル状態であるかを判定するアクション。
    */
-  val isPlayerIdle: F[Boolean]
+  val isPlayerIdle: F[IdleStatus]
 
   /**
    * プレーヤーの飛行状態を[[PlayerFlyStatus]]に基づいてセットするアクション。
