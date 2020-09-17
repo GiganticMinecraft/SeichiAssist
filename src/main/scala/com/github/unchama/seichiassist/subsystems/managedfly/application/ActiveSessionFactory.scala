@@ -19,12 +19,6 @@ class ActiveSessionFactory[
 
   type KleisliAsyncContext[A] = Kleisli[AsyncContext, Player, A]
 
-  import cats.effect.implicits._
-  import cats.implicits._
-  import com.github.unchama.generic.ContextCoercion._
-
-  import scala.concurrent.duration._
-
   private def tickDuration[F[_]](duration: RemainingFlyDuration)(implicit F: Sync[F]): F[RemainingFlyDuration] =
     duration.tickOneMinute match {
       case Some(tickedDuration) => F.pure(tickedDuration)
@@ -34,18 +28,30 @@ class ActiveSessionFactory[
   import KleisliAsyncContext._
 
   private def doOneMinuteCycle(duration: RemainingFlyDuration): KleisliAsyncContext[RemainingFlyDuration] = {
-    Timer[KleisliAsyncContext].sleep(1.minute) >>
-      isPlayerIdle >>= {
-      case Idle =>
-        Kleisli.pure(duration)
-      case HasMovedRecently =>
-        consumePlayerExp >> tickDuration[KleisliAsyncContext](duration)
-    }
+    import cats.implicits.catsSyntaxFlatMapOps
+
+    import scala.concurrent.duration._
+
+    for {
+      oldIdleStatus <- isPlayerIdle
+      _ <- notifyRemainingDuration(oldIdleStatus, duration)
+      _ <- Timer[KleisliAsyncContext].sleep(1.minute)
+      newIdleStatus <- isPlayerIdle
+      newDuration <- newIdleStatus match {
+        case Idle =>
+          Kleisli.pure(duration)
+        case HasMovedRecently => consumePlayerExp >> tickDuration[KleisliAsyncContext](duration)
+      }
+    } yield newDuration
   }
 
   def start[
     SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
   ](totalDuration: RemainingFlyDuration): KleisliAsyncContext[ActiveSession[AsyncContext, SyncContext]] = {
+    import cats.effect.implicits._
+    import cats.implicits._
+    import com.github.unchama.generic.ContextCoercion._
+
     for {
       currentRemainingDurationRef <-
         Ref.in[KleisliAsyncContext, SyncContext, RemainingFlyDuration](totalDuration)

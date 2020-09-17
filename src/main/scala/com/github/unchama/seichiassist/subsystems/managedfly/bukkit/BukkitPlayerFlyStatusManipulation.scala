@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
-import org.bukkit.ChatColor.{GREEN, RED}
+import org.bukkit.ChatColor.{GRAY, GREEN, RED}
 import org.bukkit.entity.Player
 
 class BukkitPlayerFlyStatusManipulation[
@@ -92,6 +92,24 @@ class BukkitPlayerFlyStatusManipulation[
       }
     }
   }
+
+  /**
+   * 放置状態も考慮して、プレーヤーに残飛行時間の通知を送るアクション。
+   */
+  override val notifyRemainingDuration: (IdleStatus, RemainingFlyDuration) => Kleisli[AsyncContext, Player, Unit] =
+    (status, duration) => {
+      val message = status match {
+        case Idle => s"${GRAY}放置時間中のflyは無期限で継続中です(経験値は消費しません)"
+        case HasMovedRecently => duration match {
+          case RemainingFlyDuration.Infinity =>
+            s"${GREEN}fly効果は無期限で継続中です"
+          case RemainingFlyDuration.PositiveMinutes(minutes) =>
+            s"${GREEN}fly効果はあと${minutes}分です"
+        }
+      }
+
+      sendMessages(List(message))
+    }
 
   /**
    * [[InternalInterruption]] に対応して、プレーヤーへセッションが終了することを通知するアクション。

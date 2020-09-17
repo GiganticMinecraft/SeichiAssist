@@ -27,7 +27,11 @@ private[managedfly] class Mock[
     override def consume(amount: BigInt): Option[ExperienceMock] = Some(InfiniteExperience)
   }
 
-  case class MessageMock(interruption: InternalInterruption)
+  sealed trait MessageMock
+
+  case class InterruptionMessageMock(interruption: InternalInterruption) extends MessageMock
+
+  case class StatusMessageMock(idleStatus: IdleStatus, remainingFlyDuration: RemainingFlyDuration) extends MessageMock
 
   import ContextCoercion._
   import cats.implicits._
@@ -106,7 +110,13 @@ private[managedfly] class Mock[
 
       override val sendNotificationsOnInterruption: InternalInterruption => PlayerAsyncKleisli[Unit] = { interruption =>
         Kleisli { player: PlayerMockReference =>
-          player.sendMessage(MessageMock(interruption))
+          player.sendMessage(InterruptionMessageMock(interruption))
+        }
+      }
+
+      override val notifyRemainingDuration: (IdleStatus, RemainingFlyDuration) => PlayerAsyncKleisli[Unit] = { (i, d) =>
+        Kleisli { player: PlayerMockReference =>
+          player.sendMessage(StatusMessageMock(i, d))
         }
       }
     }

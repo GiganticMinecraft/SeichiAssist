@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{IdleStatus, PlayerFlyStatus}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{IdleStatus, PlayerFlyStatus, RemainingFlyDuration}
 import simulacrum.typeclass
 
 /**
@@ -30,6 +30,11 @@ import simulacrum.typeclass
    * プレーヤーの飛行状態を[[PlayerFlyStatus]]に基づいてセットするアクション。
    */
   val synchronizeFlyStatus: PlayerFlyStatus => F[Unit]
+
+  /**
+   * 放置状態も考慮して、プレーヤーに残飛行時間の通知を送るアクション。
+   */
+  val notifyRemainingDuration: (IdleStatus, RemainingFlyDuration) => F[Unit]
 
   /**
    * [[InternalInterruption]] に対応して、プレーヤーへセッションが終了することを通知するアクション。
