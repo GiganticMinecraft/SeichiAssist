@@ -5,7 +5,7 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, PartiallyParsedArgs}
-import com.github.unchama.playerdatarepository.PlayerDataRepository
+import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider.Messages

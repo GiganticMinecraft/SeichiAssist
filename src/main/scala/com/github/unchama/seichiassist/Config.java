@@ -18,6 +18,10 @@ public final class Config {
         return new Config(plugin.getConfig());
     }
 
+    public int getFlyExp() {
+        return Integer.parseInt(config.getString("flyexp"));
+    }
+
     // NOTE:
     //   config.getInt/config.getDoubleはnull値の場合0を返す
     //   getIntFailSafe/getDoubleFailSafeはNumberFormatExceptionを投げる

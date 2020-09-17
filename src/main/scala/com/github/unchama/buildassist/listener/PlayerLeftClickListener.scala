@@ -1,15 +1,19 @@
 package com.github.unchama.buildassist.listener
 
+import cats.effect.SyncIO
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.subsystems
 import org.bukkit.Material
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
-class PlayerLeftClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class PlayerLeftClickListener(implicit effectEnvironment: EffectEnvironment,
+                              flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
 
   import com.github.unchama.targetedeffect._
 
@@ -34,7 +38,7 @@ class PlayerLeftClickListener(implicit effectEnvironment: EffectEnvironment) ext
     effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        BuildMainMenu.open
+        new BuildMainMenu().open
       ),
       "BuildMainMenuを開く"
     )

@@ -2,10 +2,10 @@ package com.github.unchama.itemmigration.controllers.player
 
 import cats.effect.concurrent.TryableDeferred
 import cats.effect.{ConcurrentEffect, SyncEffect}
+import com.github.unchama.datarepository.bukkit.player.PreLoginToQuitPlayerDataRepository
 import com.github.unchama.itemmigration.domain.ItemMigrations
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.itemmigration.targets.PlayerInventoriesData
-import com.github.unchama.playerdatarepository.PreLoginToQuitPlayerDataRepository
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.inventory.InventoryOpenEvent

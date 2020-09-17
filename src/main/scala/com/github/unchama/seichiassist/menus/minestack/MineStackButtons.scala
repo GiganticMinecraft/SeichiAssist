@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.menus.minestack
 
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.concurrent.{Execution, MinecraftServerThreadIOShift}
+import com.github.unchama.concurrent.{Execution, MinecraftServerThreadShift}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
@@ -58,7 +58,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(implicit ctx: MinecraftServerThreadIOShift): IO[Button] = RecomputedButton(IO {
+  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(implicit ctx: MinecraftServerThreadShift[IO]): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -103,7 +103,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def withDrawOneStackEffect(mineStackObj: MineStackObj)(implicit ctx: MinecraftServerThreadIOShift): TargetedEffect[Player] = {
+  private def withDrawOneStackEffect(mineStackObj: MineStackObj)(implicit ctx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = {
     val maxStackSize = mineStackObj.itemStack.getMaxStackSize.toLong
 
     Kleisli(player => Execution.onServerMainThread {

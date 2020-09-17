@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task.global
 
-import cats.effect.IO
+import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
@@ -73,7 +73,7 @@ object HalfHourRankingRoutine {
             val playerNameText =
               if(starLevel == 0) 
                 s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}$WHITE"
-              else 
+              else
                 s"$positionColor[ Lv${playerData.level}☆${starLevel} ]${playerData.lowercaseName}$WHITE"
             val increaseAmountText = s"$AQUA${playerData.halfhourblock.increase}$WHITE"
 
@@ -83,6 +83,8 @@ object HalfHourRankingRoutine {
 
       Util.sendEveryMessage("--------------------------------------------------")
     }
+
+    implicit val timer: Timer[IO] = IO.timer(context)
 
     RepeatingRoutine.permanentRoutine(getRepeatInterval, routineAction)
   }

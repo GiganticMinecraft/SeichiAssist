@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.repository
 
 import cats.effect.{IO, Sync, SyncIO}
-import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
+import com.github.unchama.datarepository.bukkit.player.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeechBlockageState, MebiusSpeechGateway}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import org.bukkit.entity.Player

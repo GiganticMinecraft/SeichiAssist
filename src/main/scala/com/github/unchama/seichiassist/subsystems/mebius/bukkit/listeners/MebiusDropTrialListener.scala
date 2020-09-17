@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 import java.util.concurrent.TimeUnit
 
 import cats.effect.{IO, SyncIO, Timer}
+import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.MebiusDrop

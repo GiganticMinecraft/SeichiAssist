@@ -4,15 +4,16 @@ import java.util.UUID
 
 import cats.Parallel.Aux
 import cats.effect
-import cats.effect.{Fiber, IO, SyncIO, Timer}
+import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
+import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
-import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
+import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
@@ -27,11 +28,11 @@ import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
-import org.bukkit.command.{Command, CommandSender}
 import org.bukkit.entity.Entity
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
@@ -75,6 +76,20 @@ class SeichiAssist extends JavaPlugin() {
 
     subsystems.itemmigration.System.wired[IO, SyncIO]
   }.unsafeRunSync()
+
+  lazy val managedFlySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]] = {
+    import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
+
+    implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
+    val configuration = subsystems.managedfly.application.SystemConfiguration(
+      expConsumptionAmount = seichiAssistConfig.getFlyExp
+    )
+
+    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
+  }
 
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
@@ -222,7 +237,8 @@ class SeichiAssist extends JavaPlugin() {
     val subsystems = Seq(
       mebius.System.wired,
       expBottleStackSystem,
-      itemMigrationSystem
+      itemMigrationSystem,
+      managedFlySystem
     )
 
     // コマンドの登録
@@ -304,7 +320,10 @@ class SeichiAssist extends JavaPlugin() {
 
     logger.info("SeichiAssist is Enabled!")
 
-    SeichiAssist.buildAssist = new BuildAssist(this)
+    SeichiAssist.buildAssist = {
+      implicit val flySystem: StatefulSubsystem[InternalState[SyncIO]] = managedFlySystem
+      new BuildAssist(this)
+    }
     SeichiAssist.buildAssist.onEnable()
 
     hasBeenLoadedAlready = true
@@ -375,9 +394,6 @@ class SeichiAssist extends JavaPlugin() {
 
     SeichiAssist.buildAssist.onDisable()
   }
-
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean
-  = SeichiAssist.buildAssist.onCommand(sender, command, label, args)
 
   def restartRepeatedJobs(): Unit = {
     cancelRepeatedJobs()

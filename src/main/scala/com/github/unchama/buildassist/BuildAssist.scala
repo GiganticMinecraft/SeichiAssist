@@ -3,23 +3,24 @@ package com.github.unchama.buildassist
 import java.util
 import java.util.UUID
 
+import cats.effect.SyncIO
 import com.github.unchama.buildassist.listener._
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.DefaultEffectEnvironment
-import org.bukkit.command.{Command, CommandExecutor, CommandSender}
+import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Bukkit, Material}
 
 import scala.collection.mutable
 
-class BuildAssist(plugin: Plugin) {
+class BuildAssist(plugin: Plugin)
+                 (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) {
 
   import collection.JavaConverters._
 
   //起動するタスクリスト
   private val tasklist = new util.ArrayList[BukkitTask]()
-  private var commandlist = mutable.HashMap[String, CommandExecutor]()
 
   {
     BuildAssist.plugin = plugin
@@ -31,10 +32,6 @@ class BuildAssist(plugin: Plugin) {
     BuildAssist.config.loadConfig()
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-
-    //コマンドの登録
-    commandlist = mutable.HashMap()
-    commandlist += "fly" -> new FlyCommand()
 
     Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
     Bukkit.getServer.getPluginManager.registerEvents(new EntityListener(), plugin)
@@ -58,10 +55,6 @@ class BuildAssist(plugin: Plugin) {
     plugin.getLogger.info("BuildAssist is Enabled!")
 
     tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200))
-  }
-
-  def onCommand(sender: CommandSender, cmd: Command, label: String, args: Array[String]): Boolean = {
-    commandlist.get(cmd.getName).exists(_.onCommand(sender, cmd, label, args))
   }
 
   def onDisable(): Unit = {

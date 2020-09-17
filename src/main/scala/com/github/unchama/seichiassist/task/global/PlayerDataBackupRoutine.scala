@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.task.global
 
-import cats.effect.IO
+import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -48,6 +48,8 @@ object PlayerDataBackupRoutine {
         _ <- updateRankingData
       } yield true
     }
+
+    implicit val timer: Timer[IO] = IO.timer(context)
 
     RepeatingRoutine.permanentRoutine(getRepeatInterval, routineAction)
   }

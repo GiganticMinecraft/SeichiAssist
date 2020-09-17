@@ -4,7 +4,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 import cats.data.{Kleisli, NonEmptyList}
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.slot.Slot
@@ -12,9 +12,10 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
+import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners, subsystems}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -45,9 +46,10 @@ object MineStackMassCraftMenu {
      * クラフトは実行されず適切なメッセージがプレーヤーに通達される。
      *
      * @param requiredMassCraftLevel レシピの実行に必要なクラフトレベル
-     * @param menuPageNumber このボタンが表示される一括クラフト画面のページ番号
+     * @param menuPageNumber         このボタンが表示される一括クラフト画面のページ番号
      */
-    def computeButton(player: Player, requiredMassCraftLevel: Int, menuPageNumber: Int): IO[Button] = {
+    def computeButton(player: Player, requiredMassCraftLevel: Int, menuPageNumber: Int)
+                     (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
       import cats.implicits._
 
       def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
@@ -170,7 +172,8 @@ object MineStackMassCraftMenu {
   }
 
   case class MassCraftRecipeBlock(recipe: MassCraftRecipe, recipeScales: List[Int], requiredBuildLevel: Int) {
-    def toLayout(player: Player, beginIndex: Int, pageNumber: Int): IO[List[(Int, Slot)]] = {
+    def toLayout(player: Player, beginIndex: Int, pageNumber: Int)
+                (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[List[(Int, Slot)]] = {
       import cats.implicits._
 
       recipeScales.zipWithIndex
@@ -467,7 +470,8 @@ object MineStackMassCraftMenu {
     )
   }
 
-  def apply(pageNumber: Int = 1): Menu = {
+  def apply(pageNumber: Int = 1)
+           (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): Menu = {
     import eu.timepit.refined.auto._
 
     val menuFrame = {
@@ -504,7 +508,7 @@ object MineStackMassCraftMenu {
           Map(
             ChestSlotRef(5, 0) -> CommonButtons.transferButton(
               new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-              "ホームへ", BuildMainMenu
+              "ホームへ", new BuildMainMenu()
             )
           )
 
