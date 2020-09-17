@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 import cats.data.Kleisli
 import cats.effect.{Concurrent, Sync, Timer}
 import com.github.unchama.concurrent.{MinecraftServerThreadShift, NonServerThreadContextShift}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus}
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
@@ -59,8 +60,11 @@ class BukkitPlayerFlyStatusManipulation[
   /**
    * プレーヤーがアイドル状態であるかを判定するアクション。
    */
-
-  override val isPlayerIdle: Kleisli[AsyncContext, Player, Boolean] = Sync[Kleisli[AsyncContext, Player, *]].pure(false)
+  override val isPlayerIdle: Kleisli[AsyncContext, Player, Boolean] = Kleisli { player: Player =>
+    Sync[AsyncContext].delay {
+      SeichiAssist.playermap(player.getUniqueId).idleMinute >= 10
+    }
+  }
 
   /**
    * プレーヤーの飛行状態を[[PlayerFlyStatus]]に基づいてセットするアクション。
