@@ -7,8 +7,8 @@ import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference, SystemConfiguration}
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference, FlyDurationPersistenceRepository, SystemConfiguration}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{PlayerFlyStatus, RemainingFlyDuration}
 import org.bukkit.entity.Player
 
 class BukkitActiveFlySessionReferenceRepository[
@@ -16,14 +16,21 @@ class BukkitActiveFlySessionReferenceRepository[
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
 ](implicit effectEnvironment: EffectEnvironment,
   configuration: SystemConfiguration,
-  factory: ActiveSessionFactory[AsyncContext, Player])
+  factory: ActiveSessionFactory[AsyncContext, Player],
+  persistenceRepository: FlyDurationPersistenceRepository[SyncContext, UUID])
   extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, ActiveSessionReference[AsyncContext, SyncContext]] {
 
   override protected type TemporaryData = Option[RemainingFlyDuration]
 
-  // TODO DBに永続化した値を読み込む
+  import cats.implicits._
+
   override protected val loadTemporaryData: (String, UUID) => SyncContext[Either[Option[String], Option[RemainingFlyDuration]]] = {
-    (_, _) => SyncEffect[SyncContext].pure(Right(None))
+    (_, uuid) =>
+      for {
+        result <- persistenceRepository.read(uuid).attempt
+      } yield result.leftMap { _ =>
+        Some("飛行データの読み込みに失敗しました。")
+      }
   }
 
   import cats.effect.implicits._
@@ -46,11 +53,14 @@ class BukkitActiveFlySessionReferenceRepository[
       }
   }
 
-  // TODO DBに永続化する値を書き込む
   override protected val unloadData: (Player, ActiveSessionReference[AsyncContext, SyncContext]) => SyncContext[Unit] = {
-    (_, sessionRef) =>
-      sessionRef.stopAnyRunningSession
-        .runAsync(_ => IO.unit)
-        .runSync[SyncContext]
+    (player, sessionRef) =>
+      for {
+        latestStatus <- sessionRef.getLatestFlyStatus
+        _ <- persistenceRepository.writePair(player.getUniqueId, PlayerFlyStatus.toDurationOption(latestStatus))
+        _ <- sessionRef.stopAnyRunningSession
+          .runAsync(_ => IO.unit)
+          .runSync[SyncContext]
+      } yield ()
   }
 }

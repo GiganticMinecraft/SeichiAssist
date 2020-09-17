@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.managedfly
 
+import java.util.UUID
+
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
@@ -8,10 +10,11 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, PlayerFlyStatusManipulation, SystemConfiguration}
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, FlyDurationPersistenceRepository, PlayerFlyStatusManipulation, SystemConfiguration}
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitPlayerFlyStatusManipulation
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers.{BukkitActiveFlySessionReferenceRepository, BukkitFlyCommand}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
+import com.github.unchama.seichiassist.subsystems.managedfly.infrastructure.JdbcFlyDurationPersistenceRepository
 import org.bukkit.entity.Player
 
 /**
@@ -27,6 +30,9 @@ object System {
   ](configuration: SystemConfiguration)(implicit effectEnvironment: EffectEnvironment)
   : SyncContext[StatefulSubsystem[InternalState[SyncContext]]] = {
     implicit val _configuration: SystemConfiguration = configuration
+
+    implicit val _jdbcRepository: FlyDurationPersistenceRepository[SyncContext, UUID] =
+      new JdbcFlyDurationPersistenceRepository[SyncContext]
 
     implicit val _playerKleisliManipulation: PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] =
       new BukkitPlayerFlyStatusManipulation[AsyncContext]
