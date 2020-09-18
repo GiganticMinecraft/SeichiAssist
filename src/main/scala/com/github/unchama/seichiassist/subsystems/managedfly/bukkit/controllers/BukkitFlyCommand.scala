@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers
 
-import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, IO, SyncEffect, SyncIO, Timer}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference}
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 object BukkitFlyCommand {
 
   private val commandHelpMessage = List(
-    s"${GREEN}fly機能を時間付きで利用したい場合は末尾に「start limited 利用したい時間(分単位)」の数値を、",
+    s"${GREEN}fly機能を時間付きで利用したい場合は末尾に「add 利用したい時間(分単位)」の数値を、",
     s"${GREEN}fly機能を無期限で利用したい場合は末尾に「start endless」を、",
     s"${GREEN}fly機能を中断したい場合は、末尾に「finish」を記入してください。"
   )
@@ -39,6 +39,7 @@ object BukkitFlyCommand {
     }
 
   import cats.effect.implicits._
+  import cats.implicits._
 
   def startEndlessCommand[
     F[_] : ConcurrentEffect : Timer,
@@ -56,7 +57,7 @@ object BukkitFlyCommand {
       }
       .build()
 
-  def startLimitedCommand[
+  def addCommand[
     F[_] : ConcurrentEffect : Timer,
     G[_] : SyncEffect
   ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]],
@@ -67,9 +68,14 @@ object BukkitFlyCommand {
         val List(duration: RemainingFlyDuration) = context.args.parsed
 
         for {
+          currentStatus <- sessionReferenceRepository(context.sender).getLatestFlyStatus.runSync[SyncIO].toIO
+          newTotalDuration = currentStatus match {
+            case Flying(remainingDuration) => remainingDuration.combine(duration)
+            case NotFlying => duration
+          }
           _ <-
             sessionReferenceRepository(context.sender)
-              .replaceSession(factory.start[G](duration).run(context.sender))
+              .replaceSession(factory.start[G](newTotalDuration).run(context.sender))
               .toIO
         } yield TargetedEffect.emptyEffect
       }
@@ -102,13 +108,8 @@ object BukkitFlyCommand {
     factory: ActiveSessionFactory[F, Player]): TabExecutor =
     BranchedExecutor(
       Map(
-        "start" -> BranchedExecutor(
-          Map(
-            "endless" -> startEndlessCommand[F, G],
-            "limited" -> startLimitedCommand[F, G]
-          ),
-          whenArgInsufficient = Some(printUsageExecutor), whenBranchNotFound = Some(printUsageExecutor)
-        ),
+        "endless" -> startEndlessCommand[F, G],
+        "add" -> addCommand[F, G],
         "finish" -> finishCommand[F, G]
       ),
       whenArgInsufficient = Some(printUsageExecutor), whenBranchNotFound = Some(printUsageExecutor)

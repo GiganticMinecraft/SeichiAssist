@@ -235,6 +235,7 @@ private object ConstantButtons {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
+  // TODO プレーヤーが飛行中かどうかでON/追加の表示を変えるとUX良さそう
   val buttonToFlyFor1Minute: Button = {
     val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
       .amount(1)
@@ -252,12 +253,13 @@ private object ConstantButtons {
         SequentialEffect(
           closeInventoryEffect,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          CommandEffect("fly start limited 1")
+          CommandEffect("fly add 1")
         )
       }
     )
   }
 
+  // TODO プレーヤーが飛行中かどうかでON/追加の表示を変えるとUX良さそう
   val buttonToFlyFor5Minutes: Button = {
     val iconItemStack = new IconItemStackBuilder(Material.FEATHER)
       .amount(5)
@@ -275,7 +277,7 @@ private object ConstantButtons {
         SequentialEffect(
           closeInventoryEffect,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          CommandEffect("fly start limited 5")
+          CommandEffect("fly add 5")
         )
       }
     )

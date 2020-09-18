@@ -94,7 +94,6 @@ commands:
     permission-message: *denied
   fly:
     description: This is a fly command.
-    usage: /<command> <finish/amount/endless>
     permission-message: *denied
     permission: multibuildplugin.build
 

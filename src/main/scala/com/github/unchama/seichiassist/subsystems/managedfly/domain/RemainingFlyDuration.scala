@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.domain
 
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration.PositiveMinutes.fromPositive
+import cats.kernel.Semigroup
 
 sealed trait RemainingFlyDuration {
 
@@ -21,6 +21,8 @@ object RemainingFlyDuration {
 
   case class PositiveMinutes private(value: Int) extends RemainingFlyDuration {
     override lazy val tickOneMinute: Option[RemainingFlyDuration] = {
+      import PositiveMinutes.fromPositive
+
       value match {
         case 1 => None
         case _ => Some(fromPositive(value - 1))
@@ -36,4 +38,19 @@ object RemainingFlyDuration {
     }
   }
 
+  implicit val remainingFlyDurationSemigroup: Semigroup[RemainingFlyDuration] = {
+    import PositiveMinutes.fromPositive
+
+    (x: RemainingFlyDuration, y: RemainingFlyDuration) =>
+      (x, y) match {
+        case (Infinity, _) => Infinity
+        case (_, Infinity) => Infinity
+        case (PositiveMinutes(nx), PositiveMinutes(ny)) =>
+          val sum = nx.toLong + ny.toLong
+          if (sum <= Int.MaxValue)
+            fromPositive(sum.toInt)
+          else
+            Infinity
+      }
+  }
 }
