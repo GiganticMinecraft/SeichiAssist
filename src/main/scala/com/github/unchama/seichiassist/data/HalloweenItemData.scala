@@ -30,7 +30,7 @@ object HalloweenItemData {
     potion
   }
 
-  private val halloweenPotionItemFlags = Seq(
+  private val halloweenPotionItemFlags = Set(
     ItemFlag.HIDE_ENCHANTS,
     ItemFlag.HIDE_POTION_EFFECTS
   )
@@ -43,12 +43,12 @@ object HalloweenItemData {
   )
 
   private def halloweenPotionLoreList() = {
-    val loreList = mutable.ListBuffer[String]()
-    loreList += ""
     val year = Calendar.getInstance().get(Calendar.YEAR)
-    loreList += s"${ChatColor.RESET}${ChatColor.GRAY}${year}ハロウィンイベント限定品"
-    loreList += s"${ChatColor.RESET}${ChatColor.GRAY}敵に囲まれてピンチの時や"
-    loreList += s"${ChatColor.RESET}${ChatColor.GRAY}MEBIUS育成中の時などにご利用ください"
-    loreList.toList
+    List(
+      "",
+      s"${ChatColor.RESET}${ChatColor.GRAY}${year}ハロウィンイベント限定品",
+      s"${ChatColor.RESET}${ChatColor.GRAY}敵に囲まれてピンチの時や",
+      s"${ChatColor.RESET}${ChatColor.GRAY}MEBIUS育成中の時などにご利用ください"
+    )
   }.asJava
 }
