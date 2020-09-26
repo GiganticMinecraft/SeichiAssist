@@ -13,8 +13,8 @@ import org.bukkit.inventory.meta.{ItemMeta, PotionMeta}
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 object HalloweenItemData {
-  def getHalloweenPotion: ItemStack = {
-    val potion: ItemStack = new ItemStack(Material.POTION, 1)
+  def getHalloweenPotion(): ItemStack = {
+    val potion = new ItemStack(Material.POTION, 1)
     val potionMeta: PotionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta]
     potionMeta.setDisplayName(s"${ChatColor.AQUA}${ChatColor.ITALIC}うんちゃまの汗")
     potionMeta.setColor(fromRGB(1, 93, 178))
