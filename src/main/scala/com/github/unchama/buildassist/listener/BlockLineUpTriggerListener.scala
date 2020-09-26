@@ -13,7 +13,7 @@ import scala.util.control.Breaks
 
 object BlockLineUpTriggerListener extends Listener {
 
-  import collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   @EventHandler
   def onBlockLineUpSkillTrigger(event: PlayerInteractEvent): Unit = {

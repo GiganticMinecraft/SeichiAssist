@@ -17,7 +17,7 @@ import scala.collection.mutable
 class BuildAssist(plugin: Plugin)
                  (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) {
 
-  import collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   //起動するタスクリスト
   private val tasklist = new util.ArrayList[BukkitTask]()
