@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.data
 
-import scala.collection.mutable
+import scala.collection.immutable.{List, Set}
 import scala.jdk.CollectionConverters._
+import scala.util.chaining._
 import java.util._
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -14,18 +15,23 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 object HalloweenItemData {
   def getHalloweenPotion(): ItemStack = {
-    val potion = new ItemStack(Material.POTION, 1)
     val potionMeta: PotionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta]
-    potionMeta.setDisplayName(s"${ChatColor.AQUA}${ChatColor.ITALIC}うんちゃまの汗")
-    potionMeta.setColor(fromRGB(1, 93, 178))
-    potionMeta.addEnchant(Enchantment.MENDING, 1, true)
-    potionMeta.setLore(halloweenPotionLoreList())
-    halloweenPotionItemFlags.foreach {
-      potionMeta.addItemFlags(_)
-    }
-    halloweenPotionEffects.foreach {
-      potionMeta.addCustomEffect(_, true)
-    }
+      .tap(_.setDisplayName(s"${ChatColor.AQUA}${ChatColor.ITALIC}うんちゃまの汗"))
+      .tap(_.setColor(fromRGB(1, 93, 178)))
+      .tap(_.addEnchant(Enchantment.MENDING, 1, true))
+      .tap(_.setLore(halloweenPotionLoreList()))
+      .tap(meta =>
+        halloweenPotionItemFlags.foreach(flg =>
+          meta.addItemFlags(flg)
+        )
+      )
+      .tap(meta =>
+        halloweenPotionEffects.foreach (ef =>
+          meta.addCustomEffect(ef, true)
+        )
+      )
+
+    val potion = new ItemStack(Material.POTION, 1)
     potion.setItemMeta(potionMeta)
     potion
   }
