@@ -35,11 +35,11 @@ object HalloweenItemData {
     ItemFlag.HIDE_POTION_EFFECTS
   )
 
-  private val halloweenPotionEffects = Seq(
-    new PotionEffect(PotionEffectType.REGENERATION, 200, 3),
-    new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 400, 2),
-    new PotionEffect(PotionEffectType.NIGHT_VISION, 12000, 0),
-    new PotionEffect(PotionEffectType.LUCK, 6000, 0)
+  private val halloweenPotionEffects = Set(
+    new PotionEffect(PotionEffectType.REGENERATION, 20 * 10, 3),
+    new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 20, 2),
+    new PotionEffect(PotionEffectType.NIGHT_VISION, 20 * 60 * 10, 0),
+    new PotionEffect(PotionEffectType.LUCK, 20 * 60 * 5, 0)
   )
 
   private def halloweenPotionLoreList() = {

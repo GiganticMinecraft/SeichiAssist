@@ -22,7 +22,9 @@ class HalloweenItemListener extends Listener {
     val hwPotionMeta = HalloweenItemData.getHalloweenPotion().getItemMeta
 
     if (itemMeta.getLore == hwPotionMeta.getLore && itemMeta.getDisplayName == hwPotionMeta.getDisplayName) {
-      player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 12000, 0), true)
+      // 1.12.2では、Saturationのポーションは効果がないので、PotionEffectとして直接Playerに付与する
+      // 10分
+      player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0), true)
     }
   }
 }
