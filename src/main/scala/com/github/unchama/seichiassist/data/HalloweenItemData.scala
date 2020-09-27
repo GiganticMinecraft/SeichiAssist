@@ -4,6 +4,8 @@ import scala.collection.immutable.{List, Set}
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 import java.util._
+
+import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Color.fromRGB
@@ -33,7 +35,10 @@ object HalloweenItemData {
 
     val potion = new ItemStack(Material.POTION, 1)
     potion.setItemMeta(potionMeta)
-    potion
+
+    val nbtItem = new NBTItem(potion)
+    nbtItem.setByte(NBTTagConstants.typeIdTag, 1.toByte)
+    nbtItem.getItem
   }
 
   private val halloweenPotionItemFlags = Set(
@@ -57,4 +62,16 @@ object HalloweenItemData {
       s"${ChatColor.RESET}${ChatColor.GRAY}MEBIUS育成中の時などにご利用ください"
     )
   }.asJava
+
+  private object NBTTagConstants {
+    val typeIdTag = "halloweenPotionTypeId"
+  }
+
+  def isHalloweenPotion(itemStack: ItemStack): Boolean = {
+    if (itemStack != null && itemStack.getType != Material.AIR) {
+      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) != 0
+    } else {
+      false
+    }
+  }
 }
