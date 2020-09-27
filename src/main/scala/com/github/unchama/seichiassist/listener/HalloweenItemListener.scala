@@ -1,12 +1,8 @@
 package com.github.unchama.seichiassist.listener
 
-import org.bukkit.entity.Player
-import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.meta.PotionMeta
 import com.github.unchama.seichiassist.data.HalloweenItemData.isHalloweenPotion
-import com.github.unchama.seichiassist.util.Util
-import org.bukkit.Bukkit
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 class HalloweenItemListener extends Listener {
