@@ -13,16 +13,10 @@ class HalloweenItemListener extends Listener {
 
   @EventHandler
   def onPlayerConsumeHalloweenPotion(event: PlayerItemConsumeEvent): Unit = {
-    val player = event.getPlayer
-    val item = event.getItem
-    val itemMeta = item.getItemMeta
-
-    if (!item.hasItemMeta || !itemMeta.hasLore || !itemMeta.isInstanceOf[PotionMeta]) return
-
-    if (isHalloweenPotion(item)) {
+    if (isHalloweenPotion(event.getItem)) {
       // 1.12.2では、Saturationのポーションは効果がないので、PotionEffectとして直接Playerに付与する
       // 10分
-      player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0), true)
+      event.getPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 20 * 60 * 10, 0), true)
     }
   }
 }
