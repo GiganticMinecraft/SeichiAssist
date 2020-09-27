@@ -286,7 +286,8 @@ class SeichiAssist extends JavaPlugin() {
       new RegionInventoryListener(),
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
-      new MenuHandler()
+      new MenuHandler(),
+      new HalloweenItemListener()
     )
       .concat(repositories)
       .concat(subsystems.flatMap(_.listeners))
