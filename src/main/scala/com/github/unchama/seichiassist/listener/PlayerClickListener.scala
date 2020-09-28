@@ -16,15 +16,15 @@ import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.WorldGuardWrapper.isRegionOwner
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.material.{MaterialData, Openable}
-import org.bukkit.{GameMode, Location, Material, Sound}
+import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
 
@@ -330,7 +330,6 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
             event.setCancelled(true)
 
-            import cats.implicits._
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
             SeichiAssist.instance
@@ -476,13 +475,5 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     materialData.setOpen(!materialData.isOpen)
     blockState.setData(materialData.asInstanceOf[MaterialData])
     blockState.update()
-  }
-
-  private def isRegionOwner(player: Player, blockLoc: Location): Boolean = {
-    val wg = ExternalPlugins.getWorldGuard
-    val regions = wg.getRegionManager(player.getWorld).getApplicableRegions(blockLoc).getRegions
-    // 座標を保護している保護領域がないもしくは2個以上ある場合は、区別がつかないのでfalse
-    if (regions.size() != 1) return false
-    regions.iterator().next().isOwner(wg.wrapPlayer(player))
   }
 }
