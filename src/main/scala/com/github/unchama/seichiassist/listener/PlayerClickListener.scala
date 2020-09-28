@@ -458,6 +458,8 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     p.playSound(p.getLocation, Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f)
   }
 
+  // 鉄のトラップドアを動力無しで開閉できるようにする処理
+  // 参照：https://red.minecraftserver.jp/issues/8109
   @EventHandler
   def onPlayerRightClickIronTrapdoor(event: PlayerInteractEvent): Unit = {
     val clickedBlock = event.getClickedBlock
