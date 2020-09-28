@@ -330,6 +330,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
             event.setCancelled(true)
 
+          　import cats.implicits._
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
             SeichiAssist.instance
