@@ -461,7 +461,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
   // 鉄のトラップドアを動力無しで開閉できるようにする処理
   // 参照：https://red.minecraftserver.jp/issues/8109
   @EventHandler
-  def onPlayerRightClickIronTrapdoor(event: PlayerInteractEvent): Unit = {
+  def onPlayerRightClickIronTrapDoor(event: PlayerInteractEvent): Unit = {
     val clickedBlock = event.getClickedBlock
 
     if (!isRegionOwner(event.getPlayer, clickedBlock.getLocation)) return
@@ -477,9 +477,9 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     blockState.update()
   }
 
-  private def isRegionOwner(player: Player, targetLocation: Location): Boolean = {
+  private def isRegionOwner(player: Player, blockLoc: Location): Boolean = {
     val wg = ExternalPlugins.getWorldGuard
-    val regions = wg.getRegionManager(player.getWorld).getApplicableRegions(targetLocation).getRegions
+    val regions = wg.getRegionManager(player.getWorld).getApplicableRegions(blockLoc).getRegions
     // 座標を保護している保護領域がないもしくは2個以上ある場合は、区別がつかないのでfalse
     if (regions.size() != 1) return false
     regions.iterator().next().isOwner(wg.wrapPlayer(player))
