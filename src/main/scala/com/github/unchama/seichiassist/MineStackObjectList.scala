@@ -44,6 +44,7 @@ object MineStackObjectList {
     new MineStackDropObj("bone", "骨", 1, Material.BONE, 0),
     new MineStackDropObj("sulphur", "火薬", 1, Material.SULPHUR, 0),
     new MineStackDropObj("arrow", "矢", 1, Material.ARROW, 0),
+    new MineStackDropObj("tipped_arrow", "鈍化の矢", 1, Material.TIPPED_ARROW, 0),
     new MineStackDropObj("spider_eye", "蜘蛛の目", 1, Material.SPIDER_EYE, 0),
     new MineStackDropObj("string", "糸", 1, Material.STRING, 0),
     new MineStackDropObj("name_tag", "名札", 1, Material.NAME_TAG, 0),
