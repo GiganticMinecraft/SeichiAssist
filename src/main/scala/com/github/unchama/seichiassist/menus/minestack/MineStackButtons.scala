@@ -81,7 +81,8 @@ private[minestack] case class MineStackButtons(player: Player) {
             List(
               s"$RESET$GREEN${stackedAmount}個",
               s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
-              s"$RESET$DARK_RED${UNDERLINE}クリックで1スタック取り出し"
+              s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
+              s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
             ).asJava
           }
         }
@@ -92,7 +93,17 @@ private[minestack] case class MineStackButtons(player: Player) {
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
         SequentialEffect(
-          withDrawOneStackEffect(mineStackObj),
+          withDrawItemEffect(mineStackObj, mineStackObj.itemStack.getMaxStackSize),
+          targetedeffect.UnfocusedEffect {
+            if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
+              playerData.hisotryData.add(mineStackObj)
+            }
+          }
+        )
+      },
+      action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+        SequentialEffect(
+          withDrawItemEffect(mineStackObj, 1),
           targetedeffect.UnfocusedEffect {
             if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
               playerData.hisotryData.add(mineStackObj)
@@ -103,9 +114,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def withDrawOneStackEffect(mineStackObj: MineStackObj)(implicit ctx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = {
-    val maxStackSize = mineStackObj.itemStack.getMaxStackSize.toLong
-
+  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(implicit ctx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = {
     Kleisli(player => Execution.onServerMainThread {
       for {
         playerData <- IO {
@@ -114,9 +123,9 @@ private[minestack] case class MineStackButtons(player: Player) {
         currentAmount <- IO {
           playerData.minestack.getStackedAmountOf(mineStackObj)
         }
-        grantAmount = Math.min(maxStackSize, currentAmount).toInt
+        grantAmount = Math.min(amount, currentAmount).toInt
 
-        soundEffectPitch = if (grantAmount == maxStackSize) 1.0f else 0.5f
+        soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
         itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
         _ <-
@@ -155,7 +164,7 @@ private[minestack] case class MineStackButtons(player: Player) {
             s"$RESET$DARK_GREEN${UNDERLINE}クリックでON"
           ))
       }
-      }.build()
+    }.build()
 
     val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
       SequentialEffect(
