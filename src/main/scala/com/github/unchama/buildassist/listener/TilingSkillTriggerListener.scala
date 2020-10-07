@@ -2,6 +2,7 @@ package com.github.unchama.buildassist.listener
 
 import com.github.unchama.buildassist.{BuildAssist, Util}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld._
 import org.bukkit.ChatColor.RED
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -186,7 +187,7 @@ object TilingSkillTriggerListener extends Listener {
       }
     }
 
-    if (Util.inTrackedWorld(player)) {
+    if (player.getWorld.isTrackedBuildBlockWorld) {
       //設置した数を足す
       Util.addBuild1MinAmount(player, new java.math.BigDecimal(placementCount * BuildAssist.config.getBlockCountMag))
     }
