@@ -187,7 +187,7 @@ object TilingSkillTriggerListener extends Listener {
       }
     }
 
-    if (player.getWorld.isTrackedBuildBlockWorld) {
+    if (player.getWorld.shouldTrackBuildBlock) {
       //設置した数を足す
       Util.addBuild1MinAmount(player, new java.math.BigDecimal(placementCount * BuildAssist.config.getBlockCountMag))
     }

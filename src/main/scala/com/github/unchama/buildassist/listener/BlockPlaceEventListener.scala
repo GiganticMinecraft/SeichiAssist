@@ -19,7 +19,7 @@ class BlockPlaceEventListener extends TypedEventListener[BlockPlaceEvent] {
   @EventHandler
   override def onEvent(event: BlockPlaceEvent): Unit = {
     val player = event.getPlayer
-    if (!player.getWorld.isTrackedBuildBlockWorld) return
+    if (!player.getWorld.shouldTrackBuildBlock) return
 
     //設置がキャンセルされていたら終了
     if (event.isCancelled) return
