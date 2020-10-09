@@ -52,6 +52,7 @@ object MaterialSets {
 
   val breakToolMaterials: Set[Material] = Set(
     Material.WOOD_PICKAXE, Material.WOOD_SPADE,
+    Material.STONE_PICKAXE, Material.STONE_AXE, Material.STONE_SPADE,
     Material.IRON_PICKAXE, Material.IRON_AXE, Material.IRON_SPADE,
     Material.GOLD_PICKAXE, Material.GOLD_AXE, Material.GOLD_SPADE
   ) ++ breakTestToolMaterials
