@@ -16,12 +16,14 @@ import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.WorldGuardWrapper.isRegionOwner
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.material.{MaterialData, Openable}
 import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
@@ -328,7 +330,6 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
             event.setCancelled(true)
 
-            import cats.implicits._
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
             SeichiAssist.instance
@@ -455,5 +456,24 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     targetBlock.setType(Material.AIR)
     //音を鳴らしておく
     p.playSound(p.getLocation, Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f)
+  }
+
+  // 鉄のトラップドアを動力無しで開閉できるようにする処理
+  // 参照：https://red.minecraftserver.jp/issues/8109
+  @EventHandler
+  def onPlayerRightClickIronTrapDoor(event: PlayerInteractEvent): Unit = {
+    val clickedBlock = event.getClickedBlock
+
+    if (!isRegionOwner(event.getPlayer, clickedBlock.getLocation)) return
+
+    if (event.getHand == EquipmentSlot.OFF_HAND) return
+    if (event.getAction != Action.RIGHT_CLICK_BLOCK || clickedBlock.getType != Material.IRON_TRAPDOOR) return
+
+    // TODO: 手に何も持っていない場合は機能するが、ブロックなどを持っている場合は機能しない（手に持っているものが設置できるもののときや弓矢は反応する）
+    val blockState = clickedBlock.getState
+    val materialData = blockState.getData.asInstanceOf[Openable]
+    materialData.setOpen(!materialData.isOpen)
+    blockState.setData(materialData.asInstanceOf[MaterialData])
+    blockState.update()
   }
 }
