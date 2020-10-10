@@ -40,8 +40,8 @@ import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
@@ -287,7 +287,8 @@ class SeichiAssist extends JavaPlugin() {
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
-      new HalloweenItemListener()
+      new HalloweenItemListener(),
+      new PlayerMoveListener()
     )
       .concat(repositories)
       .concat(subsystems.flatMap(_.listeners))
