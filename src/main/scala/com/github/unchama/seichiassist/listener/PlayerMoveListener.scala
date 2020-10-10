@@ -10,7 +10,7 @@ class PlayerMoveListener(implicit effectEnvironment: EffectEnvironment) extends 
   def onPlayerMoveToVoid(event: PlayerMoveEvent): Unit = {
     if (event.getTo.getY < 0.0) {
       val player = event.getPlayer
-      event.setTo(player.getWorld.getSpawnLocation)
+      player.teleport(player.getWorld.getSpawnLocation)
       player.sendMessage(s"${ChatColor.RED}voidに突入していたためスポーン地点にテレポートしました。")
     }
   }
