@@ -20,14 +20,10 @@ class SeasonalEventsConfig(private val plugin: Plugin) {
   }
 
   // コンフィグのセーブ
-  def saveConfig(): Unit = {
-    plugin.saveConfig()
-  }
+  def saveConfig(): Unit = plugin.saveConfig()
 
   // plugin.ymlがない時にDefaultのファイルを生成
-  def saveDefaultConfig(): Unit = {
-    plugin.saveDefaultConfig()
-  }
+  def saveDefaultConfig(): Unit = plugin.saveDefaultConfig()
 
   // plugin.ymlファイルからの読み込み
   def getConfig: FileConfiguration = plugin.getConfig
