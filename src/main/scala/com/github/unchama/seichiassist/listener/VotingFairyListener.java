@@ -88,23 +88,23 @@ public class VotingFairyListener implements Listener {
             VotingFairyTask.speak(p, getMessage(night, p.getName()), playerdata.toggleVFSound());
     }
 
+    private static final List<String> halloweenEventMessages = Arrays.asList(
+        "[str1]！僕と一緒に、せーの！Happy Halloween！"
+        , "Happy Helloween！ あれ...スペル違う？"
+        , "Trick or Treat！がちゃりんごくれなきゃいたずらしちゃうぞ！"
+        , "がちゃりんごがランタンだったらいいのになー"
+        , "シイナorトリート！"
+        , "[str1]。そういえば、ハロウィンらしいけど、僕って仮装する必要ある？"
+        , "ハロウィンだとみんなたくさんがちゃりんごをくれるんだ！[str1]もくれるよね？"
+        , "ハロウィンっておばけが集まるらしいけど...僕場違いじゃない？"
+        , "ハロウィンのカボチャって最初はカブだったらしいよ！[str1]は知ってた？"
+        , "わるい子はいねぇーかー！…え？これはハロウィンじゃないの？"
+    );
+
     public static void sendHalloweenEventMessage(Player player) {
         HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
         UUID uuid = player.getUniqueId();
         PlayerData playerdata = playermap.apply(uuid);
-
-        final List<String> halloweenEventMessages = Arrays.asList(
-                "[str1]！僕と一緒に、せーの！Happy Halloween！"
-                , "Happy Helloween！ あれ...スペル違う？"
-                , "Trick or Treat！がちゃりんごくれなきゃいたずらしちゃうぞ！"
-                , "がちゃりんごがランタンだったらいいのになー"
-                , "シイナorトリート！"
-                , "[str1]。そういえば、ハロウィンらしいけど、僕って仮装する必要ある？"
-                , "ハロウィンだとみんなたくさんがちゃりんごをくれるんだ！[str1]もくれるよね？"
-                , "ハロウィンっておばけが集まるらしいけど...僕場違いじゃない？"
-                , "ハロウィンのカボチャって最初はカブだったらしいよ！[str1]は知ってた？"
-                , "わるい子はいねぇーかー！…え？これはハロウィンじゃないの？"
-        );
         VotingFairyTask.speak(player, getMessage(halloweenEventMessages, player.getName()), playerdata.toggleVFSound());
     }
 
