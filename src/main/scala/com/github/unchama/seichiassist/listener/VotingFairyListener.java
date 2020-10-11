@@ -95,7 +95,7 @@ public class VotingFairyListener implements Listener {
 
         final List<String> halloweenEventMessages = Arrays.asList(
                 "[str1]！僕と一緒に、せーの！Happy Halloween！"
-                , "Happy Halloween！ あれ...スペル違う？"
+                , "Happy Helloween！ あれ...スペル違う？"
                 , "Trick or Treat！がちゃりんごくれなきゃいたずらしちゃうぞ！"
                 , "がちゃりんごがランタンだったらいいのになー"
                 , "シイナorトリート！"
