@@ -33,7 +33,8 @@ class Valentine(private val plugin: Plugin) extends Listener {
   private val FINISH = config.getEventFinishDay
   private val FINISHDISP = config.getEventFinishDayDisp
 
-  try { // イベント開催中か判定
+  try {
+    // イベント開催中か判定
     val format = new SimpleDateFormat("yyyy-MM-dd")
     val finishdate = format.parse(FINISH)
     val dropdate = format.parse(DROPDAY)
@@ -194,7 +195,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
   }
 
   private def useChoco(player: Player, item: ItemStack): Unit = {
-    val msg = Set(
+    val msg = Seq(
       s"${player.getName}は${getChocoOwner(item)}のチョコレートを食べた！猟奇的な味だった。",
       s"${player.getName}！${getChocoOwner(item)}からのチョコだと思ったかい？ざぁんねんっ！",
       s"${player.getName}は${getChocoOwner(item)}のプレゼントで鼻血が止まらない！（計画通り）",
