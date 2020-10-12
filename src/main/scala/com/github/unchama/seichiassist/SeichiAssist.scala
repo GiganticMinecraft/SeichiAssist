@@ -238,7 +238,8 @@ class SeichiAssist extends JavaPlugin() {
       mebius.System.wired,
       expBottleStackSystem,
       itemMigrationSystem,
-      managedFlySystem
+      managedFlySystem,
+      rescueplayer.System.wired
     )
 
     // コマンドの登録
@@ -288,7 +289,6 @@ class SeichiAssist extends JavaPlugin() {
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
       new HalloweenItemListener(),
-      new PlayerMoveListener()
     )
       .concat(repositories)
       .concat(subsystems.flatMap(_.listeners))

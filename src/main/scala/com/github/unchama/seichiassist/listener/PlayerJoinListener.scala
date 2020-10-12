@@ -130,8 +130,6 @@ class PlayerJoinListener extends Listener {
       //初見さんにLv1メッセージを送信
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
-
-    if (player.isDead) player.teleport(player.getWorld.getSpawnLocation)
   }
 
   // プレイヤーがワールドを移動したとき
