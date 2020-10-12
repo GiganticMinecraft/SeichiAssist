@@ -60,15 +60,15 @@ class Seizonsiki(private val plugin: Plugin) extends Listener {
 
   @EventHandler
   def onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent): Unit = {
-    if (isZongoConsumed(event.getItem)) increase10PerMana(event.getPlayer)
+    if (isZongoConsumed(event.getItem)) increase10PctMana(event.getPlayer)
   }
 
   // プレイヤーにゾンビが倒されたとき発生
   private def dropZongo(killer: Player, loc: Location): Unit = {
     if (isdrop) {
-      val dp: Double = SeasonalEvents.config.getDropPer
-      val rand: Double = Math.random * 100
-      if (rand < dp) {
+      val dropRate: Double = SeasonalEvents.config.getDropRate
+      val num: Double = Math.random * 100
+      if (num < dropRate) {
         // 報酬をドロップ
         killer.getWorld.dropItemNaturally(loc, getZongoItemStack)
       }
@@ -87,7 +87,7 @@ class Seizonsiki(private val plugin: Plugin) extends Listener {
   }
 
   // ゾンごを使った時のマナ回復処理
-  private def increase10PerMana(player: Player): Unit = {
+  private def increase10PctMana(player: Player): Unit = {
     val uuid: UUID = player.getUniqueId
     val pd: PlayerData = SeichiAssist.playermap.getOrElse(uuid, return)
     val mana = pd.manaState
