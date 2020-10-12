@@ -131,6 +131,7 @@ class PlayerJoinListener extends Listener {
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
 
+    if (player.isDead) player.teleport(player.getWorld.getSpawnLocation)
   }
 
   // プレイヤーがワールドを移動したとき
