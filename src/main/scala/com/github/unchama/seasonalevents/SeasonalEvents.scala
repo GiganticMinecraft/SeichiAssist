@@ -1,5 +1,6 @@
 package com.github.unchama.seasonalevents
 
+import com.github.unchama.seasonalevents.event.{Seizonsiki, Valentine}
 import org.bukkit.plugin.Plugin
 
 class SeasonalEvents(plugin: Plugin) {
@@ -9,10 +10,15 @@ class SeasonalEvents(plugin: Plugin) {
   def onEnable(): Unit = {
     SeasonalEvents.config = new SeasonalEventsConfig(plugin)
     SeasonalEvents.config.loadConfig()
+
+    new Seizonsiki(plugin)
+    new Valentine(plugin)
+
+    plugin.getLogger.info("SeasonalEvents is Enabled!")
   }
 
   def onDisable(): Unit = {
-
+    plugin.getLogger.info("SeasonalEvents is Disabled!")
   }
 }
 
