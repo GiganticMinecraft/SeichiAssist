@@ -116,7 +116,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
   // プレイヤーにクリーパーが倒されたとき発生
   private def killEvent(entity: Entity, loc: Location): Unit = {
     if (isdrop) {
-      val dp = SeasonalEvents.config.getDropPer
+      val dp = SeasonalEvents.config.getDropRate
       val rand = new Random().nextInt(100)
       if (rand < dp) {
         // 報酬をドロップ

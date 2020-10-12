@@ -4,6 +4,7 @@ import java.text.{ParseException, SimpleDateFormat}
 import java.util.{Date, UUID}
 
 import com.github.unchama.seasonalevents.SeasonalEvents
+import com.github.unchama.seasonalevents.event.seizonsiki.SeizonsikiItemData._
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import org.bukkit._
@@ -11,19 +12,13 @@ import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.plugin.Plugin
-
-import scala.jdk.CollectionConverters._
-import scala.util.chaining._
 
 class Seizonsiki(private val plugin: Plugin) extends Listener {
   private var isdrop = false
   private val DROPDAY = "2017-01-16"
   private val DROPDAYDISP = "2017/01/15"
   private val FINISH = "2017-01-22"
-  private val FINISHDISP = "2017/01/21"
 
   try {
     val format = new SimpleDateFormat("yyyy-MM-dd")
@@ -75,17 +70,6 @@ class Seizonsiki(private val plugin: Plugin) extends Listener {
     }
   }
 
-  // TODO: 別ファイルに
-  // アイテムがゾンごかどうかの判定
-  private def isZongoConsumed(item: ItemStack): Boolean = {
-    // Lore取得
-    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
-    val itemLore = item.getItemMeta.getLore
-    val prizeLore = getZongoLore
-    // 比較
-    itemLore.containsAll(prizeLore)
-  }
-
   // ゾンごを使った時のマナ回復処理
   private def increase10PctMana(player: Player): Unit = {
     val uuid: UUID = player.getUniqueId
@@ -96,29 +80,8 @@ class Seizonsiki(private val plugin: Plugin) extends Listener {
     mana.increase(max * 0.1, player, pd.level)
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }
+}
 
-  // TODO: 別ファイルに
-  private def getZongoItemStack = {
-    val itemMeta: ItemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE)
-      .tap(_.setDisplayName(s"${ChatColor.GOLD}${ChatColor.BOLD}ゾんご"))
-      .tap(_.setLore(getZongoLore))
-
-    val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)
-    itemStack.setItemMeta(itemMeta)
-    itemStack
-  }
-
-  // TODO: 別ファイルに
-  private def getZongoLore =
-    List(
-      "",
-      s"${ChatColor.RESET}${ChatColor.GRAY}成ゾン式で暴走していたチャラゾンビから没収した。",
-      "ゾンビたちが栽培しているりんご。",
-      "良質な腐葉土で1つずつ大切に育てられた。",
-      "栄養豊富で、食べるとマナが10%回復する。",
-      "腐りやすいため賞味期限を超えると効果が無くなる。",
-      "",
-      s"${ChatColor.RESET}${ChatColor.DARK_GREEN}賞味期限：$FINISHDISP",
-      s"${ChatColor.RESET}${ChatColor.AQUA}マナ回復（10％）${ChatColor.GRAY} （期限内）"
-    ).asJava
+object Seizonsiki {
+  val FINISHDISP = "2017/01/21"
 }
