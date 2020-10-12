@@ -1,7 +1,7 @@
 package com.github.unchama.seasonalevents
 
-import com.github.unchama.seasonalevents.event.Valentine
-import com.github.unchama.seasonalevents.event.seizonsiki.Seizonsiki
+import com.github.unchama.seasonalevents.valentine.Valentine
+import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki
 import org.bukkit.plugin.Plugin
 
 class SeasonalEvents(plugin: Plugin) {

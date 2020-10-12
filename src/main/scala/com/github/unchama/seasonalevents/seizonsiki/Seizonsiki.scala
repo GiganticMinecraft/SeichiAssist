@@ -1,10 +1,10 @@
-package com.github.unchama.seasonalevents.event.seizonsiki
+package com.github.unchama.seasonalevents.seizonsiki
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.{Date, UUID}
 
 import com.github.unchama.seasonalevents.SeasonalEvents
-import com.github.unchama.seasonalevents.event.seizonsiki.SeizonsikiItemData._
+import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData.{isZongoConsumed, getZongoItemStack}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import org.bukkit._

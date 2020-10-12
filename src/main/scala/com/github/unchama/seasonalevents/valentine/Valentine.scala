@@ -1,4 +1,4 @@
-package com.github.unchama.seasonalevents.event
+package com.github.unchama.seasonalevents.valentine
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util

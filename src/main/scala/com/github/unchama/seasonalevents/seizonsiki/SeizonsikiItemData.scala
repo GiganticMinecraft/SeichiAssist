@@ -1,8 +1,8 @@
-package com.github.unchama.seasonalevents.event.seizonsiki
+package com.github.unchama.seasonalevents.seizonsiki
 
 import java.util
 
-import com.github.unchama.seasonalevents.event.seizonsiki.Seizonsiki.FINISHDISP
+import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.FINISHDISP
 
 import org.bukkit.{Bukkit, ChatColor, Material}
 import org.bukkit.inventory.ItemStack
@@ -32,7 +32,7 @@ object SeizonsikiItemData {
     itemStack
   }
 
-  def getZongoLore: util.List[String] = List(
+  private def getZongoLore: util.List[String] = List(
     "",
     s"${ChatColor.RESET}${ChatColor.GRAY}成ゾン式で暴走していたチャラゾンビから没収した。",
     "ゾンビたちが栽培しているりんご。",
