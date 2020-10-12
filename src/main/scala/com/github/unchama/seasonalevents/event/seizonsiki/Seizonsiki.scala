@@ -1,4 +1,4 @@
-package com.github.unchama.seasonalevents.event
+package com.github.unchama.seasonalevents.event.seizonsiki
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.{Date, UUID}
@@ -19,7 +19,6 @@ import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 
 class Seizonsiki(private val plugin: Plugin) extends Listener {
-  // TODO: この最初のあたりどうにかできそう？
   private var isdrop = false
   private val DROPDAY = "2017-01-16"
   private val DROPDAYDISP = "2017/01/15"
@@ -33,14 +32,10 @@ class Seizonsiki(private val plugin: Plugin) extends Listener {
 
     val now = new Date
     // イベント開催中か判定
-    if (now.before(finishDate)) {
-      // リスナーを登録
-      plugin.getServer.getPluginManager.registerEvents(this, plugin)
-    }
+    if (now.before(finishDate)) plugin.getServer.getPluginManager.registerEvents(this, plugin)
     if (now.before(dropDate)) isdrop = true
   } catch {
-    case e: ParseException =>
-      e.printStackTrace()
+    case e: ParseException => e.printStackTrace()
   }
 
   @EventHandler
