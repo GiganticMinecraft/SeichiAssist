@@ -136,28 +136,27 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   // アイテム使用時の処理
   private def usePrize(player: Player): Unit = {
-    val ef = List(
-      new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 12000, 1),
-      new PotionEffect(PotionEffectType.NIGHT_VISION, 12000, 1),
-      new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 12000, 1),
-      new PotionEffect(PotionEffectType.JUMP, 12000, 1),
-      new PotionEffect(PotionEffectType.REGENERATION, 12000, 1),
-      new PotionEffect(PotionEffectType.SPEED, 12000, 1),
-      new PotionEffect(PotionEffectType.WATER_BREATHING, 12000, 1),
-      new PotionEffect(PotionEffectType.ABSORPTION, 12000, 1),
-      new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 12000, 1),
-      new PotionEffect(PotionEffectType.UNLUCK, 1200, 1)
+    val effectsMap = Map(
+      "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 12000, 1),
+      "暗視" -> new PotionEffect(PotionEffectType.NIGHT_VISION, 12000, 1),
+      "耐性" -> new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 12000, 1),
+      "跳躍力上昇" -> new PotionEffect(PotionEffectType.JUMP, 12000, 1),
+      "再生能力" -> new PotionEffect(PotionEffectType.REGENERATION, 12000, 1),
+      "移動速度上昇" -> new PotionEffect(PotionEffectType.SPEED, 12000, 1),
+      "水中呼吸" -> new PotionEffect(PotionEffectType.WATER_BREATHING, 12000, 1),
+      "緩衝吸収" -> new PotionEffect(PotionEffectType.ABSORPTION, 12000, 1),
+      "攻撃力上昇" -> new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 12000, 1),
+      "不運" -> new PotionEffect(PotionEffectType.UNLUCK, 1200, 1)
     )
-    val msg = Set("火炎耐性", "暗視", "耐性", "跳躍力上昇", "再生能力", "移動速度上昇", "水中呼吸", "緩衝吸収", "攻撃力上昇", "不運")
-    val ran: Int = new Random().nextInt(ef.size)
-    if (ran != 9) {
-      player.addPotionEffect(ef(ran))
-      player.sendMessage(msg(ran) + " IIを奪い取った！あぁ、おいしいなぁ！")
-    }
-    else {
-      player.addPotionEffect(ef(ran))
-      player.sendMessage(msg(ran) + " IIを感じてしまった…はぁ…むなしいなぁ…")
-    }
+    val effectsName = effectsMap.keys.toSeq
+    val effects = effectsMap.values.toSeq
+    val num: Int = new Random().nextInt(effectsMap.size)
+
+    player.addPotionEffect(effects(num))
+
+    if (num == 9) player.sendMessage(s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…")
+    else player.sendMessage(s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！")
+
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }
 
