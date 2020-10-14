@@ -22,7 +22,7 @@ object HalloweenItemData {
    */
 
   def getHalloweenPotion: ItemStack = {
-    val potionMeta: PotionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta]
+    val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta]
       .tap(_.setDisplayName(s"${ChatColor.AQUA}${ChatColor.ITALIC}うんちゃまの汗"))
       .tap(_.setColor(fromRGB(1, 93, 178)))
       .tap(_.addEnchant(Enchantment.MENDING, 1, true))
