@@ -16,6 +16,11 @@ import org.bukkit.inventory.meta.{ItemMeta, PotionMeta}
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 object HalloweenItemData {
+
+  /*
+  HalloweenPotionここから
+   */
+
   def getHalloweenPotion: ItemStack = {
     val potionMeta: PotionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta]
       .tap(_.setDisplayName(s"${ChatColor.AQUA}${ChatColor.ITALIC}うんちゃまの汗"))
@@ -63,15 +68,19 @@ object HalloweenItemData {
     )
   }.asJava
 
-  private object NBTTagConstants {
-    val typeIdTag = "halloweenItemTypeId"
-  }
-
   def isHalloweenPotion(itemStack: ItemStack): Boolean = {
     if (itemStack != null && itemStack.getType != Material.AIR) {
       new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 1
     } else {
       false
     }
+  }
+
+  /*
+  HalloweenPotionここまで
+   */
+
+  private object NBTTagConstants {
+    val typeIdTag = "halloweenItemTypeId"
   }
 }
