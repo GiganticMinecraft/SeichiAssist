@@ -23,8 +23,9 @@ object HalloweenItemData {
 
   def getHalloweenPotion: ItemStack = {
     val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta]
-      .tap(_.setDisplayName(s"${ChatColor.AQUA}${ChatColor.ITALIC}うんちゃまの汗"))
+      .tap(_.setDisplayName(s"$AQUA${ITALIC}うんちゃまの汗"))
       .tap(_.setColor(fromRGB(1, 93, 178)))
+      // 意味のないエンチャント。エンチャントが付与されている時の紫色のキラキラをつけるため。
       .tap(_.addEnchant(Enchantment.MENDING, 1, true))
       .tap(_.setLore(halloweenPotionLoreList()))
       .tap(meta =>
@@ -62,9 +63,11 @@ object HalloweenItemData {
     val year = Calendar.getInstance().get(Calendar.YEAR)
     List(
       "",
-      s"${ChatColor.RESET}${ChatColor.GRAY}${year}ハロウィンイベント限定品",
-      s"${ChatColor.RESET}${ChatColor.GRAY}敵に囲まれてピンチの時や",
-      s"${ChatColor.RESET}${ChatColor.GRAY}MEBIUS育成中の時などにご利用ください"
+      s"$RESET$GRAY${year}ハロウィンイベント限定品",
+      "敵に囲まれてピンチの時や",
+      "MEBIUS育成中の時などにご利用ください",
+      "飲むと強くなりますし",
+      "飲みすぎても死にません"
     )
   }.asJava
 
@@ -78,6 +81,64 @@ object HalloweenItemData {
 
   /*
   HalloweenPotionここまで
+   */
+
+  /*
+  HalloweenHoeここから
+   */
+
+  def getHalloweenHoe: ItemStack = {
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_HOE)
+      .tap(_.setDisplayName(halloweenHoeName))
+      // 意味のないエンチャント。エンチャントが付与されている時の紫色のキラキラをつけるため。
+      .tap(_.addEnchant(Enchantment.ARROW_INFINITE, 1, true))
+      .tap(_.setLore(halloweenHoeLoreList()))
+      .tap(meta =>
+        halloweenHoeItemFlags.foreach(flg =>
+          meta.addItemFlags(flg)
+        )
+      )
+
+    val hoe = new ItemStack(Material.DIAMOND_HOE, 1)
+    hoe.setItemMeta(itemMeta)
+
+    val nbtItem = new NBTItem(hoe)
+    nbtItem.setByte(NBTTagConstants.typeIdTag, 2.toByte)
+    nbtItem.getItem
+  }
+
+  private val halloweenHoeName =
+    List(s"${RED}C", s"${GOLD}E", s"${YELLOW}N", s"${GREEN}T", s"${BLUE}E", s"${DARK_AQUA}O", s"${LIGHT_PURPLE}T", s"${RED}L")
+      .foldLeft(""){ (name, str) => name + str.patch(2, s"$BOLD$ITALIC", 0) }
+
+  private val halloweenHoeItemFlags = Set(
+    ItemFlag.HIDE_ENCHANTS,
+    ItemFlag.HIDE_UNBREAKABLE
+  )
+
+  private def halloweenHoeLoreList() = {
+    val year = Calendar.getInstance().get(Calendar.YEAR)
+    List(
+      "",
+      s"$RESET$GRAY${year}ハロウィンイベント限定品",
+      "特殊なエンチャントが付与されています",
+      "",
+      // TODO: テクスチャコンペ終了時に記載する
+      s"$RESET${WHITE}テクスチャ名：「」",
+      "製作者："
+    )
+  }.asJava
+
+  def isHalloweenHoe(itemStack: ItemStack): Boolean = {
+    if (itemStack != null && itemStack.getType != Material.AIR) {
+      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 2
+    } else {
+      false
+    }
+  }
+
+  /*
+  HalloweenHoeここまで
    */
 
   private object NBTTagConstants {
