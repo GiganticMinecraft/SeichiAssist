@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.data
 
-import java.util._
+import java.util.Calendar
 
+import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
@@ -90,12 +91,11 @@ object HalloweenItemData {
   def getHalloweenHoe: ItemStack = {
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_HOE)
       .tap(_.setDisplayName(halloweenHoeName))
-      // 意味のないエンチャント。エンチャントが付与されている時の紫色のキラキラをつけるため。
-      .tap(_.addEnchant(Enchantment.ARROW_INFINITE, 1, true))
       .tap(_.setLore(halloweenHoeLoreList()))
+      .tap(_.addItemFlags(ItemFlag.HIDE_ENCHANTS))
       .tap(meta =>
-        halloweenHoeItemFlags.foreach(flg =>
-          meta.addItemFlags(flg)
+        halloweenHoeEnchantments.foreach((ench, lvl) =>
+          meta.addEnchant(ench, lvl, true)
         )
       )
 
@@ -111,14 +111,18 @@ object HalloweenItemData {
     List(s"${RED}C", s"${GOLD}E", s"${YELLOW}N", s"${GREEN}T", s"${BLUE}E", s"${DARK_AQUA}O", s"${LIGHT_PURPLE}T", s"${RED}L")
       .foldLeft(""){ (name, str) => name + str.patch(2, s"$BOLD$ITALIC", 0) }
 
-  private val halloweenHoeItemFlags = Set(
-    ItemFlag.HIDE_ENCHANTS,
-    ItemFlag.HIDE_UNBREAKABLE
+  private val halloweenHoeEnchantments = Set(
+    (Enchantment.DURABILITY, 7),
+    (Enchantment.DIG_SPEED, 7),
+    (Enchantment.MENDING, 1)
   )
 
   private def halloweenHoeLoreList() = {
     val year = Calendar.getInstance().get(Calendar.YEAR)
-    List(
+    val enchNames = halloweenHoeEnchantments.map( map =>
+      s"$RESET$GRAY${Util.getEnchantName(map._1, map._2)}"
+    ).toList
+    val lore = List(
       "",
       s"$RESET$GRAY${year}ハロウィンイベント限定品",
       "特殊なエンチャントが付与されています",
@@ -127,6 +131,7 @@ object HalloweenItemData {
       s"$RESET${WHITE}テクスチャ名：「」",
       "製作者："
     )
+    enchNames ::: lore
   }.asJava
 
   def isHalloweenHoe(itemStack: ItemStack): Boolean = {
