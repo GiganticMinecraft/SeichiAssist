@@ -64,12 +64,12 @@ object HalloweenItemData {
   }.asJava
 
   private object NBTTagConstants {
-    val typeIdTag = "halloweenPotionTypeId"
+    val typeIdTag = "halloweenItemTypeId"
   }
 
   def isHalloweenPotion(itemStack: ItemStack): Boolean = {
     if (itemStack != null && itemStack.getType != Material.AIR) {
-      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) != 0
+      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 1
     } else {
       false
     }
