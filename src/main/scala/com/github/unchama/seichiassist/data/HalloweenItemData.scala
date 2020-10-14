@@ -1,19 +1,19 @@
 package com.github.unchama.seichiassist.data
 
-import scala.collection.immutable.{List, Set}
-import scala.jdk.CollectionConverters._
-import scala.util.chaining._
 import java.util._
 
 import de.tr7zw.itemnbtapi.NBTItem
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
+import org.bukkit.{Bukkit, Material}
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.Material
+import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
-import org.bukkit.inventory.meta.{ItemMeta, PotionMeta}
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
+
+import scala.collection.immutable.{List, Set}
+import scala.jdk.CollectionConverters._
+import scala.util.chaining._
 
 object HalloweenItemData {
 
