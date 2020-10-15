@@ -64,12 +64,12 @@ object HalloweenItemData {
     val year = Calendar.getInstance().get(Calendar.YEAR)
     List(
       "",
-      s"$RESET$GRAY${year}ハロウィンイベント限定品",
+      s"${year}ハロウィンイベント限定品",
       "敵に囲まれてピンチの時や",
       "MEBIUS育成中の時などにご利用ください",
       "飲むと強くなりますし",
       "飲みすぎても死にません"
-    )
+    ).map( str => s"$RESET$GRAY$str" )
   }.asJava
 
   def isHalloweenPotion(itemStack: ItemStack): Boolean = {
@@ -109,7 +109,7 @@ object HalloweenItemData {
 
   private val halloweenHoeName =
     List(s"${RED}C", s"${GOLD}E", s"${YELLOW}N", s"${GREEN}T", s"${BLUE}E", s"${DARK_AQUA}O", s"${LIGHT_PURPLE}T", s"${RED}L")
-      .foldLeft(""){ (name, str) => name + str.patch(2, s"$BOLD$ITALIC", 0) }
+      .map( str => s"$BOLD$ITALIC$str" ).mkString
 
   private val halloweenHoeEnchantments = Set(
     (Enchantment.DURABILITY, 7),
@@ -124,13 +124,14 @@ object HalloweenItemData {
     ).toList
     val lore = List(
       "",
-      s"$RESET$GRAY${year}ハロウィンイベント限定品",
-      "特殊なエンチャントが付与されています",
+      s"$GRAY${year}ハロウィンイベント限定品",
+      "",
+      s"${YELLOW}特殊なエンチャントが付与されています",
       "",
       // TODO: テクスチャコンペ終了時に記載する
-      s"$RESET${WHITE}テクスチャ名：「」",
-      "製作者："
-    )
+      s"${WHITE}テクスチャ名：「」",
+      s"${WHITE}製作者："
+    ).map( str => s"$RESET$str" )
     enchNames ::: lore
   }.asJava
 
