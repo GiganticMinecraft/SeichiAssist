@@ -463,6 +463,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
   @EventHandler
   def onPlayerRightClickIronTrapDoor(event: PlayerInteractEvent): Unit = {
     val clickedBlock = event.getClickedBlock
+    if (clickedBlock == null) return
 
     if (!isRegionOwner(event.getPlayer, clickedBlock.getLocation)) return
 
