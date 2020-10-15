@@ -94,8 +94,8 @@ object HalloweenItemData {
       .tap(_.setLore(halloweenHoeLoreList()))
       .tap(_.addItemFlags(ItemFlag.HIDE_ENCHANTS))
       .tap(meta =>
-        halloweenHoeEnchantments.foreach((ench, lvl) =>
-          meta.addEnchant(ench, lvl, true)
+        halloweenHoeEnchantments.foreach( ench =>
+          meta.addEnchant(ench._1, ench._2, true)
         )
       )
 
@@ -119,8 +119,8 @@ object HalloweenItemData {
 
   private def halloweenHoeLoreList() = {
     val year = Calendar.getInstance().get(Calendar.YEAR)
-    val enchNames = halloweenHoeEnchantments.map( map =>
-      s"$RESET$GRAY${Util.getEnchantName(map._1, map._2)}"
+    val enchNames = halloweenHoeEnchantments.map( ench =>
+      s"$RESET$GRAY${Util.getEnchantName(ench._1.getName, ench._2)}"
     ).toList
     val lore = List(
       "",
