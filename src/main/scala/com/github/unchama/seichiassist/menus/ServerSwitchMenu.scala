@@ -45,7 +45,7 @@ object ServerSwitchMenu extends Menu {
     case object PUBLIC extends Server(s"$GREEN${BOLD}公共施設", "s7", ChestSlotRef(0, 8), Material.DIAMOND)
 
     // TODO
-    case object SEICHI extends Server(s"${BOLD}整地専用", "s5", ChestSlotRef(0, 4), ???)
+    case object SEICHI extends Server(s"${BOLD}整地専用", "s5", ChestSlotRef(0, 4), Material.IRON_PICKAXE)
     
     val values: IndexedSeq[Server] = findValues
 
