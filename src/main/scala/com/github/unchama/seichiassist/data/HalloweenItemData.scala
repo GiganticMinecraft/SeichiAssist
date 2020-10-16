@@ -128,9 +128,8 @@ object HalloweenItemData {
       "",
       s"${YELLOW}特殊なエンチャントが付与されています",
       "",
-      // TODO: テクスチャコンペ終了時に記載する
-      s"${WHITE}テクスチャ名：「」",
-      s"${WHITE}製作者："
+      s"${WHITE}テクスチャ名：「バットクワン」",
+      s"${WHITE}製作者：SpecialBoyWaka"
     ).map( str => s"$RESET$str" )
     enchNames ::: lore
   }.asJava
