@@ -34,7 +34,9 @@ object PlayerDataRecalculationRoutine {
 
       //プレイヤーマップに記録されているすべてのplayerdataについての処理
       for (player <- onlinePlayers) {
-        val playerData = SeichiAssist.playermap(player.getUniqueId)
+        val pdOption = SeichiAssist.playermap.get(player.getUniqueId)
+        if (pdOption.isEmpty) return;
+        val playerData = pdOption()
 
         //エフェクトデータの持続時間を1200tick引いて、０以下のものを削除
         playerData.calcEffectData()
