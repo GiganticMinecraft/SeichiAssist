@@ -68,13 +68,11 @@ object HalloweenItemData {
     nbtItem.getItem
   }
 
-  def isHalloweenPotion(itemStack: ItemStack): Boolean = {
-    if (itemStack != null && itemStack.getType != Material.AIR) {
-      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 1
-    } else {
-      false
+  def isHalloweenPotion(itemStack: ItemStack): Boolean =
+    itemStack != null && itemStack.getType != Material.AIR && {
+      new NBTItem(itemStack)
+        .getByte(NBTTagConstants.typeIdTag) == 1
     }
-  }
 
   //endregion
 
@@ -125,13 +123,11 @@ object HalloweenItemData {
     nbtItem.getItem
   }
 
-  def isHalloweenHoe(itemStack: ItemStack): Boolean = {
-    if (itemStack != null && itemStack.getType != Material.AIR) {
-      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 2
-    } else {
-      false
+  def isHalloweenHoe(itemStack: ItemStack): Boolean =
+    itemStack != null && itemStack.getType != Material.AIR && {
+      new NBTItem(itemStack)
+        .getByte(NBTTagConstants.typeIdTag) == 2
     }
-  }
 
   //endregion
 
