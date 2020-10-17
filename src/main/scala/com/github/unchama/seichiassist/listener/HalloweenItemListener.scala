@@ -26,7 +26,11 @@ class HalloweenItemListener extends Listener {
   def onPlayerRightClickWithHalloweenHoe(event: PlayerInteractEvent): Unit = {
     if (!isHalloweenHoe(event.getItem)) return
 
-    // 特殊エンチャント：
+    /*
+    特殊エンチャントの処理
+    HalloweenHoeで右クリックされたブロックの半径4ブロック以内の草及び土ブロックを耕地に変える
+    ただし、耕地になるのは、そのブロックが自分がOwnerかMemberになっている保護の領域内である場合のみ
+     */
     if (event.getHand == EquipmentSlot.OFF_HAND) return
     if (event.getAction != Action.RIGHT_CLICK_BLOCK) return
 
