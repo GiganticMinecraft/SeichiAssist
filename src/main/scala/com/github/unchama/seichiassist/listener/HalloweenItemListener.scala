@@ -50,6 +50,6 @@ class HalloweenItemListener extends Listener {
   }
 
   private def canBeReplacedWithSoil(player: Player, block: Block) = {
-    (block.getType == Material.DIRT || block.getType == Material.GRASS) && isRegionMember(player, block.getLocation).isPresent
+    (block.getType == Material.DIRT || block.getType == Material.GRASS) && isRegionMember(player, block.getLocation)
   }
 }

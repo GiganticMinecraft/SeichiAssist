@@ -51,20 +51,24 @@ public class WorldGuardWrapper {
      * @return Ownerである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
      */
     public static boolean isRegionOwner(@NotNull Player player, @NotNull Location location) {
-        Set<ProtectedRegion> regions = plugin.getRegionManager(player.getWorld()).getApplicableRegions(location).getRegions();
-        if (regions.size() != 1) return false;
-        return regions.iterator().next().isOwner(plugin.wrapPlayer(player));
+        Optional<ProtectedRegion> region = getOneRegion(location);
+        return region.map(rg -> rg.isOwner(plugin.wrapPlayer(player))).orElse(false);
     }
 
     /**
-     * 現在{@link Player}が{@link Location}の座標でMemberになっている保護を1つだけ返す。
+     * 現在{@link Player}が{@link Location}の座標でMemberになっている保護があるかどうかを返す。
      * ※Ownerでもある場合も含まれる。
      * @param player 調べる対象であるPlayer
      * @param location どの座標か
-     * @return Memberである保護が1つだけあればOptional<ProtectedRegion>、ないか保護が2個以上重なっていて判定できなければOptional.empty
+     * @return Memberである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
      */
-    public static Optional<ProtectedRegion> isRegionMember(@NotNull Player player, @NotNull Location location) {
-        Set<ProtectedRegion> regions = plugin.getRegionManager(player.getWorld()).getApplicableRegions(location).getRegions();
+    public static boolean isRegionMember(@NotNull Player player, @NotNull Location location) {
+        Optional<ProtectedRegion> region = getOneRegion(location);
+        return region.map(rg -> rg.isMember(plugin.wrapPlayer(player))).orElse(false);
+    }
+
+    private static Optional<ProtectedRegion> getOneRegion(@NotNull Location location) {
+        Set<ProtectedRegion> regions = plugin.getRegionManager(location.getWorld()).getApplicableRegions(location).getRegions();
         if (regions.size() != 1) return Optional.empty();
         return Optional.of(regions.iterator().next());
     }
