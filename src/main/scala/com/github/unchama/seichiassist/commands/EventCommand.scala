@@ -20,8 +20,8 @@ object EventCommand {
 
   val halloweenGrantEffect: TargetedEffect[Player] =
     Util.grantItemStacksEffect(
-      HalloweenItemData.getHalloweenPotion,
-      HalloweenItemData.getHalloweenHoe
+      HalloweenItemData.halloweenPotion,
+      HalloweenItemData.halloweenHoe
     )
 
   val executor: TabExecutor = playerCommandBuilder
