@@ -2,13 +2,14 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.data.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
+import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
-import org.bukkit.{Location, Material}
 
 class HalloweenItemListener extends Listener {
 
@@ -31,27 +32,20 @@ class HalloweenItemListener extends Listener {
 
     val clickedBlock = event.getClickedBlock
     if (clickedBlock == null) return
-    val clickedBlockLoc = clickedBlock.getLocation
-    val standardLoc = (clickedBlockLoc.getX.toInt, clickedBlockLoc.getZ.toInt)
 
     val player = event.getPlayer
     // まず、Playerが自分でクリックしたブロックについて判定する
-    if (!canBeReplacedWithSoil(player, clickedBlockLoc)) return
+    if (!canBeReplacedWithSoil(player, clickedBlock)) return
     clickedBlock.setType(Material.SOIL)
 
     // 次にクリックされたブロックから半径4ブロック以内のブロックについて判定する
-    for (x <- standardLoc._1 - 4 to standardLoc._1 + 4) {
-      for (z <- standardLoc._2 - 4 to standardLoc._2 + 4) {
-        val loc = new Location(clickedBlockLoc.getWorld, x.toDouble, clickedBlockLoc.getY, z.toDouble)
-        val block = loc.getBlock
-
-        if (block != null && canBeReplacedWithSoil(player, loc)) block.setType(Material.SOIL)
-      }
+    for (relX <- -4 to 4; relZ <- -4 to 4) {
+      val block = clickedBlock.getRelative(relX, 0, relZ)
+      if (block != null && canBeReplacedWithSoil(player, block)) block.setType(Material.SOIL)
     }
   }
 
-  private def canBeReplacedWithSoil(player: Player, loc: Location) = {
-    val block = loc.getBlock
-    isRegionMember(player, loc) && (block.getType == Material.DIRT || block.getType == Material.GRASS)
+  private def canBeReplacedWithSoil(player: Player, block: Block) = {
+    (block.getType == Material.DIRT || block.getType == Material.GRASS) && isRegionMember(player, block)
   }
 }
