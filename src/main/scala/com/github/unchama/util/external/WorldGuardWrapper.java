@@ -51,8 +51,9 @@ public class WorldGuardWrapper {
      * @return Ownerである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
      */
     public static boolean isRegionOwner(@NotNull Player player, @NotNull Location location) {
-        Optional<ProtectedRegion> region = getOneRegion(location);
-        return region.map(rg -> rg.isOwner(plugin.wrapPlayer(player))).orElse(false);
+        return getOneRegion(location)
+            .filter(rg -> rg.isOwner(plugin.wrapPlayer(player)))
+            .isPresent();
     }
 
     /**
@@ -63,8 +64,9 @@ public class WorldGuardWrapper {
      * @return Memberである保護が1つだけあればtrue、ないか保護が2個以上重なっていて判定できなければfalse
      */
     public static boolean isRegionMember(@NotNull Player player, @NotNull Location location) {
-        Optional<ProtectedRegion> region = getOneRegion(location);
-        return region.map(rg -> rg.isMember(plugin.wrapPlayer(player))).orElse(false);
+        return getOneRegion(location)
+            .filter(rg -> rg.isMember(plugin.wrapPlayer(player)))
+            .isPresent();
     }
 
     private static Optional<ProtectedRegion> getOneRegion(@NotNull Location location) {
