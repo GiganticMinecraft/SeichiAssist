@@ -97,9 +97,9 @@ object HalloweenItemData {
     )
     val loreList = {
       val year = Calendar.getInstance().get(Calendar.YEAR)
-      val enchDescription = enchantments.map(ench =>
-        s"$RESET$GRAY${Util.getEnchantName(ench._1.getName, ench._2)}"
-      ).toList
+      val enchDescription = enchantments
+        .map {case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}"}
+        .toList
       val lore = List(
         "",
         s"$GRAY${year}ハロウィンイベント限定品",
@@ -117,9 +117,9 @@ object HalloweenItemData {
       .tap(_.setLore(loreList))
       .tap(_.addItemFlags(ItemFlag.HIDE_ENCHANTS))
       .tap(meta =>
-        enchantments.foreach( ench =>
-          meta.addEnchant(ench._1, ench._2, true)
-        )
+        enchantments.foreach {case (ench, lvl) =>
+          meta.addEnchant(ench, lvl, true)
+        }
       )
 
     val hoe = new ItemStack(Material.DIAMOND_HOE, 1)
