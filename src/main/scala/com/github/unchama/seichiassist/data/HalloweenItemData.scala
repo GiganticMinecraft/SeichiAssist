@@ -80,9 +80,9 @@ object HalloweenItemData {
 
   val halloweenHoe: ItemStack = {
     val displayName = List(
-        s"${RED}C", s"${GOLD}E", s"${YELLOW}N", s"${GREEN}T", s"${BLUE}E", s"${DARK_AQUA}O", s"${LIGHT_PURPLE}T", s"${RED}L")
-        .map(str => s"$BOLD$ITALIC$str")
-        .mkString
+      s"${RED}C", s"${GOLD}E", s"${YELLOW}N", s"${GREEN}T", s"${BLUE}E", s"${DARK_AQUA}O", s"${LIGHT_PURPLE}T", s"${RED}L")
+      .foldLeft(""){(name, str) => name + str.patch(2, s"$BOLD$ITALIC", 0)}
+
     val enchantments = Set(
       (Enchantment.DURABILITY, 7),
       (Enchantment.DIG_SPEED, 7),
