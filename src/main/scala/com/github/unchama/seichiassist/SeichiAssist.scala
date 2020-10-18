@@ -30,7 +30,7 @@ import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectC
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
-import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
+import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Entity
@@ -341,7 +341,8 @@ class SeichiAssist extends JavaPlugin() {
       val programs: List[IO[Nothing]] =
         List(
           PlayerDataRecalculationRoutine(),
-          PlayerDataBackupRoutine()
+          PlayerDataBackupRoutine(),
+          WorldSaveRoutine()
         ) ++
           Option.unless(
             SeichiAssist.seichiAssistConfig.getServerNum == 7
