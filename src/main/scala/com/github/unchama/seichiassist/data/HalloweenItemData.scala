@@ -34,8 +34,8 @@ object HalloweenItemData {
     val loreList = {
       val year = Calendar.getInstance().get(Calendar.YEAR)
       List(
-        "",
         s"${year}ハロウィンイベント限定品",
+        "",
         "敵に囲まれてピンチの時や",
         "MEBIUS育成中の時などにご利用ください",
         "飲むと強くなりますし",
