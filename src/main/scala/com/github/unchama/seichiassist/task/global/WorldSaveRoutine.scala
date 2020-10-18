@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.task.global
 import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.Config
 import com.github.unchama.seichiassist.task.WorldSaveTask
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Bukkit
@@ -20,18 +21,20 @@ object WorldSaveRoutine {
 
     val routineAction: IO[Boolean] = {
       val save = IO {
-        import scala.jdk.CollectionConverters._
+        if (Config.loadFrom(SeichiAssist.instance).isAutoSaveEnabled) {
+          import scala.jdk.CollectionConverters._
 
-        Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ中…")
-        Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ中…")
+          Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ中…")
+          Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ中…")
 
-        Bukkit.getServer.getScheduler.runTask(
-          SeichiAssist.instance,
-          () => Bukkit.getServer.getWorlds.asScala.foreach(WorldSaveTask.saveWorld)
-        )
+          Bukkit.getServer.getScheduler.runTask(
+            SeichiAssist.instance,
+            () => Bukkit.getServer.getWorlds.asScala.foreach(WorldSaveTask.saveWorld)
+          )
 
-        Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ完了")
-        Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ完了")
+          Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ完了")
+          Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ完了")
+        }
       }
 
       for {

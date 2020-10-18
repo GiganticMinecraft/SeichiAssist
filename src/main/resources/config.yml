@@ -246,3 +246,7 @@ minestack_BlockCraft:
 
 #ブロック設置カウントの1分上限
 BuildNum1minLimit: '256'
+
+# オートセーブの設定
+AutoSave:
+  Enable: true

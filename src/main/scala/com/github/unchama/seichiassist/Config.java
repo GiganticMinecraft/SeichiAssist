@@ -259,4 +259,8 @@ public final class Config {
     public String getUrl(final String typeName) {
         return config.getString("Url." + typeName, "");
     }
+
+    public boolean isAutoSaveEnabled() {
+        return config.getBoolean("AutoSave.Enable");
+    }
 }
