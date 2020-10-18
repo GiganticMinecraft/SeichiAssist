@@ -80,8 +80,15 @@ object HalloweenItemData {
 
   val halloweenHoe: ItemStack = {
     val displayName = Seq(
-      (RED, "C"), (GOLD, "E"), (YELLOW, "N"), (GREEN, "T"), (BLUE, "E"), (DARK_AQUA, "O"), (LIGHT_PURPLE, "T"), (RED, "L"))
-      .map(name => s"${name._1}$BOLD$ITALIC${name._2}")
+      "C" -> RED,
+      "E" -> GOLD,
+      "N" -> YELLOW,
+      "T" -> GREEN,
+      "E" -> BLUE,
+      "O" -> DARK_AQUA,
+      "T" -> LIGHT_PURPLE,
+      "L" -> RED
+    ).map {case (c, color) => s"$color$BOLD$ITALIC$c"}
       .mkString
     val enchantments = Set(
       (Enchantment.DURABILITY, 7),
