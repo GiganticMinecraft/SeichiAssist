@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.task
+package com.github.unchama.seichiassist.subsystems.autosave.bukkit.task
 
 import java.lang.reflect.Field
 

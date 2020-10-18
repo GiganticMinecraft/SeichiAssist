@@ -1,10 +1,10 @@
-package com.github.unchama.seichiassist.task.global
+package com.github.unchama.seichiassist.subsystems.autosave.bukkit.task.global
 
 import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.Config
-import com.github.unchama.seichiassist.task.WorldSaveTask
+import com.github.unchama.seichiassist.subsystems.autosave.bukkit.task.WorldSaveTask
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
