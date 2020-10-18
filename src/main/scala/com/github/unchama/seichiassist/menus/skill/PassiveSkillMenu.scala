@@ -104,7 +104,7 @@ object PassiveSkillMenu extends Menu {
             )
           } else {
             SequentialEffect(
-              MessageEffect("整地レベルが足りません"),
+              MessageEffect("整地Lvが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1f, 0.1f),
             )
           }
@@ -163,7 +163,7 @@ object PassiveSkillMenu extends Menu {
 
       val material = if (openerData.level < 10) Material.STICK else openerData.giganticBerserk.materialOnUI()
       val baseLore = if (openerData.level < 10) {
-        List(s"${WHITE}このパッシブスキルは", s"${WHITE}整地レベルが10以上になると解放されます")
+        List(s"${WHITE}このパッシブスキルは", s"${WHITE}整地Lvが10以上になると解放されます")
       } else {
         List(
           s"${RED}敵MOBを倒した時",

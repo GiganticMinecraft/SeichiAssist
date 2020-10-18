@@ -210,7 +210,7 @@ object FirstPage extends Menu {
         val actionGuidance = if (openerData.level >= minimumLevelRequired) {
           s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
         } else {
-          s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumLevelRequired}以上必要です"
+          s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumLevelRequired}以上必要です"
         }
 
         val annotation = List(
@@ -255,7 +255,7 @@ object FirstPage extends Menu {
             s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           )
         } else {
-          List(s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です")
+          List(s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です")
         }
 
         new IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
@@ -287,7 +287,7 @@ object FirstPage extends Menu {
           if (playerData.level >= minimumRequiredLevel) {
             s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           } else {
-            s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です"
+            s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です"
           }
         }
 

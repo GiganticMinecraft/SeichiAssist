@@ -14,13 +14,13 @@
 - [item-nbt-api-plugin-1.8.2-SNAPSHOT](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
 - [Multiverse-Core-2.5.0](https://dev.bukkit.org/projects/multiverse-core/files/2428161/download)
 - [Multiverse-Portals-2.5.0](https://dev.bukkit.org/projects/multiverse-portals/files/2428333/download)
-- [ParticleAPI_v2.1.1](http://dl.inventivetalent.org/download/?file=plugin/ParticleAPI_v2.1.1)
+- [ParticleAPI_v2.1.1](https://dl.inventivetalent.org/download/?file=plugin/ParticleAPI_v2.1.1)
 - [WorldBorder1.8.7](https://dev.bukkit.org/projects/worldborder/files/2415838/download)
 - [worldedit-bukkit-6.1.9](https://dev.bukkit.org/projects/worldedit/files/2597538/download)
 - [worldguard-bukkit-6.2.2](https://dev.bukkit.org/projects/worldguard/files/2610618/download)
 
 ## 前提プラグイン(整地鯖内製)
-- RegenWorld_1.0 [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
+- RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
 - SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
 ## ビルド

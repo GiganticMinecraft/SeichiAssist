@@ -4,7 +4,7 @@ import ResourceFilter.filterResources
 import sbt.Keys.baseDirectory
 
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "1.4.8"
+ThisBuild / version := "1.5.0"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description      := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -18,7 +18,7 @@ resolvers ++= Seq(
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
-  "maven.elmakers.com" at "http://maven.elmakers.com/repository/" // stouma915#5421の環境ではなぜかspigot-apiがダウンロードできないため一応追加
+  "maven.elmakers.com" at "http://maven.elmakers.com/repository/" // stouma915#0915の環境ではなぜかspigot-apiがダウンロードできないため一応追加
 )
 
 val providedDependencies = Seq(
@@ -35,8 +35,10 @@ val providedDependencies = Seq(
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "4.4.0",
-  "org.scalatest" %% "scalatest" % "3.1.2",
-  "org.scalacheck" %% "scalacheck" % "1.14.1",
+  "org.scalatest" %% "scalatest" % "3.2.2",
+  "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
+  // テスト用のTestSchedulerを使うため
+  "io.monix" %% "monix" % "3.2.2"
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(

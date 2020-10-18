@@ -20,47 +20,6 @@ object Util {
   }
 
   /**
-   * プレイヤーの居るワールドでスキルが発動できるか判定する
-   *
-   * @param player 対象となるプレイヤー
-   * @return 発動できる場合はtrue、できない場合はfalse
-   */
-  def isSkillEnable(player: Player): Boolean = {
-    // プレイヤーの場所が各種整地ワールド(world_SWで始まるワールド)または
-    // 各種メインワールド(world)または各種TTワールドにいる場合
-    // TODO: ManagedWorldへ移行
-
-    val name = player.getWorld.getName
-    name.toLowerCase.startsWith(SeichiAssist.SEICHIWORLDNAME) ||
-      name.equalsIgnoreCase("world") ||
-      name.equalsIgnoreCase("world_2") ||
-      name.equalsIgnoreCase("world_nether") ||
-      name.equalsIgnoreCase("world_the_end") ||
-      name.equalsIgnoreCase("world_TT") ||
-      name.equalsIgnoreCase("world_nether_TT") ||
-      name.equalsIgnoreCase("world_the_end_TT") ||
-      name.equalsIgnoreCase("world_dot")
-  }
-
-  /**
-   * ブロックがカウントされるワールドにプレイヤーが居るか判定する
-   *
-   * @param player 対象のプレイヤー
-   * @return いる場合はtrue、いない場合はfalse
-   */
-  def inTrackedWorld(player: Player): Boolean = {
-    if (SeichiAssist.DEBUG) return true
-    val name = player.getWorld.getName
-    //プレイヤーの場所がメインワールド(world)または各種整地ワールド(world_SW)にいる場合
-    name.toLowerCase.startsWith(SeichiAssist.SEICHIWORLDNAME) ||
-      name.equalsIgnoreCase("world") ||
-      name.equalsIgnoreCase("world_2") ||
-      name.equalsIgnoreCase("world_nether") ||
-      name.equalsIgnoreCase("world_the_end") ||
-      name.equalsIgnoreCase("world_dot")
-  }
-
-  /**
    * 指定した名前のマインスタックオブジェクトを返す
    */
   // FIXME: これはここにあるべきではない

@@ -1,4 +1,4 @@
-package com.github.unchama.playerdatarepository
+package com.github.unchama.datarepository.bukkit.player
 
 import cats.effect.IO
 import org.bukkit.entity.Player
@@ -10,6 +10,8 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
  *
  * [[PlayerJoinEvent]] の [[EventPriority.LOW]] から、
  * [[PlayerQuitEvent]] の [[EventPriority.HIGHEST]] までのデータの取得を保証する。
+ *
+ * TODO TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, (), R]にできる
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */

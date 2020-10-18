@@ -4,9 +4,9 @@ import java.util.UUID
 
 import cats.effect.concurrent.{Deferred, TryableDeferred}
 import cats.effect.{Concurrent, ConcurrentEffect, ContextShift, SyncEffect}
+import com.github.unchama.datarepository.bukkit.player.PreLoginToQuitPlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.playerdatarepository.PreLoginToQuitPlayerDataRepository
 import org.bukkit.entity.Player
 
 /**

@@ -91,7 +91,7 @@ class PlayerJoinListener extends Listener {
 
       // 1周年記念
       if (playerData.anniversary) {
-        player.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。http://seichi.click/wiki/anniversary")
+        player.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。https://seichi.click/wiki/anniversary")
         player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       }
 
@@ -118,7 +118,8 @@ class PlayerJoinListener extends Listener {
 
       //メビウスおひとつどうぞ
       player.getInventory.setHelmet(BukkitMebiusItemStackCodec.materialize(
-        MebiusProperty.initialProperty(player.getDisplayName, player.getUniqueId.toString),
+        // **getDisplayNameは二つ名も含むのでMCIDにはgetNameが適切**
+        MebiusProperty.initialProperty(player.getName, player.getUniqueId.toString),
         damageValue = 0.toShort
       ))
 
@@ -129,7 +130,6 @@ class PlayerJoinListener extends Listener {
       //初見さんにLv1メッセージを送信
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
-
   }
 
   // プレイヤーがワールドを移動したとき

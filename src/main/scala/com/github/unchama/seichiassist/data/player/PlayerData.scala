@@ -319,7 +319,7 @@ class PlayerData(
     manaState.display(player, level)
   }
 
-  //表示される名前に整地レベルor二つ名を追加
+  //表示される名前に整地Lvor二つ名を追加
   def setDisplayName(): Unit = {
     val playerName = player.getName
 
