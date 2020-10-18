@@ -79,9 +79,10 @@ object HalloweenItemData {
   //region HalloweenHoe
 
   val halloweenHoe: ItemStack = {
-    val displayName = List(
-      s"${RED}C", s"${GOLD}E", s"${YELLOW}N", s"${GREEN}T", s"${BLUE}E", s"${DARK_AQUA}O", s"${LIGHT_PURPLE}T", s"${RED}L")
-      .foldLeft(""){(name, str) => name + str.patch(2, s"$BOLD$ITALIC", 0)}
+    val displayName = Seq(
+      (RED, "C"), (GOLD, "E"), (YELLOW, "N"), (GREEN, "T"), (BLUE, "E"), (DARK_AQUA, "O"), (LIGHT_PURPLE, "T"), (RED, "L"))
+      .map(name => s"${name._1}$BOLD$ITALIC${name._2}")
+      .mkString
     val enchantments = Set(
       (Enchantment.DURABILITY, 7),
       (Enchantment.DIG_SPEED, 7),
@@ -89,7 +90,7 @@ object HalloweenItemData {
     )
     val loreList = {
       val year = Calendar.getInstance().get(Calendar.YEAR)
-      val enchDescription = enchantments.map( ench =>
+      val enchDescription = enchantments.map(ench =>
         s"$RESET$GRAY${Util.getEnchantName(ench._1.getName, ench._2)}"
       ).toList
       val lore = List(
