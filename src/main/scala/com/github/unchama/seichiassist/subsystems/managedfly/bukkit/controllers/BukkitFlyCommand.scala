@@ -18,7 +18,7 @@ object BukkitFlyCommand {
 
   private val commandHelpMessage = List(
     s"${GREEN}fly機能を時間付きで利用したい場合は末尾に「add 利用したい時間(分単位)」の数値を、",
-    s"${GREEN}fly機能を無期限で利用したい場合は末尾に「start endless」を、",
+    s"${GREEN}fly機能を無期限で利用したい場合は末尾に「endless」を、",
     s"${GREEN}fly機能を中断したい場合は、末尾に「finish」を記入してください。"
   )
 

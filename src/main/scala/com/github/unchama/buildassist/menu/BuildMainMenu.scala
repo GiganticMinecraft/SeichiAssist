@@ -299,7 +299,7 @@ private object ConstantButtons {
         SequentialEffect(
           closeInventoryEffect,
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          CommandEffect("fly start endless")
+          CommandEffect("fly endless")
         )
       }
     )
