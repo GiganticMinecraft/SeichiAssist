@@ -24,19 +24,19 @@ public class VotingFairyTask {
         //マナ回復
         VotingFairyListener.regeneMana(p);
 
-        //ハロウィンイベントのメッセージを送信(普通のメッセージと同時に送信されないように少しずらす)
-        Bukkit.getServer().getScheduler().runTaskLater(
-                SeichiAssist.instance(),
-                () -> VotingFairyListener.sendHalloweenEventMessage(p),
-                300
-        );
-
         //効果時間中か
         if (!Util.isVotingFairyPeriod(playerdata.votingFairyStartTime(), playerdata.votingFairyEndTime())) {
             speak(p, ("あっ、もうこんな時間だ！"), false);
             speak(p, ("じゃーねー！" + p.getName()), true);
             p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった");
             playerdata.usingVotingFairy_$eq(false);
+        } else {
+            //ハロウィンイベントのメッセージを送信(普通のメッセージと同時に送信されないように少しずらす)
+            Bukkit.getServer().getScheduler().runTaskLater(
+                    SeichiAssist.instance(),
+                    () -> VotingFairyListener.sendHalloweenEventMessage(p),
+                    300
+            );
         }
     }
 
