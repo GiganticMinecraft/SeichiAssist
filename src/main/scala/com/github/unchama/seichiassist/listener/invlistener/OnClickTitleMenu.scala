@@ -158,7 +158,6 @@ object OnClickTitleMenu {
           val k: MenuType = MenuInventoryData.MenuType.HEAD
           MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
           player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
-          MenuInventoryData
       }
     } else if (title == s"${prefix}二つ名組合せ「中」") {
       event.setCancelled(true)
