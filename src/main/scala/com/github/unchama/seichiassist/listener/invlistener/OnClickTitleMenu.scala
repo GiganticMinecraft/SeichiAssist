@@ -4,6 +4,7 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
+import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.targetedeffect.SequentialEffect
@@ -18,6 +19,7 @@ import org.bukkit.{Material, Sound}
 object OnClickTitleMenu {
   private final val MAX_LENGTH: Int = 8
   private final val prefix: String = s"$DARK_PURPLE$BOLD"
+  private final val PER_PAGE: Int = 24
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
@@ -118,9 +120,6 @@ object OnClickTitleMenu {
             "実績メニューを開く"
           )
       }
-
-
-
     } else if (title == s"${prefix}二つ名組合せ「前」") {
       event.setCancelled(true)
       //プレイヤーインベントリのクリックの場合終了
@@ -155,7 +154,11 @@ object OnClickTitleMenu {
         case _ if isSkull && isRightArrow(current) =>
           // 次ページ
           clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          val uuid = player.getUniqueId
+          val k: MenuType = MenuInventoryData.MenuType.HEAD
+          MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
           player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
+          MenuInventoryData
       }
     } else if (title == s"${prefix}二つ名組合せ「中」") {
       event.setCancelled(true)
@@ -189,6 +192,9 @@ object OnClickTitleMenu {
 
         case _ if isSkull && isRightArrow(current) =>
           clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          val uuid = player.getUniqueId
+          val k: MenuType = MenuInventoryData.MenuType.MIDDLE
+          MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
           player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
       }
     } else if (title == s"${prefix}二つ名組合せ「後」") {
@@ -199,8 +205,7 @@ object OnClickTitleMenu {
         return
       }
 
-      val mat = current.getType
-      mat match {
+      current.getType match {
         case Material.LAVA_BUCKET =>
           clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
@@ -225,6 +230,9 @@ object OnClickTitleMenu {
 
         case _ if isSkull && isRightArrow(current) =>
           clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          val uuid = player.getUniqueId
+          val k: MenuType = MenuInventoryData.MenuType.TAIL
+          MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
           player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
       }
 
@@ -283,6 +291,9 @@ object OnClickTitleMenu {
 
         case _ if isSkull && isRightArrow(current) =>
           clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+          val uuid = player.getUniqueId
+          val k: MenuType = MenuInventoryData.MenuType.SHOP
+          MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
           player.openInventory(MenuInventoryData.setTitleShopData(player))
       }
     }

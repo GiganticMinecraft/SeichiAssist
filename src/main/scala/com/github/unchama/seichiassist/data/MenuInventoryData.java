@@ -81,7 +81,7 @@ public final class MenuInventoryData {
      */
     private static final Function0<Boolean> FALSE = () -> false;
 
-    private static final Consumer<ItemMeta> DIG100 = (meta) -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
+    private static final Consumer<ItemMeta> DIG100 = meta -> meta.addEnchant(Enchantment.DIG_SPEED, 100, false);
 
 
     private static final ItemStack toMoveNicknameMenu = build(
@@ -429,6 +429,50 @@ public final class MenuInventoryData {
             AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
         }
         return inventory;
+    }
+
+    public enum MenuType {
+        HEAD,
+        MIDDLE,
+        TAIL,
+        SHOP,
+        TAIHI;
+    }
+
+    public static void setHeadingIndex(UUID uuid, MenuType k, int index) {
+        switch (k) {
+            case HEAD:
+                headPartIndex.put(uuid, index);
+                break;
+            case MIDDLE:
+                middlePartIndex.put(uuid, index);
+                break;
+            case TAIL:
+                tailPartIndex.put(uuid, index);
+                break;
+            case SHOP:
+                shopIndex.put(uuid, index);
+                break;
+            case TAIHI:
+                taihiIndex.put(uuid, index);
+                break;
+        }
+    }
+
+    public static Option<Integer> getHeadingIndex(UUID uuid, MenuType k) {
+        switch (k) {
+            case HEAD:
+                return headPartIndex.get(uuid);
+            case MIDDLE:
+                return middlePartIndex.get(uuid);
+            case TAIL:
+                return tailPartIndex.get(uuid);
+            case SHOP:
+                return shopIndex.get(uuid);
+            case TAIHI:
+                return taihiIndex.get(uuid);
+        }
+        throw new AssertionError("This statement shouldn't be reached!");
     }
 
     /**
@@ -1136,7 +1180,7 @@ public final class MenuInventoryData {
     }
     
     private static <T> Consumer<T> nullConsumer() {
-        return (nothing) -> {};
+        return nothing -> {};
     }
 
     private static void placeGiganticBerserkShape(final Inventory inv) {
