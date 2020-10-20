@@ -19,7 +19,7 @@ import org.bukkit.{Material, Sound}
 object OnClickTitleMenu {
   private final val MAX_LENGTH: Int = 8
   private final val prefix: String = s"$DARK_PURPLE$BOLD"
-  private final val PER_PAGE: Int = 24
+  private final val PER_PAGE: Int = ???
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
