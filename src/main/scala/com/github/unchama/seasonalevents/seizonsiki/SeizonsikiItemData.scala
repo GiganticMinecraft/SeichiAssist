@@ -4,7 +4,8 @@ import java.util
 
 import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.FINISHDISP
 
-import org.bukkit.{Bukkit, ChatColor, Material}
+import org.bukkit.{Bukkit, Material}
+import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
@@ -13,6 +14,7 @@ import scala.util.chaining._
 
 object SeizonsikiItemData {
   // アイテムがゾンごかどうかの判定
+  // TODO NBT化
   def isZongoConsumed(item: ItemStack): Boolean = {
     // Lore取得
     if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
@@ -24,7 +26,7 @@ object SeizonsikiItemData {
 
   def getZongoItemStack: ItemStack = {
     val itemMeta: ItemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE)
-      .tap(_.setDisplayName(s"${ChatColor.GOLD}${ChatColor.BOLD}ゾんご"))
+      .tap(_.setDisplayName(s"$GOLD${BOLD}ゾんご"))
       .tap(_.setLore(getZongoLore))
 
     val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)
@@ -34,13 +36,13 @@ object SeizonsikiItemData {
 
   private def getZongoLore: util.List[String] = List(
     "",
-    s"${ChatColor.RESET}${ChatColor.GRAY}成ゾン式で暴走していたチャラゾンビから没収した。",
-    "ゾンビたちが栽培しているりんご。",
-    "良質な腐葉土で1つずつ大切に育てられた。",
-    "栄養豊富で、食べるとマナが10%回復する。",
-    "腐りやすいため賞味期限を超えると効果が無くなる。",
+    s"$RESET${GRAY}成ゾン式で暴走していたチャラゾンビから没収した。",
+    s"$RESET${GRAY}ゾンビたちが栽培しているりんご。",
+    s"$RESET${GRAY}良質な腐葉土で1つずつ大切に育てられた。",
+    s"$RESET${GRAY}栄養豊富で、食べるとマナが10%回復する。",
+    s"$RESET${GRAY}腐りやすいため賞味期限を超えると効果が無くなる。",
     "",
-    s"${ChatColor.RESET}${ChatColor.DARK_GREEN}賞味期限：$FINISHDISP",
-    s"${ChatColor.RESET}${ChatColor.AQUA}マナ回復（10％）${ChatColor.GRAY} （期限内）"
+    s"$RESET${DARK_GREEN}賞味期限：$FINISHDISP",
+    s"$RESET${AQUA}マナ回復（10％）$GRAY （期限内）"
   ).asJava
 }
