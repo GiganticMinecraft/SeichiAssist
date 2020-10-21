@@ -472,6 +472,12 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("popped_chorus_fruit", 4))
           ), oneToThousand, 3
         ),
+        ChestSlotRef(3, 5) -> MassCraftRecipeBlock(
+          MassCraftRecipe(
+            NonEmptyList.of(("popped_chorus_fruit", 4)),
+            NonEmptyList.of(("purpur_block", 4))
+          ), oneToThousand, 3
+        ),
       )
     )
   }
