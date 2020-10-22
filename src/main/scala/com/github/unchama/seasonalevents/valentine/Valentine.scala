@@ -1,7 +1,6 @@
 package com.github.unchama.seasonalevents.valentine
 
 import java.text.{ParseException, SimpleDateFormat}
-import java.util
 import java.util.{Date, Random, UUID}
 
 import com.github.unchama.seasonalevents.SeasonalEvents
