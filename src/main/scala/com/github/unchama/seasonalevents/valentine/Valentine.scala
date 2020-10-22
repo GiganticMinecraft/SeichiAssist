@@ -62,8 +62,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
     if (!isdrop || entity == null) return
 
     if (entity.isInstanceOf[Monster] && entity.isDead){
-//      killEvent(event.getEntity, event.getEntity.getLocation)
-      Utl.dropItem(entity, entity.getLocation, droppedCookie)
+      Utl.dropItem(entity, droppedCookie)
     }
   }
 
@@ -76,7 +75,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
     if (entity.getLastDamageCause.getCause == DamageCause.ENTITY_EXPLOSION) {
       // 死因が爆発の場合、確率でアイテムをドロップ
-      Utl.dropItem(entity, entity.getLocation, droppedCookie)
+      Utl.dropItem(entity, droppedCookie)
     }
   }
 
