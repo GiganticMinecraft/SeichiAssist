@@ -5,23 +5,25 @@ import java.util
 import java.util.{Date, Random}
 
 import com.github.unchama.seasonalevents.SeasonalEvents
+import com.github.unchama.seasonalevents.Utl
 import com.github.unchama.seichiassist.util.Util
-import org.bukkit.entity.{Entity, Monster, Player}
+import org.bukkit.{Bukkit, Material, Sound}
+import org.bukkit.ChatColor._
+import org.bukkit.entity.{Monster, Player}
+import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDeathEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
-import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.{ItemMeta, SkullMeta}
+import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
-import org.bukkit.{Bukkit, ChatColor, Location, Material, Sound}
 
+import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 class Valentine(private val plugin: Plugin) extends Listener {
   private var isdrop = false
-  var isInEvent = false
   private val config = SeasonalEvents.config
   /*
 	時間に関してだが、Date#beforeは指定した日付よりも前->true 後->false
@@ -43,7 +45,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
     if (now.before(finishdate)) {
       // リスナーを登録
       plugin.getServer.getPluginManager.registerEvents(this, plugin)
-      isInEvent = true
+      Valen.isInEvent = true
     }
     if (now.before(dropdate)) isdrop = true
   } catch {
@@ -51,151 +53,114 @@ class Valentine(private val plugin: Plugin) extends Listener {
       e.printStackTrace()
   }
 
-  def playerHeadMeta(head: SkullMeta): SkullMeta = {
-    if (isdrop) {
-      head.setLore(playerHeadLoreList)
-    }
-    head
-  }
-
-  private def playerHeadLoreList = {
-    val year = DROPDAY.substring(0, 4)
-    List(
-      "",
-      s"${ChatColor.RESET}${ChatColor.ITALIC}${ChatColor.GREEN}大切なあなたへ。",
-      s"${ChatColor.RESET}${ChatColor.ITALIC}${ChatColor.UNDERLINE}${ChatColor.YELLOW}Happy Valentine $year"
-    ).asJava
-  }
+  //region Listener
 
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
-    try if (event.getEntity.isInstanceOf[Monster] && event.getEntity.isDead)
-      killEvent(event.getEntity, event.getEntity.getLocation)
-    catch {
-      case e: NullPointerException => e.printStackTrace()
+    if (!isdrop) return
+
+    val entity = event.getEntity
+    if (entity == null) return
+
+    if (entity.isInstanceOf[Monster] && entity.isDead){
+//      killEvent(event.getEntity, event.getEntity.getLocation)
+      Utl.dropItem(entity, entity.getLocation, makePrize)
     }
   }
 
+  // TODO TNTで爆破死した敵からも出るのを直す
+  // TODO 爆破死したモンスター以外のmob(スノーゴーレム、プレイヤーなど)からもチョコチップクッキーが出る
   @EventHandler
   def onEntityDeath(event: EntityDeathEvent): Unit = {
-    try if (event.getEntity.getLastDamageCause.getCause == DamageCause.ENTITY_EXPLOSION) {
+    if (!isdrop) return
+
+    val entity = event.getEntity
+    if (entity == null) return
+
+    if (entity.getLastDamageCause.getCause == DamageCause.ENTITY_EXPLOSION) {
       // 死因が爆発の場合、確率でアイテムをドロップ
-      killEvent(event.getEntity, event.getEntity.getLocation)
-    }
-    catch {
-      case e: NullPointerException => e.printStackTrace()
+      Utl.dropItem(entity, entity.getLocation, makePrize)
     }
   }
 
   @EventHandler
-  def onplayerJoinEvent(event: PlayerJoinEvent): Unit = {
-    try if (isdrop) {
-      List(
-        s"${ChatColor.LIGHT_PURPLE}${DROPDAYDISP}までの期間限定で、シーズナルイベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+  def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
+    if (isdrop) {
+      Seq(
+        s"$LIGHT_PURPLE${DROPDAYDISP}までの期間限定で、シーズナルイベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記wikiをご覧ください。",
-        s"${ChatColor.DARK_GREEN}${ChatColor.UNDERLINE}${SeasonalEvents.config.getWikiAddr}"
+        s"$DARK_GREEN$UNDERLINE${SeasonalEvents.config.getWikiAddr}"
       ).foreach(
         event.getPlayer.sendMessage(_)
       )
-    }
-    catch {
-      case e: NullPointerException => e.printStackTrace()
     }
   }
 
   @EventHandler
   def onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent): Unit = {
-    try {
-      if (checkPrize(event.getItem)) usePrize(event.getPlayer)
-      if (isChoco(event.getItem)) useChoco(event.getPlayer, event.getItem)
-    } catch {
-      case e: NullPointerException => e.printStackTrace()
-    }
+    val item = event.getItem
+    val player = event.getPlayer
+    if (isValentineCookie(event.getItem)) usePrize(event.getPlayer)
+    if (isChocolate(event.getItem)) useChoco(event.getPlayer, event.getItem)
   }
 
-  // プレイヤーにクリーパーが倒されたとき発生
-  private def killEvent(entity: Entity, loc: Location): Unit = {
-    if (isdrop) {
-      val dp = SeasonalEvents.config.getDropRate
-      val rand = new Random().nextInt(100)
-      if (rand < dp) {
-        // 報酬をドロップ
-        entity.getWorld.dropItemNaturally(loc, makePrize)
-      }
-    }
-  }
+  //endregion
 
-  // チョコチップクッキー判定
-  private def checkPrize(item: ItemStack): Boolean = {
-    // Lore取得
-    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
-    val lore: util.List[String] = item.getItemMeta.getLore
-    val plore: util.List[String] = getPrizeLore
-    // 比較
-    lore.containsAll(plore)
-  }
+  //region ItemData
 
-  // アイテム使用時の処理
-  private def usePrize(player: Player): Unit = {
-    val effectsMap = Map(
-      "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 12000, 1),
-      "暗視" -> new PotionEffect(PotionEffectType.NIGHT_VISION, 12000, 1),
-      "耐性" -> new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 12000, 1),
-      "跳躍力上昇" -> new PotionEffect(PotionEffectType.JUMP, 12000, 1),
-      "再生能力" -> new PotionEffect(PotionEffectType.REGENERATION, 12000, 1),
-      "移動速度上昇" -> new PotionEffect(PotionEffectType.SPEED, 12000, 1),
-      "水中呼吸" -> new PotionEffect(PotionEffectType.WATER_BREATHING, 12000, 1),
-      "緩衝吸収" -> new PotionEffect(PotionEffectType.ABSORPTION, 12000, 1),
-      "攻撃力上昇" -> new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 12000, 1),
-      "不運" -> new PotionEffect(PotionEffectType.UNLUCK, 1200, 1)
-    )
-    val effectsName = effectsMap.keys.toSeq
-    val effects = effectsMap.values.toSeq
-    val num: Int = new Random().nextInt(effectsMap.size)
+  /*
+  Prize -> 棒メニューでもらえるやつ
+  Choco -> 爆発したmobからドロップするやつ
+   */
 
-    player.addPotionEffect(effects(num))
+  private val baseLore = List(
+    s"$RESET${GRAY}食べると一定時間ステータスが変化する。",
+    s"$RESET${GRAY}賞味期限を超えると効果が無くなる。",
+    "",
+    s"$RESET${DARK_GREEN}賞味期限：$FINISHDISP",
+    s"$RESET${AQUA}ステータス変化（10分）$GRAY （期限内）"
+  )
 
-    if (num == 9) player.sendMessage(s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…")
-    else player.sendMessage(s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！")
+  private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
 
-    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
-  }
+  private val makePrize = {
+    val loreList = {
+      val header = List(
+        "",
+        s"$RESET${GRAY}リア充を爆発させて奪い取った。")
+      header ++ baseLore
+    }.asJava
 
-  private def makePrize: ItemStack = {
-    val prize: ItemStack = new ItemStack(Material.COOKIE, 1)
-    val itemmeta: ItemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
-    itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "チョコチップクッキー")
-    itemmeta.setLore(getPrizeLore)
-    prize.setItemMeta(itemmeta)
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
+    itemMeta.setDisplayName(cookieName)
+    itemMeta.setLore(loreList)
+
+    val prize = new ItemStack(Material.COOKIE, 1)
+    prize.setItemMeta(itemMeta)
     prize
   }
 
-  private def getPrizeLore = List(
-    "",
-    s"${ChatColor.RESET}${ChatColor.GRAY}リア充を爆発させて奪い取った。",
-    "食べると一定時間ステータスが変化する。",
-    "賞味期限を超えると効果が無くなる。",
-    "",
-    s"${ChatColor.RESET}${ChatColor.DARK_GREEN}賞味期限：$FINISHDISP",
-    s"${ChatColor.RESET}${ChatColor.AQUA}ステータス変化（10分）${ChatColor.GRAY} （期限内）"
-  ).asJava
-
-  // チョコレート配布
-  def giveChoco(player: Player): Unit = {
-    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, makeChoco(player))
-    else Util.addItem(player, makeChoco(player))
+  // TODO NBT化？　賞味期限があることに注意　製作者も？
+  // チョコレート判定
+  private def isChocolate(item: ItemStack): Boolean = {
+//    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
+//    val lore: util.List[String] = item.getItemMeta.getLore
+//    val plore: util.List[String] = getChocoLore
+//    lore.containsAll(plore)
   }
 
-  // チョコレート判定
-  private def isChoco(item: ItemStack): Boolean = {
-    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
-    val lore: util.List[String] = item.getItemMeta.getLore
-    val plore: util.List[String] = getChocoLore
-    lore.containsAll(plore)
+  // チョコチップクッキー判定
+  private def isValentineCookie(item: ItemStack): Boolean = {
+    // Lore取得
+//    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
+//    val lore: util.List[String] = item.getItemMeta.getLore
+//    val plore: util.List[String] = valentineCookieLore
+//    // 比較
+//    lore.containsAll(plore)
   }
 
   private def useChoco(player: Player, item: ItemStack): Unit = {
-    val msg = Seq(
+    val messages = Seq(
       s"${player.getName}は${getChocoOwner(item)}のチョコレートを食べた！猟奇的な味だった。",
       s"${player.getName}！${getChocoOwner(item)}からのチョコだと思ったかい？ざぁんねんっ！",
       s"${player.getName}は${getChocoOwner(item)}のプレゼントで鼻血が止まらない！（計画通り）",
@@ -213,63 +178,46 @@ class Valentine(private val plugin: Plugin) extends Listener {
     if (isChocoOwner(item, player.getName)) {
       // HP最大値アップ
       player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 10))
-    }
-    else {
+    } else {
       // 死ぬ
       player.setHealth(0)
       // 全体にメッセージ送信
-      Util.sendEveryMessage(msg(new Random().nextInt(msg.size)))
+      Util.sendEveryMessage(messages(new Random().nextInt(messages.size)))
     }
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
-  }
-
-  private def makeChoco(player: Player): ItemStack = {
-    val choco: ItemStack = new ItemStack(Material.COOKIE, 64)
-    val itemmeta: ItemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
-    itemmeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "チョコチップクッキー")
-    choco.setItemMeta(itemmeta)
-    setChocoLore(choco)
-    setChocoOwner(choco, player.getName)
-    choco
   }
 
   private def isChocoOwner(item: ItemStack, owner: String): Boolean = {
     getChocoOwner(item) == owner
   }
 
-  private def setChocoLore(item: ItemStack): Unit = {
-    try {
-      val meta: ItemMeta = item.getItemMeta
-      meta.setLore(getChocoLore)
-      item.setItemMeta(meta)
-    } catch {
-      case e: NullPointerException => e.printStackTrace()
-    }
+  // アイテム使用時の処理
+  private def usePrize(player: Player): Unit = {
+    val potionEffects = Map(
+      "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 60 * 10, 1),
+      "暗視" -> new PotionEffect(PotionEffectType.NIGHT_VISION, 20 * 60 * 10, 1),
+      "耐性" -> new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 60 * 10, 1),
+      "跳躍力上昇" -> new PotionEffect(PotionEffectType.JUMP, 20 * 60 * 10, 1),
+      "再生能力" -> new PotionEffect(PotionEffectType.REGENERATION, 20 * 60 * 10, 1),
+      "移動速度上昇" -> new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, 1),
+      "水中呼吸" -> new PotionEffect(PotionEffectType.WATER_BREATHING, 20 * 60 * 10, 1),
+      "緩衝吸収" -> new PotionEffect(PotionEffectType.ABSORPTION, 20 * 60 * 10, 1),
+      "攻撃力上昇" -> new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 60 * 10, 1),
+      "不運" -> new PotionEffect(PotionEffectType.UNLUCK, 20 * 60, 1)
+    )
+    val effectsName = potionEffects.keys.toSeq
+    val effects = potionEffects.values.toSeq
+    val num: Int = new Random().nextInt(potionEffects.size)
+
+    player.addPotionEffect(effects(num))
+
+    if (num == 9) player.sendMessage(s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…")
+    else player.sendMessage(s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！")
+
+    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }
 
-  private def getChocoLore = List(
-    "",
-    s"${ChatColor.RESET}${ChatColor.GRAY}手作りのチョコチップクッキー。",
-    "食べると一定時間ステータスが変化する。",
-    "賞味期限を超えると効果が無くなる。",
-    "",
-    s"${ChatColor.RESET}${ChatColor.DARK_GREEN}賞味期限：$FINISHDISP",
-    s"${ChatColor.RESET}${ChatColor.AQUA}ステータス変化（10分）${ChatColor.GRAY} （期限内）"
-  ).asJava
-
-  private val CHOCO_HEAD = s"${ChatColor.RESET}${ChatColor.DARK_GREEN}製作者："
-
-  private def setChocoOwner(item: ItemStack, owner: String): Unit = {
-    try {
-      val meta: ItemMeta = item.getItemMeta
-      val lore: util.List[String] = meta.getLore
-      lore.add(CHOCO_HEAD + owner)
-      meta.setLore(lore)
-      item.setItemMeta(meta)
-    } catch {
-      case e: NullPointerException => e.printStackTrace()
-    }
-  }
+  private val CHOCO_HEAD = s"$RESET${DARK_GREEN}製作者："
 
   private def getChocoOwner(item: ItemStack) = {
     var owner: String = "名称未設定"
@@ -282,4 +230,52 @@ class Valentine(private val plugin: Plugin) extends Listener {
     }
     owner
   }
+
+  //region これらはSeichiAssistで呼ばれてるだけ
+
+  def playerHeadMeta(head: SkullMeta): SkullMeta = {
+    if (isdrop) {
+      val prefix: String = DROPDAY.substring(0, 4)
+      val lore = List(
+        "",
+        s"$RESET$ITALIC${GREEN}大切なあなたへ。",
+        s"$RESET$ITALIC$UNDERLINE${YELLOW}Happy Valentine $prefix"
+      )
+      head.setLore(lore)
+    }
+    head
+  }
+
+  // チョコレート配布
+  def giveChoco(player: Player): Unit = {
+    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, makeChoco(player))
+    else Util.addItem(player, makeChoco(player))
+  }
+
+  private def makeChoco(player: Player): ItemStack = {
+    val loreList = {
+      val header = List(
+        "",
+        s"$RESET${GRAY}手作りのチョコチップクッキー。")
+      val producer = List(s"$RESET$GRAY$CHOCO_HEAD${player.getName}")
+
+      header ++ baseLore ++ producer
+    }.asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
+    itemMeta.setDisplayName(cookieName)
+    itemMeta.setLore(loreList)
+
+    val choco = new ItemStack(Material.COOKIE, 64)
+    choco.setItemMeta(itemMeta)
+    choco
+  }
+
+  //endregion
+
+  //endregion
+}
+
+object Valentine {
+  var isInEvent: Boolean = _
 }
