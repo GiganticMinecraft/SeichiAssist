@@ -6,6 +6,7 @@ import java.util.{Date, Random}
 
 import com.github.unchama.seasonalevents.SeasonalEvents
 import com.github.unchama.seasonalevents.Utl
+import de.tr7zw.itemnbtapi.NBTItem
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.{Bukkit, Material, Sound}
 import org.bukkit.ChatColor._
@@ -19,7 +20,6 @@ import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
-import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 class Valentine(private val plugin: Plugin) extends Listener {
@@ -117,7 +117,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
     s"$RESET${GRAY}食べると一定時間ステータスが変化する。",
     s"$RESET${GRAY}賞味期限を超えると効果が無くなる。",
     "",
-    s"$RESET${DARK_GREEN}賞味期限：$FINISHDISP",
+    s"$RESET${DARK_GREEN}消費期限：$FINISHDISP",
     s"$RESET${AQUA}ステータス変化（10分）$GRAY （期限内）"
   )
 
@@ -135,28 +135,52 @@ class Valentine(private val plugin: Plugin) extends Listener {
     itemMeta.setDisplayName(cookieName)
     itemMeta.setLore(loreList)
 
-    val prize = new ItemStack(Material.COOKIE, 1)
-    prize.setItemMeta(itemMeta)
-    prize
+    val cookie = new ItemStack(Material.COOKIE, 1)
+    cookie.setItemMeta(itemMeta)
+
+    val nbtItem = new NBTItem(cookie)
+    nbtItem.setByte(NBTTagConstants.typeIdTag, 1.toByte)
+    val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
+    nbtItem.setObject(NBTTagConstants.expirationDateTag, n.toInstant)
+    nbtItem
   }
 
-  // TODO NBT化？　賞味期限があることに注意　製作者も？
-  // チョコレート判定
   private def isGiftedCookie(item: ItemStack): Boolean = {
-//    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
-//    val lore: util.List[String] = item.getItemMeta.getLore
-//    val plore: util.List[String] = getChocoLore
-//    lore.containsAll(plore)
+    item != null && item.getType != Material.AIR && {
+      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
+    }
   }
 
-  // チョコチップクッキー判定
-  private def isDroppedCookie(item: ItemStack): Boolean = {
-    // Lore取得
-//    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
-//    val lore: util.List[String] = item.getItemMeta.getLore
-//    val plore: util.List[String] = valentineCookieLore
-//    // 比較
-//    lore.containsAll(plore)
+  private def isDroppedCookie(item: ItemStack) =
+    item != null && item.getType != Material.AIR && {
+      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
+    }
+
+  // アイテム使用時の処理
+  private def useDroppedCookie(player: Player): Unit = {
+    val potionEffects = Map(
+      "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 60 * 10, 1),
+      "暗視" -> new PotionEffect(PotionEffectType.NIGHT_VISION, 20 * 60 * 10, 1),
+      "耐性" -> new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 60 * 10, 1),
+      "跳躍力上昇" -> new PotionEffect(PotionEffectType.JUMP, 20 * 60 * 10, 1),
+      "再生能力" -> new PotionEffect(PotionEffectType.REGENERATION, 20 * 60 * 10, 1),
+      "移動速度上昇" -> new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, 1),
+      "水中呼吸" -> new PotionEffect(PotionEffectType.WATER_BREATHING, 20 * 60 * 10, 1),
+      "緩衝吸収" -> new PotionEffect(PotionEffectType.ABSORPTION, 20 * 60 * 10, 1),
+      "攻撃力上昇" -> new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 60 * 10, 1),
+      "不運" -> new PotionEffect(PotionEffectType.UNLUCK, 20 * 60, 1)
+    )
+    val effectsName = potionEffects.keys.toSeq
+    val effects = potionEffects.values.toSeq
+    val num: Int = new Random().nextInt(potionEffects.size)
+    val msg =
+      if (num == 9) s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…"
+      else s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！"
+
+    // TODO tap
+    player.addPotionEffect(effects(num))
+    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+    player.sendMessage(msg)
   }
 
   private def useGiftedCookie(player: Player, item: ItemStack): Unit = {
@@ -191,33 +215,6 @@ class Valentine(private val plugin: Plugin) extends Listener {
     getCookieProducer(item) == owner
   }
 
-  // アイテム使用時の処理
-  private def useDroppedCookie(player: Player): Unit = {
-    val potionEffects = Map(
-      "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 60 * 10, 1),
-      "暗視" -> new PotionEffect(PotionEffectType.NIGHT_VISION, 20 * 60 * 10, 1),
-      "耐性" -> new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 60 * 10, 1),
-      "跳躍力上昇" -> new PotionEffect(PotionEffectType.JUMP, 20 * 60 * 10, 1),
-      "再生能力" -> new PotionEffect(PotionEffectType.REGENERATION, 20 * 60 * 10, 1),
-      "移動速度上昇" -> new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, 1),
-      "水中呼吸" -> new PotionEffect(PotionEffectType.WATER_BREATHING, 20 * 60 * 10, 1),
-      "緩衝吸収" -> new PotionEffect(PotionEffectType.ABSORPTION, 20 * 60 * 10, 1),
-      "攻撃力上昇" -> new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 60 * 10, 1),
-      "不運" -> new PotionEffect(PotionEffectType.UNLUCK, 20 * 60, 1)
-    )
-    val effectsName = potionEffects.keys.toSeq
-    val effects = potionEffects.values.toSeq
-    val num: Int = new Random().nextInt(potionEffects.size)
-    val msg =
-      if (num == 9) s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…"
-      else s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！"
-
-    // TODO tap
-    player.addPotionEffect(effects(num))
-    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
-    player.sendMessage(msg)
-  }
-
   // TODO 変数名これでいいの？prefixなだけで、別に製作者の名前自体は入ってないよね？
   private val producerName = s"$RESET${DARK_GREEN}製作者："
 
@@ -248,7 +245,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
     head
   }
 
-  // チョコレート配布
+  // 棒メニューで使われるログイン時のクッキー配布処理
   def giveCookie(player: Player): Unit = {
     if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, giftedCookie(player))
     else Util.addItem(player, giftedCookie(player))
@@ -268,14 +265,28 @@ class Valentine(private val plugin: Plugin) extends Listener {
     itemMeta.setDisplayName(cookieName)
     itemMeta.setLore(loreList)
 
-    val choco = new ItemStack(Material.COOKIE, 64)
-    choco.setItemMeta(itemMeta)
-    choco
+    val cookie = new ItemStack(Material.COOKIE, 64)
+    cookie.setItemMeta(itemMeta)
+
+    val nbtItem = new NBTItem(cookie)
+    nbtItem.setByte(NBTTagConstants.typeIdTag, 2.toByte)
+    val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
+    nbtItem.setObject(NBTTagConstants.expirationDateTag, n)
+    nbtItem.setString(NBTTagConstants.producerNameTag, player.getName)
+    nbtItem.setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
+    nbtItem
   }
 
   //endregion
 
   //endregion
+
+  private object NBTTagConstants {
+    val typeIdTag = "valentineCookieTypeId"
+    val expirationDateTag = "valentineCookieExpirationDate"
+    val producerNameTag = "valentineCookieProducerName"
+    val producerUuidTag = "valentineCookieProducerUuid"
+  }
 }
 
 object Valentine {
