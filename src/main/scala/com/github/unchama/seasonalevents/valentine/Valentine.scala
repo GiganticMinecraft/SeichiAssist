@@ -101,8 +101,8 @@ class Valentine(private val plugin: Plugin) extends Listener {
   def onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent): Unit = {
     val item = event.getItem
     val player = event.getPlayer
-    if (isDroppedCookie(item)) useDroppedCookie(player)
-    if (isGiftedCookie(item)) useGiftedCookie(player, item)
+    if (isDroppedCookie(item) && isValidCookie(item)) useDroppedCookie(player)
+    if (isGiftedCookie(item) && isValidCookie(item)) useGiftedCookie(player, item)
   }
 
   //endregion
@@ -151,10 +151,15 @@ class Valentine(private val plugin: Plugin) extends Listener {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
-  private def isGiftedCookie(item: ItemStack): Boolean =
+  private def isGiftedCookie(item: ItemStack) =
     item != null && item.getType != Material.AIR && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
     }
+
+  private def isValidCookie(item: ItemStack) = {
+    val now = new Date()
+    new NBTItem(item).getObject(NBTTagConstants.expirationDateTag).asInstanceOf[Date].after(now)
+  }
 
   // アイテム使用時の処理
   private def useDroppedCookie(player: Player): Unit = {
