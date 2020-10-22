@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.valentine
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util
-import java.util.{Date, Random}
+import java.util.{Date, Random, UUID}
 
 import com.github.unchama.seasonalevents.SeasonalEvents
 import com.github.unchama.seasonalevents.Utl
@@ -38,6 +38,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
   try {
     // イベント開催中か判定
     val format = new SimpleDateFormat("yyyy-MM-dd")
+    // TODO Objectの中に移動する
     val finishdate = format.parse(FINISH)
     val dropdate = format.parse(DROPDAY)
 
@@ -109,8 +110,8 @@ class Valentine(private val plugin: Plugin) extends Listener {
   //region ItemData
 
   /*
-  Choco = GiftedCookie -> 棒メニューでもらえるやつ
   Prize = DroppedCookie -> 爆発したmobからドロップするやつ
+  Choco = GiftedCookie -> 棒メニューでもらえるやつ
    */
 
   private val baseLore = List(
@@ -141,19 +142,18 @@ class Valentine(private val plugin: Plugin) extends Listener {
     val nbtItem = new NBTItem(cookie)
     nbtItem.setByte(NBTTagConstants.typeIdTag, 1.toByte)
     val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
-    nbtItem.setObject(NBTTagConstants.expirationDateTag, n.toInstant)
+    nbtItem.setObject(NBTTagConstants.expirationDateTag, n)
     nbtItem
-  }
-
-  private def isGiftedCookie(item: ItemStack): Boolean = {
-    item != null && item.getType != Material.AIR && {
-      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
-    }
   }
 
   private def isDroppedCookie(item: ItemStack) =
     item != null && item.getType != Material.AIR && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
+    }
+
+  private def isGiftedCookie(item: ItemStack): Boolean =
+    item != null && item.getType != Material.AIR && {
+      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
     }
 
   // アイテム使用時の処理
@@ -184,22 +184,24 @@ class Valentine(private val plugin: Plugin) extends Listener {
   }
 
   private def useGiftedCookie(player: Player, item: ItemStack): Unit = {
+    val playerName = player.getName
+    val cookieProducerName = getCookieProducer(item)
     val messages = Seq(
-      s"${player.getName}は${getCookieProducer(item)}のチョコレートを食べた！猟奇的な味だった。",
-      s"${player.getName}！${getCookieProducer(item)}からのチョコだと思ったかい？ざぁんねんっ！",
-      s"${player.getName}は${getCookieProducer(item)}のプレゼントで鼻血が止まらない！（計画通り）",
-      s"${player.getName}は${getCookieProducer(item)}のチョコレートを頬張ったまま息絶えた！",
-      s"${player.getName}は${getCookieProducer(item)}のチョコにアレが入っているとはを知らずに食べた…",
-      s"${player.getName}は${getCookieProducer(item)}のチョコなんか食ってないであくしろはたらけ",
-      s"${getCookieProducer(item)}は${player.getName}に日頃の恨みを晴らした！スッキリ！",
-      s"${getCookieProducer(item)}による${player.getName}への痛恨の一撃！ハッピーバレンタインッ！",
-      s"${getCookieProducer(item)}は${player.getName}が食べる姿を、満面の笑みで見つめている！",
-      s"${getCookieProducer(item)}は悪くない！${player.getName}が悪いんだっ！",
-      s"${getCookieProducer(item)}は${player.getName}を討伐した！",
-      s"こうして${getCookieProducer(item)}のイタズラでまた1人${player.getName}が社畜となった。",
-      s"おい聞いたか！${getCookieProducer(item)}が${player.getName}にチョコ送ったらしいぞー！"
+      s"${playerName}は${cookieProducerName}のチョコレートを食べた！猟奇的な味だった。",
+      s"$playerName！${cookieProducerName}からのチョコだと思ったかい？ざぁんねんっ！",
+      s"${playerName}は${cookieProducerName}のプレゼントで鼻血が止まらない！（計画通り）",
+      s"${playerName}は${cookieProducerName}のチョコレートを頬張ったまま息絶えた！",
+      s"${playerName}は${cookieProducerName}のチョコにアレが入っているとはを知らずに食べた…",
+      s"${playerName}は${cookieProducerName}のチョコなんか食ってないであくしろはたらけ",
+      s"${cookieProducerName}は${playerName}に日頃の恨みを晴らした！スッキリ！",
+      s"${cookieProducerName}による${playerName}への痛恨の一撃！ハッピーバレンタインッ！",
+      s"${cookieProducerName}は${playerName}が食べる姿を、満面の笑みで見つめている！",
+      s"${cookieProducerName}は悪くない！${playerName}が悪いんだっ！",
+      s"${cookieProducerName}は${playerName}を討伐した！",
+      s"こうして${cookieProducerName}のイタズラでまた1人${playerName}が社畜となった。",
+      s"おい聞いたか！${cookieProducerName}が${playerName}にチョコ送ったらしいぞー！"
     )
-    if (isCookieSender(item, player.getName)) {
+    if (isCookieSender(item, playerName)) {
       // HP最大値アップ
       player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 10))
     } else {
@@ -211,24 +213,11 @@ class Valentine(private val plugin: Plugin) extends Listener {
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }
 
-  private def isCookieSender(item: ItemStack, owner: String): Boolean = {
-    getCookieProducer(item) == owner
-  }
+  private def isCookieSender(item: ItemStack, uuid: UUID): Boolean =
+    uuid == new NBTItem(item).getObject(NBTTagConstants.producerUuidTag)
 
-  // TODO 変数名これでいいの？prefixなだけで、別に製作者の名前自体は入ってないよね？
-  private val producerName = s"$RESET${DARK_GREEN}製作者："
-
-  private def getCookieProducer(item: ItemStack) = {
-    var owner: String = "名称未設定"
-    try {
-      val lore: util.List[String] = item.getItemMeta.getLore
-      val ownerRow: String = lore.get(lore.size - 1)
-      if (ownerRow.contains(producerName)) owner = ownerRow.replace(producerName, "")
-    } catch {
-      case e: NullPointerException => e.printStackTrace()
-    }
-    owner
-  }
+  private def getCookieProducer(item: ItemStack): String =
+    new NBTItem(item).getObject(NBTTagConstants.producerNameTag)
 
   //region これらはSeichiAssistで呼ばれてるだけ
 
@@ -251,17 +240,21 @@ class Valentine(private val plugin: Plugin) extends Listener {
     else Util.addItem(player, giftedCookie(player))
   }
 
+  private val producerNamePrefix = s"$RESET${DARK_GREEN}製作者："
+
   private def giftedCookie(player: Player): ItemStack = {
+    val playerName = player.getName
     val loreList = {
       val header = List(
         "",
         s"$RESET${GRAY}手作りのチョコチップクッキー。")
-      val producer = List(s"$RESET$GRAY$producerName${player.getName}")
+      val producer = List(s"$RESET$GRAY$producerNamePrefix$playerName")
 
       header ++ baseLore ++ producer
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
+    // TODO tap
     itemMeta.setDisplayName(cookieName)
     itemMeta.setLore(loreList)
 
@@ -269,10 +262,11 @@ class Valentine(private val plugin: Plugin) extends Listener {
     cookie.setItemMeta(itemMeta)
 
     val nbtItem = new NBTItem(cookie)
+    // TODO tap
     nbtItem.setByte(NBTTagConstants.typeIdTag, 2.toByte)
     val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
     nbtItem.setObject(NBTTagConstants.expirationDateTag, n)
-    nbtItem.setString(NBTTagConstants.producerNameTag, player.getName)
+    nbtItem.setString(NBTTagConstants.producerNameTag, playerName)
     nbtItem.setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
     nbtItem
   }
