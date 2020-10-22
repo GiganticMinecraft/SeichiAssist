@@ -46,7 +46,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
     if (now.before(finishdate)) {
       // リスナーを登録
       plugin.getServer.getPluginManager.registerEvents(this, plugin)
-      Valen.isInEvent = true
+      Valentine.isInEvent = true
     }
     if (now.before(dropdate)) isdrop = true
   } catch {
@@ -122,7 +122,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
   private def isValidCookie(item: ItemStack) = {
     val now = new Date()
     // TODO 時刻は比較しない
-    new NBTItem(item).getObject(NBTTagConstants.expirationDateTag).asInstanceOf[Date].after(now)
+    new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[Date]).after(now)
   }
 
   //region Prize = DroppedCookie -> 爆発したmobからドロップするやつ
@@ -238,7 +238,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
       s"こうして${cookieProducerName}のイタズラでまた1人${playerName}が社畜となった。",
       s"おい聞いたか！${cookieProducerName}が${playerName}にチョコ送ったらしいぞー！"
     )
-    if (isCookieSender(item, playerName)) {
+    if (isCookieSender(item, player.getUniqueId)) {
       // HP最大値アップ
       player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 10))
     } else {
@@ -251,7 +251,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
   }
 
   private def isCookieSender(item: ItemStack, uuid: UUID): Boolean =
-    uuid == new NBTItem(item).getObject(NBTTagConstants.producerUuidTag)
+    uuid == new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID])
 
   // SeichiAssistで呼ばれてるだけ
   // 棒メニューで使われるログイン時のクッキー配布処理
@@ -270,7 +270,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
         "",
         s"$RESET$ITALIC${GREEN}大切なあなたへ。",
         s"$RESET$ITALIC$UNDERLINE${YELLOW}Happy Valentine $prefix"
-      )
+      ).asJava
       head.setLore(lore)
     }
     head
