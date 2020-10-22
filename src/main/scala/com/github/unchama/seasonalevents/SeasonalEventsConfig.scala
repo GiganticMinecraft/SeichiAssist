@@ -28,6 +28,8 @@ class SeasonalEventsConfig(private val plugin: Plugin) {
   // plugin.ymlファイルからの読み込み
   def getConfig: FileConfiguration = plugin.getConfig
 
+  // TODO Optionに包む？
+
   def getDropRate: Double = config.getString("dropper").toDouble
 
   def getWikiAddr: String = config.getString("wiki")
