@@ -218,6 +218,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
     player.sendMessage(msg)
   }
 
+  // TODO 変数名これでいいの？prefixなだけで、別に製作者の名前自体は入ってないよね？
   private val producerName = s"$RESET${DARK_GREEN}製作者："
 
   private def getCookieProducer(item: ItemStack) = {
@@ -278,5 +279,5 @@ class Valentine(private val plugin: Plugin) extends Listener {
 }
 
 object Valentine {
-  var isInEvent: Boolean = _
+  var isInEvent: Boolean = false
 }
