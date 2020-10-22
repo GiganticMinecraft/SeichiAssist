@@ -58,10 +58,8 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
-    if (!isdrop) return
-
     val entity = event.getEntity
-    if (entity == null) return
+    if (!isdrop || entity == null) return
 
     if (entity.isInstanceOf[Monster] && entity.isDead){
 //      killEvent(event.getEntity, event.getEntity.getLocation)
@@ -73,10 +71,8 @@ class Valentine(private val plugin: Plugin) extends Listener {
   // TODO 爆破死したモンスター以外のmob(スノーゴーレム、プレイヤーなど)からもチョコチップクッキーが出る
   @EventHandler
   def onEntityDeath(event: EntityDeathEvent): Unit = {
-    if (!isdrop) return
-
     val entity = event.getEntity
-    if (entity == null) return
+    if (!isdrop || entity == null) return
 
     if (entity.getLastDamageCause.getCause == DamageCause.ENTITY_EXPLOSION) {
       // 死因が爆発の場合、確率でアイテムをドロップ
