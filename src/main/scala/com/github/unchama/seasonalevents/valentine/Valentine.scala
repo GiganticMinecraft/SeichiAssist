@@ -124,6 +124,14 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
 
+  private def isValidCookie(item: ItemStack) = {
+    val now = new Date()
+    // TODO 時刻は比較しない
+    new NBTItem(item).getObject(NBTTagConstants.expirationDateTag).asInstanceOf[Date].after(now)
+  }
+
+  //region Prize = DroppedCookie -> 爆発したmobからドロップするやつ
+
   private val droppedCookie = {
     val loreList = {
       val header = List(
@@ -143,23 +151,13 @@ class Valentine(private val plugin: Plugin) extends Listener {
     nbtItem.setByte(NBTTagConstants.typeIdTag, 1.toByte)
     val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
     nbtItem.setObject(NBTTagConstants.expirationDateTag, n)
-    nbtItem
+    nbtItem.getItem
   }
 
   private def isDroppedCookie(item: ItemStack) =
     item != null && item.getType != Material.AIR && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
-
-  private def isGiftedCookie(item: ItemStack) =
-    item != null && item.getType != Material.AIR && {
-      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
-    }
-
-  private def isValidCookie(item: ItemStack) = {
-    val now = new Date()
-    new NBTItem(item).getObject(NBTTagConstants.expirationDateTag).asInstanceOf[Date].after(now)
-  }
 
   // アイテム使用時の処理
   private def useDroppedCookie(player: Player): Unit = {
@@ -188,9 +186,48 @@ class Valentine(private val plugin: Plugin) extends Listener {
     player.sendMessage(msg)
   }
 
+  //endregion
+
+  //region Choco = GiftedCookie -> 棒メニューでもらえるやつ
+
+  private def giftedCookie(player: Player) = {
+    val playerName = player.getName
+    val loreList = {
+      val header = List(
+        "",
+        s"$RESET${GRAY}手作りのチョコチップクッキー。")
+      val producer = List(s"$RESET${DARK_GREEN}製作者：$playerName")
+
+      header ++ baseLore ++ producer
+    }.asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
+    // TODO tap
+    itemMeta.setDisplayName(cookieName)
+    itemMeta.setLore(loreList)
+
+    val cookie = new ItemStack(Material.COOKIE, 64)
+    cookie.setItemMeta(itemMeta)
+
+    val nbtItem = new NBTItem(cookie)
+    // TODO tap
+    nbtItem.setByte(NBTTagConstants.typeIdTag, 2.toByte)
+    // FIXME finishDateがObjectにいったら
+    val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
+    nbtItem.setObject(NBTTagConstants.expirationDateTag, n)
+    nbtItem.setString(NBTTagConstants.producerNameTag, playerName)
+    nbtItem.setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
+    nbtItem.getItem
+  }
+
+  private def isGiftedCookie(item: ItemStack) =
+    item != null && item.getType != Material.AIR && {
+      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
+    }
+
   private def useGiftedCookie(player: Player, item: ItemStack): Unit = {
     val playerName = player.getName
-    val cookieProducerName = getCookieProducer(item)
+    val cookieProducerName = new NBTItem(item).getString(NBTTagConstants.producerNameTag)
     val messages = Seq(
       s"${playerName}は${cookieProducerName}のチョコレートを食べた！猟奇的な味だった。",
       s"$playerName！${cookieProducerName}からのチョコだと思ったかい？ざぁんねんっ！",
@@ -221,11 +258,16 @@ class Valentine(private val plugin: Plugin) extends Listener {
   private def isCookieSender(item: ItemStack, uuid: UUID): Boolean =
     uuid == new NBTItem(item).getObject(NBTTagConstants.producerUuidTag)
 
-  private def getCookieProducer(item: ItemStack): String =
-    new NBTItem(item).getObject(NBTTagConstants.producerNameTag)
+  // SeichiAssistで呼ばれてるだけ
+  // 棒メニューで使われるログイン時のクッキー配布処理
+  def giveCookie(player: Player): Unit = {
+    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, giftedCookie(player))
+    else Util.addItem(player, giftedCookie(player))
+  }
 
-  //region これらはSeichiAssistで呼ばれてるだけ
+  //endregion
 
+  // SeichiAssistで呼ばれてるだけ
   def valentinePlayerHead(head: SkullMeta): SkullMeta = {
     if (isdrop) {
       val prefix: String = DROPDAY.substring(0, 4)
@@ -238,45 +280,6 @@ class Valentine(private val plugin: Plugin) extends Listener {
     }
     head
   }
-
-  // 棒メニューで使われるログイン時のクッキー配布処理
-  def giveCookie(player: Player): Unit = {
-    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, giftedCookie(player))
-    else Util.addItem(player, giftedCookie(player))
-  }
-
-  private val producerNamePrefix = s"$RESET${DARK_GREEN}製作者："
-
-  private def giftedCookie(player: Player): ItemStack = {
-    val playerName = player.getName
-    val loreList = {
-      val header = List(
-        "",
-        s"$RESET${GRAY}手作りのチョコチップクッキー。")
-      val producer = List(s"$RESET$GRAY$producerNamePrefix$playerName")
-
-      header ++ baseLore ++ producer
-    }.asJava
-
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
-    // TODO tap
-    itemMeta.setDisplayName(cookieName)
-    itemMeta.setLore(loreList)
-
-    val cookie = new ItemStack(Material.COOKIE, 64)
-    cookie.setItemMeta(itemMeta)
-
-    val nbtItem = new NBTItem(cookie)
-    // TODO tap
-    nbtItem.setByte(NBTTagConstants.typeIdTag, 2.toByte)
-    val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
-    nbtItem.setObject(NBTTagConstants.expirationDateTag, n)
-    nbtItem.setString(NBTTagConstants.producerNameTag, playerName)
-    nbtItem.setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
-    nbtItem
-  }
-
-  //endregion
 
   //endregion
 
