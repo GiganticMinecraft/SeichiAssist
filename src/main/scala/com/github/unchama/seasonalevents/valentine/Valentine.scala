@@ -64,7 +64,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
     if (entity.isInstanceOf[Monster] && entity.isDead){
 //      killEvent(event.getEntity, event.getEntity.getLocation)
-      Utl.dropItem(entity, entity.getLocation, makePrize)
+      Utl.dropItem(entity, entity.getLocation, droppedCookie)
     }
   }
 
@@ -79,7 +79,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
     if (entity.getLastDamageCause.getCause == DamageCause.ENTITY_EXPLOSION) {
       // 死因が爆発の場合、確率でアイテムをドロップ
-      Utl.dropItem(entity, entity.getLocation, makePrize)
+      Utl.dropItem(entity, entity.getLocation, droppedCookie)
     }
   }
 
@@ -100,8 +100,8 @@ class Valentine(private val plugin: Plugin) extends Listener {
   def onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent): Unit = {
     val item = event.getItem
     val player = event.getPlayer
-    if (isValentineCookie(event.getItem)) usePrize(event.getPlayer)
-    if (isChocolate(event.getItem)) useChoco(event.getPlayer, event.getItem)
+    if (isDroppedCookie(event.getItem)) useDroppedCookie(event.getPlayer)
+    if (isGiftedCookie(event.getItem)) useGiftedCookie(event.getPlayer, event.getItem)
   }
 
   //endregion
@@ -109,8 +109,8 @@ class Valentine(private val plugin: Plugin) extends Listener {
   //region ItemData
 
   /*
-  Prize -> 棒メニューでもらえるやつ
-  Choco -> 爆発したmobからドロップするやつ
+  Choco = GiftedCookie -> 棒メニューでもらえるやつ
+  Prize = DroppedCookie -> 爆発したmobからドロップするやつ
    */
 
   private val baseLore = List(
@@ -123,7 +123,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
 
-  private val makePrize = {
+  private val droppedCookie = {
     val loreList = {
       val header = List(
         "",
@@ -142,7 +142,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   // TODO NBT化？　賞味期限があることに注意　製作者も？
   // チョコレート判定
-  private def isChocolate(item: ItemStack): Boolean = {
+  private def isGiftedCookie(item: ItemStack): Boolean = {
 //    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
 //    val lore: util.List[String] = item.getItemMeta.getLore
 //    val plore: util.List[String] = getChocoLore
@@ -150,7 +150,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
   }
 
   // チョコチップクッキー判定
-  private def isValentineCookie(item: ItemStack): Boolean = {
+  private def isDroppedCookie(item: ItemStack): Boolean = {
     // Lore取得
 //    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
 //    val lore: util.List[String] = item.getItemMeta.getLore
@@ -159,23 +159,23 @@ class Valentine(private val plugin: Plugin) extends Listener {
 //    lore.containsAll(plore)
   }
 
-  private def useChoco(player: Player, item: ItemStack): Unit = {
+  private def useGiftedCookie(player: Player, item: ItemStack): Unit = {
     val messages = Seq(
-      s"${player.getName}は${getChocoOwner(item)}のチョコレートを食べた！猟奇的な味だった。",
-      s"${player.getName}！${getChocoOwner(item)}からのチョコだと思ったかい？ざぁんねんっ！",
-      s"${player.getName}は${getChocoOwner(item)}のプレゼントで鼻血が止まらない！（計画通り）",
-      s"${player.getName}は${getChocoOwner(item)}のチョコレートを頬張ったまま息絶えた！",
-      s"${player.getName}は${getChocoOwner(item)}のチョコにアレが入っているとはを知らずに食べた…",
-      s"${player.getName}は${getChocoOwner(item)}のチョコなんか食ってないであくしろはたらけ",
-      s"${getChocoOwner(item)}は${player.getName}に日頃の恨みを晴らした！スッキリ！",
-      s"${getChocoOwner(item)}による${player.getName}への痛恨の一撃！ハッピーバレンタインッ！",
-      s"${getChocoOwner(item)}は${player.getName}が食べる姿を、満面の笑みで見つめている！",
-      s"${getChocoOwner(item)}は悪くない！${player.getName}が悪いんだっ！",
-      s"${getChocoOwner(item)}は${player.getName}を討伐した！",
-      s"こうして${getChocoOwner(item)}のイタズラでまた1人${player.getName}が社畜となった。",
-      s"おい聞いたか！${getChocoOwner(item)}が${player.getName}にチョコ送ったらしいぞー！"
+      s"${player.getName}は${getCookieProducer(item)}のチョコレートを食べた！猟奇的な味だった。",
+      s"${player.getName}！${getCookieProducer(item)}からのチョコだと思ったかい？ざぁんねんっ！",
+      s"${player.getName}は${getCookieProducer(item)}のプレゼントで鼻血が止まらない！（計画通り）",
+      s"${player.getName}は${getCookieProducer(item)}のチョコレートを頬張ったまま息絶えた！",
+      s"${player.getName}は${getCookieProducer(item)}のチョコにアレが入っているとはを知らずに食べた…",
+      s"${player.getName}は${getCookieProducer(item)}のチョコなんか食ってないであくしろはたらけ",
+      s"${getCookieProducer(item)}は${player.getName}に日頃の恨みを晴らした！スッキリ！",
+      s"${getCookieProducer(item)}による${player.getName}への痛恨の一撃！ハッピーバレンタインッ！",
+      s"${getCookieProducer(item)}は${player.getName}が食べる姿を、満面の笑みで見つめている！",
+      s"${getCookieProducer(item)}は悪くない！${player.getName}が悪いんだっ！",
+      s"${getCookieProducer(item)}は${player.getName}を討伐した！",
+      s"こうして${getCookieProducer(item)}のイタズラでまた1人${player.getName}が社畜となった。",
+      s"おい聞いたか！${getCookieProducer(item)}が${player.getName}にチョコ送ったらしいぞー！"
     )
-    if (isChocoOwner(item, player.getName)) {
+    if (isCookieSender(item, player.getName)) {
       // HP最大値アップ
       player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 10))
     } else {
@@ -187,12 +187,12 @@ class Valentine(private val plugin: Plugin) extends Listener {
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }
 
-  private def isChocoOwner(item: ItemStack, owner: String): Boolean = {
-    getChocoOwner(item) == owner
+  private def isCookieSender(item: ItemStack, owner: String): Boolean = {
+    getCookieProducer(item) == owner
   }
 
   // アイテム使用時の処理
-  private def usePrize(player: Player): Unit = {
+  private def useDroppedCookie(player: Player): Unit = {
     val potionEffects = Map(
       "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 60 * 10, 1),
       "暗視" -> new PotionEffect(PotionEffectType.NIGHT_VISION, 20 * 60 * 10, 1),
@@ -208,23 +208,24 @@ class Valentine(private val plugin: Plugin) extends Listener {
     val effectsName = potionEffects.keys.toSeq
     val effects = potionEffects.values.toSeq
     val num: Int = new Random().nextInt(potionEffects.size)
+    val msg =
+      if (num == 9) s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…"
+      else s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！"
 
+    // TODO tap
     player.addPotionEffect(effects(num))
-
-    if (num == 9) player.sendMessage(s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…")
-    else player.sendMessage(s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！")
-
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+    player.sendMessage(msg)
   }
 
-  private val CHOCO_HEAD = s"$RESET${DARK_GREEN}製作者："
+  private val producerName = s"$RESET${DARK_GREEN}製作者："
 
-  private def getChocoOwner(item: ItemStack) = {
+  private def getCookieProducer(item: ItemStack) = {
     var owner: String = "名称未設定"
     try {
       val lore: util.List[String] = item.getItemMeta.getLore
       val ownerRow: String = lore.get(lore.size - 1)
-      if (ownerRow.contains(CHOCO_HEAD)) owner = ownerRow.replace(CHOCO_HEAD, "")
+      if (ownerRow.contains(producerName)) owner = ownerRow.replace(producerName, "")
     } catch {
       case e: NullPointerException => e.printStackTrace()
     }
@@ -233,7 +234,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   //region これらはSeichiAssistで呼ばれてるだけ
 
-  def playerHeadMeta(head: SkullMeta): SkullMeta = {
+  def valentinePlayerHead(head: SkullMeta): SkullMeta = {
     if (isdrop) {
       val prefix: String = DROPDAY.substring(0, 4)
       val lore = List(
@@ -247,17 +248,17 @@ class Valentine(private val plugin: Plugin) extends Listener {
   }
 
   // チョコレート配布
-  def giveChoco(player: Player): Unit = {
-    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, makeChoco(player))
-    else Util.addItem(player, makeChoco(player))
+  def giveCookie(player: Player): Unit = {
+    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, giftedCookie(player))
+    else Util.addItem(player, giftedCookie(player))
   }
 
-  private def makeChoco(player: Player): ItemStack = {
+  private def giftedCookie(player: Player): ItemStack = {
     val loreList = {
       val header = List(
         "",
         s"$RESET${GRAY}手作りのチョコチップクッキー。")
-      val producer = List(s"$RESET$GRAY$CHOCO_HEAD${player.getName}")
+      val producer = List(s"$RESET$GRAY$producerName${player.getName}")
 
       header ++ baseLore ++ producer
     }.asJava
