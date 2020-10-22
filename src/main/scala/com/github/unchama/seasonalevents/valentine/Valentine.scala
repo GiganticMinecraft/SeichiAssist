@@ -100,8 +100,8 @@ class Valentine(private val plugin: Plugin) extends Listener {
   def onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent): Unit = {
     val item = event.getItem
     val player = event.getPlayer
-    if (isDroppedCookie(event.getItem)) useDroppedCookie(event.getPlayer)
-    if (isGiftedCookie(event.getItem)) useGiftedCookie(event.getPlayer, event.getItem)
+    if (isDroppedCookie(item)) useDroppedCookie(player)
+    if (isGiftedCookie(item)) useGiftedCookie(player, item)
   }
 
   //endregion
