@@ -1,8 +1,9 @@
 package com.github.unchama.seasonalevents.valentine
 
-import java.text.{ParseException, SimpleDateFormat}
-import java.util.{Date, Random, UUID}
+import java.time.LocalDate
+import java.util.{Random, UUID}
 
+import com.github.unchama.seasonalevents.Utl.tryNewDate
 import com.github.unchama.seasonalevents.{SeasonalEvents, Utl}
 import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
@@ -19,45 +20,23 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.jdk.CollectionConverters._
+import scala.util.chaining._
 
 class Valentine(private val plugin: Plugin) extends Listener {
-  private var isdrop = false
-  private val config = SeasonalEvents.config
-  /*
-	時間に関してだが、Date#beforeは指定した日付よりも前->true 後->false
-	つまり2018-02-20の場合は、2018/02/20 00:00 よりも前ならtrueを返します。
-	鯖再起動は4時なので、その際に判定が行われる関係で2018/02/20 4時までが期限となります。
-	*/
-  private val DROPDAY = config.getDropFinishDay
-  private val DROPDAYDISP = config.getDropFinishDayDisp
-  private val FINISH = config.getEventFinishDay
-  private val FINISHDISP = config.getEventFinishDayDisp
-
-  try {
-    // イベント開催中か判定
-    val format = new SimpleDateFormat("yyyy-MM-dd")
-    // TODO Objectの中に移動する
-    val finishdate = format.parse(FINISH)
-    val dropdate = format.parse(DROPDAY)
-
-    val now = new Date
-    if (now.before(finishdate)) {
-      // リスナーを登録
-      plugin.getServer.getPluginManager.registerEvents(this, plugin)
-      Valentine.isInEvent = true
-    }
-    if (now.before(dropdate)) isdrop = true
-  } catch {
-    case e: ParseException =>
-      e.printStackTrace()
+  // イベント開催中か判定
+  private val today = LocalDate.now()
+  if (today.isBefore(Valentine.END_DATE)) {
+    plugin.getServer.getPluginManager.registerEvents(this, plugin)
+    Valentine.isInEvent = true
   }
+  if (today.isBefore(Valentine.DROP_END_DATE)) Valentine.isDrop = true
 
   //region Listener
 
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
     val entity = event.getEntity
-    if (!isdrop || entity == null) return
+    if (!Valentine.isDrop || entity == null) return
 
     if (entity.isInstanceOf[Monster] && entity.isDead){
       Utl.dropItem(entity, droppedCookie)
@@ -69,7 +48,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
   @EventHandler
   def onEntityDeath(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity
-    if (!isdrop || entity == null) return
+    if (!Valentine.isDrop || entity == null) return
 
     if (entity.getLastDamageCause.getCause == DamageCause.ENTITY_EXPLOSION) {
       // 死因が爆発の場合、確率でアイテムをドロップ
@@ -79,10 +58,10 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   @EventHandler
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
-    if (isdrop) {
+    if (Valentine.isDrop) {
       Seq(
-        s"$LIGHT_PURPLE${DROPDAYDISP}までの期間限定で、シーズナルイベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
-        "詳しくは下記wikiをご覧ください。",
+        s"$LIGHT_PURPLE${Valentine.DISPLAYED_END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        "詳しくは下記HPをご覧ください。",
         s"$DARK_GREEN$UNDERLINE${SeasonalEvents.config.getWikiAddr}"
       ).foreach(
         event.getPlayer.sendMessage(_)
@@ -102,49 +81,43 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   //region ItemData
 
-  /*
-  Prize = DroppedCookie -> 爆発したmobからドロップするやつ
-  Choco = GiftedCookie -> 棒メニューでもらえるやつ
-   */
-
   private val baseLore = List(
-    s"$RESET${GRAY}食べると一定時間ステータスが変化する。",
-    s"$RESET${GRAY}賞味期限を超えると効果が無くなる。",
+    s"${GRAY}食べると一定時間ステータスが変化する。",
+    s"${GRAY}賞味期限を超えると効果が無くなる。",
     "",
-    s"$RESET${DARK_GREEN}消費期限：$FINISHDISP",
-    s"$RESET${AQUA}ステータス変化（10分）$GRAY （期限内）"
-  )
+    s"${DARK_GREEN}消費期限：${Valentine.DISPLAYED_END_DATE}",
+    s"${AQUA}ステータス変化（10分）$GRAY （期限内）"
+  ).map(str => s"$RESET$str")
 
   private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
 
   private def isValidCookie(item: ItemStack) = {
-    val now = new Date()
-    // TODO 時刻は比較しない
-    new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[Date]).after(now)
+    val today = LocalDate.now()
+    val exp = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
+    today.isBefore(exp)
   }
 
-  //region Prize = DroppedCookie -> 爆発したmobからドロップするやつ
+  //region DroppedCookie -> 爆発したmobからドロップするやつ
 
   private val droppedCookie = {
     val loreList = {
-      val header = List(
+      List(
         "",
-        s"$RESET${GRAY}リア充を爆発させて奪い取った。")
-      header ++ baseLore
+        s"$RESET${GRAY}リア充を爆発させて奪い取った。"
+      ) ++ baseLore
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
-    itemMeta.setDisplayName(cookieName)
-    itemMeta.setLore(loreList)
+      .tap(_.setDisplayName(cookieName))
+      .tap(_.setLore(loreList))
 
-    val cookie = new ItemStack(Material.COOKIE, 1)
-    cookie.setItemMeta(itemMeta)
+    val itemStack = new ItemStack(Material.COOKIE, 1)
+    itemStack.setItemMeta(itemMeta)
 
-    val nbtItem = new NBTItem(cookie)
-    nbtItem.setByte(NBTTagConstants.typeIdTag, 1.toByte)
-    val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
-    nbtItem.setObject(NBTTagConstants.expirationDateTag, n)
-    nbtItem.getItem
+    new NBTItem(itemStack)
+      .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
+      .tap(_.setObject(NBTTagConstants.expirationDateTag, Valentine.END_DATE))
+      .pipe(_.getItem)
   }
 
   private def isDroppedCookie(item: ItemStack) =
@@ -152,7 +125,6 @@ class Valentine(private val plugin: Plugin) extends Listener {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
-  // アイテム使用時の処理
   private def useDroppedCookie(player: Player): Unit = {
     val potionEffects = Map(
       "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 60 * 10, 1),
@@ -173,15 +145,15 @@ class Valentine(private val plugin: Plugin) extends Listener {
       if (num == 9) s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…"
       else s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！"
 
-    // TODO tap
-    player.addPotionEffect(effects(num))
-    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
-    player.sendMessage(msg)
+    player
+      .tap(_.addPotionEffect(effects(num)))
+      .tap(_.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F))
+      .tap(_.sendMessage(msg))
   }
 
   //endregion
 
-  //region Choco = GiftedCookie -> 棒メニューでもらえるやつ
+  //region GiftedCookie -> 棒メニューでもらえるやつ
 
   private def giftedCookie(player: Player) = {
     val playerName = player.getName
@@ -195,22 +167,18 @@ class Valentine(private val plugin: Plugin) extends Listener {
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
-    // TODO tap
-    itemMeta.setDisplayName(cookieName)
-    itemMeta.setLore(loreList)
+      .tap(_.setDisplayName(cookieName))
+      .tap(_.setLore(loreList))
 
-    val cookie = new ItemStack(Material.COOKIE, 64)
-    cookie.setItemMeta(itemMeta)
+    val itemStack = new ItemStack(Material.COOKIE, 64)
+    itemStack.setItemMeta(itemMeta)
 
-    val nbtItem = new NBTItem(cookie)
-    // TODO tap
-    nbtItem.setByte(NBTTagConstants.typeIdTag, 2.toByte)
-    // FIXME finishDateがObjectにいったら
-    val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
-    nbtItem.setObject(NBTTagConstants.expirationDateTag, n)
-    nbtItem.setString(NBTTagConstants.producerNameTag, playerName)
-    nbtItem.setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
-    nbtItem.getItem
+    new NBTItem(itemStack)
+      .tap(_.setByte(NBTTagConstants.typeIdTag, 2.toByte))
+      .tap(_.setObject(NBTTagConstants.expirationDateTag, Valentine.END_DATE))
+      .tap(_.setObject(NBTTagConstants.producerUuidTag, player.getUniqueId))
+      .tap(_.setString(NBTTagConstants.producerNameTag, playerName))
+      .pipe(_.getItem)
   }
 
   private def isGiftedCookie(item: ItemStack) =
@@ -238,7 +206,7 @@ class Valentine(private val plugin: Plugin) extends Listener {
     )
     if (isCookieSender(item, player.getUniqueId)) {
       // HP最大値アップ
-      player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 10))
+      player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 20 * 60 * 10, 10))
     } else {
       // 死ぬ
       player.setHealth(0)
@@ -262,13 +230,14 @@ class Valentine(private val plugin: Plugin) extends Listener {
 
   // SeichiAssistで呼ばれてるだけ
   def valentinePlayerHead(head: SkullMeta): SkullMeta = {
-    if (isdrop) {
-      val prefix: String = DROPDAY.substring(0, 4)
+    if (Valentine.isDrop) {
+      val year: String = Valentine.DROP_END_DATE.getYear.toString
       val lore = List(
         "",
-        s"$RESET$ITALIC${GREEN}大切なあなたへ。",
-        s"$RESET$ITALIC$UNDERLINE${YELLOW}Happy Valentine $prefix"
-      ).asJava
+        s"${GREEN}大切なあなたへ。",
+        s"$UNDERLINE${YELLOW}Happy Valentine $year"
+      ).map(str => s"$RESET$ITALIC$str")
+        .asJava
       head.setLore(lore)
     }
     head
@@ -285,5 +254,14 @@ class Valentine(private val plugin: Plugin) extends Listener {
 }
 
 object Valentine {
+  var isDrop = false
+  // SeichiAssistで呼ばれてるだけ
   var isInEvent: Boolean = false
+
+  // イベントが実際に終了する日
+  val END_DATE: LocalDate = tryNewDate(2018, 2, 27)
+  // ドロップが実際に終了する日
+  val DROP_END_DATE: LocalDate = tryNewDate(2018, 2, 20)
+  val DISPLAYED_END_DATE: LocalDate = END_DATE.minusDays(1)
+  val DISPLAYED_DROP_END_DATE: LocalDate = DROP_END_DATE.minusDays(1)
 }
