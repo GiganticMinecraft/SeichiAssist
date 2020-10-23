@@ -1,6 +1,10 @@
 package com.github.unchama.seasonalevents.seizonsiki
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.FINISHDISP
+import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
@@ -9,7 +13,6 @@ import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 
 object SeizonsikiItemData {
-  // TODO NBT化
   val seizonsikiZongo: ItemStack = {
     val loreList = List(
       "",
@@ -30,17 +33,24 @@ object SeizonsikiItemData {
 
     val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)
     itemStack.setItemMeta(itemMeta)
-    itemStack
+
+    // FIXME finishDateがObjectにいったら
+    val n: Date = new SimpleDateFormat("yyyy-MM-dd").parse(FINISH)
+    new NBTItem(itemStack)
+      .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
+      .tap(_.setObject(NBTTagConstants.expirationDateTag, n))
+      .pipe(_.getItem)
   }
 
   // アイテムがゾンごかどうかの判定
   def isZongoConsumed(item: ItemStack): Boolean = {
-    // Lore取得
-//    if (!item.hasItemMeta || !item.getItemMeta.hasLore) return false
-//    val itemLore = item.getItemMeta.getLore
-//    val prizeLore = getZongoLore
-//    // 比較
-//    itemLore.containsAll(prizeLore)
-    false
+    item != null && item.getType != Material.AIR && {
+      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
+    }
+  }
+
+  private object NBTTagConstants {
+    val typeIdTag = "seizonsikiZongoTypeId"
+    val expirationDateTag = "seizonsikiZongoExpirationDate"
   }
 }

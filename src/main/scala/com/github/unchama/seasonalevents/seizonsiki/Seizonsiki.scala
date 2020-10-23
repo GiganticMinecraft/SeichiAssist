@@ -26,5 +26,6 @@ class Seizonsiki(private val plugin: Plugin) {
 object Seizonsiki {
   val FINISHDISP = "2017/01/21"
   val DROPDAYDISP = "2017/01/15"
+  val FINISH = "2017-01-22"
   var isDrop = false
 }
