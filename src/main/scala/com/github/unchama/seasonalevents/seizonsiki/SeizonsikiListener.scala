@@ -1,6 +1,6 @@
 package com.github.unchama.seasonalevents.seizonsiki
 
-import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData.{isZongoConsumed, seizonsikiZongo}
+import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData.{isValidZongo, isZongo, seizonsikiZongo}
 import com.github.unchama.seasonalevents.{SeasonalEvents, Utl}
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.entity.EntityType
@@ -36,7 +36,8 @@ class SeizonsikiListener extends Listener {
 
   @EventHandler
   def onPlayerConsumedZongo(event: PlayerItemConsumeEvent): Unit = {
-    if (!isZongoConsumed(event.getItem)) return
+    val item = event.getItem
+    if (!isZongo(item) || !isValidZongo(item)) return
 
     val player = event.getPlayer
     val playerUuid = player.getUniqueId

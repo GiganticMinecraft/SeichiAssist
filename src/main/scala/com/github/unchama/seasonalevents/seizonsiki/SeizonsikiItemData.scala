@@ -3,7 +3,7 @@ package com.github.unchama.seasonalevents.seizonsiki
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.FINISHDISP
+import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.{FINISH, FINISHDISP}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
@@ -42,11 +42,16 @@ object SeizonsikiItemData {
       .pipe(_.getItem)
   }
 
-  // アイテムがゾンごかどうかの判定
-  def isZongoConsumed(item: ItemStack): Boolean = {
+  def isZongo(item: ItemStack): Boolean = {
     item != null && item.getType != Material.AIR && {
-      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
+      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) != 0
     }
+  }
+
+  def isValidZongo(item: ItemStack): Boolean = {
+    val now = new Date()
+    // TODO 時刻は比較しない
+    new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[Date]).after(now)
   }
 
   private object NBTTagConstants {
