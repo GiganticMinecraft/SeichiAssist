@@ -39,8 +39,8 @@ class ValentineListener extends Listener {
     if (isDrop) {
       Seq(
         s"$LIGHT_PURPLE${DISPLAYED_END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
-        "詳しくは下記HPをご覧ください。",
-        s"$DARK_GREEN$UNDERLINE${SeasonalEvents.config.getWikiAddr}"
+        "詳しくは下記URLのサイトをご覧ください。",
+        s"$DARK_GREEN$UNDERLINE${SeasonalEvents.config.blogArticleUrl}"
       ).foreach(
         event.getPlayer.sendMessage(_)
       )

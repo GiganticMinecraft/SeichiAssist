@@ -16,8 +16,8 @@ object Utl {
    * @param item ドロップさせるItemStack
    */
   def dropItem(entity: Entity, item: ItemStack): Unit = {
-    val rate = SeasonalEvents.config.getDropRate
-    val rand = new Random().nextInt(100)
+    val rate = SeasonalEvents.config.itemDropRate
+    val rand = new Random().nextDouble() * 100
     if (rand < rate) {
       // 報酬をドロップ
       entity.getWorld.dropItemNaturally(entity.getLocation, item)

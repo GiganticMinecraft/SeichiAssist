@@ -28,37 +28,12 @@ class SeasonalEventsConfig(private val plugin: Plugin) {
   // plugin.ymlファイルからの読み込み
   def getConfig: FileConfiguration = plugin.getConfig
 
-  // TODO Optionに包む？
+  val itemDropRate: Double = Option(config.getInt("SeasonalEvents.ItemDropRate"))
+    .filter(0 <= _ <= 100)
+    .getOrElse(30)
+    .toDouble
 
-  def getDropRate: Double = config.getString("dropper").toDouble
-
-  def getWikiAddr: String = config.getString("wiki")
-
-  /**
-   * イベントドロップ終了日を指定します。(西暦4桁-月2桁-日付2桁)
-   *
-   * @return イベントドロップ終了日 (西暦4桁-月2桁-日付2桁)
-   */
-  def getDropFinishDay: String = config.getString("DropFinishDay")
-
-  /**
-   * イベント終了日を取得します。(西暦4桁-月2桁-日付2桁)
-   *
-   * @return イベント終了日 (西暦4桁-月2桁-日付2桁)
-   */
-  def getEventFinishDay: String = config.getString("EventFinishDay")
-
-  /**
-   * イベントドロップ終了日(表示用)を取得します。(西暦4桁/月2桁/日付2桁)
-   *
-   * @return イベントドロップ終了日(表示用) (西暦4桁/月2桁/日付2桁)
-   */
-  def getDropFinishDayDisp: String = config.getString("DropFinishDayDisp")
-
-  /**
-   * イベント終了日(表示用)を取得します。(西暦4桁/月2桁/日付2桁)
-   *
-   * @return イベント終了日(表示用) (西暦4桁/月2桁/日付2桁)
-   */
-  def getEventFinishDayDisp: String = config.getString("EventFinishDayDisp")
+  val blogArticleUrl: String = Option(config.getString("SeasonalEvents.HPUrl")
+    .filter(_.startsWith("https://www.seichi.network/post/")))
+    .getOrElse("https://www.seichi.network/blog/categories/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E6%83%85%E5%A0%B1")
 }
