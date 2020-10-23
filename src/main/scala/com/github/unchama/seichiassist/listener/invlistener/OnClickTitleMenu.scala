@@ -19,6 +19,7 @@ import org.bukkit.{Material, Sound}
 object OnClickTitleMenu {
   private final val MAX_LENGTH: Int = 8
   private final val PER_PAGE: Int = ???
+  private final val LENGTH_LIMIT_EXCEEDED: String = s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。"
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
@@ -68,12 +69,11 @@ object OnClickTitleMenu {
     val mat = current.getType
     topInventory.getTitle match {
       case MenuType.COMBINE.invName =>
+        // 二つ名組み合わせトップ
         mat match {
           //実績ポイント最新化
           case Material.EMERALD_ORE =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-            pd.recalculateAchievePoint()
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
 
           //エフェクトポイント→実績ポイント変換
           case Material.EMERALD =>
@@ -83,10 +83,6 @@ object OnClickTitleMenu {
             } else {
               player.sendMessage("エフェクトポイントが不足しています。")
             }
-            //データ最新化
-            pd.recalculateAchievePoint()
-
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
 
           //パーツショップ
           case Material.ITEM_FRAME =>
@@ -120,6 +116,13 @@ object OnClickTitleMenu {
             )
         }
 
+        // refresh if needed
+        mat match {
+          case Material.EMERALD_ORE | Material.EMERALD =>
+            pd.recalculateAchievePoint()
+            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+        }
+        
       case MenuType.HEAD.invName =>
         mat match {
           case Material.WATER_BUCKET =>
@@ -129,7 +132,7 @@ object OnClickTitleMenu {
             val length = Nicknames.getTitleFor(id,
               pd.settings.nickname.id2, pd.settings.nickname.id3).length
             if (length > MAX_LENGTH) {
-              player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
+              player.sendMessage(LENGTH_LIMIT_EXCEEDED)
             } else {
               pd.updateNickname(id1 = id)
               player.sendMessage("前パーツ「" + Nicknames.getHeadPartFor(pd.settings.nickname.id1).getOrElse("") + "」をセットしました。")
@@ -149,7 +152,7 @@ object OnClickTitleMenu {
             // 次ページ
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
-            val k: MenuType = MenuInventoryData.MenuType.HEAD
+            val k = MenuInventoryData.MenuType.HEAD
             MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
         }
@@ -163,7 +166,7 @@ object OnClickTitleMenu {
             val length = Nicknames.getTitleFor(pd.settings.nickname.id1,
               id, pd.settings.nickname.id3).length
             if (length > MAX_LENGTH) {
-              player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
+              player.sendMessage(LENGTH_LIMIT_EXCEEDED)
             } else {
               pd.updateNickname(id2 = id)
               player.sendMessage("中パーツ「" + Nicknames.getMiddlePartFor(pd.settings.nickname.id2).getOrElse("") + "」をセットしました。")
@@ -181,7 +184,7 @@ object OnClickTitleMenu {
           case _ if isSkull && isRightArrow(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
-            val k: MenuType = MenuInventoryData.MenuType.MIDDLE
+            val k = MenuInventoryData.MenuType.MIDDLE
             MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
         }
@@ -195,7 +198,7 @@ object OnClickTitleMenu {
             val length = Nicknames.getTitleFor(pd.settings.nickname.id1,
               pd.settings.nickname.id2, id).length
             if (length > MAX_LENGTH) {
-              player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
+              player.sendMessage(LENGTH_LIMIT_EXCEEDED)
             } else {
               pd.updateNickname(id3 = id)
               player.sendMessage("後パーツ「" + Nicknames.getTailPartFor(pd.settings.nickname.id3).getOrElse("") + "」をセットしました。")
@@ -213,7 +216,7 @@ object OnClickTitleMenu {
           case _ if isSkull && isRightArrow(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
-            val k: MenuType = MenuInventoryData.MenuType.TAIL
+            val k = MenuInventoryData.MenuType.TAIL
             MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
         }
@@ -232,29 +235,22 @@ object OnClickTitleMenu {
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
             val num = current.getItemMeta.getDisplayName.toInt
-            val curpt = pd.achievePoint.left
-            if (num < 9900) {
-              val requiredPt = 20
-              if (curpt >= requiredPt) {
-                pd.TitleFlags.addOne(num)
-                pd.consumeAchievePoint(requiredPt)
-                player.sendMessage("パーツ「" + Nicknames.getHeadPartFor(num).getOrElse("") + "」を購入しました。")
-                pd.samepageflag = true
-                player.openInventory(MenuInventoryData.computePartsShopMenu(player))
-              } else {
-                player.sendMessage("実績ポイントが不足しています。")
-              }
+            val isHead = num < 9900
+            val required = if (isHead) 20 else 35
+            val getPart = if (isHead) {
+              num => Nicknames.getHeadPartFor(num)
             } else {
-              val requiredPt = 35
-              if (curpt >= requiredPt) {
-                pd.TitleFlags.addOne(num)
-                pd.consumeAchievePoint(requiredPt)
-                player.sendMessage("パーツ「" + Nicknames.getMiddlePartFor(num).getOrElse("") + "」を購入しました。")
-                pd.samepageflag = true
-                player.openInventory(MenuInventoryData.computePartsShopMenu(player))
-              } else {
-                player.sendMessage("実績ポイントが不足しています。")
-              }
+              num => Nicknames.getMiddlePartFor(num)
+            }
+
+            if (pd.achievePoint.left >= required) {
+              pd.TitleFlags.addOne(num)
+              pd.consumeAchievePoint(required)
+              player.sendMessage("パーツ「" + getPart(num).getOrElse("") + "」を購入しました。")
+              pd.samepageflag = true
+              player.openInventory(MenuInventoryData.computePartsShopMenu(player))
+            } else {
+              player.sendMessage("実績ポイントが不足しています。")
             }
 
           case Material.BARRIER =>
@@ -264,7 +260,7 @@ object OnClickTitleMenu {
           case _ if isSkull && isRightArrow(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
-            val k: MenuType = MenuInventoryData.MenuType.SHOP
+            val k = MenuInventoryData.MenuType.SHOP
             MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computePartsShopMenu(player))
         }
