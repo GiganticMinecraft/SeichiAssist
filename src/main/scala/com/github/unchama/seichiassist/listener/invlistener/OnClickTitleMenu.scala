@@ -40,12 +40,12 @@ object OnClickTitleMenu {
     }
 
     //インベントリが存在しない時終了
-    val topinventory = view.getTopInventory.ifNull(return)
+    val topInventory = view.getTopInventory.ifNull(return)
 
     import com.github.unchama.util.InventoryUtil._
 
     //インベントリサイズが4列でない時終了
-    if (topinventory.row != 4) {
+    if (topInventory.row != 4) {
       return
     }
     val current = event.getCurrentItem
@@ -53,248 +53,251 @@ object OnClickTitleMenu {
     val player = he.asInstanceOf[Player]
     val pd = SeichiAssist.playermap(player.getUniqueId)
 
-    val title = topinventory.getTitle
     //インベントリ名が以下の時処理
     val isSkull = current.getType == Material.SKULL_ITEM
 
-    if (title == MenuType.COMBINE.invName) {
-      event.setCancelled(true)
+    topInventory.getTitle match {
+      case MenuType.COMBINE.invName =>
+        event.setCancelled(true)
 
-      //実績解除処理部分の読みこみ
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-
-      /*
-       * クリックしたボタンに応じた各処理内容の記述ここから
-       */
-      current.getType match {
-        //実績ポイント最新化
-        case Material.EMERALD_ORE =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-          pd.recalculateAchievePoint()
-          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-
-        //エフェクトポイント→実績ポイント変換
-        case Material.EMERALD =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-          if (pd.effectPoint >= 10) {
-            pd.convertEffectPointToAchievePoint()
-          } else {
-            player.sendMessage("エフェクトポイントが不足しています。")
-          }
-          //データ最新化
-          pd.recalculateAchievePoint()
-
-          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-
-        //パーツショップ
-        case Material.ITEM_FRAME =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          player.openInventory(MenuInventoryData.setTitleShopData(player))
-
-        //前パーツ
-        case Material.WATER_BUCKET =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
-
-        //中パーツ
-        case Material.MILK_BUCKET =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
-
-        //後パーツ
-        case Material.LAVA_BUCKET =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
-
-        case _ if isSkull && isRightArrow(current) =>
-          import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-
-          effectEnvironment.runAsyncTargetedEffect(player)(
-            SequentialEffect(
-              CommonSoundEffects.menuTransitionFenceSound,
-              StickMenu.firstPage.open
-            ),
-            "実績メニューを開く"
-          )
-      }
-    } else if (title == MenuType.HEAD.invName) {
-      event.setCancelled(true)
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-
-      current.getType match {
-        case Material.WATER_BUCKET =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-
-          val id = current.getItemMeta.getDisplayName.toInt
-          val length = Nicknames.getTitleFor(id,
-            pd.settings.nickname.id2, pd.settings.nickname.id3).length
-          if (length > MAX_LENGTH) {
-            player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
-          } else {
-            pd.updateNickname(id1 = id)
-            player.sendMessage("前パーツ「" + Nicknames.getHeadPartFor(pd.settings.nickname.id1).getOrElse("") + "」をセットしました。")
-          }
-
-        case Material.GRASS =>
-          // unselect
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-          pd.updateNickname(id1 = 0)
-          player.sendMessage("前パーツの選択を解除しました。")
-
-        case Material.BARRIER =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-
-        case _ if isSkull && isRightArrow(current) =>
-          // 次ページ
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          val uuid = player.getUniqueId
-          val k: MenuType = MenuInventoryData.MenuType.HEAD
-          MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
-          player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
-      }
-    } else if (title == MenuType.MIDDLE.invName) {
-      event.setCancelled(true)
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-
-      current.getType match {
-        case Material.MILK_BUCKET =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-
-          val id = current.getItemMeta.getDisplayName.toInt
-          val length = Nicknames.getTitleFor(pd.settings.nickname.id1,
-            id, pd.settings.nickname.id3).length
-          if (length > MAX_LENGTH) {
-            player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
-          } else {
-            pd.updateNickname(id2 = id)
-            player.sendMessage("中パーツ「" + Nicknames.getMiddlePartFor(pd.settings.nickname.id2).getOrElse("") + "」をセットしました。")
-          }
-
-        case Material.GRASS =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-          pd.updateNickname(id2 = 0)
-          player.sendMessage("中パーツの選択を解除しました。")
-
-        case Material.BARRIER =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-
-        case _ if isSkull && isRightArrow(current) =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          val uuid = player.getUniqueId
-          val k: MenuType = MenuInventoryData.MenuType.MIDDLE
-          MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
-          player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
-      }
-    } else if (title == MenuType.TAIL.invName) {
-      event.setCancelled(true)
-
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+        //実績解除処理部分の読みこみ
         //プレイヤーインベントリのクリックの場合終了
-        return
-      }
+        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+          return
+        }
 
-      current.getType match {
-        case Material.LAVA_BUCKET =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+        /*
+         * クリックしたボタンに応じた各処理内容の記述ここから
+         */
+        current.getType match {
+          //実績ポイント最新化
+          case Material.EMERALD_ORE =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+            pd.recalculateAchievePoint()
+            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
 
-          val id = current.getItemMeta.getDisplayName.toInt
-          val length = Nicknames.getTitleFor(pd.settings.nickname.id1,
-            pd.settings.nickname.id2, id).length
-          if (length > MAX_LENGTH) {
-            player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
-          } else {
-            pd.updateNickname(id3 = id)
-            player.sendMessage("後パーツ「" + Nicknames.getTailPartFor(pd.settings.nickname.id3).getOrElse("") + "」をセットしました。")
-          }
-
-        case Material.GRASS =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-          pd.updateNickname(id3 = 0)
-          player.sendMessage("後パーツの選択を解除しました。")
-
-        case Material.BARRIER =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
-
-        case _ if isSkull && isRightArrow(current) =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          val uuid = player.getUniqueId
-          val k: MenuType = MenuInventoryData.MenuType.TAIL
-          MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
-          player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
-      }
-
-    } else if (title == MenuType.SHOP.invName) {
-      event.setCancelled(true)
-
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-
-      /*
-       * クリックしたボタンに応じた各処理内容の記述ここから
-       */
-
-      current.getType match {
-        //実績ポイント最新化
-        case Material.EMERALD_ORE =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-          pd.recalculateAchievePoint()
-          pd.samepageflag = true
-          player.openInventory(MenuInventoryData.setTitleShopData(player))
-
-        // 購入処理
-        case Material.BEDROCK =>
-          clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
-
-          val num = current.getItemMeta.getDisplayName.toInt
-          val curpt = pd.achievePoint.left
-          if (num < 9900) {
-            val requiredPt = 20
-            if (curpt >= requiredPt) {
-              pd.TitleFlags.addOne(num)
-              pd.consumeAchievePoint(requiredPt)
-              player.sendMessage("パーツ「" + Nicknames.getHeadPartFor(num).getOrElse("") + "」を購入しました。")
-              pd.samepageflag = true
-              player.openInventory(MenuInventoryData.setTitleShopData(player))
+          //エフェクトポイント→実績ポイント変換
+          case Material.EMERALD =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+            if (pd.effectPoint >= 10) {
+              pd.convertEffectPointToAchievePoint()
             } else {
-              player.sendMessage("実績ポイントが不足しています。")
+              player.sendMessage("エフェクトポイントが不足しています。")
             }
-          } else {
-            val requiredPt = 35
-            if (curpt >= requiredPt) {
-              pd.TitleFlags.addOne(num)
-              pd.consumeAchievePoint(requiredPt)
-              player.sendMessage("パーツ「" + Nicknames.getMiddlePartFor(num).getOrElse("") + "」を購入しました。")
-              pd.samepageflag = true
-              player.openInventory(MenuInventoryData.setTitleShopData(player))
+            //データ最新化
+            pd.recalculateAchievePoint()
+
+            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+
+          //パーツショップ
+          case Material.ITEM_FRAME =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            player.openInventory(MenuInventoryData.setTitleShopData(player))
+
+          //前パーツ
+          case Material.WATER_BUCKET =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
+
+          //中パーツ
+          case Material.MILK_BUCKET =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
+
+          //後パーツ
+          case Material.LAVA_BUCKET =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
+
+          case _ if isSkull && isRightArrow(current) =>
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
+            effectEnvironment.runAsyncTargetedEffect(player)(
+              SequentialEffect(
+                CommonSoundEffects.menuTransitionFenceSound,
+                StickMenu.firstPage.open
+              ),
+              "実績メニューを開く"
+            )
+        }
+
+      case MenuType.HEAD.invName =>
+        event.setCancelled(true)
+        //プレイヤーインベントリのクリックの場合終了
+        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+          return
+        }
+
+        current.getType match {
+          case Material.WATER_BUCKET =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+
+            val id = current.getItemMeta.getDisplayName.toInt
+            val length = Nicknames.getTitleFor(id,
+              pd.settings.nickname.id2, pd.settings.nickname.id3).length
+            if (length > MAX_LENGTH) {
+              player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
             } else {
-              player.sendMessage("実績ポイントが不足しています。")
+              pd.updateNickname(id1 = id)
+              player.sendMessage("前パーツ「" + Nicknames.getHeadPartFor(pd.settings.nickname.id1).getOrElse("") + "」をセットしました。")
             }
-          }
 
-        case Material.BARRIER =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+          case Material.GRASS =>
+            // unselect
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+            pd.updateNickname(id1 = 0)
+            player.sendMessage("前パーツの選択を解除しました。")
 
-        case _ if isSkull && isRightArrow(current) =>
-          clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-          val uuid = player.getUniqueId
-          val k: MenuType = MenuInventoryData.MenuType.SHOP
-          MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
-          player.openInventory(MenuInventoryData.setTitleShopData(player))
-      }
+          case Material.BARRIER =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+
+          case _ if isSkull && isRightArrow(current) =>
+            // 次ページ
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            val uuid = player.getUniqueId
+            val k: MenuType = MenuInventoryData.MenuType.HEAD
+            MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
+            player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
+        }
+
+      case MenuType.MIDDLE.invName =>
+        event.setCancelled(true)
+        //プレイヤーインベントリのクリックの場合終了
+        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+          return
+        }
+
+        current.getType match {
+          case Material.MILK_BUCKET =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+
+            val id = current.getItemMeta.getDisplayName.toInt
+            val length = Nicknames.getTitleFor(pd.settings.nickname.id1,
+              id, pd.settings.nickname.id3).length
+            if (length > MAX_LENGTH) {
+              player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
+            } else {
+              pd.updateNickname(id2 = id)
+              player.sendMessage("中パーツ「" + Nicknames.getMiddlePartFor(pd.settings.nickname.id2).getOrElse("") + "」をセットしました。")
+            }
+
+          case Material.GRASS =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+            pd.updateNickname(id2 = 0)
+            player.sendMessage("中パーツの選択を解除しました。")
+
+          case Material.BARRIER =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+
+          case _ if isSkull && isRightArrow(current) =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            val uuid = player.getUniqueId
+            val k: MenuType = MenuInventoryData.MenuType.MIDDLE
+            MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
+            player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
+        }
+
+      case MenuType.TAIL.invName =>
+        event.setCancelled(true)
+
+        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+          //プレイヤーインベントリのクリックの場合終了
+          return
+        }
+
+        current.getType match {
+          case Material.LAVA_BUCKET =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+
+            val id = current.getItemMeta.getDisplayName.toInt
+            val length = Nicknames.getTitleFor(pd.settings.nickname.id1,
+              pd.settings.nickname.id2, id).length
+            if (length > MAX_LENGTH) {
+              player.sendMessage(s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。")
+            } else {
+              pd.updateNickname(id3 = id)
+              player.sendMessage("後パーツ「" + Nicknames.getTailPartFor(pd.settings.nickname.id3).getOrElse("") + "」をセットしました。")
+            }
+
+          case Material.GRASS =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+            pd.updateNickname(id3 = 0)
+            player.sendMessage("後パーツの選択を解除しました。")
+
+          case Material.BARRIER =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+
+          case _ if isSkull && isRightArrow(current) =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            val uuid = player.getUniqueId
+            val k: MenuType = MenuInventoryData.MenuType.TAIL
+            MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
+            player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
+        }
+
+      case MenuType.SHOP.invName =>
+        event.setCancelled(true)
+
+        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+          return
+        }
+
+        /*
+         * クリックしたボタンに応じた各処理内容の記述ここから
+         */
+
+        current.getType match {
+          //実績ポイント最新化
+          case Material.EMERALD_ORE =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+            pd.recalculateAchievePoint()
+            pd.samepageflag = true
+            player.openInventory(MenuInventoryData.setTitleShopData(player))
+
+          // 購入処理
+          case Material.BEDROCK =>
+            clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
+
+            val num = current.getItemMeta.getDisplayName.toInt
+            val curpt = pd.achievePoint.left
+            if (num < 9900) {
+              val requiredPt = 20
+              if (curpt >= requiredPt) {
+                pd.TitleFlags.addOne(num)
+                pd.consumeAchievePoint(requiredPt)
+                player.sendMessage("パーツ「" + Nicknames.getHeadPartFor(num).getOrElse("") + "」を購入しました。")
+                pd.samepageflag = true
+                player.openInventory(MenuInventoryData.setTitleShopData(player))
+              } else {
+                player.sendMessage("実績ポイントが不足しています。")
+              }
+            } else {
+              val requiredPt = 35
+              if (curpt >= requiredPt) {
+                pd.TitleFlags.addOne(num)
+                pd.consumeAchievePoint(requiredPt)
+                player.sendMessage("パーツ「" + Nicknames.getMiddlePartFor(num).getOrElse("") + "」を購入しました。")
+                pd.samepageflag = true
+                player.openInventory(MenuInventoryData.setTitleShopData(player))
+              } else {
+                player.sendMessage("実績ポイントが不足しています。")
+              }
+            }
+
+          case Material.BARRIER =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+
+          case _ if isSkull && isRightArrow(current) =>
+            clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
+            val uuid = player.getUniqueId
+            val k: MenuType = MenuInventoryData.MenuType.SHOP
+            MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
+            player.openInventory(MenuInventoryData.setTitleShopData(player))
+        }
     }
   }
 }
