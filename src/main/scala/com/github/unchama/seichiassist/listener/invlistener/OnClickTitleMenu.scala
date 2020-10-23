@@ -57,7 +57,7 @@ object OnClickTitleMenu {
     //インベントリ名が以下の時処理
     val isSkull = current.getType == Material.SKULL_ITEM
 
-    if (title == s"${prefix}二つ名組合せシステム") {
+    if (title == MenuType.COMBINE.invName) {
       event.setCancelled(true)
 
       //実績解除処理部分の読みこみ
@@ -120,7 +120,7 @@ object OnClickTitleMenu {
             "実績メニューを開く"
           )
       }
-    } else if (title == s"${prefix}二つ名組合せ「前」") {
+    } else if (title == MenuType.HEAD.invName) {
       event.setCancelled(true)
       //プレイヤーインベントリのクリックの場合終了
       if (event.getClickedInventory.getType == InventoryType.PLAYER) {
@@ -159,7 +159,7 @@ object OnClickTitleMenu {
           MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
           player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
       }
-    } else if (title == s"${prefix}二つ名組合せ「中」") {
+    } else if (title == MenuType.MIDDLE.invName) {
       event.setCancelled(true)
       //プレイヤーインベントリのクリックの場合終了
       if (event.getClickedInventory.getType == InventoryType.PLAYER) {
@@ -196,7 +196,7 @@ object OnClickTitleMenu {
           MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
           player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
       }
-    } else if (title == s"${prefix}二つ名組合せ「後」") {
+    } else if (title == MenuType.TAIL.invName) {
       event.setCancelled(true)
 
       if (event.getClickedInventory.getType == InventoryType.PLAYER) {
@@ -235,7 +235,7 @@ object OnClickTitleMenu {
           player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
       }
 
-    } else if (title == s"${prefix}実績ポイントショップ") {
+    } else if (title == MenuType.SHOP.invName) {
       event.setCancelled(true)
 
       if (event.getClickedInventory.getType == InventoryType.PLAYER) {

@@ -320,8 +320,8 @@ public final class MenuInventoryData {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata, "二つ名組み合わせ")) return null;
-        final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せシステム");
+        if (isError(p, playerdata, "二つ名組み合わせ")) return null;
+        final Inventory inventory = getEmptyInventory(4, MenuType.COMBINE.invName);
 
         //各ボタンの設定
         finishedHeadPageBuild.put(uuid, false);
@@ -432,11 +432,18 @@ public final class MenuInventoryData {
     }
 
     public enum MenuType {
-        HEAD,
-        MIDDLE,
-        TAIL,
-        SHOP,
-        TAIHI;
+        HEAD("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せ「前」"),
+        MIDDLE("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せ「中」"),
+        TAIL("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せ「後」"),
+        SHOP("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "実績ポイントショップ"),
+        COMBINE("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せシステム"),
+        // TODO: ぶっ殺す
+        TAIHI(null);
+
+        public final String invName;
+        MenuType(String invName) {
+            this.invName = invName;
+        }
     }
 
     public static void setHeadingIndex(UUID uuid, MenuType k, int index) {
@@ -484,9 +491,9 @@ public final class MenuInventoryData {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata, "二つ名/前パーツ")) return null;
+        if (isError(p, playerdata, "二つ名/前パーツ")) return null;
 
-        final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「前」");
+        final Inventory inventory = getEmptyInventory(4, MenuType.HEAD.invName);
 
         if (finishedHeadPageBuild.getOrElse(uuid, () -> false)) {
             finishedHeadPageBuild.put(uuid, false);
@@ -543,7 +550,7 @@ public final class MenuInventoryData {
         return inventory;
     }
 
-    private static boolean validate(final Player destination, final PlayerData pd, final String operation) {
+    private static boolean isError(final Player destination, final PlayerData pd, final String operation) {
         if (pd == null) {
             destination.sendMessage(ChatColor.RED + "playerdataがありません。管理者に報告してください");
             Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "SeichiAssist[" + operation + "]でエラー発生");
@@ -561,9 +568,9 @@ public final class MenuInventoryData {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata, "二つ名/中パーツ")) return null;
+        if (isError(p, playerdata, "二つ名/中パーツ")) return null;
 
-        final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「中」");
+        final Inventory inventory = getEmptyInventory(4, MenuType.MIDDLE.invName);
 
 
         if (finishedMiddlePageBuild.getOrElse(uuid, FALSE)) {
@@ -631,8 +638,8 @@ public final class MenuInventoryData {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata, "二つ名/後パーツ")) return null;
-        final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "二つ名組合せ「後」");
+        if (isError(p, playerdata, "二つ名/後パーツ")) return null;
+        final Inventory inventory = getEmptyInventory(4, MenuType.TAIL.invName);
 
         if (!finishedTailPageBuild.getOrElse(uuid, FALSE)) {
             tailPartIndex.put(uuid, 1000);
@@ -695,8 +702,8 @@ public final class MenuInventoryData {
         //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata, "実績ポイントショップ")) return null;
-        final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "実績ポイントショップ");
+        if (isError(p, playerdata, "実績ポイントショップ")) return null;
+        final Inventory inventory = getEmptyInventory(4, MenuType.SHOP.invName);
 
         //実績ポイントの最新情報反映ボタン
         {
@@ -814,7 +821,7 @@ public final class MenuInventoryData {
         //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata, "投票妖精")) return null;
+        if (isError(p, playerdata, "投票妖精")) return null;
         final Inventory inventory = getEmptyInventory(4, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票ptメニュー");
 
         //投票pt受け取り
@@ -1032,7 +1039,7 @@ public final class MenuInventoryData {
         //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata, "Gigantic進化前確認")) return null;
+        if (isError(p, playerdata, "Gigantic進化前確認")) return null;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
         {
             // 色
@@ -1078,7 +1085,7 @@ public final class MenuInventoryData {
         //プレイヤーデータ
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
-        if (validate(p, playerdata, "GiganticBerserk進化後画面")) return null;
+        if (isError(p, playerdata, "GiganticBerserk進化後画面")) return null;
         final Inventory inventory = getEmptyInventory(6, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました");
         {
             final byte[] table = {12, 15, 4, 0, 3, 12};
