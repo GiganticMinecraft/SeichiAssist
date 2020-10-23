@@ -18,14 +18,15 @@ import org.bukkit.{Material, Sound}
 
 object OnClickTitleMenu {
   private final val MAX_LENGTH: Int = 8
-  private final val prefix: String = s"$DARK_PURPLE$BOLD"
   private final val PER_PAGE: Int = ???
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
-  private def clickedSound(player: Player, sound: Sound, pitch: Float): Unit = player.playSound(player.getLocation, sound, 1f, pitch)
+  private def clickedSound(player: Player, sound: Sound, pitch: Float): Unit =
+    player.playSound(player.getLocation, sound, 1f, pitch)
 
-  private def isRightArrow(is: ItemStack): Boolean = is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight"
+  private def isRightArrow(is: ItemStack): Boolean =
+    is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight"
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(implicit effectEnvironment: EffectEnvironment): Unit = {
     //外枠のクリック処理なら終了
@@ -56,20 +57,18 @@ object OnClickTitleMenu {
     //インベントリ名が以下の時処理
     val isSkull = current.getType == Material.SKULL_ITEM
 
+    if (event.getClickedInventory.getType == InventoryType.PLAYER) {
+      //プレイヤーインベントリのクリックの場合終了
+      return
+    }
+
+    // プレイヤーインベントリでイベントをキャンセルするとプレイヤーがアイテムをつかめなくて困るのでは？
+    event.setCancelled(true)
+
+    val mat = current.getType
     topInventory.getTitle match {
       case MenuType.COMBINE.invName =>
-        event.setCancelled(true)
-
-        //実績解除処理部分の読みこみ
-        //プレイヤーインベントリのクリックの場合終了
-        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-          return
-        }
-
-        /*
-         * クリックしたボタンに応じた各処理内容の記述ここから
-         */
-        current.getType match {
+        mat match {
           //実績ポイント最新化
           case Material.EMERALD_ORE =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
@@ -122,13 +121,7 @@ object OnClickTitleMenu {
         }
 
       case MenuType.HEAD.invName =>
-        event.setCancelled(true)
-        //プレイヤーインベントリのクリックの場合終了
-        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-          return
-        }
-
-        current.getType match {
+        mat match {
           case Material.WATER_BUCKET =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
@@ -162,13 +155,7 @@ object OnClickTitleMenu {
         }
 
       case MenuType.MIDDLE.invName =>
-        event.setCancelled(true)
-        //プレイヤーインベントリのクリックの場合終了
-        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-          return
-        }
-
-        current.getType match {
+        mat match {
           case Material.MILK_BUCKET =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
@@ -200,14 +187,7 @@ object OnClickTitleMenu {
         }
 
       case MenuType.TAIL.invName =>
-        event.setCancelled(true)
-
-        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-          //プレイヤーインベントリのクリックの場合終了
-          return
-        }
-
-        current.getType match {
+        mat match {
           case Material.LAVA_BUCKET =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
 
@@ -239,17 +219,7 @@ object OnClickTitleMenu {
         }
 
       case MenuType.SHOP.invName =>
-        event.setCancelled(true)
-
-        if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-          return
-        }
-
-        /*
-         * クリックしたボタンに応じた各処理内容の記述ここから
-         */
-
-        current.getType match {
+        mat match {
           //実績ポイント最新化
           case Material.EMERALD_ORE =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
