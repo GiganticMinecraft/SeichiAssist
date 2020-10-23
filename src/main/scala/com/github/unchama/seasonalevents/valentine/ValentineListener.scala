@@ -1,14 +1,14 @@
 package com.github.unchama.seasonalevents.valentine
 
-import com.github.unchama.seasonalevents.{SeasonalEvents, Utl}
-import com.github.unchama.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seasonalevents.valentine.Valentine.{DISPLAYED_END_DATE, isDrop}
+import com.github.unchama.seasonalevents.valentine.ValentineItemData._
+import com.github.unchama.seasonalevents.{SeasonalEvents, Utl}
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.entity.Monster
-import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDeathEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
+import org.bukkit.event.{EventHandler, Listener}
 
 class ValentineListener extends Listener {
   @EventHandler
@@ -21,8 +21,9 @@ class ValentineListener extends Listener {
     }
   }
 
+  // 現状、以下のTODOは仕様扱いだが、意図した挙動ではない
   // TODO TNTで爆破死した敵からも出るのを直す
-  // TODO 爆破死したモンスター以外のmob(スノーゴーレム、プレイヤーなど)からもチョコチップクッキーが出る
+  // TODO 爆破死したモンスター以外のmob(スノーゴーレム、プレイヤーなど)からもチョコチップクッキーが出るのを直す
   @EventHandler
   def onEntityDeath(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity
