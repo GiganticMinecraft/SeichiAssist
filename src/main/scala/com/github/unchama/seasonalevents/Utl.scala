@@ -1,6 +1,6 @@
 package com.github.unchama.seasonalevents
 
-import java.util.Random
+import scala.util.Random
 
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
@@ -13,9 +13,9 @@ object Utl {
    * @param item ドロップさせるItemStack
    */
   def dropItem(entity: Entity, item: ItemStack): Unit = {
-    val dp = SeasonalEvents.config.getDropRate
+    val rate = SeasonalEvents.config.getDropRate
     val rand = new Random().nextInt(100)
-    if (rand < dp) {
+    if (rand < rate) {
       // 報酬をドロップ
       entity.getWorld.dropItemNaturally(entity.getLocation, item)
     }
