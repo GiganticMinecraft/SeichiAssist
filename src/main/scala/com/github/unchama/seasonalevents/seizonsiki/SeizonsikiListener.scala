@@ -25,8 +25,8 @@ class SeizonsikiListener extends Listener {
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (Seizonsiki.isDrop) {
       List(
-        s"$LIGHT_PURPLE${Seizonsiki.DISPLAYED_END_DATE}までの期間限定で、シーズナルイベント『チャラゾンビたちの成ゾン式！』を開催しています。",
-        "詳しくは下記wikiをご覧ください。",
+        s"$LIGHT_PURPLE${Seizonsiki.DISPLAYED_END_DATE}までの期間限定で、限定イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
+        "詳しくは下記HPをご覧ください。",
         s"$DARK_GREEN$UNDERLINE${SeasonalEvents.config.getWikiAddr}"
       ).foreach(
         event.getPlayer.sendMessage(_)
@@ -41,6 +41,8 @@ class SeizonsikiListener extends Listener {
 
     val player = event.getPlayer
     val playerUuid = player.getUniqueId
+    // この条件分岐がfalseになる可能性は通常ないが、なっている事例があるので念の為
+    // 参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/707
     if (SeichiAssist.playermap.contains(playerUuid)) {
       val playerData = SeichiAssist.playermap(playerUuid)
       val manaState = playerData.manaState
