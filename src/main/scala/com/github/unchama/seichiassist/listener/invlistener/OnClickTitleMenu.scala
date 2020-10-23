@@ -73,7 +73,7 @@ object OnClickTitleMenu {
           case Material.EMERALD_ORE =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
             pd.recalculateAchievePoint()
-            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
 
           //エフェクトポイント→実績ポイント変換
           case Material.EMERALD =>
@@ -86,27 +86,27 @@ object OnClickTitleMenu {
             //データ最新化
             pd.recalculateAchievePoint()
 
-            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
 
           //パーツショップ
           case Material.ITEM_FRAME =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.setTitleShopData(player))
+            player.openInventory(MenuInventoryData.computePartsShopMenu(player))
 
           //前パーツ
           case Material.WATER_BUCKET =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
+            player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
 
           //中パーツ
           case Material.MILK_BUCKET =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
+            player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
 
           //後パーツ
           case Material.LAVA_BUCKET =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
+            player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
 
           case _ if isSkull && isRightArrow(current) =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
@@ -143,7 +143,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
 
           case _ if isSkull && isRightArrow(current) =>
             // 次ページ
@@ -151,7 +151,7 @@ object OnClickTitleMenu {
             val uuid = player.getUniqueId
             val k: MenuType = MenuInventoryData.MenuType.HEAD
             MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
-            player.openInventory(MenuInventoryData.setFreeTitle1Data(player))
+            player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
         }
 
       case MenuType.MIDDLE.invName =>
@@ -176,14 +176,14 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
 
           case _ if isSkull && isRightArrow(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
             val k: MenuType = MenuInventoryData.MenuType.MIDDLE
             MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
-            player.openInventory(MenuInventoryData.setFreeTitle2Data(player))
+            player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
         }
 
       case MenuType.TAIL.invName =>
@@ -208,14 +208,14 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
 
           case _ if isSkull && isRightArrow(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
             val k: MenuType = MenuInventoryData.MenuType.TAIL
             MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
-            player.openInventory(MenuInventoryData.setFreeTitle3Data(player))
+            player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
         }
 
       case MenuType.SHOP.invName =>
@@ -225,7 +225,7 @@ object OnClickTitleMenu {
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
             pd.recalculateAchievePoint()
             pd.samepageflag = true
-            player.openInventory(MenuInventoryData.setTitleShopData(player))
+            player.openInventory(MenuInventoryData.computePartsShopMenu(player))
 
           // 購入処理
           case Material.BEDROCK =>
@@ -240,7 +240,7 @@ object OnClickTitleMenu {
                 pd.consumeAchievePoint(requiredPt)
                 player.sendMessage("パーツ「" + Nicknames.getHeadPartFor(num).getOrElse("") + "」を購入しました。")
                 pd.samepageflag = true
-                player.openInventory(MenuInventoryData.setTitleShopData(player))
+                player.openInventory(MenuInventoryData.computePartsShopMenu(player))
               } else {
                 player.sendMessage("実績ポイントが不足しています。")
               }
@@ -251,7 +251,7 @@ object OnClickTitleMenu {
                 pd.consumeAchievePoint(requiredPt)
                 player.sendMessage("パーツ「" + Nicknames.getMiddlePartFor(num).getOrElse("") + "」を購入しました。")
                 pd.samepageflag = true
-                player.openInventory(MenuInventoryData.setTitleShopData(player))
+                player.openInventory(MenuInventoryData.computePartsShopMenu(player))
               } else {
                 player.sendMessage("実績ポイントが不足しています。")
               }
@@ -259,14 +259,14 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
 
           case _ if isSkull && isRightArrow(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
             val k: MenuType = MenuInventoryData.MenuType.SHOP
             MenuInventoryData.setHeadingIndex(uuid, k, MenuInventoryData.getHeadingIndex(uuid, k).get + PER_PAGE)
-            player.openInventory(MenuInventoryData.setTitleShopData(player))
+            player.openInventory(MenuInventoryData.computePartsShopMenu(player))
         }
     }
   }

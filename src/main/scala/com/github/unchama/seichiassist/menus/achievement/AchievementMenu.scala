@@ -96,7 +96,7 @@ object AchievementMenu extends Menu {
         CommonSoundEffects.menuTransitionFenceSound,
         Kleisli.liftF(PluginExecutionContexts.syncShift.shift),
         TargetedEffect.delay { player =>
-          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+          player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
         }
       )
     )

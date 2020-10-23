@@ -316,7 +316,7 @@ public final class MenuInventoryData {
      * @param p プレイヤー
      * @return メニュー
      */
-    public static Inventory setFreeTitleMainData(final Player p) {
+    public static Inventory computeRefreshedCombineMenu(final Player p) {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
@@ -487,7 +487,7 @@ public final class MenuInventoryData {
      * @param p プレイヤー
      * @return メニュー
      */
-    public static Inventory setFreeTitle1Data(final Player p) {
+    public static Inventory computeHeadPartCustomMenu(final Player p) {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
@@ -564,7 +564,7 @@ public final class MenuInventoryData {
      * @param p プレイヤー
      * @return メニュー
      */
-    public static Inventory setFreeTitle2Data(final Player p) {
+    public static Inventory computeMiddlePartCustomMenu(final Player p) {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
@@ -634,7 +634,7 @@ public final class MenuInventoryData {
      * @param p プレイヤー
      * @return メニュー
      */
-    public static Inventory setFreeTitle3Data(final Player p) {
+    public static Inventory computeTailPartCustomMenu(final Player p) {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
         //念のためエラー分岐
@@ -696,7 +696,7 @@ public final class MenuInventoryData {
      * @param p プレイヤー
      * @return メニュー
      */
-    public static Inventory setTitleShopData(final Player p) {
+    public static Inventory computePartsShopMenu(final Player p) {
         //プレイヤーを取得
         final UUID uuid = p.getUniqueId();
         //プレイヤーデータ
