@@ -1,31 +1,22 @@
 package com.github.unchama.seasonalevents.seizonsiki
 
-import java.text.{ParseException, SimpleDateFormat}
-import java.util.Date
+import java.time.LocalDate
 
+import com.github.unchama.seasonalevents.Utl.tryNewDate
 import org.bukkit.plugin.Plugin
 
 class Seizonsiki(private val plugin: Plugin) {
-  private val DROPDAY = "2017-01-16"
-  private val FINISH = "2017-01-22"
-
-  try {
-    val format = new SimpleDateFormat("yyyy-MM-dd")
-    val finishDate = format.parse(FINISH)
-    val dropDate = format.parse(DROPDAY)
-
-    val now = new Date
-    // イベント開催中か判定
-    if (now.before(finishDate)) plugin.getServer.getPluginManager.registerEvents(new SeizonsikiListener(), plugin)
-    if (now.before(dropDate)) Seizonsiki.isDrop = true
-  } catch {
-    case e: ParseException => e.printStackTrace()
-  }
+  val today: LocalDate = LocalDate.now()
+  // イベント開催中か判定
+  if (today.isBefore(Seizonsiki.END_DATE)) plugin.getServer.getPluginManager.registerEvents(new SeizonsikiListener(), plugin)
+  if (today.isBefore(Seizonsiki.DROP_END_DATE)) Seizonsiki.isDrop = true
 }
 
 object Seizonsiki {
-  val FINISHDISP = "2017/01/21"
-  val DROPDAYDISP = "2017/01/15"
-  val FINISH = "2017-01-22"
+  val END_DATE: LocalDate = tryNewDate(2017, 1, 22)
+  val DISPLAYED_END_DATE: LocalDate = END_DATE.minusDays(1)
+  val DROP_END_DATE: LocalDate = tryNewDate(2017, 1, 16)
+  val DISPLAYED_DROP_END_DATE: LocalDate = DROP_END_DATE.minusDays(1)
+
   var isDrop = false
 }

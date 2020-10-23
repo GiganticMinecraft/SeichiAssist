@@ -25,7 +25,7 @@ class SeizonsikiListener extends Listener {
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (Seizonsiki.isDrop) {
       List(
-        s"$LIGHT_PURPLE${Seizonsiki.DROPDAYDISP}までの期間限定で、シーズナルイベント『チャラゾンビたちの成ゾン式！』を開催しています。",
+        s"$LIGHT_PURPLE${Seizonsiki.DISPLAYED_END_DATE}までの期間限定で、シーズナルイベント『チャラゾンビたちの成ゾン式！』を開催しています。",
         "詳しくは下記wikiをご覧ください。",
         s"$DARK_GREEN$UNDERLINE${SeasonalEvents.config.getWikiAddr}"
       ).foreach(
