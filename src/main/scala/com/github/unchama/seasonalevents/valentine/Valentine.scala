@@ -234,9 +234,9 @@ class Valentine(private val plugin: Plugin) extends Listener {
       val year: String = Valentine.DROP_END_DATE.getYear.toString
       val lore = List(
         "",
-        s"${GREEN}大切なあなたへ。",
-        s"$UNDERLINE${YELLOW}Happy Valentine $year"
-      ).map(str => s"$RESET$ITALIC$str")
+        s"$GREEN${ITALIC}大切なあなたへ。",
+        s"$UNDERLINE$YELLOW${ITALIC}Happy Valentine $year"
+      ).map(str => s"$RESET$str")
         .asJava
       head.setLore(lore)
     }
