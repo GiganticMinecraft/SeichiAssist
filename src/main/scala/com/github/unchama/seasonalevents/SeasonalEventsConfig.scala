@@ -29,11 +29,11 @@ class SeasonalEventsConfig(private val plugin: Plugin) {
   def getConfig: FileConfiguration = plugin.getConfig
 
   val itemDropRate: Double = Option(config.getInt("SeasonalEvents.ItemDropRate"))
-    .filter(0 <= _ <= 100)
+    .filter((0 to 100).contains(_))
     .getOrElse(30)
     .toDouble
 
-  val blogArticleUrl: String = Option(config.getString("SeasonalEvents.HPUrl")
-    .filter(_.startsWith("https://www.seichi.network/post/")))
+  val blogArticleUrl: String = Option(config.getString("SeasonalEvents.HPUrl"))
+    .filter(_.startsWith("https://www.seichi.network/post/"))
     .getOrElse("https://www.seichi.network/blog/categories/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E6%83%85%E5%A0%B1")
 }
