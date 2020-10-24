@@ -63,7 +63,6 @@ object OnClickTitleMenu {
       return
     }
 
-    // プレイヤーインベントリでイベントをキャンセルするとプレイヤーがアイテムをつかめなくて困るのでは？
     event.setCancelled(true)
 
     val mat = current.getType
