@@ -437,8 +437,6 @@ public final class MenuInventoryData {
         TAIL("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せ「後」"),
         SHOP("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "実績ポイントショップ"),
         COMBINE("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せシステム"),
-        // TODO: ぶっ殺す
-        TAIHI(null);
 
         public final String invName;
         MenuType(String invName) {
