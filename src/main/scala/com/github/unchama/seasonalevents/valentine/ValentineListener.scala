@@ -4,9 +4,10 @@ import com.github.unchama.seasonalevents.valentine.Valentine.{DISPLAYED_END_DATE
 import com.github.unchama.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seasonalevents.{SeasonalEvents, Utl}
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
-import org.bukkit.entity.Monster
+import org.bukkit.attribute.Attribute
+import org.bukkit.entity.{EntityType, Monster}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
-import org.bukkit.event.entity.{EntityDeathEvent, EntityExplodeEvent}
+import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 
@@ -21,16 +22,21 @@ class ValentineListener extends Listener {
     }
   }
 
-  // 現状、以下のTODOは仕様扱いだが、意図した挙動ではない
-  // TODO TNTで爆破死した敵からも出るのを直す
-  // TODO 爆破死したモンスター以外のmob(スノーゴーレム、プレイヤーなど)からもチョコチップクッキーが出るのを直す
+  // 死因がクリーパーによる爆発の場合、確率でアイテムをドロップ
   @EventHandler
-  def onEntityDeath(event: EntityDeathEvent): Unit = {
-    val entity = event.getEntity
-    if (!isDrop || entity == null) return
+  def onEntityDeath(event: EntityDamageByEntityEvent): Unit = {
+    if (!isDrop) return
 
-    if (entity.getLastDamageCause.getCause == DamageCause.ENTITY_EXPLOSION) {
-      // 死因が爆発の場合、確率でアイテムをドロップ
+    val entity = event.getEntity
+    if (entity == null || !entity.isInstanceOf[Monster]) return
+
+    val damager = event.getDamager
+    if (damager == null) return
+
+    if (event.getCause != DamageCause.ENTITY_EXPLOSION || damager.getType != EntityType.CREEPER) return
+
+    val entityMaxHealth = entity.asInstanceOf[Monster].getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
+    if (entityMaxHealth <= event.getDamage) {
       Utl.dropItem(entity, droppedCookie)
     }
   }
