@@ -6,7 +6,7 @@ import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.seasonalevents.events.valentine.Valentine
+import com.github.unchama.seasonalevents.valentine.ValentineItemData
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -102,7 +102,7 @@ object SecondPage extends Menu {
               import stack._
               //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
               setItemMeta {
-                Valentine.playerHeadLore(getItemMeta.asInstanceOf[SkullMeta])
+                ValentineItemData.valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
               }
             }
 
