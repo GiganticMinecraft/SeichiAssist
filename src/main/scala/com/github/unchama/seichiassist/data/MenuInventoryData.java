@@ -527,7 +527,8 @@ public final class MenuInventoryData {
                         ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
                         "MHF_ArrowRight"
                 );
-                AsyncInventorySetter.setItemAsync(inventory, 27,  itemstack);
+                // 統一性のために右下へ
+                AsyncInventorySetter.setItemAsync(inventory, 35,  itemstack);
                 finishedHeadPageBuild.put(uuid, true);
                 break;
             }
