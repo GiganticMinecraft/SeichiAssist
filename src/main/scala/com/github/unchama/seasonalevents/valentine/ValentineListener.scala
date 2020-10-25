@@ -22,7 +22,7 @@ class ValentineListener extends Listener {
     }
   }
 
-  // 死因がクリーパーによる爆発の場合、確率でアイテムをドロップ
+  // モンスターの死因がクリーパーによる爆発の場合、確率でアイテムをドロップ
   @EventHandler
   def onEntityDeath(event: EntityDamageByEntityEvent): Unit = {
     if (!isDrop) return

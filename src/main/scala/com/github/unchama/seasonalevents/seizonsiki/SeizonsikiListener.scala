@@ -1,5 +1,6 @@
 package com.github.unchama.seasonalevents.seizonsiki
 
+import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.isDrop
 import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData.{isValidZongo, isZongo, seizonsikiZongo}
 import com.github.unchama.seasonalevents.{SeasonalEvents, Utl}
 import com.github.unchama.seichiassist.SeichiAssist
@@ -14,7 +15,7 @@ class SeizonsikiListener extends Listener {
   @EventHandler
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity
-    if (!Seizonsiki.isDrop || entity == null) return
+    if (!isDrop || entity == null) return
 
     if (entity.getType == EntityType.ZOMBIE && entity.getKiller != null) {
       Utl.dropItem(entity, seizonsikiZongo)
@@ -23,7 +24,7 @@ class SeizonsikiListener extends Listener {
 
   @EventHandler
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
-    if (Seizonsiki.isDrop) {
+    if (isDrop) {
       List(
         s"$LIGHT_PURPLE${Seizonsiki.DISPLAYED_END_DATE}までの期間限定で、限定イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
