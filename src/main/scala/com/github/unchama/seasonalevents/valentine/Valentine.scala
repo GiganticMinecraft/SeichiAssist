@@ -3,14 +3,13 @@ package com.github.unchama.seasonalevents.valentine
 import java.time.LocalDate
 
 import com.github.unchama.seasonalevents.Utl.tryNewDate
-import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 
-class Valentine(private val plugin: Plugin) extends Listener {
+class Valentine(private val plugin: Plugin) {
   // イベント開催中か判定
   private val today = LocalDate.now()
   if (today.isBefore(Valentine.END_DATE)) {
-    plugin.getServer.getPluginManager.registerEvents(this, plugin)
+    plugin.getServer.getPluginManager.registerEvents(new ValentineListener(), plugin)
     Valentine.isInEvent = true
   }
   if (today.isBefore(Valentine.DROP_END_DATE)) Valentine.isDrop = true
