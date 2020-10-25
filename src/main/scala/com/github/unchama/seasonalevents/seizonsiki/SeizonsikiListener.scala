@@ -7,8 +7,8 @@ import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.ChatColor.{LIGHT_PURPLE, DARK_GREEN, UNDERLINE}
-import org.bukkit.Sound
+import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
+import org.bukkit.{Bukkit, Sound}
 
 class SeizonsikiListener extends Listener {
   @EventHandler
@@ -50,6 +50,6 @@ class SeizonsikiListener extends Listener {
       // マナを10%回復する
       manaState.increase(maxMana * 0.1, player, playerData.level)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
-    }
+    } else Bukkit.getServer.getLogger.info(s"${player.getName}によってゾんごが使用されましたが、プレイヤーデータが存在しなかったため、マナ回復が行われませんでした。")
   }
 }
