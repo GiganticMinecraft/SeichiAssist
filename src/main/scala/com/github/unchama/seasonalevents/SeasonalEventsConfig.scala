@@ -7,6 +7,7 @@ class SeasonalEventsConfig(private val plugin: Plugin) {
   private var config: FileConfiguration = _
 
   saveDefaultConfig()
+  loadConfig()
 
   // コンフィグのロード
   def loadConfig(): Unit = {
