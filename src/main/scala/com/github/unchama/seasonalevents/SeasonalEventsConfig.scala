@@ -29,7 +29,7 @@ class SeasonalEventsConfig(private val plugin: Plugin) {
   def getConfig: FileConfiguration = plugin.getConfig
 
   val itemDropRate: Double = Option(config.getInt("SeasonalEvents.ItemDropRate"))
-    .filter((0 to 100).contains(_))
+    .filter(rate => 0 <= rate && rate <= 100)
     .getOrElse(30)
     .toDouble
 

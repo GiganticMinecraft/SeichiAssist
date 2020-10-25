@@ -61,7 +61,7 @@ object ValentineItemData {
     }
 
   def useDroppedCookie(player: Player): Unit = {
-    val potionEffects = Map(
+    val potionEffects = Seq(
       "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 60 * 10, 1),
       "暗視" -> new PotionEffect(PotionEffectType.NIGHT_VISION, 20 * 60 * 10, 1),
       "耐性" -> new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 60 * 10, 1),
@@ -73,15 +73,13 @@ object ValentineItemData {
       "攻撃力上昇" -> new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 60 * 10, 1),
       "不運" -> new PotionEffect(PotionEffectType.UNLUCK, 20 * 60, 1)
     )
-    val effectsName = potionEffects.keys.toSeq
-    val effects = potionEffects.values.toSeq
-    val num: Int = new Random().nextInt(potionEffects.size)
+    val (effectName, effect) = potionEffects(new Random().nextInt(potionEffects.size))
     val msg =
-      if (num == 9) s"${effectsName(num)}IIを感じてしまった…はぁ…むなしいなぁ…"
-      else s"${effectsName(num)}IIを奪い取った！あぁ、おいしいなぁ！"
+      if (effectName == "不運") "不運IIを感じてしまった…はぁ…むなしいなぁ…"
+      else s"${effectName}IIを奪い取った！あぁ、おいしいなぁ！"
 
     player
-      .tap(_.addPotionEffect(effects(num)))
+      .tap(_.addPotionEffect(effect))
       .tap(_.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F))
       .tap(_.sendMessage(msg))
   }
