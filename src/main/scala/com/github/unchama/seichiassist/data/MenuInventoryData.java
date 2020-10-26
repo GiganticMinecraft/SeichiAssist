@@ -436,7 +436,7 @@ public final class MenuInventoryData {
         MIDDLE("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せ「中」"),
         TAIL("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せ「後」"),
         SHOP("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "実績ポイントショップ"),
-        COMBINE("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せシステム"),
+        COMBINE("" + ChatColor.DARK_PURPLE + ChatColor.BOLD + "二つ名組合せシステム");
 
         public final String invName;
         MenuType(String invName) {
@@ -458,9 +458,6 @@ public final class MenuInventoryData {
             case SHOP:
                 shopIndex.put(uuid, index);
                 break;
-            case TAIHI:
-                taihiIndex.put(uuid, index);
-                break;
         }
     }
 
@@ -474,8 +471,6 @@ public final class MenuInventoryData {
                 return tailPartIndex.get(uuid);
             case SHOP:
                 return shopIndex.get(uuid);
-            case TAIHI:
-                return taihiIndex.get(uuid);
         }
         throw new AssertionError("This statement shouldn't be reached!");
     }
