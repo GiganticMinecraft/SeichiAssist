@@ -1,10 +1,11 @@
 package com.github.unchama.seichiassist.commands
 
+import cats.data.EitherT
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -49,6 +50,7 @@ object AchievementCommand {
     case object GIVE extends AchievementOperation
 
     case object DEPRIVE extends AchievementOperation
+
   }
 
   object ScopeSpecification {
@@ -65,6 +67,7 @@ object AchievementCommand {
     case object SERVER extends ScopeSpecification
 
     case object WORLD extends ScopeSpecification
+
   }
 
   private val descriptionPrintExecutor = new EchoExecutor(
@@ -106,18 +109,27 @@ object AchievementCommand {
         import cats.implicits._
 
         targetPlayerNames.map { playerName =>
-          IO {
-            Option(Bukkit.getPlayer(playerName)) match {
-              case Some(player) =>
+          Option(Bukkit.getPlayer(playerName)) match {
+            case Some(player) =>
+              IO {
                 val playerData = SeichiAssist.playermap(player.getUniqueId)
                 operation match {
                   case AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
                   case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
                 }
-              case None =>
-                MessageEffect(s"$playerName は現在サーバーにログインしていません。")
-              // TODO 実績付与予約システムに書き込むようにする
-            }
+              }
+            case None => {
+              val manipulator = SeichiAssist.databaseGateway.bookedAchievementManipulator
+              for {
+                uuid <- EitherT(manipulator.findPlayerUuid(playerName))
+                _ <- EitherT(manipulator.bookAchievement(uuid, achievementNumber))
+                successEffect <- EitherT.right[TargetedEffect[CommandSender]](
+                  IO {
+                    MessageEffect(s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みます。")
+                  }
+                )
+              } yield successEffect
+            }.merge
           }
         }.combineAll
       }

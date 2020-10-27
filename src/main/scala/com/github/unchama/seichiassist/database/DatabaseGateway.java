@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulat
 import com.github.unchama.seichiassist.database.manipulators.GachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.MineStackGachaDataManipulator;
 import com.github.unchama.seichiassist.database.manipulators.PlayerDataManipulator;
+import com.github.unchama.seichiassist.subsystems.bookedachivement.infrastructure.BookedAchievementManipulator;
 import com.github.unchama.util.ActionStatus;
 import com.github.unchama.util.failable.FailableAction;
 import com.github.unchama.util.failable.Try;
@@ -29,6 +30,7 @@ public class DatabaseGateway {
     public final GachaDataManipulator gachaDataManipulator;
     public final MineStackGachaDataManipulator mineStackGachaDataManipulator;
     public final DonateDataManipulator donateDataManipulator;
+    public final BookedAchievementManipulator bookedAchievementManipulator;
     private @NotNull
     final String databaseUrl;
     private @NotNull
@@ -50,6 +52,7 @@ public class DatabaseGateway {
         this.gachaDataManipulator = new GachaDataManipulator(this);
         this.mineStackGachaDataManipulator = new MineStackGachaDataManipulator(this);
         this.donateDataManipulator = new DonateDataManipulator(this);
+        this.bookedAchievementManipulator = new BookedAchievementManipulator(this);
     }
 
     public static DatabaseGateway createInitializedInstance(@NotNull String databaseUrl,

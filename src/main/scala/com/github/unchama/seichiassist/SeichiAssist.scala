@@ -239,7 +239,8 @@ class SeichiAssist extends JavaPlugin() {
       expBottleStackSystem,
       itemMigrationSystem,
       managedFlySystem,
-      rescueplayer.System.wired
+      rescueplayer.System.wired,
+      bookedachivement.System.wired
     )
 
     // コマンドの登録
