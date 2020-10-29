@@ -240,7 +240,7 @@ class SeichiAssist extends JavaPlugin() {
       itemMigrationSystem,
       managedFlySystem,
       rescueplayer.System.wired,
-      bookedachivement.System.wired
+      bookedachivement.System.wired[SyncIO]
     )
 
     // コマンドの登録
@@ -255,7 +255,6 @@ class SeichiAssist extends JavaPlugin() {
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "shareinv" -> ShareInvCommand.executor,
-      "achievement" -> AchievementCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
       "event" -> EventCommand.executor,
       "contribute" -> ContributeCommand.executor,

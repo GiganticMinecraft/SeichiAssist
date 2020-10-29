@@ -1,10 +1,11 @@
 package com.github.unchama.seichiassist.commands
 
 import cats.data.EitherT
-import cats.effect.IO
+import cats.effect.{IO, SyncEffect, SyncIO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.Bukkit
@@ -80,7 +81,9 @@ object AchievementCommand {
     )
   )
 
-  val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
+  def executor[
+    SyncContext[_] : SyncEffect
+  ](implicit service: AchievementBookingService[SyncContext]): TabExecutor = ContextualExecutorBuilder.beginConfiguration()
     .argumentsParsers(
       List(operationParser, achievementNumberParser, scopeParser),
       onMissingArguments = descriptionPrintExecutor
@@ -107,29 +110,27 @@ object AchievementCommand {
         }
 
         import cats.implicits._
+        import cats.effect.implicits._
 
         targetPlayerNames.map { playerName =>
-          Option(Bukkit.getPlayer(playerName)) match {
-            case Some(player) =>
-              IO {
+          IO {
+            Option(Bukkit.getPlayer(playerName)) match {
+              case Some(player) =>
                 val playerData = SeichiAssist.playermap(player.getUniqueId)
                 operation match {
                   case AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
                   case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
                 }
-              }
-            case None => {
-              val manipulator = SeichiAssist.databaseGateway.bookedAchievementManipulator
-              for {
-                uuid <- EitherT(manipulator.findPlayerUuid(playerName))
-                _ <- EitherT(manipulator.bookAchievement(uuid, achievementNumber))
-                successEffect <- EitherT.right[TargetedEffect[CommandSender]](
-                  IO {
-                    MessageEffect(s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みます。")
-                  }
-                )
-              } yield successEffect
-            }.merge
+              case None =>
+                service.writeAchivementId(playerName, achievementNumber)
+                  .runSync[SyncIO]
+                  .unsafeRunSync() match {
+                  case Left(errorMessage) => MessageEffect(errorMessage)
+                  case Right(_) => MessageEffect(
+                    s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みます。"
+                  )
+                }
+            }
           }
         }.combineAll
       }
