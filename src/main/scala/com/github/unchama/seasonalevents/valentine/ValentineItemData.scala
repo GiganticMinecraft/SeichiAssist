@@ -137,7 +137,7 @@ object ValentineItemData {
       s"こうして${cookieProducerName}のイタズラでまた1人${playerName}が社畜となった。",
       s"おい聞いたか！${cookieProducerName}が${playerName}にチョコ送ったらしいぞー！"
     )
-    if (isCookieSender(item, player.getUniqueId)) {
+    if (ownerOf(item).contains(player.getUniqueId)) {
       // HP最大値アップ
       player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 20 * 60 * 10, 10))
     } else {
@@ -149,8 +149,8 @@ object ValentineItemData {
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }
 
-  private def isCookieSender(item: ItemStack, uuid: UUID): Boolean =
-    uuid == new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID])
+  private def ownerOf(item: ItemStack): Option[UUID] =
+    Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
 
   //endregion
 
