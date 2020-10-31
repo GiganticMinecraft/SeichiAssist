@@ -2,7 +2,6 @@ package com.github.unchama.seasonalevents
 
 import java.time.LocalDate
 
-import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
 
