@@ -26,7 +26,7 @@ object ValentineItemData {
 
   private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
 
-  def isValidCookie(item: ItemStack): Boolean = {
+  def isUsableCookie(item: ItemStack): Boolean = {
     val today = LocalDate.now()
     val exp = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
     today.isBefore(exp)

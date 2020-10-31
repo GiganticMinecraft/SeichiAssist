@@ -58,7 +58,7 @@ class ValentineListener extends Listener {
   def onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent): Unit = {
     val item = event.getItem
     val player = event.getPlayer
-    if (isDroppedCookie(item) && isValidCookie(item)) useDroppedCookie(player)
-    if (isGiftedCookie(item) && isValidCookie(item)) useGiftedCookie(player, item)
+    if (isDroppedCookie(item) && isUsableCookie(item)) useDroppedCookie(player)
+    if (isGiftedCookie(item) && isUsableCookie(item)) useGiftedCookie(player, item)
   }
 }
