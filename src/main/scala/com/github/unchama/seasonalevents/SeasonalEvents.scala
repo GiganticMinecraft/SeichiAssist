@@ -6,8 +6,6 @@ import com.github.unchama.seichiassist.SeichiAssist
 
 class SeasonalEvents(plugin: SeichiAssist) {
 
-  SeasonalEvents.plugin = plugin
-
   def onEnable(): Unit = {
     SeasonalEvents.config = new SeasonalEventsConfig(plugin)
     SeasonalEvents.config.loadConfig()
