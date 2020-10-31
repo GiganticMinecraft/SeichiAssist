@@ -12,5 +12,4 @@ public class DatabaseConstants {
     public static final String SKILL_EFFECT_TABLENAME = "unlocked_active_skill_effect";
     public static final String SUB_HOME_TABLENAME = "sub_home";
 
-    public static final String BOOKED_ACHIEVEMENT_TABLENAME = "booked_achievement";
 }
