@@ -156,8 +156,8 @@ object ValentineItemData {
 
   // SeichiAssistで呼ばれてるだけ
   def valentinePlayerHead(head: SkullMeta): SkullMeta = {
-    if (Valentine.itemsWillBeDropped) {
-      val year: String = Valentine.DROP_END_DATE.getYear.toString
+    if (Valentine.isInEvent) {
+      val year: String = Valentine.END_DATE.getYear.toString
       val lore = List(
         "",
         s"$GREEN${ITALIC}大切なあなたへ。",

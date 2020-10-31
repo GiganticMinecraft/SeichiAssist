@@ -8,17 +8,17 @@ import org.bukkit.plugin.Plugin
 class Seizonsiki(private val plugin: Plugin) {
   private val today = LocalDate.now()
   // イベント開催中か判定
-  if (today.isBefore(Seizonsiki.END_DATE)) plugin.getServer.getPluginManager.registerEvents(new SeizonsikiListener(), plugin)
-  if (today.isBefore(Seizonsiki.DROP_END_DATE)) Seizonsiki.itemsWillBeDropped = true
+  if (today.isBefore(Seizonsiki.END_DATE)) {
+    Seizonsiki.isInEvent = true
+    plugin.getServer.getPluginManager.registerEvents(new SeizonsikiListener(), plugin)
+  }
 }
 
 object Seizonsiki {
-  var itemsWillBeDropped = false
+  var isInEvent = false
 
-  // イベントが実際に終了する日
+  // イベントが実際に終了する日。
   val END_DATE: LocalDate = localDateFromYearMonthDays(2017, 1, 22)
-  // ドロップが実際に終了する日
-  val DROP_END_DATE: LocalDate = localDateFromYearMonthDays(2017, 1, 16)
+  // 表記上の終了日。サーバーは午前4時に再起動するため、開催中の判定が行われるのはその時。
   val DISPLAYED_END_DATE: LocalDate = END_DATE.minusDays(1)
-  val DISPLAYED_DROP_END_DATE: LocalDate = DROP_END_DATE.minusDays(1)
 }
