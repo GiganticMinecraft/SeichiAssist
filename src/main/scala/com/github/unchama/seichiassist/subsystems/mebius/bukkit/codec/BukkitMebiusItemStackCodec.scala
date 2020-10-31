@@ -41,13 +41,10 @@ object BukkitMebiusItemStackCodec {
     val nameTag = "mebiusName"
   }
 
-  def isMebius(itemStack: ItemStack): Boolean = {
-    if (itemStack != null && itemStack.getType != Material.AIR) {
-      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) != 0
-    } else {
-      false
+  def isMebius(itemStack: ItemStack): Boolean =
+    itemStack != null && itemStack.getType != Material.AIR && {
+      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 1
     }
-  }
 
   /**
    * (必ずしも有効な`MebiusProperty`を持つとは限らない)実体から `ItemStack` をデコードする。
