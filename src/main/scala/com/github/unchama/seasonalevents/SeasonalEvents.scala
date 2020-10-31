@@ -5,11 +5,10 @@ import com.github.unchama.seasonalevents.valentine.Valentine
 import com.github.unchama.seichiassist.SeichiAssist
 
 class SeasonalEvents(plugin: SeichiAssist) {
+  implicit val config: SeasonalEventsConfig = new SeasonalEventsConfig(plugin)
+  config.loadConfig()
 
   def onEnable(): Unit = {
-    SeasonalEvents.config = new SeasonalEventsConfig(plugin)
-    SeasonalEvents.config.loadConfig()
-
     new Seizonsiki(plugin)
     new Valentine(plugin)
 
@@ -19,8 +18,4 @@ class SeasonalEvents(plugin: SeichiAssist) {
   def onDisable(): Unit = {
     plugin.getLogger.info("SeasonalEvents is Disabled!")
   }
-}
-
-object SeasonalEvents {
-  var config: SeasonalEventsConfig = _
 }

@@ -14,8 +14,8 @@ object Util {
    * @param entity 対象のエンティティ
    * @param item ドロップさせるItemStack
    */
-  def randomlyDropItemAt(entity: Entity, item: ItemStack): Unit = {
-    val rate = SeasonalEvents.config.itemDropRate
+  def randomlyDropItemAt(entity: Entity, item: ItemStack)(implicit config: SeasonalEventsConfig): Unit = {
+    val rate = config.itemDropRate
     val rand = new Random().nextDouble() * 100
     if (rand < rate) entity.getWorld.dropItemNaturally(entity.getLocation, item)
   }

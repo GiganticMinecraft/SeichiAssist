@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.valentine
 
 import com.github.unchama.seasonalevents.valentine.Valentine.{DISPLAYED_END_DATE, isInEvent}
 import com.github.unchama.seasonalevents.valentine.ValentineItemData._
-import com.github.unchama.seasonalevents.{SeasonalEvents, Util}
+import com.github.unchama.seasonalevents.{SeasonalEvents, SeasonalEventsConfig, Util}
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.{EntityType, Monster}
@@ -11,7 +11,7 @@ import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 
-class ValentineListener extends Listener {
+class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener {
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
     val entity = event.getEntity
@@ -47,7 +47,7 @@ class ValentineListener extends Listener {
       Seq(
         s"$LIGHT_PURPLE${DISPLAYED_END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
-        s"$DARK_GREEN$UNDERLINE${SeasonalEvents.config.blogArticleUrl}"
+        s"$DARK_GREEN$UNDERLINE${config.blogArticleUrl}"
       ).foreach(
         event.getPlayer.sendMessage(_)
       )
