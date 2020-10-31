@@ -8,14 +8,14 @@ import org.bukkit.inventory.ItemStack
 
 import scala.util.Random
 
-object Utl {
+object Util {
   /**
    *指定されたEntityがいるLocationに、指定されたitemをドロップする
    *
    * @param entity 対象のエンティティ
    * @param item ドロップさせるItemStack
    */
-  def dropItem(entity: Entity, item: ItemStack): Unit = {
+  def randomlyDropItemAt(entity: Entity, item: ItemStack): Unit = {
     val rate = SeasonalEvents.config.itemDropRate
     val rand = new Random().nextDouble() * 100
     if (rand < rate) {
@@ -31,7 +31,7 @@ object Utl {
    * @param daysOfMonth 日
    * @return `LocalDate`。存在しない日付の場合は、エラーを出力して`LocalDate.of(2020,1,1)`（2020年1月1日）を返す。
    */
-  def tryNewDate(year: Int, month: Int, daysOfMonth: Int): LocalDate = {
+  def localDateFromYearMonthDays(year: Int, month: Int, daysOfMonth: Int): LocalDate = {
     try {
       LocalDate.of(year, month, daysOfMonth)
     } catch {

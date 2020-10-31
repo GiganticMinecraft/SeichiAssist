@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.seizonsiki
 
 import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.isDrop
 import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData.{isValidZongo, isZongo, seizonsikiZongo}
-import com.github.unchama.seasonalevents.{SeasonalEvents, Utl}
+import com.github.unchama.seasonalevents.{SeasonalEvents, Util}
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.EntityDeathEvent
@@ -18,7 +18,7 @@ class SeizonsikiListener extends Listener {
     if (!isDrop || entity == null) return
 
     if (entity.getType == EntityType.ZOMBIE && entity.getKiller != null) {
-      Utl.dropItem(entity, seizonsikiZongo)
+      Util.randomlyDropItemAt(entity, seizonsikiZongo)
     }
   }
 

@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.valentine
 
 import com.github.unchama.seasonalevents.valentine.Valentine.{DISPLAYED_END_DATE, isDrop}
 import com.github.unchama.seasonalevents.valentine.ValentineItemData._
-import com.github.unchama.seasonalevents.{SeasonalEvents, Utl}
+import com.github.unchama.seasonalevents.{SeasonalEvents, Util}
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.{EntityType, Monster}
@@ -18,7 +18,7 @@ class ValentineListener extends Listener {
     if (!isDrop || entity == null) return
 
     if (entity.isInstanceOf[Monster] && entity.isDead){
-      Utl.dropItem(entity, droppedCookie)
+      Util.randomlyDropItemAt(entity, droppedCookie)
     }
   }
 
@@ -37,7 +37,7 @@ class ValentineListener extends Listener {
 
     val entityMaxHealth = entity.asInstanceOf[Monster].getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
     if (entityMaxHealth <= event.getDamage) {
-      Utl.dropItem(entity, droppedCookie)
+      Util.randomlyDropItemAt(entity, droppedCookie)
     }
   }
 

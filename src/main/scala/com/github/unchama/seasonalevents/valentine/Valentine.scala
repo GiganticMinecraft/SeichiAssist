@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.valentine
 
 import java.time.LocalDate
 
-import com.github.unchama.seasonalevents.Utl.tryNewDate
+import com.github.unchama.seasonalevents.Util.localDateFromYearMonthDays
 import org.bukkit.plugin.Plugin
 
 class Valentine(private val plugin: Plugin) {
@@ -21,9 +21,9 @@ object Valentine {
   var isInEvent: Boolean = false
 
   // イベントが実際に終了する日
-  val END_DATE: LocalDate = tryNewDate(2018, 2, 27)
+  val END_DATE: LocalDate = localDateFromYearMonthDays(2018, 2, 27)
   // ドロップが実際に終了する日
-  val DROP_END_DATE: LocalDate = tryNewDate(2018, 2, 20)
+  val DROP_END_DATE: LocalDate = localDateFromYearMonthDays(2018, 2, 20)
   val DISPLAYED_END_DATE: LocalDate = END_DATE.minusDays(1)
   val DISPLAYED_DROP_END_DATE: LocalDate = DROP_END_DATE.minusDays(1)
 }
