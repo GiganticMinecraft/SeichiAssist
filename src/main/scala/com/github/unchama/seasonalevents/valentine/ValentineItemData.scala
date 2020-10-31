@@ -88,7 +88,7 @@ object ValentineItemData {
 
   //region GiftedCookie -> 棒メニューでもらえるやつ
 
-  private def giftedCookie(player: Player) = {
+  def cookieOf(player: Player): ItemStack = {
     val playerName = player.getName
     val loreList = {
       val header = List(
@@ -151,13 +151,6 @@ object ValentineItemData {
 
   private def isCookieSender(item: ItemStack, uuid: UUID): Boolean =
     uuid == new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID])
-
-  // SeichiAssistで呼ばれてるだけ
-  // 棒メニューで使われるログイン時のクッキー配布処理
-  def giveCookie(player: Player): Unit = {
-    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, giftedCookie(player))
-    else Util.addItem(player, giftedCookie(player))
-  }
 
   //endregion
 

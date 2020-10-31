@@ -5,7 +5,8 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.seasonalevents.valentine.{Valentine, ValentineItemData}
+import com.github.unchama.seasonalevents.valentine.Valentine
+import com.github.unchama.seasonalevents.valentine.ValentineItemData.cookieOf
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
@@ -546,7 +547,9 @@ object FirstPage extends Menu {
                 SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
                   targetedeffect.UnfocusedEffect {
-                    ValentineItemData.giveCookie(player)
+                    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, cookieOf(player))
+                    else Util.addItem(player, cookieOf(player))
+
                     playerData.hasChocoGave = true
                   },
                   MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。")
