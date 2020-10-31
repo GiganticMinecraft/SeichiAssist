@@ -1,6 +1,6 @@
 package com.github.unchama.seasonalevents.valentine
 
-import com.github.unchama.seasonalevents.valentine.Valentine.{DISPLAYED_END_DATE, isDrop}
+import com.github.unchama.seasonalevents.valentine.Valentine.{DISPLAYED_END_DATE, itemsWillBeDropped}
 import com.github.unchama.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seasonalevents.{SeasonalEvents, Util}
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
@@ -15,7 +15,7 @@ class ValentineListener extends Listener {
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
     val entity = event.getEntity
-    if (!isDrop || entity == null) return
+    if (!itemsWillBeDropped || entity == null) return
 
     if (entity.isInstanceOf[Monster] && entity.isDead){
       Util.randomlyDropItemAt(entity, droppedCookie)
@@ -25,7 +25,7 @@ class ValentineListener extends Listener {
   // モンスターの死因がクリーパーによる爆発の場合、確率でアイテムをドロップ
   @EventHandler
   def onEntityDeath(event: EntityDamageByEntityEvent): Unit = {
-    if (!isDrop) return
+    if (!itemsWillBeDropped) return
 
     val entity = event.getEntity
     if (entity == null || !entity.isInstanceOf[Monster]) return
@@ -43,7 +43,7 @@ class ValentineListener extends Listener {
 
   @EventHandler
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
-    if (isDrop) {
+    if (itemsWillBeDropped) {
       Seq(
         s"$LIGHT_PURPLE${DISPLAYED_END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",

@@ -12,11 +12,11 @@ class Valentine(private val plugin: Plugin) {
     plugin.getServer.getPluginManager.registerEvents(new ValentineListener(), plugin)
     Valentine.isInEvent = true
   }
-  if (today.isBefore(Valentine.DROP_END_DATE)) Valentine.isDrop = true
+  if (today.isBefore(Valentine.DROP_END_DATE)) Valentine.itemsWillBeDropped = true
 }
 
 object Valentine {
-  var isDrop = false
+  var itemsWillBeDropped = false
   // SeichiAssistで呼ばれてるだけ
   var isInEvent: Boolean = false
 

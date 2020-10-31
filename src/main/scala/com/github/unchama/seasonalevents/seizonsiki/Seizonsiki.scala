@@ -9,11 +9,11 @@ class Seizonsiki(private val plugin: Plugin) {
   private val today = LocalDate.now()
   // イベント開催中か判定
   if (today.isBefore(Seizonsiki.END_DATE)) plugin.getServer.getPluginManager.registerEvents(new SeizonsikiListener(), plugin)
-  if (today.isBefore(Seizonsiki.DROP_END_DATE)) Seizonsiki.isDrop = true
+  if (today.isBefore(Seizonsiki.DROP_END_DATE)) Seizonsiki.itemsWillBeDropped = true
 }
 
 object Seizonsiki {
-  var isDrop = false
+  var itemsWillBeDropped = false
 
   // イベントが実際に終了する日
   val END_DATE: LocalDate = localDateFromYearMonthDays(2017, 1, 22)
