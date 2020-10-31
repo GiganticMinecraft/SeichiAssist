@@ -1,9 +1,12 @@
 package com.github.unchama.seasonalevents.seizonsiki
 
+import java.time.LocalDate
+
 import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.itemsWillBeDropped
-import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData.{isValidZongo, isZongo, seizonsikiZongo}
+import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData.{NBTTagConstants, isValidZongo, isZongo, seizonsikiZongo}
 import com.github.unchama.seasonalevents.{SeasonalEvents, Util}
 import com.github.unchama.seichiassist.SeichiAssist
+import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.entity.EntityType
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
@@ -38,7 +41,10 @@ class SeizonsikiListener extends Listener {
   @EventHandler
   def onPlayerConsumedZongo(event: PlayerItemConsumeEvent): Unit = {
     val item = event.getItem
-    if (!isZongo(item) || !isValidZongo(item)) return
+
+    val today = LocalDate.now()
+    val exp = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
+    if (!isZongo(item) || !today.isBefore(exp)) return
 
     val player = event.getPlayer
     val playerUuid = player.getUniqueId

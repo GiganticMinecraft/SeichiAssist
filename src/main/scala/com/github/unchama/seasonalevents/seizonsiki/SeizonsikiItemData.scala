@@ -45,13 +45,7 @@ object SeizonsikiItemData {
     }
   }
 
-  def isValidZongo(item: ItemStack): Boolean = {
-    val today = LocalDate.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
-    today.isBefore(exp)
-  }
-
-  private object NBTTagConstants {
+  object NBTTagConstants {
     val typeIdTag = "seizonsikiZongoTypeId"
     val expirationDateTag = "seizonsikiZongoExpirationDate"
   }
