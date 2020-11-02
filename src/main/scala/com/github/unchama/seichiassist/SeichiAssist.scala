@@ -12,6 +12,7 @@ import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.seasonalevents.SeasonalEvents
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -329,6 +330,9 @@ class SeichiAssist extends JavaPlugin() {
     }
     SeichiAssist.buildAssist.onEnable()
 
+    SeichiAssist.seasonalEvents = new SeasonalEvents(this)
+    SeichiAssist.seasonalEvents.onEnable()
+
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
   }
@@ -396,6 +400,8 @@ class SeichiAssist extends JavaPlugin() {
     logger.info("SeichiAssist is Disabled!")
 
     SeichiAssist.buildAssist.onDisable()
+
+    SeichiAssist.seasonalEvents.onDisable()
   }
 
   def restartRepeatedJobs(): Unit = {
@@ -436,6 +442,7 @@ object SeichiAssist {
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _
   var buildAssist: BuildAssist = _
+  var seasonalEvents: SeasonalEvents = _
   //(minestackに格納する)Gachadataに依存するデータリスト
   val msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
   //総採掘量表示用
