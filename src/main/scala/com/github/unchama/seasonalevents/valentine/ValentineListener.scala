@@ -43,13 +43,15 @@ class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener 
 
   @EventHandler
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
+    val player = event.getPlayer
+
     if (isInEvent) {
       Seq(
         s"$LIGHT_PURPLE${DISPLAYED_END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE${config.blogArticleUrl}"
       ).foreach(
-        event.getPlayer.sendMessage(_)
+        player.sendMessage
       )
     }
   }
