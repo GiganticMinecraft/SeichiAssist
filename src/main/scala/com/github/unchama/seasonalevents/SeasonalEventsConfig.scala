@@ -6,27 +6,10 @@ import org.bukkit.plugin.Plugin
 class SeasonalEventsConfig(private val plugin: Plugin) {
   private var config: FileConfiguration = _
 
-  saveDefaultConfig()
-
   // コンフィグのロード
   def loadConfig(): Unit = {
-    config = getConfig
+    config = plugin.getConfig
   }
-
-  // コンフィグのリロード
-  def reloadConfig(): Unit = {
-    plugin.reloadConfig()
-    config = getConfig
-  }
-
-  // コンフィグのセーブ
-  def saveConfig(): Unit = plugin.saveConfig()
-
-  // plugin.ymlがない時にDefaultのファイルを生成
-  def saveDefaultConfig(): Unit = plugin.saveDefaultConfig()
-
-  // plugin.ymlファイルからの読み込み
-  def getConfig: FileConfiguration = plugin.getConfig
 
   def itemDropRate: Double = Option(config.getInt("SeasonalEvents.ItemDropRate"))
     .filter(rate => 0 <= rate && rate <= 100)
