@@ -38,31 +38,30 @@ class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener 
   def onEntityDeath(event: EntityDamageByEntityEvent): Unit = {
     if (!isInEvent) return
 
-    val entity = event.getEntity
-    if (entity == null || !entity.isInstanceOf[Monster]) return
-
     val damager = event.getDamager
     if (damager == null) return
 
     if (event.getCause != DamageCause.ENTITY_EXPLOSION || damager.getType != EntityType.CREEPER) return
 
-    val entityMaxHealth = entity.asInstanceOf[Monster].getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
-    if (entityMaxHealth <= event.getDamage) {
-      randomlyDropItemAt(entity, droppedCookie)
+    event.getEntity match {
+      case monster: Monster =>
+        val entityMaxHealth = monster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
+        // monsterが死んだならば
+        if (entityMaxHealth <= event.getDamage) {
+          randomlyDropItemAt(monster, droppedCookie)
+        }
     }
   }
 
   @EventHandler
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
-    val player = event.getPlayer
-
     if (isInEvent) {
       Seq(
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE${config.blogArticleUrl}"
       ).foreach(
-        player.sendMessage
+        event.getPlayer.sendMessage(_)
       )
     }
   }

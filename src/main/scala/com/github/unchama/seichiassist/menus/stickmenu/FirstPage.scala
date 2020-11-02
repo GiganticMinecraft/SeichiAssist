@@ -546,12 +546,8 @@ object FirstPage extends Menu {
               if (Valentine.isInEvent) {
                 SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
-                  targetedeffect.UnfocusedEffect {
-                    if (Util.isPlayerInventoryFull(player)) Util.dropItem(player, cookieOf(player))
-                    else Util.addItem(player, cookieOf(player))
-
-                    playerData.hasChocoGave = true
-                  },
+                  Util.grantItemStacksEffect(cookieOf(player)),
+                  targetedeffect.UnfocusedEffect {playerData.hasChocoGave = true},
                   MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。")
                 )
               } else {
