@@ -64,27 +64,6 @@ object Util {
     player.getWorld.getName.toLowerCase().startsWith(worldname)
   }
 
-  //ガチャ券アイテムスタック型の取得
-  def getskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).tap { skull =>
-      import skull._
-      setDurability(3.toShort)
-      setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { skullMeta =>
-          import skullMeta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます",
-              s"$RESET${DARK_GREEN}所有者:$name"
-            ).asJava
-          }
-          setOwner("unchama")
-        }
-      }
-    }
-  }
-
   /**
    * プレイヤーに安全にアイテムを付与します。
    *
@@ -339,48 +318,6 @@ object Util {
     } else
       return itemstack.getAmount >= count
     true
-  }
-
-  def getForBugskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
-      import itemStack._
-      setDurability(3)
-      setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { meta =>
-          import meta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます",
-              s"$RESET${DARK_GREEN}所有者：$name",
-              s"$RESET${DARK_RED}運営から不具合のお詫びです"
-            ).asJava
-          }
-          setOwner("unchama")
-        }
-      }
-    }
-  }
-
-  def getVoteskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
-      import itemStack._
-      setDurability(3)
-      setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { meta =>
-          import meta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます",
-              s"$RESET${DARK_GREEN}所有者：$name",
-              s"$RESET${LIGHT_PURPLE}投票ありがとナス♡"
-            ).asJava
-          }
-          setOwner("unchama")
-        }
-      }
-    }
   }
 
   def getExchangeskull(name: String): ItemStack = {

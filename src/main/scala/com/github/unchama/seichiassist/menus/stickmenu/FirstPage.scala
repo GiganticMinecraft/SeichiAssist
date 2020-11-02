@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, Fi
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seasonalevents.valentine.Valentine
 import com.github.unchama.seasonalevents.valentine.ValentineItemData.cookieOf
-import com.github.unchama.seichiassist.data.MenuInventoryData
+import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
@@ -356,7 +356,7 @@ object FirstPage extends Menu {
             val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player)
 
             if (numberOfItemsToGive > 0) {
-              val itemToGive = Util.getForBugskull(player.getName)
+              val itemToGive = GachaSkullData.gachaFromAdministrator
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
@@ -459,7 +459,7 @@ object FirstPage extends Menu {
             val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
 
             if (gachaTicketsToGive > 0) {
-              val itemToGive = Util.getskull(player.getName)
+              val itemToGive = GachaSkullData.gachaSkull
               val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
 
               SequentialEffect(
