@@ -4,9 +4,9 @@ import java.time.LocalDate
 
 import com.github.unchama.seasonalevents.SeasonalEventsConfig
 import com.github.unchama.seasonalevents.Util.localDateFromYearMonthDays
-import org.bukkit.plugin.Plugin
+import com.github.unchama.seichiassist.SeichiAssist
 
-class Seizonsiki(private val plugin: Plugin)(implicit config: SeasonalEventsConfig) {
+class Seizonsiki(private val plugin: SeichiAssist)(implicit config: SeasonalEventsConfig) {
   private val today = LocalDate.now()
   // イベント開催中か判定
   if (today.isBefore(Seizonsiki.END_DATE)) {
