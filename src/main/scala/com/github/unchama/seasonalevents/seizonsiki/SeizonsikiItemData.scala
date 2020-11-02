@@ -17,9 +17,9 @@ object SeizonsikiItemData {
       s"${GRAY}ゾンビたちが栽培しているりんご。",
       s"${GRAY}良質な腐葉土で1つずつ大切に育てられた。",
       s"${GRAY}栄養豊富で、食べるとマナが10%回復する。",
-      s"${GRAY}腐りやすいため賞味期限を超えると効果が無くなる。",
+      s"${GRAY}腐りやすいため消費期限を超えると効果が無くなる。",
       "",
-      s"${DARK_GREEN}賞味期限：$DISPLAYED_END_DATE",
+      s"${DARK_GREEN}消費期限：$DISPLAYED_END_DATE",
       s"${AQUA}マナ回復（10％）$GRAY （期限内）"
     ).map(str => s"$RESET$str")
       .asJava

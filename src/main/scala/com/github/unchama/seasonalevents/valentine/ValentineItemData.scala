@@ -16,7 +16,7 @@ import scala.util.chaining._
 object ValentineItemData {
   private val baseLore = List(
     s"${GRAY}食べると一定時間ステータスが変化する。",
-    s"${GRAY}賞味期限を超えると効果が無くなる。",
+    s"${GRAY}消費期限を超えると効果が無くなる。",
     "",
     s"${DARK_GREEN}消費期限：${Valentine.DISPLAYED_END_DATE}",
     s"${AQUA}ステータス変化（10分）$GRAY （期限内）"
