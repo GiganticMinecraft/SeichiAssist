@@ -1,15 +1,26 @@
 package com.github.unchama.seasonalevents.valentine
 
+import java.util.Random
+
+import com.github.unchama.seasonalevents.SeasonalEventsConfig
+import com.github.unchama.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seasonalevents.valentine.Valentine.{DISPLAYED_END_DATE, isInEvent}
+import com.github.unchama.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seasonalevents.valentine.ValentineItemData._
-import com.github.unchama.seasonalevents.{SeasonalEvents, SeasonalEventsConfig, Util}
+import com.github.unchama.seichiassist.util.Util.sendEveryMessage
+import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
+import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
-import org.bukkit.entity.{EntityType, Monster}
+import org.bukkit.entity.{EntityType, Monster, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.{PotionEffect, PotionEffectType}
+
+import scala.util.chaining._
 
 class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener {
   @EventHandler
@@ -18,7 +29,7 @@ class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener 
     if (!isInEvent || entity == null) return
 
     if (entity.isInstanceOf[Monster] && entity.isDead){
-      Util.randomlyDropItemAt(entity, droppedCookie)
+      randomlyDropItemAt(entity, droppedCookie)
     }
   }
 
@@ -37,7 +48,7 @@ class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener 
 
     val entityMaxHealth = entity.asInstanceOf[Monster].getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
     if (entityMaxHealth <= event.getDamage) {
-      Util.randomlyDropItemAt(entity, droppedCookie)
+      randomlyDropItemAt(entity, droppedCookie)
     }
   }
 
@@ -62,5 +73,27 @@ class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener 
     val player = event.getPlayer
     if (isDroppedCookie(item) && isUsableCookie(item)) useDroppedCookie(player)
     if (isGiftedCookie(item) && isUsableCookie(item)) useGiftedCookie(player, item)
+  }
+
+  private def useDroppedCookie(player: Player): Unit = {
+    val effect = randomlySelectEffect
+    player
+      .tap(_.sendMessage(getMessage(effect)))
+      .tap(_.addPotionEffect(getEffect(effect)._2))
+      .tap(_.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F))
+  }
+
+  private def useGiftedCookie(player: Player, item: ItemStack): Unit = {
+    if (ownerOf(item).contains(player.getUniqueId)) {
+      // HP最大値アップ
+      player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 20 * 60 * 10, 10))
+    } else {
+      // 死ぬ
+      player.setHealth(0)
+
+      val messages = deathMessages(player.getName, new NBTItem(item).getString(NBTTagConstants.producerNameTag))
+      sendEveryMessage(messages(new Random().nextInt(messages.size)))
+    }
+    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }
 }

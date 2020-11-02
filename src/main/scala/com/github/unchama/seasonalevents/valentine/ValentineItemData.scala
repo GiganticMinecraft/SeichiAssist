@@ -1,16 +1,14 @@
 package com.github.unchama.seasonalevents.valentine
 
 import java.time.LocalDate
-import java.util.{Random, UUID}
+import java.util.UUID
 
-import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
-import org.bukkit.potion.{PotionEffect, PotionEffectType}
-import org.bukkit.{Bukkit, Material, Sound}
+import org.bukkit.{Bukkit, Material}
 
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
@@ -60,30 +58,6 @@ object ValentineItemData {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
-  def useDroppedCookie(player: Player): Unit = {
-    val potionEffects = Seq(
-      "火炎耐性" -> new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 60 * 10, 1),
-      "暗視" -> new PotionEffect(PotionEffectType.NIGHT_VISION, 20 * 60 * 10, 1),
-      "耐性" -> new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 60 * 10, 1),
-      "跳躍力上昇" -> new PotionEffect(PotionEffectType.JUMP, 20 * 60 * 10, 1),
-      "再生能力" -> new PotionEffect(PotionEffectType.REGENERATION, 20 * 60 * 10, 1),
-      "移動速度上昇" -> new PotionEffect(PotionEffectType.SPEED, 20 * 60 * 10, 1),
-      "水中呼吸" -> new PotionEffect(PotionEffectType.WATER_BREATHING, 20 * 60 * 10, 1),
-      "緩衝吸収" -> new PotionEffect(PotionEffectType.ABSORPTION, 20 * 60 * 10, 1),
-      "攻撃力上昇" -> new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 60 * 10, 1),
-      "不運" -> new PotionEffect(PotionEffectType.UNLUCK, 20 * 60, 1)
-    )
-    val (effectName, effect) = potionEffects(new Random().nextInt(potionEffects.size))
-    val msg =
-      if (effectName == "不運") "不運IIを感じてしまった…はぁ…むなしいなぁ…"
-      else s"${effectName}IIを奪い取った！あぁ、おいしいなぁ！"
-
-    player
-      .tap(_.addPotionEffect(effect))
-      .tap(_.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F))
-      .tap(_.sendMessage(msg))
-  }
-
   //endregion
 
   //region GiftedCookie -> 棒メニューでもらえるやつ
@@ -119,38 +93,24 @@ object ValentineItemData {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
     }
 
-  def useGiftedCookie(player: Player, item: ItemStack): Unit = {
-    val playerName = player.getName
-    val cookieProducerName = new NBTItem(item).getString(NBTTagConstants.producerNameTag)
-    val messages = Seq(
-      s"${playerName}は${cookieProducerName}のチョコレートを食べた！猟奇的な味だった。",
-      s"$playerName！${cookieProducerName}からのチョコだと思ったかい？ざぁんねんっ！",
-      s"${playerName}は${cookieProducerName}のプレゼントで鼻血が止まらない！（計画通り）",
-      s"${playerName}は${cookieProducerName}のチョコレートを頬張ったまま息絶えた！",
-      s"${playerName}は${cookieProducerName}のチョコにアレが入っているとはを知らずに食べた…",
-      s"${playerName}は${cookieProducerName}のチョコなんか食ってないであくしろはたらけ",
-      s"${cookieProducerName}は${playerName}に日頃の恨みを晴らした！スッキリ！",
-      s"${cookieProducerName}による${playerName}への痛恨の一撃！ハッピーバレンタインッ！",
-      s"${cookieProducerName}は${playerName}が食べる姿を、満面の笑みで見つめている！",
-      s"${cookieProducerName}は悪くない！${playerName}が悪いんだっ！",
-      s"${cookieProducerName}は${playerName}を討伐した！",
-      s"こうして${cookieProducerName}のイタズラでまた1人${playerName}が社畜となった。",
-      s"おい聞いたか！${cookieProducerName}が${playerName}にチョコ送ったらしいぞー！"
-    )
-    if (ownerOf(item).contains(player.getUniqueId)) {
-      // HP最大値アップ
-      player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 20 * 60 * 10, 10))
-    } else {
-      // 死ぬ
-      player.setHealth(0)
-      // 全体にメッセージ送信
-      Util.sendEveryMessage(messages(new Random().nextInt(messages.size)))
-    }
-    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
-  }
-
-  private def ownerOf(item: ItemStack): Option[UUID] =
+  def ownerOf(item: ItemStack): Option[UUID] =
     Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
+
+  def deathMessages(playerName: String, cookieProducerName: String) = Seq(
+    s"${playerName}は${cookieProducerName}のチョコレートを食べた！猟奇的な味だった。",
+    s"$playerName！${cookieProducerName}からのチョコだと思ったかい？ざぁんねんっ！",
+    s"${playerName}は${cookieProducerName}のプレゼントで鼻血が止まらない！（計画通り）",
+    s"${playerName}は${cookieProducerName}のチョコレートを頬張ったまま息絶えた！",
+    s"${playerName}は${cookieProducerName}のチョコにアレが入っているとはを知らずに食べた…",
+    s"${playerName}は${cookieProducerName}のチョコなんか食ってないであくしろはたらけ",
+    s"${cookieProducerName}は${playerName}に日頃の恨みを晴らした！スッキリ！",
+    s"${cookieProducerName}による${playerName}への痛恨の一撃！ハッピーバレンタインッ！",
+    s"${cookieProducerName}は${playerName}が食べる姿を、満面の笑みで見つめている！",
+    s"${cookieProducerName}は悪くない！${playerName}が悪いんだっ！",
+    s"${cookieProducerName}は${playerName}を討伐した！",
+    s"こうして${cookieProducerName}のイタズラでまた1人${playerName}が社畜となった。",
+    s"おい聞いたか！${cookieProducerName}が${playerName}にチョコ送ったらしいぞー！"
+  )
 
   //endregion
 
@@ -169,7 +129,7 @@ object ValentineItemData {
     head
   }
 
-  private object NBTTagConstants {
+  object NBTTagConstants {
     val typeIdTag = "valentineCookieTypeId"
     val expirationDateTag = "valentineCookieExpirationDate"
     val producerNameTag = "valentineCookieProducerName"
