@@ -4,6 +4,7 @@ import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
+import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
@@ -134,7 +135,7 @@ object PlayerDataRecalculationRoutine {
          * ガチャ券付与の処理
          */
         if (playerData.gachapoint >= config.getGachaPresentInterval && playerData.settings.receiveGachaTicketEveryMinute) {
-          val skull = Util.getskull(name)
+          val skull = GachaSkullData.gachaSkull
           playerData.gachapoint = playerData.gachapoint - config.getGachaPresentInterval
           if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
             Util.addItem(player, skull)

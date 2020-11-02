@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.listener
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
-import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
+import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -688,7 +688,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
           //ここに投票1回につきプレゼントする特典の処理を書く
 
           //ガチャ券プレゼント処理
-          val skull = Util.getVoteskull(player.getName)
+          val skull = GachaSkullData.gachaForVoting
           for {_ <- 0 to 9} {
             if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
               Util.addItem(player, skull)
