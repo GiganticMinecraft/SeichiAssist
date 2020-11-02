@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.isInEvent
 import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData.{NBTTagConstants, isZongo, seizonsikiZongo}
-import com.github.unchama.seasonalevents.{SeasonalEvents, SeasonalEventsConfig, Util}
+import com.github.unchama.seasonalevents.{SeasonalEventsConfig, Util}
 import com.github.unchama.seichiassist.SeichiAssist
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}

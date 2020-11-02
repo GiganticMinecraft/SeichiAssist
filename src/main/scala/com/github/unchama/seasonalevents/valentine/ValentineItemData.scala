@@ -6,11 +6,11 @@ import java.util.{Random, UUID}
 import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
-import org.bukkit.{Bukkit, Material, Sound}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
+import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._

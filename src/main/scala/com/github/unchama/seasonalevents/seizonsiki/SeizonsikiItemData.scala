@@ -1,7 +1,5 @@
 package com.github.unchama.seasonalevents.seizonsiki
 
-import java.time.LocalDate
-
 import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.{DISPLAYED_END_DATE, END_DATE}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
