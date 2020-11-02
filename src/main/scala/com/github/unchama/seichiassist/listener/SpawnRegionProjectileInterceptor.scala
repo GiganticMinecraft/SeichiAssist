@@ -11,10 +11,11 @@ object SpawnRegionProjectileInterceptor extends Listener {
     val projectile = event.getEntity
     if (projectile == null) return
 
-    val shooter = projectile.getShooter
-    if (shooter == null || !shooter.isInstanceOf[Player]) return
-
-    val isInSpawnRegion = getOneRegion(shooter.asInstanceOf[Player].getLocation).filter(rg => rg.getId == "spawn").isPresent
-    if (isInSpawnRegion) event.setCancelled(true)
+    projectile.getShooter match {
+      case player: Player =>
+        val isInSpawnRegion = getOneRegion(player.getLocation).filter(_.getId == "spawn").isPresent
+        if (isInSpawnRegion) event.setCancelled(true)
+      case _ =>
+    }
   }
 }
