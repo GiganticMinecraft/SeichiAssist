@@ -1,7 +1,7 @@
 package com.github.unchama.seasonalevents
 
-import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki
-import com.github.unchama.seasonalevents.valentine.Valentine
+import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiListener
+import com.github.unchama.seasonalevents.valentine.ValentineListener
 import com.github.unchama.seichiassist.SeichiAssist
 
 class SeasonalEvents(plugin: SeichiAssist) {
@@ -9,8 +9,8 @@ class SeasonalEvents(plugin: SeichiAssist) {
   config.loadConfig()
 
   def onEnable(): Unit = {
-    new Seizonsiki(plugin)
-    new Valentine(plugin)
+    plugin.getServer.getPluginManager.registerEvents(new SeizonsikiListener(), plugin)
+    plugin.getServer.getPluginManager.registerEvents(new ValentineListener(), plugin)
 
     plugin.getLogger.info("SeasonalEvents is Enabled!")
   }

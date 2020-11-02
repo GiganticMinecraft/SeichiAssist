@@ -31,7 +31,7 @@ class SeizonsikiListener(implicit config: SeasonalEventsConfig) extends Listener
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       List(
-        s"$LIGHT_PURPLE${Seizonsiki.DISPLAYED_END_DATE}までの期間限定で、限定イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
+        s"$LIGHT_PURPLE${Seizonsiki.END_DATE}までの期間限定で、限定イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE${config.blogArticleUrl}"
       ).foreach(

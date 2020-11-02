@@ -3,6 +3,7 @@ package com.github.unchama.seasonalevents.valentine
 import java.time.LocalDate
 import java.util.UUID
 
+import com.github.unchama.seasonalevents.valentine.Valentine.{END_DATE, isInEvent}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -18,7 +19,7 @@ object ValentineItemData {
     s"${GRAY}食べると一定時間ステータスが変化する。",
     s"${GRAY}消費期限を超えると効果が無くなる。",
     "",
-    s"${DARK_GREEN}消費期限：${Valentine.DISPLAYED_END_DATE}",
+    s"${DARK_GREEN}消費期限：$END_DATE",
     s"${AQUA}ステータス変化（10分）$GRAY （期限内）"
   ).map(str => s"$RESET$str")
 
@@ -49,7 +50,7 @@ object ValentineItemData {
 
     new NBTItem(itemStack)
       .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
-      .tap(_.setObject(NBTTagConstants.expirationDateTag, Valentine.END_DATE))
+      .tap(_.setObject(NBTTagConstants.expirationDateTag, END_DATE))
       .pipe(_.getItem)
   }
 
@@ -82,7 +83,7 @@ object ValentineItemData {
 
     new NBTItem(itemStack)
       .tap(_.setByte(NBTTagConstants.typeIdTag, 2.toByte))
-      .tap(_.setObject(NBTTagConstants.expirationDateTag, Valentine.END_DATE))
+      .tap(_.setObject(NBTTagConstants.expirationDateTag, END_DATE))
       .tap(_.setObject(NBTTagConstants.producerUuidTag, player.getUniqueId))
       .tap(_.setString(NBTTagConstants.producerNameTag, playerName))
       .pipe(_.getItem)
@@ -116,8 +117,8 @@ object ValentineItemData {
 
   // SeichiAssistで呼ばれてるだけ
   def valentinePlayerHead(head: SkullMeta): SkullMeta = {
-    if (Valentine.isInEvent) {
-      val year: String = Valentine.END_DATE.getYear.toString
+    if (isInEvent) {
+      val year: String = END_DATE.getYear.toString
       val lore = List(
         "",
         s"$GREEN${ITALIC}大切なあなたへ。",

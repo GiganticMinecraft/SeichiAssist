@@ -4,7 +4,7 @@ import java.util.Random
 
 import com.github.unchama.seasonalevents.SeasonalEventsConfig
 import com.github.unchama.seasonalevents.Util.randomlyDropItemAt
-import com.github.unchama.seasonalevents.valentine.Valentine.{DISPLAYED_END_DATE, isInEvent}
+import com.github.unchama.seasonalevents.valentine.Valentine.{END_DATE, isInEvent}
 import com.github.unchama.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seichiassist.util.Util.sendEveryMessage
@@ -58,7 +58,7 @@ class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener 
 
     if (isInEvent) {
       Seq(
-        s"$LIGHT_PURPLE${DISPLAYED_END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE${config.blogArticleUrl}"
       ).foreach(

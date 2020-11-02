@@ -1,6 +1,6 @@
 package com.github.unchama.seasonalevents.seizonsiki
 
-import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.{DISPLAYED_END_DATE, END_DATE}
+import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.END_DATE
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
@@ -19,7 +19,7 @@ object SeizonsikiItemData {
       s"${GRAY}栄養豊富で、食べるとマナが10%回復する。",
       s"${GRAY}腐りやすいため消費期限を超えると効果が無くなる。",
       "",
-      s"${DARK_GREEN}消費期限：$DISPLAYED_END_DATE",
+      s"${DARK_GREEN}消費期限：$END_DATE",
       s"${AQUA}マナ回復（10％）$GRAY （期限内）"
     ).map(str => s"$RESET$str")
       .asJava
