@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class ProjectileLaunchListener extends Listener {
+object ProjectileLaunchListener extends Listener {
   @EventHandler
   def onProjectileLaunch(event: ProjectileLaunchEvent): Unit = {
     val projectile = event.getEntity
