@@ -43,6 +43,18 @@ object SeizonsikiItemData {
     }
   }
 
+  def deathMessages(playerName: String): Seq[String] = Seq(
+    "やっぱりゾンビが持ってたりんごなんだから体に悪い可能性だってあるよね",
+    "毒！？毒りんごだったの！？あのチャラゾンビめ...",
+    s"${playerName}は消費期限切れのゾンごを食べて死亡した",
+    "賞味期限は少しくらい無視してもいいけど、消費期限は守ろうね！unchamaとのお約束だぞ！",
+    "腐った食べ物には腐敗菌が作り出した毒素や毒物がたくさん含まれているらしいよ",
+    "マナ妖精「消費期限切れのゾンごなんて僕でも食べないよ！」",
+    s"$playerName「色も匂いも全然変わってないので消費期限切れだけど食べてもヨシ！」",
+    "？？？「どうして期限切れのゾンごを食べようとしたんですか？」",
+    "[Tips] りんごは他の野菜や果物と冷蔵庫に入れると熟成を早めちゃうから別々にしよう！"
+  )
+
   object NBTTagConstants {
     val typeIdTag = "seizonsikiZongoTypeId"
     val expirationDateTag = "seizonsikiZongoExpirationDate"

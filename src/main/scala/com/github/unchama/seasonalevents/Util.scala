@@ -1,11 +1,10 @@
 package com.github.unchama.seasonalevents
 
 import java.time.LocalDate
+import java.util.Random
 
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
-
-import scala.util.Random
 
 object Util {
   /**

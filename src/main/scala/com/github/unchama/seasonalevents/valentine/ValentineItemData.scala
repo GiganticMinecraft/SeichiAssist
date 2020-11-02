@@ -96,7 +96,7 @@ object ValentineItemData {
   def ownerOf(item: ItemStack): Option[UUID] =
     Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
 
-  def deathMessages(playerName: String, cookieProducerName: String) = Seq(
+  def deathMessages(playerName: String, cookieProducerName: String): Seq[String] = Seq(
     s"${playerName}は${cookieProducerName}のチョコレートを食べた！猟奇的な味だった。",
     s"$playerName！${cookieProducerName}からのチョコだと思ったかい？ざぁんねんっ！",
     s"${playerName}は${cookieProducerName}のプレゼントで鼻血が止まらない！（計画通り）",
