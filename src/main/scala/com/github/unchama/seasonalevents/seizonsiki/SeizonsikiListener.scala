@@ -64,7 +64,7 @@ class SeizonsikiListener(implicit config: SeasonalEventsConfig) extends Listener
         Bukkit.getServer.getLogger.info(s"${player.getName}によってゾんごが使用されましたが、プレイヤーデータが存在しなかったため、マナ回復が行われませんでした。")
       }
     } else {
-      // END_DATEと同じ日かその翌日以降なら（DISPLAYED_END_DATEの翌日以降なら）
+      // END_DATEと同じ日かその翌日以降なら
       // 死ぬ
       player.setHealth(0)
 
