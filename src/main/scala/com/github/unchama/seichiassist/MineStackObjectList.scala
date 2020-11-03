@@ -126,6 +126,7 @@ object MineStackObjectList {
     new MineStackFarmObj("nether_stalk", "ネザーウォート", 1, Material.NETHER_STALK, 0),
     new MineStackFarmObj("chorus_fruit", "コーラスフルーツ", 1, Material.CHORUS_FRUIT, 0),
     new MineStackFarmObj("chorus_flower", "コーラスフラワー", 1, Material.CHORUS_FLOWER, 0),
+    new MineStackFarmObj("popped_chorus_fruit", "焼いたコーラスフルーツ", 1, Material.CHORUS_FRUIT_POPPED, 0),
     new MineStackFarmObj("egg", "卵", 1, Material.EGG, 0),
     new MineStackFarmObj("pork", "生の豚肉", 1, Material.PORK, 0),
     new MineStackFarmObj("cooked_porkchop", "焼き豚", 1, Material.GRILLED_PORK, 0),
