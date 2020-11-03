@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.commands
+package com.github.unchama.seasonalevents.commands
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.data.HalloweenItemData
+import com.github.unchama.seasonalevents.halloween.HalloweenItemData
 import com.github.unchama.seichiassist.listener.new_year_event.{NewYearBagListener, NewYearItemListener}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.TargetedEffect._
