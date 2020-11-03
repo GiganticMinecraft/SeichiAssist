@@ -5,9 +5,6 @@ import com.github.unchama.seasonalevents.valentine.ValentineListener
 import com.github.unchama.seichiassist.SeichiAssist
 
 class SeasonalEvents(plugin: SeichiAssist) {
-  implicit val config: SeasonalEventsConfig = new SeasonalEventsConfig(plugin)
-  config.loadConfig()
-
   def onEnable(): Unit = {
     plugin.getServer.getPluginManager.registerEvents(new SeizonsikiListener(), plugin)
     plugin.getServer.getPluginManager.registerEvents(new ValentineListener(), plugin)
