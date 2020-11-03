@@ -264,6 +264,9 @@ object OnClickTitleMenu {
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computePartsShopMenu(player))
         }
+
+      // それ以外のインベントリの名前だった場合何もしない！
+      case _ => ()
     }
   }
 }
