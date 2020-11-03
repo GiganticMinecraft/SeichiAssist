@@ -114,6 +114,8 @@ object OnClickTitleMenu {
               ),
               "実績メニューを開く"
             )
+
+          case _ =>
         }
 
         // refresh if needed
@@ -121,6 +123,8 @@ object OnClickTitleMenu {
           case Material.EMERALD_ORE | Material.EMERALD =>
             pd.recalculateAchievePoint()
             player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+
+          case _ =>
         }
         
       case MenuType.HEAD.invName =>
@@ -155,6 +159,8 @@ object OnClickTitleMenu {
             val menuType = MenuInventoryData.MenuType.HEAD
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
+
+          case _ =>
         }
 
       case MenuType.MIDDLE.invName =>
@@ -187,6 +193,8 @@ object OnClickTitleMenu {
             val menuType = MenuInventoryData.MenuType.MIDDLE
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
+
+          case _ =>
         }
 
       case MenuType.TAIL.invName =>
@@ -219,6 +227,8 @@ object OnClickTitleMenu {
             val menuType = MenuInventoryData.MenuType.TAIL
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
+
+          case _ =>
         }
 
       case MenuType.SHOP.invName =>
@@ -263,10 +273,12 @@ object OnClickTitleMenu {
             val menuType = MenuInventoryData.MenuType.SHOP
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computePartsShopMenu(player))
+
+          case _ =>
         }
 
       // それ以外のインベントリの名前だった場合何もしない！
-      case _ => ()
+      case _ =>
     }
   }
 }
