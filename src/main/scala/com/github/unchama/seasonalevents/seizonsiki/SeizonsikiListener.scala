@@ -3,9 +3,9 @@ package com.github.unchama.seasonalevents.seizonsiki
 import java.time.LocalDate
 import java.util.Random
 
-import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki.isInEvent
+import com.github.unchama.seasonalevents.Util.randomlyDropItemAt
+import com.github.unchama.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seasonalevents.seizonsiki.SeizonsikiItemData._
-import com.github.unchama.seasonalevents.{SeasonalEventsConfig, Util}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util.sendEveryMessage
 import de.tr7zw.itemnbtapi.NBTItem
@@ -16,14 +16,14 @@ import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Bukkit, Sound}
 
-class SeizonsikiListener(implicit config: SeasonalEventsConfig) extends Listener {
+class SeizonsikiListener extends Listener {
   @EventHandler
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity
     if (!isInEvent || entity == null) return
 
     if (entity.getType == EntityType.ZOMBIE && entity.getKiller != null) {
-      Util.randomlyDropItemAt(entity, seizonsikiZongo)
+      randomlyDropItemAt(entity, seizonsikiZongo, itemDropRate)
     }
   }
 
@@ -31,9 +31,9 @@ class SeizonsikiListener(implicit config: SeasonalEventsConfig) extends Listener
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       List(
-        s"$LIGHT_PURPLE${Seizonsiki.END_DATE}までの期間限定で、限定イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、限定イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
-        s"$DARK_GREEN$UNDERLINE${config.blogArticleUrl}"
+        s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(
         event.getPlayer.sendMessage(_)
       )

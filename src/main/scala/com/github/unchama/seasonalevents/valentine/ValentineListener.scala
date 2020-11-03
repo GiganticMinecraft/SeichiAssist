@@ -2,9 +2,8 @@ package com.github.unchama.seasonalevents.valentine
 
 import java.util.Random
 
-import com.github.unchama.seasonalevents.SeasonalEventsConfig
 import com.github.unchama.seasonalevents.Util.randomlyDropItemAt
-import com.github.unchama.seasonalevents.valentine.Valentine.{END_DATE, isInEvent}
+import com.github.unchama.seasonalevents.valentine.Valentine._
 import com.github.unchama.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seichiassist.util.Util.sendEveryMessage
@@ -22,14 +21,14 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 import scala.util.chaining._
 
-class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener {
+class ValentineListener extends Listener {
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
     val entity = event.getEntity
     if (!isInEvent || entity == null) return
 
     if (entity.isInstanceOf[Monster] && entity.isDead){
-      randomlyDropItemAt(entity, droppedCookie)
+      randomlyDropItemAt(entity, droppedCookie, itemDropRate)
     }
   }
 
@@ -48,7 +47,7 @@ class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener 
         val entityMaxHealth = monster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue
         // monsterが死んだならば
         if (entityMaxHealth <= event.getDamage) {
-          randomlyDropItemAt(monster, droppedCookie)
+          randomlyDropItemAt(monster, droppedCookie, itemDropRate)
         }
     }
   }
@@ -59,7 +58,7 @@ class ValentineListener(implicit config: SeasonalEventsConfig) extends Listener 
       Seq(
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
-        s"$DARK_GREEN$UNDERLINE${config.blogArticleUrl}"
+        s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(
         event.getPlayer.sendMessage(_)
       )
