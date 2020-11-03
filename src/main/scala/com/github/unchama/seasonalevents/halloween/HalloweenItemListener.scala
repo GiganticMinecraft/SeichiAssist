@@ -1,6 +1,6 @@
-package com.github.unchama.seichiassist.listener
+package com.github.unchama.seasonalevents.halloween
 
-import com.github.unchama.seichiassist.data.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
+import com.github.unchama.seasonalevents.halloween.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import org.bukkit.Material
 import org.bukkit.block.Block

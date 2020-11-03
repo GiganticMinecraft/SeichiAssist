@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seasonalevents.halloween
 
 import java.util.Calendar
 

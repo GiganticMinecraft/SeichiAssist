@@ -257,7 +257,6 @@ class SeichiAssist extends JavaPlugin() {
       "shareinv" -> ShareInvCommand.executor,
       "achievement" -> AchievementCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
-      "event" -> EventCommand.executor,
       "contribute" -> ContributeCommand.executor,
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
@@ -289,7 +288,6 @@ class SeichiAssist extends JavaPlugin() {
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
-      new HalloweenItemListener(),
       SpawnRegionProjectileInterceptor,
     )
       .concat(repositories)
