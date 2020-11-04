@@ -25,7 +25,6 @@ import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, Ran
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
-import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
@@ -295,9 +294,6 @@ class SeichiAssist extends JavaPlugin() {
       .foreach {
         getServer.getPluginManager.registerEvents(_, this)
       }
-
-    //正月イベント用
-    new NewYearsEvent(this)
 
     //オンラインの全てのプレイヤーを処理
     getServer.getOnlinePlayers.asScala.foreach { p =>
