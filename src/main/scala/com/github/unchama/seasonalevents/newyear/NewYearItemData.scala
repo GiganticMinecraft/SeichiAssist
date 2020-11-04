@@ -74,5 +74,4 @@ object NewYearItemData {
     val expirationDateTag = "newYearAppleExpirationDate"
     val eventYearTag = "newYearEventYear"
   }
-
 }
