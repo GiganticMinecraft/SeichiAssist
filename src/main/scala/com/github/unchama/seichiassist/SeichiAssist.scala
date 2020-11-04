@@ -401,7 +401,7 @@ class SeichiAssist extends JavaPlugin() {
 
     SeichiAssist.buildAssist.onDisable()
 
-    SeichiAssist.seasonalEvents.onDisable()
+    if (SeichiAssist.seasonalEvents != null) SeichiAssist.seasonalEvents.onDisable()
   }
 
   def restartRepeatedJobs(): Unit = {
