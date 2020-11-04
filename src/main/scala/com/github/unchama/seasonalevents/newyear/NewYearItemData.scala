@@ -1,6 +1,6 @@
 package com.github.unchama.seasonalevents.newyear
 
-import com.github.unchama.seasonalevents.newyear.NewYear.END_DATE
+import com.github.unchama.seasonalevents.newyear.NewYear.{END_DATE, EVENT_YEAR}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -21,7 +21,8 @@ object NewYearItemData {
       "",
       s"${DARK_GREEN}消費期限：$END_DATE",
       s"${AQUA}マナ回復（10%）$GRAY （期限内）"
-    ).asJava
+    ).map(str => s"$RESET$str")
+      .asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE)
       .tap(_.setDisplayName(s"$GOLD${BOLD}正月りんご"))
@@ -44,9 +45,34 @@ object NewYearItemData {
     }
   }
 
+  val newYearBag: ItemStack = {
+    val loreList = List(
+      "新年あけましておめでとうございます",
+      s"新年をお祝いして$RED${UNDERLINE}お年玉袋${RESET}をプレゼント！",
+      s"$RED${UNDERLINE}アルカディア、エデン、ヴァルハラサーバー メインワールドの",
+      s"$RED${UNDERLINE}スポーン地点にいる村人で様々なアイテムに交換可能です。"
+    ).map(str => s"$RESET$str")
+      .asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.PAPER)
+      .tap(_.setDisplayName(s"${AQUA}お年玉袋"))
+      .tap(_.setLore(loreList))
+      .tap(_.addEnchant(Enchantment.DIG_SPEED, 20 * 5, true))
+      .tap(_.addItemFlags(ItemFlag.HIDE_ENCHANTS))
+
+    val itemStack = new ItemStack(Material.PAPER, 1)
+    itemStack.setItemMeta(itemMeta)
+
+    new NBTItem(itemStack)
+      .tap(_.setByte(NBTTagConstants.typeIdTag, 2.toByte))
+      .tap(_.setObject(NBTTagConstants.eventYearTag, EVENT_YEAR))
+      .pipe(_.getItem)
+  }
+
   object NBTTagConstants {
-    val typeIdTag = "newYearAppleTypeId"
+    val typeIdTag = "newYearItemTypeId"
     val expirationDateTag = "newYearAppleExpirationDate"
+    val eventYearTag = "newYearEventYear"
   }
 
 }
