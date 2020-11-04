@@ -34,7 +34,7 @@ object Util {
    * 引数で指定されたStringが告知のブログ記事として適当なものかどうかを検証し、Stringを返す
    *
    * @param url URL
-   * @return 適当であれば指定された`url`そのまま、適当でなければブログ記事のイベント情報一覧のURL
+   * @return 適当であれば指定された`url`そのまま、適当でなければブログ記事のイベント情報一覧のURLをそれぞれ[[String]]で返す
    */
   def validateUrl(url: String): String = Option(url)
     .filter(_.startsWith("https://www.seichi.network/post/"))
