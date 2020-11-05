@@ -89,8 +89,8 @@ class NewYearListener(instance: SeichiAssist) extends Listener {
     val playerUuid = player.getUniqueId
     if (!SeichiAssist.playermap.contains(playerUuid)) return
 
-    val rand = new Random().nextInt(itemDropRate)
-    if (rand == 0) {
+    val rand = new Random().nextDouble() * 100
+    if (rand < itemDropRate) {
       if (isPlayerInventoryFull(player)) {
         dropItem(player, newYearBag)
         player.sendMessage(s"${RED}インベントリに空きがなかったため、「お年玉袋」は地面にドロップしました。")
@@ -100,6 +100,7 @@ class NewYearListener(instance: SeichiAssist) extends Listener {
       }
       player.playSound(player.getLocation, Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f)
 
+      // TODO これいる？こことDBへのload・save以外で使われてないよ？
       val playerData = SeichiAssist.playermap(playerUuid)
       playerData.newYearBagAmount_$eq(playerData.newYearBagAmount + 1)
     }

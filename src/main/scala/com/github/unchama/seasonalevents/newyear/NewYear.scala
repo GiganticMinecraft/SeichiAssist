@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.newyear
 
 import java.time.LocalDate
 
-import com.github.unchama.seasonalevents.Util.getDateSeq
+import com.github.unchama.seasonalevents.Util.{getDateSeq, validateItemDropRate}
 
 object NewYear {
   // 新年が何年かを西暦で入力しておくと、自動的に他の日付が設定される
@@ -12,8 +12,9 @@ object NewYear {
   val END_DATE: LocalDate = LocalDate.ofYearDay(EVENT_YEAR, 31)
   val DISTRIBUTED_SOBA_DATE: LocalDate = LocalDate.ofYearDay(PREV_EVENT_YEAR, 365)
 
-  // お年玉袋ドロップ数(1/nブロック)
-  val itemDropRate = 500
+  // お年玉袋ドロップ率（%）
+  // 旧実装：ドロップ数 1/nブロック、初期値 n=500
+  val itemDropRate: Double = validateItemDropRate(0.2)
 
   def sobaWillBeDistributed: Boolean = LocalDate.now().isEqual(DISTRIBUTED_SOBA_DATE)
 

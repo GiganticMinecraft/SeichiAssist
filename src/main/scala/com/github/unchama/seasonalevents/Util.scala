@@ -31,6 +31,16 @@ object Util {
     .toDouble
 
   /**
+   * 引数で指定されたDoubleがドロップ率として適当な範囲（0.0以上100.0以下の小数）にあるかどうか検証して返す
+   *
+   * @param rate ドロップ率
+   * @return 適当な値であれば`rate`、適当な値でなければ `0.2`
+   */
+  def validateItemDropRate(rate: Double): Double = Option(rate)
+    .filter(rate => 0 <= rate && rate <= 100)
+    .getOrElse(0.2)
+
+  /**
    * 引数で指定されたStringが告知のブログ記事として適当なものかどうかを検証し、Stringを返す
    *
    * @param url URL
