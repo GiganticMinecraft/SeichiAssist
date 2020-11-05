@@ -11,7 +11,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
-class HalloweenItemListener extends Listener {
+object HalloweenItemListener extends Listener {
 
   @EventHandler
   def onPlayerConsumeHalloweenPotion(event: PlayerItemConsumeEvent): Unit = {

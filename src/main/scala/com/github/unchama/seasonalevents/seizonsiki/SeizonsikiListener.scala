@@ -16,7 +16,7 @@ import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Bukkit, Sound}
 
-class SeizonsikiListener extends Listener {
+object SeizonsikiListener extends Listener {
   @EventHandler
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity

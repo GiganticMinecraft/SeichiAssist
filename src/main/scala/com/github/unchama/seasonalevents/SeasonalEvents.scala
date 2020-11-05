@@ -9,9 +9,9 @@ import com.github.unchama.seichiassist.SeichiAssist
 class SeasonalEvents(plugin: SeichiAssist) {
   def onEnable(): Unit = {
     List(
-      new HalloweenItemListener(),
-      new SeizonsikiListener(),
-      new ValentineListener()
+      HalloweenItemListener,
+      SeizonsikiListener,
+      ValentineListener
     ).foreach(
       plugin.getServer.getPluginManager.registerEvents(_, plugin)
     )

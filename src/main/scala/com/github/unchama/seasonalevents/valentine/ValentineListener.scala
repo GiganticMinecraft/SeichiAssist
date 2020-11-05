@@ -21,13 +21,13 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 import scala.util.chaining._
 
-class ValentineListener extends Listener {
+object ValentineListener extends Listener {
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
     val entity = event.getEntity
     if (!isInEvent || entity == null) return
 
-    if (entity.isInstanceOf[Monster] && entity.isDead){
+    if (entity.isInstanceOf[Monster] && entity.isDead) {
       randomlyDropItemAt(entity, droppedCookie, itemDropRate)
     }
   }
