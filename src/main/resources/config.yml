@@ -192,24 +192,6 @@ LimitedLoginEvent:
   #Tips:[Item]内容一覧(追加・変更はコード修正が必要です)
   #"1":ガチャ券
 
-#お正月イベント関連(ここの設定を変更することで毎年使いまわしが可能です。)
-#日付は必ず"西暦4桁-月2桁-日2桁"で入力すること!!
-NewYearEvent:
-  #お正月用「年越し蕎麦」配布日
-  GivingNewYearSobaDay: "2017-12-31"
-  #お正月用「年越し蕎麦」Loreに記入される年
-  NewYearSobaYear: "2017"
-  #お年玉袋ドロップ開始日/終了日
-  DropNewYearBagStartDay: "2018-01-01"
-  DropNewYearBagEndDay: "2018-01-31"
-  #お年玉袋ドロップ数(1/nブロック)
-  NewYearBagDropProbability: 500
-  #(お年玉袋ItemNBT識別用);基本的に来年度の年を入力してください。
-  NewYear: "2018"
-  #正月リンゴの使用可能期限
-  NewYearAppleStartDay: "2018-01-01"
-  NewYearAppleEndDay: "2018-02-07"
-
 #GiganticBerserk
 #1分間上限
 GBLimit: 50
