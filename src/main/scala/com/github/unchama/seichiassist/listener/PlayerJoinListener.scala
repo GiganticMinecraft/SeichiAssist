@@ -89,12 +89,6 @@ class PlayerJoinListener extends Listener {
       limitedLoginEvent.setLastCheckDate(playerData.lastcheckdate)
       limitedLoginEvent.TryGetItem(player)
 
-      // 1周年記念
-      if (playerData.anniversary) {
-        player.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。https://seichi.click/wiki/anniversary")
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      }
-
       //join時とonenable時、プレイヤーデータを最新の状態に更新
       playerData.updateOnJoin()
     }
