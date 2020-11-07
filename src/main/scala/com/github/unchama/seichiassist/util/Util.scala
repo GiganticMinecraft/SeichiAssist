@@ -506,12 +506,8 @@ object Util {
       loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...") >= 0
   }
 
-  def getSkullDataFromBlock(block: Block): ItemStack = {
-    //ブロックがskullじゃない場合石でも返しとく
-    // TODO ????
-    if (block.getType != Material.SKULL) {
-      return new ItemStack(Material.STONE)
-    }
+  def getSkullDataFromBlock(block: Block): Option[ItemStack] = {
+    if (block.getType != Material.SKULL) return None
 
     val skull = block.getState.asInstanceOf[Skull]
     val itemStack = new ItemStack(Material.SKULL_ITEM)
@@ -526,10 +522,10 @@ object Util {
         case SkullType.ZOMBIE => SkullType.ZOMBIE.ordinal.toShort
         case _ => itemStack.getDurability
       }
-      return itemStack.tap(_.setDurability(durability))
+      return Some(itemStack.tap(_.setDurability(durability)))
     }
     //プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
-    block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort))
+    Some(block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort)))
   }
 
   def isLimitedTitanItem(itemstack: ItemStack): Boolean = {
