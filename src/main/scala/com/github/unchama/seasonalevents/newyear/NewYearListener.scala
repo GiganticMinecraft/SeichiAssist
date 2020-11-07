@@ -3,14 +3,14 @@ package com.github.unchama.seasonalevents.newyear
 import java.time.LocalDate
 import java.util.Random
 
-import com.github.unchama.seasonalevents.newyear.NewYear.{PREV_EVENT_YEAR, isInEvent, itemDropRate}
+import com.github.unchama.seasonalevents.newyear.NewYear.{isInEvent, itemDropRate}
 import com.github.unchama.seasonalevents.newyear.NewYearItemData._
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import de.tr7zw.itemnbtapi.NBTItem
-import org.bukkit.ChatColor.{AQUA, RED, UNDERLINE, YELLOW}
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
@@ -39,10 +39,14 @@ class NewYearListener(instance: SeichiAssist) extends Listener {
           ).map(str => s"$RED$UNDERLINE$str")
             .foreach(player.sendMessage)
         } else {
-          // 配布しているヘッドはこれ： https://minecraft-heads.com/custom-heads/food-drinks/413-bowl-of-noodles
-          val command = s"""give ${player.getName} skull 1 3 {display:{Name:"年越し蕎麦(${PREV_EVENT_YEAR}年)",Lore:["", "${YELLOW}大晦日記念アイテムだよ！"]},SkullOwner:{Id:"f15ab073-412e-4fe2-8668-1be12066e2ac",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ=="}]}}}"""
-          Bukkit.dispatchCommand(Bukkit.getConsoleSender, command)
-          playerData.hasNewYearSobaGive_$eq(true)
+          sobaHead match {
+            case Some(item) =>
+              addItem(player, item)
+              playerData.hasNewYearSobaGive_$eq(true)
+              player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
+            case None =>
+              player.sendMessage(s"${RED}内部的なエラーによりアイテムを配布できませんでした。管理者にお問い合わせください。")
+          }
         }
         player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
       }

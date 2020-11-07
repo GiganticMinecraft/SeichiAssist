@@ -2,10 +2,14 @@ package com.github.unchama.seasonalevents
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.Random
+import java.util.{Random, UUID}
 
+import com.mojang.authlib.GameProfile
+import com.mojang.authlib.properties.Property
+import org.bukkit.Material
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 
 object Util {
   /**
@@ -44,7 +48,7 @@ object Util {
    * 引数で指定されたStringが告知のブログ記事として適当なものかどうかを検証し、Stringを返す
    *
    * @param url URL
-   * @return 適当であれば指定された`url`そのまま、適当でなければブログ記事のイベント情報一覧のURLをそれぞれ[[String]]で返す
+   * @return 適当であれば指定された`url`そのまま、適当でなければブログ記事のイベント情報一覧のURLをそれぞれStringで返す
    */
   def validateUrl(url: String): String = Option(url)
     .filter(_.startsWith("https://www.seichi.network/post/"))
@@ -55,9 +59,35 @@ object Util {
    *
    * @param from 期間の開始日
    * @param to   期間の終了日
-   * @return 期間に含まれるすべての[[LocalDate]]をもつSeq
+   * @return 期間に含まれるすべてのLocalDateをもつSeq
    * @see [[https://qiita.com/pictiny/items/357630e48043185da223 Qiita: Scalaで日付の範囲を指定してリストを作る]]
    */
   def getDateSeq(from: LocalDate, to: LocalDate): Seq[LocalDate] =
     Range(0, from.until(to, ChronoUnit.DAYS).toInt + 1).map(from.plusDays(_))
+
+  /**
+   * `value`の中に含まれるテクスチャデータを適用したSkullのItemStackをOptionに包んで返す
+   *
+   * @param customHead [[com.github.unchama.seasonalevents.SkullData]]
+   * @return Option[ItemStack]
+   * @see [[https://www.spigotmc.org/threads/1-12-2-applying-custom-textures-to-skulls.327361/  カスタムヘッドを生成するコード]]
+   * @see [[https://qiita.com/yuta0801/items/edb4804dfb867ea82c5a テクスチャへのリンク周り]]
+   */
+  def createCustomHead(customHead: SkullData): Option[ItemStack] = {
+    val skull = new ItemStack(Material.SKULL_ITEM, 1, 3.toShort)
+    // ↑のMaterialをSKULL_ITEM以外にしなければ、↓のmatch caseは_の方には進まないはず（返り値がNoneにはならないはず）
+    skull.getItemMeta match {
+      case meta: SkullMeta =>
+        val gameProfile = new GameProfile(UUID.randomUUID, null)
+        gameProfile.getProperties.put("textures", new Property("textures", customHead.textureValue, ""))
+
+        val profileField = meta.getClass.getDeclaredField("profile")
+        profileField.setAccessible(true)
+        profileField.set(meta, gameProfile)
+
+        skull.setItemMeta(meta)
+        Some(skull)
+      case _ => None
+    }
+  }
 }
