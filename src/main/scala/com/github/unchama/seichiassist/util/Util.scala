@@ -522,7 +522,7 @@ object Util {
         case SkullType.ZOMBIE => SkullType.ZOMBIE.ordinal.toShort
         case _ => itemStack.getDurability
       }
-      return Option(itemStack.tap(_.setDurability(durability)))
+      return Some(itemStack.tap(_.setDurability(durability)))
     }
     //プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
     Option(block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort)))
