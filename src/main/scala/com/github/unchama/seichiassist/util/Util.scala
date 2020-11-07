@@ -525,7 +525,7 @@ object Util {
       return Some(itemStack.tap(_.setDurability(durability)))
     }
     //プレイヤーの頭の場合，ドロップアイテムからItemStackを取得．データ値をPLAYERにして返す
-    Option(block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort)))
+    Some(block.getDrops.asScala.head.tap(_.setDurability(SkullType.PLAYER.ordinal.toShort)))
   }
 
   def isLimitedTitanItem(itemstack: ItemStack): Boolean = {
