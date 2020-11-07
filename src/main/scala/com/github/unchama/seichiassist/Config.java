@@ -201,38 +201,6 @@ public final class Config {
         return config.getInt("LimitedLoginEvent.DAY" + i + "_Amount");
     }
 
-    public String getGivingNewYearSobaDay() {
-        return config.getString("NewYearEvent.GivingNewYearSobaDay");
-    }
-
-    public String getNewYearSobaYear() {
-        return config.getString("NewYearEvent.NewYearSobaYear");
-    }
-
-    public String getDropNewYearBagStartDay() {
-        return config.getString("NewYearEvent.DropNewYearBagStartDay");
-    }
-
-    public String getDropNewYearBagEndDay() {
-        return config.getString("NewYearEvent.DropNewYearBagEndDay");
-    }
-
-    public int getNewYearDropProbability() {
-        return getIntFailSafe("NewYearEvent.NewYearBagDropProbability");
-    }
-
-    public String getNewYear() {
-        return config.getString("NewYearEvent.NewYear");
-    }
-
-    public String getNewYearAppleStartDay() {
-        return config.getString("NewYearEvent.NewYearAppleStartDay");
-    }
-
-    public String getNewYearAppleEndDay() {
-        return config.getString("NewYearEvent.NewYearAppleEndDay");
-    }
-
     public int getWorldSize() {
         return getIntFailSafe("world_size");
     }
