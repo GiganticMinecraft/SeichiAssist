@@ -18,7 +18,8 @@ resolvers ++= Seq(
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
-  "maven.elmakers.com" at "http://maven.elmakers.com/repository/" // stouma915#0915の環境ではなぜかspigot-apiがダウンロードできないため一応追加
+  "maven.elmakers.com" at "http://maven.elmakers.com/repository/", // stouma915#0915の環境ではなぜかspigot-apiがダウンロードできないため一応追加
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev"
 )
 
 val providedDependencies = Seq(
@@ -28,6 +29,7 @@ val providedDependencies = Seq(
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
   "net.coreprotect" % "coreprotect" % "2.14.2",
+  "com.mojang" % "authlib" % "1.5.25",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.0"
