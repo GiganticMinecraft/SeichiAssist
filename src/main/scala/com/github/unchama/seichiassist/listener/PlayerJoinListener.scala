@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener
 import java.util.UUID
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -81,17 +80,8 @@ class PlayerJoinListener extends Listener {
       }
     }
 
-    {
-      val limitedLoginEvent = new LimitedLoginEvent()
-      val playerData = playerMap(player.getUniqueId)
-
-      //期間限定ログインイベント判別処理
-      limitedLoginEvent.setLastCheckDate(playerData.lastcheckdate)
-      limitedLoginEvent.TryGetItem(player)
-
-      //join時とonenable時、プレイヤーデータを最新の状態に更新
-      playerData.updateOnJoin()
-    }
+    //join時とonenable時、プレイヤーデータを最新の状態に更新
+    playerMap(player.getUniqueId).updateOnJoin()
 
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {

@@ -184,23 +184,6 @@ public final class Config {
         return getIntFailSafe("contribute_added_mana");
     }
 
-    public String getLimitedLoginEventStart() {
-        return config.getString("LimitedLoginEvent.EventStart");
-    }
-
-    public String getLimitedLoginEventEnd() {
-        return config.getString("LimitedLoginEvent.EventEnd");
-    }
-
-    // getIntのnull値を0にする仕様を使っている
-    public int getLimitedLoginEventItem(final int i) {
-        return config.getInt("LimitedLoginEvent.DAY" + i + "_Item");
-    }
-
-    public int getLimitedLoginEventAmount(final int i) {
-        return config.getInt("LimitedLoginEvent.DAY" + i + "_Amount");
-    }
-
     public int getWorldSize() {
         return getIntFailSafe("world_size");
     }
