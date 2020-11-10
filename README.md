@@ -21,7 +21,6 @@
 
 ## 前提プラグイン(整地鯖内製)
 - RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
-- SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
 ## ビルド
 
