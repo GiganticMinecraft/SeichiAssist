@@ -10,6 +10,6 @@ object LimitedLoginItemData {
     itemDataMap.get(day) match {
       case Some(pair) => pair
       case None if itemDataMap.contains(0) => itemDataMap(0)
-      case _ => throw new NullPointerException
+      case _ => throw new NoSuchElementException
     }
 }
