@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.listener
 
-import com.github.unchama.util.external.WorldGuardWrapper.getOneRegion
+import com.github.unchama.util.external.WorldGuardWrapper.{getOneRegion, getRegions}
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.{EventHandler, Listener}
+
+import scala.jdk.CollectionConverters._
 
 object SpawnRegionProjectileInterceptor extends Listener {
   @EventHandler
@@ -13,7 +15,7 @@ object SpawnRegionProjectileInterceptor extends Listener {
 
     projectile.getShooter match {
       case player: Player =>
-        val isInSpawnRegion = getOneRegion(player.getLocation).filter(_.getId == "spawn").isPresent
+        val isInSpawnRegion = getRegions(player.getLocation).asScala.exists(_.getId == "spawn")
         if (isInSpawnRegion) event.setCancelled(true)
       case _ =>
     }
