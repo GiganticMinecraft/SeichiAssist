@@ -69,7 +69,7 @@ public class WorldGuardWrapper {
             .isPresent();
     }
 
-    private static Optional<ProtectedRegion> getOneRegion(@NotNull Location location) {
+    public static Optional<ProtectedRegion> getOneRegion(@NotNull Location location) {
         Set<ProtectedRegion> regions = plugin.getRegionManager(location.getWorld()).getApplicableRegions(location).getRegions();
         if (regions.size() != 1) return Optional.empty();
         return Optional.of(regions.iterator().next());

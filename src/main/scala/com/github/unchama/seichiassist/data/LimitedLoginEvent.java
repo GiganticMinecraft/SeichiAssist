@@ -28,7 +28,7 @@ public class LimitedLoginEvent {
     public void TryGetItem(final Player p) {
         final UUID uuid = p.getUniqueId();
         final PlayerData playerdata = playermap.getOrElse(uuid, () -> null);
-        final ItemStack skull = Util.getskull(p.getName());
+        final ItemStack skull = GachaSkullData.gachaSkull();
         final Calendar cal = Calendar.getInstance();
         final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
