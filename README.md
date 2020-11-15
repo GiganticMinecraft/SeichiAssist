@@ -33,7 +33,7 @@ sbtがコマンドラインで使える状態で`sbt assembly`を実行すると
 ### IntelliJ IDEAの画面からビルドする
 
 IntelliJ IDEAを開発に使用している場合、プロジェクトをsbtプロジェクトとして読み込み、
-sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`build/lib`フォルダにjarが出力されます。
+sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`target/build`フォルダにjarが出力されます。
 
 ## デバッグ用docker環境
 
