@@ -4,7 +4,7 @@ import java.util.UUID
 
 import cats.data.EitherT
 import cats.effect.SyncEffect
-import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.BookedAchievementPersistenceRepository
+import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{AchievementOperation, BookedAchievementPersistenceRepository}
 
 class AchievementBookingService[
   SyncContext[_] : SyncEffect
@@ -13,27 +13,27 @@ class AchievementBookingService[
 
   import cats.implicits._
 
-  def loadBookedAchievementsIds(uuid: UUID): SyncContext[Either[String, List[Int]]] = {
+  def loadBookedAchievementsIds(uuid: UUID): SyncContext[Either[String, List[(AchievementOperation, Int)]]] = {
     {
       for {
         result <- EitherT(loadNotGivenBookedAchivementsOrError(uuid))
-        _ <- EitherT(deleteAllBookedAchievementsOrError(uuid))
+        _ <- EitherT(setAllBookedAchievementsAppliedOrError(uuid))
       } yield result
     }.value
   }
 
-  def writeAchivementId(playerName: String, achievementId: Int): SyncContext[Either[String, Unit]] = {
+  def writeAchivementId(playerName: String, achievementId: Int, operation: AchievementOperation): SyncContext[Either[String, Unit]] = {
     {
       for {
         uuid <- EitherT(findUUIDByPlayerNameOrError(playerName))
-        _ <- EitherT(bookAchievement(uuid, achievementId))
+        _ <- EitherT(bookAchievement(uuid, achievementId, operation))
       } yield ()
     }.value
   }
 
-  private def bookAchievement(uuid: UUID, achievementId: Int): SyncContext[Either[String, Unit]] = {
+  private def bookAchievement(uuid: UUID, achievementId: Int, operation: AchievementOperation): SyncContext[Either[String, Unit]] = {
     for {
-      result <- persistenceRepository.bookAchievement(uuid, achievementId).attempt
+      result <- persistenceRepository.bookAchievement(uuid, achievementId, operation).attempt
     } yield result.leftMap { _ =>
       s"[実績予約システム] 実績 (No. $achievementId) をプレイヤー (UUID = $uuid) に正常に予約できませんでした。"
     }
@@ -47,17 +47,17 @@ class AchievementBookingService[
     }
   }
 
-  private def loadNotGivenBookedAchivementsOrError(uuid: UUID): SyncContext[Either[String, List[Int]]] = {
+  private def loadNotGivenBookedAchivementsOrError(uuid: UUID): SyncContext[Either[String, List[(AchievementOperation, Int)]]] = {
     for {
-      result <- persistenceRepository.loadNotGivenBookedAchievementsOf(uuid).attempt
+      result <- persistenceRepository.loadNotAppliedBookedAchievementsOf(uuid).attempt
     } yield result.leftMap { _ =>
       s"[実績予約システム] プレイヤー (UUID = $uuid) に実績を正常に与えられませんでした。"
     }
   }
 
-  private def deleteAllBookedAchievementsOrError(uuid: UUID): SyncContext[Either[String, Unit]] = {
+  private def setAllBookedAchievementsAppliedOrError(uuid: UUID): SyncContext[Either[String, Unit]] = {
     for {
-      result <- persistenceRepository.deleteBookedAchievementsOf(uuid).attempt
+      result <- persistenceRepository.setAllBookedAchievementsApplied(uuid).attempt
     } yield result.leftMap { _ =>
       s"[実績予約システム] プレイヤー (UUID = $uuid) の予約済み実績を正常に削除できませんでした。"
     }

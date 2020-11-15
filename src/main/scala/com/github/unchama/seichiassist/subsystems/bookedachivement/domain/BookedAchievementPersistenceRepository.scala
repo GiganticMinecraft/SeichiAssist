@@ -6,11 +6,11 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 trait BookedAchievementPersistenceRepository[SyncContext[_], Key] {
-  def bookAchievement(key: Key, achievementId: Int): SyncContext[Unit]
+  def bookAchievement(key: Key, achievementId: Int, operation: AchievementOperation): SyncContext[Unit]
 
-  def loadNotGivenBookedAchievementsOf(key: Key): SyncContext[List[Int]]
+  def loadNotAppliedBookedAchievementsOf(key: Key): SyncContext[List[(AchievementOperation, Int)]]
 
-  def deleteBookedAchievementsOf(key: Key): SyncContext[Unit]
+  def setAllBookedAchievementsApplied(key: Key): SyncContext[Unit]
 
   def findPlayerUuid(playerName: String): SyncContext[Key]
 }

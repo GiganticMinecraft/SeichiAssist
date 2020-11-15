@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.commands
 
-import cats.data.EitherT
 import cats.effect.{IO, SyncEffect, SyncIO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.AchievementOperation
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -36,23 +36,7 @@ object AchievementCommand {
     MessageEffect(s"${RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。")
   )
 
-  sealed trait AchievementOperation
-
   sealed trait ScopeSpecification
-
-  object AchievementOperation {
-
-    def fromString(string: String): Option[AchievementOperation] = string match {
-      case "give" => Some(GIVE)
-      case "deprive" => Some(DEPRIVE)
-      case _ => None
-    }
-
-    case object GIVE extends AchievementOperation
-
-    case object DEPRIVE extends AchievementOperation
-
-  }
 
   object ScopeSpecification {
 
@@ -122,12 +106,18 @@ object AchievementCommand {
                   case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
                 }
               case None =>
-                service.writeAchivementId(playerName, achievementNumber)
+                service.writeAchivementId(playerName, achievementNumber, operation)
                   .runSync[SyncIO]
                   .unsafeRunSync() match {
                   case Left(errorMessage) => MessageEffect(errorMessage)
                   case Right(_) => MessageEffect(
-                    s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みます。"
+                    List(
+                      s"$playerName の No.$achievementNumber の実績を${operation match {
+                        case AchievementOperation.GIVE => "付与"
+                        case AchievementOperation.DEPRIVE => "剥奪"
+                      }}します。",
+                      s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みました。"
+                    )
                   )
                 }
             }

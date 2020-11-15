@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.liste
 import cats.effect.{SyncEffect, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.AchievementOperation
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -28,8 +29,12 @@ class GrantBookedAchievementListener[SyncContext[_] : SyncEffect](implicit
       case Left(errorMessage) =>
         MessageEffect(errorMessage)
       case Right(ids) =>
+        val idMap = ids.toMap
+        val (shouldBeGivenIds, shouldBeDeprivedIds) =
+          (idMap.get(AchievementOperation.GIVE), idMap.get(AchievementOperation.DEPRIVE))
         SequentialEffect(
-          ids.map(playerData.tryForcefullyUnlockAchievement)
+          shouldBeGivenIds.map(playerData.tryForcefullyUnlockAchievement).toList ++
+          shouldBeDeprivedIds.map(playerData.forcefullyDepriveAchievement)
         )
     }
 
