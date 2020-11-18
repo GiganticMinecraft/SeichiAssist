@@ -5,6 +5,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryDragEvent, InventoryInteractEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.AnvilInventory
+import org.bukkit.event.inventory.InventoryAction
 
 class MebiusRenamePreventionListener extends Listener {
 
@@ -43,6 +44,23 @@ class MebiusRenamePreventionListener extends Listener {
 
     if (event.getRawSlots.contains(0) && event.getView.convertSlot(0) == 0) {
       cancelEventAndNotifyTheAlternative(event)
+    }
+  }
+
+  // 数字キーでホットバーのアイテムを金床のスロットに移動している時
+  @EventHandler def onSwap(event: InventoryClickEvent): Unit = {
+    // 金床を開いていない場合終了
+    if (!event.getView.getTopInventory.isInstanceOf[AnvilInventory]) return
+
+    val action = event.getAction
+    if (action == null ||
+      (action != InventoryAction.HOTBAR_SWAP && action 1 = InventoryAction.HOTBAR_MOVE_AND_READD
+    ) ) return
+
+    val keyNum = event.getHotbarButton
+    Option(event.getViewers.iterator().next().getInventory.getItem(keyNum)).foreach { item =>
+      // TODO 金床の一番左のスロットならという条件をつける
+      if (BukkitMebiusItemStackCodec.isMebius(item)) cancelEventAndNotifyTheAlternative(event)
     }
   }
 }
