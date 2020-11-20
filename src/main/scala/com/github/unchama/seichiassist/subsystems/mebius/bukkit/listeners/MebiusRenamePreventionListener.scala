@@ -2,10 +2,9 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import org.bukkit.ChatColor._
-import org.bukkit.event.inventory.{InventoryClickEvent, InventoryDragEvent, InventoryInteractEvent}
+import org.bukkit.event.inventory.{InventoryAction, InventoryClickEvent, InventoryDragEvent, InventoryInteractEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.AnvilInventory
-import org.bukkit.event.inventory.InventoryAction
 
 class MebiusRenamePreventionListener extends Listener {
 
@@ -53,14 +52,16 @@ class MebiusRenamePreventionListener extends Listener {
     if (!event.getView.getTopInventory.isInstanceOf[AnvilInventory]) return
 
     val action = event.getAction
-    if (action == null ||
-      (action != InventoryAction.HOTBAR_SWAP && action 1 = InventoryAction.HOTBAR_MOVE_AND_READD
-    ) ) return
+    // event.getActionが数字キーによるアイテムの移動ならば処理を続行
+    if (action == null || (action != InventoryAction.HOTBAR_SWAP && action != InventoryAction.HOTBAR_MOVE_AND_READD)) return
 
     val keyNum = event.getHotbarButton
-    Option(event.getViewers.iterator().next().getInventory.getItem(keyNum)).foreach { item =>
-      // TODO 金床の一番左のスロットならという条件をつける
-      if (BukkitMebiusItemStackCodec.isMebius(item)) cancelEventAndNotifyTheAlternative(event)
+    val viewers = event.getViewers
+    // 押された数字キーに対応するホットバーのアイテムを取得する
+    Option(viewers.iterator().next().getInventory.getItem(keyNum)).foreach { item =>
+      // 金床の一番左のスロットにMebiusを移動させた場合
+      if (BukkitMebiusItemStackCodec.isMebius(item) && event.getView.convertSlot(0) == 0 && event.getRawSlot == 0)
+        cancelEventAndNotifyTheAlternative(event)
     }
   }
 }
