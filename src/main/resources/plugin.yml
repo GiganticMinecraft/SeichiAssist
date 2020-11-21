@@ -13,117 +13,117 @@ default-permission-message: &denied You don't have <permission>
 commands:
   gacha:
     description: Gacha operation command.
-    permission: multiseichiplugin.seichi
+    permission: seichiassist.seichi
     permission-message: *denied
   seichihaste:
     description: Mining speed operation command.
-    permission: multiseichiplugin.seichihaste
+    permission: seichiassist.seichihaste
     permission-message: *denied
   seichiassist:
     description: SeichiAssist command.
-    permission: multiseichiplugin.seichiassist
+    permission: seichiassist.seichiassist
     permission-message: *denied
   openpocket:
     description: Open pocket.
-    permission: multiseichiplugin.openpocket
+    permission: seichiassist.openpocket
     permission-message: *denied
   ef:
     description: Effect operation command.
-    permission: multiseichiplugin.ef
+    permission: seichiassist.ef
     permission-message: *denied
     aliases:
       - effect
   lastquit:
     description: Show last logout.
-    permission: multiseichiplugin.lastquit
+    permission: seichiassist.lastquit
     permission-message: *denied
   rmp:
     description: Delete unused Regions.
-    permission: multiseichiplugin.rmp
+    permission: seichiassist.rmp
     permission-message: *denied
   map:
     description: Show map URL.
-    permission: multiseichiplugin.map
+    permission: seichiassist.map
     permission-message: *denied
 
   stick:
     description: Get a stick.
-    permission: multiseichiplugin.stick
+    permission: seichiassist.stick
     permission-message: *denied
   shareinv:
     description: Share inventory.
-    permission: multiseichiplugin.shareinv
+    permission: seichiassist.shareinv
     permission-message: *denied
   mebius:
     description: MEBIUS operation command.
-    permission: multiseichiplugin.mebius
+    permission: seichiassist.mebius
     permission-message: *denied
   achievement:
     description: Achievement operation command.
     usage: /<command> <操作> <実績No> <スコープ指定子>
-    permission: multiseichiplugin.achievement
+    permission: seichiassist.achievement
     permission-message: *denied
   halfguard:
     description: Toggle half block protection.
-    permission: multiseichiplugin.halfguard
+    permission: seichiassist.halfguard
     permission-message: *denied
   event:
     description: Event command.
-    permission: multiseichiplugin.event
+    permission: seichiassist.event
     permission-message: *denied
   contribute:
     description: Contribution operation command.
-    permission: multiseichiplugin.contribute
+    permission: seichiassist.contribute
     permission-message: *denied
   subhome:
     description: Subhome operation command.
-    permission: multiseichiplugin.subhome
+    permission: seichiassist.subhome
     permission-message: *denied
   gtfever:
     description: GiganticFever start command.
-    permission: multiseichiplugin.gtfever
+    permission: seichiassist.gtfever
     permission-message: *denied
   minehead:
     description: Minehead command.
-    permission: multiseichiplugin.minehead
+    permission: seichiassist.minehead
     permission-message: *denied
   x-transfer:
     description: Command to change the owner of a Region.
     usage: /<command> [region name] [new owner name]
-    permission: multiseichiplugin.x-transfer
+    permission: seichiassist.x-transfer
     permission-message: *denied
   fly:
     description: This is a fly command.
     permission-message: *denied
-    permission: multibuildplugin.build
+    permission: buildassist.build
 
 permissions:
-  multiseichiplugin.*:
+  seichiassist.*:
     default: false
     children:
-      - multiseichiplugin.seichi
-      - multiseichiplugin.seichihaste
-      - multiseichiplugin.seichiassist
-      - multiseichiplugin.openpocket
-      - multiseichiplugin.ef
-      - multiseichiplugin.lastquit
-      - multiseichiplugin.rmp
-      - multiseichiplugin.map
-      - multiseichiplugin.stick
-      - multiseichiplugin.shareinv
-      - multiseichiplugin.mebius
-      - multiseichiplugin.achievenemt
-      - multiseichiplugin.halfguard
-      - multiseichiplugin.event
-      - multiseichiplugin.contribute
-      - multiseichiplugin.subhome
-      - multiseichiplugin.gtfever
-      - multiseichiplugin.minehead
-      - multiseichiplugin.x-transfer
-      - multibuildplugin.build
-  multiseichiplugin.event:
+      - seichiassist.seichi
+      - seichiassist.seichihaste
+      - seichiassist.seichiassist
+      - seichiassist.openpocket
+      - seichiassist.ef
+      - seichiassist.lastquit
+      - seichiassist.rmp
+      - seichiassist.map
+      - seichiassist.stick
+      - seichiassist.shareinv
+      - seichiassist.mebius
+      - seichiassist.achievenemt
+      - seichiassist.halfguard
+      - seichiassist.event
+      - seichiassist.contribute
+      - seichiassist.subhome
+      - seichiassist.gtfever
+      - seichiassist.minehead
+      - seichiassist.x-transfer
+      - buildassist.build
+  seichiassist.event:
     default: op
-  multiseichiplugin.shareinv:
+  seichiassist.shareinv:
     default: not op
-  multiseichiplugin.mebius:
+  seichiassist.mebius:
     default: not op
