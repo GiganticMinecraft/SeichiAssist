@@ -320,27 +320,6 @@ object Util {
     true
   }
 
-  def getExchangeskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
-      import itemStack._
-      setDurability(3)
-      setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { meta =>
-          import meta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます",
-              s"$RESET${DARK_GREEN}所有者：$name",
-              s"$RESET${GRAY}ガチャ景品と交換しました。"
-            ).asJava
-          }
-          setOwner("unchama")
-        }
-      }
-    }
-  }
-
   def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
     val meta = itemstack.getItemMeta
 

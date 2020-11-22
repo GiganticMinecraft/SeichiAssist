@@ -359,7 +359,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
       /*
 			 * step3 ガチャ券をインベントリへ
 			 */
-      val skull = Util.getExchangeskull(player.getName)
+      val skull = GachaSkullData.gachaForExchanging
       var count = 0
       while (givegacha > 0) {
         if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
