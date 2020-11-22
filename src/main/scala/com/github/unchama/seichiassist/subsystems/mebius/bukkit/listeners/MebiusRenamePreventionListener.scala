@@ -55,13 +55,14 @@ class MebiusRenamePreventionListener extends Listener {
     // event.getActionが数字キーによるアイテムの移動ならば処理を続行
     if (action == null || (action != InventoryAction.HOTBAR_SWAP && action != InventoryAction.HOTBAR_MOVE_AND_READD)) return
 
+    // 金床の一番左のスロットにアイテムを移動させた場合以外return
+    if (event.getView.convertSlot(0) != 0 || event.getRawSlot != 0) return
+
+    // Mebiusを移動させた場合
+    val bottomInventory = event.getView.getBottomInventory
     val keyNum = event.getHotbarButton
-    val viewers = event.getViewers
-    // 押された数字キーに対応するホットバーのアイテムを取得する
-    Option(viewers.iterator().next().getInventory.getItem(keyNum)).foreach { item =>
-      // 金床の一番左のスロットにMebiusを移動させた場合
-      if (BukkitMebiusItemStackCodec.isMebius(item) && event.getView.convertSlot(0) == 0 && event.getRawSlot == 0)
-        cancelEventAndNotifyTheAlternative(event)
+    if (BukkitMebiusItemStackCodec.isMebius(bottomInventory.getItem(keyNum))) {
+      cancelEventAndNotifyTheAlternative(event)
     }
   }
 }
