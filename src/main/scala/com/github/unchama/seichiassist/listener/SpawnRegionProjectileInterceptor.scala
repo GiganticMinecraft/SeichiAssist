@@ -5,6 +5,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.{EventHandler, Listener}
 
+import scala.jdk.CollectionConverters._
+
 object SpawnRegionProjectileInterceptor extends Listener {
   @EventHandler
   def onProjectileLaunch(event: ProjectileLaunchEvent): Unit = {
@@ -22,7 +24,7 @@ object SpawnRegionProjectileInterceptor extends Listener {
 
     projectile.getShooter match {
       case player: Player =>
-        getRegions(player.getLocation).forEach(rg => if (spawnRegions.contains(rg.getId)) event.setCancelled(true))
+        if (getRegions(player.getLocation).asScala.map(_.getId).exists(spawnRegions.contains)) event.setCancelled(true)
       case _ =>
     }
   }
