@@ -26,7 +26,7 @@ class JdbcBookedAchievementPersistenceRepository[SyncContext[_]](implicit SyncCo
   /**
    * `key` を UUID に持つプレイヤーに適用されていない予約済み実績の番号を返します.
    */
-  override def loadNotAppliedBookedAchievementsOf(key: UUID): SyncContext[List[(AchievementOperation, Int)]] = {
+  override def loadBookedAchievementsYetToBeAppliedOf(key: UUID): SyncContext[List[(AchievementOperation, Int)]] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"""|select achievement_id, operation from booked_achievement_status_change

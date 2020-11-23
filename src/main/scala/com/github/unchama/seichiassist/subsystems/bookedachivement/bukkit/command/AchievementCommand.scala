@@ -1,20 +1,27 @@
-package com.github.unchama.seichiassist.commands
+package com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.command
 
-import cats.effect.{IO, SyncEffect, SyncIO}
+import cats.data.EitherT
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
+import com.github.unchama.generic.ContextCoercion.coercibleComputation
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.AchievementOperation
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
+import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor._
+import org.bukkit.ChatColor.RED
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 
 import scala.jdk.CollectionConverters._
 
+/**
+ * Created by karayuu on 2020/11/21
+ */
 object AchievementCommand {
 
   private val operationParser = Parsers.fromOptionParser(
@@ -66,8 +73,9 @@ object AchievementCommand {
   )
 
   def executor[
-    SyncContext[_] : SyncEffect
-  ](implicit service: AchievementBookingService[SyncContext]): TabExecutor = ContextualExecutorBuilder.beginConfiguration()
+    AsyncContext[_] : ConcurrentEffect
+  ](implicit effectEnvironment: EffectEnvironment,
+    service: AchievementBookingService[AsyncContext]): TabExecutor = ContextualExecutorBuilder.beginConfiguration()
     .argumentsParsers(
       List(operationParser, achievementNumberParser, scopeParser),
       onMissingArguments = descriptionPrintExecutor
@@ -105,21 +113,23 @@ object AchievementCommand {
                   case AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
                   case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
                 }
+
               case None =>
-                service.writeAchivementId(playerName, achievementNumber, operation)
-                  .runSync[SyncIO]
-                  .unsafeRunSync() match {
-                  case Left(errorMessage) => MessageEffect(errorMessage)
-                  case Right(_) => MessageEffect(
-                    List(
-                      s"$playerName の No.$achievementNumber の実績を${operation match {
+                effectEnvironment.runEffectAsync("実績を予約する",
+                  service.writeAchivementId(playerName, achievementNumber, operation).start
+                )
+
+                MessageEffect(
+                  List(
+                    s"$playerName の No.$achievementNumber の実績を${
+                      operation match {
                         case AchievementOperation.GIVE => "付与"
                         case AchievementOperation.DEPRIVE => "剥奪"
-                      }}します。",
-                      s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みました。"
-                    )
+                      }
+                    }します。",
+                    s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みました。"
                   )
-                }
+                )
             }
           }
         }.combineAll

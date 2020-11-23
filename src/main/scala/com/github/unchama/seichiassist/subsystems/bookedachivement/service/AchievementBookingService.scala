@@ -3,26 +3,26 @@ package com.github.unchama.seichiassist.subsystems.bookedachivement.service
 import java.util.UUID
 
 import cats.data.EitherT
-import cats.effect.SyncEffect
+import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{AchievementOperation, BookedAchievementPersistenceRepository}
 
 class AchievementBookingService[
-  SyncContext[_] : SyncEffect
-](implicit persistenceRepository: BookedAchievementPersistenceRepository[SyncContext, UUID]
+  AsyncContext[_] : ConcurrentEffect
+](implicit persistenceRepository: BookedAchievementPersistenceRepository[AsyncContext, UUID]
  ) {
 
   import cats.implicits._
 
-  def loadBookedAchievementsIds(uuid: UUID): SyncContext[Either[String, List[(AchievementOperation, Int)]]] = {
+  def loadBookedAchievementsIds(uuid: UUID): AsyncContext[Either[String, List[(AchievementOperation, Int)]]] = {
     {
       for {
-        result <- EitherT(loadNotGivenBookedAchivementsOrError(uuid))
+        result <- EitherT(loadBookedAchivementsYetToBeAppliedOrError(uuid))
         _ <- EitherT(setAllBookedAchievementsAppliedOrError(uuid))
       } yield result
     }.value
   }
 
-  def writeAchivementId(playerName: String, achievementId: Int, operation: AchievementOperation): SyncContext[Either[String, Unit]] = {
+  def writeAchivementId(playerName: String, achievementId: Int, operation: AchievementOperation): AsyncContext[Either[String, Unit]] = {
     {
       for {
         uuid <- EitherT(findUUIDByPlayerNameOrError(playerName))
@@ -31,7 +31,7 @@ class AchievementBookingService[
     }.value
   }
 
-  private def bookAchievement(uuid: UUID, achievementId: Int, operation: AchievementOperation): SyncContext[Either[String, Unit]] = {
+  private def bookAchievement(uuid: UUID, achievementId: Int, operation: AchievementOperation): AsyncContext[Either[String, Unit]] = {
     for {
       result <- persistenceRepository.bookAchievement(uuid, achievementId, operation).attempt
     } yield result.leftMap { _ =>
@@ -39,7 +39,7 @@ class AchievementBookingService[
     }
   }
 
-  private def findUUIDByPlayerNameOrError(playerName: String): SyncContext[Either[String, UUID]] = {
+  private def findUUIDByPlayerNameOrError(playerName: String): AsyncContext[Either[String, UUID]] = {
     for {
       result <- persistenceRepository.findPlayerUuid(playerName).attempt
     } yield result.leftMap { _ =>
@@ -47,15 +47,15 @@ class AchievementBookingService[
     }
   }
 
-  private def loadNotGivenBookedAchivementsOrError(uuid: UUID): SyncContext[Either[String, List[(AchievementOperation, Int)]]] = {
+  private def loadBookedAchivementsYetToBeAppliedOrError(uuid: UUID): AsyncContext[Either[String, List[(AchievementOperation, Int)]]] = {
     for {
-      result <- persistenceRepository.loadNotAppliedBookedAchievementsOf(uuid).attempt
+      result <- persistenceRepository.loadBookedAchievementsYetToBeAppliedOf(uuid).attempt
     } yield result.leftMap { _ =>
       s"[実績予約システム] プレイヤー (UUID = $uuid) に実績を正常に与えられませんでした。"
     }
   }
 
-  private def setAllBookedAchievementsAppliedOrError(uuid: UUID): SyncContext[Either[String, Unit]] = {
+  private def setAllBookedAchievementsAppliedOrError(uuid: UUID): AsyncContext[Either[String, Unit]] = {
     for {
       result <- persistenceRepository.setAllBookedAchievementsApplied(uuid).attempt
     } yield result.leftMap { _ =>
