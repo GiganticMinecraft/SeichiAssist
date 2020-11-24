@@ -412,7 +412,7 @@ object SecondPage extends Menu {
           s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
           s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
           s"$RESET${DARK_GRAY}神に祈りながら交換しよう",
-          s"${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo()}個",
+          s"${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo}個",
           s"$RESET$DARK_GRAY$DARK_RED${UNDERLINE}クリックで開く"
         ))
         .build()
