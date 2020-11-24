@@ -6,13 +6,13 @@ import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{AchievementOperation, BookedAchievementPersistenceRepository}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-class JdbcBookedAchievementPersistenceRepository[SyncContext[_]](implicit SyncContext: Sync[SyncContext])
-  extends BookedAchievementPersistenceRepository[SyncContext, UUID] {
+class JdbcBookedAchievementPersistenceRepository[F[_]](implicit SyncContext: Sync[F])
+  extends BookedAchievementPersistenceRepository[F, UUID] {
 
   /**
    * 指定した `achievementId` の実績付与・剥奪をプレイヤーの UUID である `key` とともに記録します.
    */
-  override def bookAchievement(key: UUID, achievementId: Int, operation: AchievementOperation): SyncContext[Unit] = {
+  override def bookAchievement(key: UUID, achievementId: Int, operation: AchievementOperation): F[Unit] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"""|insert into booked_achievement_status_change (player_uuid, achievement_id, operation)
@@ -26,7 +26,7 @@ class JdbcBookedAchievementPersistenceRepository[SyncContext[_]](implicit SyncCo
   /**
    * `key` を UUID に持つプレイヤーに適用されていない予約済み実績の番号を返します.
    */
-  override def loadBookedAchievementsYetToBeAppliedOf(key: UUID): SyncContext[List[(AchievementOperation, Int)]] = {
+  override def loadBookedAchievementsYetToBeAppliedOf(key: UUID): F[List[(AchievementOperation, Int)]] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"""|select achievement_id, operation from booked_achievement_status_change
@@ -44,7 +44,7 @@ class JdbcBookedAchievementPersistenceRepository[SyncContext[_]](implicit SyncCo
   /**
    * `key` を `UUID` に持つプレイヤーの予約済み実績を受け取り済みとします.
    */
-  override def setAllBookedAchievementsApplied(key: UUID): SyncContext[Unit] = {
+  override def setAllBookedAchievementsApplied(key: UUID): F[Unit] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"""|update booked_achievement_status_change set completed_at = cast(now() as datetime)
@@ -58,7 +58,7 @@ class JdbcBookedAchievementPersistenceRepository[SyncContext[_]](implicit SyncCo
   /**
    * プレイヤー名が `playerName` なプレイヤーの `UUID` を探します.
    */
-  override def findPlayerUuid(playerName: String): SyncContext[UUID] = {
+  override def findPlayerUuid(playerName: String): F[UUID] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
         UUID.fromString(

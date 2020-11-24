@@ -2,64 +2,27 @@ package com.github.unchama.seichiassist.subsystems.bookedachivement.service
 
 import java.util.UUID
 
-import cats.data.EitherT
-import cats.effect.ConcurrentEffect
+import cats.FlatMap
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{AchievementOperation, BookedAchievementPersistenceRepository}
 
 class AchievementBookingService[
-  AsyncContext[_] : ConcurrentEffect
-](implicit persistenceRepository: BookedAchievementPersistenceRepository[AsyncContext, UUID]
- ) {
+  F[_] : FlatMap
+](implicit persistenceRepository: BookedAchievementPersistenceRepository[F, UUID]) {
 
   import cats.implicits._
+  import persistenceRepository._
 
-  def loadBookedAchievementsIds(uuid: UUID): AsyncContext[Either[String, List[(AchievementOperation, Int)]]] = {
-    {
-      for {
-        result <- EitherT(loadBookedAchivementsYetToBeAppliedOrError(uuid))
-        _ <- EitherT(setAllBookedAchievementsAppliedOrError(uuid))
-      } yield result
-    }.value
-  }
-
-  def writeAchivementId(playerName: String, achievementId: Int, operation: AchievementOperation): AsyncContext[Either[String, Unit]] = {
-    {
-      for {
-        uuid <- EitherT(findUUIDByPlayerNameOrError(playerName))
-        _ <- EitherT(bookAchievement(uuid, achievementId, operation))
-      } yield ()
-    }.value
-  }
-
-  private def bookAchievement(uuid: UUID, achievementId: Int, operation: AchievementOperation): AsyncContext[Either[String, Unit]] = {
+  def loadBookedAchievementsIds(uuid: UUID): F[List[(AchievementOperation, Int)]] = {
     for {
-      result <- persistenceRepository.bookAchievement(uuid, achievementId, operation).attempt
-    } yield result.leftMap { _ =>
-      s"[実績予約システム] 実績 (No. $achievementId) をプレイヤー (UUID = $uuid) に正常に予約できませんでした。"
-    }
+      result <- loadBookedAchievementsYetToBeAppliedOf(uuid)
+      _ <- setAllBookedAchievementsApplied(uuid)
+    } yield result
   }
 
-  private def findUUIDByPlayerNameOrError(playerName: String): AsyncContext[Either[String, UUID]] = {
+  def writeAchivementId(playerName: String, achievementId: Int, operation: AchievementOperation): F[Unit] = {
     for {
-      result <- persistenceRepository.findPlayerUuid(playerName).attempt
-    } yield result.leftMap { _ =>
-      s"[実績予約システム] プレイヤー ($playerName) のUUIDを発見できませんでした。"
-    }
-  }
-
-  private def loadBookedAchivementsYetToBeAppliedOrError(uuid: UUID): AsyncContext[Either[String, List[(AchievementOperation, Int)]]] = {
-    for {
-      result <- persistenceRepository.loadBookedAchievementsYetToBeAppliedOf(uuid).attempt
-    } yield result.leftMap { _ =>
-      s"[実績予約システム] プレイヤー (UUID = $uuid) に実績を正常に与えられませんでした。"
-    }
-  }
-
-  private def setAllBookedAchievementsAppliedOrError(uuid: UUID): AsyncContext[Either[String, Unit]] = {
-    for {
-      result <- persistenceRepository.setAllBookedAchievementsApplied(uuid).attempt
-    } yield result.leftMap { _ =>
-      s"[実績予約システム] プレイヤー (UUID = $uuid) の予約済み実績を正常に削除できませんでした。"
-    }
+      uuid <- findPlayerUuid(playerName)
+      _ <- bookAchievement(uuid, achievementId, operation)
+    } yield ()
   }
 }

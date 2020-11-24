@@ -1,17 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.command
 
-import cats.data.EitherT
+import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
-import com.github.unchama.generic.ContextCoercion.coercibleComputation
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.AchievementOperation
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor.RED
 import org.bukkit.command.{CommandSender, TabExecutor}
@@ -73,9 +70,8 @@ object AchievementCommand {
   )
 
   def executor[
-    AsyncContext[_] : ConcurrentEffect
-  ](implicit effectEnvironment: EffectEnvironment,
-    service: AchievementBookingService[AsyncContext]): TabExecutor = ContextualExecutorBuilder.beginConfiguration()
+    F[_] : ConcurrentEffect
+  ](implicit service: AchievementBookingService[F]): TabExecutor = ContextualExecutorBuilder.beginConfiguration()
     .argumentsParsers(
       List(operationParser, achievementNumberParser, scopeParser),
       onMissingArguments = descriptionPrintExecutor
@@ -101,8 +97,8 @@ object AchievementCommand {
             }
         }
 
-        import cats.implicits._
         import cats.effect.implicits._
+        import cats.implicits._
 
         targetPlayerNames.map { playerName =>
           IO {
@@ -115,19 +111,20 @@ object AchievementCommand {
                 }
 
               case None =>
-                effectEnvironment.runEffectAsync("実績を予約する",
-                  service.writeAchivementId(playerName, achievementNumber, operation).start
-                )
-
-                MessageEffect(
-                  List(
-                    s"$playerName の No.$achievementNumber の実績を${
-                      operation match {
-                        case AchievementOperation.GIVE => "付与"
-                        case AchievementOperation.DEPRIVE => "剥奪"
-                      }
-                    }します。",
-                    s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みました。"
+                SequentialEffect(
+                  Kleisli.liftF(
+                    service.writeAchivementId(playerName, achievementNumber, operation).toIO
+                  ),
+                  MessageEffect(
+                    List(
+                      s"$playerName の No.$achievementNumber の実績を${
+                        operation match {
+                          case AchievementOperation.GIVE => "付与"
+                          case AchievementOperation.DEPRIVE => "剥奪"
+                        }
+                      }します。",
+                      s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みました。"
+                    )
                   )
                 )
             }
