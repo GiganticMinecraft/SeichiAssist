@@ -15,7 +15,7 @@ object LimitedLoginEvent {
 
 class LimitedLoginEvent {
   private val playermap = SeichiAssist.playermap
-  private var lastcheckdate = ""
+  private var lastcheckdate: String = _
 
   def setLastCheckDate(s: String): Unit = lastcheckdate = s
 
