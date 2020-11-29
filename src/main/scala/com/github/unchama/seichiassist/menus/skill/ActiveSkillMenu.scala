@@ -315,7 +315,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}æ•´å
                               try {
                                 val url = new URL(webhookURL)
                                 val httpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
-                                httpURLConnection.addRequestProperty("Content-Type", "application/JSON; charset=utf-8")
+                                httpURLConnection.addRequestProperty("Content-Type", "application/json; charset=utf-8")
                                 httpURLConnection.addRequestProperty("User-Agent", "DiscordBot")
                                 httpURLConnection.setDoOutput(true)
                                 httpURLConnection.setRequestMethod("POST")
