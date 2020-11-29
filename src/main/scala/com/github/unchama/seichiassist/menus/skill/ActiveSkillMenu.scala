@@ -270,7 +270,7 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                     List(s"$RESET${YELLOW}全てのスキルを獲得すると解除されます")
                   case _ => defaultDescription
                 }
-                case skill: ActiveSkill => defaultDescription
+                case _: ActiveSkill => defaultDescription
               }
             case Unlocked => List(s"$RESET$DARK_RED${UNDERLINE}クリックでセット")
             case Selected => List(s"$RESET$DARK_RED${UNDERLINE}クリックで選択解除")

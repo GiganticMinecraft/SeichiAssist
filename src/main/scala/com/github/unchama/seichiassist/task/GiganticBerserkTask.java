@@ -19,7 +19,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class GiganticBerserkTask {
-    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private final HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
     private Player player;
     private PlayerData playerdata;
 
