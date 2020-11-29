@@ -29,6 +29,8 @@ import org.bukkit.entity.Player
 import org.bukkit.potion.PotionType
 import org.bukkit.{Bukkit, Material, Sound}
 
+import scala.util.chaining._
+
 object ActiveSkillMenu extends Menu {
   private sealed trait SkillSelectionState
   private case object Locked extends SkillSelectionState
@@ -315,11 +317,12 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}æ•´å
                               try {
                                 val url = new URL(webhookURL)
                                 val httpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
-                                httpURLConnection.addRequestProperty("Content-Type", "application/json; charset=utf-8")
-                                httpURLConnection.addRequestProperty("User-Agent", "DiscordBot")
-                                httpURLConnection.setDoOutput(true)
-                                httpURLConnection.setRequestMethod("POST")
-                                httpURLConnection.setRequestProperty("Content-Length", json.length.toString)
+                                httpURLConnection
+                                  .tap(_.addRequestProperty("Content-Type", "application/json; charset=utf-8"))
+                                  .tap(_.addRequestProperty("User-Agent", "DiscordBot"))
+                                  .tap(_.setDoOutput(true))
+                                  .tap(_.setRequestMethod("POST"))
+                                  .tap(_.setRequestProperty("Content-Length", json.length.toString))
                                 val outputStream = httpURLConnection.getOutputStream
                                 outputStream.write(json.getBytes(StandardCharsets.UTF_8))
                                 outputStream.flush()
