@@ -17,6 +17,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
+import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -24,7 +25,7 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionType
-import org.bukkit.{Material, Sound}
+import org.bukkit.{Bukkit, Material, Sound}
 
 object ActiveSkillMenu extends Menu {
   private sealed trait SkillSelectionState
@@ -306,6 +307,28 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                         val (newState, assaultSkillUnlockEffects) =
                           if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
                             unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
+                            val webhookURL = SeichiAssist.seichiAssistConfig.getWebhookURL
+                            if (!webhookURL.equalsIgnoreCase("")) {
+                              val curlCommand =
+                                if (Util.isWindows)
+                                  // Windowsはクォートの仕方が違ったりUnicodeに変換しないといけない。Windows絶対許さん
+                                  s"""curl -X POST -H "Content-Type: application/json" --data "{\\"content\\":\\"${Util.stringToUnicode(s"${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")}\\"}" $webhookURL"""
+                                else
+                                  s"""curl -X POST -H 'Content-Type: application/json' -d '{"content":"${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！"}' $webhookURL"""
+                              try {
+                                val runtimeProcess = Runtime.getRuntime.exec(curlCommand)
+                                val processComplete = runtimeProcess.waitFor()
+                                if (processComplete == 0)
+                                  runtimeProcess.destroy()
+                                else
+                                  Bukkit.getLogger.warning("Discordへの通知に失敗しました。")
+                              } catch {
+                                case e: Exception =>
+                                  e.printStackTrace()
+                                  Bukkit.getLogger.warning("Discordへの通知に失敗しました。")
+                              }
+                            } else
+                              Bukkit.getLogger.info("WebhookのURLが空のため、Discordへの通知を行いません。")
                             (
                               unlockedState.obtained(SeichiSkill.AssaultArmor),
                               SequentialEffect(

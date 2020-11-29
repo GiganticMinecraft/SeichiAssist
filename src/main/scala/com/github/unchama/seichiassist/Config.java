@@ -259,4 +259,8 @@ public final class Config {
     public String getUrl(final String typeName) {
         return config.getString("Url." + typeName, "");
     }
+
+    public String getWebhookURL() {
+        return config.getString("WebhookURL");
+    }
 }

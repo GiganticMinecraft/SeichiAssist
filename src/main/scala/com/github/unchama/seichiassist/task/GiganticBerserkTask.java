@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import scala.collection.mutable.HashMap;
@@ -70,6 +71,23 @@ public class GiganticBerserkTask {
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f);
                 //最大レベルになった時の処理
                 if (playerdata.giganticBerserk().reachedLimit()) {
+                    String webhookURL = SeichiAssist.seichiAssistConfig().getWebhookURL();
+                    if (!webhookURL.equalsIgnoreCase("")) {
+                        // Windowsはクォートの仕方が違ったりUnicodeに変換しないといけない。Windows絶対許さん
+                        String curlCommand = Util.isWindows() ? "curl -X POST -H \"Content-Type: application/json\" --data \"{\\\"content\\\":\\\"" + Util.stringToUnicode(playerdata.lowercaseName() + "がパッシブスキル:GiganticBerserkを完成させました！") + "\\\"}\" " + webhookURL : "curl -X POST -H 'Content-Type: application/json' -d '{\"content\":\"" + playerdata.lowercaseName() + "がパッシブスキル:GiganticBerserkを完成させました！" + "\"}' " + webhookURL;
+                        try {
+                            Process runtimeProcess = Runtime.getRuntime().exec(curlCommand);
+                            int processComplete = runtimeProcess.waitFor();
+                            if (processComplete == 0)
+                                runtimeProcess.destroy();
+                            else
+                                Bukkit.getLogger().warning("Discordへの通知に失敗しました。");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Bukkit.getLogger().warning("Discordへの通知に失敗しました。");
+                        }
+                    } else
+                        Bukkit.getLogger().info("WebhookのURLが空のため、Discordへの通知を行いません。");
                     Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f);
                     Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.lowercaseName() + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！");
                 }

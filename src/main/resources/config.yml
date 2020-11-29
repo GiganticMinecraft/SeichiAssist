@@ -247,6 +247,9 @@ minestack_BlockCraft:
 #ブロック設置カウントの1分上限
 BuildNum1minLimit: '256'
 
+# アサルト開放やバーサーク完成時にDiscordに通知するWebhookのURL
+WebhookURL: ""
+
 SeasonalEvents:
   ItemDropRate: 30
   HPUrl: "https://www.seichi.network/blog/categories/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E6%83%85%E5%A0%B1"
