@@ -1,5 +1,8 @@
 package com.github.unchama.seichiassist.menus.skill
 
+import java.net.{HttpURLConnection, URL}
+import java.nio.charset.StandardCharsets
+
 import cats.data.Kleisli
 import cats.effect.IO
 import cats.effect.concurrent.Ref
@@ -17,7 +20,6 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -309,19 +311,23 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
                             unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
                             val webhookURL = SeichiAssist.seichiAssistConfig.getWebhookURL
                             if (!webhookURL.equalsIgnoreCase("")) {
-                              val curlCommand =
-                                if (Util.isWindows)
-                                  // Windowsはクォートの仕方が違ったりUnicodeに変換しないといけない。Windows絶対許さん
-                                  s"""curl -X POST -H "Content-Type: application/json" --data "{\\"content\\":\\"${Util.stringToUnicode(s"${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")}\\"}" $webhookURL"""
-                                else
-                                  s"""curl -X POST -H 'Content-Type: application/json' -d '{"content":"${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！"}' $webhookURL"""
+                              val json = s"""{"content":"${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！"}"""
                               try {
-                                val runtimeProcess = Runtime.getRuntime.exec(curlCommand)
-                                val processComplete = runtimeProcess.waitFor()
-                                if (processComplete == 0)
-                                  runtimeProcess.destroy()
-                                else
-                                  Bukkit.getLogger.warning("Discordへの通知に失敗しました。")
+                                val url = new URL(webhookURL)
+                                val httpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
+                                httpURLConnection.addRequestProperty("Content-Type", "application/JSON; charset=utf-8")
+                                httpURLConnection.addRequestProperty("User-Agent", "DiscordBot")
+                                httpURLConnection.setDoOutput(true)
+                                httpURLConnection.setRequestMethod("POST")
+                                httpURLConnection.setRequestProperty("Content-Length", json.length.toString)
+                                val outputStream = httpURLConnection.getOutputStream
+                                outputStream.write(json.getBytes(StandardCharsets.UTF_8))
+                                outputStream.flush()
+                                outputStream.close()
+                                val statusCode = httpURLConnection.getResponseCode
+                                if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_NO_CONTENT)
+                                  Bukkit.getLogger.warning(s"Discordへの通知に失敗しました。(ステータスコード: $statusCode)")
+                                httpURLConnection.disconnect()
                               } catch {
                                 case e: Exception =>
                                   e.printStackTrace()

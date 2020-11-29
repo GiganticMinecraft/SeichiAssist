@@ -11,6 +11,10 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import scala.collection.mutable.HashMap;
 
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.UUID;
 
@@ -73,15 +77,23 @@ public class GiganticBerserkTask {
                 if (playerdata.giganticBerserk().reachedLimit()) {
                     String webhookURL = SeichiAssist.seichiAssistConfig().getWebhookURL();
                     if (!webhookURL.equalsIgnoreCase("")) {
-                        // Windowsはクォートの仕方が違ったりUnicodeに変換しないといけない。Windows絶対許さん
-                        String curlCommand = Util.isWindows() ? "curl -X POST -H \"Content-Type: application/json\" --data \"{\\\"content\\\":\\\"" + Util.stringToUnicode(playerdata.lowercaseName() + "がパッシブスキル:GiganticBerserkを完成させました！") + "\\\"}\" " + webhookURL : "curl -X POST -H 'Content-Type: application/json' -d '{\"content\":\"" + playerdata.lowercaseName() + "がパッシブスキル:GiganticBerserkを完成させました！" + "\"}' " + webhookURL;
+                        String json = "{\"content\":\"" + playerdata.lowercaseName() + "がパッシブスキル:GiganticBerserkを完成させました！" + "\"}";
                         try {
-                            Process runtimeProcess = Runtime.getRuntime().exec(curlCommand);
-                            int processComplete = runtimeProcess.waitFor();
-                            if (processComplete == 0)
-                                runtimeProcess.destroy();
-                            else
-                                Bukkit.getLogger().warning("Discordへの通知に失敗しました。");
+                            URL url = new URL(webhookURL);
+                            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                            httpURLConnection.addRequestProperty("Content-Type", "application/JSON; charset=utf-8");
+                            httpURLConnection.addRequestProperty("User-Agent", "DiscordBot");
+                            httpURLConnection.setDoOutput(true);
+                            httpURLConnection.setRequestMethod("POST");
+                            httpURLConnection.setRequestProperty("Content-Length", String.valueOf(json.length()));
+                            OutputStream outputStream = httpURLConnection.getOutputStream();
+                            outputStream.write(json.getBytes(StandardCharsets.UTF_8));
+                            outputStream.flush();
+                            outputStream.close();
+                            int statusCode = httpURLConnection.getResponseCode();
+                            if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_NO_CONTENT)
+                                Bukkit.getLogger().warning("Discordへの通知に失敗しました。(ステータスコード: " + statusCode + ")");
+                            httpURLConnection.disconnect();
                         } catch (Exception e) {
                             e.printStackTrace();
                             Bukkit.getLogger().warning("Discordへの通知に失敗しました。");

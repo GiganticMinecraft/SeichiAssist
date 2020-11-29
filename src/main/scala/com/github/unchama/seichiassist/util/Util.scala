@@ -512,15 +512,6 @@ object Util {
       loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "特別なタイタンをあなたに♡") >= 0
   }
 
-  def isWindows: Boolean = System.getProperty("os.name").toLowerCase.startsWith("windows")
-
-  def stringToUnicode(string: String): String = {
-    val stringBuilder = new StringBuilder
-    for (i <- 0 until string.length)
-      stringBuilder.append(String.format("\\u%04X", Character.codePointAt(string, i)))
-    stringBuilder.toString()
-  }
-
   /**
    * loreを捜査して、要素の中に`find`が含まれているかを調べる。
    *
