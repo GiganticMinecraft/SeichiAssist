@@ -13,17 +13,16 @@ object WorldSaveTask {
     world.save()
   }
 
-  private def getField(clazz: Class[_], name: String): Option[Field] = {
-    var c = clazz
-    do for (field <- c.getDeclaredFields) {
-      if (field.getName.equals(name)) {
-        field.setAccessible(true)
-        return Some(field)
+def getField(clazz: Class[_], name: String): Option[Field] = {  
+  clazz.getDeclaredFields.find(_.getName.equals(name)) match {
+    case s@Some(field) =>
+      field.setAccessible(true)
+      s
+    case None =>
+      clazz.getSuperclass match {
+        case null => None
+        case s => getField(s, name)
       }
-    } while ({
-      c = c.getSuperclass
-      c.getSuperclass != null
-    })
-    None
   }
+}
 }
