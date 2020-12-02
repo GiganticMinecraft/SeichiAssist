@@ -16,7 +16,7 @@ object WorldSaveRoutine {
     val getRepeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
 
-      10.minutes
+      1.minutes
     }
 
     val routineAction = IO {
@@ -26,10 +26,7 @@ object WorldSaveRoutine {
         Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ中…")
         Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ中…")
 
-        Bukkit.getServer.getScheduler.runTask(
-          SeichiAssist.instance,
-          () => Bukkit.getServer.getWorlds.asScala.foreach(WorldSaveTask.saveWorld)
-        )
+        Bukkit.getServer.getWorlds.asScala.foreach(WorldSaveTask.saveWorld)
 
         Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ完了")
         Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ完了")
