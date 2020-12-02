@@ -19,27 +19,21 @@ object WorldSaveRoutine {
       10.minutes
     }
 
-    val routineAction: IO[Boolean] = {
-      val save = IO {
-        if (Config.loadFrom(SeichiAssist.instance).isAutoSaveEnabled) {
-          import scala.jdk.CollectionConverters._
+    val routineAction = IO {
+      if (Config.loadFrom(SeichiAssist.instance).isAutoSaveEnabled) {
+        import scala.jdk.CollectionConverters._
 
-          Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ中…")
-          Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ中…")
+        Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ中…")
+        Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ中…")
 
-          Bukkit.getServer.getScheduler.runTask(
-            SeichiAssist.instance,
-            () => Bukkit.getServer.getWorlds.asScala.foreach(WorldSaveTask.saveWorld)
-          )
+        Bukkit.getServer.getScheduler.runTask(
+          SeichiAssist.instance,
+          () => Bukkit.getServer.getWorlds.asScala.foreach(WorldSaveTask.saveWorld)
+        )
 
-          Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ完了")
-          Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ完了")
-        }
+        Util.sendEveryMessage(s"${AQUA}ワールドデータセーブ完了")
+        Bukkit.getLogger.info(s"${AQUA}ワールドデータセーブ完了")
       }
-
-      for {
-        _ <- save
-      } yield true
     }
 
     implicit val timer: Timer[IO] = IO.timer(context)
