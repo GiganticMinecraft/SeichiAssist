@@ -92,6 +92,14 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
 
+  lazy val autoSaveSystem: StatefulSubsystem[List[IO[Nothing]]] = {
+    val configuration = subsystems.autosave.application.SystemConfiguration(
+      autoSaveEnabled = seichiAssistConfig.isAutoSaveEnabled
+    )
+
+    subsystems.autosave.System.wired(configuration)
+  }
+
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
    *
@@ -339,7 +347,7 @@ class SeichiAssist extends JavaPlugin() {
 
   private def startRepeatedJobs(): Unit = {
     val subsystems = Seq(
-      autosave.System.wired
+      autoSaveSystem
     )
 
     val startTask = {
