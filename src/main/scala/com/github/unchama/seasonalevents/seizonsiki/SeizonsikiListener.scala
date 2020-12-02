@@ -47,7 +47,7 @@ object SeizonsikiListener extends Listener {
 
     val player = event.getPlayer
     val today = LocalDate.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
+    val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(exp)) {
       val playerUuid = player.getUniqueId
 

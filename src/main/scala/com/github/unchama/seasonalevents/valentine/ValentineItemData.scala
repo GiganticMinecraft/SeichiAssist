@@ -27,7 +27,7 @@ object ValentineItemData {
 
   def isUsableCookie(item: ItemStack): Boolean = {
     val today = LocalDate.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
+    val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     today.isBefore(exp)
   }
 
@@ -53,7 +53,7 @@ object ValentineItemData {
     new NBTItem(itemStack).tap { item =>
       import item._
       setByte(NBTTagConstants.typeIdTag, 1.toByte)
-      setObject(NBTTagConstants.expirationDateTag, END_DATE)
+      setObject(NBTTagConstants.expiryDateTag, END_DATE)
     }
       .pipe(_.getItem)
   }
@@ -90,7 +90,7 @@ object ValentineItemData {
     new NBTItem(itemStack).tap { item =>
       import item._
       setByte(NBTTagConstants.typeIdTag, 2.toByte)
-      setObject(NBTTagConstants.expirationDateTag, END_DATE)
+      setObject(NBTTagConstants.expiryDateTag, END_DATE)
       setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
       setString(NBTTagConstants.producerNameTag, playerName)
     }
@@ -140,7 +140,7 @@ object ValentineItemData {
 
   object NBTTagConstants {
     val typeIdTag = "valentineCookieTypeId"
-    val expirationDateTag = "valentineCookieExpirationDate"
+    val expiryDateTag = "valentineCookieExpiryDate"
     val producerNameTag = "valentineCookieProducerName"
     val producerUuidTag = "valentineCookieProducerUuid"
   }

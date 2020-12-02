@@ -36,7 +36,7 @@ object SeizonsikiItemData {
     new NBTItem(itemStack).tap { item =>
       import item._
       setByte(NBTTagConstants.typeIdTag, 1.toByte)
-      setObject(NBTTagConstants.expirationDateTag, END_DATE)
+      setObject(NBTTagConstants.expiryDateTag, END_DATE)
     }
       .pipe(_.getItem)
   }
@@ -61,6 +61,6 @@ object SeizonsikiItemData {
 
   object NBTTagConstants {
     val typeIdTag = "seizonsikiZongoTypeId"
-    val expirationDateTag = "seizonsikiZongoExpirationDate"
+    val expiryDateTag = "seizonsikiZongoExpiryDate"
   }
 }

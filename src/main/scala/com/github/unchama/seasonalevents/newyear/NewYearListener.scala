@@ -56,7 +56,7 @@ object NewYearListener extends Listener {
 
     val player = event.getPlayer
     val today = LocalDate.now()
-    val expiryDate = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
+    val expiryDate = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(expiryDate) || today.isEqual(expiryDate)) {
       val playerUuid = player.getUniqueId
 
