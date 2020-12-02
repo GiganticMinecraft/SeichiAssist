@@ -95,7 +95,7 @@ object ResourceScope {
    * @tparam R リソースハンドラの型
    */
   def unsafeCreate[F[_] : Concurrent, G[_] : Sync : ContextCoercion[*[_], F], R]: ResourceScope[F, G, R] = {
-    new TrieMapResourceScope()
+    new MultiDictResourceScope()
   }
 
   /**
@@ -120,9 +120,9 @@ object ResourceScope {
   /**
    * `ResourceScope` の標準的な実装。
    */
-  class TrieMapResourceScope[F[_], G[_], ResourceHandler] private[ResourceScope](implicit val ResourceUsageContext: Concurrent[F],
-                                                                                 val DataAccessContext: Sync[G],
-                                                                                 contextCoercion: ContextCoercion[G, F])
+  class MultiDictResourceScope[F[_], G[_], ResourceHandler] private[ResourceScope](implicit val ResourceUsageContext: Concurrent[F],
+                                                                                   val DataAccessContext: Sync[G],
+                                                                                   contextCoercion: ContextCoercion[G, F])
     extends ResourceScope[F, G, ResourceHandler] {
 
     /**
