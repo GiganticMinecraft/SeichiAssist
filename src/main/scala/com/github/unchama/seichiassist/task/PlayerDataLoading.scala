@@ -361,7 +361,6 @@ object PlayerDataLoading {
 
         //正月イベント用
         playerData.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive")
-        playerData.newYearBagAmount = rs.getInt("newYearBagAmount")
 
         //バレンタインイベント用
         playerData.hasChocoGave = rs.getBoolean("hasChocoGave")
