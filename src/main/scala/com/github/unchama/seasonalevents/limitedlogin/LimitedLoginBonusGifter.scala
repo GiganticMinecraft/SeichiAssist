@@ -22,7 +22,7 @@ object LimitedLoginBonusGifter extends Listener {
     // 参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/707
     if (!SeichiAssist.playermap.contains(playerUuid)) return
 
-    val playerData = SeichiAssist.playermap.apply(playerUuid)
+    val playerData = SeichiAssist.playermap(playerUuid)
     val lastChecked = playerData.lastcheckdate
     var loginDays = playerData.LimitedLoginCount
     val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
@@ -41,7 +41,7 @@ object LimitedLoginBonusGifter extends Listener {
           case 1 => {
             player.sendMessage(s"【限定ログボ：${days}日目】${amount}個のガチャ券をプレゼント！")
             val skull = GachaSkullData.gachaSkull
-            for (1 <- 1 to amount) {
+            for (_ <- 1 to amount) {
               if (player.getInventory.contains(skull) || !isPlayerInventoryFull(player)) addItem(player, skull)
               else dropItem(player, skull)
             }

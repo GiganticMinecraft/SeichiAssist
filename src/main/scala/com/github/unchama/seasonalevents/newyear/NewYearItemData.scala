@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.newyear
 
 import com.github.unchama.seasonalevents.SkullData
 import com.github.unchama.seasonalevents.Util.createCustomHead
-import com.github.unchama.seasonalevents.newyear.NewYear.{END_DATE, EVENT_YEAR, PREV_EVENT_YEAR}
+import com.github.unchama.seasonalevents.newyear.NewYear.{END_DATE, EVENT_YEAR, DISTRIBUTED_SOBA_DATE}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -26,18 +26,22 @@ object NewYearItemData {
     ).map(str => s"$RESET$str")
       .asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE)
-      .tap(_.setDisplayName(s"$GOLD${BOLD}正月りんご"))
-      .tap(_.setLore(loreList))
-      .tap(_.addEnchant(Enchantment.DIG_SPEED, 20 * 50, true))
-      .tap(_.addItemFlags(ItemFlag.HIDE_ENCHANTS))
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE).tap { meta =>
+      import meta._
+      setDisplayName(s"$GOLD${BOLD}正月りんご")
+      setLore(loreList)
+      addEnchant(Enchantment.DIG_SPEED, 1, true)
+      addItemFlags(ItemFlag.HIDE_ENCHANTS)
+    }
 
     val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack)
-      .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
-      .tap(_.setObject(NBTTagConstants.expirationDateTag, END_DATE))
+    new NBTItem(itemStack).tap { item =>
+      import item._
+      setByte(NBTTagConstants.typeIdTag, 1.toByte)
+      setObject(NBTTagConstants.expirationDateTag, END_DATE)
+    }
       .pipe(_.getItem)
   }
 
@@ -56,18 +60,22 @@ object NewYearItemData {
     ).map(str => s"$RESET$str")
       .asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.PAPER)
-      .tap(_.setDisplayName(s"${AQUA}お年玉袋"))
-      .tap(_.setLore(loreList))
-      .tap(_.addEnchant(Enchantment.DIG_SPEED, 20 * 5, true))
-      .tap(_.addItemFlags(ItemFlag.HIDE_ENCHANTS))
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.PAPER).tap { meta =>
+      import meta._
+      setDisplayName(s"${AQUA}お年玉袋")
+      setLore(loreList)
+      addEnchant(Enchantment.DIG_SPEED, 1, true)
+      addItemFlags(ItemFlag.HIDE_ENCHANTS)
+    }
 
     val itemStack = new ItemStack(Material.PAPER, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack)
-      .tap(_.setByte(NBTTagConstants.typeIdTag, 2.toByte))
-      .tap(_.setObject(NBTTagConstants.eventYearTag, EVENT_YEAR))
+    new NBTItem(itemStack).tap { item =>
+      import item._
+      setByte(NBTTagConstants.typeIdTag, 2.toByte)
+      setObject(NBTTagConstants.expirationDateTag, END_DATE)
+    }
       .pipe(_.getItem)
   }
 
@@ -78,7 +86,7 @@ object NewYearItemData {
     ).asJava
 
     val itemMeta = item.getItemMeta
-      .tap(_.setDisplayName(s"年越し蕎麦(${PREV_EVENT_YEAR}年)"))
+      .tap(_.setDisplayName(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)"))
       .tap(_.setLore(loreList))
     item.setItemMeta(itemMeta)
     item
