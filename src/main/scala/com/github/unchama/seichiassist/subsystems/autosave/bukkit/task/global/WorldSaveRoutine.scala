@@ -16,7 +16,7 @@ object WorldSaveRoutine {
     val getRepeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
 
-      if (SeichiAssist.DEBUG) 20.seconds else 10.minutes
+      10.minutes
     }
 
     val routineAction: IO[Boolean] = {
