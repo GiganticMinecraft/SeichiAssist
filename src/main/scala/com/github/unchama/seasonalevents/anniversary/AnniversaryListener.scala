@@ -46,15 +46,10 @@ object AnniversaryListener extends Listener {
     if (isPlayerInventoryFull(player)) {
       player.sendMessage(s"${RED}インベントリに空きがなかったため、アイテムを配布できませんでした。")
     } else {
-      mineHead match {
-        case Some(item) =>
-          addItem(player, item)
-          playerData.anniversary_$eq(false)
-          SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(false, Some.apply(playerUuid))
-          player.sendMessage(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。")
-        case None =>
-          player.sendMessage(s"${RED}内部的なエラーによりアイテムを配布できませんでした。管理者にお問い合わせください。")
-      }
+      addItem(player, mineHead)
+      playerData.anniversary_$eq(false)
+      SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(false, Some.apply(playerUuid))
+      player.sendMessage(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。")
     }
     player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
   }

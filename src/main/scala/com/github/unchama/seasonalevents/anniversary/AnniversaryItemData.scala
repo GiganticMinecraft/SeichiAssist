@@ -1,5 +1,8 @@
 package com.github.unchama.seasonalevents.anniversary
 
+import java.util.UUID
+
+import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.seasonalevents.SkullData
 import com.github.unchama.seasonalevents.Util.createCustomHead
 import com.github.unchama.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COUNT
@@ -10,19 +13,12 @@ import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 
 object AnniversaryItemData {
-  val mineHead: Option[ItemStack] = createCustomHead(SkullData.MineChan).map { item =>
-    val loreList = List(
+
+  val mineHead = new SkullItemStackBuilder(UUID.randomUUID(), SkullData.MineChan.textureValue)
+    .title("まいんちゃん")
+    .lore(List(
       "",
       s"${YELLOW}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年記念だよ！"
-    ).asJava
-
-    val itemMeta = item.getItemMeta.tap { meta =>
-      import meta._
-      setDisplayName("まいんちゃん")
-      setLore(loreList)
-    }
-
-    item.setItemMeta(itemMeta)
-    item
-  }
+    ))
+    .build()
 }

@@ -1,8 +1,11 @@
 package com.github.unchama.seasonalevents.newyear
 
+import java.util.UUID
+
+import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.seasonalevents.SkullData
 import com.github.unchama.seasonalevents.Util.createCustomHead
-import com.github.unchama.seasonalevents.newyear.NewYear.{END_DATE, EVENT_YEAR, DISTRIBUTED_SOBA_DATE}
+import com.github.unchama.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE, EVENT_YEAR}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -79,20 +82,13 @@ object NewYearItemData {
       .pipe(_.getItem)
   }
 
-  val sobaHead: Option[ItemStack] = createCustomHead(SkullData.NewYearSoba).map { item =>
-    val loreList = List(
+  val sobaHead = new SkullItemStackBuilder(UUID.randomUUID(), SkullData.NewYearSoba.textureValue)
+    .title(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)")
+    .lore(List(
       "",
       s"${YELLOW}大晦日記念アイテムだよ!"
-    ).asJava
-
-    val itemMeta = item.getItemMeta.tap { meta =>
-      import meta._
-      setDisplayName(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)")
-      setLore(loreList)
-    }
-    item.setItemMeta(itemMeta)
-    item
-  }
+    ))
+    .build()
 
   object NBTTagConstants {
     val typeIdTag = "newYearItemTypeId"
