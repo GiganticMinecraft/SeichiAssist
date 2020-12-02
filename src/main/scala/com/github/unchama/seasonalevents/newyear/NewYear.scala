@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.newyear
 
 import java.time.LocalDate
 
-import com.github.unchama.seasonalevents.Util.{getDateSeq, validateItemDropRate}
+import com.github.unchama.seasonalevents.Util.{dateRangeAsSequence, validateItemDropRate}
 
 object NewYear {
   // お年玉袋ドロップ率（%）
@@ -17,5 +17,5 @@ object NewYear {
 
   def sobaWillBeDistributed: Boolean = LocalDate.now().isEqual(DISTRIBUTED_SOBA_DATE)
 
-  def isInEvent: Boolean = getDateSeq(START_DATE, END_DATE).contains(LocalDate.now())
+  def isInEvent: Boolean = dateRangeAsSequence(START_DATE, END_DATE).contains(LocalDate.now())
 }

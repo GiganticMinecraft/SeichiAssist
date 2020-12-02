@@ -60,8 +60,8 @@ class NewYearListener(instance: SeichiAssist) extends Listener {
 
     val player = event.getPlayer
     val today = LocalDate.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
-    if (today.isBefore(exp) || today.isEqual(exp)) {
+    val expiryDate = new NBTItem(item).getObject(NBTTagConstants.expirationDateTag, classOf[LocalDate])
+    if (today.isBefore(expiryDate) || today.isEqual(expiryDate)) {
       val playerUuid = player.getUniqueId
 
       // この条件分岐がfalseになる可能性は通常ない（ログインしている限りplayerMapにはそのMCIDのデータが有るはずだ）が、なっている事例があるので念の為
