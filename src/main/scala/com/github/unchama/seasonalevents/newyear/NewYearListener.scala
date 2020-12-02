@@ -82,7 +82,7 @@ object NewYearListener extends Listener {
 
     val player = event.getPlayer
     val block = event.getBlock
-    if (player == null || block == null) return
+    if (block == null) return
     if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
     if (!isRegionMember(player, block.getLocation)) return
 
