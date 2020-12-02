@@ -7,13 +7,13 @@ import org.bukkit.{Bukkit, World}
 object WorldSaveTask {
   def saveWorld(world: World): Unit = {
     // WARNを防ぐためMinecraftサーバーデフォルトの自動セーブは無効化
-    val server = getField(Bukkit.getServer.getClass, "console").getOrElse(return).get(Bukkit.getServer)
-    getField(server.getClass, "autosavePeriod").getOrElse(return).set(server, 0)
+    val server = getFieldAsAccessibleField(Bukkit.getServer.getClass, "console").getOrElse(return).get(Bukkit.getServer)
+    getFieldAsAccessibleField(server.getClass, "autosavePeriod").getOrElse(return).set(server, 0)
 
     world.save()
   }
 
-  def getField(clazz: Class[_], name: String): Option[Field] = {  
+  private def getFieldAsAccessibleField(clazz: Class[_], name: String): Option[Field] = {  
     clazz.getDeclaredFields.find(_.getName.equals(name)) match {
       case s@Some(field) =>
         field.setAccessible(true)
