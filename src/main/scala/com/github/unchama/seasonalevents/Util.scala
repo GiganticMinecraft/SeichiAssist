@@ -66,30 +66,4 @@ object Util {
    */
   def dateRangeAsSequence(from: LocalDate, to: LocalDate): Seq[LocalDate] =
     Range(0, from.until(to, ChronoUnit.DAYS).toInt + 1).map(from.plusDays(_))
-
-  /**
-   * `value`の中に含まれるテクスチャデータを適用したSkullのItemStackをOptionに包んで返す
-   *
-   * @param customHead [[com.github.unchama.seasonalevents.SkullData]]
-   * @return Option[ItemStack]
-   * @see [[https://www.spigotmc.org/threads/1-12-2-applying-custom-textures-to-skulls.327361/  カスタムヘッドを生成するコード]]
-   * @see [[https://qiita.com/yuta0801/items/edb4804dfb867ea82c5a テクスチャへのリンク周り]]
-   */
-  def createCustomHead(customHead: SkullData): Option[ItemStack] = {
-    val skull = new ItemStack(Material.SKULL_ITEM, 1, 3.toShort)
-    // ↑のMaterialをSKULL_ITEM以外にしなければ、↓のmatch caseは_の方には進まないはず（返り値がNoneにはならないはず）
-    skull.getItemMeta match {
-      case meta: SkullMeta =>
-        val gameProfile = new GameProfile(UUID.randomUUID, null)
-        gameProfile.getProperties.put("textures", new Property("textures", customHead.textureValue, ""))
-
-        val profileField = meta.getClass.getDeclaredField("profile")
-        profileField.setAccessible(true)
-        profileField.set(meta, gameProfile)
-
-        skull.setItemMeta(meta)
-        Some(skull)
-      case _ => None
-    }
-  }
 }

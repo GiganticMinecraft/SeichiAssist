@@ -48,6 +48,11 @@ class SkullItemStackBuilder(private val owner: SkullOwnerReference) extends
          */
         //noinspection ScalaDeprecation
         meta.setOwner(name)
+
+      /**
+       * @see [[https://www.spigotmc.org/threads/1-12-2-applying-custom-textures-to-skulls.327361/  カスタムヘッドを生成するコード]]
+       * @see [[https://qiita.com/yuta0801/items/edb4804dfb867ea82c5a テクスチャへのリンク周り]]
+       */
       case SkullOwnerUuidWithTextureValue(uuid, textureValue) =>
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid))
 

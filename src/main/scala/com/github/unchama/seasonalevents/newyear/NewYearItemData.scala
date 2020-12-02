@@ -4,7 +4,6 @@ import java.util.UUID
 
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.seasonalevents.SkullData
-import com.github.unchama.seasonalevents.Util.createCustomHead
 import com.github.unchama.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE, EVENT_YEAR}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
