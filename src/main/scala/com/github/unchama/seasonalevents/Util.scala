@@ -27,22 +27,23 @@ object Util {
    * 引数で指定されたIntがドロップ率として適当な範囲（0以上100以下の整数）にあるかどうか検証し、Doubleにして返す
    *
    * @param rate ドロップ率
-   * @return 適当な値であれば`rate.toDouble`、適当な値でなければ `30.toDouble`
+   * @return 適当な値であれば`rate.toDouble`、適当な値でなければ`IllegalArgumentException`
+   * @throws IllegalArgumentException 指定されたドロップ率が適切ではない
    */
-  def validateItemDropRate(rate: Int): Double = Option(rate)
-    .filter(rate => 0 <= rate && rate <= 100)
-    .getOrElse(30)
-    .toDouble
+  def validateItemDropRate(rate: Int): Double =
+    if (0 <= rate && rate <= 100) rate.toDouble
+    else throw new IllegalArgumentException("適切ではないアイテムドロップ率が指定されました。")
 
   /**
    * 引数で指定されたDoubleがドロップ率として適当な範囲（0.0以上100.0以下の小数）にあるかどうか検証して返す
    *
    * @param rate ドロップ率
-   * @return 適当な値であれば`rate`、適当な値でなければ `0.2`
+   * @return 適当な値であれば`rate`、適当な値でなければ`IllegalArgumentException`
+   * @throws IllegalArgumentException 指定されたドロップ率が適切ではない
    */
-  def validateItemDropRate(rate: Double): Double = Option(rate)
-    .filter(rate => 0 <= rate && rate <= 100)
-    .getOrElse(0.2)
+  def validateItemDropRate(rate: Double): Double =
+    if (0 <= rate && rate <= 100) rate
+    else throw new IllegalArgumentException("適切ではないアイテムドロップ率が指定されました。")
 
   /**
    * 引数で指定されたStringが告知のブログ記事として適切なものかどうかを検証し、Stringを返す
@@ -52,7 +53,7 @@ object Util {
    * @throws IllegalArgumentException 指定されたURLが適切ではない
    */
   def validateUrl(url: String): String =
-    if (url.startsWith("https://www.seichi.network/post/")) return url
+    if (url.startsWith("https://www.seichi.network/post/")) url
     else throw new IllegalArgumentException("適切ではないURLが指定されました。")
 
   /**
