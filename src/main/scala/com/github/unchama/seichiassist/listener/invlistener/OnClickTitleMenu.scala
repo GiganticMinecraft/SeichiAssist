@@ -63,12 +63,11 @@ object OnClickTitleMenu {
       return
     }
 
-    event.setCancelled(true)
-
     val mat = current.getType
     val isSkull = mat == Material.SKULL_ITEM
     topInventory.getTitle match {
       case MenuType.COMBINE.invName =>
+        event.setCancelled(true)
         // 二つ名組み合わせトップ
         mat match {
           //実績ポイント最新化
@@ -128,6 +127,7 @@ object OnClickTitleMenu {
         }
         
       case MenuType.HEAD.invName =>
+        event.setCancelled(true)
         mat match {
           case Material.WATER_BUCKET =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
@@ -164,6 +164,7 @@ object OnClickTitleMenu {
         }
 
       case MenuType.MIDDLE.invName =>
+        event.setCancelled(true)
         mat match {
           case Material.MILK_BUCKET =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
@@ -198,6 +199,7 @@ object OnClickTitleMenu {
         }
 
       case MenuType.TAIL.invName =>
+        event.setCancelled(true)
         mat match {
           case Material.LAVA_BUCKET =>
             clickedSound(player, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f)
@@ -232,6 +234,7 @@ object OnClickTitleMenu {
         }
 
       case MenuType.SHOP.invName =>
+        event.setCancelled(true)
         mat match {
           //実績ポイント最新化
           case Material.EMERALD_ORE =>
