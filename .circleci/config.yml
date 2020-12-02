@@ -138,18 +138,18 @@ jobs:
       - pull-submodules
 
       - restore-dependency-cache:
-          dependency-cache-version: v4
+          dependency-cache-version: v5
       - restore-build-cache:
-          build-cache-version: v7
+          build-cache-version: v8
       - restore-local-dependencies-timestamps
 
       - build-artifact-and-copy-to-workspace
 
       - persist-tmp-workspace
       - save-dependency-cache:
-          dependency-cache-version: v4
+          dependency-cache-version: v5
       - save-build-cache:
-          build-cache-version: v7
+          build-cache-version: v8
   full_build_and_test:
     executor: sbt-docker
     working_directory: ~/repo
@@ -158,13 +158,13 @@ jobs:
       - pull-submodules
 
       - restore-dependency-cache:
-          dependency-cache-version: v4
+          dependency-cache-version: v5
 
       - build-artifact-and-copy-to-workspace
 
       - persist-tmp-workspace
       - save-dependency-cache:
-          dependency-cache-version: v4
+          dependency-cache-version: v5
   deploy_debug:
     executor: sbt-docker
     working_directory: ~/repo

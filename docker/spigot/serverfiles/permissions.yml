@@ -2,4 +2,4 @@ server.basics:
   description: Allow all permissions for debug Server.
   default: true
   children:
-    multiseichiplugin.*: true
+    seichiassist.*: true

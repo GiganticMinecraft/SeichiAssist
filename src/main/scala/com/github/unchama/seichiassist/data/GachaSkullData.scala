@@ -74,4 +74,27 @@ object GachaSkullData {
         }
       }
     }
+
+  /**
+   * ガチャ景品（当たり・大当たり）とガチャ券の交換システムで手に入るガチャ券
+   */
+  val gachaForExchanging: ItemStack = {
+    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
+      import itemStack._
+      setDurability(3)
+      setItemMeta {
+        ItemMetaFactory.SKULL.getValue.tap { meta =>
+          import meta._
+          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
+          setLore {
+            List(
+              s"$RESET${GREEN}右クリックで使えます",
+              s"$RESET${GRAY}ガチャ景品と交換しました。"
+            ).asJava
+          }
+          setOwner("unchama")
+        }
+      }
+    }
+  }
 }

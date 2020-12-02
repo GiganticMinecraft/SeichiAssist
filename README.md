@@ -21,7 +21,6 @@
 
 ## 前提プラグイン(整地鯖内製)
 - RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
-- SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
 
 ## ビルド
 
@@ -34,7 +33,7 @@ sbtがコマンドラインで使える状態で`sbt assembly`を実行すると
 ### IntelliJ IDEAの画面からビルドする
 
 IntelliJ IDEAを開発に使用している場合、プロジェクトをsbtプロジェクトとして読み込み、
-sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`build/lib`フォルダにjarが出力されます。
+sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`target/build`フォルダにjarが出力されます。
 
 ## デバッグ用docker環境
 
