@@ -358,7 +358,7 @@ class SeichiAssist extends JavaPlugin() {
           )(
             HalfHourRankingRoutine()
           ).toList)
-          .concat(subsystems.flatMap(_.repeatedJobs))
+          .concat(subsystems.flatMap(_.state))
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
