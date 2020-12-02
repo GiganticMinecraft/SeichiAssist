@@ -5,9 +5,9 @@ import java.time.format.DateTimeFormatter
 
 import com.github.unchama.seasonalevents.limitedlogin.LimitedLoginEvent.{EVENT_PERIOD, isInEvent}
 import com.github.unchama.seasonalevents.limitedlogin.LimitedLoginItemData.getItemData
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import com.github.unchama.seichiassist.data.GachaSkullData
-import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull}
+import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
@@ -42,8 +42,10 @@ object LimitedLoginBonusGifter extends Listener {
             player.sendMessage(s"【限定ログボ：${days}日目】${amount}個のガチャ券をプレゼント！")
             val skull = GachaSkullData.gachaSkull
             for (_ <- 1 to amount) {
-              if (player.getInventory.contains(skull) || !isPlayerInventoryFull(player)) addItem(player, skull)
-              else dropItem(player, skull)
+              DefaultEffectEnvironment.runEffectAsync(
+                "ガチャ券を付与する",
+                grantItemStacksEffect(skull).run(player)
+              )
             }
           }
           case _ =>
