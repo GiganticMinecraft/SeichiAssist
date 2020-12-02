@@ -18,39 +18,35 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{Bukkit, Sound}
 
-class NewYearListener(instance: SeichiAssist) extends Listener {
+object NewYearListener extends Listener {
   @EventHandler
   def giveSobaToPlayer(event: PlayerJoinEvent): Unit = {
     if (!isInEvent) return
 
     val player: Player = event.getPlayer
 
-    new BukkitRunnable {
-      override def run(): Unit = {
-        if (!SeichiAssist.playermap.contains(player.getUniqueId)) return
+    if (!SeichiAssist.playermap.contains(player.getUniqueId)) return
 
-        val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
-        if (playerData.hasNewYearSobaGive) return
+    val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
+    if (playerData.hasNewYearSobaGive) return
 
-        if (isPlayerInventoryFull(player)) {
-          List(
-            "インベントリに空きがなかったため、アイテムを配布できませんでした。",
-            "インベントリに空きを作ってから、再度サーバーに参加してください。"
-          ).map(str => s"$RED$UNDERLINE$str")
-            .foreach(player.sendMessage)
-        } else {
-          sobaHead match {
-            case Some(item) =>
-              addItem(player, item)
-              playerData.hasNewYearSobaGive_$eq(true)
-              player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
-            case None =>
-              player.sendMessage(s"${RED}内部的なエラーによりアイテムを配布できませんでした。管理者にお問い合わせください。")
-          }
-        }
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+    if (isPlayerInventoryFull(player)) {
+      List(
+        "インベントリに空きがなかったため、アイテムを配布できませんでした。",
+        "インベントリに空きを作ってから、再度サーバーに参加してください。"
+      ).map(str => s"$RED$UNDERLINE$str")
+        .foreach(player.sendMessage)
+    } else {
+      sobaHead match {
+        case Some(item) =>
+          addItem(player, item)
+          playerData.hasNewYearSobaGive_$eq(true)
+          player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
+        case None =>
+          player.sendMessage(s"${RED}内部的なエラーによりアイテムを配布できませんでした。管理者にお問い合わせください。")
       }
-    }.runTaskLater(instance, 200L)
+    }
+    player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
   }
 
   @EventHandler

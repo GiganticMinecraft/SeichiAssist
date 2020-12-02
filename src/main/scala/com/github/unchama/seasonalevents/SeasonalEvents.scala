@@ -17,7 +17,7 @@ class SeasonalEvents(instance: SeichiAssist) {
       LimitedLoginBonusGifter,
       SeizonsikiListener,
       ValentineListener,
-      new NewYearListener(instance),
+      NewYearListener,
     ).foreach(
       instance.getServer.getPluginManager.registerEvents(_, instance)
     )
