@@ -16,7 +16,6 @@ object LimitedLoginBonusGifter extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
-    if (player == null) return
     val playerUuid = player.getUniqueId
 
     // この条件分岐がtrueになる可能性は通常ない（ログインしている限りplayerMapにはそのMCIDのデータが有るはずだ）が、なっている事例があるので念の為

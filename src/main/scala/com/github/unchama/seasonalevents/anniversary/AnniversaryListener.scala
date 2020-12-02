@@ -17,7 +17,7 @@ object AnniversaryListener extends Listener {
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
 
-    if (player != null && LocalDate.now().isEqual(EVENT_DATE)) {
+    if (LocalDate.now().isEqual(EVENT_DATE)) {
       List(
         s"${BLUE}本日でギガンティック☆整地鯖は${ANNIVERSARY_COUNT}周年を迎えます。",
         s"${BLUE}これを記念し、限定アイテムを入手可能です。詳しくは下記URLのサイトをご覧ください。",
@@ -30,7 +30,6 @@ object AnniversaryListener extends Listener {
   @EventHandler
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
     val player = event.getEntity
-    if (player == null) return
     val playerUuid = player.getUniqueId
 
     // この条件分岐がtrueになる可能性は通常ない（ログインしている限りplayerMapにはそのMCIDのデータが有るはずだ）が、なっている事例があるので念の為
