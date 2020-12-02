@@ -820,7 +820,7 @@ class PlayerData(
    * @return この作用の実行者に向け操作の結果を記述する[TargetedEffect]
    */
   def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] = DeferredEffect(IO {
-    if (!TitleFlags(number)) {
+    if (TitleFlags(number)) {
       TitleFlags(number) = false
 
       MessageEffect(s"$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。")

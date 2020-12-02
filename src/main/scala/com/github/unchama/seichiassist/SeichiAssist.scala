@@ -26,7 +26,7 @@ import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.listener.new_year_event.NewYearsEvent
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
@@ -90,6 +90,15 @@ class SeichiAssist extends JavaPlugin() {
     )
 
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
+  }
+
+  lazy val bookedAchievementSystem: Subsystem = {
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.bookedachivement.System.wired[IO]
   }
 
   /**
@@ -241,7 +250,8 @@ class SeichiAssist extends JavaPlugin() {
       itemMigrationSystem,
       managedFlySystem,
       rescueplayer.System.wired,
-      webhook.System.wired
+      webhook.System.wired,
+      bookedAchievementSystem
     )
 
     // コマンドの登録
@@ -256,7 +266,6 @@ class SeichiAssist extends JavaPlugin() {
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
       "shareinv" -> ShareInvCommand.executor,
-      "achievement" -> AchievementCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
       "event" -> EventCommand.executor,
       "contribute" -> ContributeCommand.executor,

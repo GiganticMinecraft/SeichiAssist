@@ -1,18 +1,25 @@
-package com.github.unchama.seichiassist.commands
+package com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.command
 
-import cats.effect.IO
+import cats.data.Kleisli
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.AchievementOperation
+import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor._
+import org.bukkit.ChatColor.RED
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 
 import scala.jdk.CollectionConverters._
 
+/**
+ * Created by karayuu on 2020/11/21
+ */
 object AchievementCommand {
 
   private val operationParser = Parsers.fromOptionParser(
@@ -34,22 +41,7 @@ object AchievementCommand {
     MessageEffect(s"${RED}スコープ指定子はuser [ユーザー名], server, worldのみ入力できます。")
   )
 
-  sealed trait AchievementOperation
-
   sealed trait ScopeSpecification
-
-  object AchievementOperation {
-
-    def fromString(string: String): Option[AchievementOperation] = string match {
-      case "give" => Some(GIVE)
-      case "deprive" => Some(DEPRIVE)
-      case _ => None
-    }
-
-    case object GIVE extends AchievementOperation
-
-    case object DEPRIVE extends AchievementOperation
-  }
 
   object ScopeSpecification {
 
@@ -65,6 +57,7 @@ object AchievementCommand {
     case object SERVER extends ScopeSpecification
 
     case object WORLD extends ScopeSpecification
+
   }
 
   private val descriptionPrintExecutor = new EchoExecutor(
@@ -77,7 +70,9 @@ object AchievementCommand {
     )
   )
 
-  val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
+  def executor[
+    F[_] : ConcurrentEffect
+  ](implicit service: AchievementBookingService[F]): TabExecutor = ContextualExecutorBuilder.beginConfiguration()
     .argumentsParsers(
       List(operationParser, achievementNumberParser, scopeParser),
       onMissingArguments = descriptionPrintExecutor
@@ -103,6 +98,7 @@ object AchievementCommand {
             }
         }
 
+        import cats.effect.implicits._
         import cats.implicits._
 
         targetPlayerNames.map { playerName =>
@@ -114,9 +110,24 @@ object AchievementCommand {
                   case AchievementOperation.GIVE => playerData.tryForcefullyUnlockAchievement(achievementNumber)
                   case AchievementOperation.DEPRIVE => playerData.forcefullyDepriveAchievement(achievementNumber)
                 }
+
               case None =>
-                MessageEffect(s"$playerName は現在サーバーにログインしていません。")
-              // TODO 実績付与予約システムに書き込むようにする
+                SequentialEffect(
+                  Kleisli.liftF(
+                    service.writeAchivementId(playerName, achievementNumber, operation).toIO.start.as(())
+                  ),
+                  MessageEffect(
+                    List(
+                      s"$playerName の No.$achievementNumber の実績を${
+                        operation match {
+                          case AchievementOperation.GIVE => "付与"
+                          case AchievementOperation.DEPRIVE => "剥奪"
+                        }
+                      }します。",
+                      s"$playerName は現在サーバーにログインしていません。\n予約システムに書き込みました。"
+                    )
+                  )
+                )
             }
           }
         }.combineAll
