@@ -85,9 +85,11 @@ object NewYearItemData {
       s"${YELLOW}大晦日記念アイテムだよ!"
     ).asJava
 
-    val itemMeta = item.getItemMeta
-      .tap(_.setDisplayName(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)"))
-      .tap(_.setLore(loreList))
+    val itemMeta = item.getItemMeta.tap { meta =>
+      import meta._
+      setDisplayName(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)")
+      setLore(loreList)
+    }
     item.setItemMeta(itemMeta)
     item
   }

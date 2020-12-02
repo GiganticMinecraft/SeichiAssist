@@ -41,16 +41,20 @@ object ValentineItemData {
       ) ++ baseLore
     }.asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
-      .tap(_.setDisplayName(cookieName))
-      .tap(_.setLore(loreList))
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE).tap { meta =>
+      import meta._
+      setDisplayName(cookieName)
+      setLore(loreList)
+    }
 
     val itemStack = new ItemStack(Material.COOKIE, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack)
-      .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
-      .tap(_.setObject(NBTTagConstants.expirationDateTag, END_DATE))
+    new NBTItem(itemStack).tap { item =>
+      import item._
+      setByte(NBTTagConstants.typeIdTag, 1.toByte)
+      setObject(NBTTagConstants.expirationDateTag, END_DATE)
+    }
       .pipe(_.getItem)
   }
 
@@ -74,18 +78,22 @@ object ValentineItemData {
       header ++ baseLore ++ producer
     }.asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE)
-      .tap(_.setDisplayName(cookieName))
-      .tap(_.setLore(loreList))
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE).tap { meta =>
+      import meta._
+      setDisplayName(cookieName)
+      setLore(loreList)
+    }
 
     val itemStack = new ItemStack(Material.COOKIE, 64)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack)
-      .tap(_.setByte(NBTTagConstants.typeIdTag, 2.toByte))
-      .tap(_.setObject(NBTTagConstants.expirationDateTag, END_DATE))
-      .tap(_.setObject(NBTTagConstants.producerUuidTag, player.getUniqueId))
-      .tap(_.setString(NBTTagConstants.producerNameTag, playerName))
+    new NBTItem(itemStack).tap { item =>
+      import item._
+      setByte(NBTTagConstants.typeIdTag, 2.toByte)
+      setObject(NBTTagConstants.expirationDateTag, END_DATE)
+      setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
+      setString(NBTTagConstants.producerNameTag, playerName)
+    }
       .pipe(_.getItem)
   }
 

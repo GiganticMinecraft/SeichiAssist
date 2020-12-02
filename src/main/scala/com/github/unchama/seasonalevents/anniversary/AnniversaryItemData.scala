@@ -16,9 +16,11 @@ object AnniversaryItemData {
       s"${YELLOW}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年記念だよ！"
     ).asJava
 
-    val itemMeta = item.getItemMeta
-      .tap(_.setDisplayName("まいんちゃん"))
-      .tap(_.setLore(loreList))
+    val itemMeta = item.getItemMeta.tap { meta =>
+      import meta._
+      setDisplayName("まいんちゃん")
+      setLore(loreList)
+    }
 
     item.setItemMeta(itemMeta)
     item

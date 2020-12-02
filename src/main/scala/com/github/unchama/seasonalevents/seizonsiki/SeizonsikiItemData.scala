@@ -24,16 +24,20 @@ object SeizonsikiItemData {
     ).map(str => s"$RESET$str")
       .asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE)
-      .tap(_.setDisplayName(s"$GOLD${BOLD}ゾんご"))
-      .tap(_.setLore(loreList))
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE).tap { meta =>
+      import meta._
+      setDisplayName(s"$GOLD${BOLD}ゾんご")
+      setLore(loreList)
+    }
 
     val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack)
-      .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
-      .tap(_.setObject(NBTTagConstants.expirationDateTag, END_DATE))
+    new NBTItem(itemStack).tap { item =>
+      import item._
+      setByte(NBTTagConstants.typeIdTag, 1.toByte)
+      setObject(NBTTagConstants.expirationDateTag, END_DATE)
+    }
       .pipe(_.getItem)
   }
 

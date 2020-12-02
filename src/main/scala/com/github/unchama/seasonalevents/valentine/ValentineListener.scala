@@ -75,10 +75,12 @@ object ValentineListener extends Listener {
 
   private def useDroppedCookie(player: Player): Unit = {
     val effect = randomlySelectEffect
-    player
-      .tap(_.sendMessage(getMessage(effect)))
-      .tap(_.addPotionEffect(getEffect(effect)._2))
-      .tap(_.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F))
+    player.tap { player =>
+      import player._
+      sendMessage(getMessage(effect))
+      addPotionEffect(getEffect(effect)._2)
+      playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+    }
   }
 
   private def useGiftedCookie(player: Player, item: ItemStack): Unit = {
