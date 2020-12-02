@@ -48,11 +48,12 @@ object Util {
    * 引数で指定されたStringが告知のブログ記事として適当なものかどうかを検証し、Stringを返す
    *
    * @param url URL
-   * @return 適当であれば指定された`url`そのまま、適当でなければブログ記事のイベント情報一覧のURLをそれぞれStringで返す
+   * @return 適当であれば指定された`url`をそのまま返し、適当でなければ`IllegalArgumentException`を出す
+   * @throws IllegalArgumentException
    */
-  def validateUrl(url: String): String = Option(url)
-    .filter(_.startsWith("https://www.seichi.network/post/"))
-    .getOrElse("https://www.seichi.network/blog/categories/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E6%83%85%E5%A0%B1")
+  def validateUrl(url: String): String =
+    if (url.startsWith("https://www.seichi.network/post/")) return url
+    else throw IllegalArgumentException
 
   /**
    * 指定された期間に含まれるすべての日付を返す
