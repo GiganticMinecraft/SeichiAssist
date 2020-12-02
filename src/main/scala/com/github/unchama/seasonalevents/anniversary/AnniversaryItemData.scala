@@ -8,12 +8,9 @@ import com.github.unchama.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COU
 import org.bukkit.ChatColor.YELLOW
 import org.bukkit.inventory.ItemStack
 
-import scala.jdk.CollectionConverters._
-import scala.util.chaining._
-
 object AnniversaryItemData {
 
-  val mineHead = new SkullItemStackBuilder(UUID.randomUUID(), SkullData.MineChan.textureValue)
+  val mineHead: ItemStack = new SkullItemStackBuilder(UUID.randomUUID(), SkullData.MineChan.textureValue)
     .title("まいんちゃん")
     .lore(List(
       "",

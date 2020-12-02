@@ -5,12 +5,11 @@ import java.time.format.DateTimeFormatter
 
 import com.github.unchama.seasonalevents.limitedlogin.LimitedLoginEvent.{EVENT_PERIOD, isInEvent}
 import com.github.unchama.seasonalevents.limitedlogin.LimitedLoginItemData.getItemData
-import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import com.github.unchama.seichiassist.data.GachaSkullData
-import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
+import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.inventory.ItemStack
 
 object LimitedLoginBonusGifter extends Listener {
   @EventHandler

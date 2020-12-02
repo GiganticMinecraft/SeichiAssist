@@ -4,7 +4,7 @@ import java.util.UUID
 
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.seasonalevents.SkullData
-import com.github.unchama.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE, EVENT_YEAR}
+import com.github.unchama.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -81,7 +81,7 @@ object NewYearItemData {
       .pipe(_.getItem)
   }
 
-  val sobaHead = new SkullItemStackBuilder(UUID.randomUUID(), SkullData.NewYearSoba.textureValue)
+  val sobaHead: ItemStack = new SkullItemStackBuilder(UUID.randomUUID(), SkullData.NewYearSoba.textureValue)
     .title(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)")
     .lore(List(
       "",

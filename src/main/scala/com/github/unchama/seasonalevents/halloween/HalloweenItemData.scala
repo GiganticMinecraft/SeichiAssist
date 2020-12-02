@@ -6,11 +6,11 @@ import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
-import org.bukkit.{Bukkit, Material}
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
+import org.bukkit.{Bukkit, Material}
 
 import scala.collection.immutable.{List, Set}
 import scala.jdk.CollectionConverters._

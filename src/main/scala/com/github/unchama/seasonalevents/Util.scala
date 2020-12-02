@@ -2,14 +2,10 @@ package com.github.unchama.seasonalevents
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.{Random, UUID}
+import java.util.Random
 
-import com.mojang.authlib.GameProfile
-import com.mojang.authlib.properties.Property
-import org.bukkit.Material
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.SkullMeta
 
 object Util {
   /**

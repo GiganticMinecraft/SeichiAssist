@@ -15,7 +15,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.{Bukkit, Sound}
 
 object NewYearListener extends Listener {
