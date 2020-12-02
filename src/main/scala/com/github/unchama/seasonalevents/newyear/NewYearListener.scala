@@ -37,14 +37,9 @@ object NewYearListener extends Listener {
       ).map(str => s"$RED$UNDERLINE$str")
         .foreach(player.sendMessage)
     } else {
-      sobaHead match {
-        case Some(item) =>
-          addItem(player, item)
-          playerData.hasNewYearSobaGive_$eq(true)
-          player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
-        case None =>
-          player.sendMessage(s"${RED}内部的なエラーによりアイテムを配布できませんでした。管理者にお問い合わせください。")
-      }
+      addItem(player, sobaHead)
+      playerData.hasNewYearSobaGive_$eq(true)
+      player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
     }
     player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
   }
