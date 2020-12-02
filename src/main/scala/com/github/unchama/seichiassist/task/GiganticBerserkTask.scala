@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.util.Util
 import org.bukkit.{Bukkit, ChatColor, Sound}
 import org.bukkit.entity.Player
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Random, Success}
 
 class GiganticBerserkTask {
@@ -61,6 +60,7 @@ class GiganticBerserkTask {
         if (playerdata.giganticBerserk.reachedLimit()) {
           val webhookURL = SeichiAssist.seichiAssistConfig.getWebhookURL
           if (!webhookURL.equalsIgnoreCase("")) {
+            implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
             new WebhookService().sendMessage(webhookURL, s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！").onComplete {
               case Success(statusCode) =>
                 if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_NO_CONTENT)
