@@ -86,9 +86,6 @@ object NewYearListener extends Listener {
     if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
     if (!isRegionMember(player, block.getLocation)) return
 
-    val playerUuid = player.getUniqueId
-    if (!SeichiAssist.playermap.contains(playerUuid)) return
-
     val rand = new Random().nextDouble() * 100
     if (rand < itemDropRate) {
       if (isPlayerInventoryFull(player)) {
@@ -99,10 +96,6 @@ object NewYearListener extends Listener {
         player.sendMessage(s"$AQUA「お年玉袋」を見つけたよ！")
       }
       player.playSound(player.getLocation, Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f)
-
-      // TODO これいる？こことDBへのload・save以外で使われてないよ？
-      val playerData = SeichiAssist.playermap(playerUuid)
-      playerData.newYearBagAmount_$eq(playerData.newYearBagAmount + 1)
     }
   }
 }

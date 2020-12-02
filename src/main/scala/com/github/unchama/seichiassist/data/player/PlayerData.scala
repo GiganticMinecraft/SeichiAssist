@@ -217,7 +217,6 @@ class PlayerData(
   var contribute_point = 0
   //正月イベント用
   var hasNewYearSobaGive = false
-  var newYearBagAmount = 0
   //バレンタインイベント用
   var hasChocoGave = false
   var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
