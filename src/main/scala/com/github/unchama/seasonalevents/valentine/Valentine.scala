@@ -9,6 +9,6 @@ object Valentine {
 
   // イベントが実際に終了する日
   val END_DATE: LocalDate = LocalDate.of(2018, 2, 27)
-  val itemDropRate: Double = validateItemDropRate(30)
+  val itemDropRate: Double = validateItemDropRate(0.3)
   val blogArticleUrl: String = validateUrl("https://www.seichi.network/post/valentine2020")
 }

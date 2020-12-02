@@ -15,30 +15,19 @@ object Util {
    * @param item   ドロップさせるItemStack
    */
   def randomlyDropItemAt(entity: Entity, item: ItemStack, rate: Double): Unit = {
-    val rand = new Random().nextDouble() * 100
+    val rand = new Random().nextDouble()
     if (rand < rate) entity.getWorld.dropItemNaturally(entity.getLocation, item)
   }
 
   /**
-   * 引数で指定されたIntがドロップ率として適当な範囲（0以上100以下の整数）にあるかどうか検証し、Doubleにして返す
-   *
-   * @param rate ドロップ率
-   * @return 適当な値であれば`rate.toDouble`、適当な値でなければ`IllegalArgumentException`
-   * @throws IllegalArgumentException 指定されたドロップ率が適切ではない
-   */
-  def validateItemDropRate(rate: Int): Double =
-    if (0 <= rate && rate <= 100) rate.toDouble
-    else throw new IllegalArgumentException("適切ではないアイテムドロップ率が指定されました。")
-
-  /**
-   * 引数で指定されたDoubleがドロップ率として適当な範囲（0.0以上100.0以下の小数）にあるかどうか検証して返す
+   * 引数で指定されたDoubleがドロップ率として適当な範囲（0.0以上1.0以下の小数）にあるかどうか検証して返す
    *
    * @param rate ドロップ率
    * @return 適当な値であれば`rate`、適当な値でなければ`IllegalArgumentException`
    * @throws IllegalArgumentException 指定されたドロップ率が適切ではない
    */
   def validateItemDropRate(rate: Double): Double =
-    if (0 <= rate && rate <= 100) rate
+    if (0.0 <= rate && rate <= 1.0) rate
     else throw new IllegalArgumentException("適切ではないアイテムドロップ率が指定されました。")
 
   /**

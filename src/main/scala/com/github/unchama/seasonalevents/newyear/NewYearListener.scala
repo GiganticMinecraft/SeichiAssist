@@ -80,7 +80,7 @@ object NewYearListener extends Listener {
     if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
     if (!isRegionMember(player, block.getLocation)) return
 
-    val rand = new Random().nextDouble() * 100
+    val rand = new Random().nextDouble()
     if (rand < itemDropRate) {
       if (isPlayerInventoryFull(player)) {
         dropItem(player, newYearBag)
