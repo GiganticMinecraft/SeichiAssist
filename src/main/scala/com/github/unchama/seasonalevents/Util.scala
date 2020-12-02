@@ -45,15 +45,15 @@ object Util {
     .getOrElse(0.2)
 
   /**
-   * 引数で指定されたStringが告知のブログ記事として適当なものかどうかを検証し、Stringを返す
+   * 引数で指定されたStringが告知のブログ記事として適切なものかどうかを検証し、Stringを返す
    *
    * @param url URL
-   * @return 適当であれば指定された`url`をそのまま返し、適当でなければ`IllegalArgumentException`を出す
-   * @throws IllegalArgumentException
+   * @return 適切であれば指定された`url`をそのまま返し、適切でなければ`IllegalArgumentException`を出す
+   * @throws IllegalArgumentException 指定されたURLが適切ではない
    */
   def validateUrl(url: String): String =
     if (url.startsWith("https://www.seichi.network/post/")) return url
-    else throw IllegalArgumentException
+    else throw new IllegalArgumentException("適切ではないURLが指定されました。")
 
   /**
    * 指定された期間に含まれるすべての日付を返す
