@@ -19,7 +19,7 @@ resolvers ++= Seq(
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
   "maven.elmakers.com" at "http://maven.elmakers.com/repository/", // stouma915#0915の環境ではなぜかspigot-apiがダウンロードできないため一応追加
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev"
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのための
 )
 
 val providedDependencies = Seq(
