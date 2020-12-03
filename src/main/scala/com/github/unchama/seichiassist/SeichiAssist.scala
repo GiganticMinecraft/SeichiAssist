@@ -355,17 +355,13 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private def startRepeatedJobs(): Unit = {
-    val subsystems = Seq(
-      autoSaveSystem
-    )
-
     val startTask = {
       import PluginExecutionContexts._
       import cats.implicits._
 
       // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
       val programs: List[IO[Nothing]] =
-        (List(
+        List(
           PlayerDataRecalculationRoutine(),
           PlayerDataBackupRoutine()
         ) ++
@@ -374,8 +370,7 @@ class SeichiAssist extends JavaPlugin() {
               || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
             HalfHourRankingRoutine()
-          ).toList)
-          .concat(subsystems.flatMap(_.state))
+          ).toList ++ autoSaveSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
