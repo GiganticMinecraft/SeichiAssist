@@ -14,6 +14,8 @@ import org.bukkit.event.{EventHandler, Listener}
 object LimitedLoginBonusGifter extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
+    if (!isInEvent) return
+
     val player = event.getPlayer
     val playerUuid = player.getUniqueId
 
@@ -23,36 +25,36 @@ object LimitedLoginBonusGifter extends Listener {
 
     val playerData = SeichiAssist.playermap(playerUuid)
     val lastChecked = playerData.lastcheckdate
-    var loginDays = playerData.LimitedLoginCount
+    // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）0、そうでなければ（=開催期間中ならば）playerData.LimitedLoginCount
+    var loginDays =
+      if (lastCheckedDate.isBefore(START_DATE)) 0
+      else playerData.LimitedLoginCount
     val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
     val lastCheckedDate = LocalDate.parse(lastChecked, formatter)
-    if (isInEvent) {
-      // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）リセット
-      if (lastCheckedDate.isBefore(START_DATE)) loginDays = 0
 
-      loginDays += 1
-      var days = 0
-      do {
-        val itemNumber = getItemData(days)._1
-        val amount = getItemData(days)._2
+    loginDays += 1
+    var days = 0
+    do {
+      val itemNumber = getItemData(days)._1
+      val amount = getItemData(days)._2
 
-        itemNumber match {
-          case 1 => {
-            player.sendMessage(s"【限定ログボ：${days}日目】${amount}個のガチャ券をプレゼント！")
-            val skull = GachaSkullData.gachaSkull
-            for (_ <- 1 to amount) {
-              DefaultEffectEnvironment.runEffectAsync(
-                "ガチャ券を付与する",
-                grantItemStacksEffect(skull).run(player)
-              )
-            }
+      itemNumber match {
+        case 1 => {
+          player.sendMessage(s"【限定ログボ：${days}日目】${amount}個のガチャ券をプレゼント！")
+          val skull = GachaSkullData.gachaSkull
+          for (_ <- 1 to amount) {
+            DefaultEffectEnvironment.runEffectAsync(
+              "ガチャ券を付与する",
+              grantItemStacksEffect(skull).run(player)
+            )
           }
-          case _ =>
         }
+        case _ =>
+      }
 
-        days += loginDays
-      } while (days == loginDays)
-    }
+      days += loginDays
+    } while (days == loginDays)
+
     playerData.LimitedLoginCount_$eq(loginDays)
   }
 }
