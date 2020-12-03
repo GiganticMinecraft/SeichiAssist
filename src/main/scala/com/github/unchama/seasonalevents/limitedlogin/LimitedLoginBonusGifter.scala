@@ -3,7 +3,7 @@ package com.github.unchama.seasonalevents.limitedlogin
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import com.github.unchama.seasonalevents.limitedlogin.LimitedLoginEvent.{EVENT_PERIOD, isInEvent}
+import com.github.unchama.seasonalevents.limitedlogin.LimitedLoginEvent.{START_DATE, isInEvent}
 import com.github.unchama.seasonalevents.limitedlogin.LimitedLoginItemData.getItemData
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
@@ -27,9 +27,9 @@ object LimitedLoginBonusGifter extends Listener {
     val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
     val lastCheckedDate = LocalDate.parse(lastChecked, formatter)
     if (isInEvent) {
-      if (EVENT_PERIOD.contains(lastCheckedDate)) {
-        loginDays = 0
-      }
+      // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）リセット
+      if (lastCheckedDate.isBefore(START_DATE)) loginDays = 0
+
       loginDays += 1
       var days = 0
       do {
