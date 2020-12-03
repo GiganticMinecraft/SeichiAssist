@@ -48,7 +48,9 @@ object Util {
    * @param to   期間の終了日
    * @return 期間に含まれるすべてのLocalDateをもつSeq
    * @see [[https://qiita.com/pictiny/items/357630e48043185da223 Qiita: Scalaで日付の範囲を指定してリストを作る]]
+   * @throws IllegalArgumentException `from`に`to`より後の日付が指定された時
    */
   def dateRangeAsSequence(from: LocalDate, to: LocalDate): Seq[LocalDate] =
-    Range(0, from.until(to, ChronoUnit.DAYS).toInt + 1).map(from.plusDays(_))
+    if (from.isAfter(to)) throw new IllegalArgumentException("適切ではない期間が指定されました。")
+    else Range(0, from.until(to, ChronoUnit.DAYS).toInt + 1).map(from.plusDays(_))
 }
