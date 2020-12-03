@@ -25,12 +25,12 @@ object LimitedLoginBonusGifter extends Listener {
 
     val playerData = SeichiAssist.playermap(playerUuid)
     val lastChecked = playerData.lastcheckdate
+    val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
+    val lastCheckedDate = LocalDate.parse(lastChecked, formatter)
     // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）0、そうでなければ（=開催期間中ならば）playerData.LimitedLoginCount
     var loginDays =
       if (lastCheckedDate.isBefore(START_DATE)) 0
       else playerData.LimitedLoginCount
-    val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
-    val lastCheckedDate = LocalDate.parse(lastChecked, formatter)
 
     loginDays += 1
     var days = 0
