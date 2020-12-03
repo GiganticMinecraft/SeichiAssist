@@ -21,7 +21,7 @@ object WorldSaveTask {
       case None =>
         clazz.getSuperclass match {
           case null => None
-          case s => getField(s, name)
+          case s => getFieldAsAccessibleField(s, name)
         }
     }
   }
