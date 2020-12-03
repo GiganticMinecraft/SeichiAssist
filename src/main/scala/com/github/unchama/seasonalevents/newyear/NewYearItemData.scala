@@ -1,9 +1,6 @@
 package com.github.unchama.seasonalevents.newyear
 
-import java.util.UUID
-
-import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
-import com.github.unchama.seasonalevents.SkullData
+import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
 import com.github.unchama.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
@@ -81,7 +78,10 @@ object NewYearItemData {
       .pipe(_.getItem)
   }
 
-  val sobaHead: ItemStack = new SkullItemStackBuilder(UUID.randomUUID(), SkullData.NewYearSoba.textureValue)
+  // https://minecraft-heads.com/custom-heads/food-drinks/413-bowl-of-noodles
+  private val soba = SkullOwnerTextureValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ==")
+
+  val sobaHead: ItemStack = new SkullItemStackBuilder(soba)
     .title(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)")
     .lore(List(
       "",
