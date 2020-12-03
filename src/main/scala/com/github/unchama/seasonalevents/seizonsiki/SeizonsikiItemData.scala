@@ -63,4 +63,5 @@ object SeizonsikiItemData {
     val typeIdTag = "seizonsikiZongoTypeId"
     val expiryDateTag = "seizonsikiZongoExpiryDate"
   }
+
 }

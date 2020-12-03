@@ -43,14 +43,14 @@ object HalloweenItemData {
       ).map(str => s"$RESET$GRAY$str")
     }.asJava
 
-    val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap {meta =>
+    val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
       import meta._
       setDisplayName(s"$AQUA${ITALIC}うんちゃまの汗")
       setColor(fromRGB(1, 93, 178))
       addEnchant(Enchantment.MENDING, 1, true)
       setLore(loreList)
       itemFlags.foreach(flg => addItemFlags(flg))
-      potionEffects.foreach (effect => addCustomEffect(effect, true))
+      potionEffects.foreach(effect => addCustomEffect(effect, true))
     }
 
     val potion = new ItemStack(Material.POTION, 1)
@@ -81,7 +81,7 @@ object HalloweenItemData {
       "O" -> DARK_AQUA,
       "T" -> LIGHT_PURPLE,
       "L" -> RED
-    ).map {case (c, color) => s"$color$BOLD$ITALIC$c"}
+    ).map { case (c, color) => s"$color$BOLD$ITALIC$c" }
       .mkString
     val enchantments = Set(
       (Enchantment.DURABILITY, 7),
@@ -91,7 +91,7 @@ object HalloweenItemData {
     val loreList = {
       val year = Calendar.getInstance().get(Calendar.YEAR)
       val enchDescription = enchantments
-        .map {case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}"}
+        .map { case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}" }
         .toList
       val lore = List(
         "",
@@ -110,7 +110,7 @@ object HalloweenItemData {
       setDisplayName(displayName)
       setLore(loreList)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
-      enchantments.foreach {case (ench, lvl) => addEnchant(ench, lvl, true)}
+      enchantments.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
     }
 
     val hoe = new ItemStack(Material.DIAMOND_HOE, 1)
@@ -132,4 +132,5 @@ object HalloweenItemData {
   private object NBTTagConstants {
     val typeIdTag = "halloweenItemTypeId"
   }
+
 }
