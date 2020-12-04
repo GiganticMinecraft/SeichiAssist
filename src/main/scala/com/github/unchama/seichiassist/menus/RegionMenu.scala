@@ -48,7 +48,7 @@ override val frame: MenuFrame =
 
     val computeButtonToClaimRegion: IO[Button] = IO {
       val openerData = SeichiAssist.playermap(player.getUniqueId)
-      val selection = ExternalPlugins.getWorldEdit.getSelection(player)
+      val selection = ExternalPlugins.getWorldEdit.get.getSelection(player)
 
       val playerHasPermission = player.hasPermission("worldguard.region.claim")
       val isSelectionNull = selection == null

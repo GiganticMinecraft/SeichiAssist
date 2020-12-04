@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class RegionMenuData {
     static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
-    static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
+    static WorldEditPlugin We = ExternalPlugins.getWorldEdit().get();
     private static Config config = SeichiAssist.seichiAssistConfig();
     private static NumberFormat nfNum = NumberFormat.getNumberInstance();
 

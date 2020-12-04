@@ -461,7 +461,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       case Some(itemStack) => p.getInventory.addItem(itemStack)
       case None =>
     }
-    if (!ExternalPlugins.getCoreProtectWrapper.queueBlockRemoval(p, targetBlock)) {
+    if (!ExternalPlugins.getCoreProtectWrapper.get.queueBlockRemoval(p, targetBlock)) {
       SeichiAssist.instance.getLogger.warning(s"Logging in skull break: Failed Location: ${targetBlock.getLocation}, Player:$p")
     }
     //ブロックを空気で置き換える

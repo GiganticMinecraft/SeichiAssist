@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, Du
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
-import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.{CoreProtectWrapper, ExternalPlugins}
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.Block
@@ -55,15 +55,15 @@ object BreakUtil {
     }
 
     if (!equalsIgnoreNameCaseWorld(player.getWorld.getName)) {
-      val wrapper = ExternalPlugins.getCoreProtectWrapper
-      if (wrapper == null) {
-        Bukkit.getLogger.warning("CoreProtectにアクセスできませんでした。")
-      } else {
-        //もし失敗したらプレイヤーに報告し処理を終了
-        if (!wrapper.queueBlockRemoval(player, checkTarget)) {
-          player.sendMessage(s"${RED}coreprotectに保存できませんでした。管理者に報告してください。")
-          return false
-        }
+      ExternalPlugins.getCoreProtectWrapper match {
+        case Some(wrapper: CoreProtectWrapper) =>
+          //もし失敗したらプレイヤーに報告し処理を終了
+          if (!wrapper.queueBlockRemoval(player, checkTarget)) {
+            player.sendMessage(s"${RED}coreprotectに保存できませんでした。管理者に報告してください。")
+            return false
+          }
+        case None =>
+          Bukkit.getLogger.warning("CoreProtectにアクセスできませんでした。")
       }
     }
 
@@ -555,20 +555,21 @@ object BreakUtil {
   }
 
   def logRemove(player: Player, removedBlock: Block): Boolean = {
-    val wrapper = ExternalPlugins.getCoreProtectWrapper
-    if (wrapper == null) {
-      player.sendMessage(RED.toString + "error:coreprotectに保存できませんでした。管理者に報告してください。")
-      return false
+    ExternalPlugins.getCoreProtectWrapper match {
+      case Some(wrapper: CoreProtectWrapper) =>
+        val failure = !wrapper.queueBlockRemoval(player, removedBlock)
+
+        //もし失敗したらプレイヤーに報告し処理を終了
+        if (failure) {
+          player.sendMessage(RED.toString + "error:coreprotectに保存できませんでした。管理者に報告してください。")
+          return false
+        }
+        true
+      case None =>
+        player.sendMessage(RED.toString + "error:coreprotectに保存できませんでした。管理者に報告してください。")
+        false
     }
 
-    val failure = !wrapper.queueBlockRemoval(player, removedBlock)
-
-    //もし失敗したらプレイヤーに報告し処理を終了
-    if (failure) {
-      player.sendMessage(RED.toString + "error:coreprotectに保存できませんでした。管理者に報告してください。")
-      return false
-    }
-    true
   }
 
 }

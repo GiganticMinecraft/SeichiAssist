@@ -211,7 +211,7 @@ class RegionInventoryListener extends Listener {
 
 object RegionInventoryListener {
   val Wg: WorldGuardPlugin = ExternalPlugins.getWorldGuard
-  val We: WorldEditPlugin = ExternalPlugins.getWorldEdit
+  val We: WorldEditPlugin = ExternalPlugins.getWorldEdit.get
   var config: Config = SeichiAssist.seichiAssistConfig
 
   private def gridResetFunction(player: Player): Unit = {
