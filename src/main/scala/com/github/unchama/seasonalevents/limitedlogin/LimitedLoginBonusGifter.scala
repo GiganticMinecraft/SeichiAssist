@@ -41,7 +41,7 @@ object LimitedLoginBonusGifter extends Listener {
     giveLoginBonus(0)
     giveLoginBonus(loginDays)
 
-    playerData.LimitedLoginCount_$eq(loginDays)
+    playerData.LimitedLoginCount = loginDays
   }
 
   private def giveLoginBonus(day: Int)(implicit player: Player): Unit = {
@@ -56,12 +56,14 @@ object LimitedLoginBonusGifter extends Listener {
         player.sendMessage(s"【限定ログボ：$messageofDay】${loginBonus.amount}個のガチャ券をプレゼント！")
 
         val skull = GachaSkullData.gachaSkull
-        for (_ <- 1 to loginBonus.amount) {
-          DefaultEffectEnvironment.runEffectAsync(
-            "ガチャ券を付与する",
+
+        import cats.implicits._
+        DefaultEffectEnvironment.runEffectAsync(
+          "ガチャ券を付与する",
+          List.fill(loginBonus.amount)(
             grantItemStacksEffect(skull).run(player)
-          )
-        }
+          ).sequence
+        )
     }
   }
 }

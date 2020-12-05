@@ -22,7 +22,7 @@ object AnniversaryListener extends Listener {
         s"${BLUE}本日でギガンティック☆整地鯖は${ANNIVERSARY_COUNT}周年を迎えます。",
         s"${BLUE}これを記念し、限定アイテムを入手可能です。詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
-      ).foreach(player.sendMessage(_))
+      ).foreach(player.sendMessage)
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
     }
   }
@@ -47,8 +47,8 @@ object AnniversaryListener extends Listener {
       player.sendMessage(s"${RED}インベントリに空きがなかったため、アイテムを配布できませんでした。")
     } else {
       addItem(player, mineHead)
-      playerData.anniversary_$eq(false)
-      SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(false, Some.apply(playerUuid))
+      playerData.anniversary = false
+      SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(anniversary = false, Some.apply(playerUuid))
       player.sendMessage(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。")
     }
     player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)

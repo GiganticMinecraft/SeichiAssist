@@ -37,7 +37,7 @@ object NewYearListener extends Listener {
         .foreach(player.sendMessage)
     } else {
       addItem(player, sobaHead)
-      playerData.hasNewYearSobaGive_$eq(true)
+      playerData.hasNewYearSobaGive = true
       player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
     }
     player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
