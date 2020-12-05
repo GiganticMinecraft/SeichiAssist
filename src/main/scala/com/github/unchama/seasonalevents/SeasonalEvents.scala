@@ -14,7 +14,7 @@ class SeasonalEvents(instance: SeichiAssist) {
   def onEnable(): Unit = {
     List(
       AnniversaryListener,
-      ChristmasItemListener,
+      new ChristmasItemListener(instance),
       HalloweenItemListener,
       LimitedLoginBonusGifter,
       SeizonsikiListener,

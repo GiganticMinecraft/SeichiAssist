@@ -4,10 +4,14 @@ import java.time.LocalDate
 
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{AQUA, GRAY, ITALIC, RESET}
+import org.bukkit.Color.fromRGB
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
+import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Material}
 
+import scala.collection.immutable.{List, Set}
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 
@@ -95,6 +99,52 @@ object ChristmasItemData {
     itemStack != null && itemStack.getType != Material.AIR && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 2
+    }
+
+  //endregion
+
+  //region ChristmasPotion
+
+  val christmasPotion: ItemStack = {
+    val itemFlags = Set(
+      ItemFlag.HIDE_ENCHANTS,
+      ItemFlag.HIDE_POTION_EFFECTS
+    )
+    val potionEffects = Set(
+      new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 30, 0),
+      new PotionEffect(PotionEffectType.REGENERATION, 20 * 20, 0)
+    )
+    val loreList = {
+      val year = LocalDate.now().getYear
+      List(
+        s"${year}クリスマスイベント限定品",
+        "",
+        "クリスマスを一人で過ごす鯖民たちの涙（血涙）を集めた瓶"
+      ).map(str => s"$RESET$GRAY$str")
+    }.asJava
+
+    val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
+      import meta._
+      setDisplayName(s"$AQUA${ITALIC}みんなの涙")
+      setColor(fromRGB(215, 0, 58))
+      addEnchant(Enchantment.MENDING, 1, true)
+      setLore(loreList)
+      itemFlags.foreach(flg => addItemFlags(flg))
+      potionEffects.foreach(effect => addCustomEffect(effect, true))
+    }
+
+    val potion = new ItemStack(Material.POTION, 1)
+    potion.setItemMeta(potionMeta)
+
+    new NBTItem(potion)
+      .tap(_.setByte(NBTTagConstants.typeIdTag, 3.toByte))
+      .pipe(_.getItem)
+  }
+
+  def isChristmasPotion(itemStack: ItemStack): Boolean =
+    itemStack != null && itemStack.getType != Material.AIR && {
+      new NBTItem(itemStack)
+        .getByte(NBTTagConstants.typeIdTag) == 3
     }
 
   //endregion
