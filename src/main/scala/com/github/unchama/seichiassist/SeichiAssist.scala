@@ -31,7 +31,7 @@ import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectC
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
-import com.github.unchama.seichiassist.task.global.{HalfHourRankingRoutine, PlayerDataBackupRoutine, PlayerDataRecalculationRoutine}
+import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Entity
@@ -90,6 +90,14 @@ class SeichiAssist extends JavaPlugin() {
     )
 
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
+  }
+
+  lazy val autoSaveSystem: StatefulSubsystem[List[IO[Nothing]]] = {
+    val configuration = subsystems.autosave.application.SystemConfiguration(
+      autoSaveEnabled = seichiAssistConfig.isAutoSaveEnabled
+    )
+
+    subsystems.autosave.System.wired(configuration)
   }
 
   lazy val bookedAchievementSystem: Subsystem = {
@@ -363,7 +371,7 @@ class SeichiAssist extends JavaPlugin() {
               || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
             HalfHourRankingRoutine()
-          ).toList
+          ).toList ++ autoSaveSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
