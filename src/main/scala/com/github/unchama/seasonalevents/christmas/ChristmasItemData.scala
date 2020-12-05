@@ -41,8 +41,11 @@ object ChristmasItemData {
     val cake = new ItemStack(Material.CAKE, 1)
     cake.setItemMeta(itemMeta)
 
-    new NBTItem(cake)
-      .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
+    new NBTItem(cake).tap { nbtItem =>
+      import nbtItem._
+      setByte(NBTTagConstants.typeIdTag, 1.toByte)
+      setByte(NBTTagConstants.cakePieceTag, 7.toByte)
+    }
       .pipe(_.getItem)
   }
 
@@ -54,8 +57,9 @@ object ChristmasItemData {
 
   //endregion
 
-  private object NBTTagConstants {
-    val typeIdTag = "halloweenItemTypeId"
+  object NBTTagConstants {
+    val typeIdTag = "christmasItemTypeId"
+    val cakePieceTag = "christmasCakePiece"
   }
 
 }
