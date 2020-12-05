@@ -184,55 +184,6 @@ public final class Config {
         return getIntFailSafe("contribute_added_mana");
     }
 
-    public String getLimitedLoginEventStart() {
-        return config.getString("LimitedLoginEvent.EventStart");
-    }
-
-    public String getLimitedLoginEventEnd() {
-        return config.getString("LimitedLoginEvent.EventEnd");
-    }
-
-    // getIntのnull値を0にする仕様を使っている
-    public int getLimitedLoginEventItem(final int i) {
-        return config.getInt("LimitedLoginEvent.DAY" + i + "_Item");
-    }
-
-    public int getLimitedLoginEventAmount(final int i) {
-        return config.getInt("LimitedLoginEvent.DAY" + i + "_Amount");
-    }
-
-    public String getGivingNewYearSobaDay() {
-        return config.getString("NewYearEvent.GivingNewYearSobaDay");
-    }
-
-    public String getNewYearSobaYear() {
-        return config.getString("NewYearEvent.NewYearSobaYear");
-    }
-
-    public String getDropNewYearBagStartDay() {
-        return config.getString("NewYearEvent.DropNewYearBagStartDay");
-    }
-
-    public String getDropNewYearBagEndDay() {
-        return config.getString("NewYearEvent.DropNewYearBagEndDay");
-    }
-
-    public int getNewYearDropProbability() {
-        return getIntFailSafe("NewYearEvent.NewYearBagDropProbability");
-    }
-
-    public String getNewYear() {
-        return config.getString("NewYearEvent.NewYear");
-    }
-
-    public String getNewYearAppleStartDay() {
-        return config.getString("NewYearEvent.NewYearAppleStartDay");
-    }
-
-    public String getNewYearAppleEndDay() {
-        return config.getString("NewYearEvent.NewYearAppleEndDay");
-    }
-
     public int getWorldSize() {
         return getIntFailSafe("world_size");
     }
