@@ -6,7 +6,10 @@ import com.github.unchama.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util.{addItem, removeItemfromPlayerInventory}
 import de.tr7zw.itemnbtapi.NBTItem
+import org.bukkit.entity.EntityType._
+import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
@@ -37,6 +40,7 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
     val remainingPiece = new NBTItem(item).getByte(NBTTagConstants.cakePieceTag).toInt
     if (remainingPiece != 0) {
       val newItem = new NBTItem(item)
+        // TODO Pieceの説明文も減らす
         .tap(_.setByte(NBTTagConstants.cakePieceTag, (remainingPiece - 1).toByte))
         .pipe(_.getItem)
       addItem(player, newItem)
@@ -59,6 +63,7 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
     val player = event.getPlayer
     val playerUuid = player.getUniqueId
 
+    // 1分おきに計5回マナを一定量回復する
     for (i <- 1 to 5) {
       Bukkit.getServer.getScheduler.runTaskLater(instance, new Runnable {
         override def run(): Unit = {
@@ -76,6 +81,38 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
           }
         }
       }, (20 * 60 * i).toLong)
+    }
+  }
+
+  @EventHandler
+  def onEntityTarget(event: EntityTargetLivingEntityEvent): Unit = {
+    val enemies = Set(
+      BLAZE, CREEPER, ELDER_GUARDIAN, ENDERMAN, ENDERMITE, EVOKER, GHAST, GUARDIAN, HUSK, MAGMA_CUBE, PIG_ZOMBIE,
+      SHULKER, SILVERFISH, SKELETON, SLIME, SPIDER, STRAY, VEX, VINDICATOR, WITCH, WITHER_SKELETON, ZOMBIE, ZOMBIE_VILLAGER
+    )
+
+    val entity = event.getEntity
+    if (entity == null || !enemies.contains(entity.getType)) return
+
+    val target = event.getTarget
+    // nullということは、EntityがTargetを忘れたということ
+    if (target == null) return
+
+    target match {
+      case player: Player =>
+        val chestPlate = player.getInventory.getChestplate
+        if (!isChristmasChestPlate(chestPlate)) return
+
+        val entityLocation = entity.getLocation
+        val playerLocation = player.getLocation
+
+        val distance = entityLocation.distance(playerLocation)
+        val enchantLevel = new NBTItem(chestPlate).getByte(NBTTagConstants.camouflageEnchLevelTag).toInt
+        // ここの数字に敵からの索敵距離を下げる
+        val standard = calculateStandardDistance(enchantLevel, entity.getType)
+
+        if (distance > standard) event.setCancelled(true)
+      case _ =>
     }
   }
 

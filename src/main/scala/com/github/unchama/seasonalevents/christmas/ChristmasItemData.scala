@@ -6,6 +6,7 @@ import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{AQUA, GRAY, ITALIC, RESET}
 import org.bukkit.Color.fromRGB
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.EntityType
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
@@ -85,10 +86,10 @@ object ChristmasItemData {
       itemFlags.foreach(flg => addItemFlags(flg))
     }
 
-    val cake = new ItemStack(Material.COOKED_CHICKEN, 1)
-    cake.setItemMeta(itemMeta)
+    val turkey = new ItemStack(Material.COOKED_CHICKEN, 1)
+    turkey.setItemMeta(itemMeta)
 
-    new NBTItem(cake).tap { nbtItem =>
+    new NBTItem(turkey).tap { nbtItem =>
       import nbtItem._
       setByte(NBTTagConstants.typeIdTag, 2.toByte)
     }
@@ -149,9 +150,64 @@ object ChristmasItemData {
 
   //endregion
 
+  //region ChristmasChestPlate
+
+  val ChristmasChestPlate: ItemStack = {
+    val enchants = Set(
+      Enchantment.MENDING,
+      Enchantment.DURABILITY
+    )
+    val loreList = {
+      val year = LocalDate.now().getYear
+      List(
+        "迷彩 I",
+        "",
+        s"${year}クリスマスイベント限定品",
+        "",
+        "敵から気づかれにくくなります",
+        "「鮮やかに、キメろ。」"
+      ).map(str => s"$RESET$GRAY$str")
+    }.asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_CHESTPLATE).tap { meta =>
+      import meta._
+      setDisplayName(s"$AQUA${ITALIC}迷彩服")
+      setLore(loreList)
+      enchants.foreach(ench => addEnchant(ench, 1, true))
+    }
+
+    val chestPlate = new ItemStack(Material.DIAMOND_CHESTPLATE, 1)
+    chestPlate.setItemMeta(itemMeta)
+
+    new NBTItem(chestPlate).tap { nbtItem =>
+      import nbtItem._
+      setByte(NBTTagConstants.typeIdTag, 4.toByte)
+      setByte(NBTTagConstants.camouflageEnchLevelTag, 1.toByte)
+    }
+      .pipe(_.getItem)
+  }
+
+  def isChristmasChestPlate(itemStack: ItemStack): Boolean =
+    itemStack != null && itemStack.getType != Material.AIR && {
+      new NBTItem(itemStack)
+        .getByte(NBTTagConstants.typeIdTag) == 4
+    }
+
+  //endregion
+
+  def calculateStandardDistance(enchLevel: Int, enemyType: EntityType): Int = {
+    val isZombie = enemyType == EntityType.ZOMBIE || enemyType == EntityType.ZOMBIE_VILLAGER
+
+    enchLevel match {
+      case 1 => if (isZombie) 20 else 10
+      case _ => if (isZombie) 40 else 20
+    }
+  }
+
   object NBTTagConstants {
     val typeIdTag = "christmasItemTypeId"
     val cakePieceTag = "christmasCakePiece"
+    val camouflageEnchLevelTag = "camouflageEnchLevel"
   }
 
 }
