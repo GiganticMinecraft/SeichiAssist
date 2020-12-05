@@ -262,6 +262,7 @@ public final class Config {
 
     public String getWebhookURL() {
         return config.getString("WebhookURL");
+    }
 
     public boolean isAutoSaveEnabled() {
         return config.getBoolean("AutoSave.Enable");
