@@ -57,6 +57,48 @@ object ChristmasItemData {
 
   //endregion
 
+  //region ChristmasTurkey
+
+  val ChristmasTurkey: ItemStack = {
+    val itemFlags = Set(
+      ItemFlag.HIDE_ENCHANTS
+    )
+    val loreList = {
+      val year = LocalDate.now().getYear
+      List(
+        "",
+        s"${year}クリスマスイベント限定品",
+        "",
+        "食べると移動速度上昇か低下がランダムで付与されます"
+      ).map(str => s"$RESET$GRAY$str")
+    }.asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKED_CHICKEN).tap { meta =>
+      import meta._
+      setDisplayName(s"$AQUA${ITALIC}まいんちゃん特製ローストターキー")
+      addEnchant(Enchantment.MENDING, 1, true)
+      setLore(loreList)
+      itemFlags.foreach(flg => addItemFlags(flg))
+    }
+
+    val cake = new ItemStack(Material.COOKED_CHICKEN, 1)
+    cake.setItemMeta(itemMeta)
+
+    new NBTItem(cake).tap { nbtItem =>
+      import nbtItem._
+      setByte(NBTTagConstants.typeIdTag, 2.toByte)
+    }
+      .pipe(_.getItem)
+  }
+
+  def isChristmasTurkey(itemStack: ItemStack): Boolean =
+    itemStack != null && itemStack.getType != Material.AIR && {
+      new NBTItem(itemStack)
+        .getByte(NBTTagConstants.typeIdTag) == 2
+    }
+
+  //endregion
+
   object NBTTagConstants {
     val typeIdTag = "christmasItemTypeId"
     val cakePieceTag = "christmasCakePiece"

@@ -6,7 +6,7 @@ import com.github.unchama.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, removeItemfromPlayerInventory}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.event.block.Action
-import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
@@ -39,5 +39,14 @@ object ChristmasItemListener extends Listener {
         .pipe(_.getItem)
       addItem(player, newItem)
     }
+  }
+
+  @EventHandler
+  def onPlayerConsumeChristmasTurkey(event: PlayerItemConsumeEvent): Unit = {
+    if (!isChristmasTurkey(event.getItem)) return
+
+    val rand = new Random().nextDouble()
+    val potionEffectType = if (rand > 0.5) PotionEffectType.SPEED else PotionEffectType.SLOW
+    event.getPlayer.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0), true)
   }
 }
