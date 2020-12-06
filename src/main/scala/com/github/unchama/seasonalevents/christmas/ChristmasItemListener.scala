@@ -149,6 +149,8 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
 
   @EventHandler
   def onStrayDeath(event: EntityDeathEvent): Unit = {
+    if (!isInEvent) return
+
     event.getEntity match {
       case entity: LivingEntity =>
         if (entity.getType == EntityType.STRAY && entity.getKiller != null)
