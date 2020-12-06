@@ -213,7 +213,6 @@ object PlayerDataSaveTask {
 
           //正月イベント
           + ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
-          + ",newYearBagAmount = " + playerdata.newYearBagAmount
 
           //バレンタインイベント
           + ",hasChocoGave = " + playerdata.hasChocoGave

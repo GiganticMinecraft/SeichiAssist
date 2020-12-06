@@ -17,7 +17,7 @@ object SeichiAssistCommand {
     "デバッグモードのON,OFFを切り替えます",
     "config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能",
     s"$RED/seichiassist set-anniversary-flag",
-    "1周年記念フラグを立てる（コンソール限定コマンド）"
+    "n周年記念フラグを立てる（コンソール限定コマンド）"
   )))
 
   private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()

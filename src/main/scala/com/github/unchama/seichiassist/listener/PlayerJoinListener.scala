@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener
 import java.util.UUID
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -81,23 +80,8 @@ class PlayerJoinListener extends Listener {
       }
     }
 
-    {
-      val limitedLoginEvent = new LimitedLoginEvent()
-      val playerData = playerMap(player.getUniqueId)
-
-      //期間限定ログインイベント判別処理
-      limitedLoginEvent.setLastCheckDate(playerData.lastcheckdate)
-      limitedLoginEvent.TryGetItem(player)
-
-      // 1周年記念
-      if (playerData.anniversary) {
-        player.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。https://seichi.click/wiki/anniversary")
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      }
-
-      //join時とonenable時、プレイヤーデータを最新の状態に更新
-      playerData.updateOnJoin()
-    }
+    //join時とonenable時、プレイヤーデータを最新の状態に更新
+    playerMap(player.getUniqueId).updateOnJoin()
 
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {

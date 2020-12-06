@@ -1,6 +1,6 @@
-package com.github.unchama.seichiassist.listener
+package com.github.unchama.seasonalevents.halloween
 
-import com.github.unchama.seichiassist.data.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
+import com.github.unchama.seasonalevents.halloween.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -11,7 +11,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
-class HalloweenItemListener extends Listener {
+object HalloweenItemListener extends Listener {
 
   @EventHandler
   def onPlayerConsumeHalloweenPotion(event: PlayerItemConsumeEvent): Unit = {

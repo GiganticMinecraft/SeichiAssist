@@ -200,7 +200,7 @@ class PlayerData(
   var achievePoint: AchievementPoint = AchievementPoint()
 
   var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
-  // 1周年記念
+  // n周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
   //投票妖精関連
@@ -217,7 +217,6 @@ class PlayerData(
   var contribute_point = 0
   //正月イベント用
   var hasNewYearSobaGive = false
-  var newYearBagAmount = 0
   //バレンタインイベント用
   var hasChocoGave = false
   var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)

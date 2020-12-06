@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seasonalevents.halloween
 
 import java.util.Calendar
 
@@ -6,11 +6,11 @@ import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
-import org.bukkit.{Bukkit, Material}
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
+import org.bukkit.{Bukkit, Material}
 
 import scala.collection.immutable.{List, Set}
 import scala.jdk.CollectionConverters._
@@ -43,29 +43,22 @@ object HalloweenItemData {
       ).map(str => s"$RESET$GRAY$str")
     }.asJava
 
-    val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta]
-      .tap(_.setDisplayName(s"$AQUA${ITALIC}うんちゃまの汗"))
-      .tap(_.setColor(fromRGB(1, 93, 178)))
-      // 意味のないエンチャント。エンチャントが付与されている時の紫色のキラキラをつけるため。
-      .tap(_.addEnchant(Enchantment.MENDING, 1, true))
-      .tap(_.setLore(loreList))
-      .tap(meta =>
-        itemFlags.foreach(flg =>
-          meta.addItemFlags(flg)
-        )
-      )
-      .tap(meta =>
-        potionEffects.foreach (ef =>
-          meta.addCustomEffect(ef, true)
-        )
-      )
+    val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
+      import meta._
+      setDisplayName(s"$AQUA${ITALIC}うんちゃまの汗")
+      setColor(fromRGB(1, 93, 178))
+      addEnchant(Enchantment.MENDING, 1, true)
+      setLore(loreList)
+      itemFlags.foreach(flg => addItemFlags(flg))
+      potionEffects.foreach(effect => addCustomEffect(effect, true))
+    }
 
     val potion = new ItemStack(Material.POTION, 1)
     potion.setItemMeta(potionMeta)
 
-    val nbtItem = new NBTItem(potion)
-    nbtItem.setByte(NBTTagConstants.typeIdTag, 1.toByte)
-    nbtItem.getItem
+    new NBTItem(potion)
+      .tap(_.setByte(NBTTagConstants.typeIdTag, 1.toByte))
+      .pipe(_.getItem)
   }
 
   def isHalloweenPotion(itemStack: ItemStack): Boolean =
@@ -88,7 +81,7 @@ object HalloweenItemData {
       "O" -> DARK_AQUA,
       "T" -> LIGHT_PURPLE,
       "L" -> RED
-    ).map {case (c, color) => s"$color$BOLD$ITALIC$c"}
+    ).map { case (c, color) => s"$color$BOLD$ITALIC$c" }
       .mkString
     val enchantments = Set(
       (Enchantment.DURABILITY, 7),
@@ -98,7 +91,7 @@ object HalloweenItemData {
     val loreList = {
       val year = Calendar.getInstance().get(Calendar.YEAR)
       val enchDescription = enchantments
-        .map {case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}"}
+        .map { case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}" }
         .toList
       val lore = List(
         "",
@@ -112,22 +105,20 @@ object HalloweenItemData {
       enchDescription ::: lore
     }.asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_HOE)
-      .tap(_.setDisplayName(displayName))
-      .tap(_.setLore(loreList))
-      .tap(_.addItemFlags(ItemFlag.HIDE_ENCHANTS))
-      .tap(meta =>
-        enchantments.foreach {case (ench, lvl) =>
-          meta.addEnchant(ench, lvl, true)
-        }
-      )
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_HOE).tap { meta =>
+      import meta._
+      setDisplayName(displayName)
+      setLore(loreList)
+      addItemFlags(ItemFlag.HIDE_ENCHANTS)
+      enchantments.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
+    }
 
     val hoe = new ItemStack(Material.DIAMOND_HOE, 1)
     hoe.setItemMeta(itemMeta)
 
-    val nbtItem = new NBTItem(hoe)
-    nbtItem.setByte(NBTTagConstants.typeIdTag, 2.toByte)
-    nbtItem.getItem
+    new NBTItem(hoe)
+      .tap(_.setByte(NBTTagConstants.typeIdTag, 2.toByte))
+      .pipe(_.getItem)
   }
 
   def isHalloweenHoe(itemStack: ItemStack): Boolean =
@@ -141,4 +132,5 @@ object HalloweenItemData {
   private object NBTTagConstants {
     val typeIdTag = "halloweenItemTypeId"
   }
+
 }
