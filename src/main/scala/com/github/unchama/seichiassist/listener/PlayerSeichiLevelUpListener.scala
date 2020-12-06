@@ -51,5 +51,5 @@ object PlayerSeichiLevelUpListener extends Listener {
     )
   }
 
-  private def runGacha(times: Int)(implicit player: Player) = GachaCommand.Gachagive(player, times, player.getName)
+  private def runGacha(times: Int)(implicit player: Player): Unit = GachaCommand.Gachagive(player, times, player.getName)
 }
