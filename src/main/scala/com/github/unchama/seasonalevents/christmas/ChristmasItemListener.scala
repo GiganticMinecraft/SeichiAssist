@@ -109,9 +109,14 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
         val distance = entityLocation.distance(playerLocation)
         val enchantLevel = new NBTItem(chestPlate).getByte(NBTTagConstants.camouflageEnchLevelTag).toInt
         // ここの数字に敵からの索敵距離を下げる
-        val standard = calculateStandardDistance(enchantLevel, entity.getType)
-
-        if (distance > standard) event.setCancelled(true)
+        try {
+          val standard = calculateStandardDistance(enchantLevel, entity.getType)
+          if (distance > standard) event.setCancelled(true)
+        } catch {
+          case err: IllegalArgumentException =>
+            Bukkit.getServer.getLogger.info(s"${player.getName}によって、「迷彩」エンチャントのついたアイテムが使用されましたが、設定されているエンチャントレベルが不正なものでした。")
+            err.printStackTrace()
+        }
       case _ =>
     }
   }
