@@ -72,7 +72,7 @@ object ChristmasItemData {
 
   //region ChristmasTurkey
 
-  val ChristmasTurkey: ItemStack = {
+  val christmasTurkey: ItemStack = {
     val itemFlags = Set(
       ItemFlag.HIDE_ENCHANTS
     )
@@ -160,7 +160,7 @@ object ChristmasItemData {
 
   //region ChristmasChestPlate
 
-  val ChristmasChestPlate: ItemStack = {
+  val christmasChestPlate: ItemStack = {
     val enchants = Set(
       Enchantment.MENDING,
       Enchantment.DURABILITY
@@ -219,7 +219,7 @@ object ChristmasItemData {
 
   //region THANATOSレプリカ
 
-  val ChristmasPickaxe: ItemStack = {
+  val christmasPickaxe: ItemStack = {
     val displayName = Seq(
       "T" -> RED,
       "H" -> GOLD,
