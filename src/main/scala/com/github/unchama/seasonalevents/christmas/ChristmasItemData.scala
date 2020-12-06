@@ -195,13 +195,18 @@ object ChristmasItemData {
 
   //endregion
 
-  def calculateStandardDistance(enchLevel: Int, enemyType: EntityType): Int = {
+  def calculateStandardDistance(enchLevel: Int, enemyType: EntityType): Double = {
+    val rate = enchLevel match {
+      case 1 => 0.9
+      case 2 => 0.8
+      case 3 => 0.5
+      case 4 => 0.3
+      case 5 => 0.1
+      case _ => throw new IllegalArgumentException("不正なエンチャントレベルが指定されました。")
+    }
     val isZombie = enemyType == EntityType.ZOMBIE || enemyType == EntityType.ZOMBIE_VILLAGER
 
-    enchLevel match {
-      case 1 => if (isZombie) 20 else 10
-      case _ => if (isZombie) 40 else 20
-    }
+    (if (isZombie) 40 else 20) * rate
   }
 
   object NBTTagConstants {
