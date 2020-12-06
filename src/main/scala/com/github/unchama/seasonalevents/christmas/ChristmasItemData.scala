@@ -303,6 +303,11 @@ object ChristmasItemData {
 
   //endregion
 
+  val christmasMebiusLore: List[String] = List(
+    "",
+    s"$RESET${WHITE}Merry Christmas! あなたに特別なMebiusを"
+  )
+
   // SeichiAssistで呼ばれてるだけ
   def christmasPlayerHead(head: SkullMeta): SkullMeta = {
     val lore = List(
