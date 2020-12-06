@@ -10,6 +10,4 @@ object Christmas {
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 12, 26)
 
   def isInEvent: Boolean = dateRangeAsSequence(START_DATE, END_DATE).contains(LocalDate.now())
-
-  def isChristmas: Boolean = LocalDate.of(EVENT_YEAR, 12, 25).isEqual(LocalDate.now())
 }
