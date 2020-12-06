@@ -210,6 +210,66 @@ object ChristmasItemData {
 
   //endregion
 
+  //region THANATOSレプリカ
+
+  val ChristmasPickaxe: ItemStack = {
+    val displayName = Seq(
+      "T" -> RED,
+      "H" -> GOLD,
+      "A" -> YELLOW,
+      "N" -> GREEN,
+      "A" -> BLUE,
+      "T" -> DARK_AQUA,
+      "O" -> LIGHT_PURPLE,
+      "S" -> RED,
+      " Replica" -> WHITE
+    ).map { case (c, color) => s"$color$BOLD$ITALIC$c" }
+      .mkString
+    val enchants = Set(
+      (Enchantment.DIG_SPEED, 3),
+      (Enchantment.LUCK, 1)
+    )
+    val loreList = {
+      val year = LocalDate.now().getYear
+      val enchDescription = enchants
+        .map { case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}" }
+        .toList
+      val lore = List(
+        "",
+        s"$GRAY${year}クリスマスイベント限定品",
+        "",
+        s"${AQUA}耐久無限"
+      ).map(str => s"$RESET$str")
+      enchDescription ::: lore
+    }.asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_PICKAXE).tap { meta =>
+      import meta._
+      setDisplayName(displayName)
+      setLore(loreList)
+      setUnbreakable(true)
+      addItemFlags(ItemFlag.HIDE_ENCHANTS)
+      enchants.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
+    }
+
+    val pickaxe = new ItemStack(Material.DIAMOND_PICKAXE, 1)
+    pickaxe.setItemMeta(itemMeta)
+
+    new NBTItem(pickaxe).tap { nbtItem =>
+      import nbtItem._
+      setByte(NBTTagConstants.typeIdTag, 5.toByte)
+    }
+      .pipe(_.getItem)
+  }
+
+  def isChristmasPickaxe(itemStack: ItemStack): Boolean =
+    itemStack != null && itemStack.getType != Material.AIR && {
+      new NBTItem(itemStack)
+        .getByte(NBTTagConstants.typeIdTag) == 5
+    }
+
+  //endregion
+
   object NBTTagConstants {
     val typeIdTag = "christmasItemTypeId"
     val cakePieceTag = "christmasCakePiece"
