@@ -263,25 +263,9 @@ object ChristmasItemData {
       .pipe(_.getItem)
   }
 
-  def isChristmasPickaxe(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
-      new NBTItem(itemStack)
-        .getByte(NBTTagConstants.typeIdTag) == 5
-    }
-
   //endregion
 
-  // SeichiAssistで呼ばれてるだけ
-  def christmasPlayerHead(head: SkullMeta): SkullMeta = {
-    val lore = List(
-      "",
-      s"$GREEN${ITALIC}大切なあなたへ。",
-      s"$YELLOW$UNDERLINE${ITALIC}Merry Christmas $EVENT_YEAR"
-    ).map(str => s"$RESET$str")
-      .asJava
-    head.setLore(lore)
-    head
-  }
+  //region hristmasSock
 
   val christmasSock: ItemStack = {
     val loreList = List(
@@ -309,6 +293,20 @@ object ChristmasItemData {
       setObject(NBTTagConstants.expiryDateTag, END_DATE)
     }
       .pipe(_.getItem)
+  }
+
+  //endregion
+
+  // SeichiAssistで呼ばれてるだけ
+  def christmasPlayerHead(head: SkullMeta): SkullMeta = {
+    val lore = List(
+      "",
+      s"$GREEN${ITALIC}大切なあなたへ。",
+      s"$YELLOW$UNDERLINE${ITALIC}Merry Christmas $EVENT_YEAR"
+    ).map(str => s"$RESET$str")
+      .asJava
+    head.setLore(lore)
+    head
   }
 
   object NBTTagConstants {
