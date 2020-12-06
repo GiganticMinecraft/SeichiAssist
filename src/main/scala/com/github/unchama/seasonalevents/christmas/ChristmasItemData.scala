@@ -2,8 +2,9 @@ package com.github.unchama.seasonalevents.christmas
 
 import java.time.LocalDate
 
+import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
-import org.bukkit.ChatColor.{AQUA, GRAY, ITALIC, RESET}
+import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
@@ -28,11 +29,11 @@ object ChristmasItemData {
       val year = LocalDate.now().getYear
       List(
         "",
-        s"${year}クリスマスイベント限定品",
+        s"$GRAY{year}クリスマスイベント限定品",
         "",
-        "一口で食べられます",
-        "食べると不運か幸運がランダムで付与されます"
-      ).map(str => s"$RESET$GRAY$str")
+        s"${YELLOW}一口で食べられます",
+        s"${YELLOW}食べると不運か幸運がランダムで付与されます"
+      ).map(str => s"$RESET$str")
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.CAKE).tap { meta =>
@@ -72,10 +73,10 @@ object ChristmasItemData {
       val year = LocalDate.now().getYear
       List(
         "",
-        s"${year}クリスマスイベント限定品",
+        s"$GRAY${year}クリスマスイベント限定品",
         "",
-        "食べると移動速度上昇か低下がランダムで付与されます"
-      ).map(str => s"$RESET$GRAY$str")
+        s"${YELLOW}食べると移動速度上昇か低下がランダムで付与されます"
+      ).map(str => s"$RESET$str")
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKED_CHICKEN).tap { meta =>
@@ -118,10 +119,10 @@ object ChristmasItemData {
     val loreList = {
       val year = LocalDate.now().getYear
       List(
-        s"${year}クリスマスイベント限定品",
+        s"$GRAY${year}クリスマスイベント限定品",
         "",
-        "クリスマスを一人で過ごす鯖民たちの涙（血涙）を集めた瓶"
-      ).map(str => s"$RESET$GRAY$str")
+        s"${YELLOW}クリスマスを一人で過ごす鯖民たちの涙（血涙）を集めた瓶"
+      ).map(str => s"$RESET$str")
     }.asJava
 
     val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
@@ -160,18 +161,18 @@ object ChristmasItemData {
     val loreList = {
       val year = LocalDate.now().getYear
       List(
-        "迷彩 I",
+        s"${GRAY}迷彩 I",
         "",
-        s"${year}クリスマスイベント限定品",
+        s"$GRAY${year}クリスマスイベント限定品",
         "",
-        "敵から気づかれにくくなります",
-        "「鮮やかに、キメろ。」"
-      ).map(str => s"$RESET$GRAY$str")
+        s"${WHITE}敵から気づかれにくくなります",
+        s"$WHITE「鮮やかに、キメろ。」"
+      ).map(str => s"$RESET$str")
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_CHESTPLATE).tap { meta =>
       import meta._
-      setDisplayName(s"$AQUA${ITALIC}迷彩服")
+      setDisplayName(s"$AQUA${ITALIC}迷彩服（胴）")
       setLore(loreList)
       enchants.foreach(ench => addEnchant(ench, 1, true))
     }
