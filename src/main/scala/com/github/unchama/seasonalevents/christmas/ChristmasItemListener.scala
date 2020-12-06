@@ -19,8 +19,6 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
 
-import scala.util.chaining._
-
 class ChristmasItemListener(instance: SeichiAssist) extends Listener {
   @EventHandler
   def onPlayerConsumeChristmasCake(event: PlayerInteractEvent): Unit = {
@@ -42,10 +40,7 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
 
     val remainingPiece = new NBTItem(item).getByte(NBTTagConstants.cakePieceTag).toInt
     if (remainingPiece != 0) {
-      val newItem = new NBTItem(item)
-        // TODO Pieceの説明文も減らす
-        .tap(_.setByte(NBTTagConstants.cakePieceTag, (remainingPiece - 1).toByte))
-        .pipe(_.getItem)
+      val newItem = christmasCake(remainingPiece - 1)
       addItem(player, newItem)
     }
   }

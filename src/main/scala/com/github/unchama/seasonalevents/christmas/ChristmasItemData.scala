@@ -22,19 +22,25 @@ object ChristmasItemData {
 
   //region ChristmasCake
 
-  val ChristmasCake: ItemStack = {
+  private val christmasCakeBaseLore: List[String] = List(
+    "",
+    s"$GRAY${EVENT_YEAR}クリスマスイベント限定品",
+    "",
+    s"${YELLOW}一口で食べられます",
+    s"${YELLOW}食べると不運か幸運がランダムで付与されます"
+  ).map(str => s"$RESET$str")
+
+  private def christmasCakePieceLore(remainingPieces: Int): List[String] =
+    List(s"$RESET${GRAY}残り摂食可能回数: $remainingPieces")
+
+  val christmasCakeDefaultPieces = 7
+
+  def christmasCake(pieces: Int): ItemStack = {
     val itemFlags = Set(
       ItemFlag.HIDE_ENCHANTS
     )
     val loreList = {
-      val year = LocalDate.now().getYear
-      List(
-        "",
-        s"$GRAY{year}クリスマスイベント限定品",
-        "",
-        s"${YELLOW}一口で食べられます",
-        s"${YELLOW}食べると不運か幸運がランダムで付与されます"
-      ).map(str => s"$RESET$str")
+      christmasCakeBaseLore ::: christmasCakePieceLore(pieces)
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.CAKE).tap { meta =>
@@ -51,7 +57,7 @@ object ChristmasItemData {
     new NBTItem(cake).tap { nbtItem =>
       import nbtItem._
       setByte(NBTTagConstants.typeIdTag, 1.toByte)
-      setByte(NBTTagConstants.cakePieceTag, 7.toByte)
+      setByte(NBTTagConstants.cakePieceTag, pieces.toByte)
     }
       .pipe(_.getItem)
   }
