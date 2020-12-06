@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.listener
 import cats.implicits._
 import com.github.unchama.seichiassist.DefaultEffectEnvironment
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
-import com.github.unchama.seichiassist.data.GachaSkullData
+import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import org.bukkit.entity.Player
