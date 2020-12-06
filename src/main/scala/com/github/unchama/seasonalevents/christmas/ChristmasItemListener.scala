@@ -2,6 +2,7 @@ package com.github.unchama.seasonalevents.christmas
 
 import java.util.Random
 
+import com.github.unchama.seasonalevents.Util
 import com.github.unchama.seasonalevents.christmas.Christmas.{isInEvent, itemDropRate}
 import com.github.unchama.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
@@ -9,9 +10,9 @@ import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{AQUA, RED}
 import org.bukkit.entity.EntityType._
-import org.bukkit.entity.Player
+import org.bukkit.entity.{EntityType, LivingEntity, Player}
 import org.bukkit.event.block.{Action, BlockBreakEvent}
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent
+import org.bukkit.event.entity.{EntityDeathEvent, EntityTargetLivingEntityEvent}
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
@@ -143,6 +144,15 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
         player.sendMessage(s"$AQUA「靴下」を見つけたよ！")
       }
       player.playSound(player.getLocation, Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f)
+    }
+  }
+
+  @EventHandler
+  def onStrayDeath(event: EntityDeathEvent): Unit = {
+    event.getEntity match {
+      case entity: LivingEntity =>
+        if (entity.getType == EntityType.STRAY && entity.getKiller != null)
+          Util.randomlyDropItemAt(entity, christmasSock, itemDropRate)
     }
   }
 
