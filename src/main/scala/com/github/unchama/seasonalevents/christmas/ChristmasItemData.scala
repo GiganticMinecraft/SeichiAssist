@@ -2,13 +2,14 @@ package com.github.unchama.seasonalevents.christmas
 
 import java.time.LocalDate
 
+import com.github.unchama.seasonalevents.christmas.Christmas.EVENT_YEAR
 import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
-import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.inventory.meta.{PotionMeta, SkullMeta}
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Material}
@@ -269,6 +270,18 @@ object ChristmasItemData {
     }
 
   //endregion
+
+  // SeichiAssistで呼ばれてるだけ
+  def christmasPlayerHead(head: SkullMeta): SkullMeta = {
+    val lore = List(
+      "",
+      s"$GREEN${ITALIC}大切なあなたへ。",
+      s"$YELLOW$UNDERLINE${ITALIC}Merry Christmas $EVENT_YEAR"
+    ).map(str => s"$RESET$str")
+      .asJava
+    head.setLore(lore)
+    head
+  }
 
   object NBTTagConstants {
     val typeIdTag = "christmasItemTypeId"
