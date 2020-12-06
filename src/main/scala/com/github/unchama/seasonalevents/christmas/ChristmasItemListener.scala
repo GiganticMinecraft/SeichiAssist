@@ -2,13 +2,15 @@ package com.github.unchama.seasonalevents.christmas
 
 import java.util.Random
 
+import com.github.unchama.seasonalevents.christmas.Christmas.{isInEvent, itemDropRate}
 import com.github.unchama.seasonalevents.christmas.ChristmasItemData._
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.Util.{addItem, removeItemfromPlayerInventory}
+import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
+import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import de.tr7zw.itemnbtapi.NBTItem
+import org.bukkit.ChatColor.{AQUA, RED}
 import org.bukkit.entity.EntityType._
 import org.bukkit.entity.Player
-import org.bukkit.event.block.Action
+import org.bukkit.event.block.{Action, BlockBreakEvent}
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent}
 import org.bukkit.event.{EventHandler, Listener}
@@ -118,6 +120,29 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
             err.printStackTrace()
         }
       case _ =>
+    }
+  }
+
+  @EventHandler
+  def onChristmasSockPopped(event: BlockBreakEvent): Unit = {
+    if (!isInEvent) return
+    if (event.isCancelled) return
+
+    val player = event.getPlayer
+    val block = event.getBlock
+    if (block == null) return
+    if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
+
+    val rand = new Random().nextDouble()
+    if (rand < itemDropRate) {
+      if (isPlayerInventoryFull(player)) {
+        dropItem(player, christmasSock)
+        player.sendMessage(s"${RED}インベントリに空きがなかったため、「靴下」は地面にドロップしました。")
+      } else {
+        addItem(player, christmasSock)
+        player.sendMessage(s"$AQUA「靴下」を見つけたよ！")
+      }
+      player.playSound(player.getLocation, Sound.BLOCK_NOTE_HARP, 3.0f, 1.0f)
     }
   }
 
