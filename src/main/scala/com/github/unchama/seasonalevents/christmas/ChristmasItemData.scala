@@ -1,7 +1,5 @@
 package com.github.unchama.seasonalevents.christmas
 
-import java.time.LocalDate
-
 import com.github.unchama.seasonalevents.christmas.Christmas.{END_DATE, EVENT_YEAR}
 import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
@@ -20,18 +18,16 @@ import scala.util.chaining._
 
 object ChristmasItemData {
 
+  private val christmasItemBaseLore = List(
+    "",
+    s"$RESET$GRAY${EVENT_YEAR}クリスマスイベント限定品",
+    "",
+  )
+
   //region ChristmasCake
 
-  private val christmasCakeBaseLore: List[String] = List(
-    "",
-    s"$GRAY${EVENT_YEAR}クリスマスイベント限定品",
-    "",
-    s"${YELLOW}一口で食べられます",
-    s"${YELLOW}食べると不運か幸運がランダムで付与されます"
-  ).map(str => s"$RESET$str")
-
-  private def christmasCakePieceLore(remainingPieces: Int): List[String] =
-    List(s"$RESET${GRAY}残り摂食可能回数: $remainingPieces")
+  private def christmasCakePieceLore(remainingPieces: Int) =
+    List(s"$RESET${GRAY}残り摂食可能回数: $remainingPieces/${christmasCakeDefaultPieces}回")
 
   val christmasCakeDefaultPieces = 7
 
@@ -40,7 +36,12 @@ object ChristmasItemData {
       ItemFlag.HIDE_ENCHANTS
     )
     val loreList = {
-      christmasCakeBaseLore ::: christmasCakePieceLore(pieces)
+      val cakeBaseLore: List[String] = List(
+        s"${YELLOW}置かずに食べられます",
+        s"${YELLOW}食べると不運か幸運がランダムで付与されます"
+      ).map(str => s"$RESET$str")
+
+      christmasItemBaseLore ::: cakeBaseLore ::: christmasCakePieceLore(pieces)
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.CAKE).tap { meta =>
@@ -77,13 +78,11 @@ object ChristmasItemData {
       ItemFlag.HIDE_ENCHANTS
     )
     val loreList = {
-      val year = LocalDate.now().getYear
-      List(
-        "",
-        s"$GRAY${year}クリスマスイベント限定品",
-        "",
-        s"${YELLOW}食べると移動速度上昇か低下がランダムで付与されます"
-      ).map(str => s"$RESET$str")
+      val lore = List(
+        s"$RESET${YELLOW}食べると移動速度上昇か低下がランダムで付与されます"
+      )
+
+      christmasItemBaseLore ::: lore
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKED_CHICKEN).tap { meta =>
@@ -124,12 +123,11 @@ object ChristmasItemData {
       new PotionEffect(PotionEffectType.REGENERATION, 20 * 20, 0)
     )
     val loreList = {
-      val year = LocalDate.now().getYear
-      List(
-        s"$GRAY${year}クリスマスイベント限定品",
-        "",
-        s"${YELLOW}クリスマスを一人で過ごす鯖民たちの涙（血涙）を集めた瓶"
-      ).map(str => s"$RESET$str")
+      val lore = List(
+        s"$RESET${YELLOW}クリスマスを一人で過ごす鯖民たちの涙（血涙）を集めた瓶"
+      )
+
+      christmasItemBaseLore ::: lore
     }.asJava
 
     val potionMeta = Bukkit.getItemFactory.getItemMeta(Material.POTION).asInstanceOf[PotionMeta].tap { meta =>
@@ -166,15 +164,13 @@ object ChristmasItemData {
       Enchantment.DURABILITY
     )
     val loreList = {
-      val year = LocalDate.now().getYear
-      List(
-        s"${GRAY}迷彩 I",
-        "",
-        s"$GRAY${year}クリスマスイベント限定品",
-        "",
-        s"${WHITE}敵から気づかれにくくなります",
-        s"$WHITE「鮮やかに、キメろ。」"
-      ).map(str => s"$RESET$str")
+      val lore = List(
+        "特殊エンチャント：迷彩 I",
+        "敵から気づかれにくくなります",
+        "「鮮やかに、キメろ。」"
+      ).map(str => s"$RESET$WHITE$str")
+
+      christmasItemBaseLore ::: lore
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_CHESTPLATE).tap { meta =>
@@ -237,17 +233,14 @@ object ChristmasItemData {
       (Enchantment.LUCK, 1)
     )
     val loreList = {
-      val year = LocalDate.now().getYear
       val enchDescription = enchants
         .map { case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}" }
         .toList
       val lore = List(
-        "",
-        s"$GRAY${year}クリスマスイベント限定品",
-        "",
-        s"${AQUA}耐久無限"
-      ).map(str => s"$RESET$str")
-      enchDescription ::: lore
+        s"$RESET${AQUA}耐久無限"
+      )
+
+      enchDescription ::: christmasItemBaseLore ::: lore
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.DIAMOND_PICKAXE).tap { meta =>
