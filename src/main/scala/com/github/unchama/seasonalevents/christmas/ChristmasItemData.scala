@@ -2,7 +2,7 @@ package com.github.unchama.seasonalevents.christmas
 
 import java.time.LocalDate
 
-import com.github.unchama.seasonalevents.christmas.Christmas.EVENT_YEAR
+import com.github.unchama.seasonalevents.christmas.Christmas.{END_DATE, EVENT_YEAR}
 import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
@@ -283,10 +283,39 @@ object ChristmasItemData {
     head
   }
 
+  val christmasSock: ItemStack = {
+    val loreList = List(
+      "Merry Christmas!",
+      s"クリスマスをお祝いして$RED${UNDERLINE}靴下${RESET}をどうぞ！",
+      s"$RED${UNDERLINE}アルカディア、エデン、ヴァルハラサーバー メインワールドの",
+      s"$RED${UNDERLINE}スポーン地点にいる村人に欲しい物を詰めてもらおう！"
+    ).map(str => s"$RESET$str")
+      .asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.PAPER).tap { meta =>
+      import meta._
+      setDisplayName(s"${AQUA}靴下")
+      setLore(loreList)
+      addEnchant(Enchantment.DIG_SPEED, 1, true)
+      addItemFlags(ItemFlag.HIDE_ENCHANTS)
+    }
+
+    val itemStack = new ItemStack(Material.PAPER, 1)
+    itemStack.setItemMeta(itemMeta)
+
+    new NBTItem(itemStack).tap { item =>
+      import item._
+      setByte(NBTTagConstants.typeIdTag, 6.toByte)
+      setObject(NBTTagConstants.expiryDateTag, END_DATE)
+    }
+      .pipe(_.getItem)
+  }
+
   object NBTTagConstants {
     val typeIdTag = "christmasItemTypeId"
     val cakePieceTag = "christmasCakePiece"
     val camouflageEnchLevelTag = "camouflageEnchLevel"
+    val expiryDateTag = "christmasSockExpiryDate"
   }
 
 }
