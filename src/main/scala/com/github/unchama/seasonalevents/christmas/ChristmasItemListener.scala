@@ -3,23 +3,36 @@ package com.github.unchama.seasonalevents.christmas
 import java.util.Random
 
 import com.github.unchama.seasonalevents.Util
-import com.github.unchama.seasonalevents.christmas.Christmas.{isInEvent, itemDropRate}
+import com.github.unchama.seasonalevents.christmas.Christmas.{END_DATE, blogArticleUrl, isInEvent, itemDropRate}
 import com.github.unchama.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import de.tr7zw.itemnbtapi.NBTItem
-import org.bukkit.ChatColor.{AQUA, RED}
+import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
 import org.bukkit.entity.{EntityType, LivingEntity, Player}
 import org.bukkit.event.block.{Action, BlockBreakEvent}
 import org.bukkit.event.entity.{EntityDeathEvent, EntityTargetLivingEntityEvent}
-import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent}
+import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
 
 class ChristmasItemListener(instance: SeichiAssist) extends Listener {
+  @EventHandler
+  def onPlayerJoin(event: PlayerJoinEvent): Unit = {
+    if (isInEvent) {
+      Seq(
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、クリスマスイベントを開催しています。",
+        "詳しくは下記URLのサイトをご覧ください。",
+        s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
+      ).foreach(
+        event.getPlayer.sendMessage(_)
+      )
+    }
+  }
+
   @EventHandler
   def onPlayerConsumeChristmasCake(event: PlayerInteractEvent): Unit = {
     val item = event.getItem
