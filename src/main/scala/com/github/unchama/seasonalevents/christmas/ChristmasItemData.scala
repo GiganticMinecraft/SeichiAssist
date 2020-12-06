@@ -193,8 +193,6 @@ object ChristmasItemData {
         .getByte(NBTTagConstants.typeIdTag) == 4
     }
 
-  //endregion
-
   def calculateStandardDistance(enchLevel: Int, enemyType: EntityType): Double = {
     val rate = enchLevel match {
       case 1 => 0.9
@@ -208,6 +206,8 @@ object ChristmasItemData {
 
     (if (isZombie) 40 else 20) * rate
   }
+
+  //endregion
 
   object NBTTagConstants {
     val typeIdTag = "christmasItemTypeId"
