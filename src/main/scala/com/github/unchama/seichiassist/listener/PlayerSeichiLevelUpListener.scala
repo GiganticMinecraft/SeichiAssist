@@ -19,28 +19,25 @@ object PlayerSeichiLevelUpListener extends Listener {
 
     giveItem("ガチャ券を付与する", level * 5, GachaSkullData.gachaForSeichiLevelUp)
 
-    val name = player.getName
-
     level match {
       case 10 =>
         giveItem("SuperPickaxeを配布する", 5, ItemData.getSuperPickaxe(1))
       case 20 =>
-        GachaCommand.Gachagive(player, 3, name)
-        GachaCommand.Gachagive(player, 10, name)
+        runGacha(13)
       case 40 =>
         giveItem("ガチャりんごを付与する", 256, ItemData.getGachaApple(1))
       case 50 =>
-        GachaCommand.Gachagive(player, 27, name)
+        runGacha(23)
       case 60 =>
-        GachaCommand.Gachagive(player, 26, name)
+        runGacha(26)
       case 70 =>
-        GachaCommand.Gachagive(player, 25, name)
+        runGacha(25)
       case 80 =>
-        GachaCommand.Gachagive(player, 24, name)
+        runGacha(24)
       case 90 =>
-        GachaCommand.Gachagive(player, 20, name)
+        runGacha(20)
       case 100 =>
-        GachaCommand.Gachagive(player, 21, name)
+        runGacha(21)
         giveItem("エルサを付与する", 1, ItemData.getElsa(1))
     }
   }
@@ -53,4 +50,6 @@ object PlayerSeichiLevelUpListener extends Listener {
       ).sequence
     )
   }
+
+  private def runGacha(times: Int)(implicit player: Player) = GachaCommand.Gachagive(player, times, player.getName)
 }
