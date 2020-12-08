@@ -286,8 +286,8 @@ object ChristmasItemData {
     val itemStack = new ItemStack(Material.PAPER, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
+    new NBTItem(itemStack).tap { nbtItem =>
+      import nbtItem._
       setByte(NBTTagConstants.typeIdTag, 6.toByte)
       setObject(NBTTagConstants.expiryDateTag, END_DATE)
     }

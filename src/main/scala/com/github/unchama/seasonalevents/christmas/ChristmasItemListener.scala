@@ -160,9 +160,8 @@ class ChristmasItemListener(instance: SeichiAssist) extends Listener {
     if (!isInEvent) return
 
     event.getEntity match {
-      case entity: LivingEntity =>
-        if (entity.getType == EntityType.STRAY && entity.getKiller != null)
-          Util.randomlyDropItemAt(entity, christmasSock, itemDropRate)
+      case entity: LivingEntity if entity.getType == EntityType.STRAY && entity.getKiller != null =>
+        Util.randomlyDropItemAt(entity, christmasSock, itemDropRate)
       case _ =>
     }
   }
