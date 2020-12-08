@@ -275,7 +275,7 @@ object ChristmasItemData {
     ).map(str => s"$RESET$str")
       .asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.PAPER).tap { meta =>
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.LEATHER_BOOTS).tap { meta =>
       import meta._
       setDisplayName(s"${AQUA}靴下")
       setLore(loreList)
@@ -283,7 +283,7 @@ object ChristmasItemData {
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
     }
 
-    val itemStack = new ItemStack(Material.PAPER, 1)
+    val itemStack = new ItemStack(Material.LEATHER_BOOTS, 1)
     itemStack.setItemMeta(itemMeta)
 
     new NBTItem(itemStack).tap { nbtItem =>
