@@ -9,7 +9,7 @@ loadbefore:
   - Shopkeepers
   - WeatherRestrictions
 
-default-permission-message: &denied You don't have permission. (<permission>) Please report this if you this is an error.
+default-permission-message: &denied You don't have permission. (<permission>) Please report this if you think this is an error.
 commands:
   gacha:
     description: Gacha operation command.
