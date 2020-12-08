@@ -264,9 +264,9 @@ object MineStackMassCraftMenu {
         ),
         ChestSlotRef(1, 1) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-            NonEmptyList.of(("iron_ore", 4), ("coal", 1)),
-            NonEmptyList.of(("iron_ingot", 4))
-          ), oneToHundred, 3
+            NonEmptyList.of(("iron_ore", 40), ("coal", 10)),
+            NonEmptyList.of(("iron_ingot", 40))
+          ), oneToHundred, 4
         ),
         ChestSlotRef(1, 6) -> MassCraftRecipeBlock(
           MassCraftRecipe(
