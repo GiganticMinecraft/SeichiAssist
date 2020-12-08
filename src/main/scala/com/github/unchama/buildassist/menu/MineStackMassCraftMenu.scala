@@ -262,7 +262,7 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("red_nether_brick", 10))
           ), oneToThousand, 2
         ),
-        ChestSlotRef(1, 1) -> MassCraftRecipeBlock(
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
             NonEmptyList.of(("iron_ore", 40), ("coal", 10)),
             NonEmptyList.of(("iron_ingot", 40))
