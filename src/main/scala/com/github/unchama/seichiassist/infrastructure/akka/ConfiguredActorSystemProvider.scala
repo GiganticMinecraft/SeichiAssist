@@ -1,4 +1,4 @@
-package com.github.unchama.bungeesemaphoreresponder.infrastructure.akka
+package com.github.unchama.seichiassist.infrastructure.akka
 
 import akka.actor.ActorSystem
 

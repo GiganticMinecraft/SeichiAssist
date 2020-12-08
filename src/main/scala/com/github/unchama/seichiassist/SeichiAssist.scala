@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist
 
-import java.util.UUID
-
 import cats.Parallel.Aux
 import cats.effect
 import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
@@ -23,7 +21,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.cached
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
+import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
@@ -40,6 +38,7 @@ import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 
+import java.util.UUID
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
