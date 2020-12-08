@@ -7,7 +7,7 @@ package com.github.unchama.bungeesemaphoreresponder.domain
  * within `onQuitOf` the object should do "finalization" of
  * any data that is associated with player's login session.
  */
-trait PlayerFinalizer[F[_], Player] {
+trait PlayerDataFinalizer[F[_], Player] {
 
   /**
    * A finalizing action that must be run when the given [[Player]] quits the server.

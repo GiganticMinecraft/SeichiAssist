@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist
 
+import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
 import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
@@ -21,6 +22,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.cached
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
@@ -106,6 +108,8 @@ class SeichiAssist extends JavaPlugin() {
 
     subsystems.bookedachivement.System.wired[IO]
   }
+
+  private implicit val _akkaSystem: ActorSystem = ConfiguredActorSystemProvider("reference.conf").provide()
 
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
