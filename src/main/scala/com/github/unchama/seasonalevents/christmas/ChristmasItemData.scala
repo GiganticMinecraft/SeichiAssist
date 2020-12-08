@@ -37,9 +37,9 @@ object ChristmasItemData {
     )
     val loreList = {
       val cakeBaseLore: List[String] = List(
-        s"${YELLOW}置かずに食べられます",
-        s"${YELLOW}食べると不運か幸運がランダムで付与されます"
-      ).map(str => s"$RESET$str")
+        "置かずに食べられます",
+        "食べると不運か幸運がランダムで付与されます"
+      ).map(str => s"$RESET$YELLOW$str")
 
       christmasItemBaseLore ::: cakeBaseLore ::: christmasCakePieceLore(pieces)
     }.asJava
