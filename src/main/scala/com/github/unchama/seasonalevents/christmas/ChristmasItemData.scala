@@ -46,7 +46,7 @@ object ChristmasItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.CAKE).tap { meta =>
       import meta._
-      setDisplayName(s"$AQUA${ITALIC}まいんちゃん特製クリスマスケーキ")
+      setDisplayName(s"$AQUA${ITALIC}まいんちゃんお手製クリスマスケーキ")
       addEnchant(Enchantment.MENDING, 1, true)
       setLore(loreList)
       itemFlags.foreach(flg => addItemFlags(flg))
@@ -87,7 +87,7 @@ object ChristmasItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKED_CHICKEN).tap { meta =>
       import meta._
-      setDisplayName(s"$AQUA${ITALIC}まいんちゃん特製ローストターキー")
+      setDisplayName(s"$AQUA${ITALIC}まいんちゃんお手製ローストターキー")
       addEnchant(Enchantment.MENDING, 1, true)
       setLore(loreList)
       itemFlags.foreach(flg => addItemFlags(flg))
