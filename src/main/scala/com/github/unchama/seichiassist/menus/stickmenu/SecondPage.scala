@@ -6,7 +6,10 @@ import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.seasonalevents.valentine.ValentineItemData
+import com.github.unchama.seasonalevents.christmas.Christmas
+import com.github.unchama.seasonalevents.christmas.ChristmasItemData.christmasPlayerHead
+import com.github.unchama.seasonalevents.valentine.Valentine
+import com.github.unchama.seasonalevents.valentine.ValentineItemData.valentinePlayerHead
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -100,9 +103,12 @@ object SecondPage extends Menu {
             import scala.util.chaining._
             val skullToGive = new SkullItemStackBuilder(getUniqueId).build().tap { stack =>
               import stack._
-              //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
-              setItemMeta {
-                ValentineItemData.valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+              // 季節イベント中の特殊lore
+              if (Valentine.isInEvent) setItemMeta {
+                valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+              }
+              else if (Christmas.isInEvent) setItemMeta {
+                christmasPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
               }
             }
 

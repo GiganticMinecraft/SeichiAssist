@@ -1,6 +1,7 @@
 package com.github.unchama.seasonalevents
 
 import com.github.unchama.seasonalevents.anniversary.AnniversaryListener
+import com.github.unchama.seasonalevents.christmas.ChristmasItemListener
 import com.github.unchama.seasonalevents.commands.EventCommand
 import com.github.unchama.seasonalevents.halloween.HalloweenItemListener
 import com.github.unchama.seasonalevents.limitedlogin.LimitedLoginBonusGifter
@@ -13,6 +14,7 @@ class SeasonalEvents(instance: SeichiAssist) {
   def onEnable(): Unit = {
     List(
       AnniversaryListener,
+      new ChristmasItemListener(instance),
       HalloweenItemListener,
       LimitedLoginBonusGifter,
       SeizonsikiListener,
