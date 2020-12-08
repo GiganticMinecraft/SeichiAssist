@@ -1,6 +1,7 @@
 package com.github.unchama.bungeesemaphoreresponder
 
 import java.net.InetSocketAddress
+import scala.concurrent.duration.Duration
 
 trait RedisConnectionSettings {
 
@@ -17,5 +18,7 @@ trait RedisConnectionSettings {
 trait Configuration {
 
   val redis: RedisConnectionSettings
+
+  val saveTimeoutDuration: Duration
 
 }
