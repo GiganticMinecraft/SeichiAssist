@@ -468,6 +468,38 @@ object SecondPage extends Menu {
       )
     }
 
+    val narutoRemakeConversionButton: Button = {
+      val iconItemStack = new IconItemStackBuilder(Material.SHEARS, durability = 1)
+        .title(s"$YELLOW$UNDERLINE${BOLD}「NARUTO REMAKE」交換システム")
+        .lore(List(
+          s"${GREEN}実装後に耐久無限を付与することが決まったため",
+          s"${GOLD}2020ハロウィンイベント限定アイテム「NARUTO REMAKE」$RESET${GREEN}を",
+          s"${GREEN}耐久無限のものに交換できます"
+          s"${GREEN}出てきたインベントリーに",
+          s"${GREEN}交換したいアイテムを入れて",
+          s"${GREEN}escキーを押してください",
+          s"${DARK_GRAY}アイテムが消失する可能性がありますが",
+          s"${DARK_GRAY}その場合の補償は申し訳ございませんが行っていません",
+          s"${DARK_GRAY}神に祈りながら交換しよう",
+          s"$DARK_RED${UNDERLINE}クリックで開く"
+        ).map(str => s"$RESET$str"))
+        .unbreakable()
+        .build()
+
+      Button(
+        iconItemStack,
+        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
+            // TODO メニューインベントリに差し替える
+            openInventoryEffect(
+              createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}修繕したい「NARUTO REMAKE」を入れてネ"))
+            )
+          )
+        }
+      )
+    }
+
     val recycleBinButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.BUCKET)
         .title(s"$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
