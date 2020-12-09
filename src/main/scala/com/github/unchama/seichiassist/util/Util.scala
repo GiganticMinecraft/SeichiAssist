@@ -509,8 +509,29 @@ object Util {
 
   def isLimitedTitanItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.DIAMOND_AXE &&
-      loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "特別なタイタンをあなたに♡") >= 0
+      isContainedInLore(itemstack, "特別なタイタンをあなたに♡")
   }
+
+  def isNarutoRemake(itemStack: ItemStack): Boolean = {
+    if (!itemStack.hasItemMeta) return false
+    val itemMeta = itemStack.getItemMeta
+
+    itemStack.getType == Material.SHEARS &&
+      itemMeta.getDisplayName.contains(s"$DARK_RED$BOLD${ITALIC}NARUTO $WHITE$BOLD${ITALIC}REMAKE") &&
+      isContainedInLore(itemStack, s"${GRAY}2020ハロウィン討伐イベント")
+  }
+
+  /**
+   * 指定された`String`が指定された[[ItemStack]]のloreに含まれているかどうか
+   *
+   * @param itemStack 確認する`ItemStack`
+   * @param sentence  探す文字列
+   * @return 含まれていれば`true`、含まれていなければ`false`。ただし、`ItemStack`に`ItemMeta`と`Lore`のいずれかがなければfalse
+   */
+  def isContainedInLore(itemStack: ItemStack, sentence: String): Boolean =
+    if (!itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) false
+    else loreIndexOf(itemStack.getItemMeta.getLore.asScala.toList, sentence) >= 0
+
 
   /**
    * loreを捜査して、要素の中に`find`が含まれているかを調べる。
