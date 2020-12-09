@@ -56,11 +56,16 @@ services:
       - redis
     stdin_open: true
   bungeecord:
-    build: ./docker/bungeecord
+    build:
+      context: .
+      dockerfile: ./docker/bungeecord/Dockerfile
     ports:
       - 25565:25577
     networks:
       - seichi
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - spigota
       - spigotb
