@@ -61,6 +61,11 @@ object ServerSwitchMenu extends Menu {
       val slotIndex = server.chestSlotRef
       val iconItemStack = new IconItemStackBuilder(server.material)
         .title(server.uiLabel + "サーバー")
+        .lore {
+          if (server.identifier == "s5")
+            List("上級者向けのサーバー", "始めたての頃は他のサーバーがおすすめ").map { str => s"$RESET$RED$str" }
+          else Nil
+        }
         .enchanted()
         .build()
       val button = Button(
