@@ -114,6 +114,11 @@ class PlayerJoinListener extends Listener {
       //初見さんにLv1メッセージを送信
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
+
+    if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
+      player.sendTitle(
+        s"${WHITE}このサーバーは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}です",
+        s"${WHITE}始めたての頃は他のサーバーがおすすめです。", 10, 70, 20)
   }
 
   // プレイヤーがワールドを移動したとき
