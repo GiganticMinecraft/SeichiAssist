@@ -412,7 +412,7 @@ object SecondPage extends Menu {
         .lore(List(
           s"$RESET${GREEN}不必要なGT大当り景品を",
           s"$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
-          s"$RESET${GREEN}出てきたインベントリーに",
+          s"$RESET${GREEN}出てきたインベントリに",
           s"$RESET${GREEN}交換したい景品を入れて",
           s"$RESET${GREEN}escキーを押してください",
           s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
@@ -443,7 +443,7 @@ object SecondPage extends Menu {
         .lore(List(
           s"$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
           s"$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
-          s"$RESET${GREEN}出てきたインベントリーに",
+          s"$RESET${GREEN}出てきたインベントリに",
           s"$RESET${GREEN}修繕したいタイタンを入れて",
           s"$RESET${GREEN}escキーを押してください",
           s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
@@ -470,12 +470,12 @@ object SecondPage extends Menu {
 
     val narutoRemakeConversionButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.SHEARS, durability = 1)
-        .title(s"$YELLOW$UNDERLINE${BOLD}「NARUTO REMAKE」交換システム")
+        .title(s"$YELLOW$UNDERLINE$BOLD「NARUTO REMAKE」交換システム")
         .lore(List(
           s"${GREEN}実装後に耐久無限を付与することが決まったため",
           s"${GOLD}2020ハロウィンイベント限定アイテム「NARUTO REMAKE」$RESET${GREEN}を",
           s"${GREEN}耐久無限のものに交換できます",
-          s"${GREEN}出てきたインベントリーに",
+          s"${GREEN}出てきたインベントリに",
           s"${GREEN}交換したいアイテムを入れて",
           s"${GREEN}escキーを押してください",
           s"${DARK_GRAY}アイテムが消失する可能性がありますが",
