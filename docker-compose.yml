@@ -8,6 +8,7 @@ volumes:
   spigot_a:
   spigot_b:
   db-data:
+  redis-data:
 
 services:
   spigota:
@@ -26,8 +27,11 @@ services:
       - SERVER_ID=spigot-a
       - DB_HOST=db
       - DB_PASSWORD=unchamaisgod
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - db
+      - redis
     stdin_open: true
   spigotb:
     build:
@@ -45,8 +49,11 @@ services:
       - SERVER_ID=spigot-b
       - DB_HOST=db
       - DB_PASSWORD=unchamaisgod
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - db
+      - redis
     stdin_open: true
   bungeecord:
     build: ./docker/bungeecord
@@ -75,14 +82,20 @@ services:
       - "8080:80"
     depends_on:
       - db
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
   db:
     image: mariadb:10.1.38-bionic
     environment:
       - TZ=Asia/Tokyo
       - MYSQL_ROOT_PASSWORD=unchamaisgod
     command: [
-      '--wait_timeout=86400',
-      '--character-set-server=utf8',
+        '--wait_timeout=86400',
+        '--character-set-server=utf8',
     ]
     networks:
       - seichi
