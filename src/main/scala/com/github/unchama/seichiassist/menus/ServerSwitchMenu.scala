@@ -63,7 +63,7 @@ object ServerSwitchMenu extends Menu {
         .title(server.uiLabel + "サーバー")
         .lore {
           if (server.identifier == "s5")
-            List("上級者向けのサーバー", "始めたての頃は他のサーバーがおすすめ").map { str => s"$RESET$RED$str" }
+            List("上級者向けのサーバー", "始めたての頃は他のサーバーがおすすめ").map { str => s"$RESET$BLUE$str" }
           else Nil
         }
         .enchanted()
