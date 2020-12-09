@@ -331,20 +331,6 @@ class SeichiAssist extends JavaPlugin() {
       getServer.getPluginManager.registerEvents(_, this)
     }
 
-    // TODO この処理は走らないので消せ
-    //オンラインの全てのプレイヤーを処理
-    getServer.getOnlinePlayers.asScala.foreach { p =>
-      try {
-        //プレイヤーデータを生成
-        SeichiAssist.playermap(p.getUniqueId) = SeichiAssist.databaseGateway
-          .playerDataManipulator.loadPlayerData(p.getUniqueId, p.getName)
-      } catch {
-        case e: Exception =>
-          e.printStackTrace()
-          p.kickPlayer("プレーヤーデータの読み込みに失敗しました。")
-      }
-    }
-
     //ランキングリストを最新情報に更新する
     if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
       logger.info("ランキングデータの作成に失敗しました。サーバーを停止します…")
@@ -352,8 +338,6 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     startRepeatedJobs()
-
-    logger.info("SeichiAssist is Enabled!")
 
     SeichiAssist.buildAssist = {
       implicit val flySystem: StatefulSubsystem[InternalState[SyncIO]] = managedFlySystem
@@ -366,6 +350,8 @@ class SeichiAssist extends JavaPlugin() {
 
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
+
+    logger.info("SeichiAssistが有効化されました！")
   }
 
   private def startRepeatedJobs(): Unit = {
