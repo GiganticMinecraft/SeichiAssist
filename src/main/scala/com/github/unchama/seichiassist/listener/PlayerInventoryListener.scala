@@ -650,6 +650,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
             if (item.hasItemMeta && Util.isNarutoRemake(item)) {
               val itemMeta = item.getItemMeta
               itemMeta.setUnbreakable(true)
+              item.setDurability(238.toShort)
               item.setItemMeta(itemMeta)
               amount += 1
             }
