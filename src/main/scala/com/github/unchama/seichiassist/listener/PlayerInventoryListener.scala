@@ -632,7 +632,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
   }
 
   @EventHandler
-  def onNarutoRemakeRepairEvent(event: InventoryCloseEvent): Unit = {
+  def onNarutoRemakeExchangingEvent(event: InventoryCloseEvent): Unit = {
     event.getPlayer match {
       case player: Player =>
         val inventory = event.getInventory
@@ -663,7 +663,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         }
 
         val message =
-          if (amount >= 1) s"$GREEN「NARUTO REMAKE」を${amount}個認識し、修繕しました"
+          if (amount >= 1) s"$GREEN「NARUTO REMAKE」を${amount}個認識し、交換しました"
           else s"$GREEN「NARUTO REMAKE」を認識しませんでした。すべてのアイテムを返却します"
         player.sendMessage(message)
       case _ =>
