@@ -12,11 +12,11 @@ class RedisBungeeSemaphoreSynchronization[F[_] : Effect](implicit
                                                          actorSystem: ActorSystem)
   extends BungeeSemaphoreSynchronization[F[Unit], PlayerName] {
 
+  private val client = ConfiguredRedisClient()
+
   type Action = F[Unit]
 
   private def sendMessage(message: BungeeSemaphoreMessage): Action = {
-    val client = ConfiguredRedisClient()
-
     Effect[F].liftIO {
       IO.fromFuture {
         IO {
