@@ -5,6 +5,7 @@ import cats.Parallel.Aux
 import cats.effect
 import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizerList
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.generic.effect.ResourceScope
@@ -33,7 +34,7 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.Entity
+import org.bukkit.entity.{Entity, Player}
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 import org.flywaydb.core.Flyway
@@ -292,8 +293,18 @@ class SeichiAssist extends JavaPlugin() {
       assaultSkillRoutines
     )
 
+    val bungeeSemaphoreResponderSystem = {
+      implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+      implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+      implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration = ???
+
+      val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](Nil)
+
+      new com.github.unchama.bungeesemaphoreresponder.System(playerDataFinalizers, PluginExecutionContexts.asyncShift)
+    }
+
     //リスナーの登録
-    Seq(
+    val listeners = Seq(
       new PlayerJoinListener(),
       new PlayerQuitListener(),
       new PlayerClickListener(),
@@ -309,12 +320,15 @@ class SeichiAssist extends JavaPlugin() {
       new MenuHandler(),
       SpawnRegionProjectileInterceptor,
     )
+      .concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat(repositories)
       .concat(subsystems.flatMap(_.listeners))
-      .foreach {
-        getServer.getPluginManager.registerEvents(_, this)
-      }
 
+    listeners.foreach {
+      getServer.getPluginManager.registerEvents(_, this)
+    }
+
+    // TODO この処理は走らないので消せ
     //オンラインの全てのプレイヤーを処理
     getServer.getOnlinePlayers.asScala.foreach { p =>
       try {
