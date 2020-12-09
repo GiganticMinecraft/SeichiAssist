@@ -93,8 +93,6 @@ services:
       - seichi
     volumes:
       - redis-data:/data
-    ports:
-      - "6379:6379"
   db:
     image: mariadb:10.1.38-bionic
     environment:
