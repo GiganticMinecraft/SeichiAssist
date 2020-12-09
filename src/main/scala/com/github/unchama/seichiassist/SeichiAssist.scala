@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist
 
-import java.util.UUID
-
+import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
 import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizerList
+import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.generic.effect.ResourceScope
@@ -23,7 +24,8 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.cached
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.infrastructure.ScalikeJDBCConfiguration
+import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
+import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
@@ -33,13 +35,14 @@ import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import org.bukkit.ChatColor._
-import org.bukkit.entity.Entity
+import org.bukkit.entity.{Entity, Player}
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 
+import java.util.UUID
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -107,6 +110,8 @@ class SeichiAssist extends JavaPlugin() {
 
     subsystems.bookedachivement.System.wired[IO]
   }
+
+  private implicit val _akkaSystem: ActorSystem = ConfiguredActorSystemProvider("reference.conf").provide()
 
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
@@ -289,8 +294,19 @@ class SeichiAssist extends JavaPlugin() {
       assaultSkillRoutines
     )
 
+    val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
+      implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+      implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+      implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
+        seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
+
+      val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](Nil)
+
+      new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
+    }
+
     //リスナーの登録
-    Seq(
+    val listeners = Seq(
       new PlayerJoinListener(),
       new PlayerQuitListener(),
       new PlayerClickListener(),
@@ -307,12 +323,15 @@ class SeichiAssist extends JavaPlugin() {
       PlayerSeichiLevelUpListener,
       SpawnRegionProjectileInterceptor,
     )
+      .concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat(repositories)
       .concat(subsystems.flatMap(_.listeners))
-      .foreach {
-        getServer.getPluginManager.registerEvents(_, this)
-      }
 
+    listeners.foreach {
+      getServer.getPluginManager.registerEvents(_, this)
+    }
+
+    // TODO この処理は走らないので消せ
     //オンラインの全てのプレイヤーを処理
     getServer.getOnlinePlayers.asScala.foreach { p =>
       try {
@@ -447,6 +466,7 @@ object SeichiAssist {
 
   var instance: SeichiAssist = _
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
+  // TODO deprecate this
   var DEBUG = false
   //ガチャシステムのメンテナンスフラグ
   var gachamente = false

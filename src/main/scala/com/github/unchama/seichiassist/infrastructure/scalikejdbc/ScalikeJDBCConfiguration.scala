@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.infrastructure
+package com.github.unchama.seichiassist.infrastructure.scalikejdbc
 
 import scalikejdbc.{ConnectionPool, ConnectionPoolSettings, GlobalSettings, LoggingSQLAndTimeSettings}
 
