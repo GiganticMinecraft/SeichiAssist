@@ -108,6 +108,8 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO]
   }
 
+  lazy val dragonNightTimeSystem: StatefulSubsystem[List[IO[Nothing]]] = subsystems.dragonnighttime.System.wired
+
   /**
    * スキル使用などで破壊されることが確定したブロック塊のスコープ
    *
@@ -365,7 +367,7 @@ class SeichiAssist extends JavaPlugin() {
               || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
             HalfHourRankingRoutine()
-          ).toList ++ autoSaveSystem.state
+          ).toList ++ autoSaveSystem.state ++ dragonNightTimeSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
