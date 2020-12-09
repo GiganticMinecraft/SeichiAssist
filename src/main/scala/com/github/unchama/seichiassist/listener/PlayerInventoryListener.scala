@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
+import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -627,6 +628,45 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
       } else {
         player.sendMessage(GREEN.toString + "限定タイタンを" + count + "個認識し、修繕しました。")
       }
+    }
+  }
+
+  @EventHandler
+  def onNarutoRemakeRepairEvent(event: InventoryCloseEvent): Unit = {
+    event.getPlayer match {
+      case player: Player =>
+        val inventory = event.getInventory
+
+        //インベントリサイズが36でない時終了
+        if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}修繕したい「NARUTO REMAKE」を入れてネ") return
+
+        //インベントリの中身を取得
+        val items = inventory.getContents
+
+        var amount = 0
+        //インベントリを一個ずつ対象アイテムかどうか見ていくfor文
+        for (item <- items) {
+          if (item != null) {
+            if (item.hasItemMeta && Util.isNarutoRemake(item)) {
+              val itemMeta = item.getItemMeta
+              itemMeta.setUnbreakable(true)
+              item.setItemMeta(itemMeta)
+              amount += 1
+            }
+
+            // アイテムは結局修繕対象であろうとなかろうと返却するので、条件分岐の外におく
+            DefaultEffectEnvironment.runEffectAsync(
+              "渡されたItemStackをプレイヤーのインベントリに返却する",
+              grantItemStacksEffect(item).run(player)
+            )
+          }
+        }
+
+        val message =
+          if (amount >= 1) s"$GREEN「NARUTO REMAKE」を${amount}個認識し、修繕しました"
+          else s"$GREEN「NARUTO REMAKE」を認識しませんでした。すべてのアイテムを返却します"
+        player.sendMessage(message)
+      case _ =>
     }
   }
 
