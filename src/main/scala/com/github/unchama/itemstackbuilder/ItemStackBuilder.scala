@@ -18,7 +18,6 @@ trait ItemStackBuilder {
    * [ItemStack] のLoreを設定します.
    *
    * @param lore [ItemStack] のLoreとして設定する [String] の [List]
-   *             [List] に `null` が含まれていた場合,その行は無視されます.
    * @return このBuilder
    */
   def lore(lore: List[String]): ItemStackBuilder
@@ -27,7 +26,6 @@ trait ItemStackBuilder {
    * [ItemStack] のLoreを設定します.
    *
    * @param _lore [ItemStack] のLoreとして設定する [String] の [List]
-   *              [List] に `null` が含まれていた場合,その行は無視されます.
    * @return このBuilder
    */
   def lore(_lore: String*): ItemStackBuilder = lore(_lore.toList)
