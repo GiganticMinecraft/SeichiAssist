@@ -474,7 +474,7 @@ object SecondPage extends Menu {
         .lore(List(
           s"${GREEN}実装後に耐久無限を付与することが決まったため",
           s"${GOLD}2020ハロウィンイベント限定アイテム「NARUTO REMAKE」$RESET${GREEN}を",
-          s"${GREEN}耐久無限のものに交換できます"
+          s"${GREEN}耐久無限のものに交換できます",
           s"${GREEN}出てきたインベントリーに",
           s"${GREEN}交換したいアイテムを入れて",
           s"${GREEN}escキーを押してください",
