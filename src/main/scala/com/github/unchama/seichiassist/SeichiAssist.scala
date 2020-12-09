@@ -6,6 +6,7 @@ import cats.effect
 import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizerList
+import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
 import com.github.unchama.generic.effect.ResourceScope
@@ -293,14 +294,15 @@ class SeichiAssist extends JavaPlugin() {
       assaultSkillRoutines
     )
 
-    val bungeeSemaphoreResponderSystem = {
+    val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
       implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
       implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-      implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration = ???
+      implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
+        seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
 
       val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](Nil)
 
-      new com.github.unchama.bungeesemaphoreresponder.System(playerDataFinalizers, PluginExecutionContexts.asyncShift)
+      new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
     }
 
     //リスナーの登録
@@ -463,6 +465,7 @@ object SeichiAssist {
 
   var instance: SeichiAssist = _
   //デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
+  // TODO deprecate this
   var DEBUG = false
   //ガチャシステムのメンテナンスフラグ
   var gachamente = false
