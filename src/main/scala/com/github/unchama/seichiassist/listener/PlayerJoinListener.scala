@@ -115,6 +115,7 @@ class PlayerJoinListener extends Listener {
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
 
+    // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
     if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
       player.sendTitle(
         s"${WHITE}このサーバーは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}です",
