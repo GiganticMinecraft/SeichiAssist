@@ -13,7 +13,6 @@ import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
-import com.github.unchama.seasonalevents.SeasonalEvents
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -109,6 +108,10 @@ class SeichiAssist extends JavaPlugin() {
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
     subsystems.bookedachivement.System.wired[IO]
+  }
+
+  lazy val seasonalEventsSystem: Subsystem = {
+    subsystems.seasonalevents.System.wired(this)
   }
 
   private implicit val _akkaSystem: ActorSystem = ConfiguredActorSystemProvider("reference.conf").provide()
@@ -262,7 +265,8 @@ class SeichiAssist extends JavaPlugin() {
       itemMigrationSystem,
       managedFlySystem,
       rescueplayer.System.wired,
-      bookedAchievementSystem
+      bookedAchievementSystem,
+      seasonalEventsSystem
     )
 
     // コマンドの登録
@@ -331,20 +335,6 @@ class SeichiAssist extends JavaPlugin() {
       getServer.getPluginManager.registerEvents(_, this)
     }
 
-    // TODO この処理は走らないので消せ
-    //オンラインの全てのプレイヤーを処理
-    getServer.getOnlinePlayers.asScala.foreach { p =>
-      try {
-        //プレイヤーデータを生成
-        SeichiAssist.playermap(p.getUniqueId) = SeichiAssist.databaseGateway
-          .playerDataManipulator.loadPlayerData(p.getUniqueId, p.getName)
-      } catch {
-        case e: Exception =>
-          e.printStackTrace()
-          p.kickPlayer("プレーヤーデータの読み込みに失敗しました。")
-      }
-    }
-
     //ランキングリストを最新情報に更新する
     if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
       logger.info("ランキングデータの作成に失敗しました。サーバーを停止します…")
@@ -353,19 +343,16 @@ class SeichiAssist extends JavaPlugin() {
 
     startRepeatedJobs()
 
-    logger.info("SeichiAssist is Enabled!")
-
     SeichiAssist.buildAssist = {
       implicit val flySystem: StatefulSubsystem[InternalState[SyncIO]] = managedFlySystem
       new BuildAssist(this)
     }
     SeichiAssist.buildAssist.onEnable()
 
-    SeichiAssist.seasonalEvents = new SeasonalEvents(this)
-    SeichiAssist.seasonalEvents.onEnable()
-
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
+
+    logger.info("SeichiAssistが有効化されました！")
   }
 
   private def startRepeatedJobs(): Unit = {
@@ -428,11 +415,9 @@ class SeichiAssist extends JavaPlugin() {
       logger.info("データベース切断に失敗しました")
     }
 
-    logger.info("SeichiAssist is Disabled!")
-
     SeichiAssist.buildAssist.onDisable()
 
-    SeichiAssist.seasonalEvents.onDisable()
+    logger.info("SeichiAssistが無効化されました!")
   }
 
   def restartRepeatedJobs(): Unit = {
@@ -474,7 +459,6 @@ object SeichiAssist {
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _
   var buildAssist: BuildAssist = _
-  var seasonalEvents: SeasonalEvents = _
   //(minestackに格納する)Gachadataに依存するデータリスト
   val msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
   //総採掘量表示用
