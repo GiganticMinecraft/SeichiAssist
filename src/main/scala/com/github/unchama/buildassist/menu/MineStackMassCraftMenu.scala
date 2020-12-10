@@ -1,8 +1,5 @@
 package com.github.unchama.buildassist.menu
 
-import java.text.NumberFormat
-import java.util.Locale
-
 import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.BuildAssist
@@ -22,7 +19,11 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
+import java.text.NumberFormat
+import java.util.Locale
+
 object MineStackMassCraftMenu {
+
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
   type MineStackItemId = String
@@ -49,7 +50,7 @@ object MineStackMassCraftMenu {
      * @param menuPageNumber         このボタンが表示される一括クラフト画面のページ番号
      */
     def computeButton(player: Player, requiredMassCraftLevel: Int, menuPageNumber: Int)
-                     (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
+                     (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
       import cats.implicits._
 
       def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
@@ -173,7 +174,7 @@ object MineStackMassCraftMenu {
 
   case class MassCraftRecipeBlock(recipe: MassCraftRecipe, recipeScales: List[Int], requiredBuildLevel: Int) {
     def toLayout(player: Player, beginIndex: Int, pageNumber: Int)
-                (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[List[(Int, Slot)]] = {
+                (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[List[(Int, Slot)]] = {
       import cats.implicits._
 
       recipeScales.zipWithIndex
@@ -489,7 +490,7 @@ object MineStackMassCraftMenu {
   }
 
   def apply(pageNumber: Int = 1)
-           (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): Menu = {
+           (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): Menu = {
     import eu.timepit.refined.auto._
 
     val menuFrame = {

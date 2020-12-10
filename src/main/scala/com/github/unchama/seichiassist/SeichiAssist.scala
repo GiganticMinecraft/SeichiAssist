@@ -64,22 +64,22 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreateSingletonScope
   }
 
-  lazy val expBottleStackSystem: StatefulSubsystem[subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
+  lazy val expBottleStackSystem: StatefulSubsystem[IO, subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    subsystems.expbottlestack.System.wired[IO, SyncIO]
+    subsystems.expbottlestack.System.wired[IO, SyncIO, IO]
   }.unsafeRunSync()
 
-  lazy val itemMigrationSystem: StatefulSubsystem[subsystems.itemmigration.InternalState[IO]] = {
+  lazy val itemMigrationSystem: StatefulSubsystem[IO, subsystems.itemmigration.InternalState[IO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(getLogger.getName)
 
-    subsystems.itemmigration.System.wired[IO, SyncIO]
+    subsystems.itemmigration.System.wired[IO, SyncIO, IO]
   }.unsafeRunSync()
 
-  lazy val managedFlySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]] = {
+  lazy val managedFlySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
 
     implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
@@ -90,10 +90,10 @@ class SeichiAssist extends JavaPlugin() {
       expConsumptionAmount = seichiAssistConfig.getFlyExp
     )
 
-    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
+    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync().coerceFinalizationContextTo[IO]
   }
 
-  lazy val autoSaveSystem: StatefulSubsystem[List[IO[Nothing]]] = {
+  lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
     val configuration = subsystems.autosave.application.SystemConfiguration(
       autoSaveEnabled = seichiAssistConfig.isAutoSaveEnabled
     )
@@ -101,16 +101,16 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.autosave.System.wired(configuration)
   }
 
-  lazy val bookedAchievementSystem: Subsystem = {
+  lazy val bookedAchievementSystem: Subsystem[IO] = {
     import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
-    subsystems.bookedachivement.System.wired[IO]
+    subsystems.bookedachivement.System.wired[IO, IO]
   }
 
-  lazy val seasonalEventsSystem: Subsystem = {
+  lazy val seasonalEventsSystem: Subsystem[IO] = {
     subsystems.seasonalevents.System.wired(this)
   }
 
@@ -299,12 +299,22 @@ class SeichiAssist extends JavaPlugin() {
     )
 
     val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
+      import cats.implicits._
       implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
       implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
         seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
 
-      val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](Nil)
+      val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
+        managedFlySystem.managedFinalizers
+      ).withAnotherFinalizer(player =>
+        IO {
+          import scala.util.chaining._
+          SeichiAssist.playermap.remove(player.getUniqueId).get.tap(_.updateOnQuit())
+        } >>= (playerData =>
+          PlayerDataSaveTask.savePlayerData[IO](player, playerData)
+          )
+      )
 
       new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
     }
@@ -312,7 +322,7 @@ class SeichiAssist extends JavaPlugin() {
     //リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),
-      new PlayerQuitListener(),
+      new ExpBarDesynchronizationListener(),
       new PlayerClickListener(),
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
@@ -344,7 +354,7 @@ class SeichiAssist extends JavaPlugin() {
     startRepeatedJobs()
 
     SeichiAssist.buildAssist = {
-      implicit val flySystem: StatefulSubsystem[InternalState[SyncIO]] = managedFlySystem
+      implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
       new BuildAssist(this)
     }
     SeichiAssist.buildAssist.onEnable()
@@ -399,16 +409,12 @@ class SeichiAssist extends JavaPlugin() {
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
     getServer.getOnlinePlayers.asScala.foreach { p =>
-      //UUIDを取得
       val uuid = p.getUniqueId
-
-      //プレイヤーデータ取得
       val playerData = SeichiAssist.playermap(uuid)
 
-      //quit時とondisable時、プレイヤーデータを最新の状態に更新
       playerData.updateOnQuit()
 
-      PlayerDataSaveTask.savePlayerData(playerData)
+      PlayerDataSaveTask.savePlayerData[SyncIO](p, playerData).unsafeRunSync()
     }
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {

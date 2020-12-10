@@ -26,7 +26,7 @@ class BungeeSemaphoreCooperator[
 
     val program = for {
       fibers <- registry
-        .allActionsOnQuitOf(player)
+        .allActionsOnQuitOf(player).toList
         .traverse(_.attempt.start)
       results <-
         ConcurrentEffect[F].race(
