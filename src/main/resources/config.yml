@@ -213,3 +213,18 @@ BuildNum1minLimit: '256'
 # オートセーブの設定
 AutoSave:
   Enable: true
+
+# BungeeCordと協調してデータ保存周りのロックを管理するシステムの設定項目
+BungeeSemaphoreResponder:
+  # SeichiAssistが保存処理を待つ最大の時間(ミリ秒指定)
+  # プレーヤーが退出してからこのミリ秒数が経過した場合、
+  # 保存処理に失敗したと見なしBungeeCordに失敗シグナルを送信する。
+  #
+  # デフォルトは55秒に設定されている。タイムアウトを無効にする場合負の値を設定すること。
+  SaveTimeout: 55000
+  Redis:
+    Host: localhost
+    Port: 6379
+    # Redisサーバーがパスワードを持っている場合、次の行をアンコメントしてパスワードを入れること。
+    # Password: ""
+
