@@ -17,7 +17,8 @@ object PlayerSeichiLevelUpListener extends Listener {
 
     val level = event.getLevelAfterLevelUp
 
-    giveItem("ガチャ券を付与する", level * 5, GachaSkullData.gachaForSeichiLevelUp)
+    if (level <= 50)
+      giveItem("ガチャ券を付与する", level * 5, GachaSkullData.gachaForSeichiLevelUp)
 
     level match {
       case 10 =>
