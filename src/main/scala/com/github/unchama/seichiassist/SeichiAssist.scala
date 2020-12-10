@@ -299,6 +299,7 @@ class SeichiAssist extends JavaPlugin() {
     )
 
     val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
+      import cats.implicits._
       implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
       implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
@@ -306,6 +307,13 @@ class SeichiAssist extends JavaPlugin() {
 
       val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
         managedFlySystem.managedFinalizers
+      ).withAnotherFinalizer(player =>
+        IO {
+          import scala.util.chaining._
+          SeichiAssist.playermap.remove(player.getUniqueId).get.tap(_.updateOnQuit())
+        } >>= (playerData =>
+          PlayerDataSaveTask.savePlayerData[IO](player, playerData)
+          )
       )
 
       new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
@@ -314,7 +322,7 @@ class SeichiAssist extends JavaPlugin() {
     //リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),
-      new PlayerQuitListener(),
+      new ExpBarDesynchronizationListener(),
       new PlayerClickListener(),
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
@@ -401,16 +409,12 @@ class SeichiAssist extends JavaPlugin() {
     //sqlコネクションチェック
     SeichiAssist.databaseGateway.ensureConnection()
     getServer.getOnlinePlayers.asScala.foreach { p =>
-      //UUIDを取得
       val uuid = p.getUniqueId
-
-      //プレイヤーデータ取得
       val playerData = SeichiAssist.playermap(uuid)
 
-      //quit時とondisable時、プレイヤーデータを最新の状態に更新
       playerData.updateOnQuit()
 
-      PlayerDataSaveTask.savePlayerData(playerData)
+      PlayerDataSaveTask.savePlayerData[SyncIO](p, playerData).unsafeRunSync()
     }
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
