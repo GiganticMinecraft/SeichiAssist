@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.autosave.application.SystemCon
 import com.github.unchama.seichiassist.subsystems.autosave.bukkit.task.global.WorldSaveRoutine
 
 object System {
-  def wired(configuration: SystemConfiguration): StatefulSubsystem[List[IO[Nothing]]] = {
+  def wired[F[_]](configuration: SystemConfiguration): StatefulSubsystem[F, List[IO[Nothing]]] = {
     import PluginExecutionContexts._
 
     implicit val _configuration: SystemConfiguration = configuration
@@ -16,6 +16,6 @@ object System {
       WorldSaveRoutine()
     )
 
-    StatefulSubsystem[List[IO[Nothing]]](Seq(), Map(), repeatedJobs)
+    StatefulSubsystem[F, List[IO[Nothing]]](Seq(), Nil, Map(), repeatedJobs)
   }
 }
