@@ -73,24 +73,17 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
     if (!isChristmasPotion(event.getItem)) return
 
     val player = event.getPlayer
-    val playerUuid = player.getUniqueId
 
     // 1分おきに計5回マナを一定量回復する
     for (i <- 1 to 5) {
       Bukkit.getServer.getScheduler.runTaskLater(instance, new Runnable {
         override def run(): Unit = {
-          // この条件分岐がfalseになる可能性は通常ない（ログインしている限りplayerMapにはそのMCIDのデータが有るはずだ）が、なっている事例があるので念の為
-          // 参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/707
-          if (SeichiAssist.playermap.contains(playerUuid)) {
-            val playerData = SeichiAssist.playermap(playerUuid)
-            val manaState = playerData.manaState
-            val maxMana = manaState.calcMaxManaOnly(player, playerData.level)
-            // マナを15%回復する
-            manaState.increase(maxMana * 0.15, player, playerData.level)
-            player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
-          } else {
-            Bukkit.getServer.getLogger.info(s"${player.getName}によって「みんなの涙」が使用されましたが、プレイヤーデータが存在しなかったため、マナ回復が行われませんでした。")
-          }
+          val playerData = SeichiAssist.playermap(player.getUniqueId)
+          val manaState = playerData.manaState
+          val maxMana = manaState.calcMaxManaOnly(player, playerData.level)
+          // マナを15%回復する
+          manaState.increase(maxMana * 0.15, player, playerData.level)
+          player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
         }
       }, (20 * 60 * i).toLong)
     }

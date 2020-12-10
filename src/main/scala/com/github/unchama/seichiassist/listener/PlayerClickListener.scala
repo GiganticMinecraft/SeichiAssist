@@ -111,8 +111,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
   @EventHandler
   def onPlayerRightClickGachaEvent(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
-    val uuid = player.getUniqueId
-    val playerData = playerMap.getOrElse(uuid, return)
+    val playerData = playerMap(player.getUniqueId)
 
     //もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return

@@ -1,14 +1,14 @@
 package com.github.unchama.buildassist
 
-import java.math.BigDecimal
-import java.util.UUID
-
 import com.github.unchama.buildassist.domain.explevel.{BuildAssistExpTable, BuildExpAmount}
 import com.github.unchama.seichiassist.data.player.BuildCount
 import com.github.unchama.seichiassist.{PackagePrivate, SeichiAssist}
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+
+import java.math.BigDecimal
+import java.util.UUID
 
 final class PlayerData(val player: Player) {
   //初期値を設定
@@ -89,10 +89,7 @@ final class PlayerData(val player: Player) {
    * 建築系データを保存
    */
   def buildsave(player: Player): Unit = {
-    val playerData = SeichiAssist.playermap.getOrElse(uuid, {
-      player.sendMessage(s"${RED}建築系データ保存失敗しました")
-      return
-    })
+    val playerData = SeichiAssist.playermap(uuid)
 
     val oldBuildCount = playerData.buildCount
 
