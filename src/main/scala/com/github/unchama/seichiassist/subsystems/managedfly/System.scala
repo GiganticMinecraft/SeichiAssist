@@ -26,10 +26,9 @@ object System {
 
   def wired[
     AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : NonServerThreadContextShift : Timer,
-    SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
-    H[_]
+    SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
   ](configuration: SystemConfiguration)(implicit effectEnvironment: EffectEnvironment)
-  : SyncContext[StatefulSubsystem[H, InternalState[SyncContext]]] = {
+  : SyncContext[StatefulSubsystem[AsyncContext, InternalState[SyncContext]]] = {
     implicit val _configuration: SystemConfiguration = configuration
 
     implicit val _jdbcRepository: FlyDurationPersistenceRepository[SyncContext, UUID] =

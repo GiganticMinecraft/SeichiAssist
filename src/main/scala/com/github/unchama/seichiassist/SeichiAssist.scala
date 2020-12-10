@@ -90,7 +90,7 @@ class SeichiAssist extends JavaPlugin() {
       expConsumptionAmount = seichiAssistConfig.getFlyExp
     )
 
-    subsystems.managedfly.System.wired[IO, SyncIO, IO](configuration).unsafeRunSync()
+    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
 
   lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
