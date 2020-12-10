@@ -28,7 +28,7 @@ object System {
     AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : NonServerThreadContextShift : Timer,
     SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
   ](configuration: SystemConfiguration)(implicit effectEnvironment: EffectEnvironment)
-  : SyncContext[StatefulSubsystem[AsyncContext, InternalState[SyncContext]]] = {
+  : SyncContext[StatefulSubsystem[SyncContext, InternalState[SyncContext]]] = {
     implicit val _configuration: SystemConfiguration = configuration
 
     implicit val _jdbcRepository: FlyDurationPersistenceRepository[SyncContext, UUID] =
@@ -52,7 +52,9 @@ object System {
 
       StatefulSubsystem(
         listenersToBeRegistered = Seq(_stateRepository),
-        finalizersToBeManaged = Nil,
+        finalizersToBeManaged = Seq(
+          player => _stateRepository.finalizationAction(player)
+        ),
         commandsToBeRegistered = Map(
           "fly" -> BukkitFlyCommand.executor[AsyncContext, SyncContext]
         ),

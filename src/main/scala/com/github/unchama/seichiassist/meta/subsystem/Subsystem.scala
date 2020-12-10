@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.meta.subsystem
 
+import cats.~>
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
+import com.github.unchama.generic.ContextCoercion
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -30,6 +32,15 @@ trait Subsystem[F[_]] {
    * サブシステムが管理するコマンド
    */
   val commands: Map[String, TabExecutor]
+
+  def transformFinalizationContext[G[_]](trans: F ~> G): Subsystem[G] = new Subsystem[G] {
+    override val listeners: Seq[Listener] = Subsystem.this.listeners
+    override val managedFinalizers: Seq[PlayerDataFinalizer[G, Player]] =
+      Subsystem.this.managedFinalizers.map(_.transformContext(trans))
+    override val commands: Map[String, TabExecutor] = Subsystem.this.commands
+  }
+
+  def coerceFinalizationContextTo[G[_] : ContextCoercion[F, *[_]]]: Subsystem[G] = transformFinalizationContext(implicitly)
 
 }
 

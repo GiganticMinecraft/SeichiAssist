@@ -90,7 +90,7 @@ class SeichiAssist extends JavaPlugin() {
       expConsumptionAmount = seichiAssistConfig.getFlyExp
     )
 
-    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
+    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync().coerceFinalizationContextTo[IO]
   }
 
   lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
@@ -304,7 +304,9 @@ class SeichiAssist extends JavaPlugin() {
       implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
         seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
 
-      val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](Nil)
+      val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
+        managedFlySystem.managedFinalizers
+      )
 
       new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
     }
