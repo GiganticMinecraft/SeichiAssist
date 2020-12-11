@@ -56,7 +56,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable {
             playermap.put(uuid, playerdata);
         } else {
             //リストにある場合はそれを読み込む
-            playerdata = playermap.apply(uuid);
+            playerdata = playermap.get(uuid).get();
         }
         //建築系データ読み込み
         playerdata.buildload(p);

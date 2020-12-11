@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist.listener
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.SyncIO
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
@@ -13,7 +13,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
 class PlayerLeftClickListener(implicit effectEnvironment: EffectEnvironment,
-                              flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
+                              flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
 
   import com.github.unchama.targetedeffect._
 

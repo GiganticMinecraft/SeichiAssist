@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec
 
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusEnchantmentLevels, MebiusLevel, MebiusProperty}
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks
-import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.{Christmas, ChristmasItemData}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Material
@@ -106,9 +105,6 @@ object BukkitMebiusItemStackCodec {
             .concat {
               if (property.level.isMaximum) List(unbreakableLoreRow) else Nil
             }
-            .concat {
-              if (Christmas.isInEvent) ChristmasItemData.christmasMebiusLore else Nil
-            }
             .asJava
         }
       }
@@ -137,8 +133,7 @@ object BukkitMebiusItemStackCodec {
   def displayNameOfMaterializedItem(property: MebiusProperty): String = {
     import LoreConstants._
 
-    if (Christmas.isInEvent) s"$RESET$WHITE$BOLD" + property.mebiusName + " Christmas Ver."
-    else mebiusNameDisplayPrefix + property.mebiusName
+    mebiusNameDisplayPrefix + property.mebiusName
   }
 
   def ownershipMatches(player: Player)(property: MebiusProperty): Boolean =

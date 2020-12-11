@@ -86,7 +86,7 @@ class PlayerJoinListener extends Listener {
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {
       //初見さんであることを全体告知
-      Util.sendEveryMessage(s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
+      Util.sendEveryMessage(s"${LIGHT_PURPLE}$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
       Util.sendEveryMessage(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
@@ -114,12 +114,6 @@ class PlayerJoinListener extends Listener {
       //初見さんにLv1メッセージを送信
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
-
-    // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
-    if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
-      player.sendTitle(
-        s"${WHITE}このサーバーは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}です",
-        s"${WHITE}始めたての頃は他のサーバーがおすすめです。", 10, 70, 20)
   }
 
   // プレイヤーがワールドを移動したとき

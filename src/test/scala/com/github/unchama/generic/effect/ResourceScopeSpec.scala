@@ -85,7 +85,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       def runImpureFunction(o: NumberedObject) = IO(impureFunction(o))
 
-      val runImpureFunction2 = IO(impureFunction2(()))
+      val runImpureFunction2 = IO(impureFunction2())
 
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
@@ -122,7 +122,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
 
-      val runImpureFunction2 = IO(impureFunction2(()))
+      val runImpureFunction2 = IO(impureFunction2())
 
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
@@ -231,7 +231,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
 
-      val runImpureFunction2 = IO(impureFunction2(()))
+      val runImpureFunction2 = IO(impureFunction2())
 
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
@@ -268,7 +268,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
       def runImpureFunction(o: NumberedObject): IO[Unit] = IO(impureFunction(o))
 
-      val runImpureFunction2 = IO(impureFunction2(()))
+      val runImpureFunction2 = IO(impureFunction2())
 
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList

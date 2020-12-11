@@ -1,6 +1,8 @@
 package com.github.unchama.buildassist
 
-import cats.effect.{IO, SyncIO}
+import java.util.UUID
+
+import cats.effect.SyncIO
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
@@ -12,11 +14,10 @@ import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Material, Sound}
 
-import java.util.UUID
 import scala.collection.mutable
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
-                              flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
+                              flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
   val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
 
   import com.github.unchama.targetedeffect._

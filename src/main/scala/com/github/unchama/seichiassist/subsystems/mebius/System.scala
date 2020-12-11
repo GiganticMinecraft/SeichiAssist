@@ -16,10 +16,10 @@ import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechSer
 import org.bukkit.entity.Player
 
 object System {
-  def wired[F[_]](implicit effectEnvironment: EffectEnvironment,
-                  timer: Timer[IO],
-                  repeatingTaskContext: RepeatingTaskContext,
-                  bukkitSyncIOShift: MinecraftServerThreadShift[IO]): Subsystem[F] = {
+  def wired(implicit effectEnvironment: EffectEnvironment,
+            timer: Timer[IO],
+            repeatingTaskContext: RepeatingTaskContext,
+            bukkitSyncIOShift: MinecraftServerThreadShift[IO]): Subsystem = {
     implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
     implicit val gatewayProvider: Player => MebiusSpeechGateway[SyncIO] = new BukkitMebiusSpeechGateway(_)
     implicit val getFreshSpeechBlockageState: SyncIO[MebiusSpeechBlockageState[SyncIO]] = SyncIO(new MebiusSpeechBlockageState[SyncIO])
@@ -40,6 +40,6 @@ object System {
       "mebius" -> new MebiusCommandExecutorProvider().executor
     )
 
-    Subsystem(listeners, Nil, commands)
+    Subsystem(listeners, commands)
   }
 }

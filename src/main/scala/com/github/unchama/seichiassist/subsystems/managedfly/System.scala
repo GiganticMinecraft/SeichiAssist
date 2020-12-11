@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.managedfly
 
+import java.util.UUID
+
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
@@ -15,8 +17,6 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlySta
 import com.github.unchama.seichiassist.subsystems.managedfly.infrastructure.JdbcFlyDurationPersistenceRepository
 import org.bukkit.entity.Player
 
-import java.util.UUID
-
 /**
  * NOTE: このサブシステム(managedfly)は本来BuildAssist側に属するが、
  * BuildAssistがSeichiAssistのサブシステムとして完全に整理されなおすまでは、
@@ -28,7 +28,7 @@ object System {
     AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : NonServerThreadContextShift : Timer,
     SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
   ](configuration: SystemConfiguration)(implicit effectEnvironment: EffectEnvironment)
-  : SyncContext[StatefulSubsystem[SyncContext, InternalState[SyncContext]]] = {
+  : SyncContext[StatefulSubsystem[InternalState[SyncContext]]] = {
     implicit val _configuration: SystemConfiguration = configuration
 
     implicit val _jdbcRepository: FlyDurationPersistenceRepository[SyncContext, UUID] =
@@ -52,9 +52,6 @@ object System {
 
       StatefulSubsystem(
         listenersToBeRegistered = Seq(_stateRepository),
-        finalizersToBeManaged = Seq(
-          player => _stateRepository.finalizationAction(player)
-        ),
         commandsToBeRegistered = Map(
           "fly" -> BukkitFlyCommand.executor[AsyncContext, SyncContext]
         ),

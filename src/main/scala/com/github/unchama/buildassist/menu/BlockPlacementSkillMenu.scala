@@ -17,7 +17,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
-class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Menu {
+class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import menuinventory.syntax._

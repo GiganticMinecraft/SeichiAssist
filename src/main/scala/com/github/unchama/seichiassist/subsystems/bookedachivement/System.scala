@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement
 
+import java.util.UUID
+
 import cats.effect.ConcurrentEffect
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -10,13 +12,10 @@ import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.Booked
 import com.github.unchama.seichiassist.subsystems.bookedachivement.infrastructure.JdbcBookedAchievementPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
 
-import java.util.UUID
-
 object System {
   def wired[
-    F[_] : ConcurrentEffect : NonServerThreadContextShift,
-    G[_]
-  ](implicit effectEnvironment: EffectEnvironment): Subsystem[G] = {
+    F[_] : ConcurrentEffect : NonServerThreadContextShift
+  ](implicit effectEnvironment: EffectEnvironment): Subsystem = {
 
     implicit val repository: BookedAchievementPersistenceRepository[F, UUID] =
       new JdbcBookedAchievementPersistenceRepository[F]
@@ -28,7 +27,7 @@ object System {
       new GrantBookedAchievementListener()
     )
 
-    Subsystem(listener, Nil, Map(
+    Subsystem(listener, Map(
       "achievement" -> AchievementCommand.executor
     ))
   }

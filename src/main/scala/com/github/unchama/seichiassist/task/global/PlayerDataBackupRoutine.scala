@@ -18,31 +18,21 @@ object PlayerDataBackupRoutine {
       if (SeichiAssist.DEBUG) 20.seconds else 10.minutes
     }
 
-    import cats.implicits._
-
     val routineAction: IO[Boolean] = {
-      val save = {
+      val save = IO {
         import scala.jdk.CollectionConverters._
 
         if (SeichiAssist.playermap.nonEmpty) {
-          for {
-            _ <- IO {
-              Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ中…")
-              Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
-            }
-            players <- IO {
-              Bukkit.getOnlinePlayers.asScala.toList
-            }
-            _ <- players.traverse { player =>
-              PlayerDataSaveTask.savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
-            }
-            _ <- IO {
-              Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ完了")
-              Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
-            }
-          } yield ()
-        } else {
-          IO.unit
+          Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ中…")
+          Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
+
+          //現在オンラインのプレイヤーのプレイヤーデータを永続化する
+          Bukkit.getOnlinePlayers.asScala.toList
+            .map(player => SeichiAssist.playermap(player.getUniqueId))
+            .foreach(PlayerDataSaveTask.savePlayerData)
+
+          Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ完了")
+          Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
         }
       }
 
