@@ -7,10 +7,10 @@ import org.bukkit.inventory.ItemStack
 
 import scala.jdk.CollectionConverters._
 
-object V1_1_0_MigrateNarutoRemakeToNewCodec {
+object V1_1_0_AddUnbreakableToNarutoRemake {
 
   object OldNarutoRemakeItemStackCodec {
-    private val narutoRemakeLore = List(s"${GRAY}2020ハロウィン討伐イベント")
+    private val narutoRemakeLore = s"${GRAY}2020ハロウィン討伐イベント"
 
     def decodeOldNarutoRemake(itemStack: ItemStack): Option[ItemStack] = Some(itemStack).filter(isNarutoRemake)
 
