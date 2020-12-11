@@ -5,10 +5,10 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Ann
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
 import com.github.unchama.seichiassist.util.Util.{addItem, isPlayerInventoryFull}
 import org.bukkit.ChatColor._
+import org.bukkit.Sound
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.{Bukkit, Sound}
 
 import java.time.LocalDate
 
@@ -31,15 +31,6 @@ object AnniversaryListener extends Listener {
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
     val player = event.getEntity
     val playerUuid = player.getUniqueId
-
-    // この条件分岐がtrueになる可能性は通常ない（ログインしている限りplayerMapにはそのMCIDのデータが有るはずだ）が、なっている事例があるので念の為
-    // 参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/707
-    if (!SeichiAssist.playermap.contains(playerUuid)) {
-      Bukkit.getServer.getLogger.info(s"${player.getName}のプレイヤーデータが存在しなかったため、周年記念ヘッドを配布できませんでした。")
-      player.sendMessage(s"${RED}内部的なエラーによりアイテムを配布できませんでした。管理者にお問い合わせください。")
-      return
-    }
-
     val playerData = SeichiAssist.playermap(playerUuid)
     if (!playerData.anniversary) return
 

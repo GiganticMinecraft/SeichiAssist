@@ -4,11 +4,11 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.rescueplayer.bukkit.listeners.RescuePlayerListener
 
 object System {
-  def wired: Subsystem = {
+  def wired[F[_]]: Subsystem[F] = {
     val listeners = Seq(
       new RescuePlayerListener()
     )
 
-    Subsystem(listeners, Map())
+    Subsystem(listeners, Nil, Map())
   }
 }

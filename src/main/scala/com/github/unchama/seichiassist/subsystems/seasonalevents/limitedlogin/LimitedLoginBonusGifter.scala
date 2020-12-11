@@ -18,13 +18,7 @@ object LimitedLoginBonusGifter extends Listener {
     if (!isInEvent) return
 
     implicit val player: Player = event.getPlayer
-    val playerUuid = player.getUniqueId
-
-    // この条件分岐がtrueになる可能性は通常ない（ログインしている限りplayerMapにはそのMCIDのデータが有るはずだ）が、なっている事例があるので念の為
-    // 参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/707
-    if (!SeichiAssist.playermap.contains(playerUuid)) return
-
-    val playerData = SeichiAssist.playermap(playerUuid)
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
     val lastCheckedDate = {
       val lastChecked = playerData.lastcheckdate
       val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")

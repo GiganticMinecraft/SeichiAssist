@@ -9,23 +9,24 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.Li
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineListener
-import org.bukkit.command.TabExecutor
-import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 
 object System {
-  def wired(instance: JavaPlugin): Subsystem = new Subsystem {
-    override val listeners: Seq[Listener] = Seq(
-      AnniversaryListener,
-      new ChristmasItemListener(instance),
-      HalloweenItemListener,
-      LimitedLoginBonusGifter,
-      SeizonsikiListener,
-      ValentineListener,
-      NewYearListener,
-    )
-    override val commands: Map[String, TabExecutor] = Map(
-      "event" -> EventCommand.executor
+  def wired[F[_]](instance: JavaPlugin): Subsystem[F] = {
+    Subsystem(
+      listenersToBeRegistered = Seq(
+        AnniversaryListener,
+        new ChristmasItemListener(instance),
+        HalloweenItemListener,
+        LimitedLoginBonusGifter,
+        SeizonsikiListener,
+        ValentineListener,
+        NewYearListener,
+      ),
+      finalizersToBeManaged = Nil,
+      commandsToBeRegistered = Map(
+        "event" -> EventCommand.executor
+      )
     )
   }
 }

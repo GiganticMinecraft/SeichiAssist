@@ -1,13 +1,13 @@
 package com.github.unchama.datarepository.bukkit.player
 
-import java.util.UUID
-
-import cats.effect.{ConcurrentEffect, ContextShift, SyncEffect, SyncIO}
+import cats.effect.{ConcurrentEffect, ContextShift, Sync, SyncEffect, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
+
+import java.util.UUID
 
 /**
  * プレーヤーに値を関連付けるオンメモリデータリポジトリのクラス。
@@ -72,9 +72,7 @@ abstract class TwoPhasedPlayerDataRepository[
 
   def apply(player: Player): R = state(player.getUniqueId)
 
-  import ContextCoercion._
   import cats.effect.implicits._
-  import cats.implicits._
 
   @EventHandler(priority = EventPriority.LOWEST)
   final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
@@ -111,15 +109,14 @@ abstract class TwoPhasedPlayerDataRepository[
     }
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
-  final def onPlayerLeave(event: PlayerQuitEvent): Unit = {
-    val player = event.getPlayer
-    val uuid = player.getUniqueId
-    val storedValue = state.remove(uuid).get
+  /**
+   * プレーヤーの退出処理。この作用は2度以上呼び出した場合の動作が未定義である。
+   */
+  final def finalizationAction(key: Player): SyncContext[Unit] = {
+    import cats.implicits._
 
-    environment.runEffectAsync(
-      s"プレーヤー退出時にデータをアンロードする(${getClass.getName})",
-      ContextShift[AsyncContext].shift >> unloadData(player, storedValue).coerceTo[AsyncContext]
-    )
+    Sync[SyncContext].delay {
+      state.remove(key.getUniqueId).get
+    }.flatMap(unloadData(key, _))
   }
 }

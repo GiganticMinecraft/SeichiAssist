@@ -19,8 +19,9 @@ object System {
 
   def wired[
     F[_] : ConcurrentEffect : ContextShift,
-    G[_] : SyncEffect : ContextCoercion[*[_], F]
-  ](implicit effectEnvironment: EffectEnvironment, logger: Logger): G[StatefulSubsystem[InternalState[F]]] = Sync[G].delay {
+    G[_] : SyncEffect : ContextCoercion[*[_], F],
+    H[_]
+  ](implicit effectEnvironment: EffectEnvironment, logger: Logger): G[StatefulSubsystem[H, InternalState[F]]] = Sync[G].delay {
 
     val migrations = {
       implicit val syncIOUuidRepository: UuidRepository[SyncIO] = JdbcBackedUuidRepository
@@ -54,6 +55,7 @@ object System {
         repository,
         playerItemMigrationController
       ),
+      finalizersToBeManaged = Nil,
       commandsToBeRegistered = Map(),
       stateToExpose = InternalState(entryPoints, repository)
     )

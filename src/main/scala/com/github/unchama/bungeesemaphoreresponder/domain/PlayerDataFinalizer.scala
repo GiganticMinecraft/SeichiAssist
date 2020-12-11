@@ -1,5 +1,8 @@
 package com.github.unchama.bungeesemaphoreresponder.domain
 
+import cats.~>
+import com.github.unchama.generic.ContextCoercion
+
 /**
  * The type of a pure callback object that should be invoked when a player quits the Minecraft server.
  *
@@ -19,5 +22,17 @@ trait PlayerDataFinalizer[F[_], Player] {
    * If required, the action may shift the execution context.
    */
   def onQuitOf(player: Player): F[Unit]
+
+  def transformContext[G[_]](trans: F ~> G): PlayerDataFinalizer[G, Player] = {
+    PlayerDataFinalizer(player => trans.apply(onQuitOf(player)))
+  }
+
+  def coerceContextTo[G[_] : ContextCoercion[F, *[_]]]: PlayerDataFinalizer[G, Player] = transformContext[G](implicitly)
+
+}
+
+object PlayerDataFinalizer {
+
+  def apply[F[_], Player](f: Player => F[Unit]): PlayerDataFinalizer[F, Player] = (player: Player) => f(player)
 
 }
