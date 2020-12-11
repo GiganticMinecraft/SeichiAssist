@@ -94,11 +94,13 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
+    import PluginExecutionContexts.timer
+
     val configuration = subsystems.autosave.application.SystemConfiguration(
       autoSaveEnabled = seichiAssistConfig.isAutoSaveEnabled
     )
 
-    subsystems.autosave.System.wired(configuration)
+    subsystems.autosave.System.wired[IO, IO](configuration)
   }
 
   lazy val bookedAchievementSystem: Subsystem[IO] = {
