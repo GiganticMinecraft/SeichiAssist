@@ -287,6 +287,7 @@ class SeichiAssist extends JavaPlugin() {
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
+      "stickmenu" -> StickMenuCommand.executor
     )
       .concat(subsystems.flatMap(_.commands))
       .foreach {
