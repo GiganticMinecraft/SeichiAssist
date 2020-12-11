@@ -6,13 +6,13 @@ import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.bukkit.task.global.DragonNightTimeRoutine
 
 object System {
-  def wired: StatefulSubsystem[List[IO[Nothing]]] = {
+  def wired[F[_]]: StatefulSubsystem[F, List[IO[Nothing]]] = {
     import PluginExecutionContexts._
 
     val repeatedJobs = List[IO[Nothing]](
       DragonNightTimeRoutine()
     )
 
-    StatefulSubsystem[List[IO[Nothing]]](Seq(), Map(), repeatedJobs)
+    StatefulSubsystem[F, List[IO[Nothing]]](Seq(), Nil, Map(), repeatedJobs)
   }
 }

@@ -110,7 +110,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
-  lazy val dragonNightTimeSystem: StatefulSubsystem[List[IO[Nothing]]] = subsystems.dragonnighttime.System.wired
+  lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = subsystems.dragonnighttime.System.wired
   
   lazy val seasonalEventsSystem: Subsystem[IO] = {
     subsystems.seasonalevents.System.wired(this)
