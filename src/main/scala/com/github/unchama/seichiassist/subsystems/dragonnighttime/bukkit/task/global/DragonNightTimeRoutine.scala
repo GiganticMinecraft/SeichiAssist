@@ -18,12 +18,9 @@ object DragonNightTimeRoutine {
     }
 
     val routineAction = IO {
-      val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tokyo"))
-      val hour = calendar.get(Calendar.HOUR_OF_DAY)
-      val minute = calendar.get(Calendar.MINUTE)
-      val second = calendar.get(Calendar.SECOND)
+      val time = LocalTime.of(20, 0, 0)
 
-      if (hour == 20 && minute == 0 && second == 0) {
+      if (LocalTime.now().equals(time)) {
         DragonNightTimeTask.startDragonNightTime()
 
         Util.sendEveryMessage("ドラゲナイタイム開始！")
