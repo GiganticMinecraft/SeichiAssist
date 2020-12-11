@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime.bukkit.task.global
 
-import java.util.{Calendar, TimeZone}
+import java.time.LocalTime
 
 import cats.effect.{IO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
