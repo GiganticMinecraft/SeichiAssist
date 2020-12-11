@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist
 
 import com.github.unchama.bungeesemaphoreresponder.{RedisConnectionSettings, Configuration => BungeeSemaphoreResponderConfiguration}
+import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemConfiguration => AutoSaveConfiguration}
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -129,8 +130,6 @@ final class Config private(val config: FileConfiguration) {
    */
   def getUrl(typeName: String): String = config.getString("Url." + typeName, "")
 
-  def isAutoSaveEnabled: Boolean = config.getBoolean("AutoSave.Enable")
-
   def getBungeeSemaphoreSystemConfiguration: BungeeSemaphoreResponderConfiguration = {
     val systemSettingsSection = config.getConfigurationSection("BungeeSemaphoreResponder")
 
@@ -162,5 +161,9 @@ final class Config private(val config: FileConfiguration) {
       override val redis: RedisConnectionSettings = _redis
       override val saveTimeoutDuration: Duration = _saveTimeoutDuration
     }
+  }
+
+  def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
+    override val autoSaveEnabled: Boolean = config.getBoolean("AutoSave.Enable")
   }
 }

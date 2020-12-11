@@ -96,9 +96,7 @@ class SeichiAssist extends JavaPlugin() {
   lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
     import PluginExecutionContexts.timer
 
-    val configuration = subsystems.autosave.application.SystemConfiguration(
-      autoSaveEnabled = seichiAssistConfig.isAutoSaveEnabled
-    )
+    val configuration = seichiAssistConfig.getAutoSaveSystemConfiguration
 
     subsystems.autosave.System.wired[IO, IO](configuration)
   }
