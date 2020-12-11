@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets
 
 import cats.effect.{Concurrent, Sync}
-import com.github.unchama.itemmigration.targets.WorldLevelData
+import com.github.unchama.itemmigration.bukkit.targets.WorldLevelData
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.external.{ExternalPlugins, ExternalServices}
 import org.bukkit.World

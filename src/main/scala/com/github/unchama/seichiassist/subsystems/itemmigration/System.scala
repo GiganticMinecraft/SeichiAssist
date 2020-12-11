@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.itemmigration
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Sync, SyncEffect, SyncIO}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.itemmigration.controllers.player.{PlayerItemMigrationController, PlayerItemMigrationStateRepository}
+import com.github.unchama.itemmigration.bukkit.controllers.player.{PlayerItemMigrationController, PlayerItemMigrationStateRepository}
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
