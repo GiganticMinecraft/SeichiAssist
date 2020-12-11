@@ -264,7 +264,7 @@ object ChristmasItemData {
 
   //endregion
 
-  //region christmasSock
+  //region ChristmasSock
 
   val christmasSock: ItemStack = {
     val loreList = List(
