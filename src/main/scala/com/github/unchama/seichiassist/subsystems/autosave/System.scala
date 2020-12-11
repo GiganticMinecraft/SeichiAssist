@@ -1,21 +1,27 @@
 package com.github.unchama.seichiassist.subsystems.autosave
 
-import cats.effect.IO
+import cats.effect.{Sync, Timer}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
-import com.github.unchama.seichiassist.subsystems.autosave.application.SystemConfiguration
-import com.github.unchama.seichiassist.subsystems.autosave.bukkit.task.global.WorldSaveRoutine
+import com.github.unchama.seichiassist.subsystems.autosave.application.{CanNotifySaves, CanSaveWorlds, SystemConfiguration, WorldSaveRoutine}
+import com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances.{SyncCanNotifyBukkitSaves, SyncCanSaveBukkitWorlds}
 
 object System {
-  def wired[F[_]](configuration: SystemConfiguration): StatefulSubsystem[F, List[IO[Nothing]]] = {
+  def wired[
+    F[_] : Sync : Timer,
+    G[_]
+  ](configuration: SystemConfiguration): StatefulSubsystem[G, List[F[Nothing]]] = {
     import PluginExecutionContexts._
 
     implicit val _configuration: SystemConfiguration = configuration
 
-    val repeatedJobs = List[IO[Nothing]](
+    implicit val _canSaveWorlds: CanSaveWorlds[F] = SyncCanSaveBukkitWorlds[F]
+    implicit val _canNotifySaves: CanNotifySaves[F] = SyncCanNotifyBukkitSaves[F]
+
+    val repeatedJobs = List[F[Nothing]](
       WorldSaveRoutine()
     )
 
-    StatefulSubsystem[F, List[IO[Nothing]]](Seq(), Nil, Map(), repeatedJobs)
+    StatefulSubsystem[G, List[F[Nothing]]](Seq(), Nil, Map(), repeatedJobs)
   }
 }
