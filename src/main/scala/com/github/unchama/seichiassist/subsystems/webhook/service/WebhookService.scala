@@ -14,7 +14,7 @@ class WebhookService {
     val httpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
     httpURLConnection
       .tap(_.addRequestProperty("Content-Type", "application/json; charset=utf-8"))
-      // User-AgentがDiscordBotでないばあい403が返却されるため
+      // User-AgentがDiscordBotでない場合403が返却されるため
       .tap(_.addRequestProperty("User-Agent", "DiscordBot"))
       .tap(_.setDoOutput(true))
       .tap(_.setRequestMethod("POST"))
