@@ -30,7 +30,21 @@ object MigrationHelper {
         case meta: BlockStateMeta if meta.hasBlockState =>
           meta.getBlockState match {
             case state: InventoryHolder =>
+
+              /**
+               * [このスレッド](https://www.spigotmc.org/threads/unable-to-modify-shulker-box-inventory-contents.320665/)
+               * を参考に実装。
+               *
+               * [[BlockStateMeta]] の `.getBlockState` メソッドは
+               *
+               * > The state is a copy, it must be set back (or to another item) with setBlockState(BlockState)
+               *
+               * にあるように状態のコピーを返してくるので、それに付属したインベントリ(`state.getInventory`)
+               * に変更を行った後は `state` を `meta` に返して、 `meta` を `cloned` に返す必要がある。
+               */
               convertEachStackIn(state.getInventory)(conversion)
+              meta.setBlockState(state)
+              cloned.setItemMeta(meta)
               cloned
             case _ => conversion(itemStack)
           }
