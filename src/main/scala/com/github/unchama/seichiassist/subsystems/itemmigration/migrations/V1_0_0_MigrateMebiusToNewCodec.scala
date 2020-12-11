@@ -5,8 +5,10 @@ import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.migrations.V1_0_0_MigrateMebiusToNewCodec.OldBukkitMebiusItemStackCodec.OldMebiusRawProperty
+import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec.NBTTagConstants
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.slf4j.Logger
 
@@ -29,11 +31,31 @@ object V1_0_0_MigrateMebiusToNewCodec {
     private val ownerLoreRowPrefix = s"$RESET${DARK_GREEN}所有者："
     private val levelLoreRowPrefix = s"$RESET$RED${BOLD}アイテムLv. "
 
+    def isNewMebius(itemStack: ItemStack): Boolean = {
+      itemStack != null && itemStack.getType != Material.AIR && {
+        new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 1
+      }
+    }
+
+    def isMebius(itemStack: ItemStack): Boolean = {
+      val meta = if (itemStack != null) itemStack.getItemMeta else return false
+
+      meta != null && meta.hasLore && {
+        val lore = meta.getLore.asScala
+        mebiusLoreHead.forall(lore.contains)
+      }
+    }
+
     /**
-     * (必ずしも有効な`MebiusProperty`を持つとは限らない)実体から `ItemStack` をデコードする。
+     * `"mebiusTypeId"`をNBTに持たないアイテムから古いMebiusのプロパティをデコードする。
      */
     def decodeOldMebiusProperty(itemStack: ItemStack): Option[OldMebiusRawProperty] = {
-      val mebius = if (isMebius(itemStack)) itemStack else return None
+      val mebius = {
+        // 変換を冪等にするために新しいMebiusは弾くようにする
+        if (isMebius(itemStack) && !isNewMebius(itemStack))
+          itemStack
+        else return None
+      }
 
       val nickname = {
         val nbtItem = new NBTItem(mebius)
@@ -47,15 +69,6 @@ object V1_0_0_MigrateMebiusToNewCodec {
       val mebiusName = mebius.getItemMeta.getDisplayName
 
       Some(OldMebiusRawProperty(ownerName, mebiusLevel, nickname, mebiusName))
-    }
-
-    def isMebius(itemStack: ItemStack): Boolean = {
-      val meta = if (itemStack != null) itemStack.getItemMeta else return false
-
-      meta != null && meta.hasLore && {
-        val lore = meta.getLore.asScala
-        mebiusLoreHead.forall(lore.contains)
-      }
     }
 
     case class OldMebiusRawProperty(ownerPlayerId: String,
