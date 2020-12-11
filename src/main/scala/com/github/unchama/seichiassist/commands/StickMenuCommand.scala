@@ -18,4 +18,5 @@ object StickMenuCommand {
       IO(StickMenu.firstPage.open)
     }
     .build()
+    .asNonBlockingTabExecutor()
 }
