@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -628,43 +627,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
       } else {
         player.sendMessage(GREEN.toString + "限定タイタンを" + count + "個認識し、修繕しました。")
       }
-    }
-  }
-
-  @EventHandler
-  def onNarutoRemakeExchangingEvent(event: InventoryCloseEvent): Unit = {
-
-    event.getPlayer match {
-      case player: Player =>
-        val inventory = event.getInventory
-
-        //インベントリサイズが36でない時終了
-        if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}修繕したい「NARUTO REMAKE」を入れてネ") return
-
-        //インベントリの中身を取得
-        val items = inventory.getContents.toList
-
-        val matched = items.filter(_ != null).filter(_.hasItemMeta).filter(Util.isNarutoRemake)
-        matched.foreach { item =>
-          val itemMeta = item.getItemMeta
-          itemMeta.setUnbreakable(true)
-          item.setDurability(238.toShort)
-          item.setItemMeta(itemMeta)
-        }
-        val amount = matched.size
-        // アイテムは結局修繕対象であろうとなかろうと返却する
-        items.foreach { item =>
-          DefaultEffectEnvironment.runEffectAsync(
-            "渡されたItemStackをプレイヤーのインベントリに返却する",
-            grantItemStacksEffect(item).run(player)
-          )
-        }
-
-        val message =
-          if (amount >= 1) s"$GREEN「NARUTO REMAKE」を${amount}個認識し、交換しました"
-          else s"$GREEN「NARUTO REMAKE」を認識しませんでした。すべてのアイテムを返却します"
-        player.sendMessage(message)
-      case _ =>
     }
   }
 

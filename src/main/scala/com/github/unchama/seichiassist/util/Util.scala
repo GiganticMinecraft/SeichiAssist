@@ -512,15 +512,6 @@ object Util {
       isContainedInLore(itemstack, "特別なタイタンをあなたに♡")
   }
 
-  def isNarutoRemake(itemStack: ItemStack): Boolean = {
-    if (!itemStack.hasItemMeta) return false
-    val itemMeta = itemStack.getItemMeta
-
-    itemStack.getType == Material.SHEARS &&
-      itemMeta.getDisplayName.contains(s"$DARK_RED$BOLD${ITALIC}NARUTO $WHITE$BOLD${ITALIC}REMAKE") &&
-      isContainedInLore(itemStack, s"${GRAY}2020ハロウィン討伐イベント")
-  }
-
   /**
    * 指定された`String`が指定された[[ItemStack]]のloreに含まれているかどうか
    *
