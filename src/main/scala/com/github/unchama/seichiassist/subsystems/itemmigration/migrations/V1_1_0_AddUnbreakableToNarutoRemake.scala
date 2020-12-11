@@ -9,23 +9,19 @@ import scala.jdk.CollectionConverters._
 
 object V1_1_0_AddUnbreakableToNarutoRemake {
 
-  object OldNarutoRemakeItemStackCodec {
-    private val narutoRemake1Lore = s"${GRAY}2020ハロウィン討伐イベントクリア賞"
-    private val narutoRemake2Lore = s"${GRAY}2020ハロウィン討伐イベント特別賞"
+  private val narutoRemake1Lore = s"${GRAY}2020ハロウィン討伐イベントクリア賞"
+  private val narutoRemake2Lore = s"${GRAY}2020ハロウィン討伐イベント特別賞"
 
-    def decodeOldNarutoRemake(itemStack: ItemStack): Option[ItemStack] = Some(itemStack).filter(isNarutoRemake)
-
-    def isNarutoRemake(itemStack: ItemStack): Boolean = {
-      if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) return false
-      val lore = itemStack.getItemMeta.getLore.asScala
-      lore.contains(narutoRemake1Lore) || lore.contains(narutoRemake2Lore)
-    }
+  def isNarutoRemake(itemStack: ItemStack): Boolean = {
+    if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) return false
+    val lore = itemStack.getItemMeta.getLore.asScala
+    lore.contains(narutoRemake1Lore) || lore.contains(narutoRemake2Lore)
   }
 
   import eu.timepit.refined.auto._
 
   def migrationFunction(itemStack: ItemStack): ItemStack = {
-    if (OldNarutoRemakeItemStackCodec.decodeOldNarutoRemake(itemStack).isEmpty) return itemStack
+    if (!isNarutoRemake(itemStack)) return itemStack
 
     import scala.util.chaining._
 
