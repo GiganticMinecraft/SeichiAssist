@@ -1,4 +1,4 @@
-package com.github.unchama.itemmigration.util
+package com.github.unchama.itemmigration.bukkit.util
 
 import com.github.unchama.itemmigration.domain.ItemStackConversion
 import org.bukkit.Material

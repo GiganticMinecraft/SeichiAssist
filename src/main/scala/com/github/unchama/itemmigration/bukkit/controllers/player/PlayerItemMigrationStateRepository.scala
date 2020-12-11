@@ -1,6 +1,4 @@
-package com.github.unchama.itemmigration.controllers.player
-
-import java.util.UUID
+package com.github.unchama.itemmigration.bukkit.controllers.player
 
 import cats.effect.concurrent.{Deferred, TryableDeferred}
 import cats.effect.{Concurrent, ConcurrentEffect, ContextShift, SyncEffect}
@@ -8,6 +6,8 @@ import com.github.unchama.datarepository.bukkit.player.PreLoginToQuitPlayerDataR
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
+
+import java.util.UUID
 
 /**
  * 各プレーヤーのマイグレーション処理の状態を保持するオブジェクトのクラス。
