@@ -264,7 +264,7 @@ object ChristmasItemData {
 
   //endregion
 
-  //region hristmasSock
+  //region ChristmasSock
 
   val christmasSock: ItemStack = {
     val loreList = List(
@@ -275,7 +275,7 @@ object ChristmasItemData {
     ).map(str => s"$RESET$str")
       .asJava
 
-    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.LEATHER_BOOTS).tap { meta =>
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.INK_SACK).tap { meta =>
       import meta._
       setDisplayName(s"${AQUA}靴下")
       setLore(loreList)
@@ -283,8 +283,12 @@ object ChristmasItemData {
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
     }
 
-    val itemStack = new ItemStack(Material.LEATHER_BOOTS, 1)
-    itemStack.setItemMeta(itemMeta)
+    // 赤の染料
+    val itemStack = new ItemStack(Material.INK_SACK, 1).tap { itemStack =>
+      import itemStack._
+      setDurability(1.toShort)
+      setItemMeta(itemMeta)
+    }
 
     new NBTItem(itemStack).tap { nbtItem =>
       import nbtItem._
