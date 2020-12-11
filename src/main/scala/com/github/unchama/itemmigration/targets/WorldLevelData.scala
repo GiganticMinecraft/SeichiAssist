@@ -137,31 +137,32 @@ object WorldLevelData {
                             (implicit F: Concurrent[F], logger: Logger): F[Unit] =
     for {
       worldRef <- Ref.of(originalWorld)
-    } yield {
-      val chunkConversionEffects: List[F[Unit]] = {
-        targetChunks
-          .map { chunkCoordinate =>
-            worldRef.get >>= migrateChunk[F](conversion, chunkCoordinate)
-          }
-          .toList
-      }
+      _ <- {
+        val chunkConversionEffects: List[F[Unit]] = {
+          targetChunks
+            .map { chunkCoordinate =>
+              worldRef.get >>= migrateChunk[F](conversion, chunkCoordinate)
+            }
+            .toList
+        }
 
-      /*
-       * flushEntityRemovalQueue及びqueueChunkSaverFlushが短期的なメモリ確保、
-       * reloadWorldが長期的な(複数ワールド処理の範疇での)メモリ確保に寄与する。
-       *
-       * reloadWorldには比較的時間が掛かるので少なめ、しかし変換が終わると必ず実行するようにした。
-       *
-       * 同時に導入するプラグインによっては、チャンクやワールドのロード/アンロードのハンドラ内で
-       * ワールドに対する参照を直接持ち、アンロード時のGCを妨げるものがある。
-       *
-       * OutOfMemoryErrorが観測された際には、プロファイラで残留しているワールドのインスタンスを確認し、
-       * GC Rootからの参照パスを特定することを推奨する。
-       */
-      chunkConversionEffects
-        .atEvery(chunkSaverQueueFlushInterval)(_ => flushEntityRemovalQueue(worldRef) >> queueChunkSaverFlush)
-        .atEvery(progressLogInterval)(index => logProgress(index, chunkConversionEffects.size)(worldRef))
-        .atEvery(reloadWorldInterval)(_ => reloadWorld(worldRef))
-        .sequence >> reloadWorld(worldRef)
-    }
+        /*
+         * flushEntityRemovalQueue及びqueueChunkSaverFlushが短期的なメモリ確保、
+         * reloadWorldが長期的な(複数ワールド処理の範疇での)メモリ確保に寄与する。
+         *
+         * reloadWorldには比較的時間が掛かるので少なめ、しかし変換が終わると必ず実行するようにした。
+         *
+         * 同時に導入するプラグインによっては、チャンクやワールドのロード/アンロードのハンドラ内で
+         * ワールドに対する参照を直接持ち、アンロード時のGCを妨げるものがある。
+         *
+         * OutOfMemoryErrorが観測された際には、プロファイラで残留しているワールドのインスタンスを確認し、
+         * GC Rootからの参照パスを特定することを推奨する。
+         */
+        chunkConversionEffects
+          .atEvery(chunkSaverQueueFlushInterval)(_ => flushEntityRemovalQueue(worldRef) >> queueChunkSaverFlush)
+          .atEvery(progressLogInterval)(index => logProgress(index, chunkConversionEffects.size)(worldRef))
+          .atEvery(reloadWorldInterval)(_ => reloadWorld(worldRef))
+          .sequence >> reloadWorld(worldRef)
+      }
+    } yield ()
 }
