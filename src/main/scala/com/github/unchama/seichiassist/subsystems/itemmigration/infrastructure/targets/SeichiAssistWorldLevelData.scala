@@ -21,7 +21,7 @@ private object DelegatedImpls {
   }
 
   def getWorldChunkCoordinates[F[_] : Sync](implicit logger: Logger): World => F[Seq[(Int, Int)]] =
-    ExternalServices.getChunkCoordinates[F](SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
+    ExternalServices.getChunkCoordinates[F](SeichiAssist.seichiAssistConfig.chunkSearchCommandBase)
 }
 
 class SeichiAssistWorldLevelData[F[_]](implicit metricsLogger: Logger, F: Concurrent[F])

@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.listener;
 
-import com.github.unchama.seichiassist.Config;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.EditSession;

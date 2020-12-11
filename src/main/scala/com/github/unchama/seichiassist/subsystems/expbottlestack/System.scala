@@ -11,8 +11,9 @@ import org.bukkit.entity.ThrownExpBottle
 object System {
   def wired[
     F[_] : ConcurrentEffect,
-    G[_] : SyncEffect : ContextCoercion[*[_], F]
-  ](implicit effectEnvironment: EffectEnvironment): F[StatefulSubsystem[InternalState[F, G]]] = {
+    G[_] : SyncEffect : ContextCoercion[*[_], F],
+    H[_]
+  ](implicit effectEnvironment: EffectEnvironment): F[StatefulSubsystem[H, InternalState[F, G]]] = {
     import cats.implicits._
 
     for {
@@ -24,6 +25,7 @@ object System {
         listenersToBeRegistered = Seq(
           new ExpBottleStackUsageController[F, G]()
         ),
+        finalizersToBeManaged = Nil,
         commandsToBeRegistered = Map(),
         stateToExpose = InternalState[F, G](scope)
       )
