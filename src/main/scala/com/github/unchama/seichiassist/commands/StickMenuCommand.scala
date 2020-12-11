@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.commands
 
-import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import cats.effect.IO
-import org.bukkit.command.TabExecutor
+import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import org.bukkit.command.TabExecutor
+
 /*
 * 棒メニューを開くコマンド
 * @author KisaragiEffective
