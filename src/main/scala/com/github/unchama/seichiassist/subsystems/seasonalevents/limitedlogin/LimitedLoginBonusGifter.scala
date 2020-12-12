@@ -57,7 +57,7 @@ object LimitedLoginBonusGifter extends Listener {
     }
   }
 
-  private def giveItem(itemName: String, amount: Int, item: ItemStack): Unit = {
+  private def giveItem(itemName: String, amount: Int, item: ItemStack)(implicit player: Player): Unit = {
     import cats.implicits._
     DefaultEffectEnvironment.runEffectAsync(
       s"${itemName}を付与する",
