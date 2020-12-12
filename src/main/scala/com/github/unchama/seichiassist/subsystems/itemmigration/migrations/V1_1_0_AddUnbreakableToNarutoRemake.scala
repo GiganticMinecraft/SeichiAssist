@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.migrations
 
+import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVersionNumber}
-import com.github.unchama.itemmigration.util.MigrationHelper
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
