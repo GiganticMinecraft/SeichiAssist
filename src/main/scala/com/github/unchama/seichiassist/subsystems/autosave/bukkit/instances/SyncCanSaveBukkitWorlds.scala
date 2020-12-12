@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances
 
 import cats.effect.Sync
+import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.subsystems.autosave.application.CanSaveWorlds
 import org.bukkit.{Bukkit, World}
 
@@ -9,8 +10,10 @@ import scala.annotation.tailrec
 
 object SyncCanSaveBukkitWorlds {
 
-  def apply[F[_] : Sync]: CanSaveWorlds[F] = new CanSaveWorlds[F] {
-    override val saveAllWorlds: F[Unit] = Sync[F].delay {
+  import cats.implicits._
+
+  def apply[F[_] : Sync : MinecraftServerThreadShift]: CanSaveWorlds[F] = new CanSaveWorlds[F] {
+    val saveOnServerThread: F[Unit] = Sync[F].delay {
       def saveWorld(world: World): Unit = {
         // WARNを防ぐためMinecraftサーバーデフォルトの自動セーブは無効化
         val server = getFieldAsAccessibleField(Bukkit.getServer.getClass, "console")
@@ -42,6 +45,9 @@ object SyncCanSaveBukkitWorlds {
 
       Bukkit.getServer.getWorlds.asScala.foreach(saveWorld)
     }
+
+    override val saveAllWorlds: F[Unit] =
+      MinecraftServerThreadShift[F].shift >> saveOnServerThread
   }
 
 }
