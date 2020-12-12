@@ -412,7 +412,7 @@ object SecondPage extends Menu {
         .lore(List(
           s"$RESET${GREEN}不必要なGT大当り景品を",
           s"$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
-          s"$RESET${GREEN}出てきたインベントリーに",
+          s"$RESET${GREEN}出てきたインベントリに",
           s"$RESET${GREEN}交換したい景品を入れて",
           s"$RESET${GREEN}escキーを押してください",
           s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
@@ -443,7 +443,7 @@ object SecondPage extends Menu {
         .lore(List(
           s"$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
           s"$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
-          s"$RESET${GREEN}出てきたインベントリーに",
+          s"$RESET${GREEN}出てきたインベントリに",
           s"$RESET${GREEN}修繕したいタイタンを入れて",
           s"$RESET${GREEN}escキーを押してください",
           s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
