@@ -10,7 +10,8 @@ object SeichiAssistItemMigrations {
   // SeichiAssistが実施するアイテム変換の列
   def seq(implicit uuidRepository: UuidRepository[SyncIO], logger: Logger): ItemMigrations = ItemMigrations(IndexedSeq(
     V1_0_0_MigrateMebiusToNewCodec.migration,
-    V1_1_0_AddUnbreakableToNarutoRemake.migration
+    V1_1_0_AddUnbreakableToNarutoRemake.migration,
+    V1_2_0_FixTypoOf4thAnniversaryGT.migration
   ))
 
 }
