@@ -41,7 +41,7 @@ object LimitedLoginBonusGifter extends Listener {
 
   private def giveLoginBonus(day: Int)(implicit player: Player): Unit = {
     val loginBonusSet = loginBonusAt(day) match {
-      case Some(loginBonus) => loginBonus
+      case Some(loginBonusSet) if !loginBonusSet.isEmpty => loginBonusSet
       case None => throw new NoSuchElementException("存在しないアイテムデータが指定されました。")
     }
 
