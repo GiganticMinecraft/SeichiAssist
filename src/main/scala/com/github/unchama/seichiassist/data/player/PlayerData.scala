@@ -517,10 +517,6 @@ class PlayerData(
 
     //ブロック別重み分け
     val materialFactor = m match {
-      //DIRTとGRASSは二重カウントされているので半分に
-      case Material.DIRT => 0.5
-      case Material.GRASS => 0.5
-
       //氷塊とマグマブロックの整地量を2倍
       case Material.PACKED_ICE | Material.MAGMA => 2.0
 
