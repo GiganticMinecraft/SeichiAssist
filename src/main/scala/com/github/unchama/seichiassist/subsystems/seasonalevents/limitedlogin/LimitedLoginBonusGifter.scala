@@ -8,9 +8,10 @@ import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
-
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
+import org.bukkit.inventory.ItemStack
 
 object LimitedLoginBonusGifter extends Listener {
   @EventHandler
@@ -39,25 +40,30 @@ object LimitedLoginBonusGifter extends Listener {
   }
 
   private def giveLoginBonus(day: Int)(implicit player: Player): Unit = {
-    val loginBonus = loginBonusAt(day) match {
+    val loginBonusSet = loginBonusAt(day) match {
       case Some(loginBonus) => loginBonus
       case None => throw new NoSuchElementException("存在しないアイテムデータが指定されました。")
     }
 
-    loginBonus.itemId match {
-      case LoginBonusGachaTicket =>
-        val messageofDay = if (day == 0) "毎日" else s"${day}日目"
-        player.sendMessage(s"【限定ログボ：$messageofDay】${loginBonus.amount}個のガチャ券をプレゼント！")
+    loginBonusSet.foreach { loginBonus =>
+      loginBonus.itemId match {
+        case LoginBonusGachaTicket =>
+          val messageOfDay = if (day == 0) "毎日" else s"${day}日目"
+          player.sendMessage(s"【限定ログボ：$messageOfDay】${loginBonus.amount}個のガチャ券をプレゼント！")
 
-        val skull = GachaSkullData.gachaSkull
-
-        import cats.implicits._
-        DefaultEffectEnvironment.runEffectAsync(
-          "ガチャ券を付与する",
-          List.fill(loginBonus.amount)(
-            grantItemStacksEffect(skull).run(player)
-          ).sequence
-        )
+          val skull = GachaSkullData.gachaSkull
+          giveItem("ガチャ券", loginBonus.amount, skull)
+      }
     }
+  }
+
+  private def giveItem(itemName: String, amount: Int, item: ItemStack): Unit = {
+    import cats.implicits._
+    DefaultEffectEnvironment.runEffectAsync(
+      s"${itemName}を付与する",
+      List.fill(amount)(
+        grantItemStacksEffect(item).run(player)
+      ).sequence
+    )
   }
 }
