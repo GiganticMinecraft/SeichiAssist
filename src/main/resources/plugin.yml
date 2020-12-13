@@ -98,7 +98,11 @@ commands:
     usage: /<command>
     permission-message: *denied
     permission: seichiassist.fly
-
+  stickmenu:
+    description: 棒メニューを開く
+    usage: /<command>
+    permission: seichiassist.stickmenu
+    permission-message: *denied
 permissions:
   seichiassist.*:
     default: false
@@ -123,6 +127,7 @@ permissions:
       - seichiassist.minehead
       - seichiassist.x-transfer
       - seichiassist.fly
+      - seichiassist.stickmenu
   seichiassist.event:
     default: op
   seichiassist.shareinv:
