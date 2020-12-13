@@ -1,6 +1,6 @@
 package com.github.unchama.generic.effect
 
-import cats.effect.{ContextShift, IO, Resource, Timer}
+import cats.effect.{ContextShift, IO, Resource, SyncIO, Timer}
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
@@ -149,14 +149,16 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
     implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
-    val firstResourceScope: SingleResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreateSingletonScope
-    val secondResourceScope: SingleResourceScope[IO, NumberedObject] = ResourceScope.unsafeCreateSingletonScope
+    val firstResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] = ResourceScope.unsafeCreateSingletonScope
+    val secondResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] = ResourceScope.unsafeCreateSingletonScope
 
-    def useTrackedForSome[A](scope: SingleResourceScope[IO, NumberedObject],
+    def useTrackedForSome[A](scope: SingleResourceScope[IO, SyncIO, NumberedObject],
                              obj: NumberedObject,
                              impureFinalizer: NumberedObject => Unit = _ => ())
                             (use: NumberedObject => IO[A]): IO[Option[A]] = {
-      val resource = Resource.make(IO.pure(obj))(o => IO { impureFinalizer(o) })
+      val resource = Resource.make(IO.pure(obj))(o => IO {
+        impureFinalizer(o)
+      })
 
       scope.useTrackedForSome(resource)(use)
     }
@@ -243,7 +245,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
               IO.never
           }.start
         _ <- blockerList(1).await()
-        releaseAction <- firstResourceScope.getReleaseAction(NumberedObject(0))
+        releaseAction <- firstResourceScope.getReleaseAction(NumberedObject(0)).toIO
         _ <- releaseAction.value
         _ <- runImpureFunction2
       } yield ()
@@ -280,7 +282,7 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
               IO.never
           }.start
         _ <- blockerList(1).await()
-        releaseAction <- firstResourceScope.getReleaseAllAction
+        releaseAction <- firstResourceScope.getReleaseAllAction.toIO
         _ <- releaseAction.value
         _ <- runImpureFunction2
       } yield ()

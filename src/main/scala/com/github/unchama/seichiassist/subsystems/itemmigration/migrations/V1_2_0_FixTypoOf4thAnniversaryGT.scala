@@ -5,14 +5,12 @@ import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVers
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
-import scala.jdk.CollectionConverters._
-
 object V1_2_0_FixTypoOf4thAnniversaryGT {
 
   private val gt4thName = s"$WHITE$BOLD${ITALIC}4thAniv."
 
   def is4thGiganticItem(itemStack: ItemStack): Boolean = {
-    if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) return false
+    if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasDisplayName) return false
     val name = itemStack.getItemMeta.getDisplayName
     name.contains(gt4thName)
   }

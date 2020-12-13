@@ -58,8 +58,8 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
-  // TODO: `ResourceScope[IO, SyncIO, Entity]` にしたい
-  val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
+
+  val magicEffectEntityScope: SingleResourceScope[IO, SyncIO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
@@ -146,7 +146,10 @@ class SeichiAssist extends JavaPlugin() {
     }
   }
 
-  override def onEnable(): Unit = {
+  /**
+   * プラグインを初期化する。ここで例外が投げられるとBukkitがシャットダウンされる。
+   */
+  private def monitoredInitialization(): Unit = {
     /**
      * Spigotサーバーが開始されるときにはまだPreLoginEventがcatchされない等色々な不都合があるので、
      * SeichiAssistの初期化はプレーヤーが居ないことを前提として進めることとする。
@@ -162,9 +165,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
 
     if (hasBeenLoadedAlready) {
-      slf4jLogger.error("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
-      Bukkit.shutdown()
-      return
+      throw new IllegalStateException("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
     }
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
@@ -221,28 +222,19 @@ class SeichiAssist extends JavaPlugin() {
     itemMigrationSystem.state.entryPoints.runDatabaseMigration[SyncIO].unsafeRunSync()
     itemMigrationSystem.state.entryPoints.runWorldMigration.unsafeRunSync()
 
-    try {
-      SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
-        SeichiAssist.seichiAssistConfig.getURL, SeichiAssist.seichiAssistConfig.getDB,
-        SeichiAssist.seichiAssistConfig.getID, SeichiAssist.seichiAssistConfig.getPW
-      )
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-        logger.severe("データベース初期化に失敗しました。サーバーを停止します…")
-        Bukkit.shutdown()
-    }
+    SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
+      SeichiAssist.seichiAssistConfig.getURL, SeichiAssist.seichiAssistConfig.getDB,
+      SeichiAssist.seichiAssistConfig.getID, SeichiAssist.seichiAssistConfig.getPW
+    )
 
     //mysqlからガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.gachaDataManipulator.loadGachaData()) {
-      logger.severe("ガチャデータのロードに失敗しました。サーバーを停止します…")
-      Bukkit.shutdown()
+      throw new Exception("ガチャデータのロードに失敗しました。サーバーを停止します…")
     }
 
     //mysqlからMineStack用ガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
-      logger.severe("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
-      Bukkit.shutdown()
+      throw new Exception("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
     }
 
     import PluginExecutionContexts._
@@ -348,8 +340,7 @@ class SeichiAssist extends JavaPlugin() {
 
     //ランキングリストを最新情報に更新する
     if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
-      logger.info("ランキングデータの作成に失敗しました。サーバーを停止します…")
-      Bukkit.shutdown()
+      throw new RuntimeException("ランキングデータの作成に失敗しました。サーバーを停止します…")
     }
 
     startRepeatedJobs()
@@ -364,6 +355,17 @@ class SeichiAssist extends JavaPlugin() {
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
     logger.info("SeichiAssistが有効化されました！")
+  }
+
+  override def onEnable(): Unit = {
+    try {
+      monitoredInitialization()
+    } catch {
+      case e: Exception =>
+        getLogger.severe("初期化処理に失敗しました。シャットダウンしています…")
+        e.printStackTrace()
+        Bukkit.shutdown()
+    }
   }
 
   private def startRepeatedJobs(): Unit = {
