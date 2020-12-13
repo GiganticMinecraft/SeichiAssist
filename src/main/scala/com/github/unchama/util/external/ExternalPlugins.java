@@ -1,6 +1,8 @@
 package com.github.unchama.util.external;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.palmergames.bukkit.towny.Towny;
+import com.palmergames.bukkit.towny.TownyAPI;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import net.coreprotect.CoreProtect;
@@ -74,5 +76,16 @@ public final class ExternalPlugins {
         if (pl instanceof WorldEditPlugin)
             return (WorldEditPlugin) pl;
         else return null;
+    }
+
+    public static TownyAPI getTownyAPI() {
+        Plugin pl = Bukkit.getPluginManager().getPlugin("towny");
+        if (pl instanceof Towny)
+            return TownyAPI.getInstance();
+        else return null;
+    }
+    public static TownyAPIWrapper$ getTownyAPIWrapper() {
+        TownyAPI tapi = getTownyAPI();
+        return tapi == null ? null : TownyAPIWrapper.instance();
     }
 }
