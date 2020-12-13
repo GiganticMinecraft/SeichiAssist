@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.listener
 import java.util.UUID
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.data.SeichiLvUpMessages
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -112,7 +113,7 @@ class PlayerJoinListener extends Listener {
 
       player.sendMessage("初期装備を配布しました。Eキーで確認してネ")
       //初見さんにLv1メッセージを送信
-      player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
+      player.sendMessage(SeichiLvUpMessages.get(1))
     }
 
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知

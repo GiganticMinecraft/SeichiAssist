@@ -35,5 +35,5 @@ object SeichiLvUpMessages {
     98 -> "整地の際に獲得できる経験値量が増えました。"
   )
 
-  def get(level: Int): Option[String] = messages.get(level)
+  def get(level: Int): String = messages.getOrElse(level, throw new IllegalArgumentException("指定された整地レベルに対応するメッセージが定義されていません。"))
 }
