@@ -28,9 +28,10 @@ object V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem {
     val clone = itemStack.clone()
     val meta = clone.getItemMeta.tap {meta =>
       import meta._
-      val lore = getLore
-      if (isUnbreakable) lore.removeIf(str => str == s"$RESET${DARK_RED}耐久無限")
-      setLore(lore)
+      setLore {
+        if (isUnbreakable) lore.asScala.filter(_ != s"$RESET${DARK_RED}耐久無限")
+        else getLore
+      }
     }
     clone.tap(_.setItemMeta(meta))
   }
