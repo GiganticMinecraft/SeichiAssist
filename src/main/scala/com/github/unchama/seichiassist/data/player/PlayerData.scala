@@ -200,7 +200,7 @@ class PlayerData(
   var achievePoint: AchievementPoint = AchievementPoint()
 
   var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
-  // 1周年記念
+  // n周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
   //投票妖精関連
@@ -217,7 +217,6 @@ class PlayerData(
   var contribute_point = 0
   //正月イベント用
   var hasNewYearSobaGive = false
-  var newYearBagAmount = 0
   //バレンタインイベント用
   var hasChocoGave = false
   var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
@@ -518,10 +517,6 @@ class PlayerData(
 
     //ブロック別重み分け
     val materialFactor = m match {
-      //DIRTとGRASSは二重カウントされているので半分に
-      case Material.DIRT => 0.5
-      case Material.GRASS => 0.5
-
       //氷塊とマグマブロックの整地量を2倍
       case Material.PACKED_ICE | Material.MAGMA => 2.0
 
@@ -820,7 +815,7 @@ class PlayerData(
    * @return この作用の実行者に向け操作の結果を記述する[TargetedEffect]
    */
   def forcefullyDepriveAchievement(number: Int): TargetedEffect[CommandSender] = DeferredEffect(IO {
-    if (!TitleFlags(number)) {
+    if (TitleFlags(number)) {
       TitleFlags(number) = false
 
       MessageEffect(s"$lowercaseName から実績No. $number を${RED}剥奪${GREEN}しました。")

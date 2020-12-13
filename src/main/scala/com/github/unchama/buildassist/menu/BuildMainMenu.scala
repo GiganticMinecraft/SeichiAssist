@@ -48,7 +48,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   }
 
   def computeButtonToShowStateOfFlying()
-                                      (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
+                                      (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
     for {
       flyStatus <- flySystem.state.playerFlyDurations(player).read.toIO
     } yield {
@@ -122,7 +122,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   )
 
   def computeButtonToOpenRangedPlaceSkillMenu()
-                                             (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = IO {
+                                             (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = IO {
     val openerData = BuildAssist.playermap(getUniqueId)
     val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_Exclamation)
       .title(s"$YELLOW$EMPHASIZE「範囲設置スキル」設定画面へ")
@@ -214,7 +214,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   }
 
   def computeButtonToOpenMenuToCraftItemsWhereMineStack()
-                                                       (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = IO {
+                                                       (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = IO {
     val iconItemStackBuilder = new IconItemStackBuilder(Material.WORKBENCH)
       .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
       .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
@@ -328,7 +328,7 @@ private object ConstantButtons {
   }
 }
 
-class BuildMainMenu(implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) extends Menu {
+class BuildMainMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import menuinventory.syntax._

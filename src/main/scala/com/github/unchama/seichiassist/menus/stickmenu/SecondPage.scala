@@ -6,10 +6,13 @@ import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.seasonalevents.valentine.ValentineItemData
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas
+import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData.christmasPlayerHead
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.valentinePlayerHead
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -100,9 +103,12 @@ object SecondPage extends Menu {
             import scala.util.chaining._
             val skullToGive = new SkullItemStackBuilder(getUniqueId).build().tap { stack =>
               import stack._
-              //バレンタイン中(イベント中かどうかの判断はSeasonalEvent側で行う)
-              setItemMeta {
-                ValentineItemData.valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+              // 季節イベント中の特殊lore
+              if (Valentine.isInEvent) setItemMeta {
+                valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+              }
+              else if (Christmas.isInEvent) setItemMeta {
+                christmasPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
               }
             }
 
@@ -406,13 +412,13 @@ object SecondPage extends Menu {
         .lore(List(
           s"$RESET${GREEN}不必要なGT大当り景品を",
           s"$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
-          s"$RESET${GREEN}出てきたインベントリーに",
+          s"$RESET${GREEN}出てきたインベントリに",
           s"$RESET${GREEN}交換したい景品を入れて",
           s"$RESET${GREEN}escキーを押してください",
           s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
           s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
           s"$RESET${DARK_GRAY}神に祈りながら交換しよう",
-          s"${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo()}個",
+          s"${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo}個",
           s"$RESET$DARK_GRAY$DARK_RED${UNDERLINE}クリックで開く"
         ))
         .build()
@@ -437,7 +443,7 @@ object SecondPage extends Menu {
         .lore(List(
           s"$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
           s"$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
-          s"$RESET${GREEN}出てきたインベントリーに",
+          s"$RESET${GREEN}出てきたインベントリに",
           s"$RESET${GREEN}修繕したいタイタンを入れて",
           s"$RESET${GREEN}escキーを押してください",
           s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",

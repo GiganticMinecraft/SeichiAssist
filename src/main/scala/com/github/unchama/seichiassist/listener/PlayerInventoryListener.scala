@@ -359,7 +359,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
       /*
 			 * step3 ガチャ券をインベントリへ
 			 */
-      val skull = Util.getExchangeskull(player.getName)
+      val skull = GachaSkullData.gachaForExchanging
       var count = 0
       while (givegacha > 0) {
         if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
@@ -535,7 +535,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
               if (gachadata.probability < 0.001) {
                 //ギガンティック大当たりの部分
                 //1個につき椎名林檎n個と交換する
-                giveringo += SeichiAssist.seichiAssistConfig.rateGiganticToRingo() * amount
+                giveringo += SeichiAssist.seichiAssistConfig.rateGiganticToRingo * amount
                 giga += 1
               } else {
                 //それ以外アイテム返却

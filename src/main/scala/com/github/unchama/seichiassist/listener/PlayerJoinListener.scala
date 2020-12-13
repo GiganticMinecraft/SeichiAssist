@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.listener
 import java.util.UUID
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.data.LimitedLoginEvent
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -81,28 +80,13 @@ class PlayerJoinListener extends Listener {
       }
     }
 
-    {
-      val limitedLoginEvent = new LimitedLoginEvent()
-      val playerData = playerMap(player.getUniqueId)
-
-      //期間限定ログインイベント判別処理
-      limitedLoginEvent.setLastCheckDate(playerData.lastcheckdate)
-      limitedLoginEvent.TryGetItem(player)
-
-      // 1周年記念
-      if (playerData.anniversary) {
-        player.sendMessage("整地サーバー1周年を記念してアイテムを入手出来ます。詳細はwikiをご確認ください。https://seichi.click/wiki/anniversary")
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      }
-
-      //join時とonenable時、プレイヤーデータを最新の状態に更新
-      playerData.updateOnJoin()
-    }
+    //join時とonenable時、プレイヤーデータを最新の状態に更新
+    playerMap(player.getUniqueId).updateOnJoin()
 
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {
       //初見さんであることを全体告知
-      Util.sendEveryMessage(s"${LIGHT_PURPLE}$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
+      Util.sendEveryMessage(s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
       Util.sendEveryMessage(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
@@ -130,6 +114,12 @@ class PlayerJoinListener extends Listener {
       //初見さんにLv1メッセージを送信
       player.sendMessage(SeichiAssist.seichiAssistConfig.getLvMessage(1))
     }
+
+    // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
+    if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
+      player.sendTitle(
+        s"${WHITE}このサーバーは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}です",
+        s"${WHITE}始めたての頃は他のサーバーがおすすめです。", 10, 70, 20)
   }
 
   // プレイヤーがワールドを移動したとき

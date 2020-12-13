@@ -320,27 +320,6 @@ object Util {
     true
   }
 
-  def getExchangeskull(name: String): ItemStack = {
-    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
-      import itemStack._
-      setDurability(3)
-      setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { meta =>
-          import meta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます",
-              s"$RESET${DARK_GREEN}所有者：$name",
-              s"$RESET${GRAY}ガチャ景品と交換しました。"
-            ).asJava
-          }
-          setOwner("unchama")
-        }
-      }
-    }
-  }
-
   def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
     val meta = itemstack.getItemMeta
 
@@ -530,8 +509,20 @@ object Util {
 
   def isLimitedTitanItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.DIAMOND_AXE &&
-      loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "特別なタイタンをあなたに♡") >= 0
+      isContainedInLore(itemstack, "特別なタイタンをあなたに♡")
   }
+
+  /**
+   * 指定された`String`が指定された[[ItemStack]]のloreに含まれているかどうか
+   *
+   * @param itemStack 確認する`ItemStack`
+   * @param sentence  探す文字列
+   * @return 含まれていれば`true`、含まれていなければ`false`。ただし、`ItemStack`に`ItemMeta`と`Lore`のいずれかがなければfalse
+   */
+  def isContainedInLore(itemStack: ItemStack, sentence: String): Boolean =
+    if (!itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) false
+    else loreIndexOf(itemStack.getItemMeta.getLore.asScala.toList, sentence) >= 0
+
 
   /**
    * loreを捜査して、要素の中に`find`が含まれているかを調べる。
