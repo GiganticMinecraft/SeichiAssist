@@ -49,11 +49,6 @@ public class PresentCommand implements TabExecutor {
         Player player = (Player) sender;
         
         // 運営かどうか。 TODO: 判定ロジック。これは定数警告を黙らせるためのプレスホルダーに過ぎない。
-        final boolean isAdmin = new Random().nextBoolean();
-        if (!isAdmin) {
-            sender.sendMessage("このコマンドは運営以外は使用できません。");
-            return false;
-        }
         // modeを取る以上、引数があってほしい
         if (args.length == 0) return false;
         
