@@ -58,8 +58,8 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
-  // TODO: `ResourceScope[IO, SyncIO, Entity]` にしたい
-  val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
+
+  val magicEffectEntityScope: SingleResourceScope[IO, SyncIO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
