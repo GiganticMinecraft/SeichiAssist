@@ -27,6 +27,10 @@ object LimitedLoginBonusGifter extends Listener {
       LocalDate.parse(lastChecked, formatter)
     }
 
+    // 今日すでにこの処理をしていたならば
+    // TODO この処理javaの頃はなかったが、なくても大丈夫なのか？
+    if (lastCheckedDate.equals(LocalDate.now())) return
+
     // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）1、そうでなければ（=開催期間中ならば）playerData.LimitedLoginCount + 1
     val loginDays =
       if (lastCheckedDate.isBefore(START_DATE)) 1
