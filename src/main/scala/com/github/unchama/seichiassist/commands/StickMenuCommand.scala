@@ -12,9 +12,9 @@ import org.bukkit.command.TabExecutor
 */
 object StickMenuCommand {
   val executor: TabExecutor = playerCommandBuilder
-    .execution { context =>
+    .execution { _=>
       // 棒メニューを開く
-      IO(StickMenu.firstPage.open)
+      IO.pure(StickMenu.firstPage.open)
     }
     .build()
     .asNonBlockingTabExecutor()
