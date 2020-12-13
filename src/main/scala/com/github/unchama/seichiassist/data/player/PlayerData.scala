@@ -377,14 +377,10 @@ class PlayerData(
       Util.launchFireWorks(player.getLocation) // TODO: fix Util
 
       val lvMessage = SeichiAssist.seichiAssistConfig.getLvMessage(l+1)
-      if (!lvMessage.isEmpty) {
-        player.sendMessage(AQUA + lvMessage)
-      }
+      if (!lvMessage.isEmpty) player.sendMessage(s"$AQUA$lvMessage")
 
       //マナ最大値の更新
-      if (manaState.isLoaded) {
-        manaState.onLevelUp(player, l+1)
-      }
+      if (manaState.isLoaded) manaState.onLevelUp(player, l+1)
     }
   }
 
