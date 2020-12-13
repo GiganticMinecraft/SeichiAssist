@@ -126,6 +126,6 @@ permissions:
   seichiassist.event:
     default: op
   seichiassist.shareinv:
-    default: not op
+    default: true
   seichiassist.mebius:
-    default: not op
+    default: true
