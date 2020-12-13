@@ -226,8 +226,8 @@ object ResourceScope {
             case allocated@Some(_) => (allocated, false)
           }.coerceTo[F]
         )
-        // FIXME Noneだった場合も落とす
-        _ <- OptionTExtra.failIf[F](promiseAllocation.contains(false))
+
+        _ <- OptionTExtra.failIf[F](!promiseAllocation.contains(true))
 
         forgetUsage = OptionT.liftF(resourceSlot.set(None).coerceTo[F])
 
