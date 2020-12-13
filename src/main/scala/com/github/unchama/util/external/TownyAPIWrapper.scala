@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
  * see:
  * - https://github.com/TownyAdvanced/Towny/wiki/TownyAPI
  */
-object TownyAPIWrapper {
+class TownyAPIWrapper {
   private val api = TownyAPI.getInstance()
   val instance: this.type = this
 

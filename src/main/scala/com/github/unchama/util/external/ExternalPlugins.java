@@ -84,8 +84,8 @@ public final class ExternalPlugins {
             return TownyAPI.getInstance();
         else return null;
     }
-    public static TownyAPIWrapper$ getTownyAPIWrapper() {
+    public static TownyAPIWrapper getTownyAPIWrapper() {
         TownyAPI tapi = getTownyAPI();
-        return tapi == null ? null : TownyAPIWrapper.instance();
+        return tapi == null ? null : new TownyAPIWrapper();
     }
 }
