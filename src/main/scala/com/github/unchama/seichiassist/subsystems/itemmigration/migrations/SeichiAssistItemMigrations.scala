@@ -16,7 +16,8 @@ object SeichiAssistItemMigrations {
   def seq(implicit uuidRepository: UuidRepository[SyncIO], logger: Logger): ItemMigrations = ItemMigrations(IndexedSeq(
     V1_0_0_MigrateMebiusToNewCodec.migration,
     V1_1_0_AddUnbreakableToNarutoRemake.migration,
-    V1_2_0_FixTypoOf4thAnniversaryGT.migration
+    V1_2_0_FixTypoOf4thAnniversaryGT.migration,
+    V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem.migration
   ))
 
 }
