@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
 import com.github.unchama.seichiassist.data.GachaSkullData
-import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginEvent.{START_DATE, isInEvent}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginPeriods._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LoginBonusItemData.loginBonusAt
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
@@ -32,9 +32,11 @@ object LimitedLoginBonusGifter extends Listener {
     if (lastCheckedDate.equals(LocalDate.now())) return
 
     // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）1、そうでなければ（=開催期間中ならば）playerData.LimitedLoginCount + 1
-    val loginDays =
-      if (lastCheckedDate.isBefore(START_DATE)) 1
+    val loginDays = {
+      // isInEventの条件分岐内なので、getした結果エラーになることはない
+      if (lastCheckedDate.isBefore(isContainedAt.get.startDate)) 1
       else playerData.LimitedLoginCount + 1
+    }
 
     // 0日目のアイテムは毎日配布される
     giveLoginBonus(0)
