@@ -54,6 +54,12 @@ object BreakUtil {
       return false
     }
 
+    val townyWrapper = ExternalPlugins.getTownyAPIWrapper
+    if (townyWrapper ne null && !townyWrapper.canModify(player, checkTarget.getLocation)) {
+      player.sendMessage(s"${RED}Townyの領域で保護されています。")
+      return false
+    }
+
     if (!equalsIgnoreNameCaseWorld(player.getWorld.getName)) {
       val wrapper = ExternalPlugins.getCoreProtectWrapper
       if (wrapper == null) {

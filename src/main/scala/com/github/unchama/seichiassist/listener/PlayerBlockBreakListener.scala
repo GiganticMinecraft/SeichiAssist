@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor.RED
 import org.bukkit._
 import org.bukkit.block.Block
@@ -238,7 +239,17 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
     val world = p.getWorld
     val data = SeichiAssist.playermap.apply(p.getUniqueId)
     //そもそも自分の保護じゃなきゃ処理かけない
-    if (!ExternalPlugins.getWorldGuard.canBuild(p, b.getLocation)) return
+    val wgAllowed = ExternalPlugins.getWorldGuard.canBuild(p, b.getLocation)
+    val townyAllowed = {
+      val wrapper = ExternalPlugins.getTownyAPIWrapper
+      if (wrapper ne null) {
+        wrapper.canModify(p, b.getLocation)
+      } else {
+        // プラグイン自体が存在しない
+        true
+      }
+    }
+    if (!wgAllowed || !townyAllowed) return
     if ((b.getType eq Material.DOUBLE_STEP) && b.getData == 0) {
       b.setType(Material.STEP)
       b.setData(0.toByte)

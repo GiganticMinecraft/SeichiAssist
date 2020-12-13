@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
+import java.util.UUID
+
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.Nicknames
@@ -16,7 +18,7 @@ import org.bukkit.{Material, Sound}
 
 object OnClickTitleMenu {
   private final val MAX_LENGTH: Int = 8
-  private final val PER_PAGE: Int = 9*3
+  private final val PER_PAGE: Int = 9 * 3
   private final val LENGTH_LIMIT_EXCEEDED: String = s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。"
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
@@ -30,6 +32,10 @@ object OnClickTitleMenu {
   private def isApplicableAsPrevPageButton(is: ItemStack): Boolean =
     is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft"
 
+  private def incrementMenuIndex(uuid: UUID, menuType: MenuType): Unit = {
+    MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
+  }
+  
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(implicit effectEnvironment: EffectEnvironment): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -157,7 +163,7 @@ object OnClickTitleMenu {
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
             val menuType = MenuInventoryData.MenuType.HEAD
-            MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
+            incrementMenuIndex(uuid, menuType)
             player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
 
           case _ =>
@@ -192,7 +198,7 @@ object OnClickTitleMenu {
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
             val menuType = MenuInventoryData.MenuType.MIDDLE
-            MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
+            incrementMenuIndex(uuid, menuType)
             player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
 
           case _ =>
@@ -227,7 +233,7 @@ object OnClickTitleMenu {
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
             val menuType = MenuInventoryData.MenuType.TAIL
-            MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
+            incrementMenuIndex(uuid, menuType)
             player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
 
           case _ =>
@@ -274,7 +280,7 @@ object OnClickTitleMenu {
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
             val menuType = MenuInventoryData.MenuType.SHOP
-            MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
+            incrementMenuIndex(uuid, menuType)
             player.openInventory(MenuInventoryData.computePartsShopMenu(player))
 
           case _ =>
