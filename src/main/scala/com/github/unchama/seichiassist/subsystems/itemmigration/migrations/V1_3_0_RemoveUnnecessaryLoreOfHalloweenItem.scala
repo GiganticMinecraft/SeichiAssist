@@ -7,6 +7,10 @@ import org.bukkit.inventory.ItemStack
 
 import scala.jdk.CollectionConverters._
 
+/**
+ * V1_1_0_AddUnbreakableToNarutoRemake でハロウィンイベントのアイテムに「耐久無限」のLoreが追加されたが、
+ * Minecraftが「不可壊」と普通にアイテムに書いてくるので「耐久無限」のパートを削除することになった。
+ */
 object V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem {
 
   private val halloweenClearPrizeLore = s"${GRAY}2020ハロウィン討伐イベントクリア賞"

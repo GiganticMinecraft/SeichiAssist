@@ -7,6 +7,14 @@ import org.bukkit.inventory.ItemStack
 
 import scala.jdk.CollectionConverters._
 
+/*
+ * NARUTO REMAKE I/IIの耐久無限化を目的としたマイグレーション。
+ *
+ * https://github.com/GiganticMinecraft/SeichiAssist/issues/788
+ * https://red.minecraftserver.jp/issues/8713
+ *
+ * を参照されたい。
+ */
 object V1_1_0_AddUnbreakableToNarutoRemake {
 
   private val narutoRemake1Lore = s"${GRAY}2020ハロウィン討伐イベントクリア賞"

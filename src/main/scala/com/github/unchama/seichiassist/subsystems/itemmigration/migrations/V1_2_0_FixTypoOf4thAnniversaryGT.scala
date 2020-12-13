@@ -5,6 +5,9 @@ import com.github.unchama.itemmigration.domain.{ItemMigration, ItemMigrationVers
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
+/**
+ * 4周年記念アイテムの名前がAniv.というtypoを含んでいたため修正するマイグレーション。
+ */
 object V1_2_0_FixTypoOf4thAnniversaryGT {
 
   private val gt4thName = s"$WHITE$BOLD${ITALIC}4thAniv."

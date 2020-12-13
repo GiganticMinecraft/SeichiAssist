@@ -12,6 +12,9 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.slf4j.Logger
 
+/**
+ * メビウスを古い、Loreによって情報を管理するフォーマットからNBTによって情報を管理するフォーマットに切り替える変換。
+ */
 object V1_0_0_MigrateMebiusToNewCodec {
 
   import scala.jdk.CollectionConverters._
