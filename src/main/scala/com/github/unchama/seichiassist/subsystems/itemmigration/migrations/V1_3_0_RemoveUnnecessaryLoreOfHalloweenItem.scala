@@ -34,7 +34,7 @@ object V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem {
   }
 
   def migration: ItemMigration = ItemMigration(
-    ItemMigrationVersionNumber(1, 2, 0),
+    ItemMigrationVersionNumber(1, 3, 0),
     MigrationHelper.delegateConversionForContainers(migrationFunction)
   )
 }
