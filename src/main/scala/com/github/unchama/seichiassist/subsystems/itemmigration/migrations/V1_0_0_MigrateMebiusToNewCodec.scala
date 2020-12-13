@@ -16,6 +16,8 @@ object V1_0_0_MigrateMebiusToNewCodec {
 
   import scala.jdk.CollectionConverters._
 
+  val ownerResolutionError = s"$RESET${DARK_RED}エラー：所有者が見つかりません。"
+
   //noinspection DuplicatedCode
   object OldBukkitMebiusItemStackCodec {
 
@@ -30,7 +32,6 @@ object V1_0_0_MigrateMebiusToNewCodec {
     )
     private val ownerLoreRowPrefix = s"$RESET${DARK_GREEN}所有者："
     private val levelLoreRowPrefix = s"$RESET$RED${BOLD}アイテムLv. "
-
     def isNewMebius(itemStack: ItemStack): Boolean = {
       itemStack != null && itemStack.getType != Material.AIR && {
         new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 1
@@ -101,10 +102,13 @@ object V1_0_0_MigrateMebiusToNewCodec {
           // 解決できなかった場合ItemStackにエラーを書き込む。
           clone.setItemMeta {
             val meta = clone.getItemMeta
-            meta.setLore {
-              meta.getLore.asScala
-                .append(s"$RESET${DARK_RED}エラー：所有者が見つかりません。")
-                .asJava
+            val lore = meta.getLore.asScala
+
+            // 冪等性のため、すでにエラーが書かれているケースを除外する
+            if (!lore.contains(ownerResolutionError)) {
+              meta.setLore {
+                lore.append(ownerResolutionError).asJava
+              }
             }
             meta
           }
