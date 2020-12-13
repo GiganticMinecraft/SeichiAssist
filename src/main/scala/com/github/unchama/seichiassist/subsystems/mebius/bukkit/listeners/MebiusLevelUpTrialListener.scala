@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
 import cats.effect.SyncIO
+import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.playerdatarepository.PlayerDataRepository
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks

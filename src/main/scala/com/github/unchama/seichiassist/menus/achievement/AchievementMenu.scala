@@ -73,10 +73,10 @@ object AchievementMenu extends Menu {
     import com.github.unchama.targetedeffect._
     val toggleTitleToPlayerLevelButton = Button(
       new IconItemStackBuilder(Material.REDSTONE_TORCH_ON)
-        .title(ColorScheme.navigation("整地レベルを表示"))
+        .title(ColorScheme.navigation("整地Lvを表示"))
         .lore(List(
           s"${RED}このボタンをクリックすると、",
-          s"$RED「整地LV」に表示を切り替えます。",
+          s"$RED「整地Lv」に表示を切り替えます。",
           s"$YELLOW※反映されるまで最大1分ほどかかります。"
         ))
         .build(),
@@ -96,7 +96,7 @@ object AchievementMenu extends Menu {
         CommonSoundEffects.menuTransitionFenceSound,
         Kleisli.liftF(PluginExecutionContexts.syncShift.shift),
         TargetedEffect.delay { player =>
-          player.openInventory(MenuInventoryData.setFreeTitleMainData(player))
+          player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
         }
       )
     )

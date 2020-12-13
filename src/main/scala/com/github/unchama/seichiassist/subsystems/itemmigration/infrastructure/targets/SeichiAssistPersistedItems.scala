@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets
 
 import cats.effect.Sync
+import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
-import com.github.unchama.itemmigration.util.MigrationHelper
 import com.github.unchama.seichiassist.util.{BukkitSerialization, ItemListSerialization}
 import org.bukkit.Material
 import scalikejdbc._

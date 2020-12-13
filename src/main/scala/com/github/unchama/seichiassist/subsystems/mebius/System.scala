@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.mebius
 
 import cats.effect.{IO, SyncIO, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadIOShift, RepeatingTaskContext}
+import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingTaskContext}
+import com.github.unchama.datarepository.bukkit.player.JoinToQuitPlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.playerdatarepository.JoinToQuitPlayerDataRepository
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.PropertyModificationBukkitMessages
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider
@@ -16,10 +16,10 @@ import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechSer
 import org.bukkit.entity.Player
 
 object System {
-  def wired(implicit effectEnvironment: EffectEnvironment,
-            timer: Timer[IO],
-            repeatingTaskContext: RepeatingTaskContext,
-            bukkitSyncIOShift: MinecraftServerThreadIOShift): Subsystem = {
+  def wired[F[_]](implicit effectEnvironment: EffectEnvironment,
+                  timer: Timer[IO],
+                  repeatingTaskContext: RepeatingTaskContext,
+                  bukkitSyncIOShift: MinecraftServerThreadShift[IO]): Subsystem[F] = {
     implicit val messages: PropertyModificationMessages = PropertyModificationBukkitMessages
     implicit val gatewayProvider: Player => MebiusSpeechGateway[SyncIO] = new BukkitMebiusSpeechGateway(_)
     implicit val getFreshSpeechBlockageState: SyncIO[MebiusSpeechBlockageState[SyncIO]] = SyncIO(new MebiusSpeechBlockageState[SyncIO])
@@ -40,6 +40,6 @@ object System {
       "mebius" -> new MebiusCommandExecutorProvider().executor
     )
 
-    Subsystem(listeners, commands)
+    Subsystem(listeners, Nil, commands)
   }
 }

@@ -14,14 +14,13 @@
 - [item-nbt-api-plugin-1.8.2-SNAPSHOT](https://www.spigotmc.org/resources/item-entity-tile-nbt-api.7939/download?version=241690)
 - [Multiverse-Core-2.5.0](https://dev.bukkit.org/projects/multiverse-core/files/2428161/download)
 - [Multiverse-Portals-2.5.0](https://dev.bukkit.org/projects/multiverse-portals/files/2428333/download)
-- [ParticleAPI_v2.1.1](http://dl.inventivetalent.org/download/?file=plugin/ParticleAPI_v2.1.1)
+- [ParticleAPI_v2.1.1](https://dl.inventivetalent.org/download/?file=plugin/ParticleAPI_v2.1.1)
 - [WorldBorder1.8.7](https://dev.bukkit.org/projects/worldborder/files/2415838/download)
 - [worldedit-bukkit-6.1.9](https://dev.bukkit.org/projects/worldedit/files/2597538/download)
 - [worldguard-bukkit-6.2.2](https://dev.bukkit.org/projects/worldguard/files/2610618/download)
 
 ## 前提プラグイン(整地鯖内製)
-- RegenWorld_1.0 [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
-- SeasonalEvents [リポジトリ](https://github.com/GiganticMinecraft/SeasonalEvents) | [jar](https://red.minecraftserver.jp/attachments/download/893/SeasonalEvents.jar)
+- RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
 
 ## ビルド
 
@@ -34,7 +33,7 @@ sbtがコマンドラインで使える状態で`sbt assembly`を実行すると
 ### IntelliJ IDEAの画面からビルドする
 
 IntelliJ IDEAを開発に使用している場合、プロジェクトをsbtプロジェクトとして読み込み、
-sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`build/lib`フォルダにjarが出力されます。
+sbtタブからSeichiAssist -> SeichiAssist -> sbt tasks -> assemblyを実行すれば`target/build`フォルダにjarが出力されます。
 
 ## デバッグ用docker環境
 
@@ -66,6 +65,10 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 - [gachadata.sql](https://red.minecraftserver.jp/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
 - [msgachadata.sql](https://red.minecraftserver.jp/attachments/download/894/msgachadata.sql) -> import to "msgachadata" table.
 
+## protocolディレクトリ以下のクローン
+protocol以下のファイルは`git clone`では入手することができません。以下のどちらかのコマンドを実行してください:
+* `git clone --recursive`
+* `git submodule update --init --recursive`
 ## JavaDocs
 publicなメソッドについては、JavaDocsを記載するよう心がけてください。
 その他は各自が必要だと判断した場合のみ記載してください。

@@ -40,10 +40,10 @@ object ServerSwitchMenu extends Menu {
 
     case object VALHALLA extends Server(s"$YELLOW${BOLD}ヴァルハラ", "s3", ChestSlotRef(0, 2), Material.DIAMOND_AXE)
 
-    case object ARCHITECTURE extends Server(s"$GREEN${BOLD}建築", "s8", ChestSlotRef(0, 7), Material.BRICK)
-
     case object PUBLIC extends Server(s"$GREEN${BOLD}公共施設", "s7", ChestSlotRef(0, 8), Material.DIAMOND)
 
+    case object SEICHI extends Server(s"$YELLOW${BOLD}整地専用", "s5", ChestSlotRef(0, 4), Material.IRON_PICKAXE)
+    
     val values: IndexedSeq[Server] = findValues
 
   }
@@ -61,6 +61,12 @@ object ServerSwitchMenu extends Menu {
       val slotIndex = server.chestSlotRef
       val iconItemStack = new IconItemStackBuilder(server.material)
         .title(server.uiLabel + "サーバー")
+        .lore {
+          // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
+          if (server.identifier == "s5")
+            List("上級者向けのサーバー", "始めたての頃は他のサーバーがおすすめ").map { str => s"$RESET$BLUE$str" }
+          else Nil
+        }
         .enchanted()
         .build()
       val button = Button(

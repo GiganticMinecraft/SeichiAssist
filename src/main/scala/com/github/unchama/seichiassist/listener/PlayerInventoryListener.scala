@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.listener
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
-import com.github.unchama.seichiassist.data.{ItemData, MenuInventoryData}
+import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
@@ -359,7 +359,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
       /*
 			 * step3 ガチャ券をインベントリへ
 			 */
-      val skull = Util.getExchangeskull(player.getName)
+      val skull = GachaSkullData.gachaForExchanging
       var count = 0
       while (givegacha > 0) {
         if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
@@ -535,7 +535,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
               if (gachadata.probability < 0.001) {
                 //ギガンティック大当たりの部分
                 //1個につき椎名林檎n個と交換する
-                giveringo += SeichiAssist.seichiAssistConfig.rateGiganticToRingo() * amount
+                giveringo += SeichiAssist.seichiAssistConfig.rateGiganticToRingo * amount
                 giga += 1
               } else {
                 //それ以外アイテム返却
@@ -688,7 +688,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
           //ここに投票1回につきプレゼントする特典の処理を書く
 
           //ガチャ券プレゼント処理
-          val skull = Util.getVoteskull(player.getName)
+          val skull = GachaSkullData.gachaForVoting
           for {_ <- 0 to 9} {
             if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
               Util.addItem(player, skull)

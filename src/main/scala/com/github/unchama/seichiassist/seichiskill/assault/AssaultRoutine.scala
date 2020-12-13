@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.seichiskill.assault
 
-import cats.effect.{ExitCase, IO}
-import com.github.unchama.concurrent.{MinecraftServerThreadIOShift, RepeatingRoutine, RepeatingTaskContext}
+import cats.effect.{ExitCase, IO, Timer}
+import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
@@ -21,7 +21,7 @@ object AssaultRoutine {
   }
 
   def tryStart(player: Player, skill: AssaultSkill)
-              (implicit syncShift: MinecraftServerThreadIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
+              (implicit syncShift: MinecraftServerThreadShift[IO], ctx: RepeatingTaskContext): IO[Unit] = {
     for {
       offHandTool <- IO {
         player.getInventory.getItemInOffHand
@@ -38,7 +38,7 @@ object AssaultRoutine {
 
 
   def apply(player: Player, toolToBeUsed: BreakTool, skill: AssaultSkill)
-           (implicit syncShift: MinecraftServerThreadIOShift, ctx: RepeatingTaskContext): IO[Unit] = {
+           (implicit syncShift: MinecraftServerThreadShift[IO], ctx: RepeatingTaskContext): IO[Unit] = {
     val idleCountLimit = 20
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -156,12 +156,18 @@ object AssaultRoutine {
       Some(newState)
     }
 
+    implicit val timer: Timer[IO] = IO.timer(ctx)
+
     import cats.implicits._
 
     import scala.concurrent.duration._
     for {
-      _ <- IO { player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} ON") }
-      currentLoc <- IO { player.getLocation }
+      _ <- IO {
+        player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} ON")
+      }
+      currentLoc <- IO {
+        player.getLocation
+      }
       _ <- RepeatingRoutine.recMTask(IterationState(currentLoc, 0))(s =>
         syncShift.shift >> IO(routineAction(s))
       )(IO.pure(500.millis)).guaranteeCase {

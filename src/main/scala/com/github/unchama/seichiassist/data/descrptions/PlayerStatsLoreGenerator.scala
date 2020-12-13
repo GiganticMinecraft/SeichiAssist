@@ -50,7 +50,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   }
 
   /**
-   * 木の棒メニュー等で用いられる整地レベルの説明文
+   * 木の棒メニュー等で用いられる整地Lvの説明文
    * スターレベルを保持していたら,スターレベルも同時に表示します.
    */
   private def seichiLevelDescription(): String = {
@@ -58,9 +58,9 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
     val level = playerData.level
 
     if (starLevel <= 0) {
-      s"${AQUA}整地レベル:$level"
+      s"${AQUA}整地Lv:$level"
     } else {
-      s"${AQUA}整地レベル:$level☆$starLevel"
+      s"${AQUA}整地Lv:$level☆$starLevel"
     }
   }
 

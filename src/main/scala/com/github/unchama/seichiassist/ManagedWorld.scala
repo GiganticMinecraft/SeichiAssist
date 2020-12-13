@@ -25,6 +25,10 @@ case object ManagedWorld extends Enum[ManagedWorld] {
 
   case object WORLD_SW_END extends ManagedWorld("world_SW_the_end", "整地エンド")
 
+  case object WORLD_BUILD extends ManagedWorld("world_build", "建築専用ワールド")
+
+  case object WORLD_DOT extends ManagedWorld("world_dot", "ドット絵ワールド")
+
   implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
     def isSeichi: Boolean = managedWorld match {
       case WORLD_SW
@@ -32,7 +36,8 @@ case object ManagedWorld extends Enum[ManagedWorld] {
            | WORLD_SW_3
            | WORLD_SW_4
            | WORLD_SW_NETHER
-           | WORLD_SW_END => true
+           | WORLD_SW_END
+           | WORLD_BUILD => true
       case _ => false
     }
 
@@ -45,12 +50,39 @@ case object ManagedWorld extends Enum[ManagedWorld] {
       case WORLD_SW_2 | WORLD_SW_4 => true
       case _ => false
     }
+
+    /**
+     * ブロックがカウントされるワールドかどうか
+     */
+    def shouldTrackBuildBlock: Boolean = managedWorld match {
+      case WORLD_2
+        | WORLD_SW
+        | WORLD_SW_2
+        | WORLD_SW_3
+        | WORLD_SW_4
+        | WORLD_SW_NETHER
+        | WORLD_SW_END
+        | WORLD_DOT
+        | WORLD_BUILD => true
+      case _ => false
+    }
+
+    /**
+     * 直列設置スキルを発動できるワールドかどうか
+     */
+    def isBlockLineUpSkillEnabled: Boolean = if (SeichiAssist.DEBUG) {
+      true
+    } else shouldTrackBuildBlock
   }
 
   implicit class WorldOps(val world: World) {
     def asManagedWorld(): Option[ManagedWorld] = fromBukkitWorld(world)
 
     def isSeichi: Boolean = asManagedWorld().exists(_.isSeichi)
+
+    def shouldTrackBuildBlock: Boolean = asManagedWorld().exists(_.shouldTrackBuildBlock)
+
+    def isBlockLineUpSkillEnabled: Boolean = asManagedWorld().exists(_.isBlockLineUpSkillEnabled)
   }
 
   val seichiWorlds: IndexedSeq[ManagedWorld] = values.filter(_.isSeichi)

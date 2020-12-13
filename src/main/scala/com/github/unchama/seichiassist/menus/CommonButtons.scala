@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus
 
-import com.github.unchama.concurrent.MinecraftServerThreadIOShift
+import cats.effect.IO
+import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu}
@@ -20,7 +21,7 @@ object CommonButtons {
                      transferDescription: String,
                      target: Menu,
                      actionDescription: String = "クリックで移動")
-                    (implicit layoutPreparationContext: LayoutPreparationContext, syncCtx: MinecraftServerThreadIOShift): Button =
+                    (implicit layoutPreparationContext: LayoutPreparationContext, syncCtx: MinecraftServerThreadShift[IO]): Button =
     Button(
       partialBuilder
         .title(navigation(transferDescription))

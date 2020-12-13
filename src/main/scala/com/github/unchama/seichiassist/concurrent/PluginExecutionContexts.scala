@@ -18,7 +18,7 @@ object PluginExecutionContexts {
 
   implicit val pluginInstance: JavaPlugin = SeichiAssist.instance
 
-  implicit val syncShift: MinecraftServerThreadIOShift = new BukkitServerThreadIOShift()
+  implicit val syncShift: MinecraftServerThreadShift[IO] = new BukkitServerThreadIOShift()
 
   val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 

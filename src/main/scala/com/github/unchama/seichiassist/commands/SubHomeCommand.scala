@@ -31,7 +31,7 @@ object SubHomeCommand {
     .argumentsParsers(
       List(
         Parsers.closedRangeInt(
-          0, subHomeMax,
+          1, subHomeMax,
           failureMessage = MessageEffect(s"サブホームの番号を1～${subHomeMax}の間で入力してください"))
       ),
       onMissingArguments = printDescriptionExecutor

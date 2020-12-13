@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.data;
 
 public class RankData {
     public String name;
-    /* 整地レベル */
+    /* 整地Lv */
     public int level;
     /* 整地量 */
     public long totalbreaknum;

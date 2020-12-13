@@ -1,7 +1,7 @@
 package com.github.unchama.concurrent.bukkit
 
 import cats.effect.IO
-import com.github.unchama.concurrent.MinecraftServerThreadIOShift
+import com.github.unchama.concurrent.MinecraftServerThreadShift
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext
  * shiftの実行時点でキャンセルが入ったときはBukkitのスケジューラ上で
  * キューしたタスクもろともキャンセルするような実装になっている。
  */
-class BukkitServerThreadIOShift(implicit hostPlugin: JavaPlugin) extends MinecraftServerThreadIOShift {
+class BukkitServerThreadIOShift(implicit hostPlugin: JavaPlugin) extends MinecraftServerThreadShift[IO] {
   override def shift: IO[Unit] = {
     for {
       isPrimaryThread <- IO {

@@ -16,12 +16,14 @@ import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.util.external.WorldGuardWrapper.isRegionOwner
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.material.{MaterialData, Openable}
 import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
@@ -109,8 +111,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
   @EventHandler
   def onPlayerRightClickGachaEvent(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
-    val uuid = player.getUniqueId
-    val playerData = playerMap.getOrElse(uuid, return)
+    val playerData = playerMap(player.getUniqueId)
 
     //もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return
@@ -146,7 +147,16 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     }
 
     val action = event.getAction
-    if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
+    val clickedBlock = event.getClickedBlock.ifNull {
+      return
+    }
+
+    /*
+    AIRもしくはBlockを右クリックしていない、または、Blockのときにチェストやトラップチェストをクリックしていれば処理を終了
+    参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/770
+     */
+    if (!(action == Action.RIGHT_CLICK_AIR ||
+      (action == Action.RIGHT_CLICK_BLOCK && clickedBlock.getType != Material.CHEST && clickedBlock.getType != Material.TRAPPED_CHEST))) return
 
     val count =
       if (player.isSneaking) {
@@ -184,12 +194,12 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
           Util.addItem(player, givenItem)
           ""
         } else {
-          //アイテムがスタックでき、かつ整地レベルがマインスタックの開放レベルに足りているとき...
+          //アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
           if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack) && SeichiAssist.playermap(player.getUniqueId).level >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)) {
             // ...格納した！
             s"${AQUA}景品をマインスタックに収納しました。"
           } else {
-            // スタックできないか、整地レベルがマインスタックの開放レベルに足りていないとき...
+            // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
             // ...ドロップする
             Util.dropItem(player, givenItem)
             s"${AQUA}景品がドロップしました。"
@@ -328,7 +338,6 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
 
             event.setCancelled(true)
 
-            import cats.implicits._
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
             SeichiAssist.instance
@@ -342,6 +351,18 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
         }
       }
     }
+  }
+
+  @EventHandler(priority = EventPriority.HIGHEST)
+  def onPlayerOpenMenuWithSomething(event: PlayerInteractEvent): Unit = {
+    val player = event.getPlayer
+    val action = event.getAction
+    val inventory = player.getInventory
+
+    if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
+
+    if (inventory.getItemInMainHand.getType == Material.STICK && inventory.getItemInOffHand != null)
+      event.setCancelled(true)
   }
 
   //棒メニューを開くイベント
@@ -396,7 +417,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       }
       //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
       if (playerdata.level < SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel) {
-        player.sendMessage(GREEN.toString + "4次元ポケットを入手するには整地レベルが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
+        player.sendMessage(GREEN.toString + "4次元ポケットを入手するには整地Lvが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
         return
       }
       if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
@@ -447,7 +468,10 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     }
 
     //頭を付与
-    p.getInventory.addItem(Util.getSkullDataFromBlock(targetBlock))
+    Util.getSkullDataFromBlock(targetBlock) match {
+      case Some(itemStack) => p.getInventory.addItem(itemStack)
+      case None =>
+    }
     if (!ExternalPlugins.getCoreProtectWrapper.queueBlockRemoval(p, targetBlock)) {
       SeichiAssist.instance.getLogger.warning(s"Logging in skull break: Failed Location: ${targetBlock.getLocation}, Player:$p")
     }
@@ -455,5 +479,25 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     targetBlock.setType(Material.AIR)
     //音を鳴らしておく
     p.playSound(p.getLocation, Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f)
+  }
+
+  // 鉄のトラップドアを動力無しで開閉できるようにする処理
+  // 参照：https://red.minecraftserver.jp/issues/8109
+  @EventHandler
+  def onPlayerRightClickIronTrapDoor(event: PlayerInteractEvent): Unit = {
+    val clickedBlock = event.getClickedBlock
+    if (clickedBlock == null) return
+
+    if (!isRegionOwner(event.getPlayer, clickedBlock.getLocation)) return
+
+    if (event.getHand == EquipmentSlot.OFF_HAND) return
+    if (event.getAction != Action.RIGHT_CLICK_BLOCK || clickedBlock.getType != Material.IRON_TRAPDOOR) return
+
+    // TODO: 手に何も持っていない場合は機能するが、ブロックなどを持っている場合は機能しない（手に持っているものが設置できるもののときや弓矢は反応する）
+    val blockState = clickedBlock.getState
+    val materialData = blockState.getData.asInstanceOf[Openable]
+    materialData.setOpen(!materialData.isOpen)
+    blockState.setData(materialData.asInstanceOf[MaterialData])
+    blockState.update()
   }
 }

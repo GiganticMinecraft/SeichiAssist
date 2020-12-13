@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets
 
 import cats.effect.{Concurrent, Sync}
-import com.github.unchama.itemmigration.targets.WorldLevelData
+import com.github.unchama.itemmigration.bukkit.targets.WorldLevelData
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.external.{ExternalPlugins, ExternalServices}
 import org.bukkit.World
@@ -21,7 +21,7 @@ private object DelegatedImpls {
   }
 
   def getWorldChunkCoordinates[F[_] : Sync](implicit logger: Logger): World => F[Seq[(Int, Int)]] =
-    ExternalServices.getChunkCoordinates[F](SeichiAssist.seichiAssistConfig.chunkSearchCommandBase())
+    ExternalServices.getChunkCoordinates[F](SeichiAssist.seichiAssistConfig.chunkSearchCommandBase)
 }
 
 class SeichiAssistWorldLevelData[F[_]](implicit metricsLogger: Logger, F: Concurrent[F])

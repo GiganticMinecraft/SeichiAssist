@@ -34,7 +34,7 @@ object MaterialSets {
     Material.MOB_SPAWNER, Material.WORKBENCH, Material.FURNACE, Material.QUARTZ_BLOCK, Material.CHEST,
     Material.TRAPPED_CHEST, Material.NETHER_FENCE, Material.NETHER_BRICK_STAIRS, Material.CAULDRON, Material.END_ROD,
     Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST, Material.PURPUR_SLAB, Material.STEP,
-    Material.DOUBLE_STEP,Material.ENDER_PORTAL_FRAME,Material.ENDER_PORTAL
+    Material.DOUBLE_STEP,Material.ENDER_PORTAL_FRAME,Material.ENDER_PORTAL, Material.VINE
   ) ++ fortuneMaterials
 
   /**
@@ -52,6 +52,7 @@ object MaterialSets {
 
   val breakToolMaterials: Set[Material] = Set(
     Material.WOOD_PICKAXE, Material.WOOD_SPADE,
+    Material.STONE_PICKAXE, Material.STONE_AXE, Material.STONE_SPADE,
     Material.IRON_PICKAXE, Material.IRON_AXE, Material.IRON_SPADE,
     Material.GOLD_PICKAXE, Material.GOLD_AXE, Material.GOLD_SPADE
   ) ++ breakTestToolMaterials

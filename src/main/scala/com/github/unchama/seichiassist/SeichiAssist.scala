@@ -15,7 +15,7 @@ import com.github.unchama.playerdatarepository.{NonPersistentPlayerDataRefReposi
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.{GachaCommand, PresentCommand}
+import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.cachedThreadPool
 import com.github.unchama.seichiassist.data.player.PlayerData
@@ -245,10 +245,15 @@ class SeichiAssist extends JavaPlugin() {
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
+      "stickmenu" -> StickMenuCommand.executor,
       "present" -> new PresentCommand()
-    ).concat(subsystems.flatMap(_.commands)).foreach {
-      case (commandName, executor) => getCommand(commandName).setExecutor(executor)
-    }
+    )
+      .concat(subsystems.flatMap(_.commands))
+      .foreach {
+        case (commandName, executor) => getCommand(commandName).setExecutor(executor)
+      }
+
+
 
     val repositories = Seq(
       activeSkillAvailability,

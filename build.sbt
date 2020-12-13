@@ -1,12 +1,12 @@
-import java.io._
-
 import ResourceFilter.filterResources
 import sbt.Keys.baseDirectory
 
+import java.io._
+
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "1.4.8"
+ThisBuild / version := "1.6.1"
 ThisBuild / organization := "click.seichi"
-ThisBuild / description      := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
+ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 resolvers ++= Seq(
   "jitpack.io" at "https://jitpack.io",
@@ -18,7 +18,8 @@ resolvers ++= Seq(
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
-  "maven.elmakers.com" at "http://maven.elmakers.com/repository/" // stouma915#5421の環境ではなぜかspigot-apiがダウンロードできないため一応追加
+  "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // stouma915#0915の環境ではなぜかspigot-apiがダウンロードできないため一応追加
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのための
 )
 
 val providedDependencies = Seq(
@@ -28,6 +29,7 @@ val providedDependencies = Seq(
   "org.spigotmc" % "spigot-api" % "1.12.2-R0.1-SNAPSHOT",
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
   "net.coreprotect" % "coreprotect" % "2.14.2",
+  "com.mojang" % "authlib" % "1.5.25",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.0"
@@ -35,8 +37,10 @@ val providedDependencies = Seq(
 
 val testDependencies = Seq(
   "org.scalamock" %% "scalamock" % "4.4.0",
-  "org.scalatest" %% "scalatest" % "3.1.2",
-  "org.scalacheck" %% "scalacheck" % "1.14.1",
+  "org.scalatest" %% "scalatest" % "3.2.2",
+  "org.scalatestplus" %% "scalacheck-1-14" % "3.2.2.0",
+  // テスト用のTestSchedulerを使うため
+  "io.monix" %% "monix" % "3.2.2"
 ).map(_ % "test")
 
 val dependenciesToEmbed = Seq(
@@ -51,6 +55,7 @@ val dependenciesToEmbed = Seq(
   "com.typesafe.scala-logging" % "scala-logging-slf4j_2.10" % "2.1.2",
   "org.slf4j" % "slf4j-api" % "1.7.28",
   "org.slf4j" % "slf4j-jdk14" % "1.7.28",
+  "com.github.etaty" %% "rediscala" % "1.9.0",
 )
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)

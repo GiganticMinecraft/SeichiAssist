@@ -5,14 +5,15 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.seasonalevents.events.valentine.Valentine
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
+import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.cookieOf
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -210,7 +211,7 @@ object FirstPage extends Menu {
         val actionGuidance = if (openerData.level >= minimumLevelRequired) {
           s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
         } else {
-          s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumLevelRequired}以上必要です"
+          s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumLevelRequired}以上必要です"
         }
 
         val annotation = List(
@@ -255,7 +256,7 @@ object FirstPage extends Menu {
             s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           )
         } else {
-          List(s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です")
+          List(s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です")
         }
 
         new IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
@@ -287,7 +288,7 @@ object FirstPage extends Menu {
           if (playerData.level >= minimumRequiredLevel) {
             s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           } else {
-            s"$RESET$DARK_RED${UNDERLINE}整地レベルが${minimumRequiredLevel}以上必要です"
+            s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です"
           }
         }
 
@@ -355,7 +356,7 @@ object FirstPage extends Menu {
             val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player)
 
             if (numberOfItemsToGive > 0) {
-              val itemToGive = Util.getForBugskull(player.getName)
+              val itemToGive = GachaSkullData.gachaFromAdministrator
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
@@ -458,7 +459,7 @@ object FirstPage extends Menu {
             val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
 
             if (gachaTicketsToGive > 0) {
-              val itemToGive = Util.getskull(player.getName)
+              val itemToGive = GachaSkullData.gachaSkull
               val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
 
               SequentialEffect(
@@ -545,10 +546,8 @@ object FirstPage extends Menu {
               if (Valentine.isInEvent) {
                 SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
-                  targetedeffect.UnfocusedEffect {
-                    Valentine.giveChoco(player)
-                    playerData.hasChocoGave = true
-                  },
+                  Util.grantItemStacksEffect(cookieOf(player)),
+                  targetedeffect.UnfocusedEffect {playerData.hasChocoGave = true},
                   MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。")
                 )
               } else {

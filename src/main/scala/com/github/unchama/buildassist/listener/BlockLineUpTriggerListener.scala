@@ -2,6 +2,7 @@ package com.github.unchama.buildassist.listener
 
 import com.github.unchama.buildassist.{BuildAssist, Util}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
@@ -13,7 +14,7 @@ import scala.util.control.Breaks
 
 object BlockLineUpTriggerListener extends Listener {
 
-  import collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   @EventHandler
   def onBlockLineUpSkillTrigger(event: PlayerInteractEvent): Unit = {
@@ -30,7 +31,7 @@ object BlockLineUpTriggerListener extends Listener {
     if (buildAssistData.line_up_flg == 0) return
 
     //スキル利用可能でないワールドの場合終了
-    if (!Util.isSkillEnable(player)) return
+    if (!player.getWorld.isBlockLineUpSkillEnabled) return
 
     //左クリックの処理
     if (!(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) return
@@ -172,7 +173,7 @@ object BlockLineUpTriggerListener extends Listener {
     }
 
     //カウント対象ワールドの場合カウント値を足す
-    if (Util.inTrackedWorld(player)) {
+    if (player.getWorld.shouldTrackBuildBlock) {
       //対象ワールドかチェック
       Util.addBuild1MinAmount(player, new java.math.BigDecimal(placedBlockCount * BuildAssist.config.getBlockCountMag)) //設置した数を足す
     }

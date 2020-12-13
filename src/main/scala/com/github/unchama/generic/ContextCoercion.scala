@@ -1,7 +1,7 @@
 package com.github.unchama.generic
 
 import cats.arrow.FunctionK
-import cats.effect.{IO, SyncIO}
+import cats.effect.{IO, Sync, SyncEffect, SyncIO}
 import cats.~>
 
 /**
@@ -34,6 +34,16 @@ object ContextCoercion extends ContextCoercionOps {
   }
 
   implicit def identityCoercion[F[_]]: ContextCoercion[F, F] = fromFunctionK(FunctionK.id)
+
+  implicit def syncEffectToSync[F[_] : SyncEffect, G[_] : Sync]: ContextCoercion[F, G] = {
+    import cats.effect.implicits._
+
+    fromFunctionK(λ[F ~> G] { fa =>
+      Sync[G].delay {
+        fa.runSync[SyncIO].unsafeRunSync()
+      }
+    })
+  }
 
   implicit val catsEffectSyncIOToIOCoercion: ContextCoercion[SyncIO, IO] = fromFunctionK {
     λ[SyncIO ~> IO](_.toIO)
