@@ -1,4 +1,92 @@
 **参照:** [masterへのマージ履歴](https://github.com/GiganticMinecraft/SeichiAssist/pulls?utf8=✓&q=is%3Apr+sort%3Aupdated-desc+is%3Aclosed+base%3Amaster)
+
+## 1.4.1 - 2020-08-19 (#633)
+### 追加 / Added
+- マイグレーションシステムの実装 (#582)
+- チェスト破壊のメッセージをアクションバーに移す (idea/8156)
+
+### 修正 / Fixed
+- xargsのオプションをMac互換にする
+- 棒メニューBが表示されなくなる不具合を修正 (#592)
+- プレイヤーヘッドを刈り取ったときにCoreProtectに記録されない問題を修正 (#600)
+- 棒を持ちながら感圧版を踏めるようにする (#591)
+- Mebiusのシステムを整理 (#606)
+- プレイヤーのデータがロードされていなかったらキックする (#604)
+- Spigotの依存解決に失敗する問題を修正 (#573)
+
+### 改善 / Improved
+- CIでインクリメンタルコンパイルをする (#565)
+- `updateLevel`の単純化 (#574)
+- Util.javaの整理 (#575)
+- 使われていない配列の削除 (#577)
+- `TypeConverter`の削除 (#579)
+- `updatePlayerLevel`の単純化 (#581)
+- `Config.java`の整理 (#585)
+- `static`な`FileConfiguration`を持つ`Config`クラスを裁く (#586)
+- `BuildBlock.java`の整理 (#587)
+- 設置がキャンセルされていたら建築量にカウントしない (#595)
+- 30分整地ランキングにスターレベルを含む (#597)
+- ガチャ券の判定方法の改善 (#598)
+- アイテムマイグレーションの適用バージョンをログに出す (#612)
+- use `circleci` commands (#615)
+- 所有者UUIDをMebiusに書き込む
+- クールダウンの下限を消す
+- ワールドデータ変換時のメモリ使用量を抑える (#628)
+- 経験値瓶を一つにまとめる (#599)
+
+## \[1.3.3\] - 2020-07-04 \([#563](https://github.com/GiganticMinecraft/SeichiAssist/pull/563)\)
+### 修正 / Fixed
+- 建築量を小数第一位まで表示するようにする (#560)
+- `サンダーストーム` → `サンダー・ストーム` (#555)
+
+## 1.3.2 - 2020-06-14 (#543)
+### 修正 / Fixed
+- ドキュメント内のtypoを修正 (#538)
+- 表記ゆれの修正
+- カラムの整理
+
+## 1.3.1 - 2020-06-12 (#537)
+### 修正 / Fixed
+- アサルトスキル解法のメッセージのフォーマットを修正
+### 改善 / Improved
+- アクティブスキル解除ボタンの表示
+- 不必要な正規表現を消去
+
+## \[1.3.0\] - 2020-06-12 \([#534](https://github.com/GiganticMinecraft/SeichiAssist/pull/534)\)
+### 追加 / Added
+- マグマブロック+バケツ→溶岩バケツ (#515)
+
+### 修正 / Fixed
+- 整地ワールドの判定を修正
+- `/x-transfer`で保護の上限数を超えて譲渡できてしまう問題を修正
+- スポーンワールド → メインワールド
+- 表記ゆれを修正
+- まとめ引きした際のメッセージを修正
+- メッセージに含まれるカラーコードが展開されていない問題を修正
+- 建築量が指数表記になっている問題を修正 (#517)
+- スキルを再実装する (#522)
+- READMEの軽微な編集 (#524)
+- 共有インベントリが格納できないことがある問題を修正 (#514)
+- 小数リテラルを使用する (#521)
+- プレミアムエフェクトポイントがdonatedataのみ参照して計算されるようにする (#528)
+- TargetedEffectのリファクタリング (#529)
+- 経験値の計算式を更新 (#530)
+- `com.github.unchama.util.modify` → `scala.util.chaining.tap` (#532)
+
+### 改善 / Improved
+- 公共施設サーバーで整地量ランキングを表示しないようにする (#509)
+- `MebiusListener.java`のドキュメントを改善 (#494)
+- 依存プラグインを明示的に指定する (#510)
+- 説明を改善する (#512)
+
+
+## \[1.2.13\] - 2020-04-07 \([#487](https://github.com/GiganticMinecraft/SeichiAssist/pull/487)\)
+### 修正 / Fixed
+- 整地ランキングの計算ロジックが正しく計算されないことがある問題
+- エフェクトが購入できない問題
+- 誤ったクラスの命名
+- GiganticBerserkで確率の桁が長い問題
+- 経験値瓶のハンドリング漏れ
 ## \[1.2.12\] - 2020-02-23 \([#463](https://github.com/GiganticMinecraft/SeichiAssist/pull/463)\)
 ### 修正 / Fixed
 - スキルで破壊したブロックがマインスタックに格納されない問題
@@ -35,7 +123,7 @@
 - 石のボタンと鉄のトラップドアの個数が共有されていた動作を修正\([0f3a228](https://github.com/GiganticMinecraft/SeichiAssist/commit/0f3a2281caf877915df33a1d8c027c510516e936)\)
 
 ### 内部的変更 / Refactor
-- 忌々しいMenuInventoryDataの整理 \([#403](https://github.com/GiganticMinecraft/SeichiAssist/pull/403)\)
+- MenuInventoryDataの整理 \([#403](https://github.com/GiganticMinecraft/SeichiAssist/pull/403)\)
 
 ## \[1.2.7\] - 2020-01-18 \([#408](https://github.com/GiganticMinecraft/SeichiAssist/pull/410)\)
 ### 修正 / Fixed
