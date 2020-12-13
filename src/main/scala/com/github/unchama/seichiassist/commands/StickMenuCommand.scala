@@ -11,11 +11,9 @@ import org.bukkit.command.TabExecutor
 * @author KisaragiEffective
 */
 object StickMenuCommand {
+  val effect = StickMenu.firstPage.open
   val executor: TabExecutor = playerCommandBuilder
-    .execution { _=>
-      // 棒メニューを開く
-      IO.pure(StickMenu.firstPage.open)
-    }
+    .execution { _ => IO.pure(effect) }
     .build()
     .asNonBlockingTabExecutor()
 }
