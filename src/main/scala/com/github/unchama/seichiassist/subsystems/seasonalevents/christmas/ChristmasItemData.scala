@@ -230,7 +230,7 @@ object ChristmasItemData {
       .mkString
     val enchants = Set(
       (Enchantment.DIG_SPEED, 3),
-      (Enchantment.LUCK, 1)
+      (Enchantment.LOOT_BONUS_BLOCKS, 1)
     )
     val loreList = {
       val enchDescription = enchants
