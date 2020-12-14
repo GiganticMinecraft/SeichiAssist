@@ -25,6 +25,9 @@ object RmpCommand {
         s"$RED/rmp remove [world名] [日数]",
         "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
         "",
+        s"$RED/rmp removeAll [world名]",
+        "原則全てのRegionを削除します(整地ワールドのみ)",
+        "",
         s"$RED/rmp list [world名] [日数]",
         "全Ownerが[日数]間ログインしていないRegionを表示します"
       )
