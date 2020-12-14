@@ -84,7 +84,7 @@ object RmpCommand {
     }
     .build()
 
-  private def removeRegions(world: World, days: Int) = {
+  private def removeRegions(world: World, days: Int): TargetedEffect[CommandSender] = {
     val isSeichiWorldWithWGRegionsOption = ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
 
     val commandName = if (days == -1) "removeAll" else "remove"
