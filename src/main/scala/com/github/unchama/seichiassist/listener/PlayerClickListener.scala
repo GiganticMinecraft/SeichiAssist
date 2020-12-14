@@ -155,8 +155,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     Blockを右クリックしていない、または、Blockのときにチェストやトラップチェストをクリックしていれば処理を終了
     参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/770
      */
-    if (!(
-      (action == Action.RIGHT_CLICK_BLOCK && clickedBlock.getType != Material.CHEST && clickedBlock.getType != Material.TRAPPED_CHEST))) return
+    if (action != Action.RIGHT_CLICK_BLOCK || clickedBlock.getType == Material.CHEST || clickedBlock.getType == Material.TRAPPED_CHEST) return
 
     val count =
       if (player.isSneaking) {
