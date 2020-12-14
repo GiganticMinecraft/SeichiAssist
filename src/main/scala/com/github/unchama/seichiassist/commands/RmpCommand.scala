@@ -77,6 +77,45 @@ object RmpCommand {
     }
     .build()
 
+  private val removeAllExecutor = argsAndSenderConfiguredBuilder
+    .execution { context =>
+      val world = context.args.parsed.head.asInstanceOf[World]
+      // -1を指定することで実質的に原則すべての保護を削除することになる
+      val days = -1
+
+      // TODO ここから下はremoveEffectと全く同じコードなので、共通化でき...る...？
+
+      val isSeichiWorldWithWGRegionsOption = ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
+
+      def execute(): TargetedEffect[ConsoleCommandSender] = {
+        isSeichiWorldWithWGRegionsOption match {
+          case None | Some(false) => return MessageEffect("removeAllコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます")
+          case Some(true) =>
+        }
+
+        // 削除処理
+        getOldRegionsIn(world, days).map { removalTargets =>
+          removalTargets.foreach { target =>
+            ExternalPlugins.getWorldGuard.getRegionContainer.get(world).removeRegion(target.getId)
+          }
+
+          // メッセージ生成
+          if (removalTargets.isEmpty) {
+            MessageEffect(s"${GREEN}該当Regionは存在しません")
+          } else {
+            targetedeffect.SequentialEffect(
+              removalTargets.map { target =>
+                MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
+              }
+            )
+          }
+        }.merge
+      }
+
+      IO(execute())
+    }
+    .build()
+
   private val listExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
       val world = context.args.parsed.head.asInstanceOf[World]
@@ -120,6 +159,7 @@ object RmpCommand {
     BranchedExecutor(
       Map(
         "remove" -> removeExecutor,
+        "removeAll" -> removeAllExecutor,
         "list" -> listExecutor
       ),
       whenArgInsufficient = Some(printDescriptionExecutor),
