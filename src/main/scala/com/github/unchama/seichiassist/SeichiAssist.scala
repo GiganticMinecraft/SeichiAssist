@@ -24,6 +24,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
+import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
@@ -33,6 +34,7 @@ import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.bukkit.ChatColor._
 import org.bukkit.entity.{Entity, Player}
 import org.bukkit.plugin.java.JavaPlugin
@@ -42,6 +44,7 @@ import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 
 import java.util.UUID
+import java.util.logging.LogManager
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -49,6 +52,25 @@ class SeichiAssist extends JavaPlugin() {
   SeichiAssist.instance = this
 
   private var hasBeenLoadedAlready = false
+
+  /*
+   * JDK14LoggerFactoryは `java.util.logging.Logger.getLogger` によりロガーを解決している。
+   * しかし、プラグインロガーが何故か `getLogger.getName` により解決ができず、
+   * このため `NamedJULLogger` で一旦ラップしたものをLogManagerに登録し、
+   * それをSlf4jにアダプトしたロガーを利用している。
+   */
+  implicit val logger: Logger = {
+    // TODO すべてのロギングをlog4cats経由で行えばこれは要らなさそう？
+    //      適当なルートロガーをJUL経由で引っ張ってきてPrefixedLogger("[SeichiAssist]")を使う
+    val pluginLogger = getLogger
+    val customLoggerName = s"seichi_assist_custom_named_logger_at_${pluginLogger.getName}"
+    val newLogger = new NamedJULLogger(customLoggerName, pluginLogger)
+
+    LogManager.getLogManager.addLogger(newLogger)
+    new JDK14LoggerFactory().getLogger(newLogger.getName)
+  }
+
+  implicit val loggerF: io.chrisdavenport.log4cats.Logger[IO] = Slf4jLogger.getLoggerFromSlf4j(logger)
 
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
@@ -74,7 +96,6 @@ class SeichiAssist extends JavaPlugin() {
   lazy val itemMigrationSystem: StatefulSubsystem[IO, subsystems.itemmigration.InternalState[IO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(getLogger.getName)
 
     subsystems.itemmigration.System.wired[IO, SyncIO, IO]
   }.unsafeRunSync()
@@ -159,10 +180,6 @@ class SeichiAssist extends JavaPlugin() {
      * 接続を試みているプレーヤーは弾かないで良さそう、と言うか弾く術がない
      */
     kickAllPlayersDueToInitialization.unsafeRunSync()
-
-    val logger = getLogger
-    // java.util.logging.Loggerの名前はJVM上で一意
-    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
 
     if (hasBeenLoadedAlready) {
       throw new IllegalStateException("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
@@ -362,7 +379,7 @@ class SeichiAssist extends JavaPlugin() {
       monitoredInitialization()
     } catch {
       case e: Exception =>
-        getLogger.severe("初期化処理に失敗しました。シャットダウンしています…")
+        logger.error("初期化処理に失敗しました。シャットダウンしています…")
         e.printStackTrace()
         Bukkit.shutdown()
     }
@@ -394,8 +411,6 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   override def onDisable(): Unit = {
-    val logger = getLogger
-
     cancelRepeatedJobs()
 
     // 管理下にある資源を開放する
