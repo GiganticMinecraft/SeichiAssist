@@ -113,7 +113,7 @@ class PlayerJoinListener extends Listener {
 
       player.sendMessage("初期装備を配布しました。Eキーで確認してネ")
       //初見さんにLv1メッセージを送信
-      player.sendMessage(SeichiLvUpMessages.get(1))
+      SeichiLvUpMessages.get(1).foreach(player.sendMessage(_))
     }
 
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知

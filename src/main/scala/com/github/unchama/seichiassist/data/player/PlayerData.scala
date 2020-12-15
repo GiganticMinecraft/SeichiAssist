@@ -376,8 +376,7 @@ class PlayerData(
       //レベルアップ時の花火の打ち上げ
       Util.launchFireWorks(player.getLocation) // TODO: fix Util
 
-      val lvMessage = SeichiLvUpMessages.get(l + 1)
-      player.sendMessage(s"$AQUA$lvMessage")
+      SeichiLvUpMessages.get(l + 1).foreach { lvUpMessage => player.sendMessage(s"$AQUA$lvUpMessage") }
 
       //マナ最大値の更新
       if (manaState.isLoaded) manaState.onLevelUp(player, l+1)
