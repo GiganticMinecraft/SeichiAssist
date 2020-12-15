@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist
 import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
-import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
+import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizerList
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
@@ -31,6 +31,7 @@ import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsys
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
+import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -185,7 +186,9 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
+    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
+    implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] = seasonalEventsSystem.api[SyncIO]
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")

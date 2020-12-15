@@ -23,7 +23,7 @@ import scala.util.Random
   /**
    * [0.0, 1.0] の範囲にある倍精度浮動小数点を生成するプログラム。
    */
-  def sampleDUnitInterval: F[Float]
+  def sampleDUnitInterval: F[Double]
 
   /**
    * 確率 1/n のベルヌーイ試行を行うプログラム。
@@ -46,7 +46,7 @@ object RandomEffect {
       random.nextFloat()
     }
 
-    override def sampleDUnitInterval: F[Float] = Sync[F].delay {
+    override def sampleDUnitInterval: F[Double] = Sync[F].delay {
       random.nextDouble()
     }
   }
