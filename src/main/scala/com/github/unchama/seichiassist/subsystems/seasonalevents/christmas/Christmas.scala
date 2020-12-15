@@ -12,5 +12,8 @@ object Christmas {
   val START_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 12, 15)
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 12, 31)
 
-  def isInEvent: Boolean = dateRangeAsSequence(START_DATE, END_DATE).contains(LocalDate.now())
+  def isInEvent(date: LocalDate): Boolean = dateRangeAsSequence(START_DATE, END_DATE).contains(date)
+
+  // side-effectful
+  def isInEventNow: Boolean = isInEvent(LocalDate.now())
 }
