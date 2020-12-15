@@ -1,12 +1,11 @@
 package com.github.unchama.seichiassist.listener
 
 import java.util.UUID
-
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusProperty
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusProperty, NormalMebius}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -103,7 +102,7 @@ class PlayerJoinListener extends Listener {
       //メビウスおひとつどうぞ
       player.getInventory.setHelmet(BukkitMebiusItemStackCodec.materialize(
         // **getDisplayNameは二つ名も含むのでMCIDにはgetNameが適切**
-        MebiusProperty.initialProperty(player.getName, player.getUniqueId.toString),
+        MebiusProperty.initialProperty(NormalMebius, player.getName, player.getUniqueId.toString),
         damageValue = 0.toShort
       ))
 
