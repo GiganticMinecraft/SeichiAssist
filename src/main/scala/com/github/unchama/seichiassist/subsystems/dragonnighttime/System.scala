@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.dragonnighttime.bukkit.task.global.DragonNightTimeRoutine
 
 object System {
-  def wired[F[_]]: StatefulSubsystem[F, List[IO[Nothing]]] = {
+  def wired[F[_], G[_]: Sync: Timer]: StatefulSubsystem[F, List[G[Nothing]]] = {
     import PluginExecutionContexts._
 
     val repeatedJobs = List[IO[Nothing]](
