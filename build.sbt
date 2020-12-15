@@ -58,6 +58,7 @@ val dependenciesToEmbed = Seq(
   "com.github.etaty" %% "rediscala" % "1.9.0",
   "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
   "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
+  "io.chrisdavenport" %% "cats-effect-time" % "0.1.2"
 )
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
