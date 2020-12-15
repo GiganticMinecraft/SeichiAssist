@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist
 import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
-import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
+import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizerList
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
@@ -24,20 +24,17 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
-import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
-import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.bukkit.ChatColor._
-import org.bukkit.entity.{Entity, Player, Projectile}
+import org.bukkit.entity.{Entity, Player}
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 import org.flywaydb.core.Flyway
@@ -45,7 +42,6 @@ import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 
 import java.util.UUID
-import java.util.logging.LogManager
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -54,29 +50,11 @@ class SeichiAssist extends JavaPlugin() {
 
   private var hasBeenLoadedAlready = false
 
-  /*
-   * JDK14LoggerFactoryは `java.util.logging.Logger.getLogger` によりロガーを解決している。
-   * しかし、プラグインロガーが何故か `getLogger.getName` により解決ができず、
-   * このため `NamedJULLogger` で一旦ラップしたものをLogManagerに登録し、
-   * それをSlf4jにアダプトしたロガーを利用している。
-   */
-  implicit val logger: Logger = {
-    // TODO すべてのロギングをlog4cats経由で行えばこれは要らなさそう？
-    //      適当なルートロガーをJUL経由で引っ張ってきてPrefixedLogger("[SeichiAssist]")を使う
-    val pluginLogger = getLogger
-    val customLoggerName = s"seichi_assist_custom_named_logger_at_${pluginLogger.getName}"
-    val newLogger = new NamedJULLogger(customLoggerName, pluginLogger)
-
-    LogManager.getLogManager.addLogger(newLogger)
-    new JDK14LoggerFactory().getLogger(newLogger.getName)
-  }
-
-  implicit val loggerF: io.chrisdavenport.log4cats.Logger[IO] = Slf4jLogger.getLoggerFromSlf4j(logger)
-
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
-  val arrowSkillProjectileScope: ResourceScope[IO, SyncIO, Projectile] = {
+  // TODO: `ResourceScope[IO, SyncIO, Projectile]` にしたい
+  val arrowSkillProjectileScope: ResourceScope[IO, IO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
@@ -96,6 +74,7 @@ class SeichiAssist extends JavaPlugin() {
   lazy val itemMigrationSystem: StatefulSubsystem[IO, subsystems.itemmigration.InternalState[IO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(getLogger.getName)
 
     subsystems.itemmigration.System.wired[IO, SyncIO, IO]
   }.unsafeRunSync()
@@ -131,7 +110,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
-  lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
+  lazy val seasonalEventsSystem: Subsystem[IO] = {
     subsystems.seasonalevents.System.wired(this)
   }
 
@@ -181,14 +160,16 @@ class SeichiAssist extends JavaPlugin() {
      */
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
+    val logger = getLogger
+    // java.util.logging.Loggerの名前はJVM上で一意
+    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
+
     if (hasBeenLoadedAlready) {
       throw new IllegalStateException("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
     }
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-
-    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
-    implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] = seasonalEventsSystem.api[SyncIO]
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -381,7 +362,7 @@ class SeichiAssist extends JavaPlugin() {
       monitoredInitialization()
     } catch {
       case e: Exception =>
-        logger.error("初期化処理に失敗しました。シャットダウンしています…")
+        getLogger.severe("初期化処理に失敗しました。シャットダウンしています…")
         e.printStackTrace()
         Bukkit.shutdown()
     }
@@ -413,6 +394,8 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   override def onDisable(): Unit = {
+    val logger = getLogger
+
     cancelRepeatedJobs()
 
     // 管理下にある資源を開放する

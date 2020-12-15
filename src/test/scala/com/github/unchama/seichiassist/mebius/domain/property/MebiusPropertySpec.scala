@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.mebius.domain.property
 
 import java.util.UUID
+
 import cats.Monad
 import cats.effect.SyncIO
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusEnchantment, MebiusProperty, NormalMebius}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusEnchantment, MebiusProperty}
 import org.scalatest.wordspec.AnyWordSpec
 
 class MebiusPropertySpec extends AnyWordSpec {
@@ -13,13 +14,13 @@ class MebiusPropertySpec extends AnyWordSpec {
   "Initial mebius property" should {
     "be valid" in {
       // exception thrown if invalid
-      MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid) equals
-        MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid)
+      MebiusProperty.initialProperty(testPlayerName, testPlayerUuid) equals
+        MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
     }
 
     "be able to be upgraded all the way to the maximum level" in {
       val upgradedToMaximum = {
-        val initialProperty = MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid)
+        val initialProperty = MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
 
         Monad[SyncIO]
           .iterateWhileM(initialProperty)(_.upgradeByOneLevel[SyncIO])(!_.level.isMaximum)
@@ -33,7 +34,7 @@ class MebiusPropertySpec extends AnyWordSpec {
   "Property with the largest level" should {
     "always contain Unbreakable enchantment" in {
       val upgradedToMaximum = {
-        val initialProperty = MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid)
+        val initialProperty = MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
 
         Monad[SyncIO]
           .iterateWhileM(initialProperty)(_.upgradeByOneLevel[SyncIO])(!_.level.isMaximum)
@@ -49,7 +50,7 @@ class MebiusPropertySpec extends AnyWordSpec {
       val testIterationCount = 1000
 
       (1 to testIterationCount).foreach { _ =>
-        val initialProperty = MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid)
+        val initialProperty = MebiusProperty.initialProperty(testPlayerName, testPlayerUuid)
 
         import cats.implicits._
 
