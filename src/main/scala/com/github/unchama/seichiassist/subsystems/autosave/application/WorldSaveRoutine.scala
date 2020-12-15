@@ -17,7 +17,7 @@ object WorldSaveRoutine {
 
     import scala.concurrent.duration._
 
-    val getRepeatInterval: F[FiniteDuration] = Applicative[F].pure(10.minutes)
+    val getRepeatInterval: F[FiniteDuration] = Applicative[F].pure(1.minutes)
 
     val routineAction: F[Unit] =
       if (configuration.autoSaveEnabled)

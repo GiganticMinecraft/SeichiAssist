@@ -63,6 +63,8 @@ final class Config private(val config: FileConfiguration) {
     s"jdbc:mysql://$hostComponent$portComponent"
   }
 
+  def getLvMessage(i: Int): String = config.getString("lv" + i + "message", "")
+
   //サーバー番号取得
   def getServerNum: Int = getIntFailSafe("servernum")
 
