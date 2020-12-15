@@ -56,6 +56,8 @@ val dependenciesToEmbed = Seq(
   "org.slf4j" % "slf4j-api" % "1.7.28",
   "org.slf4j" % "slf4j-jdk14" % "1.7.28",
   "com.github.etaty" %% "rediscala" % "1.9.0",
+  "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
+  "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
 )
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
