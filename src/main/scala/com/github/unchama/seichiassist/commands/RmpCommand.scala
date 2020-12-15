@@ -25,6 +25,9 @@ object RmpCommand {
         s"$RED/rmp remove [world名] [日数]",
         "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
         "",
+        s"$RED/rmp removeAll [world名]",
+        "原則全てのRegionを削除します(整地ワールドのみ)",
+        "",
         s"$RED/rmp list [world名] [日数]",
         "全Ownerが[日数]間ログインしていないRegionを表示します"
       )
@@ -46,34 +49,17 @@ object RmpCommand {
       val world = context.args.parsed.head.asInstanceOf[World]
       val days = context.args.parsed(1).asInstanceOf[Int]
 
-      val isSeichiWorldWithWGRegionsOption = ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
+      IO(removeRegions(world, days))
+    }
+    .build()
 
-      def execute(): TargetedEffect[ConsoleCommandSender] = {
-        isSeichiWorldWithWGRegionsOption match {
-          case None | Some(false) => return MessageEffect("removeコマンドは保護をかけて整地する整地ワールドでのみ使用出来ます")
-          case Some(true) =>
-        }
+  private val removeAllExecutor = argsAndSenderConfiguredBuilder
+    .execution { context =>
+      val world = context.args.parsed.head.asInstanceOf[World]
+      // -1を指定することで実質的に原則すべての保護を削除することになる
+      val days = -1
 
-        // 削除処理
-        getOldRegionsIn(world, days).map { removalTargets =>
-          removalTargets.foreach { target =>
-            ExternalPlugins.getWorldGuard.getRegionContainer.get(world).removeRegion(target.getId)
-          }
-
-          // メッセージ生成
-          if (removalTargets.isEmpty) {
-            MessageEffect(s"${GREEN}該当Regionは存在しません")
-          } else {
-            targetedeffect.SequentialEffect(
-              removalTargets.map { target =>
-                MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
-              }
-            )
-          }
-        }.merge
-      }
-
-      IO(execute())
+      IO(removeRegions(world, days))
     }
     .build()
 
@@ -98,6 +84,34 @@ object RmpCommand {
     }
     .build()
 
+  private def removeRegions(world: World, days: Int): TargetedEffect[CommandSender] = {
+    val isSeichiWorldWithWGRegionsOption = ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
+
+    val commandName = if (days == -1) "removeAll" else "remove"
+
+    isSeichiWorldWithWGRegionsOption match {
+      case None | Some(false) => return MessageEffect(s"${commandName}コマンドは保護をかけて整地する整地ワールドでのみ使用出来ます")
+      case Some(true) =>
+    }
+
+    getOldRegionsIn(world, days).map { removalTargets =>
+      removalTargets.foreach { target =>
+        ExternalPlugins.getWorldGuard.getRegionContainer.get(world).removeRegion(target.getId)
+      }
+
+      // メッセージ生成
+      if (removalTargets.isEmpty) {
+        MessageEffect(s"${GREEN}該当Regionは存在しません")
+      } else {
+        targetedeffect.SequentialEffect(
+          removalTargets.map { target =>
+            MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
+          }
+        )
+      }
+    }.merge
+  }
+
   private def getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] = {
     val databaseGateway = SeichiAssist.databaseGateway
 
@@ -120,6 +134,7 @@ object RmpCommand {
     BranchedExecutor(
       Map(
         "remove" -> removeExecutor,
+        "removeAll" -> removeAllExecutor,
         "list" -> listExecutor
       ),
       whenArgInsufficient = Some(printDescriptionExecutor),
