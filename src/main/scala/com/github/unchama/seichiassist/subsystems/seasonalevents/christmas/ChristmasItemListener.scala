@@ -23,7 +23,7 @@ import org.bukkit.{Bukkit, Sound}
 class ChristmasItemListener(instance: JavaPlugin) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
-    if (isInEvent) {
+    if (isInEventNow) {
       Seq(
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、クリスマスイベントを開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
@@ -128,7 +128,7 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
 
   @EventHandler
   def onChristmasSockPopped(event: BlockBreakEvent): Unit = {
-    if (!isInEvent) return
+    if (!isInEventNow) return
     if (event.isCancelled) return
 
     val player = event.getPlayer
@@ -151,7 +151,7 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
 
   @EventHandler
   def onStrayDeath(event: EntityDeathEvent): Unit = {
-    if (!isInEvent) return
+    if (!isInEventNow) return
 
     event.getEntity match {
       case entity: LivingEntity if entity.getType == EntityType.STRAY && entity.getKiller != null =>

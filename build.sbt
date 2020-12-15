@@ -4,7 +4,7 @@ import sbt.Keys.baseDirectory
 import java.io._
 
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "1.6.2"
+ThisBuild / version := "1.6.3"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -56,6 +56,9 @@ val dependenciesToEmbed = Seq(
   "org.slf4j" % "slf4j-api" % "1.7.28",
   "org.slf4j" % "slf4j-jdk14" % "1.7.28",
   "com.github.etaty" %% "rediscala" % "1.9.0",
+  "io.chrisdavenport" %% "log4cats-core" % "1.1.1",
+  "io.chrisdavenport" %% "log4cats-slf4j" % "1.1.1",
+  "io.chrisdavenport" %% "cats-effect-time" % "0.1.2"
 )
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
