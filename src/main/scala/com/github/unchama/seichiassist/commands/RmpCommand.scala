@@ -49,7 +49,7 @@ object RmpCommand {
       val world = context.args.parsed.head.asInstanceOf[World]
       val days = context.args.parsed(1).asInstanceOf[Int]
 
-      IO(removeRegions(world, days))
+      removeRegions(world, days)
     }
     .build()
 
@@ -59,7 +59,7 @@ object RmpCommand {
       // -1を指定することで実質的に原則すべての保護を削除することになる
       val days = -1
 
-      IO(removeRegions(world, days))
+      removeRegions(world, days)
     }
     .build()
 
@@ -84,32 +84,31 @@ object RmpCommand {
     }
     .build()
 
-  private def removeRegions(world: World, days: Int): TargetedEffect[CommandSender] = {
+  private def removeRegions(world: World, days: Int): IO[TargetedEffect[CommandSender]] = IO {
     val isSeichiWorldWithWGRegionsOption = ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
 
     val commandName = if (days == -1) "removeAll" else "remove"
 
     isSeichiWorldWithWGRegionsOption match {
-      case None | Some(false) => return MessageEffect(s"${commandName}コマンドは保護をかけて整地する整地ワールドでのみ使用出来ます")
+      case None | Some(false) => MessageEffect(s"${commandName}コマンドは保護をかけて整地する整地ワールドでのみ使用出来ます")
       case Some(true) =>
-    }
-
-    getOldRegionsIn(world, days).map { removalTargets =>
-      removalTargets.foreach { target =>
-        ExternalPlugins.getWorldGuard.getRegionContainer.get(world).removeRegion(target.getId)
-      }
-
-      // メッセージ生成
-      if (removalTargets.isEmpty) {
-        MessageEffect(s"${GREEN}該当Regionは存在しません")
-      } else {
-        targetedeffect.SequentialEffect(
-          removalTargets.map { target =>
-            MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
+        getOldRegionsIn(world, days).map { removalTargets =>
+          removalTargets.foreach { target =>
+            ExternalPlugins.getWorldGuard.getRegionContainer.get(world).removeRegion(target.getId)
           }
-        )
-      }
-    }.merge
+
+          // メッセージ生成
+          if (removalTargets.isEmpty) {
+            MessageEffect(s"${GREEN}該当Regionは存在しません")
+          } else {
+            targetedeffect.SequentialEffect(
+              removalTargets.map { target =>
+                MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
+              }
+            )
+          }
+        }.merge
+    }
   }
 
   private def getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] = {
