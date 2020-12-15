@@ -107,7 +107,7 @@ object SecondPage extends Menu {
               if (Valentine.isInEvent) setItemMeta {
                 valentinePlayerHead(getItemMeta.asInstanceOf[SkullMeta])
               }
-              else if (Christmas.isInEvent) setItemMeta {
+              else if (Christmas.isInEventNow) setItemMeta {
                 christmasPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
               }
             }

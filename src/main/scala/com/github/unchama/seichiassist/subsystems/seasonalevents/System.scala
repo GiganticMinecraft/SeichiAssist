@@ -27,7 +27,7 @@ class System[F[_]](override val listeners: Seq[Listener],
 }
 
 object System {
-  def wired[F[_], G[_] : Clock : Functor](instance: JavaPlugin): System[F] = {
+  def wired[F[_]](instance: JavaPlugin): System[F] = {
     new System(
       listeners = Seq(
         AnniversaryListener,

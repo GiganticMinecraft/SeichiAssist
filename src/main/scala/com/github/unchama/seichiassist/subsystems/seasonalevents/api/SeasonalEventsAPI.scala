@@ -8,7 +8,7 @@ import simulacrum.typeclass
 
 import java.time.ZoneId
 
-@typeclass trait ChristmasEventsAPI[F[_]] {
+@typeclass trait ChristmasEventsAPI[F[_]] extends AnyRef {
 
   val isInEvent: F[Boolean]
 
@@ -27,7 +27,7 @@ object ChristmasEventsAPI {
 
 }
 
-@typeclass trait SeasonalEventsAPI[F[_]] {
+@typeclass trait SeasonalEventsAPI[F[_]] extends AnyRef {
 
   implicit val christmasEventsAPI: ChristmasEventsAPI[F]
 
