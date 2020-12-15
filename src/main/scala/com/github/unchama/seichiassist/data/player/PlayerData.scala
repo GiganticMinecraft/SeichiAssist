@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
+import com.github.unchama.seichiassist.data.{GridTemplate, Mana, SeichiLvUpMessages}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -376,15 +376,10 @@ class PlayerData(
       //レベルアップ時の花火の打ち上げ
       Util.launchFireWorks(player.getLocation) // TODO: fix Util
 
-      val lvMessage = SeichiAssist.seichiAssistConfig.getLvMessage(l+1)
-      if (!lvMessage.isEmpty) {
-        player.sendMessage(AQUA + lvMessage)
-      }
+      SeichiLvUpMessages.get(l + 1).foreach { lvUpMessage => player.sendMessage(s"$AQUA$lvUpMessage") }
 
       //マナ最大値の更新
-      if (manaState.isLoaded) {
-        manaState.onLevelUp(player, l+1)
-      }
+      if (manaState.isLoaded) manaState.onLevelUp(player, l+1)
     }
   }
 
