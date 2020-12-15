@@ -24,26 +24,22 @@ object PlayerDataBackupRoutine {
       val save = {
         import scala.jdk.CollectionConverters._
 
-        if (SeichiAssist.playermap.nonEmpty) {
-          for {
-            _ <- IO {
-              Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ中…")
-              Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
-            }
-            players <- IO {
-              Bukkit.getOnlinePlayers.asScala.toList
-            }
-            _ <- players.traverse { player =>
-              PlayerDataSaveTask.savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
-            }
-            _ <- IO {
-              Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ完了")
-              Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
-            }
-          } yield ()
-        } else {
-          IO.unit
-        }
+        for {
+          _ <- IO {
+            Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ中…")
+            Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
+          }
+          players <- IO {
+            Bukkit.getOnlinePlayers.asScala.toList
+          }
+          _ <- players.traverse { player =>
+            PlayerDataSaveTask.savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
+          }
+          _ <- IO {
+            Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ完了")
+            Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
+          }
+        } yield ()
       }
 
       val updateRankingData = IO {
@@ -54,7 +50,10 @@ object PlayerDataBackupRoutine {
       }
 
       for {
-        _ <- save
+        saveRequired <- IO {
+          SeichiAssist.playermap.nonEmpty
+        }
+        _ <- if (saveRequired) save else IO.unit
         _ <- updateRankingData
       } yield true
     }
