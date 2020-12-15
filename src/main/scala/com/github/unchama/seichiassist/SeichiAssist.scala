@@ -36,7 +36,7 @@ import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.bukkit.ChatColor._
-import org.bukkit.entity.{Entity, Player}
+import org.bukkit.entity.{Entity, Player, Projectile}
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 import org.flywaydb.core.Flyway
@@ -75,8 +75,7 @@ class SeichiAssist extends JavaPlugin() {
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
-  // TODO: `ResourceScope[IO, SyncIO, Projectile]` にしたい
-  val arrowSkillProjectileScope: ResourceScope[IO, IO, Entity] = {
+  val arrowSkillProjectileScope: ResourceScope[IO, SyncIO, Projectile] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
