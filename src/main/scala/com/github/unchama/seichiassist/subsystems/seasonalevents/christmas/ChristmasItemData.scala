@@ -277,7 +277,7 @@ object ChristmasItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.INK_SACK).tap { meta =>
       import meta._
-      setDisplayName(s"${AQUA}靴下")
+      setDisplayName(s"${AQUA}靴下(${EVENT_YEAR}年)")
       setLore(loreList)
       addEnchant(Enchantment.DIG_SPEED, 1, true)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
@@ -293,7 +293,6 @@ object ChristmasItemData {
     new NBTItem(itemStack).tap { nbtItem =>
       import nbtItem._
       setByte(NBTTagConstants.typeIdTag, 6.toByte)
-      setObject(NBTTagConstants.expiryDateTag, END_DATE)
     }
       .pipe(_.getItem)
   }
@@ -321,7 +320,6 @@ object ChristmasItemData {
     val typeIdTag = "christmasItemTypeId"
     val cakePieceTag = "christmasCakePiece"
     val camouflageEnchLevelTag = "camouflageEnchLevel"
-    val expiryDateTag = "christmasSockExpiryDate"
   }
 
 }
