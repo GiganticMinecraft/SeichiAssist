@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.END_DATE
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{END_DATE, EVENT_YEAR}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -124,11 +124,10 @@ object ValentineItemData {
 
   // SeichiAssistで呼ばれてるだけ
   def valentinePlayerHead(head: SkullMeta): SkullMeta = {
-    val year: String = END_DATE.getYear.toString
     val lore = List(
       "",
       s"$GREEN${ITALIC}大切なあなたへ。",
-      s"$YELLOW$UNDERLINE${ITALIC}Happy Valentine $year"
+      s"$YELLOW$UNDERLINE${ITALIC}Happy Valentine $EVENT_YEAR"
     ).map(str => s"$RESET$str")
       .asJava
     head.setLore(lore)
