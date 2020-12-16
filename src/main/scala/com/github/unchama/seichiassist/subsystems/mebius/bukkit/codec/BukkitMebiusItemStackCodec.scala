@@ -43,6 +43,12 @@ object BukkitMebiusItemStackCodec {
     val nameTag = "mebiusName"
   }
 
+  def encodeTypeId(mebiusType: MebiusType): Int =
+    mebiusType match {
+      case NormalMebius => Some(1)
+      case ChristmasMebius => Some(2)
+    }
+
   def decodeTypeId(typeIdByte: Byte): Option[MebiusType] =
     typeIdByte match {
       case 1 => Some(NormalMebius)
@@ -136,7 +142,7 @@ object BukkitMebiusItemStackCodec {
 
       import NBTTagConstants._
 
-      nbtItem.setByte(typeIdTag, 1.toByte)
+      nbtItem.setByte(typeIdTag, encodeTypeId(property.mebiusType).toByte)
       nbtItem.setString(ownerNameTag, property.ownerPlayerId)
       nbtItem.setString(ownerUuidTag, property.ownerUuid)
       nbtItem.setInteger(levelTag, property.level.value)
