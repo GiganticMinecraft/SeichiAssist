@@ -31,7 +31,7 @@ object SeizonsikiListener extends Listener {
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       List(
-        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、限定イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(

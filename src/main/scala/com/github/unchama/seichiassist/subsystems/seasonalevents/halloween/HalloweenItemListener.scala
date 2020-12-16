@@ -1,17 +1,31 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
 
+import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.Halloween.{blogArticleUrl, END_DATE, isInEvent}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
+import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
-import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent}
+import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 object HalloweenItemListener extends Listener {
+  @EventHandler
+  def onPlayerJoin(event: PlayerJoinEvent): Unit = {
+    if (isInEvent) {
+      Seq(
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、ハロウィンイベントを開催しています。",
+        "詳しくは下記URLのサイトをご覧ください。",
+        s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
+      ).foreach(
+        event.getPlayer.sendMessage(_)
+      )
+    }
+  }
 
   @EventHandler
   def onPlayerConsumeHalloweenPotion(event: PlayerItemConsumeEvent): Unit = {

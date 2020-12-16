@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{isInEvent, itemDropRate}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
@@ -20,25 +20,33 @@ import java.util.Random
 object NewYearListener extends Listener {
   @EventHandler
   def giveSobaToPlayer(event: PlayerJoinEvent): Unit = {
-    if (!isInEvent) return
-
     val player: Player = event.getPlayer
 
-    val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
-    if (playerData.hasNewYearSobaGive) return
+    if (sobaWillBeDistributed) {
+      val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
+      if (playerData.hasNewYearSobaGive) return
 
-    if (isPlayerInventoryFull(player)) {
+      if (isPlayerInventoryFull(player)) {
+        List(
+          "インベントリに空きがなかったため、アイテムを配布できませんでした。",
+          "インベントリに空きを作ってから、再度サーバーに参加してください。"
+        ).map(str => s"$RED$UNDERLINE$str")
+          .foreach(player.sendMessage)
+      } else {
+        addItem(player, sobaHead)
+        playerData.hasNewYearSobaGive = true
+        player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
+      }
+      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+    } else if (isInEvent) {
       List(
-        "インベントリに空きがなかったため、アイテムを配布できませんでした。",
-        "インベントリに空きを作ってから、再度サーバーに参加してください。"
-      ).map(str => s"$RED$UNDERLINE$str")
-        .foreach(player.sendMessage)
-    } else {
-      addItem(player, sobaHead)
-      playerData.hasNewYearSobaGive = true
-      player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、新年イベントを開催しています。",
+        "詳しくは下記URLのサイトをご覧ください。",
+        s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
+      ).foreach(
+        player.sendMessage(_)
+      )
     }
-    player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
   }
 
   @EventHandler
