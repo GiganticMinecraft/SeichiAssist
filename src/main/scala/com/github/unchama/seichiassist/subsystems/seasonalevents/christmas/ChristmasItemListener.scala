@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
+import java.util.Random
+
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
-import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.{END_DATE, blogArticleUrl, isInEvent, itemDropRate}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
@@ -18,12 +20,10 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
 
-import java.util.Random
-
 class ChristmasItemListener(instance: JavaPlugin) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
-    if (isInEvent) {
+    if (isInEventNow) {
       Seq(
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、クリスマスイベントを開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
@@ -128,7 +128,7 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
 
   @EventHandler
   def onChristmasSockPopped(event: BlockBreakEvent): Unit = {
-    if (!isInEvent) return
+    if (!isInEventNow) return
     if (event.isCancelled) return
 
     val player = event.getPlayer
@@ -151,11 +151,11 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
 
   @EventHandler
   def onStrayDeath(event: EntityDeathEvent): Unit = {
-    if (!isInEvent) return
+    if (!isInEventNow) return
 
     event.getEntity match {
       case entity: LivingEntity if entity.getType == EntityType.STRAY && entity.getKiller != null =>
-        Util.randomlyDropItemAt(entity, christmasSock, itemDropRate)
+        Util.randomlyDropItemAt(entity, christmasSock, itemDropRateFromStray)
       case _ =>
     }
   }

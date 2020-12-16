@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist
 import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
-import cats.effect.{ConcurrentEffect, Fiber, IO, SyncIO, Timer}
+import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizerList
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
@@ -24,17 +24,20 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
+import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
+import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.bukkit.ChatColor._
-import org.bukkit.entity.{Entity, Player}
+import org.bukkit.entity.{Entity, Player, Projectile}
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.{Bukkit, Material}
 import org.flywaydb.core.Flyway
@@ -42,6 +45,7 @@ import org.slf4j.Logger
 import org.slf4j.impl.JDK14LoggerFactory
 
 import java.util.UUID
+import java.util.logging.LogManager
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -50,16 +54,34 @@ class SeichiAssist extends JavaPlugin() {
 
   private var hasBeenLoadedAlready = false
 
+  /*
+   * JDK14LoggerFactoryは `java.util.logging.Logger.getLogger` によりロガーを解決している。
+   * しかし、プラグインロガーが何故か `getLogger.getName` により解決ができず、
+   * このため `NamedJULLogger` で一旦ラップしたものをLogManagerに登録し、
+   * それをSlf4jにアダプトしたロガーを利用している。
+   */
+  implicit val logger: Logger = {
+    // TODO すべてのロギングをlog4cats経由で行えばこれは要らなさそう？
+    //      適当なルートロガーをJUL経由で引っ張ってきてPrefixedLogger("[SeichiAssist]")を使う
+    val pluginLogger = getLogger
+    val customLoggerName = s"seichi_assist_custom_named_logger_at_${pluginLogger.getName}"
+    val newLogger = new NamedJULLogger(customLoggerName, pluginLogger)
+
+    LogManager.getLogManager.addLogger(newLogger)
+    new JDK14LoggerFactory().getLogger(newLogger.getName)
+  }
+
+  implicit val loggerF: io.chrisdavenport.log4cats.Logger[IO] = Slf4jLogger.getLoggerFromSlf4j(logger)
+
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
-  // TODO: `ResourceScope[IO, SyncIO, Projectile]` にしたい
-  val arrowSkillProjectileScope: ResourceScope[IO, IO, Entity] = {
+  val arrowSkillProjectileScope: ResourceScope[IO, SyncIO, Projectile] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreate
   }
-  // TODO: `ResourceScope[IO, SyncIO, Entity]` にしたい
-  val magicEffectEntityScope: SingleResourceScope[IO, Entity] = {
+
+  val magicEffectEntityScope: SingleResourceScope[IO, SyncIO, Entity] = {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
@@ -74,7 +96,6 @@ class SeichiAssist extends JavaPlugin() {
   lazy val itemMigrationSystem: StatefulSubsystem[IO, subsystems.itemmigration.InternalState[IO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(getLogger.getName)
 
     subsystems.itemmigration.System.wired[IO, SyncIO, IO]
   }.unsafeRunSync()
@@ -94,11 +115,11 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
-    val configuration = subsystems.autosave.application.SystemConfiguration(
-      autoSaveEnabled = seichiAssistConfig.isAutoSaveEnabled
-    )
+    import PluginExecutionContexts.{syncShift, timer}
 
-    subsystems.autosave.System.wired(configuration)
+    val configuration = seichiAssistConfig.getAutoSaveSystemConfiguration
+
+    subsystems.autosave.System.wired[IO, IO](configuration)
   }
 
   lazy val bookedAchievementSystem: Subsystem[IO] = {
@@ -112,7 +133,7 @@ class SeichiAssist extends JavaPlugin() {
 
   lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = subsystems.dragonnighttime.System.wired
   
-  lazy val seasonalEventsSystem: Subsystem[IO] = {
+  lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
     subsystems.seasonalevents.System.wired(this)
   }
 
@@ -148,7 +169,10 @@ class SeichiAssist extends JavaPlugin() {
     }
   }
 
-  override def onEnable(): Unit = {
+  /**
+   * プラグインを初期化する。ここで例外が投げられるとBukkitがシャットダウンされる。
+   */
+  private def monitoredInitialization(): Unit = {
     /**
      * Spigotサーバーが開始されるときにはまだPreLoginEventがcatchされない等色々な不都合があるので、
      * SeichiAssistの初期化はプレーヤーが居ないことを前提として進めることとする。
@@ -159,18 +183,14 @@ class SeichiAssist extends JavaPlugin() {
      */
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
-    val logger = getLogger
-    // java.util.logging.Loggerの名前はJVM上で一意
-    implicit val slf4jLogger: Logger = new JDK14LoggerFactory().getLogger(logger.getName)
-
     if (hasBeenLoadedAlready) {
-      slf4jLogger.error("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
-      Bukkit.shutdown()
-      return
+      throw new IllegalStateException("SeichiAssistは2度enableされることを想定されていません！シャットダウンします…")
     }
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+
+    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
+    implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] = seasonalEventsSystem.api[SyncIO]
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -223,28 +243,19 @@ class SeichiAssist extends JavaPlugin() {
     itemMigrationSystem.state.entryPoints.runDatabaseMigration[SyncIO].unsafeRunSync()
     itemMigrationSystem.state.entryPoints.runWorldMigration.unsafeRunSync()
 
-    try {
-      SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
-        SeichiAssist.seichiAssistConfig.getURL, SeichiAssist.seichiAssistConfig.getDB,
-        SeichiAssist.seichiAssistConfig.getID, SeichiAssist.seichiAssistConfig.getPW
-      )
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-        logger.severe("データベース初期化に失敗しました。サーバーを停止します…")
-        Bukkit.shutdown()
-    }
+    SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
+      SeichiAssist.seichiAssistConfig.getURL, SeichiAssist.seichiAssistConfig.getDB,
+      SeichiAssist.seichiAssistConfig.getID, SeichiAssist.seichiAssistConfig.getPW
+    )
 
     //mysqlからガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.gachaDataManipulator.loadGachaData()) {
-      logger.severe("ガチャデータのロードに失敗しました。サーバーを停止します…")
-      Bukkit.shutdown()
+      throw new Exception("ガチャデータのロードに失敗しました。サーバーを停止します…")
     }
 
     //mysqlからMineStack用ガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
-      logger.severe("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
-      Bukkit.shutdown()
+      throw new Exception("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")
     }
 
     import PluginExecutionContexts._
@@ -289,6 +300,7 @@ class SeichiAssist extends JavaPlugin() {
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
+      "stickmenu" -> StickMenuCommand.executor
     )
       .concat(subsystems.flatMap(_.commands))
       .foreach {
@@ -349,8 +361,7 @@ class SeichiAssist extends JavaPlugin() {
 
     //ランキングリストを最新情報に更新する
     if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
-      logger.info("ランキングデータの作成に失敗しました。サーバーを停止します…")
-      Bukkit.shutdown()
+      throw new RuntimeException("ランキングデータの作成に失敗しました。サーバーを停止します…")
     }
 
     startRepeatedJobs()
@@ -365,6 +376,17 @@ class SeichiAssist extends JavaPlugin() {
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
     logger.info("SeichiAssistが有効化されました！")
+  }
+
+  override def onEnable(): Unit = {
+    try {
+      monitoredInitialization()
+    } catch {
+      case e: Exception =>
+        logger.error("初期化処理に失敗しました。シャットダウンしています…")
+        e.printStackTrace()
+        Bukkit.shutdown()
+    }
   }
 
   private def startRepeatedJobs(): Unit = {
@@ -393,8 +415,6 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   override def onDisable(): Unit = {
-    val logger = getLogger
-
     cancelRepeatedJobs()
 
     // 管理下にある資源を開放する

@@ -65,6 +65,10 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 - [gachadata.sql](https://red.minecraftserver.jp/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
 - [msgachadata.sql](https://red.minecraftserver.jp/attachments/download/894/msgachadata.sql) -> import to "msgachadata" table.
 
+## protocolディレクトリ以下のクローン
+protocol以下のファイルは`git clone`では入手することができません。以下のどちらかのコマンドを実行してください:
+* `git clone --recursive`
+* `git submodule update --init --recursive`
 ## JavaDocs
 publicなメソッドについては、JavaDocsを記載するよう心がけてください。
 その他は各自が必要だと判断した場合のみ記載してください。

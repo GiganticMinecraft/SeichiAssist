@@ -1,8 +1,8 @@
-package com.github.unchama.itemmigration.targets
+package com.github.unchama.itemmigration.bukkit.targets
 
 import cats.effect.Sync
+import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
-import com.github.unchama.itemmigration.util.MigrationHelper
 import org.bukkit.entity.Player
 
 /**
