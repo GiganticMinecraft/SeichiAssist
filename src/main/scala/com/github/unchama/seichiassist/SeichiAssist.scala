@@ -19,7 +19,6 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.cachedThreadPool
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -131,7 +130,11 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
-  lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = subsystems.dragonnighttime.System.wired
+  lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
+    import PluginExecutionContexts.timer
+
+    subsystems.dragonnighttime.System.wired[IO, IO]
+  }
   
   lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
     subsystems.seasonalevents.System.wired(this)
