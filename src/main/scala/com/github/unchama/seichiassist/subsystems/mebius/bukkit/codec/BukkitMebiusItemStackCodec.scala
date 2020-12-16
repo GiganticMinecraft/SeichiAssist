@@ -45,8 +45,8 @@ object BukkitMebiusItemStackCodec {
 
   def encodeTypeId(mebiusType: MebiusType): Int =
     mebiusType match {
-      case NormalMebius => Some(1)
-      case ChristmasMebius => Some(2)
+      case NormalMebius => 1
+      case ChristmasMebius => 2
     }
 
   def decodeTypeId(typeIdByte: Byte): Option[MebiusType] =
