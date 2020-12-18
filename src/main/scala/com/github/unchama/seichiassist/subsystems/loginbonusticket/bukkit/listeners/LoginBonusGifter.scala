@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.loginbonusticket.bukkit.liste
 import java.time.LocalDate
 
 import com.github.unchama.seichiassist.DefaultEffectEnvironment
-import com.github.unchama.seichiassist.subsystems.rescueplayer.bukkit.itemstack.BukkitLoginBonusTicketItemStack.loginBonusTicket
+import com.github.unchama.seichiassist.subsystems.loginbonusticket.bukkit.itemstack.BukkitLoginBonusTicketItemStack.loginBonusTicket
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.event.player.PlayerJoinEvent
