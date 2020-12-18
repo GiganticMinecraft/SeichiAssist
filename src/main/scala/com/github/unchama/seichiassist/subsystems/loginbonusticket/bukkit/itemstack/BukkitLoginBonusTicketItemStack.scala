@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.rescueplayer.bukkit.itemstack
+package com.github.unchama.seichiassist.subsystems.loginbonusticket.bukkit.itemstack
 
 import org.bukkit.{Bukkit, Material}
 import org.bukkit.ChatColor.GREEN
