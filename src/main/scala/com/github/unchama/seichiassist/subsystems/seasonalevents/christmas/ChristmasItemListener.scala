@@ -125,10 +125,9 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
     }
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onChristmasSockPopped(event: BlockBreakEvent): Unit = {
     if (!isInEventNow) return
-    if (event.isCancelled) return
 
     val player = event.getPlayer
     val block = event.getBlock
