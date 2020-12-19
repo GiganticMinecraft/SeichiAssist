@@ -5,7 +5,7 @@ import cats.Parallel.Aux
 import cats.effect
 import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizerList
+import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerDataFinalizerList}
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -53,6 +54,8 @@ class SeichiAssist extends JavaPlugin() {
 
   private var hasBeenLoadedAlready = false
 
+  //region logging infrastructure
+
   /*
    * JDK14LoggerFactoryは `java.util.logging.Logger.getLogger` によりロガーを解決している。
    * しかし、プラグインロガーが何故か `getLogger.getName` により解決ができず、
@@ -72,8 +75,12 @@ class SeichiAssist extends JavaPlugin() {
 
   implicit val loggerF: io.chrisdavenport.log4cats.Logger[IO] = Slf4jLogger.getLoggerFromSlf4j(logger)
 
+  //endregion
+
   val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
+
+  //region resource scopes
 
   val arrowSkillProjectileScope: ResourceScope[IO, SyncIO, Projectile] = {
     import PluginExecutionContexts.asyncShift
@@ -84,6 +91,9 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.asyncShift
     ResourceScope.unsafeCreateSingletonScope
   }
+  //endregion
+
+  //region subsystems
 
   lazy val expBottleStackSystem: StatefulSubsystem[IO, subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
     import PluginExecutionContexts.asyncShift
@@ -139,6 +149,31 @@ class SeichiAssist extends JavaPlugin() {
   lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
     subsystems.seasonalevents.System.wired(this)
   }
+
+  lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
+    import cats.implicits._
+    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
+      seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
+
+    val savePlayerData: PlayerDataFinalizer[IO, Player] = { player =>
+      IO {
+        import scala.util.chaining._
+        SeichiAssist.playermap.remove(player.getUniqueId).get.tap(_.updateOnQuit())
+      } >>= (playerData =>
+        PlayerDataSaveTask.savePlayerData[IO](player, playerData)
+        )
+    }
+
+    val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
+      managedFlySystem.managedFinalizers
+    ).withAnotherFinalizer(savePlayerData)
+
+    new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
+  }
+
+  //endregion
 
   private implicit val _akkaSystem: ActorSystem = ConfiguredActorSystemProvider("reference.conf").provide()
 
@@ -315,27 +350,6 @@ class SeichiAssist extends JavaPlugin() {
       assaultSkillRoutines
     )
 
-    val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
-      import cats.implicits._
-      implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
-      implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-      implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
-        seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
-
-      val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
-        managedFlySystem.managedFinalizers
-      ).withAnotherFinalizer(player =>
-        IO {
-          import scala.util.chaining._
-          SeichiAssist.playermap.remove(player.getUniqueId).get.tap(_.updateOnQuit())
-        } >>= (playerData =>
-          PlayerDataSaveTask.savePlayerData[IO](player, playerData)
-          )
-      )
-
-      new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
-    }
-
     //リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),
@@ -431,16 +445,14 @@ class SeichiAssist extends JavaPlugin() {
 
     expBottleStackSystem.state.managedBottleScope.getReleaseAllAction.unsafeRunSync().unsafeRunSync()
 
-    //sqlコネクションチェック
-    SeichiAssist.databaseGateway.ensureConnection()
-    getServer.getOnlinePlayers.asScala.foreach { p =>
-      val uuid = p.getUniqueId
-      val playerData = SeichiAssist.playermap(uuid)
+    import cats.implicits._
 
-      playerData.updateOnQuit()
-
-      PlayerDataSaveTask.savePlayerData[SyncIO](p, playerData).unsafeRunSync()
-    }
+    // BungeeSemaphoreResponderの全ファイナライザを走らせる
+    getServer
+      .getOnlinePlayers.asScala.toList
+      .flatMap(player => bungeeSemaphoreResponderSystem.playerFinalizerList.allActionsOnQuitOf(player).toList)
+      .sequence
+      .unsafeRunSync()
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
       logger.info("データベース切断に失敗しました")

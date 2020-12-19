@@ -24,6 +24,8 @@ class BungeeSemaphoreCooperator[
     val name = PlayerName(player.getName)
     val timeout = configuration.saveTimeoutDuration
 
+    println("QuitEvent called!")
+
     val program = for {
       fibers <- registry
         .allActionsOnQuitOf(player).toList

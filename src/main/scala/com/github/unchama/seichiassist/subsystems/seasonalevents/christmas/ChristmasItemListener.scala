@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import java.util.Random
-
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
@@ -14,7 +13,7 @@ import org.bukkit.entity.{EntityType, LivingEntity, Player}
 import org.bukkit.event.block.{Action, BlockBreakEvent}
 import org.bukkit.event.entity.{EntityDeathEvent, EntityTargetLivingEntityEvent}
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent, PlayerJoinEvent}
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
@@ -126,10 +125,9 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
     }
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onChristmasSockPopped(event: BlockBreakEvent): Unit = {
     if (!isInEventNow) return
-    if (event.isCancelled) return
 
     val player = event.getPlayer
     val block = event.getBlock
