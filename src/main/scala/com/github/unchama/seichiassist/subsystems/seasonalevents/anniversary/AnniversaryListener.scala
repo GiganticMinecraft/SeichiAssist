@@ -31,7 +31,7 @@ object AnniversaryListener extends Listener {
     val player = event.getEntity
 
     DefaultEffectEnvironment.runEffectAsync(
-      "アイテムスタックを付与する",
+      s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する",
       grantItemStacksEffect(mineHead).run(player)
     )
     player.sendMessage(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。")
