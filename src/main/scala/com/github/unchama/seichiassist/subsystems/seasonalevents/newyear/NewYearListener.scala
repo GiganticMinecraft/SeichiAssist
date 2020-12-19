@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{isInEvent, itemDropRate}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull}
-import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, ManagedWorld, SeichiAssist}
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
@@ -13,7 +13,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
-
 import java.time.LocalDate
 import java.util.Random
 
@@ -22,22 +21,13 @@ object NewYearListener extends Listener {
   def giveSobaToPlayer(event: PlayerJoinEvent): Unit = {
     if (!isInEvent) return
 
-    val player: Player = event.getPlayer
+    val player = event.getPlayer
 
-    val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
-    if (playerData.hasNewYearSobaGive) return
-
-    if (isPlayerInventoryFull(player)) {
-      List(
-        "インベントリに空きがなかったため、アイテムを配布できませんでした。",
-        "インベントリに空きを作ってから、再度サーバーに参加してください。"
-      ).map(str => s"$RED$UNDERLINE$str")
-        .foreach(player.sendMessage)
-    } else {
-      addItem(player, sobaHead)
-      playerData.hasNewYearSobaGive = true
-      player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
-    }
+    DefaultEffectEnvironment.runEffectAsync(
+      "大晦日ログインボーナスヘッドを付与する",
+      grantItemStacksEffect(sobaHead).run(player)
+    )
+    player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
     player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
   }
 
