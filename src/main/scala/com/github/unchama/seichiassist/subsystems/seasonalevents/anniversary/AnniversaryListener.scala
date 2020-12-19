@@ -34,6 +34,8 @@ object AnniversaryListener extends Listener {
     val playerData = SeichiAssist.playermap(playerUuid)
     if (!playerData.anniversary) return
 
+
+
     if (isPlayerInventoryFull(player)) {
       player.sendMessage(s"${RED}インベントリに空きがなかったため、アイテムを配布できませんでした。")
     } else {
