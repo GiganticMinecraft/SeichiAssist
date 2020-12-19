@@ -1,15 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
-import com.github.unchama.seichiassist.util.Util.{addItem, isPlayerInventoryFull}
+import com.github.unchama.seichiassist.util.Util.{addItem, grantItemStacksEffect, isPlayerInventoryFull}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
-
 import java.time.LocalDate
 
 object AnniversaryListener extends Listener {
@@ -30,20 +29,12 @@ object AnniversaryListener extends Listener {
   @EventHandler
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
     val player = event.getEntity
-    val playerUuid = player.getUniqueId
-    val playerData = SeichiAssist.playermap(playerUuid)
-    if (!playerData.anniversary) return
 
-
-
-    if (isPlayerInventoryFull(player)) {
-      player.sendMessage(s"${RED}インベントリに空きがなかったため、アイテムを配布できませんでした。")
-    } else {
-      addItem(player, mineHead)
-      playerData.anniversary = false
-      SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(anniversary = false, Some.apply(playerUuid))
-      player.sendMessage(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。")
-    }
+    DefaultEffectEnvironment.runEffectAsync(
+      "アイテムスタックを付与する",
+      grantItemStacksEffect(mineHead).run(player)
+    )
+    player.sendMessage(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。")
     player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
   }
 }
