@@ -67,7 +67,6 @@ object NewYearListener extends Listener {
     val block = event.getBlock
     if (block == null) return
     if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
-    if (!isRegionMember(player, block.getLocation)) return
 
     val rand = new Random().nextDouble()
     if (rand < itemDropRate) {
