@@ -131,7 +131,6 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
 
     val player = event.getPlayer
     val block = event.getBlock
-    if (block == null) return
     if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
 
     val rand = new Random().nextDouble()
