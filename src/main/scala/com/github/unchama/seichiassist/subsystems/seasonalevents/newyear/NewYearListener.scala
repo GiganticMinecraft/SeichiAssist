@@ -62,11 +62,10 @@ object NewYearListener extends Listener {
   def onNewYearBagPopped(event: BlockBreakEvent): Unit = {
     if (!isInEvent) return
 
-    if (!MaterialSets.materials.contains(event.getBlock.getType)) return
-
     val player = event.getPlayer
     val block = event.getBlock
     if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
+    if (!MaterialSets.materials.contains(block.getType)) return
 
     val rand = new Random().nextDouble()
     if (rand < itemDropRate) {
