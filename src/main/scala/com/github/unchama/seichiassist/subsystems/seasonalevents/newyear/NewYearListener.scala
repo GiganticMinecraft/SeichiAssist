@@ -4,7 +4,8 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{isInEvent, itemDropRate}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull}
-import com.github.unchama.seichiassist.{ManagedWorld, MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
@@ -64,7 +65,7 @@ object NewYearListener extends Listener {
 
     val player = event.getPlayer
     val block = event.getBlock
-    if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
+    if (!player.getWorld.isSeichi) return
     if (!MaterialSets.materials.contains(block.getType)) return
 
     val rand = new Random().nextDouble()
