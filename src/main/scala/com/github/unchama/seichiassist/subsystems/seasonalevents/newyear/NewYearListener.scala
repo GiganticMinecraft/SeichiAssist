@@ -12,8 +12,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
-import org.bukkit.event.{EventHandler, Listener}
-
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import java.time.LocalDate
 import java.util.Random
 
@@ -59,7 +58,7 @@ object NewYearListener extends Listener {
     }
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onNewYearBagPopped(event: BlockBreakEvent): Unit = {
     if (!isInEvent) return
     if (event.isCancelled) return
