@@ -61,7 +61,6 @@ object NewYearListener extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onNewYearBagPopped(event: BlockBreakEvent): Unit = {
     if (!isInEvent) return
-    if (event.isCancelled) return
 
     val player = event.getPlayer
     val block = event.getBlock
