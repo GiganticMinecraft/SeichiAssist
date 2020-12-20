@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 import cats.effect.SyncIO
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.ManagedWorld
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks
@@ -19,6 +20,8 @@ class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepositor
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
+
+    if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
 
     val oldMebiusProperty =
       BukkitMebiusItemStackCodec
