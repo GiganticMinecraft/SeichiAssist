@@ -1,4 +1,4 @@
-FROM docker.pkg.github.com/giganticminecraft/bungeesemaphore/bungeesemaphore-jar:b61f4e1de9d5 as bungeesemaphore-provider
+FROM docker.pkg.github.com/giganticminecraft/bungeesemaphore/bungeesemaphore-jar:6ba557d03c38 as bungeesemaphore-provider
 
 # use seichiassist-runner to overwrite line endings of shell script using nkf
 FROM docker.pkg.github.com/giganticminecraft/dockers/seichiassist-runner:3248d2056b2a
