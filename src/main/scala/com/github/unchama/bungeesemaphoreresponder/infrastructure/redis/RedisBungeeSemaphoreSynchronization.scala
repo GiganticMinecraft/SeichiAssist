@@ -20,7 +20,12 @@ class RedisBungeeSemaphoreSynchronization[F[_] : Effect](implicit
     Effect[F].liftIO {
       IO.fromFuture {
         IO {
-          client.publish(SignalFormat.signalingChannel, message.toString)
+          message match {
+            case ReleaseDataLock(playerName) =>
+              client.del(SignalFormat.lockKeyOf(playerName))
+            case DataSaveFailed(playerName) =>
+              client.pexpire(SignalFormat.lockKeyOf(playerName), 1)
+          }
         }
       }.as(())
     }

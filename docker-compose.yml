@@ -88,7 +88,7 @@ services:
     depends_on:
       - db
   redis:
-    image: "redis:latest"
+    image: "docker.pkg.github.com/giganticminecraft/dockers/bungeesemaphore-redis-dev:a13c60266389"
     networks:
       - seichi
     volumes:
