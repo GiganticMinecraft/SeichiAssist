@@ -1,15 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
-import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
+import java.time.LocalDate
+
+import com.github.unchama.seichiassist.DefaultEffectEnvironment
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
-import com.github.unchama.seichiassist.util.Util.{addItem, grantItemStacksEffect, isPlayerInventoryFull}
+import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
-import java.time.LocalDate
 
 object AnniversaryListener extends Listener {
   @EventHandler
