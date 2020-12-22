@@ -9,6 +9,15 @@ import org.bukkit.event.{EventHandler, Listener}
 import scala.jdk.CollectionConverters._
 
 object SpawnRegionProjectileInterceptor extends Listener {
+  val spawnRegions = Set(
+    // 基本の保護名
+    "spawn",
+    // メインワールドにおいて、スポーン地点を保護している保護名
+    "spawn-center",
+    // 公共施設サーバーのスポーン地点名
+    "world-spawn"
+  )
+
   @EventHandler
   def beforeProjectileLaunch(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
@@ -16,14 +25,6 @@ object SpawnRegionProjectileInterceptor extends Listener {
     val action = event.getAction
     val projectiles = Set(
       BOW, EGG, LINGERING_POTION, SPLASH_POTION, ENDER_PEARL, EYE_OF_ENDER, FIREBALL, SNOW_BALL, EXP_BOTTLE
-    )
-    val spawnRegions = Set(
-      // 基本の保護名
-      "spawn",
-      // メインワールドにおいて、スポーン地点を保護している保護名
-      "spawn-center",
-      // 公共施設サーバーのスポーン地点名
-      "world-spawn"
     )
 
     // Projectileを持った状態で右クリックし、playerがいる保護がspawn保護の中であった場合はイベントをキャンセルする
