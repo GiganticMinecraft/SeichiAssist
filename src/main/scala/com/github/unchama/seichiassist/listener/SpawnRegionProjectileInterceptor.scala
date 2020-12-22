@@ -10,7 +10,7 @@ import scala.jdk.CollectionConverters._
 
 object SpawnRegionProjectileInterceptor extends Listener {
   @EventHandler
-  def onProjectileLaunched(event: PlayerInteractEvent): Unit = {
+  def beforeProjectileLaunch(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val inventory = player.getInventory
     val action = event.getAction
