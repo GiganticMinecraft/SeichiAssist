@@ -41,7 +41,7 @@ class AnniversaryListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
       lastQuit <- service.loadLastQuitDateTime(player.getName)
       result <- LiftIO[F].liftIO(lastQuit match {
         case Some(dateTime) => dateTime.isBefore(EVENT_DATE.atStartOfDay())
-        case None => true
+        case None => false
       }.)
     } yield result
 
