@@ -17,8 +17,6 @@ import scala.collection.mutable
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
-  val playerMap: mutable.HashMap[UUID, PlayerData] = BuildAssist.playermap
-
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -48,7 +46,9 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
     val player = he.asInstanceOf[Player]
     val uuid = player.getUniqueId
-    val playerdata = playerMap.getOrElse(uuid, return)
+
+    val playerdata = BuildAssist.instance.temporaryData(uuid)
+    val playerLevel = BuildAssist.playermap(uuid).level
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -76,7 +76,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         )
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //ブロックを並べるスキル設定
-        if (playerdata.level < BuildAssist.config.getblocklineuplevel()) {
+        if (playerLevel < BuildAssist.config.getblocklineuplevel()) {
           player.sendMessage(RED.toString + "建築Lvが足りません")
         } else {
           playerdata.line_up_flg = (playerdata.line_up_flg + 1) % 3
@@ -105,7 +105,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
       } else if (itemstackcurrent.getType == Material.CHEST) {
         //マインスタックの方を優先して消費する設定
-        if (playerdata.level < BuildAssist.config.getblocklineupMinestacklevel()) {
+        if (playerLevel < BuildAssist.config.getblocklineupMinestacklevel()) {
           player.sendMessage(s"${RED.toString}建築Lvが足りません")
         } else {
           playerdata.line_up_minestack_flg = if (playerdata.line_up_minestack_flg == 0) 1 else 0

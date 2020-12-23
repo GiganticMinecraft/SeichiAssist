@@ -22,8 +22,8 @@ object BlockLineUpTriggerListener extends Listener {
     val action = event.getAction
     val playerWorld = player.getWorld
 
-    val seichiAssistData = SeichiAssist.playermap.getOrElse(player.getUniqueId, return)
-    val buildAssistData = BuildAssist.playermap.getOrElse(player.getUniqueId, return)
+    val seichiAssistData = SeichiAssist.playermap(player.getUniqueId)
+    val buildAssistData = BuildAssist.instance.temporaryData(player.getUniqueId)
 
     val playerMineStack = seichiAssistData.minestack
 

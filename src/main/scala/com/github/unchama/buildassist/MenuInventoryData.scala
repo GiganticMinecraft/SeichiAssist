@@ -18,7 +18,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.getUniqueId
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap(uuid) // If NPE, player is already offline
+    val playerdata = BuildAssist.instance.temporaryData(uuid)
 
     val inventory = Bukkit.getServer.createInventory(null, 4 * 9, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
     var itemstack = new ItemStack(Material.BARRIER, 1)
@@ -178,7 +178,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.getUniqueId
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap(uuid)
+    val playerdata = BuildAssist.instance.temporaryData(uuid)
 
     val inventory = Bukkit.getServer.createInventory(null, 4 * 9, s"$DARK_PURPLE$BOLD「ブロックを並べるスキル（仮）」設定")
     var itemstack = new ItemStack(Material.SKULL_ITEM, 1)

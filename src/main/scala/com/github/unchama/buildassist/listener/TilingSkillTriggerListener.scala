@@ -23,8 +23,8 @@ object TilingSkillTriggerListener extends Listener {
 
     val playerWorld = player.getWorld
 
-    val buildAssistPlayerData = BuildAssist.playermap.getOrElse(playerUuid, return)
-    val seichiAssistPlayerData = SeichiAssist.playermap.getOrElse(playerUuid, return)
+    val buildAssistPlayerData = BuildAssist.instance.temporaryData(playerUuid)
+    val seichiAssistPlayerData = SeichiAssist.playermap(playerUuid)
 
     val playerInventory = player.getInventory
     val offHandItem = playerInventory.getItemInOffHand

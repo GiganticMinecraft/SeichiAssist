@@ -27,6 +27,7 @@ class BuildAssist(plugin: Plugin)
 
   {
     BuildAssist.plugin = plugin
+    BuildAssist.instance = this
   }
 
   def onEnable(): Unit = {
@@ -63,6 +64,8 @@ class BuildAssist(plugin: Plugin)
 }
 
 object BuildAssist {
+  var instance: BuildAssist = _
+
   //Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap[UUID, PlayerData]()
 

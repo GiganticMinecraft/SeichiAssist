@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist.menu
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.buildassist.{BuildAssist, PlayerData}
+import com.github.unchama.buildassist.{BuildAssist, PlayerData, TemporaryMutableBuildAssistPlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
@@ -48,7 +48,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
 
     def computeButtonToToggleDirtPlacement(): IO[Button] = RecomputedButton {
       IO {
-        val playerData = BuildAssist.playermap(getUniqueId)
+        val playerData = BuildAssist.instance.temporaryData(getUniqueId)
         val currentStatus = playerData.zsSkillDirtFlag
 
         val iconItemStack = new IconItemStackBuilder(Material.DIRT)
@@ -74,7 +74,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
 
     def computeButtonToShowCurrentStatus(): IO[Button] = RecomputedButton {
       IO {
-        val playerData = BuildAssist.playermap(getUniqueId)
+        val playerData = BuildAssist.instance.temporaryData(getUniqueId)
         val isSkillEnabled = playerData.ZoneSetSkillFlag
         val skillRange = playerData.computeCurrentSkillRange()
         val isConsumingMineStack = playerData.zs_minestack_flag
@@ -93,7 +93,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
 
     def computeButtonToMaximizeRange(): IO[Button] = IO {
-      val playerData = BuildAssist.playermap(getUniqueId)
+      val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
 
       val iconItemStack = new SkullItemStackBuilder("MHF_ArrowUp")
@@ -119,7 +119,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
 
     def computeButtonToIncreaseRange(): IO[Button] = IO {
-      val playerData = BuildAssist.playermap(getUniqueId)
+      val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
       val changedRange = currentRange + 2
 
@@ -164,7 +164,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
 
     def computeButtonToResetRange(): IO[Button] = IO {
-      val playerData = BuildAssist.playermap(getUniqueId)
+      val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
 
       val iconItemStack = new SkullItemStackBuilder("MHF_TNT")
@@ -190,7 +190,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
 
     def computeButtonToDecreaseRange(): IO[Button] = IO {
-      val playerData = BuildAssist.playermap(getUniqueId)
+      val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
       val changedRange = currentRange + -2
 
@@ -235,7 +235,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
 
     def computeButtonToMinimizeRange(): IO[Button] = IO {
-      val playerData = BuildAssist.playermap(getUniqueId)
+      val playerData = BuildAssist.instance.temporaryData(getUniqueId)
       val currentRange = playerData.computeCurrentSkillRange()
 
       val iconItemStack = new SkullItemStackBuilder("MHF_ArrowDown")
@@ -262,7 +262,9 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
 
     def computeButtonToToggleConsumingMineStack(): IO[Button] = RecomputedButton {
       IO {
-        val playerData = BuildAssist.playermap(getUniqueId)
+        val playerData = BuildAssist.instance.temporaryData(getUniqueId)
+        val playerLevel = BuildAssist.playermap(getUniqueId).level
+
         val currentStatus = playerData.zs_minestack_flag
 
         val iconItemStackBuilder = new IconItemStackBuilder(Material.CHEST)
@@ -281,7 +283,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             DeferredEffect {
               IO {
-                if (playerData.level < BuildAssist.config.getZoneskillMinestacklevel)
+                if (playerLevel < BuildAssist.config.getZoneskillMinestacklevel)
                   MessageEffect(s"${RED}建築Lvが足りません")
                 else
                   SequentialEffect(
@@ -331,7 +333,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
 
 object BlockPlacementSkillMenu {
 
-  implicit class PlayerDataOps(val playerData: PlayerData) extends AnyVal {
+  implicit class PlayerDataOps(val playerData: TemporaryMutableBuildAssistPlayerData) extends AnyVal {
     def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
   }
 

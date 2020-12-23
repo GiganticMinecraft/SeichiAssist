@@ -80,7 +80,9 @@ private case class ButtonComputations(player: Player) extends AnyVal {
 
   def computeButtonToToggleRangedPlaceSkill(): IO[Button] = RecomputedButton(
     IO {
-      val openerData = BuildAssist.playermap(getUniqueId)
+      val openerData = BuildAssist.instance.temporaryData(getUniqueId)
+      val openerLevel = BuildAssist.playermap(getUniqueId).level
+
       val iconItemStack = new IconItemStackBuilder(Material.STONE)
         .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
         .lore(
@@ -98,7 +100,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             DeferredEffect {
               IO {
-                if (openerData.level < BuildAssist.config.getZoneSetSkillLevel) {
+                if (openerLevel < BuildAssist.config.getZoneSetSkillLevel) {
                   MessageEffect(s"${RED}建築Lvが足りません")
                 } else {
                   if (openerData.ZoneSetSkillFlag) SequentialEffect(
@@ -123,7 +125,9 @@ private case class ButtonComputations(player: Player) extends AnyVal {
 
   def computeButtonToOpenRangedPlaceSkillMenu()
                                              (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = IO {
-    val openerData = BuildAssist.playermap(getUniqueId)
+    val openerData = BuildAssist.instance.temporaryData(getUniqueId)
+    val openerLevel = BuildAssist.playermap(getUniqueId).level
+
     val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_Exclamation)
       .title(s"$YELLOW$EMPHASIZE「範囲設置スキル」設定画面へ")
       .lore(
@@ -139,7 +143,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
           DeferredEffect {
             IO {
-              if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
+              if (openerLevel < BuildAssist.config.getblocklineuplevel()) {
                 MessageEffect(s"${RED}建築Lvが足りません")
               } else {
                 new BlockPlacementSkillMenu().open
@@ -153,7 +157,9 @@ private case class ButtonComputations(player: Player) extends AnyVal {
 
   def computeButtonToLineUpBlocks(): IO[Button] = RecomputedButton(
     IO {
-      val openerData = BuildAssist.playermap(getUniqueId)
+      val openerData = BuildAssist.instance.temporaryData(getUniqueId)
+      val openerLevel = BuildAssist.playermap(getUniqueId).level
+
       val iconItemStack = new IconItemStackBuilder(Material.WOOD)
         .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
         .lore(
@@ -167,7 +173,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
         action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
           DeferredEffect {
             IO {
-              if (openerData.level < BuildAssist.config.getblocklineuplevel()) {
+              if (openerLevel < BuildAssist.config.getblocklineuplevel()) {
                 MessageEffect(s"${RED}建築Lvが足りません")
               } else {
                 SequentialEffect(
@@ -191,7 +197,8 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   )
 
   def computeButtonToOpenLineUpBlocksMenu(): IO[Button] = IO {
-    val openerData = BuildAssist.playermap(getUniqueId)
+    val openerData = BuildAssist.instance.temporaryData(getUniqueId)
+
     val iconItemStack = new IconItemStackBuilder(Material.PAPER)
       .title(s"$YELLOW$EMPHASIZE「ブロックを並べるスキル（仮） 」設定画面へ")
       .lore(
