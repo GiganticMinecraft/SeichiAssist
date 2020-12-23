@@ -14,7 +14,7 @@ class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F]) ext
       DB.localTx { implicit session =>
         // keyはplayerName
         sql"select lastquit from ${DatabaseConstants.PLAYERDATA_TABLENAME} where name = '$key'"
-          .map { rs => rs.localDateTimeOpt("lastquit") }
+          .map { rs => rs.timestampOpt("lastquit").map(_.toLocalDateTime) }
           .toList().apply().head
       }
     }
