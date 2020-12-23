@@ -16,7 +16,11 @@ import scala.collection.mutable
 class BuildAssist(plugin: Plugin)
                  (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) {
 
-  import scala.jdk.CollectionConverters._
+  /**
+   * 永続化されない、プレーヤーのセッション内でのみ有効な一時データを管理するMap。
+   * [[TemporaryDataInitializer]] によって初期化、削除される。
+   */
+  val temporaryData: mutable.HashMap[UUID, TemporaryMutableBuildAssistPlayerData] = mutable.HashMap()
 
   //起動するタスクリスト
   private val tasklist = new util.ArrayList[BukkitTask]()
@@ -32,34 +36,28 @@ class BuildAssist(plugin: Plugin)
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new EntityListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerLeftClickListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
-    Bukkit.getServer.getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
-    Bukkit.getServer.getPluginManager.registerEvents(BlockLineUpTriggerListener, plugin) //ブロックを並べるスキル
-    Bukkit.getServer.getPluginManager.registerEvents(TilingSkillTriggerListener, plugin) //一括設置スキル
+    val listeners = List(
+      new PlayerJoinListener(),
+      new EntityListener(),
+      new PlayerLeftClickListener(),
+      new PlayerInventoryListener(),
+      new PlayerQuitListener(),
+      new TemporaryDataInitializer(this.temporaryData),
+      BlockLineUpTriggerListener,
+      TilingSkillTriggerListener
+    )
 
-
-    for (p <- Bukkit.getServer.getOnlinePlayers.asScala) {
-      val uuid = p.getUniqueId
-
-      val playerdata = new PlayerData(p)
-
-      playerdata.updateLevel(p)
-
-      BuildAssist.playermap += uuid -> playerdata
+    listeners.foreach { listener =>
+      Bukkit.getServer.getPluginManager.registerEvents(listener, plugin)
     }
+
     plugin.getLogger.info("BuildAssist is Enabled!")
 
     tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200))
   }
 
   def onDisable(): Unit = {
-    for (task <- this.tasklist.asScala) {
-      task.cancel()
-    }
+    tasklist.forEach(_.cancel())
   }
 
 }
@@ -252,7 +250,6 @@ object BuildAssist {
   )
 
   var plugin: Plugin = _
-  val DEBUG: Boolean = false
   var config: BuildAssistConfig = _
   val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
   val line_up_step_str: Seq[String] = Seq("上側", "下側", "両方")
