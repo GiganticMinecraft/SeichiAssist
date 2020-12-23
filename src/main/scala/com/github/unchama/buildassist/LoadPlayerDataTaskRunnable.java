@@ -59,7 +59,7 @@ public class LoadPlayerDataTaskRunnable extends BukkitRunnable {
             playerdata = playermap.apply(uuid);
         }
         //建築系データ読み込み
-        playerdata.buildload(p);
+        playerdata.loadFrom(p);
         Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "建築系データ読み込み完了");
     }
 }

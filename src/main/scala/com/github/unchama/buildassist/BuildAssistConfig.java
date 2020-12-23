@@ -2,6 +2,7 @@ package com.github.unchama.buildassist;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
+import scala.math.BigDecimal;
 
 public class BuildAssistConfig {
     private static FileConfiguration config;
@@ -63,8 +64,8 @@ public class BuildAssistConfig {
     }
 
     //ブロック設置カウントの1分上限
-    public int getBuildNum1minLimit() {
-        return Integer.parseInt(config.getString("BuildNum1minLimit"));
+    public BigDecimal getBuildNum1minLimit() {
+        return BigDecimal.int2bigDecimal(Integer.parseInt(config.getString("BuildNum1minLimit")));
     }
 
     //ブロック範囲設置スキルのマインスタック優先解放レベル

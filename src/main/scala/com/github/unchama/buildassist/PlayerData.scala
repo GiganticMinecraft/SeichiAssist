@@ -26,10 +26,7 @@ final class PlayerData(val player: Player) {
    */
   @PackagePrivate private[buildassist] var build_num_1min = BigDecimal.ZERO
 
-  /**
-   * プレイヤーレベルを計算し、更新する。
-   */
-  private[buildassist] def updateLevel(player: Player): Unit = {
+  private[buildassist] def notifyPlayerAndUpdateLevel(player: Player): Unit = {
     val oldLevel = level
     val newLevel = BuildAssistExpTable.levelAt(BuildExpAmount.ofNonNegative(totalbuildnum))
 
@@ -53,39 +50,26 @@ final class PlayerData(val player: Player) {
    */
   private[buildassist] def isOffline = Bukkit.getServer.getPlayer(uuid) == null
 
-  /**
-   * 建築系データを読み込む
-   *
-   * @param player
-   * @return true:読み込み成功　false:読み込み失敗
-   */
-  private[buildassist] def buildload(player: Player): Boolean = {
-    val playerdata_s = SeichiAssist.playermap.getOrElse(player.getUniqueId, return false)
+  private[buildassist] def loadFrom(player: Player): Unit = {
+    val playerdata_s = SeichiAssist.playermap(player.getUniqueId)
 
     totalbuildnum = playerdata_s.buildCount.count
     level = playerdata_s.buildCount.lv
-    updateLevel(player)
-
-    true
+    notifyPlayerAndUpdateLevel(player)
   }
 
-  /**
-   * 建築系データを保存
-   */
-  def buildsave(player: Player): Unit = {
+  def flush1MinuteBuildCount(): Unit = {
+    totalbuildnum = totalbuildnum add (build_num_1min max BuildAssist.config.getBuildNum1minLimit)
+    build_num_1min = BigDecimal.ZERO
+  }
+
+  def normalizeAndWriteDataToSeichiAssistPlayerData(): Unit = {
+    flush1MinuteBuildCount()
+
     val playerData = SeichiAssist.playermap(uuid)
-
-    val oldBuildCount = playerData.buildCount
-
-    //1分制限の判断
-    val newBuildCount = {
-      if (build_num_1min.doubleValue <= BuildAssist.config.getBuildNum1minLimit) {
-        totalbuildnum.add(build_num_1min)
-      } else {
-        totalbuildnum.add(new BigDecimal(BuildAssist.config.getBuildNum1minLimit))
-      }
-    }
-
-    playerData.buildCount = BuildCount(level, newBuildCount, oldBuildCount.migrationFlag)
+    playerData.buildCount = playerData.buildCount.copy(
+      lv = level,
+      count = totalbuildnum
+    )
   }
 }
