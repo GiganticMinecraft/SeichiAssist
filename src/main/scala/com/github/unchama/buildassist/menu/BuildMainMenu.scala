@@ -32,7 +32,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
       val openerData = BuildAssist.playermap(getUniqueId)
       val iconItemStack = new SkullItemStackBuilder(getUniqueId)
         .enchanted()
-        .title(s"$YELLOW$EMPHASIZE${openerData.name}の建築データ")
+        .title(s"$YELLOW$EMPHASIZE${player.getName}の建築データ")
         .lore(
           s"$RESET${AQUA}建築Lv: ${openerData.level}",
           /* 小数点以下一桁で表示。
