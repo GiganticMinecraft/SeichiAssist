@@ -1,17 +1,21 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents
 
 import cats.Functor
-import cats.effect.Clock
+import cats.effect.{Clock, ConcurrentEffect}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.commands.EventCommand
+import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemListener
+import com.github.unchama.seichiassist.subsystems.seasonalevents.infrastructure.JdbcLastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginBonusGifter
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiListener
+import com.github.unchama.seichiassist.subsystems.seasonalevents.service.LastQuitInquiringService
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineListener
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -27,10 +31,16 @@ class System[F[_]](override val listeners: Seq[Listener],
 }
 
 object System {
-  def wired[F[_]](instance: JavaPlugin): System[F] = {
+  def wired[F[_] : ConcurrentEffect : NonServerThreadContextShift, G[_]](instance: JavaPlugin): System[G] = {
+
+    implicit val repository: LastQuitPersistenceRepository[F, String] =
+      new JdbcLastQuitPersistenceRepository[F]
+
+    implicit val service: LastQuitInquiringService[F] = new LastQuitInquiringService[F]
+
     new System(
       listeners = Seq(
-        AnniversaryListener,
+        new AnniversaryListener(),
         new ChristmasItemListener(instance),
         HalloweenItemListener,
         LimitedLoginBonusGifter,

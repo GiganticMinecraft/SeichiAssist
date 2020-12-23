@@ -2,9 +2,12 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
 import java.time.LocalDate
 
+import cats.effect.{ConcurrentEffect, LiftIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.DefaultEffectEnvironment
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
+import com.github.unchama.seichiassist.subsystems.seasonalevents.service.LastQuitInquiringService
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
@@ -12,7 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-object AnniversaryListener extends Listener {
+class AnniversaryListener[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit service: LastQuitInquiringService[F]) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
@@ -27,9 +30,20 @@ object AnniversaryListener extends Listener {
     }
   }
 
+  import cats.implicits._
+
   @EventHandler
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
     val player = event.getEntity
+
+    val hasNotJoinedYetBeforeEvent = for {
+      _ <- NonServerThreadContextShift[F].shift
+      lastQuit <- service.loadLastQuitDateTime(player.getName)
+      result <- LiftIO[F].liftIO(lastQuit match {
+        case Some(dateTime) => dateTime.isBefore(EVENT_DATE.atStartOfDay())
+        case None => true
+      }.)
+    } yield result
 
     DefaultEffectEnvironment.runEffectAsync(
       s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する",
