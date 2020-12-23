@@ -4,6 +4,7 @@ import cats.Functor
 import cats.effect.{Clock, ConcurrentEffect}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
@@ -31,7 +32,7 @@ class System[F[_]](override val listeners: Seq[Listener],
 }
 
 object System {
-  def wired[F[_] : ConcurrentEffect : NonServerThreadContextShift, G[_]](instance: JavaPlugin): System[G] = {
+  def wired[F[_] : ConcurrentEffect : NonServerThreadContextShift, G[_]](instance: JavaPlugin)(implicit effectEnvironment: EffectEnvironment): System[G] = {
 
     implicit val repository: LastQuitPersistenceRepository[F, String] =
       new JdbcLastQuitPersistenceRepository[F]
