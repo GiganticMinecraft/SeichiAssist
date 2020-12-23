@@ -334,8 +334,7 @@ object PlayerDataLoading {
         //建築
         playerData.buildCount = BuildCount(
           rs.getInt("build_lv"),
-          new java.math.BigDecimal(rs.getString("build_count")),
-          rs.getByte("build_count_flg")
+          new java.math.BigDecimal(rs.getString("build_count"))
         )
 
         //マナ妖精

@@ -193,7 +193,6 @@ object PlayerDataSaveTask {
           //建築
           + ",build_lv = " + playerdata.buildCount.lv
           + ",build_count = " + playerdata.buildCount.count //.toString()
-          + ",build_count_flg = " + playerdata.buildCount.migrationFlag
 
           //投票
           + ",canVotingFairyUse = " + playerdata.usingVotingFairy

@@ -28,7 +28,6 @@ private case class ButtonComputations(player: Player) extends AnyVal {
 
   def computeNotationOfStats(): IO[Button] = RecomputedButton {
     IO {
-      import java.math.RoundingMode
       val openerData = BuildAssist.playermap(getUniqueId)
       val iconItemStack = new SkullItemStackBuilder(getUniqueId)
         .enchanted()
@@ -38,7 +37,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
           /* 小数点以下一桁で表示。
            * https://github.com/GiganticMinecraft/SeichiAssist/issues/540 対策。
            */
-          s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.setScale(1, RoundingMode.HALF_UP).toPlainString}",
+          s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.setScale(1, BigDecimal.RoundingMode.HALF_UP).bigDecimal.toPlainString}",
           s"$RESET$DARK_GRAY※1分毎に更新"
         )
         .build()

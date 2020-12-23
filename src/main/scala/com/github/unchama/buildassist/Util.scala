@@ -1,7 +1,5 @@
 package com.github.unchama.buildassist
 
-import java.math.BigDecimal
-
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin
@@ -39,9 +37,9 @@ object Util {
     //ワールドによって倍率変化
     playerData.build_num_1min = {
       if (player.getWorld.getName.toLowerCase.startsWith(SeichiAssist.SEICHIWORLDNAME)) {
-        playerData.build_num_1min.add(amount.multiply(new BigDecimal("0.1")))
+        playerData.build_num_1min + (amount * 0.1)
       } else {
-        playerData.build_num_1min.add(amount)
+        playerData.build_num_1min + amount
       }
     }
   }

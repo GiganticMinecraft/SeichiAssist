@@ -1,13 +1,11 @@
 package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.domain.explevel.{BuildAssistExpTable, BuildExpAmount}
-import com.github.unchama.seichiassist.data.player.BuildCount
 import com.github.unchama.seichiassist.{PackagePrivate, SeichiAssist}
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
-import java.math.BigDecimal
 import java.util.UUID
 
 final class PlayerData(val player: Player) {
@@ -19,12 +17,12 @@ final class PlayerData(val player: Player) {
   /**
    * トータル設置ブロック数
    */
-  var totalbuildnum: BigDecimal = BigDecimal.ZERO
+  var totalbuildnum: BigDecimal = BigDecimal(0)
 
   /**
    * 1分のブロック設置数
    */
-  @PackagePrivate private[buildassist] var build_num_1min = BigDecimal.ZERO
+  @PackagePrivate private[buildassist] var build_num_1min = BigDecimal(0)
 
   private[buildassist] def notifyPlayerAndUpdateLevel(player: Player): Unit = {
     val oldLevel = level
@@ -59,8 +57,8 @@ final class PlayerData(val player: Player) {
   }
 
   def flush1MinuteBuildCount(): Unit = {
-    totalbuildnum = totalbuildnum add (build_num_1min max BuildAssist.config.getBuildNum1minLimit)
-    build_num_1min = BigDecimal.ZERO
+    totalbuildnum = totalbuildnum + (build_num_1min max BuildAssist.config.getBuildNum1minLimit)
+    build_num_1min = BigDecimal(0)
   }
 
   def normalizeAndWriteDataToSeichiAssistPlayerData(): Unit = {
