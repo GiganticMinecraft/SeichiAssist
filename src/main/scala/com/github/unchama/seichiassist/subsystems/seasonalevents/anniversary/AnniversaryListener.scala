@@ -49,7 +49,7 @@ class AnniversaryListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
         IO {
           val hasNotJoinedInEventYet = lastQuit match {
             case Some(dateTime) => dateTime.isBefore(EVENT_DATE.atStartOfDay())
-            case None => false
+            case None => true
           }
           val effect = if (hasNotJoinedInEventYet) Set(
             grantItemStacksEffect(mineHead),
