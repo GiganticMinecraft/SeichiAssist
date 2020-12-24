@@ -76,7 +76,6 @@ object FirstPage extends Menu {
         ChestSlotRef(0, 0) -> computeStatsButton,
         ChestSlotRef(0, 1) -> computeEffectSuppressionButton,
         ChestSlotRef(0, 3) -> computeRegionMenuButton,
-        ChestSlotRef(0, 5) -> computeValentineChocolateButton,
         ChestSlotRef(1, 1) -> computeStarLevelStatsButton,
         ChestSlotRef(1, 4) -> computeActiveSkillButton,
         ChestSlotRef(2, 3) -> computePocketOpenButton,
