@@ -10,7 +10,8 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.service.LastQuitInquiringService
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
-import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -20,7 +21,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 class NewYearListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
   (implicit effectEnvironment: EffectEnvironment, service: LastQuitInquiringService[F]) extends Listener {
@@ -74,16 +75,14 @@ class NewYearListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
     }
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onNewYearBagPopped(event: BlockBreakEvent): Unit = {
     if (!isInEvent) return
-    if (event.isCancelled) return
 
     val player = event.getPlayer
     val block = event.getBlock
-    if (block == null) return
-    if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
-    if (!isRegionMember(player, block.getLocation)) return
+    if (!player.getWorld.isSeichi) return
+    if (!MaterialSets.materials.contains(block.getType)) return
 
     val rand = new Random().nextDouble()
     if (rand < itemDropRate) {

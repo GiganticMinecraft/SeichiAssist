@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import java.util.Random
+
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
-import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld._
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
@@ -131,8 +133,8 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
 
     val player = event.getPlayer
     val block = event.getBlock
-    if (block == null) return
-    if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
+    if (!player.getWorld.isSeichi) return
+    if (!MaterialSets.materials.contains(block.getType)) return
 
     val rand = new Random().nextDouble()
     if (rand < itemDropRate) {
