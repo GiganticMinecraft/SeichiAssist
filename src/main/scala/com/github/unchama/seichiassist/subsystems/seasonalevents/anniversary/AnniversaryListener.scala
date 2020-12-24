@@ -37,14 +37,14 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment) extends
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
     val player = event.getEntity
     val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
-    if (playerData.hasNewYearSobaGive) return
+    if (playerData.anniversary) return
 
     effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         grantItemStacksEffect(mineHead),
         MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-        UnfocusedEffect{playerData.hasNewYearSobaGive = true}
+        UnfocusedEffect{playerData.anniversary = false}
       ),
       s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する"
     )
