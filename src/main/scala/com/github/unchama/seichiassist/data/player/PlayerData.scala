@@ -215,10 +215,6 @@ class PlayerData(
   //貢献度pt
   var added_mana = 0
   var contribute_point = 0
-  //正月イベント用
-  var hasNewYearSobaGive = false
-  //バレンタインイベント用
-  var hasChocoGave = false
   var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false
