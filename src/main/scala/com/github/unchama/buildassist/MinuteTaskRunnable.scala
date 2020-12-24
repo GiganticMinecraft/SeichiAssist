@@ -6,14 +6,12 @@ import org.bukkit.scheduler.BukkitRunnable
 class MinuteTaskRunnable extends BukkitRunnable {
 
   override def run(): Unit = {
-    BuildAssist.playermap.values.foreach { playerdata: PlayerData =>
-      if (!playerdata.isOffline) {
-        val player = Bukkit.getServer.getPlayer(playerdata.uuid)
+    Bukkit.getOnlinePlayers.forEach { player =>
+      val playerData = BuildAssist.playermap(player.getUniqueId)
 
-        playerdata.flush1MinuteBuildCount()
-        playerdata.notifyPlayerAndUpdateLevel(player)
-        playerdata.normalizeAndWriteDataToSeichiAssistPlayerData()
-      }
+      playerData.flush1MinuteBuildCount()
+      playerData.notifyPlayerAndUpdateLevel(player)
+      playerData.normalizeAndWriteDataToSeichiAssistPlayerData()
     }
   }
 }

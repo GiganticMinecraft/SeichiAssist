@@ -2,16 +2,10 @@ package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.domain.explevel.{BuildAssistExpTable, BuildExpAmount}
 import com.github.unchama.seichiassist.{PackagePrivate, SeichiAssist}
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
-import java.util.UUID
-
 final class PlayerData(val player: Player) {
-  //初期値を設定
-
-  var uuid: UUID = player.getUniqueId
 
   var level = 1
   /**
@@ -43,11 +37,6 @@ final class PlayerData(val player: Player) {
     level = newLevel.level
   }
 
-  /**
-   * オフラインかどうか
-   */
-  private[buildassist] def isOffline = Bukkit.getServer.getPlayer(uuid) == null
-
   private[buildassist] def loadFrom(player: Player): Unit = {
     val playerdata_s = SeichiAssist.playermap(player.getUniqueId)
 
@@ -64,7 +53,7 @@ final class PlayerData(val player: Player) {
   def normalizeAndWriteDataToSeichiAssistPlayerData(): Unit = {
     flush1MinuteBuildCount()
 
-    val playerData = SeichiAssist.playermap(uuid)
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
     playerData.buildCount = playerData.buildCount.copy(
       lv = level,
       count = totalbuildnum
