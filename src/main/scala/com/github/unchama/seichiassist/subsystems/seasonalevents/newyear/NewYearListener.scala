@@ -1,34 +1,59 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
-import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{isInEvent, itemDropRate}
+import java.time.LocalDate
+import java.util.Random
+
+import cats.effect.{ConcurrentEffect, IO, LiftIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{START_DATE, isInEvent, itemDropRate}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
+import com.github.unchama.seichiassist.subsystems.seasonalevents.service.LastQuitInquiringService
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
-import com.github.unchama.seichiassist.{DefaultEffectEnvironment, ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
-import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
-import java.time.LocalDate
-import java.util.Random
 
-object NewYearListener extends Listener {
+class NewYearListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
+  (implicit effectEnvironment: EffectEnvironment, service: LastQuitInquiringService[F]) extends Listener {
+
+  import cats.implicits._
+
   @EventHandler
   def giveSobaToPlayer(event: PlayerJoinEvent): Unit = {
     if (!isInEvent) return
 
     val player = event.getPlayer
 
-    DefaultEffectEnvironment.runEffectAsync(
-      "大晦日ログインボーナスヘッドを付与する",
-      grantItemStacksEffect(sobaHead).run(player)
-    )
-    player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
-    player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+    val program = for {
+      _ <- NonServerThreadContextShift[F].shift
+      lastQuit <- service.loadLastQuitDateTime(player.getName)
+      _ <- LiftIO[F].liftIO(IO{
+        val hasNotJoinedInEventYet = lastQuit match {
+          case Some(dateTime) => dateTime.isBefore(START_DATE.atStartOfDay())
+          case None => true
+        }
+
+        val effects =
+          if (hasNotJoinedInEventYet) Set(
+            grantItemStacksEffect(sobaHead),
+            MessageEffect(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。"),
+            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
+          else Set(emptyEffect)
+
+        effects.foreach(_.run(player))
+      })
+    } yield ()
+
+    effectEnvironment.runEffectAsync("大晦日ログインボーナスヘッドを付与するかどうかを判定する", program)
   }
 
   @EventHandler

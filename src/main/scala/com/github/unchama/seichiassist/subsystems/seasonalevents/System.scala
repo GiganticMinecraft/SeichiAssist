@@ -47,7 +47,7 @@ object System {
         LimitedLoginBonusGifter,
         SeizonsikiListener,
         ValentineListener,
-        NewYearListener,
+        new NewYearListener(),
       ),
       managedFinalizers = Nil,
       commands = Map(
