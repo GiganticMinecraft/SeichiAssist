@@ -46,7 +46,7 @@ object System {
         HalloweenItemListener,
         LimitedLoginBonusGifter,
         SeizonsikiListener,
-        ValentineListener,
+        new ValentineListener(),
         new NewYearListener(),
       ),
       managedFinalizers = Nil,
