@@ -24,7 +24,7 @@ object SpawnRegionProjectileInterceptor extends Listener {
     val inventory = player.getInventory
     val action = event.getAction
     val projectiles = Set(
-      BOW, EGG, LINGERING_POTION, SPLASH_POTION, ENDER_PEARL, EYE_OF_ENDER, FIREBALL, SNOW_BALL, EXP_BOTTLE
+      BOW, EGG, LINGERING_POTION, SPLASH_POTION, ENDER_PEARL, EYE_OF_ENDER, SNOW_BALL, EXP_BOTTLE
     )
 
     // Projectileを持った状態で右クリックし、playerがいる保護がspawn保護の中であった場合はイベントをキャンセルする
