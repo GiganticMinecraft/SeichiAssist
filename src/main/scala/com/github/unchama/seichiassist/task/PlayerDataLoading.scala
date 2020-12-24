@@ -358,12 +358,6 @@ object PlayerDataLoading {
           rs.getBoolean("isGBStageUp")
         )
         playerData.anniversary = rs.getBoolean("anniversary")
-
-        //正月イベント用
-        playerData.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive")
-
-        //バレンタインイベント用
-        playerData.hasChocoGave = rs.getBoolean("hasChocoGave")
       }
     }
     //sqlコネクションチェック

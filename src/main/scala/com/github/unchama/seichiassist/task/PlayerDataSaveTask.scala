@@ -213,12 +213,6 @@ object PlayerDataSaveTask {
           + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolve
           + ",TitleFlags = '" + flagString + "'"
 
-          //正月イベント
-          + ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
-
-          //バレンタインイベント
-          + ",hasChocoGave = " + playerdata.hasChocoGave
-
           + " where uuid = '" + playerUuid + "'")
       }
 
