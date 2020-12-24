@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
-import com.github.unchama.targetedeffect.SequentialEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -39,12 +39,12 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment) extends
     val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
     if (playerData.hasNewYearSobaGive) return
 
-    playerData.hasNewYearSobaGive = true
     effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         grantItemStacksEffect(mineHead),
         MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
-        FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+        FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
+        UnfocusedEffect{playerData.hasNewYearSobaGive = true}
       ),
       s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する"
     )
