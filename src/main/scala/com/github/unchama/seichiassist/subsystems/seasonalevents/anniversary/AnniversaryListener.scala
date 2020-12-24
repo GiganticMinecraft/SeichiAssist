@@ -2,14 +2,13 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
 import java.time.LocalDate
 
-import cats.effect.{ConcurrentEffect, IO, LiftIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
-import com.github.unchama.seichiassist.subsystems.seasonalevents.service.LastQuitInquiringService
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -18,9 +17,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class AnniversaryListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
-(implicit effectEnvironment: EffectEnvironment, service: LastQuitInquiringService[F])
-  extends Listener {
+class AnniversaryListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
 
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
@@ -36,34 +33,20 @@ class AnniversaryListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
     }
   }
 
-  import cats.implicits._
-
-  // TODO 「死んだとき」なので、せっかく苦労したがこれは使えないのでは？
   @EventHandler
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
     val player = event.getEntity
+    val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
+    if (playerData.hasNewYearSobaGive) return
 
-    val program = for {
-      _ <- NonServerThreadContextShift[F].shift
-      lastQuit <- service.loadLastQuitDateTime(player.getName)
-      _ <- LiftIO[F].liftIO(
-        IO {
-          val hasNotJoinedInEventYet = lastQuit match {
-            case Some(dateTime) => dateTime.isBefore(EVENT_DATE.atStartOfDay())
-            case None => true
-          }
-          val effects =
-            if (hasNotJoinedInEventYet) Set(
-              grantItemStacksEffect(mineHead),
-              MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
-              FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
-            else Set(emptyEffect)
-
-          effects.foreach(_.run(player))
-        }
-      )
-    } yield ()
-
-    effectEnvironment.runEffectAsync(s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する", program)
+    playerData.hasNewYearSobaGive = true
+    effectEnvironment.runAsyncTargetedEffect(player)(
+      SequentialEffect(
+        grantItemStacksEffect(mineHead),
+        MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
+        FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+      ),
+      s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する"
+    )
   }
 }
