@@ -21,3 +21,15 @@ case class BuildAssistPlayerData(expAmount: BuildExpAmount,
     this.copy(desyncedLevel = BuildAssistExpTable.levelAt(expAmount))
 
 }
+
+object BuildAssistPlayerData {
+
+  val initialData: BuildAssistPlayerData = {
+    val initialExp = BuildExpAmount.ofNonNegative(BigDecimal(0))
+    BuildAssistPlayerData(
+      initialExp,
+      BuildAssistExpTable.levelAt(initialExp)
+    )
+  }
+
+}
