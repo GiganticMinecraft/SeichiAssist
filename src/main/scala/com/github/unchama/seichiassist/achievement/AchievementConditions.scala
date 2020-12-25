@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 import scala.concurrent.duration.FiniteDuration
+import scala.math.floor
 
 object AchievementConditions {
   def playerDataPredicate(predicate: PlayerData => IO[Boolean]): PlayerPredicate = { player =>
@@ -96,6 +97,25 @@ object AchievementConditions {
         val dayOfWeekOnWeekOfTheMonth = now.`with`(TemporalAdjusters.dayOfWeekInMonth(weekOfMonth, dayOfWeek))
 
         now.getMonth == month && now == dayOfWeekOnWeekOfTheMonth
+      }
+
+    AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
+  }
+
+  def playedOn(day: NeedToBeCalculatedOfWhen, dateSpecification: String): AchievementCondition[String] = {
+    val predicate: PlayerPredicate = _ =>
+      IO{
+        val now = LocalDate.now()
+
+        val dayOfMonth = floor(day match {
+          case SpringEquinoxDay => 20.8431 + 0.242194 * (now.getYear - 1980) - (now.getYear - 1980) / 4
+        }).toInt
+
+        val month = day match {
+          case SpringEquinoxDay => Month.MARCH
+        }
+
+        now.getMonth == month && now.getDayOfMonth == dayOfMonth
       }
 
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)

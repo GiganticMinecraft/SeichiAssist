@@ -209,7 +209,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_9009 extends NormalManual(9009, playedIn(Month.MARCH))
   case object No_9010 extends NormalManual(9010, playedOn(Month.MARCH, 3, "とある女の子の日"))
   case object No_9011 extends NormalManual(9011, playedOn(Month.MARCH, 14, "燃え尽きたカカオだらけの日"))
-  case object No_9012 extends NormalManual(9012, playedOn(Month.MARCH, 20, "春分の日"))
+  case object No_9012 extends NormalManual(9012, playedOn(SpringEquinoxDay, "春分の日"))
   case object No_9013 extends NormalManual(9013, playedIn(Month.APRIL))
   case object No_9014 extends NormalManual(9014, playedOn(Month.APRIL, 1, "とある嘘の日"))
   case object No_9015 extends NormalManual(9015, playedOn(Month.APRIL, 15, "とある良い子の日"))
