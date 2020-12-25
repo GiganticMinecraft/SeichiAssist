@@ -1,12 +1,12 @@
 package com.github.unchama.datarepository.bukkit.player
 
-import java.util.UUID
-
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, ContextShift, Sync, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
+
+import java.util.UUID
 
 class NonPersistentPlayerDataRefRepository[
   DataAccessContext[_] : Sync,
@@ -21,6 +21,6 @@ class NonPersistentPlayerDataRefRepository[
   override val loadData: (String, UUID) => SyncContext[Either[Option[String], Ref[DataAccessContext, D]]] =
     (_, _) => Ref.in[SyncContext, DataAccessContext, D](initial).map(Right(_))
 
-  override val unloadData: (Player, Ref[DataAccessContext, D]) => SyncContext[Unit] =
+  override val finalizeBeforeUnload: (Player, Ref[DataAccessContext, D]) => SyncContext[Unit] =
     (_, _) => SyncEffect[SyncContext].unit
 }

@@ -1,12 +1,12 @@
 package com.github.unchama.datarepository.bukkit.player
 
-import java.util.UUID
-
 import cats.effect.{ConcurrentEffect, ContextShift, IO, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.generic.effect.{Mutex, TryableFiber}
 import org.bukkit.entity.Player
+
+import java.util.UUID
 
 class TryableFiberRepository[
   AsyncContext[_] : ConcurrentEffect : ContextShift,
@@ -27,7 +27,7 @@ class TryableFiberRepository[
       TryableFiber.unit[AsyncContext]
     }.map(Right.apply)
 
-  override val unloadData: (Player, MFiber) => SyncContext[Unit] = (_, fiberMutex) => {
+  override val finalizeBeforeUnload: (Player, MFiber) => SyncContext[Unit] = (_, fiberMutex) => {
     fiberMutex.readLatest >>= { fiber =>
       fiber.cancel
         .runAsync(_ => IO.unit)

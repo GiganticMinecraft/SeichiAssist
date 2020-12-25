@@ -31,7 +31,7 @@ class PlayerItemMigrationStateRepository[
         }
         .map(Right.apply)
 
-  override val unloadData: (Player, TryableDeferred[DeferredContext, Unit]) => SyncContext[Unit] = {
+  override val finalizeBeforeUnload: (Player, TryableDeferred[DeferredContext, Unit]) => SyncContext[Unit] = {
     (_, _) => SyncEffect[SyncContext].unit
   }
 

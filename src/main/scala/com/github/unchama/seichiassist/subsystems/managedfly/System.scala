@@ -53,7 +53,7 @@ object System {
       StatefulSubsystem(
         listenersToBeRegistered = Seq(_stateRepository),
         finalizersToBeManaged = Seq(
-          player => _stateRepository.finalizationAction(player)
+          player => _stateRepository.removeValueAndFinalize(player)
         ),
         commandsToBeRegistered = Map(
           "fly" -> BukkitFlyCommand.executor[AsyncContext, SyncContext]

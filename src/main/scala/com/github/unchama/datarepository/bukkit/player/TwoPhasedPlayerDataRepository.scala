@@ -29,6 +29,8 @@ abstract class TwoPhasedPlayerDataRepository[
 
   import scala.collection.mutable
 
+  //region 初期化・終了処理
+
   /**
    * 中間データの型
    */
@@ -62,17 +64,25 @@ abstract class TwoPhasedPlayerDataRepository[
   protected def initializeValue(player: Player, temporaryData: TemporaryData): SyncContext[R]
 
   /**
-   * プレーヤーが退出したときに、格納されたデータをもとに終了処理を行う。
+   * 与えられたプレーヤーに紐づいたデータを、データリポジトリが削除する前に必要な終了処理を行う作用。
    */
-  protected val unloadData: (Player, R) => SyncContext[Unit]
+  protected val finalizeBeforeUnload: (Player, R) => SyncContext[Unit]
+
+  //endregion
+
+  //region 内部状態
 
   private val state: mutable.HashMap[UUID, R] = mutable.HashMap()
 
   protected val temporaryState: mutable.HashMap[UUID, TemporaryData] = mutable.HashMap()
 
-  def apply(player: Player): R = state(player.getUniqueId)
+  //endregion
+
+  override def apply(player: Player): R = state(player.getUniqueId)
 
   import cats.effect.implicits._
+
+  //region イベントハンドラ
 
   @EventHandler(priority = EventPriority.LOWEST)
   final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
@@ -109,14 +119,16 @@ abstract class TwoPhasedPlayerDataRepository[
     }
   }
 
+  //endregion
+
   /**
    * プレーヤーの退出処理。この作用は2度以上呼び出した場合の動作が未定義である。
    */
-  final def finalizationAction(key: Player): SyncContext[Unit] = {
+  final def removeValueAndFinalize(key: Player): SyncContext[Unit] = {
     import cats.implicits._
 
     Sync[SyncContext].delay {
       state.remove(key.getUniqueId).get
-    }.flatMap(unloadData(key, _))
+    }.flatMap(finalizeBeforeUnload(key, _))
   }
 }
