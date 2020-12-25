@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist.domain.actions
 
 import com.github.unchama.buildassist.domain.explevel.BuildLevel
-import com.github.unchama.util.Diff
+import com.github.unchama.generic.Diff
 
 /**
  * 建築レベルの変化を通知するためのインターフェース。

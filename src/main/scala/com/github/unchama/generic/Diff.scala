@@ -1,4 +1,4 @@
-package com.github.unchama.util
+package com.github.unchama.generic
 
 import cats.Eq
 

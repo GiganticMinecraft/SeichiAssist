@@ -6,7 +6,7 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.buildassist.domain.actions.LevelUpNotifier
 import com.github.unchama.buildassist.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
-import com.github.unchama.util.Diff
+import com.github.unchama.generic.Diff
 import org.bukkit.entity.Player
 
 import java.util.UUID
