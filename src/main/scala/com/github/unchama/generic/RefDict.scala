@@ -1,4 +1,4 @@
-package com.github.unchama.util
+package com.github.unchama.generic
 
 /**
  * [[Key]] をキーとした参照セルの辞書型データ構造の抽象。

@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist.domain.playerdata
 
-import com.github.unchama.util.RefDict
+import com.github.unchama.generic.RefDict
 
 import java.util.UUID
 
