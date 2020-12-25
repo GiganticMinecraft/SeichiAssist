@@ -1,8 +1,7 @@
 package com.github.unchama.datarepository.bukkit.player
 
 import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, ContextShift, Sync, SyncEffect}
-import com.github.unchama.generic.ContextCoercion
+import cats.effect.{Sync, SyncEffect}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 
@@ -10,11 +9,10 @@ import java.util.UUID
 
 class NonPersistentPlayerDataRefRepository[
   DataAccessContext[_] : Sync,
-  AsyncContext[_] : ConcurrentEffect : ContextShift,
-  SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
+  SyncContext[_] : SyncEffect,
   D
 ](initial: D)(implicit effectEnvironment: EffectEnvironment)
-  extends PreLoginToQuitPlayerDataRepository[AsyncContext, SyncContext, Ref[DataAccessContext, D]] {
+  extends PreLoginToQuitPlayerDataRepository[SyncContext, Ref[DataAccessContext, D]] {
 
   import cats.implicits._
 

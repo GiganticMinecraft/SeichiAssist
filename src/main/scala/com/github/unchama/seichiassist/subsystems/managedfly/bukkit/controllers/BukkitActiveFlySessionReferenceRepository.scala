@@ -18,7 +18,7 @@ class BukkitActiveFlySessionReferenceRepository[
   configuration: SystemConfiguration,
   factory: ActiveSessionFactory[AsyncContext, Player],
   persistenceRepository: FlyDurationPersistenceRepository[SyncContext, UUID])
-  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, ActiveSessionReference[AsyncContext, SyncContext]] {
+  extends TwoPhasedPlayerDataRepository[SyncContext, ActiveSessionReference[AsyncContext, SyncContext]] {
 
   override protected type TemporaryData = Option[RemainingFlyDuration]
 

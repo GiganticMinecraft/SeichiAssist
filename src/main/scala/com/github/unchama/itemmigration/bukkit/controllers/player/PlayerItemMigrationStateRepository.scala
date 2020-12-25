@@ -1,9 +1,8 @@
 package com.github.unchama.itemmigration.bukkit.controllers.player
 
 import cats.effect.concurrent.{Deferred, TryableDeferred}
-import cats.effect.{Concurrent, ConcurrentEffect, ContextShift, SyncEffect}
+import cats.effect.{Concurrent, SyncEffect}
 import com.github.unchama.datarepository.bukkit.player.PreLoginToQuitPlayerDataRepository
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 
@@ -13,11 +12,10 @@ import java.util.UUID
  * 各プレーヤーのマイグレーション処理の状態を保持するオブジェクトのクラス。
  */
 class PlayerItemMigrationStateRepository[
-  AsyncContext[_] : ConcurrentEffect : ContextShift,
-  SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
+  SyncContext[_] : SyncEffect,
   DeferredContext[_] : Concurrent
 ](implicit environment: EffectEnvironment)
-  extends PreLoginToQuitPlayerDataRepository[AsyncContext, SyncContext, TryableDeferred[DeferredContext, Unit]] {
+  extends PreLoginToQuitPlayerDataRepository[SyncContext, TryableDeferred[DeferredContext, Unit]] {
 
   import cats.implicits._
 

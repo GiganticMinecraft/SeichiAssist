@@ -1,8 +1,6 @@
 package com.github.unchama.datarepository.bukkit.player
 
-import cats.effect.{ConcurrentEffect, ContextShift, Sync, SyncEffect, SyncIO}
-import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import cats.effect.{Sync, SyncEffect, SyncIO}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -21,11 +19,8 @@ import java.util.UUID
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
-abstract class TwoPhasedPlayerDataRepository[
-  AsyncContext[_] : ConcurrentEffect : ContextShift,
-  SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
-  R
-](implicit environment: EffectEnvironment) extends PlayerDataRepository[R] with Listener {
+abstract class TwoPhasedPlayerDataRepository[SyncContext[_] : SyncEffect, R]
+  extends PlayerDataRepository[R] with Listener {
 
   import scala.collection.mutable
 

@@ -12,7 +12,6 @@ class TryableFiberRepository[
   AsyncContext[_] : ConcurrentEffect : ContextShift,
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
 ](implicit environment: EffectEnvironment) extends PreLoginToQuitPlayerDataRepository[
-  AsyncContext,
   SyncContext,
   Mutex[AsyncContext, SyncContext, TryableFiber[AsyncContext, Unit]]
 ] {

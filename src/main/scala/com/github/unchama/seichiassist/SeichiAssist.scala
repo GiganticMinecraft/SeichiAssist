@@ -186,11 +186,10 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreate
   }
 
-  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[SyncIO, IO, SyncIO, Boolean] = {
-    import PluginExecutionContexts.asyncShift
+  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[SyncIO, SyncIO, Boolean] = {
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    new NonPersistentPlayerDataRefRepository[SyncIO, IO, SyncIO, Boolean](true)
+    new NonPersistentPlayerDataRefRepository[SyncIO, SyncIO, Boolean](true)
   }
 
   val assaultSkillRoutines: TryableFiberRepository[IO, SyncIO] = {
