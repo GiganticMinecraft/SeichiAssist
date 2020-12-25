@@ -9,7 +9,7 @@ package com.github.unchama.util
  */
 trait RefDict[F[_], Key, Value] {
 
-  def read(key: Key): F[Value]
+  def read(key: Key): F[Option[Value]]
 
   def write(key: Key, value: Value): F[Unit]
 
