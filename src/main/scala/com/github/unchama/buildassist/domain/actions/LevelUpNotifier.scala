@@ -6,14 +6,14 @@ import com.github.unchama.util.Diff
 /**
  * 建築レベルの変化を通知するためのインターフェース。
  */
-trait LevelUpNotification[F[_], Player] {
+trait LevelUpNotifier[F[_], Player] {
 
   def notifyTo(player: Player)(diff: Diff[BuildLevel]): F[Unit]
 
 }
 
-object LevelUpNotification {
+object LevelUpNotifier {
 
-  def apply[F[_], Player](implicit ev: LevelUpNotification[F, Player]): LevelUpNotification[F, Player] = ev
+  def apply[F[_], Player](implicit ev: LevelUpNotifier[F, Player]): LevelUpNotifier[F, Player] = ev
 
 }
