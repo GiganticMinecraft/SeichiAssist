@@ -2,15 +2,15 @@ package com.github.unchama.buildassist.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.buildassist.domain.explevel.{BuildExpAmount, BuildLevel}
-import com.github.unchama.buildassist.domain.playerdata.{BuildAssistPlayerData, BuildAssistPlayerDataPersistence}
+import com.github.unchama.buildassist.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcBuildAssistPlayerDataPersistence[F[_]](implicit F: Sync[F])
-  extends BuildAssistPlayerDataPersistence[F] {
+class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
+  extends BuildAmountDataPersistence[F] {
 
-  override def read(key: UUID): F[Option[BuildAssistPlayerData]] =
+  override def read(key: UUID): F[Option[BuildAmountData]] =
     F.delay {
       DB.localTx { implicit session =>
         sql"""select build_lv, build_count from playerdata
@@ -20,13 +20,13 @@ class JdbcBuildAssistPlayerDataPersistence[F[_]](implicit F: Sync[F])
             val level = BuildLevel.ofPositive(rs.int("build_lv"))
             val exp = BuildExpAmount(BigDecimal(rs.string("build_count")))
 
-            BuildAssistPlayerData(exp, level)
+            BuildAmountData(exp, level)
           }
           .first().apply()
       }
     }
 
-  override def write(key: UUID, value: BuildAssistPlayerData): F[Unit] =
+  override def write(key: UUID, value: BuildAmountData): F[Unit] =
     F.delay {
       DB.localTx { implicit session =>
         sql"""update playerdata set

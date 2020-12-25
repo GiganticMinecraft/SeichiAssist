@@ -4,30 +4,30 @@ import cats.Monad
 import cats.effect.SyncEffect
 import cats.effect.concurrent.Ref
 import com.github.unchama.buildassist.domain.actions.LevelUpNotification
-import com.github.unchama.buildassist.domain.playerdata.{BuildAssistPlayerData, BuildAssistPlayerDataPersistence}
+import com.github.unchama.buildassist.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.util.Diff
 import org.bukkit.entity.Player
 
 import java.util.UUID
 
-class BuildAssistPlayerDataRepository[
+class BuildAmountDataRepository[
   F[_] : SyncEffect : LevelUpNotification[*[_], Player]
-](implicit persistence: BuildAssistPlayerDataPersistence[F])
-  extends TwoPhasedPlayerDataRepository[F, Ref[F, BuildAssistPlayerData]] {
+](implicit persistence: BuildAmountDataPersistence[F])
+  extends TwoPhasedPlayerDataRepository[F, Ref[F, BuildAmountData]] {
 
   import cats.implicits._
 
-  override protected type TemporaryData = BuildAssistPlayerData
+  override protected type TemporaryData = BuildAmountData
 
-  override protected val loadTemporaryData: (String, UUID) => F[Either[Option[String], BuildAssistPlayerData]] =
+  override protected val loadTemporaryData: (String, UUID) => F[Either[Option[String], BuildAmountData]] =
     (_, uuid) =>
       persistence
         .read(uuid)
-        .map(_.getOrElse(BuildAssistPlayerData.initialData))
+        .map(_.getOrElse(BuildAmountData.initial))
         .map(Right.apply)
 
-  override protected def initializeValue(player: Player, temporaryData: BuildAssistPlayerData): F[Ref[F, BuildAssistPlayerData]] = {
+  override protected def initializeValue(player: Player, temporaryData: BuildAmountData): F[Ref[F, BuildAmountData]] = {
     val updatedData = temporaryData.withSyncedLevel
     val levelDiffOption = Diff.fromValues(temporaryData.desyncedLevel, updatedData.desyncedLevel)
 
@@ -36,6 +36,6 @@ class BuildAssistPlayerDataRepository[
     notifyLevelDiff >> Ref.of(updatedData)
   }
 
-  override protected val finalizeBeforeUnload: (Player, Ref[F, BuildAssistPlayerData]) => F[Unit] =
+  override protected val finalizeBeforeUnload: (Player, Ref[F, BuildAmountData]) => F[Unit] =
     (player, dataRef) => dataRef.get.flatMap(persistence.write(player.getUniqueId, _))
 }
