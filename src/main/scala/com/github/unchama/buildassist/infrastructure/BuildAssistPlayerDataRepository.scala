@@ -3,7 +3,8 @@ package com.github.unchama.buildassist.infrastructure
 import cats.Monad
 import cats.effect.SyncEffect
 import cats.effect.concurrent.Ref
-import com.github.unchama.buildassist.domain.playerdata.{BuildAssistPlayerData, BuildAssistPlayerDataPersistence, CanNotifyLevelUps}
+import com.github.unchama.buildassist.domain.actions.LevelUpNotification
+import com.github.unchama.buildassist.domain.playerdata.{BuildAssistPlayerData, BuildAssistPlayerDataPersistence}
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.util.Diff
 import org.bukkit.entity.Player
@@ -11,7 +12,7 @@ import org.bukkit.entity.Player
 import java.util.UUID
 
 class BuildAssistPlayerDataRepository[
-  F[_] : SyncEffect : CanNotifyLevelUps[*[_], Player]
+  F[_] : SyncEffect : LevelUpNotification[*[_], Player]
 ](implicit persistence: BuildAssistPlayerDataPersistence[F])
   extends TwoPhasedPlayerDataRepository[F, Ref[F, BuildAssistPlayerData]] {
 
@@ -30,7 +31,7 @@ class BuildAssistPlayerDataRepository[
     val updatedData = temporaryData.withSyncedLevel
     val levelDiffOption = Diff.fromValues(temporaryData.desyncedLevel, updatedData.desyncedLevel)
 
-    val notifyLevelDiff = levelDiffOption.fold(Monad[F].unit)(CanNotifyLevelUps[F, Player].notifyTo(player))
+    val notifyLevelDiff = levelDiffOption.fold(Monad[F].unit)(LevelUpNotification[F, Player].notifyTo(player))
 
     notifyLevelDiff >> Ref.of(updatedData)
   }
