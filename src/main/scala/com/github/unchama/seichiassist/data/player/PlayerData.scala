@@ -169,7 +169,7 @@ class PlayerData(
   //トータル破壊ブロック
   var totalbreaknum: Long = 0.toLong
   //合計経験値
-  var totalexp = 0
+  var totalexp = 0L
   //合計経験値統合済みフラグ
   var expmarge: Byte = 0
   //特典受け取り済み投票数
