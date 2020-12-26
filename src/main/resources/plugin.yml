@@ -133,11 +133,21 @@ permissions:
       - seichiassist.x-transfer
       - seichiassist.fly
       - seichiassist.stickmenu
+      - seichiassist.present.*
   seichiassist.event:
     default: op
   seichiassist.shareinv:
     default: not op
   seichiassist.mebius:
     default: not op
-  multiseichiplugin.present:
+  seichiassist.present:
     default: false
+    description: "'/present' の使用許可を与える。"
+  seichiassist.present.add:
+    default: false
+    description: "'/present add' の使用許可を与える。"
+  seichiassist.present.*:
+    default: false
+    children:
+      - seichiassit.present
+      - seichiassist.present.add
