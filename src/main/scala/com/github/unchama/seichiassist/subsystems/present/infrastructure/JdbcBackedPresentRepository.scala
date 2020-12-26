@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
 import cats.effect.Sync
+import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import scalikejdbc._
