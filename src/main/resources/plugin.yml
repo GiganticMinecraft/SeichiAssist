@@ -137,9 +137,9 @@ permissions:
   seichiassist.event:
     default: op
   seichiassist.shareinv:
-    default: not op
+    default: true
   seichiassist.mebius:
-    default: not op
+    default: true
   seichiassist.present:
     default: false
     description: "'/present' の使用許可を与える。"

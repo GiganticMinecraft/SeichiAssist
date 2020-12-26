@@ -1,28 +1,34 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
-import java.util.concurrent.TimeUnit
-
-import cats.effect.{IO, SyncIO, Timer}
+import cats.effect.{IO, SyncEffect, SyncIO, Timer}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.MebiusDrop
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
+import com.github.unchama.seichiassist.subsystems.seasonalevents.api.ChristmasEventsAPI
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, SequentialEffect}
+import com.github.unchama.util.RandomEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
+import java.util.concurrent.TimeUnit
 
 import scala.concurrent.duration.FiniteDuration
 
-class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-                              effectEnvironment: EffectEnvironment,
-                              ioTimer: Timer[IO]) extends Listener {
+class MebiusDropTrialListener[
+  G[_] : ChristmasEventsAPI : RandomEffect : SyncEffect
+](implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
+  effectEnvironment: EffectEnvironment, timer: Timer[IO]) extends Listener {
+
+  import cats.effect.implicits._
+  import cats.implicits._
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def tryMebiusDropOn(event: BlockBreakEvent): Unit = {
@@ -30,9 +36,11 @@ class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[M
 
     val player = event.getPlayer
 
+    if (player.getWorld.isSeichi) return
+
     val droppedMebiusProperty = MebiusDrop
-      .tryOnce[SyncIO](player.getName, player.getUniqueId.toString)
-      .unsafeRunSync()
+      .tryOnce[G](player.getName, player.getUniqueId.toString)
+      .runSync[SyncIO].unsafeRunSync()
       .getOrElse(return)
 
     val mebius = BukkitMebiusItemStackCodec.materialize(droppedMebiusProperty, damageValue = 0.toShort)
@@ -41,7 +49,6 @@ class MebiusDropTrialListener(implicit serviceRepository: PlayerDataRepository[M
     player.sendMessage(s"$RESET$YELLOW${BOLD}MEBIUSはプレイヤーと共に成長するヘルメットです。")
     player.sendMessage(s"$RESET$YELLOW${BOLD}あなただけのMEBIUSを育てましょう！")
 
-    import cats.implicits._
     effectEnvironment.runEffectAsync(
       "Mebiusのドロップ時メッセージを再生する",
       serviceRepository(player).makeSpeechIgnoringBlockage(

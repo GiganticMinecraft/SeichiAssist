@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.mebius.domain.property
 import cats.effect.Sync
 
 /**
+ * @param mebiusType            メビウスの種類
  * @param ownerPlayerId         オーナーのプレーヤーID
  * @param ownerUuid             オーナーのUUID文字列
  * @param enchantmentLevels     付与されるエンチャントのレベル
@@ -10,7 +11,8 @@ import cats.effect.Sync
  * @param ownerNicknameOverride オーナーをMebiusがどう呼ぶか
  * @param mebiusName            Mebius自体の名前
  */
-case class MebiusProperty private(ownerPlayerId: String,
+case class MebiusProperty private(mebiusType: MebiusType,
+                                  ownerPlayerId: String,
                                   ownerUuid: String,
                                   enchantmentLevels: MebiusEnchantmentLevels,
                                   level: MebiusLevel = MebiusLevel(1),
@@ -60,8 +62,9 @@ case class MebiusProperty private(ownerPlayerId: String,
 }
 
 object MebiusProperty {
-  def initialProperty(ownerPlayerId: String, ownerUuid: String): MebiusProperty = {
+  def initialProperty(mebiusType: MebiusType, ownerPlayerId: String, ownerUuid: String): MebiusProperty = {
     MebiusProperty(
+      mebiusType,
       ownerPlayerId,
       ownerUuid,
       enchantmentLevels = MebiusEnchantmentLevels(

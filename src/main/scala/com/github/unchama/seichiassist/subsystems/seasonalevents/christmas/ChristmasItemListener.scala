@@ -6,7 +6,8 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
-import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld._
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
@@ -14,7 +15,7 @@ import org.bukkit.entity.{EntityType, LivingEntity, Player}
 import org.bukkit.event.block.{Action, BlockBreakEvent}
 import org.bukkit.event.entity.{EntityDeathEvent, EntityTargetLivingEntityEvent}
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerItemConsumeEvent, PlayerJoinEvent}
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
@@ -23,7 +24,7 @@ import org.bukkit.{Bukkit, Sound}
 class ChristmasItemListener(instance: JavaPlugin) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
-    if (isInEvent) {
+    if (isInEventNow) {
       Seq(
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、クリスマスイベントを開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
@@ -126,15 +127,14 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
     }
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onChristmasSockPopped(event: BlockBreakEvent): Unit = {
-    if (!isInEvent) return
-    if (event.isCancelled) return
+    if (!isInEventNow) return
 
     val player = event.getPlayer
     val block = event.getBlock
-    if (block == null) return
-    if (!ManagedWorld.WorldOps(player.getWorld).isSeichi) return
+    if (!player.getWorld.isSeichi) return
+    if (!MaterialSets.materials.contains(block.getType)) return
 
     val rand = new Random().nextDouble()
     if (rand < itemDropRate) {
@@ -151,7 +151,7 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
 
   @EventHandler
   def onStrayDeath(event: EntityDeathEvent): Unit = {
-    if (!isInEvent) return
+    if (!isInEventNow) return
 
     event.getEntity match {
       case entity: LivingEntity if entity.getType == EntityType.STRAY && entity.getKiller != null =>

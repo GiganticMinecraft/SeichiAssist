@@ -41,8 +41,8 @@ object System {
     val playerItemMigrationController = new PlayerItemMigrationController[F, G](repository, migrations, service)
 
     val entryPoints = new EntryPoints {
-      override def runDatabaseMigration[H[_] : SyncEffect]: H[Unit] = {
-        DatabaseMigrationController[H](migrations).runDatabaseMigration
+      override def runDatabaseMigration[I[_] : SyncEffect]: I[Unit] = {
+        DatabaseMigrationController[I](migrations).runDatabaseMigration
       }
 
       override def runWorldMigration: IO[Unit] = {

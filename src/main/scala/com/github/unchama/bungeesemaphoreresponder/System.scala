@@ -10,7 +10,7 @@ import org.bukkit.event.Listener
 
 class System[
   F[_] : ConcurrentEffect : Timer
-](playerFinalizerList: PlayerDataFinalizerList[F, Player], messagePublishingContext: ContextShift[IO])
+](val playerFinalizerList: PlayerDataFinalizerList[F, Player], messagePublishingContext: ContextShift[IO])
  (implicit configuration: Configuration, _akkaSystem: ActorSystem) {
   // We wish to be more explicit on the context shift that will be used within this system,
   // so we don't receive it as an implicit parameter
