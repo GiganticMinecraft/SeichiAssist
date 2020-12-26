@@ -220,7 +220,7 @@ class Operator[F[_] : Sync] {
       }
     }
   }
-  
+
   def fetchPresentsState(player: Player): F[Map[Int, PresentClaimingState]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
