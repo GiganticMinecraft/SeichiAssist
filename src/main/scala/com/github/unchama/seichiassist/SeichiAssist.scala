@@ -167,6 +167,14 @@ class SeichiAssist extends JavaPlugin() {
     new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
   }
 
+  lazy val presentSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    subsystems.present.System.wired
+  }
+
   //endregion
 
   private implicit val _akkaSystem: ActorSystem = ConfiguredActorSystemProvider("reference.conf").provide()
@@ -311,7 +319,8 @@ class SeichiAssist extends JavaPlugin() {
       managedFlySystem,
       rescueplayer.System.wired,
       bookedAchievementSystem,
-      seasonalEventsSystem
+      seasonalEventsSystem,
+      presentSystem
     )
 
     // コマンドの登録
@@ -332,8 +341,7 @@ class SeichiAssist extends JavaPlugin() {
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
-      "stickmenu" -> StickMenuCommand.executor,
-      "present" -> new PresentCommand().executor
+      "stickmenu" -> StickMenuCommand.executor
     )
       .concat(subsystems.flatMap(_.commands))
       .foreach {

@@ -1,29 +1,19 @@
-package com.github.unchama.seichiassist.commands
+package com.github.unchama.seichiassist.subsystems.present.bukkit.command
 
-import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, IO, Sync}
-import cats.implicits._
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
+import com.github.unchama.seichiassist.subsystems.present.infrastructure.JdbcBackedPresentRepository
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.{Bukkit, ChatColor}
 import org.bukkit.command.TabExecutor
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.util.io.{BukkitObjectInputStream, BukkitObjectOutputStream}
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
 
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
-import java.util.UUID
-import scala.util.Using
-import scalikejdbc._
-
-class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
-  private val repo = new DirectBackedPresentRepository()
+object PresentCommand {
   /**
    * 概要: メインハンドに持っているアイテムをプレゼントとして受け取れるように追加する。
    *
@@ -41,7 +31,7 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
    *   <li>†: スペース区切り。</li>
    * </ul>
    */
-  private def addingExecutor = playerCommandBuilder
+  private def addingExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit repo: JdbcBackedPresentRepository[F]) = playerCommandBuilder
     .argumentsParsers(List(Parsers.fromOptionParser({ arg0: String =>
       arg0 match {
         // enum match
@@ -55,7 +45,7 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
         IO.pure(MessageEffect("You don't have the permission."))
       } else {
         // 多分Parserを通した段階でargs[0]は "player" | "all" になっているのでこれでOK
-        val isGlobal = context.args.parsed.head.asInstanceOf[String] == "player"
+        val isGlobal = context.args.parsed.head.asInstanceOf[String] == "all"
         val item = context.sender.getInventory.getItemInMainHand
         val eff = for {
           _ <- NonServerThreadContextShift[F].shift
@@ -94,12 +84,13 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
    *
    * 構文: /present claim &lt;id: int&gt;
    */
-  private val claimingExecutor = playerCommandBuilder
+  private def claimingExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit repo: JdbcBackedPresentRepository[F]) = playerCommandBuilder
     .argumentsParsers(List(Parsers.integer(MessageEffect("/present claimの第一引数には整数を入力してください。"))))
     .execution { context =>
       val player = context.sender
       val presentId = context.args.parsed.head.asInstanceOf[Int]
       val eff = for {
+        _ <- NonServerThreadContextShift[F].shift
         states <- repo.fetchPresentsState(player)
         claimState = states.get(presentId)
       } yield {
@@ -134,7 +125,7 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
    *
    * 構文: /present state
    */
-  private val showingStateExecutor = playerCommandBuilder
+  private def showingStateExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit repo: JdbcBackedPresentRepository[F]) = playerCommandBuilder
     .execution { context =>
       val eff = for {
         // off-main-thread
@@ -161,7 +152,7 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
    * 実行プレイヤーと対応するプレゼントの状況をページネーションと共に表示する
    * 構文: /present list &lt;page: PositiveInt&gt;
    */
-  private val listingExecutor = playerCommandBuilder
+  private def listingExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit repo: JdbcBackedPresentRepository[F]) = playerCommandBuilder
     .argumentsParsers(List(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数には1以上の数を指定してください。"))))
     .execution { context =>
       val perPage = 10
@@ -186,7 +177,7 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
       eff.toIO
     }
     .build()
-  val executor: TabExecutor = BranchedExecutor(
+  def executor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit repo: JdbcBackedPresentRepository[F]): TabExecutor = BranchedExecutor(
     Map(
       "add" -> addingExecutor,
       "claim" -> claimingExecutor,
@@ -194,138 +185,4 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
       "list" -> listingExecutor,
     )
   ).asNonBlockingTabExecutor()
-}
-
-class DirectBackedPresentRepository[F[_] : Sync] {
-  def getUUIDs: F[Set[UUID]] = Sync[F].delay {
-    DB.readOnly { implicit session =>
-      sql"SELECT uuid from seichiassist.playerdata;"
-        // mapがないとキレる
-        .map { rs =>
-          UUID.fromString(rs.string("uuid"))
-        }
-        .list()
-        .apply()
-        .toSet
-    }
-  }
-
-  /**
-   *
-   * @param itemstack 追加するアイテム
-   * @param players 配るプレイヤー
-   * @return 成功した場合新たに取得した`F[Some[Int]]`、失敗した場合`F[None]`
-   */
-  def performAddPresent(itemstack: ItemStack, players: Seq[UUID]): F[Option[Int]] = {
-    Sync[F].delay {
-      val next = DB.readOnly { implicit session =>
-        sql"""SELECT MAX(present_id) as max FROM presents"""
-          .map { _.int("max") }
-          .first()
-          .apply()
-      }.map { _ + 1 }.getOrElse(1)
-      val wasSuccessful = DB.localTx { implicit session =>
-        sql"""INSERT INTO present VALUES ($next, '${ItemStackBlobProxy.itemStackToBlob(itemstack)}')"""
-          .execute()
-          .apply()
-
-        val initQuery =
-          players.map { uuid => (uuid.toString, next, false) }.map { t =>
-            s"('${t._1}', ${t._2}, ${t._3})"
-          }.mkString(",\n")
-        sql"""INSERT INTO present_state VALUES $initQuery"""
-          .execute()
-          .apply()
-      }
-      Option.when(wasSuccessful) {
-        next
-      }
-    }
-  }
-
-  def claimPresent(player: Player, presentId: Int): F[Unit] = {
-    Sync[F].delay {
-      DB.localTx { implicit session =>
-        sql"""UPDATE present_state SET claimed = TRUE WHERE uuid = '${player.getUniqueId}' AND present_id = $presentId;"""
-          .update()
-          .apply()
-      }
-    }
-  }
-
-  def getAllPresent: F[Map[Int, ItemStack]] = {
-    Sync[F].delay {
-      DB.readOnly { implicit session =>
-        sql"""SELECT present_id, itemstack FROM presents;"""
-          .map { rs => (
-            rs.int("present_id"),
-            ItemStackBlobProxy.blobToItemStack(rs.string("itemstack"))
-          )}
-          .list()
-          .apply()
-          .toMap
-      }
-    }
-  }
-
-  def fetchPresentsState(player: Player): F[Map[Int, PresentClaimingState]] = {
-    Sync[F].delay {
-      DB.readOnly { implicit session =>
-        sql"""SELECT present_id, claimed FROM present_state WHERE uuid = '${player.getUniqueId}'"""
-          .map { x =>
-            val claimState = if (x.boolean("claimed"))
-              PresentClaimingState.Claimed
-            else
-              PresentClaimingState.NotClaimed
-            (x.int("present_id"), claimState)
-          }
-          .list()
-          .apply()
-          .toMap
-          .withDefault(_ => PresentClaimingState.Unavailable)
-      }
-    }
-  }
-
-  def getAllPresentId: F[Set[Int]] = {
-    Sync[F].delay {
-      DB.readOnly { implicit session =>
-        sql"""SELECT present_id FROM presents;"""
-          .map { rs => rs.int("present_id") }
-          .list()
-          .apply()
-          .toSet
-      }
-    }
-  }
-}
-
-sealed trait PresentClaimingState
-object PresentClaimingState {
-  case object NotClaimed extends PresentClaimingState
-  case object Claimed extends PresentClaimingState
-  case object Unavailable extends PresentClaimingState
-}
-
-/**
- * ItemStackとデータベースのBlob (正確にはその文字列表現) を互いに変換する。
- */
-object ItemStackBlobProxy {
-  type Base64 = String
-  def itemStackToBlob(stack: ItemStack): Base64 = {
-    Using.resource(new ByteArrayOutputStream()) { baos =>
-      Using.resource(new BukkitObjectOutputStream(baos)) { bos =>
-        bos.writeObject(stack)
-      }
-      Base64Coder.encodeLines(baos.toByteArray)
-    }
-  }
-
-  def blobToItemStack(data: Base64): ItemStack = {
-    Using.resource(new ByteArrayInputStream(Base64Coder.decodeLines(data))) { bais =>
-      Using.resource(new BukkitObjectInputStream(bais)) { boi =>
-        boi.readObject().asInstanceOf[ItemStack]
-      }
-    }
-  }
 }
