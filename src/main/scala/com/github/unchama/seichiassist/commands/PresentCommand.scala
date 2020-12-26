@@ -6,12 +6,11 @@ import cats.implicits._
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import org.bukkit.Bukkit
+import org.bukkit.{Bukkit, ChatColor}
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -21,47 +20,67 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import java.util.UUID
 import scala.util.Using
+import scalikejdbc._
 
-// FIXME: 標準のexecutor形式に変換する
-class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit effectEnvironment: EffectEnvironment) {
-  private val repo = new Operator()
+class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift] {
+  private val repo = new DirectBackedPresentRepository()
   /**
    * 概要: メインハンドに持っているアイテムをプレゼントとして受け取れるように追加する。
    *
    * 権限ノード: `seichiassist.present.add`
    *
-   * 出力: 追加が成功した場合は、アイテムのIDを返却する。
+   * 出力: 追加が成功した場合は、アイテムのIDを返却する。失敗した場合は、適切なエラーメッセージを表示する。
    *
-   * コマンド構文: /present add [...players^†^: PlayerName]
-   *
+   * コマンド構文:
+   * <ul>
+   * <li>/present add player &lt;...players^†^: PlayerName&gt;</li>
+   * <li>/present add all</li>
+   * </ul>
    * 備考:
    * <ul>
-   *   <li>†: スペース区切り。省略時は全てのプレイヤーが指定されたものとみなす</li>
+   *   <li>†: スペース区切り。</li>
    * </ul>
    */
-  private val addExec = playerCommandBuilder
+  private def addingExecutor = playerCommandBuilder
+    .argumentsParsers(List(Parsers.fromOptionParser({ arg0: String =>
+      arg0 match {
+        // enum match
+        case "player" => Some(arg0)
+        case "all" => Some(arg0)
+        case _ => None
+      }
+    }, MessageEffect("presentコマンドのモード指定は、playerまたはallを指定してください。"))))
     .execution { context =>
       if (!context.sender.hasPermission("seichiassist.present.add")) {
-        IO {
-          MessageEffect("You don't have the permission.")
-        }
+        IO.pure(MessageEffect("You don't have the permission."))
       } else {
+        // 多分Parserを通した段階でargs[0]は "player" | "all" になっているのでこれでOK
+        val isGlobal = context.args.parsed.head.asInstanceOf[String] == "player"
         val item = context.sender.getInventory.getItemInMainHand
-
         val eff = for {
           _ <- NonServerThreadContextShift[F].shift
-          // 可変長引数には対応していないので`yetToBeParsed`を使う
-          restParam = context.args.yetToBeParsed.filter(_.nonEmpty)
-
           uuids <- repo.getUUIDs
-          sy = if (restParam.isEmpty) uuids else restParam.map(Bukkit.getOfflinePlayer).map(_.getUniqueId)
-          optItemId <- repo.addPresent(item, sy.toSeq)
+          // 可変長引数には対応していないので`yetToBeParsed`を使う
+          target = if (isGlobal)
+            uuids
+          else context.args
+            // プレイヤー名は /[A-Za-z0-9_]{,16}/であるため空白が誤って解釈されることはない
+            .yetToBeParsed
+            // 連続した空白を消去
+            .filter(_.nonEmpty)
+            .map(Bukkit.getOfflinePlayer)
+            .map(_.getUniqueId)
+          errorIfNobody = if (target.isEmpty) MessageEffect("対象のプレイヤーが存在しません！") else TargetedEffect.emptyEffect
+          optItemId <- repo.performAddPresent(item, target.toSeq)
         } yield {
           val message = optItemId match {
             case Some(id) => s"メインハンドのアイテムをID: ${id}として登録しました。"
             case None => "アイテムの登録に失敗しました。再度お試しください。"
           }
-          MessageEffect(message)
+          SequentialEffect(
+            MessageEffect(message),
+            errorIfNobody
+          )
         }
 
         eff.toIO
@@ -73,9 +92,9 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift](impl
    * 概要: 指定されたIDのプレゼントを受け取る。
    * このコマンドを実行した際、プレイヤーにアイテムを追加する。
    *
-   * コマンド構文: /present claim &lt;id: int&gt;
+   * 構文: /present claim &lt;id: int&gt;
    */
-  private val claimExec = playerCommandBuilder
+  private val claimingExecutor = playerCommandBuilder
     .argumentsParsers(List(Parsers.integer(MessageEffect("/present claimの第一引数には整数を入力してください。"))))
     .execution { context =>
       val player = context.sender
@@ -88,9 +107,8 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift](impl
           case Some(state) =>
             state match {
               case PresentClaimingState.Claimed =>
-                val show = MessageEffect(s"ID: ${presentId}のプレゼントはすでに受け取っています。")
-                IO.pure(show)
-              case PresentClaimingState.Unclaimed =>
+                IO.pure(MessageEffect(s"ID: ${presentId}のプレゼントはすでに受け取っています。"))
+              case PresentClaimingState.NotClaimed =>
                 val showType = for {
                   _ <- repo.claimPresent(player, presentId)
                   items <- repo.getAllPresent
@@ -100,8 +118,7 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift](impl
                     MessageEffect(s"ID: ${presentId}のプレゼントを付与しました。")
                   )
                 }
-                val showType2 = showType.toIO
-                showType2
+                showType.toIO
             }
           case None =>
             IO.pure(MessageEffect(s"ID: ${presentId}のプレゼントは存在しないか、あるいは配布対象ではありません"))
@@ -113,11 +130,11 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift](impl
     .build()
 
   /**
-   * 全てのプレゼントを総覧し、ステータス (未受取/受け取り済み) を表示する
+   * 実行プレイヤーが対象となっている全てのプレゼントを総覧し、受け取りステータスを表示する
    *
-   * コマンド構文: /present state
+   * 構文: /present state
    */
-  private val stateExec = playerCommandBuilder
+  private val showingStateExecutor = playerCommandBuilder
     .execution { context =>
       val eff = for {
         // off-main-thread
@@ -126,12 +143,13 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift](impl
       } yield {
         val mes = state
           .toList
-          .map(x => s"ID: ${x._1} ---> ${
+          .map(x => s"ID=${x._1}: ${
             x._2 match {
-              case PresentClaimingState.Claimed => "受け取り済み"
-              case PresentClaimingState.Unclaimed => "受取可能"
+              case PresentClaimingState.Claimed => s"${ChatColor.GOLD}受け取り済み"
+              case PresentClaimingState.NotClaimed => s"${ChatColor.GREEN}受け取り可能"
             }
           }")
+          .filter(_.nonEmpty)
         MessageEffect(mes)
       }
 
@@ -139,17 +157,46 @@ class PresentCommand[F[_] : ConcurrentEffect : NonServerThreadContextShift](impl
     }
     .build()
 
+  /**
+   * 実行プレイヤーと対応するプレゼントの状況をページネーションと共に表示する
+   * 構文: /present list &lt;page: PositiveInt&gt;
+   */
+  private val listingExecutor = playerCommandBuilder
+    .argumentsParsers(List(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数には1以上の数を指定してください。"))))
+    .execution { context =>
+      val perPage = 10
+      val page = context.args.parsed.head.asInstanceOf[Int]
+      val player = context.sender
+      val eff = for {
+        _ <- NonServerThreadContextShift[F].shift
+        state <- repo.fetchPresentsState(player)
+        ids = state.keys.toBuffer.sorted.slice((page - 1) * perPage, page * perPage - 1)
+        id2state = ids.map { id => (id, state(id)) }
+      } yield {
+        MessageEffect(id2state.map { i2s =>
+          s"ID=${i2s._1}: ${
+            i2s._2 match {
+              case PresentClaimingState.Claimed => s"${ChatColor.GOLD}受け取り済み"
+              case PresentClaimingState.NotClaimed => s"${ChatColor.GREEN}受け取り可能"
+              case PresentClaimingState.Unavailable => s"${ChatColor.GRAY}対象外"
+            }
+          }${ChatColor.RESET}"
+        }.toList)
+      }
+      eff.toIO
+    }
+    .build()
   val executor: TabExecutor = BranchedExecutor(
     Map(
-      "add" -> addExec,
-      "claim" -> claimExec,
-      "state" -> stateExec
+      "add" -> addingExecutor,
+      "claim" -> claimingExecutor,
+      "state" -> showingStateExecutor,
+      "list" -> listingExecutor,
     )
   ).asNonBlockingTabExecutor()
 }
 
-import scalikejdbc._
-class Operator[F[_] : Sync] {
+class DirectBackedPresentRepository[F[_] : Sync] {
   def getUUIDs: F[Set[UUID]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"SELECT uuid from seichiassist.playerdata;"
@@ -169,7 +216,7 @@ class Operator[F[_] : Sync] {
    * @param players 配るプレイヤー
    * @return 成功した場合新たに取得した`F[Some[Int]]`、失敗した場合`F[None]`
    */
-  def addPresent(itemstack: ItemStack, players: Seq[UUID]): F[Option[Int]] = {
+  def performAddPresent(itemstack: ItemStack, players: Seq[UUID]): F[Option[Int]] = {
     Sync[F].delay {
       val next = DB.readOnly { implicit session =>
         sql"""SELECT MAX(present_id) as max FROM presents"""
@@ -229,12 +276,25 @@ class Operator[F[_] : Sync] {
             val claimState = if (x.boolean("claimed"))
               PresentClaimingState.Claimed
             else
-              PresentClaimingState.Unclaimed
+              PresentClaimingState.NotClaimed
             (x.int("present_id"), claimState)
           }
           .list()
           .apply()
           .toMap
+          .withDefault(_ => PresentClaimingState.Unavailable)
+      }
+    }
+  }
+
+  def getAllPresentId: F[Set[Int]] = {
+    Sync[F].delay {
+      DB.readOnly { implicit session =>
+        sql"""SELECT present_id FROM presents;"""
+          .map { rs => rs.int("present_id") }
+          .list()
+          .apply()
+          .toSet
       }
     }
   }
@@ -242,8 +302,9 @@ class Operator[F[_] : Sync] {
 
 sealed trait PresentClaimingState
 object PresentClaimingState {
-  case object Unclaimed extends PresentClaimingState
+  case object NotClaimed extends PresentClaimingState
   case object Claimed extends PresentClaimingState
+  case object Unavailable extends PresentClaimingState
 }
 
 /**
