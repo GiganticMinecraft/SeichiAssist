@@ -1,4 +1,4 @@
-package com.github.unchama.buildassist.domain.actions
+package com.github.unchama.buildassist.application.actions
 
 import cats.Monad
 import cats.effect.concurrent.Ref

@@ -2,18 +2,19 @@ package com.github.unchama.buildassist.application.datarepository
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
+import com.github.unchama.buildassist.application.actions.LevelUpNotifier
 import com.github.unchama.buildassist.application.routine.BuildLevelSynchronizationRoutine
-import com.github.unchama.buildassist.domain.actions.LevelUpNotifier
 import com.github.unchama.buildassist.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.{ContextCoercion, Diff, WeakRef}
+import com.github.unchama.minecraft.actions.SendMinecraftMessage
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 import java.util.UUID
 
 class BuildAmountDataRepository[
-  F[_] : SyncEffect : LevelUpNotifier[*[_], Player],
+  F[_] : SyncEffect : SendMinecraftMessage[*[_], Player],
   G[_] : ConcurrentEffect : Timer : ErrorLogger : ContextCoercion[F, *[_]]
 ](implicit persistence: BuildAmountDataPersistence[F])
   extends TwoPhasedPlayerDataRepository[F, Ref[F, BuildAmountData]] {
@@ -38,9 +39,9 @@ class BuildAmountDataRepository[
 
     for {
       _ <- notifyLevelDiff
-      dataRef <- Ref.in[F, G, BuildAmountData](updatedData)
+      dataRef <- Ref.of[F, BuildAmountData](updatedData)
 
-      weakDataRef = WeakRef.of[G, Ref[G, BuildAmountData]](dataRef)
+      weakDataRef = WeakRef.of[G, Ref[G, BuildAmountData]](dataRef.mapK(implicitly[ContextCoercion[F, G]]))
       _ <-
         BuildLevelSynchronizationRoutine(player, weakDataRef)
           .start

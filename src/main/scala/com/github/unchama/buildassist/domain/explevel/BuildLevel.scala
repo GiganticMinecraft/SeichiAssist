@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist.domain.explevel
 
-import cats.Eq
+import cats.{Eq, Order}
 import com.github.unchama.seichiassist.domain.explevel.Level
 
 case class BuildLevel private(level: Int) extends AnyVal
@@ -15,6 +15,8 @@ private[explevel] abstract class SeichiLevelInstances {
   }
 
   implicit val eq: Eq[BuildLevel] = Eq.by(_.level)
+
+  implicit val order: Order[BuildLevel] = Order.by(_.level)
 }
 
 object BuildLevel extends SeichiLevelInstances {

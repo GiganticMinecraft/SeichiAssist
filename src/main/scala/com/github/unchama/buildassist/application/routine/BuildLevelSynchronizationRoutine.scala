@@ -3,10 +3,11 @@ package com.github.unchama.buildassist.application.routine
 import cats.effect.Timer
 import cats.effect.concurrent.Ref
 import cats.{Applicative, MonadError}
-import com.github.unchama.buildassist.domain.actions.LevelUpNotifier
+import com.github.unchama.buildassist.application.actions.LevelUpNotifier
 import com.github.unchama.buildassist.domain.playerdata.BuildAmountData
 import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.generic.{Diff, WeakRef}
+import com.github.unchama.minecraft.actions.SendMinecraftMessage
 import io.chrisdavenport.log4cats.ErrorLogger
 
 object BuildLevelSynchronizationRoutine {
@@ -16,7 +17,7 @@ object BuildLevelSynchronizationRoutine {
     F[_]
     : MonadError[*[_], Throwable]
     : Timer
-    : LevelUpNotifier[*[_], Player]
+    : SendMinecraftMessage[*[_], Player]
     : ErrorLogger
   ](player: Player, updateTargetRef: WeakRef[F, Ref[F, BuildAmountData]]): F[Unit] = {
     import cats.implicits._
