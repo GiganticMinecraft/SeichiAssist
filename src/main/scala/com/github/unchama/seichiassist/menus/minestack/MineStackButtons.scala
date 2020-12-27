@@ -2,10 +2,11 @@ package com.github.unchama.seichiassist.menus.minestack
 
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.concurrent.{Execution, MinecraftServerThreadShift}
+import com.github.unchama.concurrent.Execution
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util

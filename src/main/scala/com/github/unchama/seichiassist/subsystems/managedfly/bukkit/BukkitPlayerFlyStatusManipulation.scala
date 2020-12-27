@@ -2,7 +2,8 @@ package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 
 import cats.data.Kleisli
 import cats.effect.{Concurrent, Sync, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadShift, NonServerThreadContextShift}
+import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._

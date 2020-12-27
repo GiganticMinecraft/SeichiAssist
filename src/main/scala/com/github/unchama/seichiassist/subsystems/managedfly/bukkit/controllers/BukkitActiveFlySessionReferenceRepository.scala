@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers
 
 import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
-import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference, FlyDurationPersistenceRepository, SystemConfiguration}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{PlayerFlyStatus, RemainingFlyDuration}
 import org.bukkit.entity.Player
