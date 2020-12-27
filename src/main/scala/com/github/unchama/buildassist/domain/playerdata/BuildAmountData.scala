@@ -19,6 +19,8 @@ case class BuildAmountData(expAmount: BuildExpAmount, desyncedLevel: BuildLevel)
   def withSyncedLevel: BuildAmountData =
     this.copy(desyncedLevel = BuildAssistExpTable.levelAt(expAmount))
 
+  def modifyExpAmount(f: BuildExpAmount => BuildExpAmount): BuildAmountData = copy(expAmount = f(expAmount))
+
 }
 
 object BuildAmountData {

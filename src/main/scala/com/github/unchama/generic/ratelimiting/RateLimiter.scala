@@ -5,6 +5,8 @@ import cats.effect.concurrent.Ref
 
 /**
  * Rate Limitの実装を提供するオブジェクト。
+ *
+ * TODO 数値型について多相的にする。Spireを導入すると良い。
  */
 trait RateLimiter[F[_]] {
 
