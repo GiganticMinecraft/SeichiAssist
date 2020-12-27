@@ -14,9 +14,9 @@ import com.github.unchama.buildassist.domain.explevel.{BuildAssistExpTable, Buil
 case class BuildAmountData(expAmount: BuildExpAmount, desyncedLevel: BuildLevel) {
 
   /**
-   * このデータの経験値を基に建築レベルが同期されたデータを計算する。
+   * このデータの経験値を基に建築レベルが同期されたデータ。
    */
-  def withSyncedLevel: BuildAmountData =
+  lazy val withSyncedLevel: BuildAmountData =
     this.copy(desyncedLevel = BuildAssistExpTable.levelAt(expAmount))
 
   def modifyExpAmount(f: BuildExpAmount => BuildExpAmount): BuildAmountData = copy(expAmount = f(expAmount))
