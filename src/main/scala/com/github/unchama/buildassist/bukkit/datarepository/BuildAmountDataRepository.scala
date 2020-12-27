@@ -1,4 +1,4 @@
-package com.github.unchama.buildassist.application.datarepository
+package com.github.unchama.buildassist.bukkit.datarepository
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
