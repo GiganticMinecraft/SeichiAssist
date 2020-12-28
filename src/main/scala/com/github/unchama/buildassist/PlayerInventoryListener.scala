@@ -12,9 +12,6 @@ import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Material, Sound}
 
-import java.util.UUID
-import scala.collection.mutable
-
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
   import com.github.unchama.targetedeffect._
@@ -48,7 +45,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     val uuid = player.getUniqueId
 
     val playerdata = BuildAssist.instance.temporaryData(uuid)
-    val playerLevel = BuildAssist.playermap(uuid).level
+    val playerLevel = BuildAssist.instance.buildAmountDataRepository(player).get.unsafeRunSync().desyncedLevel.level
 
     //プレイヤーデータが無い場合は処理終了
 
@@ -76,7 +73,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         )
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //ブロックを並べるスキル設定
-        if (playerLevel < BuildAssist.config.getblocklineuplevel()) {
+        if (playerLevel < BuildAssist.config.getblocklineuplevel) {
           player.sendMessage(RED.toString + "建築Lvが足りません")
         } else {
           playerdata.line_up_flg = (playerdata.line_up_flg + 1) % 3
@@ -105,7 +102,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
       } else if (itemstackcurrent.getType == Material.CHEST) {
         //マインスタックの方を優先して消費する設定
-        if (playerLevel < BuildAssist.config.getblocklineupMinestacklevel()) {
+        if (playerLevel < BuildAssist.config.getblocklineupMinestacklevel) {
           player.sendMessage(s"${RED.toString}建築Lvが足りません")
         } else {
           playerdata.line_up_minestack_flg = if (playerdata.line_up_minestack_flg == 0) 1 else 0

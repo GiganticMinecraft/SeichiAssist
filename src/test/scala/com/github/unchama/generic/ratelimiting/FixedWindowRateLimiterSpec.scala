@@ -37,7 +37,7 @@ class FixedWindowRateLimiterSpec
       val requestCount = 100
 
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute)
+        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute).coerceTo[Task]
         allowances <- (1 to requestCount).toList.traverse(_ => rateLimiter.requestPermission).coerceTo[Task]
       } yield {
         assert(allowances.take(maxCount).forall(allowed => allowed))
@@ -52,7 +52,7 @@ class FixedWindowRateLimiterSpec
       val maxCount = 10
 
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute)
+        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute).coerceTo[Task]
         _ <- (1 to maxCount).toList.traverse(_ => rateLimiter.requestPermission).coerceTo[Task]
         _ <- discreteEventually {
           rateLimiter.requestPermission.coerceTo[Task]
@@ -67,7 +67,7 @@ class FixedWindowRateLimiterSpec
       val windowCount = 5
 
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute)
+        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute).coerceTo[Task]
         allowances <- (1 to windowCount).toList.traverse(_ =>
           (1 to maxCount)
             .toList

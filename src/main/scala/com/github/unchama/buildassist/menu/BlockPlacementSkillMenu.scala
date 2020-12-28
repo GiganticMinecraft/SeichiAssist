@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist.menu
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.buildassist.{BuildAssist, PlayerData, TemporaryMutableBuildAssistPlayerData}
+import com.github.unchama.buildassist.{BuildAssist, TemporaryMutableBuildAssistPlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
@@ -261,42 +261,43 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
 
     def computeButtonToToggleConsumingMineStack(): IO[Button] = RecomputedButton {
-      IO {
-        val playerData = BuildAssist.instance.temporaryData(getUniqueId)
-        val playerLevel = BuildAssist.playermap(getUniqueId).level
+      BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+        IO {
+          val playerData = BuildAssist.instance.temporaryData(getUniqueId)
 
-        val currentStatus = playerData.zs_minestack_flag
+          val currentStatus = playerData.zs_minestack_flag
 
-        val iconItemStackBuilder = new IconItemStackBuilder(Material.CHEST)
-          .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
-          .lore(
-            s"$RESET${GRAY}スキルでブロックを並べるとき",
-            s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-            s"$RESET${GRAY}建築Lv ${BuildAssist.config.getblocklineupMinestacklevel()} 以上で利用可能",
-            s"$RESET${GRAY}クリックで切り替え"
-          )
-          .build()
+          val iconItemStackBuilder = new IconItemStackBuilder(Material.CHEST)
+            .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
+            .lore(
+              s"$RESET${GRAY}スキルでブロックを並べるとき",
+              s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
+              s"$RESET${GRAY}建築Lv ${BuildAssist.config.getblocklineupMinestacklevel} 以上で利用可能",
+              s"$RESET${GRAY}クリックで切り替え"
+            )
+            .build()
 
-        Button(
-          iconItemStackBuilder,
-          LeftClickButtonEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            DeferredEffect {
-              IO {
-                if (playerLevel < BuildAssist.config.getZoneskillMinestacklevel)
-                  MessageEffect(s"${RED}建築Lvが足りません")
-                else
-                  SequentialEffect(
-                    targetedeffect.UnfocusedEffect {
-                      playerData.zs_minestack_flag = !currentStatus
-                    },
-                    MessageEffect(s"MineStack優先設定${if (currentStatus) "OFF" else "ON"}"),
-                    open
-                  )
+          Button(
+            iconItemStackBuilder,
+            LeftClickButtonEffect(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              DeferredEffect {
+                IO {
+                  if (amountData.desyncedLevel.level < BuildAssist.config.getZoneskillMinestacklevel)
+                    MessageEffect(s"${RED}建築Lvが足りません")
+                  else
+                    SequentialEffect(
+                      targetedeffect.UnfocusedEffect {
+                        playerData.zs_minestack_flag = !currentStatus
+                      },
+                      MessageEffect(s"MineStack優先設定${if (currentStatus) "OFF" else "ON"}"),
+                      open
+                    )
+                }
               }
-            }
+            )
           )
-        )
+        }
       }
     }
   }

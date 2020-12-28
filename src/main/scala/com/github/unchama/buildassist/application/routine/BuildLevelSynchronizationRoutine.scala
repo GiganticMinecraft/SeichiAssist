@@ -31,6 +31,7 @@ object BuildLevelSynchronizationRoutine {
           (data.withSyncedLevel, (data, data.withSyncedLevel))
         }
         (oldData, updatedData) = dataPair
+        // TODO プレーヤーはオフラインの場合があるのでそのケースについて調べよ
         _ <-
           Diff
             .fromValues(oldData.desyncedLevel, updatedData.desyncedLevel)

@@ -8,3 +8,9 @@ class SendBukkitMessage[F[_] : Sync] extends SendMinecraftMessage[F, Player] {
   override def string(player: Player, s: String): F[Unit] =
     Sync[F].delay(player.sendMessage(s))
 }
+
+object SendBukkitMessage {
+
+  implicit def apply[F[_] : Sync]: SendBukkitMessage[F] = new SendBukkitMessage[F]
+
+}

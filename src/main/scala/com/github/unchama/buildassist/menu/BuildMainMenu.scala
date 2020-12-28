@@ -27,23 +27,21 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   import player._
 
   def computeNotationOfStats(): IO[Button] = RecomputedButton {
-    IO {
-      val openerData = BuildAssist.playermap(getUniqueId)
-      val iconItemStack = new SkullItemStackBuilder(getUniqueId)
-        .enchanted()
-        .title(s"$YELLOW$EMPHASIZE${player.getName}の建築データ")
-        .lore(
-          s"$RESET${AQUA}建築Lv: ${openerData.level}",
-          /* 小数点以下一桁で表示。
-           * https://github.com/GiganticMinecraft/SeichiAssist/issues/540 対策。
-           */
-          s"$RESET${AQUA}総建築量: ${openerData.totalbuildnum.setScale(1, BigDecimal.RoundingMode.HALF_UP).bigDecimal.toPlainString}",
-          s"$RESET$DARK_GRAY※1分毎に更新"
-        )
-        .build()
+    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap(data =>
+      IO {
+        val iconItemStack = new SkullItemStackBuilder(getUniqueId)
+          .enchanted()
+          .title(s"$YELLOW$EMPHASIZE${player.getName}の建築データ")
+          .lore(
+            s"$RESET${AQUA}建築Lv: ${data.desyncedLevel.level}",
+            s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}",
+            s"$RESET$DARK_GRAY※1分毎に更新"
+          )
+          .build()
 
-      Button(iconItemStack)
-    }
+        Button(iconItemStack)
+      }
+    )
   }
 
   def computeButtonToShowStateOfFlying()
@@ -78,120 +76,125 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   }
 
   def computeButtonToToggleRangedPlaceSkill(): IO[Button] = RecomputedButton(
-    IO {
-      val openerData = BuildAssist.instance.temporaryData(getUniqueId)
-      val openerLevel = BuildAssist.playermap(getUniqueId).level
+    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap(amountData =>
+      IO {
+        val openerData = BuildAssist.instance.temporaryData(getUniqueId)
+        val openerLevel = amountData.desyncedLevel.level
 
-      val iconItemStack = new IconItemStackBuilder(Material.STONE)
-        .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
-        .lore(
-          s"$RESET$YELLOW「スニーク+左クリック」をすると、",
-          s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
-          s"$RESET${YELLOW}インベントリ内から消費し設置します。",
-          s"$RESET$LIGHT_PURPLE＜クリックでON/OFF切り替え＞"
-        )
-        .build()
+        val iconItemStack = new IconItemStackBuilder(Material.STONE)
+          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
+          .lore(
+            s"$RESET$YELLOW「スニーク+左クリック」をすると、",
+            s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
+            s"$RESET${YELLOW}インベントリ内から消費し設置します。",
+            s"$RESET$LIGHT_PURPLE＜クリックでON/OFF切り替え＞"
+          )
+          .build()
 
-      Button(
-        iconItemStack,
-        FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-          SequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            DeferredEffect {
-              IO {
-                if (openerLevel < BuildAssist.config.getZoneSetSkillLevel) {
-                  MessageEffect(s"${RED}建築Lvが足りません")
-                } else {
-                  if (openerData.ZoneSetSkillFlag) SequentialEffect(
-                    UnfocusedEffect {
-                      openerData.ZoneSetSkillFlag = false
-                    },
-                    MessageEffect(s"${RED}範囲設置スキルOFF")
-                  ) else SequentialEffect(
-                    UnfocusedEffect {
-                      openerData.ZoneSetSkillFlag = true
-                    },
-                    MessageEffect(s"${RED}範囲設置スキルON")
-                  )
+        Button(
+          iconItemStack,
+          FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              DeferredEffect {
+                IO {
+                  if (openerLevel < BuildAssist.config.getZoneSetSkillLevel) {
+                    MessageEffect(s"${RED}建築Lvが足りません")
+                  } else {
+                    if (openerData.ZoneSetSkillFlag) SequentialEffect(
+                      UnfocusedEffect {
+                        openerData.ZoneSetSkillFlag = false
+                      },
+                      MessageEffect(s"${RED}範囲設置スキルOFF")
+                    ) else SequentialEffect(
+                      UnfocusedEffect {
+                        openerData.ZoneSetSkillFlag = true
+                      },
+                      MessageEffect(s"${RED}範囲設置スキルON")
+                    )
+                  }
                 }
               }
-            }
-          )
-        }
-      )
-    }
+            )
+          }
+        )
+      }
+    )
   )
 
   def computeButtonToOpenRangedPlaceSkillMenu()
-                                             (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = IO {
-    val openerData = BuildAssist.instance.temporaryData(getUniqueId)
-    val openerLevel = BuildAssist.playermap(getUniqueId).level
+                                             (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] =
+    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+      IO {
+        val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
-    val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_Exclamation)
-      .title(s"$YELLOW$EMPHASIZE「範囲設置スキル」設定画面へ")
-      .lore(
-        s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
-        s"$RESET${GRAY}現在の設定",
-        s"$RESET${GRAY}MineStack優先設定:${if (openerData.zs_minestack_flag) "ON" else "OFF"}"
-      )
-      .build()
+        val iconItemStack = new SkullItemStackBuilder(SkullOwners.MHF_Exclamation)
+          .title(s"$YELLOW$EMPHASIZE「範囲設置スキル」設定画面へ")
+          .lore(
+            s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
+            s"$RESET${GRAY}現在の設定",
+            s"$RESET${GRAY}MineStack優先設定:${if (openerData.zs_minestack_flag) "ON" else "OFF"}"
+          )
+          .build()
 
-    Button(iconItemStack,
-      action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-        SequentialEffect(
-          FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-          DeferredEffect {
-            IO {
-              if (openerLevel < BuildAssist.config.getblocklineuplevel()) {
-                MessageEffect(s"${RED}建築Lvが足りません")
-              } else {
-                new BlockPlacementSkillMenu().open
+        Button(iconItemStack,
+          action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
+              DeferredEffect {
+                IO {
+                  if (amountData.desyncedLevel.level < BuildAssist.config.getblocklineuplevel) {
+                    MessageEffect(s"${RED}建築Lvが足りません")
+                  } else {
+                    new BlockPlacementSkillMenu().open
+                  }
+                }
+              }
+            )
+          }
+        )
+      }
+    }
+
+  def computeButtonToLineUpBlocks(): IO[Button] = RecomputedButton(
+    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+      IO {
+        val openerData = BuildAssist.instance.temporaryData(getUniqueId)
+
+        val iconItemStack = new IconItemStackBuilder(Material.WOOD)
+          .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+          .lore(
+            s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
+            s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
+            s"$RESET${GRAY}クリックで切り替え"
+          )
+          .build()
+
+        Button(iconItemStack,
+          action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+            DeferredEffect {
+              IO {
+                if (amountData.desyncedLevel.level < BuildAssist.config.getblocklineuplevel) {
+                  MessageEffect(s"${RED}建築Lvが足りません")
+                } else {
+                  SequentialEffect(
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+                    UnfocusedEffect {
+                      openerData.line_up_flg += 1
+                      openerData.line_up_flg %= 3
+                    },
+                    DeferredEffect {
+                      IO {
+                        MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+                      }
+                    }
+                  )
+                }
               }
             }
           }
         )
       }
-    )
-  }
-
-  def computeButtonToLineUpBlocks(): IO[Button] = RecomputedButton(
-    IO {
-      val openerData = BuildAssist.instance.temporaryData(getUniqueId)
-      val openerLevel = BuildAssist.playermap(getUniqueId).level
-
-      val iconItemStack = new IconItemStackBuilder(Material.WOOD)
-        .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
-        .lore(
-          s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
-          s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-          s"$RESET${GRAY}クリックで切り替え"
-        )
-        .build()
-
-      Button(iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-          DeferredEffect {
-            IO {
-              if (openerLevel < BuildAssist.config.getblocklineuplevel()) {
-                MessageEffect(s"${RED}建築Lvが足りません")
-              } else {
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                  UnfocusedEffect {
-                    openerData.line_up_flg += 1
-                    openerData.line_up_flg %= 3
-                  },
-                  DeferredEffect {
-                    IO {
-                      MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
-                    }
-                  }
-                )
-              }
-            }
-          }
-        }
-      )
     }
   )
 

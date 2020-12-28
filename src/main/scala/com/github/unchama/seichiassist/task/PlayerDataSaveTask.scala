@@ -190,10 +190,6 @@ object PlayerDataSaveTask {
           + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
           + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
-          //建築
-          + ",build_lv = " + playerdata.buildCount.lv
-          + ",build_count = " + playerdata.buildCount.count //.toString()
-
           //投票
           + ",canVotingFairyUse = " + playerdata.usingVotingFairy
           + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString + "'"

@@ -383,7 +383,7 @@ class SeichiAssist extends JavaPlugin() {
 
     SeichiAssist.buildAssist = {
       implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
-      new BuildAssist(this)
+      new BuildAssist(this, loggerF)
     }
     SeichiAssist.buildAssist.onEnable()
 

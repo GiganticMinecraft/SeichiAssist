@@ -1,9 +1,13 @@
 package com.github.unchama.buildassist.listener
 
-import com.github.unchama.buildassist.{BuildAssist, Util}
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import cats.effect.{SyncEffect, SyncIO}
+import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.application.actions.IncrementBuildExpWhenBuiltWithSkill
+import com.github.unchama.buildassist.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.external.ExternalPlugins
+import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
@@ -12,7 +16,11 @@ import org.bukkit.{Material, Sound}
 
 import scala.util.control.Breaks
 
-object BlockLineUpTriggerListener extends Listener {
+class BlockLineUpTriggerListener[
+  F[_]
+  : IncrementBuildExpWhenBuiltWithSkill[*[_], Player]
+  : SyncEffect
+] extends Listener {
 
   import scala.jdk.CollectionConverters._
 
@@ -86,7 +94,7 @@ object BlockLineUpTriggerListener extends Listener {
       }
     }
 
-    val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag()
+    val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag
 
     val mineStackObjectToBeUsed =
       if (buildAssistData.line_up_minestack_flg == 1)
@@ -172,11 +180,12 @@ object BlockLineUpTriggerListener extends Listener {
       }
     }
 
-    //カウント対象ワールドの場合カウント値を足す
-    if (player.getWorld.shouldTrackBuildBlock) {
-      //対象ワールドかチェック
-      Util.addBuild1MinAmount(player, new java.math.BigDecimal(placedBlockCount * BuildAssist.config.getBlockCountMag)) //設置した数を足す
-    }
+    // 建築量を足す
+    import cats.effect.implicits._
+    IncrementBuildExpWhenBuiltWithSkill[F, Player]
+      .of(player, BuildExpAmount.ofNonNegative(placedBlockCount))
+      .runSync[SyncIO]
+      .unsafeRunSync()
 
     val consumptionFromMainHand = mineStackObjectToBeUsed match {
       case Some(obj) =>

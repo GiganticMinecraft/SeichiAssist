@@ -1,20 +1,30 @@
 package com.github.unchama.buildassist
 
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.buildassist.application.actions.{ClassifyPlayerWorld, IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
+import com.github.unchama.buildassist.application.{BuildExpMultiplier, Configuration}
+import com.github.unchama.buildassist.bukkit.actions.ClassifyBukkitPlayerWorld
+import com.github.unchama.buildassist.bukkit.datarepository.{BuildAmountDataRepository, RateLimiterRepository}
+import com.github.unchama.buildassist.bukkit.listeners.BuildExpIncrementer
+import com.github.unchama.buildassist.infrastructure.JdbcBuildAmountDataPersistence
 import com.github.unchama.buildassist.listener._
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
+import com.github.unchama.util.logging.log4cats.PrefixedLogger
+import io.chrisdavenport.log4cats.Logger
+import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Bukkit, Material}
 
 import java.util
 import java.util.UUID
 import scala.collection.mutable
 
-class BuildAssist(plugin: Plugin)
+class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
                  (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) {
+
+  // TODO この辺のフィールドを整理する
 
   /**
    * 永続化されない、プレーヤーのセッション内でのみ有効な一時データを管理するMap。
@@ -22,8 +32,22 @@ class BuildAssist(plugin: Plugin)
    */
   val temporaryData: mutable.HashMap[UUID, TemporaryMutableBuildAssistPlayerData] = mutable.HashMap()
 
-  //起動するタスクリスト
-  private val tasklist = new util.ArrayList[BukkitTask]()
+  lazy val rateLimiterRepository: RateLimiterRepository[IO, SyncIO] = {
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
+
+    implicit val config: Configuration = BuildAssist.config.offerBuildAssistConfiguration
+    new RateLimiterRepository[IO, SyncIO]()
+  }
+
+  val buildAmountDataRepository: BuildAmountDataRepository[SyncIO, IO] = {
+    import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
+
+    implicit val persistence: JdbcBuildAmountDataPersistence[SyncIO] = new JdbcBuildAmountDataPersistence[SyncIO]()
+    implicit val logger: Logger[IO] = PrefixedLogger[IO]("BuildAssist-BuildAmount")(loggerIO)
+
+    new BuildAmountDataRepository[SyncIO, IO]
+  }
 
   {
     BuildAssist.plugin = plugin
@@ -35,17 +59,28 @@ class BuildAssist(plugin: Plugin)
     BuildAssist.config = new BuildAssistConfig(plugin)
     BuildAssist.config.loadConfig()
 
+    implicit val expMultiplier: BuildExpMultiplier = BuildAssist.config.offerExpMultiplier
+    implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[SyncIO, Player] =
+      new ClassifyBukkitPlayerWorld[SyncIO]
+    implicit val incrementBuildExp: IncrementBuildExpWhenBuiltByHand[SyncIO, Player] =
+      IncrementBuildExpWhenBuiltByHand.using(
+        rateLimiterRepository,
+        buildAmountDataRepository
+      )
+    implicit val incrementBuildExpWhenBuiltBySkills: IncrementBuildExpWhenBuiltWithSkill[SyncIO, Player] =
+      IncrementBuildExpWhenBuiltWithSkill.withConfig(expMultiplier)
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     val listeners = List(
-      new PlayerJoinListener(),
       new EntityListener(),
       new PlayerLeftClickListener(),
       new PlayerInventoryListener(),
-      new PlayerQuitListener(),
       new TemporaryDataInitializer(this.temporaryData),
-      BlockLineUpTriggerListener,
-      TilingSkillTriggerListener
+      new BlockLineUpTriggerListener[SyncIO],
+      new TilingSkillTriggerListener[SyncIO],
+      new BuildExpIncrementer[SyncIO],
+      rateLimiterRepository,
+      buildAmountDataRepository
     )
 
     listeners.foreach { listener =>
@@ -53,13 +88,9 @@ class BuildAssist(plugin: Plugin)
     }
 
     plugin.getLogger.info("BuildAssist is Enabled!")
-
-    tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200))
   }
 
-  def onDisable(): Unit = {
-    tasklist.forEach(_.cancel())
-  }
+  def onDisable(): Unit = ()
 
 }
 

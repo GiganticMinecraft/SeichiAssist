@@ -12,6 +12,10 @@ case class BuildExpAmount private(amount: BigDecimal) extends AnyVal {
 
   def incrementBy(n: Int): BuildExpAmount = BuildExpAmount.ofNonNegative(amount + n)
 
+  def toPlainString: String = amount.setScale(1, BigDecimal.RoundingMode.HALF_UP).bigDecimal.toPlainString
+
+  def mapAmount(f: BigDecimal => BigDecimal): BuildExpAmount = BuildExpAmount.ofNonNegative(f(amount))
+
 }
 
 private[explevel] abstract class BuildExpAmountInstances {
@@ -27,4 +31,6 @@ object BuildExpAmount extends BuildExpAmountInstances {
     require(amount >= 0)
     BuildExpAmount(amount)
   }
+
+  def ofNonNegative(amount: Int): BuildExpAmount = ofNonNegative(BigDecimal(amount))
 }
