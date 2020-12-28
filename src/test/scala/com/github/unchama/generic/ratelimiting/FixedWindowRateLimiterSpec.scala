@@ -51,6 +51,8 @@ class FixedWindowRateLimiterSpec
     "reset back to accepting request when the specified time passes" in {
       val maxCount = 10
 
+      // TODO this must not pass
+
       val program = for {
         rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute).coerceTo[Task]
         _ <- (1 to maxCount).toList.traverse(_ => rateLimiter.requestPermission).coerceTo[Task]

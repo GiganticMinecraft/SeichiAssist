@@ -97,9 +97,6 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
 object BuildAssist {
   var instance: BuildAssist = _
 
-  //Playerdataに依存するデータリスト
-  val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap[UUID, PlayerData]()
-
   //範囲設置ブロックの対象リスト
   val materiallist: java.util.Set[Material] = util.EnumSet.of(
 

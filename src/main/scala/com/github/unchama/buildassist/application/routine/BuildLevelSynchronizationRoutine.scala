@@ -24,7 +24,7 @@ object BuildLevelSynchronizationRoutine {
 
     import scala.concurrent.duration._
 
-    val getRepeatInterval: F[FiniteDuration] = Applicative[F].pure(1.minute)
+    val getRepeatInterval: F[FiniteDuration] = Applicative[F].pure(1.second)
     val routineAction: Ref[F, BuildAmountData] => F[Unit] = ref =>
       for {
         dataPair <- ref.modify { data =>
@@ -35,7 +35,7 @@ object BuildLevelSynchronizationRoutine {
         _ <-
           Diff
             .fromValues(oldData.desyncedLevel, updatedData.desyncedLevel)
-            .foldMapA(LevelUpNotifier[F, Player].notifyTo(player))
+            .fold(SendMinecraftMessage[F, Player].string(player, "No Change..."))(LevelUpNotifier[F, Player].notifyTo(player))
       } yield ()
 
     RepeatingRoutine.whileReferencedRecovering(updateTargetRef, routineAction, getRepeatInterval)
