@@ -8,6 +8,7 @@ import com.github.unchama.buildassist.bukkit.datarepository.{BuildAmountDataRepo
 import com.github.unchama.buildassist.bukkit.listeners.BuildExpIncrementer
 import com.github.unchama.buildassist.infrastructure.JdbcBuildAmountDataPersistence
 import com.github.unchama.buildassist.listener._
+import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerDataFinalizerList}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
@@ -39,7 +40,7 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
     new RateLimiterRepository[IO, SyncIO]()
   }
 
-  val buildAmountDataRepository: BuildAmountDataRepository[SyncIO, IO] = {
+  lazy val buildAmountDataRepository: BuildAmountDataRepository[SyncIO, IO] = {
     import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
 
@@ -48,6 +49,14 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
 
     new BuildAmountDataRepository[SyncIO, IO]
   }
+
+  lazy val finalizers: PlayerDataFinalizerList[IO, Player] =
+    PlayerDataFinalizerList {
+      List(
+        rateLimiterRepository,
+        buildAmountDataRepository
+      ).map(r => PlayerDataFinalizer(r.removeValueAndFinalize).coerceContextTo[IO])
+    }
 
   {
     BuildAssist.plugin = plugin
@@ -89,8 +98,6 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
 
     plugin.getLogger.info("BuildAssist is Enabled!")
   }
-
-  def onDisable(): Unit = ()
 
 }
 

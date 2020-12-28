@@ -149,6 +149,11 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.seasonalevents.System.wired[IO, IO](this)
   }
 
+  lazy val buildAssist: BuildAssist = {
+    implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
+    new BuildAssist(this, loggerF)
+  }
+
   lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
     import cats.implicits._
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
@@ -167,7 +172,9 @@ class SeichiAssist extends JavaPlugin() {
 
     val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
       managedFlySystem.managedFinalizers
-    ).withAnotherFinalizer(savePlayerData)
+    )
+      .withAnotherFinalizer(savePlayerData)
+      .withFinalizers(buildAssist.finalizers)
 
     new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
   }
@@ -308,6 +315,8 @@ class SeichiAssist extends JavaPlugin() {
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
+    buildAssist.onEnable()
+
     val subsystems = Seq(
       mebius.System.wired,
       expBottleStackSystem,
@@ -381,12 +390,6 @@ class SeichiAssist extends JavaPlugin() {
 
     startRepeatedJobs()
 
-    SeichiAssist.buildAssist = {
-      implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
-      new BuildAssist(this, loggerF)
-    }
-    SeichiAssist.buildAssist.onEnable()
-
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
@@ -456,8 +459,6 @@ class SeichiAssist extends JavaPlugin() {
       logger.info("データベース切断に失敗しました")
     }
 
-    SeichiAssist.buildAssist.onDisable()
-
     logger.info("SeichiAssistが無効化されました!")
   }
 
@@ -499,7 +500,6 @@ object SeichiAssist {
   // TODO staticであるべきではない
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _
-  var buildAssist: BuildAssist = _
   //(minestackに格納する)Gachadataに依存するデータリスト
   val msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
   //総採掘量表示用
