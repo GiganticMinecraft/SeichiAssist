@@ -196,7 +196,7 @@ class TilingSkillTriggerListener[
 
     import cats.effect.implicits._
     IncrementBuildExpWhenBuiltWithSkill[F, Player]
-      .of(player, BuildExpAmount.ofNonNegative(placementCount))
+      .of(player, BuildExpAmount(placementCount))
       .runSync[SyncIO]
       .unsafeRunSync()
   }

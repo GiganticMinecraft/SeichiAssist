@@ -4,6 +4,7 @@ import cats.Monad
 import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ConcurrentEffect, IO, Sync, Timer}
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.algebra.typeclasses.TotallyOrderedGroup
 
 import scala.concurrent.duration.FiniteDuration
 import scala.ref.WeakReference
@@ -16,10 +17,11 @@ object FixedWindowRateLimiter {
 
   def in[
     F[_] : ConcurrentEffect : Timer,
-    G[_] : Sync : ContextCoercion[*[_], F]
-  ](maxPermits: Int, resetDuration: FiniteDuration): G[RateLimiter[G]] =
+    G[_] : Sync : ContextCoercion[*[_], F],
+    A: TotallyOrderedGroup
+  ](maxPermits: A, resetDuration: FiniteDuration): G[RateLimiter[G, A]] =
     for {
-      permitRef <- Ref.of[G, Int](maxPermits)
+      permitRef <- Ref.of[G, A](maxPermits)
 
       rateLimiter = RateLimiter.fromPermitRef(permitRef)
       refreshPermits = permitRef.set(maxPermits).coerceTo[F]

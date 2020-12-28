@@ -26,7 +26,7 @@ case class BuildAmountData(expAmount: BuildExpAmount, desyncedLevel: BuildLevel)
 object BuildAmountData {
 
   val initial: BuildAmountData = {
-    val initialExp = BuildExpAmount.ofNonNegative(BigDecimal(0))
+    val initialExp = BuildExpAmount(BigDecimal(0))
     BuildAmountData(
       initialExp,
       BuildAssistExpTable.levelAt(initialExp)

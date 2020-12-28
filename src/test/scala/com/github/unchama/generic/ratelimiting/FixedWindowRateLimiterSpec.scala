@@ -1,6 +1,7 @@
 package com.github.unchama.generic.ratelimiting
 
 import cats.effect.{SyncIO, Timer}
+import com.github.unchama.generic.algebra.typeclasses.TotallyOrderedGroup
 import com.github.unchama.testutil.concurrent.tests.{ConcurrentEffectTest, TaskDiscreteEventually}
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.catnap.SchedulerEffect
@@ -29,6 +30,16 @@ class FixedWindowRateLimiterSpec
   implicit val monixScheduler: TestScheduler = TestScheduler(ExecutionModel.SynchronousExecution)
   implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
 
+  implicit val intOrderedGroup: TotallyOrderedGroup[Int] = new TotallyOrderedGroup[Int] {
+    override def compare(x: Int, y: Int): Int = x.compare(y)
+
+    override def inverse(a: Int): Int = -a
+
+    override def empty: Int = 0
+
+    override def combine(x: Int, y: Int): Int = x + y
+  }
+
   import cats.implicits._
 
   "Fixed window limiter" should {
@@ -37,11 +48,11 @@ class FixedWindowRateLimiterSpec
       val requestCount = 100
 
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute).coerceTo[Task]
-        allowances <- (1 to requestCount).toList.traverse(_ => rateLimiter.requestPermission).coerceTo[Task]
+        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO, Int](maxCount, 1.minute).coerceTo[Task]
+        allowances <- (1 to requestCount).toList.traverse(_ => rateLimiter.requestPermission(1)).coerceTo[Task]
       } yield {
-        assert(allowances.take(maxCount).forall(allowed => allowed))
-        assert(allowances.drop(maxCount).forall(allowed => !allowed))
+        assert(allowances.take(maxCount).forall(_ == 1))
+        assert(allowances.drop(maxCount).forall(_ == 0))
         ()
       }
 
@@ -51,17 +62,16 @@ class FixedWindowRateLimiterSpec
     "reset back to accepting request when the specified time passes" in {
       val maxCount = 10
 
-      // TODO this must not pass
-
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute).coerceTo[Task]
-        _ <- (1 to maxCount).toList.traverse(_ => rateLimiter.requestPermission).coerceTo[Task]
-        _ <- discreteEventually {
-          rateLimiter.requestPermission.coerceTo[Task]
-        }
-      } yield ()
+        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO, Int](maxCount, 1.minute).coerceTo[Task]
+        _ <- (1 to maxCount).toList.traverse(_ => rateLimiter.requestPermission(1)).coerceTo[Task]
+        _ <- monixTimer.sleep(1.minute + 1.second)
+        allowed <- rateLimiter.requestPermission(1).coerceTo[Task].map(_ == 1)
+      } yield {
+        assert(allowed)
+      }
 
-      awaitForProgram(runConcurrent(program)(100), 1.seconds)
+      awaitForProgram(runConcurrent(program)(100), 1.minute + 1.second)
     }
 
     "reset back to accepting request as long as the specified time passes" in {
@@ -69,16 +79,16 @@ class FixedWindowRateLimiterSpec
       val windowCount = 5
 
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO](maxCount, 1.minute).coerceTo[Task]
+        rateLimiter <- FixedWindowRateLimiter.in[Task, SyncIO, Int](maxCount, 1.minute).coerceTo[Task]
         allowances <- (1 to windowCount).toList.traverse(_ =>
           (1 to maxCount)
             .toList
-            .traverse(_ => rateLimiter.requestPermission)
+            .traverse(_ => rateLimiter.requestPermission(1))
             .coerceTo[Task]
             .flatTap(_ => monixTimer.sleep(1.minute + 1.second))
         )
       } yield {
-        val expected = List.fill(windowCount * maxCount)(true)
+        val expected = List.fill(windowCount * maxCount)(1)
         assert(allowances.flatten == expected)
         ()
       }

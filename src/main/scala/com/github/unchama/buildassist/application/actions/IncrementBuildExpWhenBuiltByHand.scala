@@ -13,7 +13,7 @@ import com.github.unchama.generic.ratelimiting.RateLimiter
  */
 trait IncrementBuildExpWhenBuiltByHand[F[_], Player] {
 
-  def of(player: Player): F[Unit] = of(player, BuildExpAmount.ofNonNegative(1))
+  def of(player: Player): F[Unit] = of(player, BuildExpAmount(1))
 
   def of(player: Player, by: BuildExpAmount): F[Unit]
 
@@ -30,7 +30,7 @@ object IncrementBuildExpWhenBuiltByHand {
   def using[
     F[_] : Monad : ClassifyPlayerWorld[*[_], Player],
     Player
-  ](rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F]],
+  ](rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]])
    (implicit multiplier: BuildExpMultiplier): IncrementBuildExpWhenBuiltByHand[F, Player] =
     (player: Player, by: BuildExpAmount) => {
@@ -43,15 +43,13 @@ object IncrementBuildExpWhenBuiltByHand {
               by.mapAmount(_ * multiplier.whenInSeichiWorld),
               by
             ),
-            F.pure(BuildExpAmount.ofNonNegative(0))
+            F.pure(BuildExpAmount(0))
           )
-        // TODO floorを使わないように
         amountToIncrement <-
-          rateLimiterRepository(player)
-            .requestPermissionN(amountToRequestIncrement.floor)
+          rateLimiterRepository(player).requestPermission(amountToRequestIncrement)
         _ <-
           dataRepository(player)
-            .update(_.modifyExpAmount(_.incrementBy(amountToIncrement)))
+            .update(_.modifyExpAmount(_.add(amountToIncrement)))
       } yield ()
     }
 }
