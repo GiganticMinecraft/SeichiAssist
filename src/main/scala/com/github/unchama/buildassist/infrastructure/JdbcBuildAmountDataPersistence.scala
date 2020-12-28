@@ -33,7 +33,9 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
              |  build_lv = ${value.desyncedLevel.level},
              |  build_count = ${value.expAmount.amount}
              |  where uuid = ${key.toString}
-             |""".stripMargin
+             |"""
+          .stripMargin
+          .update().apply()
       }
     }
 
