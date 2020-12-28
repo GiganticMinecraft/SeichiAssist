@@ -24,18 +24,17 @@ object BuildLevelSynchronizationRoutine {
 
     import scala.concurrent.duration._
 
-    val getRepeatInterval: F[FiniteDuration] = Applicative[F].pure(1.second)
+    val getRepeatInterval: F[FiniteDuration] = Applicative[F].pure(1.minute)
     val routineAction: Ref[F, BuildAmountData] => F[Unit] = ref =>
       for {
         dataPair <- ref.modify { data =>
           (data.withSyncedLevel, (data, data.withSyncedLevel))
         }
         (oldData, updatedData) = dataPair
-        // TODO プレーヤーはオフラインの場合があるのでそのケースについて調べよ
         _ <-
           Diff
             .fromValues(oldData.desyncedLevel, updatedData.desyncedLevel)
-            .fold(SendMinecraftMessage[F, Player].string(player, "No Change..."))(LevelUpNotifier[F, Player].notifyTo(player))
+            .foldMapA(LevelUpNotifier[F, Player].notifyTo(player))
       } yield ()
 
     RepeatingRoutine.whileReferencedRecovering(updateTargetRef, routineAction, getRepeatInterval)
