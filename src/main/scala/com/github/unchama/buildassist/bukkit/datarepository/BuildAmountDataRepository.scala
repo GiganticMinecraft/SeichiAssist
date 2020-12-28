@@ -41,9 +41,12 @@ class BuildAmountDataRepository[
       _ <- notifyLevelDiff
       dataRef <- Ref.of[F, BuildAmountData](updatedData)
 
-      weakDataRef = WeakRef.of[G, Ref[G, BuildAmountData]](dataRef.mapK(implicitly[ContextCoercion[F, G]]))
+      weakDataRef = WeakRef
+        .of[F, Ref[F, BuildAmountData]](dataRef)
+        .map(_.mapK(ContextCoercion.asFunctionK[F, G]))
+        .mapK(ContextCoercion.asFunctionK[F, G])
       _ <-
-        BuildLevelSynchronizationRoutine(player, weakDataRef)
+        BuildLevelSynchronizationRoutine[Player, G](player, weakDataRef)
           .start
           .runAsync(_ => IO.unit)
           .runSync[F]

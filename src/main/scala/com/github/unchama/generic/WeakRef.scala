@@ -1,6 +1,7 @@
 package com.github.unchama.generic
 
 import cats.effect.Sync
+import cats.{Functor, ~>}
 
 import scala.ref.WeakReference
 
@@ -27,6 +28,16 @@ sealed trait WeakRef[F[_], A <: AnyRef] {
    * }}}
    */
   def get: F[Option[A]]
+
+  def map[B <: AnyRef](f: A => B)(implicit F: Functor[F]): WeakRef[F, B] =
+    new WeakRef[F, B] {
+      override def get: F[Option[B]] = F.map(WeakRef.this.get)(_.map(f))
+    }
+
+  def mapK[G[_]](f: F ~> G): WeakRef[G, A] =
+    new WeakRef[G, A] {
+      override def get: G[Option[A]] = f(WeakRef.this.get)
+    }
 
 }
 
