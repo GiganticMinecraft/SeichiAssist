@@ -3,14 +3,9 @@ package com.github.unchama.buildassist.domain.explevel
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.seichiassist.util.typeclass.HasMinimum
 
-case class BuildExpAmount(amount: BigDecimal) extends AnyVal {
-  // TODO do not allow constructor invocation
+case class BuildExpAmount private (amount: BigDecimal) extends AnyVal {
 
-  require {
-    amount >= BigDecimal(0)
-  }
-
-  def mapAmount(f: BigDecimal => BigDecimal): BuildExpAmount = BuildExpAmount(f(amount))
+  def mapAmount(f: BigDecimal => BigDecimal): BuildExpAmount = BuildExpAmount.ofNonNegative(f(amount))
 
   def add(a: BuildExpAmount): BuildExpAmount = mapAmount(_ + a.amount)
 
@@ -22,7 +17,7 @@ private[explevel] abstract class BuildExpAmountInstances {
   implicit lazy val ordering: Ordering[BuildExpAmount] = Ordering.by(_.amount)
 
   implicit lazy val hasMinimum: HasMinimum[BuildExpAmount] = {
-    HasMinimum.as(BuildExpAmount(0))
+    HasMinimum.as(BuildExpAmount.ofNonNegative(0))
   }
 
   implicit lazy val orderedMonus: OrderedMonus[BuildExpAmount] = {
@@ -31,12 +26,12 @@ private[explevel] abstract class BuildExpAmountInstances {
         x.amount.compare(y.amount)
 
       override val empty: BuildExpAmount =
-        BuildExpAmount(0)
+        BuildExpAmount.ofNonNegative(0)
 
       override def combine(x: BuildExpAmount, y: BuildExpAmount): BuildExpAmount =
-        BuildExpAmount(x.amount + y.amount)
+        BuildExpAmount.ofNonNegative(x.amount + y.amount)
 
-      override def |-|(x: BuildExpAmount, y: BuildExpAmount): BuildExpAmount = BuildExpAmount {
+      override def |-|(x: BuildExpAmount, y: BuildExpAmount): BuildExpAmount = BuildExpAmount.ofNonNegative {
         (x.amount - y.amount) max BigDecimal(0)
       }
     }
@@ -44,5 +39,16 @@ private[explevel] abstract class BuildExpAmountInstances {
 }
 
 object BuildExpAmount extends BuildExpAmountInstances {
-  def apply(amount: Int): BuildExpAmount = BuildExpAmount(BigDecimal(amount))
+  def ofNonNegative(amount: BigDecimal): BuildExpAmount = {
+    require(
+      amount >= BigDecimal(0),
+      "建築経験値量は非負である必要があります。"
+    )
+
+    BuildExpAmount(amount)
+  }
+
+  def ofNonNegative(amount: Int): BuildExpAmount = ofNonNegative(BigDecimal(amount))
+
+  private def apply(amount: Int): BuildExpAmount = BuildExpAmount(BigDecimal(amount))
 }

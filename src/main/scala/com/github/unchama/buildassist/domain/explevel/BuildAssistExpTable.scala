@@ -25,7 +25,7 @@ private object Constant {
     708000, 728000, 748000, 768000, 788000, //90
     808000, 828000, 848000, 868000, 888000,
     908000, 928000, 948000, 968000, 1000000, //100
-  ).map(BuildExpAmount.apply)
+  ).map(BuildExpAmount.ofNonNegative)
 }
 
 object BuildAssistExpTable extends ExpLevelTable[BuildLevel, BuildExpAmount](Constant.internalTable)
