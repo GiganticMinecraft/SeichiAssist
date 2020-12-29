@@ -22,11 +22,17 @@ object Util {
   import scala.jdk.CollectionConverters._
   import scala.util.chaining._
 
-  private val types = List(FireworkEffect.Type.BALL, FireworkEffect.Type.BALL_LARGE, FireworkEffect.Type.BURST, FireworkEffect.Type.CREEPER, FireworkEffect.Type.STAR)
+  private val types = List(
+    FireworkEffect.Type.BALL,
+    FireworkEffect.Type.BALL_LARGE,
+    FireworkEffect.Type.BURST,
+    FireworkEffect.Type.CREEPER,
+    FireworkEffect.Type.STAR
+  )
 
   def sendPlayerDataNullMessage(player: Player): Unit = {
-    player.sendMessage(RED.toString + "初回ログイン時の読み込み中か、読み込みに失敗しています")
-    player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
+    player.sendMessage(s"${RED}初回ログイン時の読み込み中か、読み込みに失敗しています")
+    player.sendMessage(s"${RED}再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
   }
 
   // TODO: ManagedWorld
@@ -257,7 +263,7 @@ object Util {
   def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
     val meta = itemstack.getItemMeta
 
-    val lore: List[String] =
+    val lore =
       if (meta.hasLore)
         meta.getLore.asScala.toList
       else
@@ -371,13 +377,11 @@ object Util {
   }
 
   def setDifficulty(worldNameList: List[String], difficulty: Difficulty): Unit = {
-    worldNameList.foreach { name =>
-      val world = Bukkit.getWorld(name)
-
-      if (world == null)
-        Bukkit.getLogger.warning(name + "という名前のワールドは存在しません。")
-      else
-        world.setDifficulty(difficulty)
+    worldNameList.map(name => (name, Option(Bukkit.getWorld(name)))).foreach { worldOpt =>
+      worldOpt._2 match {
+        case Some(value) => value.setDifficulty(difficulty)
+        case None => Bukkit.getLogger.warning(s"${worldOpt._1}という名前のワールドは存在しません。")
+      }
     }
   }
 
@@ -420,11 +424,11 @@ object Util {
     //SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり
     if (skull.getSkullType != SkullType.PLAYER) {
       val durability = skull.getSkullType match {
-        case SkullType.CREEPER => SkullType.CREEPER.ordinal.toShort
-        case SkullType.DRAGON => SkullType.DRAGON.ordinal.toShort
-        case SkullType.SKELETON => SkullType.SKELETON.ordinal.toShort
-        case SkullType.WITHER => SkullType.WITHER.ordinal.toShort
-        case SkullType.ZOMBIE => SkullType.ZOMBIE.ordinal.toShort
+        case st @ SkullType.CREEPER
+             | SkullType.DRAGON
+             | SkullType.SKELETON
+             | SkullType.WITHER
+             | SkullType.ZOMBIE => st.ordinal().toShort
         case _ => itemStack.getDurability
       }
       return Some(itemStack.tap(_.setDurability(durability)))

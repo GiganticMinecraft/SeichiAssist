@@ -155,7 +155,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     IO {
       val openerData = BuildAssist.playermap(getUniqueId)
       val iconItemStack = new IconItemStackBuilder(Material.WOOD)
-        .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${openerData.line_up_flg_e.asHumanReadable}")
+        .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${openerData.lineFillAlign.asHumanReadable}")
         .lore(
           s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
           s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -173,11 +173,11 @@ private case class ButtonComputations(player: Player) extends AnyVal {
                 SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                   UnfocusedEffect {
-                    openerData.line_up_flg_e = openerData.line_up_flg_e.next
+                    openerData.lineFillAlign = openerData.lineFillAlign.next
                   },
                   DeferredEffect {
                     IO {
-                      MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${openerData.line_up_flg_e.asHumanReadable}")
+                      MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${openerData.lineFillAlign.asHumanReadable}")
                     }
                   }
                 )
@@ -195,10 +195,10 @@ private case class ButtonComputations(player: Player) extends AnyVal {
       .title(s"$YELLOW$EMPHASIZE「ブロックを並べるスキル（仮） 」設定画面へ")
       .lore(
         s"$RESET${GRAY}現在の設定",
-        s"$RESET${GRAY}スキル設定: ${openerData.line_up_flg_e.asHumanReadable}",
-        s"$RESET${GRAY}ハーフブロック設定: ${openerData.line_up_step_flg_e.asHumanReadable}",
-        s"$RESET${GRAY}破壊設定: ${BuildAssist.lineFillSwitchMessage(openerData.line_up_des_flg_b)}",
-        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.lineFillSwitchMessage(openerData.line_up_minestack_flg_b)}"
+        s"$RESET${GRAY}スキル設定: ${openerData.lineFillAlign.asHumanReadable}",
+        s"$RESET${GRAY}ハーフブロック設定: ${openerData.lineFillStepMode.asHumanReadable}",
+        s"$RESET${GRAY}破壊設定: ${BuildAssist.lineFillSwitchMessage(openerData.lineFillBreakWeakBlocks)}",
+        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.lineFillSwitchMessage(openerData.lineFillWithMinestack)}"
       )
       .build()
 

@@ -28,10 +28,10 @@ final class PlayerData(val player: Player) {
   /**
    * ブロックを並べるスキル設定フラグ
    */
-  var line_up_flg_e: VerticalAlign = VerticalAlign.Off
-  var line_up_step_flg_e: StepPlaceMode = StepPlaceMode.Upper
-  var line_up_des_flg_b = false
-  var line_up_minestack_flg_b = false
+  var lineFillAlign: VerticalAlign = VerticalAlign.Off
+  var lineFillStepMode: StepPlaceMode = StepPlaceMode.Upper
+  var lineFillBreakWeakBlocks = false
+  var lineFillWithMinestack = false
   /**
    * ブロック範囲設置スキル設定フラグ
    */
