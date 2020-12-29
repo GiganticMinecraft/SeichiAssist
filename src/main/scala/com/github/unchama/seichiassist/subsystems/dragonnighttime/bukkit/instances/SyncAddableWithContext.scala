@@ -3,10 +3,10 @@ package com.github.unchama.seichiassist.subsystems.dragonnighttime.bukkit.instan
 import cats.effect.Sync
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
-import com.github.unchama.seichiassist.subsystems.dragonnighttime.application.CanAddEffect
+import com.github.unchama.seichiassist.subsystems.dragonnighttime.application.AddableWithContext
 
-object SyncCanAddEffect {
-  def apply[F[_] : Sync]: CanAddEffect[F] = new CanAddEffect[F] {
+object SyncAddableWithContext {
+  def apply[F[_] : Sync]: AddableWithContext[F] = new AddableWithContext[F] {
     override val addEffect: F[Unit] = Sync[F].delay {
       // FastDiggingEffectはミュータブルなのでプレイヤーごとにインスタンス化する
       SeichiAssist.playermap.values.foreach(
