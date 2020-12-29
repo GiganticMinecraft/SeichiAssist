@@ -8,7 +8,7 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.util.time.LocalTimeUtil
 
 object DragonNightTimeRoutine {
-  def apply[F[_] : Sync : CanAddEffect : Notifiable : Timer]()(implicit context: RepeatingTaskContext): F[Nothing] = {
+  def apply[F[_] : Sync : AddableWithContext : Notifiable : Timer]()(implicit context: RepeatingTaskContext): F[Nothing] = {
     import cats.implicits._
 
     import scala.concurrent.duration._
@@ -31,7 +31,7 @@ object DragonNightTimeRoutine {
     val routineAction: F[Unit] =
       Notifiable[F].notify("ドラゲナイタイム開始！") >>
         Notifiable[F].notify("採掘速度上昇Lv10のバフが1時間付与されました") >>
-        CanAddEffect[F].addEffect
+        AddableWithContext[F].addEffect
 
     RepeatingRoutine.permanentRoutine(getRepeatInterval, routineAction)
   }
