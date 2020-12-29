@@ -89,7 +89,7 @@ object BlockLineUpTriggerListener extends Listener {
     val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag()
 
     val mineStackObjectToBeUsed =
-      if (buildAssistData.line_up_minestack_flg == 1)
+      if (buildAssistData.line_up_minestack_flg_b)
         MineStackObjectList.minestacklist.find { obj =>
           mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
         }

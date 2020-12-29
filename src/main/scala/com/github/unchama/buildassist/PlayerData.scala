@@ -2,7 +2,7 @@ package com.github.unchama.buildassist
 
 import com.github.unchama.buildassist.domain.explevel.{BuildAssistExpTable, BuildExpAmount}
 import com.github.unchama.seichiassist.data.player.BuildCount
-import com.github.unchama.seichiassist.{PackagePrivate, SeichiAssist}
+import com.github.unchama.seichiassist.{AntiTypesafe, PackagePrivate, SeichiAssist}
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -28,10 +28,10 @@ final class PlayerData(val player: Player) {
   /**
    * ブロックを並べるスキル設定フラグ
    */
-  var line_up_flg = 0
-  var line_up_step_flg = 0
-  var line_up_des_flg = 0
-  var line_up_minestack_flg = 0
+  @AntiTypesafe var line_up_flg = 0
+  @AntiTypesafe var line_up_step_flg = 0
+  var line_up_des_flg_b = false
+  var line_up_minestack_flg_b = false
   /**
    * ブロック範囲設置スキル設定フラグ
    */
