@@ -28,8 +28,8 @@ final class PlayerData(val player: Player) {
   /**
    * ブロックを並べるスキル設定フラグ
    */
-  @AntiTypesafe var line_up_flg = 0
-  @AntiTypesafe var line_up_step_flg = 0
+  var line_up_flg_e: VerticalAlign = VerticalAlign.Off
+  var line_up_step_flg_e: StepPlaceMode = StepPlaceMode.Upper
   var line_up_des_flg_b = false
   var line_up_minestack_flg_b = false
   /**

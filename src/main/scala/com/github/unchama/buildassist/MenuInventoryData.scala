@@ -196,7 +196,7 @@ object MenuInventoryData {
 
     //ブロックを並べるスキル設定
     itemstack = new ItemStack(Material.WOOD, 1)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ブロックを並べるスキル（仮） ：${BuildAssist.line_up_str(playerdata.line_up_flg)}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ブロックを並べるスキル（仮） ：${playerdata.line_up_flg_e.asHumanReadable}")
     lore = List(
       s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
       s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -210,7 +210,7 @@ object MenuInventoryData {
     //ブロックを並べるスキルハーフブロック設定
     itemstack = new ItemStack(Material.STEP, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.STEP)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ハーフブロック設定 ：${BuildAssist.line_up_step_str(playerdata.line_up_step_flg)}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ハーフブロック設定 ：${playerdata.line_up_step_flg_e.asHumanReadable}")
     lore = List(
       s"$RESET${GRAY}ハーフブロックを並べる時の位置を決めます。",
       s"$RESET${GRAY}クリックで切り替え"
