@@ -325,7 +325,6 @@ class SeichiAssist extends JavaPlugin() {
       "gacha" -> new GachaCommand(),
       "map" -> MapCommand.executor,
       "ef" -> EffectCommand.executor,
-      "seichihaste" -> SeichiHasteCommand.executor,
       "seichiassist" -> SeichiAssistCommand.executor,
       "openpocket" -> OpenPocketCommand.executor,
       "lastquit" -> LastQuitCommand.executor,
