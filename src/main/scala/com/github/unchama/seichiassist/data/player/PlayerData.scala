@@ -276,11 +276,10 @@ class PlayerData(
     giganticBerserk = giganticBerserk.copy(canEvolve = value)
   }
 
-  // FIXME: BAD NAME; not clear meaning
-  def GBcd: Int = giganticBerserk.cd
+  def GBkillsPerMinute: Int = giganticBerserk.killsPerMinute
 
-  def GBcd_=(value: Int): Unit = {
-    giganticBerserk = giganticBerserk.copy(cd = value)
+  def GBkillsPerMinute_=(value: Int): Unit = {
+    giganticBerserk = giganticBerserk.copy(killsPerMinute = value)
   }
 
   //join時とonenable時、プレイヤーデータを最新の状態に更新

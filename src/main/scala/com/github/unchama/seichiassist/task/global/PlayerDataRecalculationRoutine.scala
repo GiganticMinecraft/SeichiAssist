@@ -181,7 +181,7 @@ object PlayerDataRecalculationRoutine {
         }
 
         //GiganticBerserk
-        playerData.GBcd = 0
+        playerData.GBkillsPerMinute = 0
 
       }
     }

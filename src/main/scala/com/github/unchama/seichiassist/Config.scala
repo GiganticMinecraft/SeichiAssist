@@ -118,7 +118,7 @@ final class Config private(val config: FileConfiguration) {
     (totalMinutes / 60) + "時間" + (totalMinutes % 60) + "分"
   }
 
-  def getGiganticBerserkLimit: Int = getIntFailSafe("GBLimit")
+  def getGiganticBerserkLimitRatePerMinute: Int = getIntFailSafe("GBLimit")
 
   /**
    * 各種URLを返します.

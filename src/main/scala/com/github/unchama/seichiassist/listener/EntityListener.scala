@@ -187,7 +187,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment) extends List
     //プレイヤーが整地ワールドに居ない場合終了
     import com.github.unchama.seichiassist.ManagedWorld._
     if (!player.getWorld.isSeichi) return
-    val GBTR = new GiganticBerserkTask
+    val GBTR = GiganticBerserkTask
     GBTR.PlayerKillEnemy(player)
   }
 }

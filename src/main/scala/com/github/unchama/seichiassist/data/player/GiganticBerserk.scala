@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.data.player
 import com.github.unchama.seichiassist.LevelThresholds
 import org.bukkit.Material
 
-case class GiganticBerserk(level: Int = 0, exp: Int = 0, stage: Int = 0, canEvolve: Boolean = false, cd: Int = 0) {
+case class GiganticBerserk(level: Int = 0, exp: Int = 0, stage: Int = 0, canEvolve: Boolean = false, killsPerMinute: Int = 0) {
 
   def reachedLimit(): Boolean = stage == 5 && level == 9
 
