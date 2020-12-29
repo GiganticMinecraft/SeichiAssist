@@ -44,13 +44,13 @@ class NewYearListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
         }
 
         val effects =
-          if (hasNotJoinedInEventYet) Set(
+          if (hasNotJoinedInEventYet) List(
             grantItemStacksEffect(sobaHead),
             MessageEffect(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。"),
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
-          else Set(emptyEffect)
+          else List(emptyEffect)
 
-        effects.foreach(_.run(player))
+        effects.traverse(_.run(player))
       })
     } yield ()
 
