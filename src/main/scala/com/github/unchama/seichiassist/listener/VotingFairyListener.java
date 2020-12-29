@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener;
 
+import com.github.unchama.seichiassist.MineStackObjectList;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.player.PlayerData;
@@ -138,7 +139,7 @@ public class VotingFairyListener implements Listener {
             }
 
             //りんご所持数で値変更
-            final MineStackObj gachaimoObject = Util.findMineStackObjectByName("gachaimo").get();
+            final MineStackObj gachaimoObject = MineStackObjectList.findByName("gachaimo").get();
             long l = playerdata.minestack().getStackedAmountOf(gachaimoObject);
 
             if (m > l) {
@@ -161,7 +162,7 @@ public class VotingFairyListener implements Listener {
             //マナ回復
             mana.increase(n, p, playerdata.level());
             //りんごを減らす
-            playerdata.minestack().subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo").get(), m);
+            playerdata.minestack().subtractStackedAmountOf(MineStackObjectList.findByName("gachaimo").get(), m);
             //減ったりんごの数をplayerdataに加算
             playerdata.p_apple_$eq(playerdata.p_apple() + m);
 

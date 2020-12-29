@@ -438,7 +438,7 @@ object BreakUtil {
   def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
     // 1. 重力値を適用すべきか判定
     // 整地ワールド判定
-    if (!Util.isSeichiWorld(player))
+    if (!player.getWorld.isSeichi)
       return 0
 
     // 2. 破壊要因判定

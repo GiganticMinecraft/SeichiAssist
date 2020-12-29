@@ -531,4 +531,8 @@ object MineStackObjectList {
 
   // ランダムアクセスしないので
   val minestacklist: mutable.ArrayBuffer[MineStackObj] = mutable.ArrayBuffer()
+
+  def findByName(name: String): Option[MineStackObj] = {
+    minestacklist.find(_.mineStackObjName == name)
+  }
 }

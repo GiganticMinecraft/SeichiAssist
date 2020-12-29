@@ -50,37 +50,6 @@ object Util {
   }
 
   /**
-   * プレイヤーが整地ワールドにいるかどうかの判定処理(整地ワールド=true、それ以外=false)
-   *
-   * @deprecated use ManagedWorld
-   */
-  @Deprecated()
-  def isSeichiWorld(player: Player): Boolean = {
-    //デバッグモード時は全ワールドtrue(DEBUGWORLDNAME = worldの場合)
-    var worldname = SeichiAssist.SEICHIWORLDNAME
-    if (SeichiAssist.DEBUG) {
-      worldname = SeichiAssist.DEBUGWORLDNAME
-    }
-    //整地ワールドではtrue
-    player.getWorld.getName.toLowerCase().startsWith(worldname)
-  }
-
-  /**
-   * プレイヤーに安全にアイテムを付与します。
-   *
-   * @param player    付与する対象プレイヤー
-   * @param itemStack 付与するアイテム
-   * @deprecated use [[grantItemStacksEffect]]
-   */
-  @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    // Javaから呼ばれているのでimplicitが使いづらい　grantItemStacksEffectに置き換えたい
-    DefaultEffectEnvironment.runEffectAsync(
-      "アイテムスタックを付与する",
-      grantItemStacksEffect(itemStack).run(player)
-    )
-  }
-
-  /**
    * プレイヤーに複数のアイテムを一度に付与する。
    * インベントリに入り切らなかったアイテムはプレーヤーの立ち位置にドロップされる。
    *
@@ -410,40 +379,29 @@ object Util {
     }
   }
 
-  /**
-   * 指定した名前のマインスタックオブジェクトを返す
-   */
-  // TODO これはここにあるべきではない
-  @Deprecated()
-  def findMineStackObjectByName(name: String): Option[MineStackObj] = {
-    MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
-  }
-
-  def isEnemy(entityType: EntityType): Boolean = {
-    entityType match {
-      case
-        //通常世界MOB
-        EntityType.CAVE_SPIDER |
-        EntityType.CREEPER |
-        EntityType.GUARDIAN |
-        EntityType.SILVERFISH |
-        EntityType.SKELETON |
-        EntityType.SLIME |
-        EntityType.SPIDER |
-        EntityType.WITCH |
-        EntityType.ZOMBIE |
-        //ネザーMOB
-        EntityType.BLAZE |
-        EntityType.GHAST |
-        EntityType.MAGMA_CUBE |
-        EntityType.PIG_ZOMBIE |
-        //エンドMOB
-        EntityType.ENDERMAN |
-        EntityType.ENDERMITE |
-        EntityType.SHULKER => true
-      //敵MOB以外(エンドラ,ウィザーは除外)
-      case _ => false
-    }
+  def isEnemy(entityType: EntityType): Boolean = entityType match {
+    case
+      //通常世界MOB
+      EntityType.CAVE_SPIDER |
+      EntityType.CREEPER |
+      EntityType.GUARDIAN |
+      EntityType.SILVERFISH |
+      EntityType.SKELETON |
+      EntityType.SLIME |
+      EntityType.SPIDER |
+      EntityType.WITCH |
+      EntityType.ZOMBIE |
+      //ネザーMOB
+      EntityType.BLAZE |
+      EntityType.GHAST |
+      EntityType.MAGMA_CUBE |
+      EntityType.PIG_ZOMBIE |
+      //エンドMOB
+      EntityType.ENDERMAN |
+      EntityType.ENDERMITE |
+      EntityType.SHULKER => true
+    //敵MOB以外(エンドラ,ウィザーは除外)
+    case _ => false
   }
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
