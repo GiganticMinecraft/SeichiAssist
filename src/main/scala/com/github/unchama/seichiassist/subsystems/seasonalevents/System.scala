@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents
 
+import java.util.UUID
+
 import cats.Functor
 import cats.effect.{Clock, ConcurrentEffect}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
@@ -34,10 +36,8 @@ class System[F[_]](override val listeners: Seq[Listener],
 object System {
   def wired[F[_] : ConcurrentEffect : NonServerThreadContextShift, G[_]](instance: JavaPlugin)(implicit effectEnvironment: EffectEnvironment): System[G] = {
 
-    implicit val repository: LastQuitPersistenceRepository[F, String] =
+    implicit val repository: LastQuitPersistenceRepository[F, UUID] =
       new JdbcLastQuitPersistenceRepository[F]
-
-    implicit val service: LastQuitInquiringService[F] = new LastQuitInquiringService[F]
 
     new System(
       listeners = Seq(

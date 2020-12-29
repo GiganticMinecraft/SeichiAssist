@@ -8,12 +8,11 @@ import cats.effect.Sync
 import com.github.unchama.seichiassist.database.DatabaseConstants
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F]) extends LastQuitPersistenceRepository[F, String] {
-  override def loadPlayerLastQuit(key: String): F[Option[LocalDateTime]] = {
+class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F]) extends LastQuitPersistenceRepository[F, UUID] {
+  override def loadPlayerLastQuit(key: UUID): F[Option[LocalDateTime]] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
-        // keyはplayerName
-        sql"select lastquit from ${DatabaseConstants.PLAYERDATA_TABLENAME} where name = '$key'"
+        sql"select lastquit from ${DatabaseConstants.PLAYERDATA_TABLENAME} where uuid = '$key'"
           .map { rs => rs.timestampOpt("lastquit").map(_.toLocalDateTime) }
           .toList().apply().head
       }
