@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.domain.explevel.ExpLevelTable
 
 private object Constant {
   // 経験値テーブルの生の値
-  val internalTable: Seq[BuildExpAmount] = Seq(
+  val internalTable: Vector[BuildExpAmount] = Vector(
     0, 50, 100, 200, 300,
     450, 600, 900, 1200, 1600, //10
     2000, 2500, 3000, 3600, 4300,
