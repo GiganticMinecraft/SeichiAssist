@@ -422,13 +422,14 @@ object Util {
     val itemStack = new ItemStack(Material.SKULL_ITEM)
 
     //SkullTypeがプレイヤー以外の場合，SkullTypeだけ設定して終わり
-    if (skull.getSkullType != SkullType.PLAYER) {
-      val durability = skull.getSkullType match {
-        case st @ SkullType.CREEPER
+    val stype = skull.getSkullType
+    if (stype ne SkullType.PLAYER) {
+      val durability = stype match {
+        case SkullType.CREEPER
              | SkullType.DRAGON
              | SkullType.SKELETON
              | SkullType.WITHER
-             | SkullType.ZOMBIE => st.ordinal().toShort
+             | SkullType.ZOMBIE => stype.ordinal().toShort
         case _ => itemStack.getDurability
       }
       return Some(itemStack.tap(_.setDurability(durability)))

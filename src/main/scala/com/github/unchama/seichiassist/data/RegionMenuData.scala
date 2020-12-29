@@ -177,13 +177,15 @@ object RegionMenuData {
     } else {
       Map()
     }
-    theMap.map(tp => (tp._1, tp._2 match {
-      case SOUTH => Some("南(South)")
-      case NORTH => Some("北(North)")
-      case WEST =>  Some("西(West)")
-      case EAST => Some("東(East)")
-      case _ => None
-    })).filter(_._2.nonEmpty).map(tp => (tp._1, tp._2.get))
+    theMap.map(tp => {
+      (tp._1, tp._2 match {
+        case SOUTH => Some("南(South)")
+        case NORTH => Some("北(North)")
+        case WEST => Some("西(West)")
+        case EAST => Some("東(East)")
+        case _ => None
+      })
+    }).filter(_._2.nonEmpty).map(tp => (tp._1, tp._2.get))
   }
 
   /**
