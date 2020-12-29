@@ -326,6 +326,7 @@ object Util {
     }
   }
 
+  import com.github.unchama.seichiassist.util.enumeration.Direction
   def getPlayerDirection(player: Player): Direction = {
     var rotation = ((player.getLocation.getYaw + 180) % 360).toDouble
 

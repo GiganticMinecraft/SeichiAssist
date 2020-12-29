@@ -176,6 +176,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     var gachaWin = 0
     var gachaGTWin = 0
 
+    val isSingle = count == 1
     (1 to count).foreach { _ =>
       //プレゼント用ガチャデータ作成
       val present = GachaPrize.runGacha()
@@ -256,17 +257,17 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
         gachaGTWin += 1
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
-        if (count == 1) {
+        if (isSingle) {
           player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
         }
         gachaBigWin += 1
       } else if (probabilityOfItem < 0.1) {
-        if (count == 1) {
+        if (isSingle) {
           player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
         }
         gachaWin += 1
       } else {
-        if (count == 1) {
+        if (isSingle) {
           player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
         }
       }
@@ -276,7 +277,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     if (gachaWin > 0) rewardDetailTexts += s"${YELLOW}当たりが${gachaWin}個"
     if (gachaBigWin > 0) rewardDetailTexts += s"${GOLD}大当たりが${gachaBigWin}個"
     if (gachaGTWin > 0) rewardDetailTexts += s"${RED}Gigantic☆大当たりが${gachaGTWin}個"
-    if (count != 1) {
+    if (!isSingle) {
       player.sendMessage(
         if (rewardDetailTexts.isEmpty) {
           s"${WHITE}はずれ！また遊んでね！"
@@ -417,7 +418,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
       }
       //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
       if (playerdata.level < SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel) {
-        player.sendMessage(GREEN.toString + "4次元ポケットを入手するには整地Lvが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
+        player.sendMessage(s"${GREEN.toString}4次元ポケットを入手するには整地Lvが${SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel}以上必要です。")
         return
       }
       if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
