@@ -657,14 +657,7 @@ class PlayerData(
   }
 
   def unitMap: Map[DirectionType, Int] = {
-    val unitMap = mutable.Map[DirectionType, Int]().empty
-
-    unitMap.put(DirectionType.AHEAD, claimUnit.ahead)
-    unitMap.put(DirectionType.BEHIND, claimUnit.behind)
-    unitMap.put(DirectionType.RIGHT, claimUnit.right)
-    unitMap.put(DirectionType.LEFT, claimUnit.left)
-
-    unitMap.toMap
+    DirectionType.values.map(f => (f, claimUnit(f))).toMap
   }
 
   def canGridReduce(directionType: DirectionType): Boolean = {
@@ -688,12 +681,7 @@ class PlayerData(
   import com.github.unchama.seichiassist.AntiTypesafe
 
   def addUnitAmount(directionType: DirectionType, amount: Int): Unit = {
-    this.claimUnit = directionType match {
-      case DirectionType.AHEAD => this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
-      case DirectionType.BEHIND => this.claimUnit.copy(behind = this.claimUnit.behind + amount)
-      case DirectionType.RIGHT => this.claimUnit.copy(right = this.claimUnit.right + amount)
-      case DirectionType.LEFT => this.claimUnit.copy(left = this.claimUnit.left + amount)
-    }
+    setUnitAmount(directionType, claimUnit(directionType) + amount)
   }
 
   def toggleUnitPerGrid(): Unit = {
