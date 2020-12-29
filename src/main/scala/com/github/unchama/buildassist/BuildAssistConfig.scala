@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist
 
-import com.github.unchama.buildassist.application.{BuildExpMultiplier, Configuration}
-import com.github.unchama.buildassist.domain.explevel.BuildExpAmount
+import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.Plugin
 

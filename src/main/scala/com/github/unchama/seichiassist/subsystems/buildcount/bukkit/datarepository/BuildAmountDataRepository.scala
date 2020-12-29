@@ -1,10 +1,10 @@
-package com.github.unchama.buildassist.bukkit.datarepository
+package com.github.unchama.seichiassist.subsystems.buildcount.bukkit.datarepository
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
-import com.github.unchama.buildassist.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 

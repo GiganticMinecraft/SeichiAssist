@@ -1,4 +1,4 @@
-package com.github.unchama.buildassist.domain.explevel
+package com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel
 
 import com.github.unchama.seichiassist.domain.explevel.ExpLevelTable
 

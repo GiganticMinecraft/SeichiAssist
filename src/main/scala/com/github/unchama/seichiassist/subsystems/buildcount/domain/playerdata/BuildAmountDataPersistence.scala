@@ -1,4 +1,4 @@
-package com.github.unchama.buildassist.domain.playerdata
+package com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata
 
 import com.github.unchama.generic.RefDict
 

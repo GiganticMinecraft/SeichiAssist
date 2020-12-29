@@ -1,9 +1,9 @@
-package com.github.unchama.buildassist.domain.explevel
+package com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel
 
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.seichiassist.util.typeclass.HasMinimum
 
-case class BuildExpAmount private (amount: BigDecimal) extends AnyVal {
+case class BuildExpAmount private(amount: BigDecimal) extends AnyVal {
 
   def mapAmount(f: BigDecimal => BigDecimal): BuildExpAmount = BuildExpAmount.ofNonNegative(f(amount))
 

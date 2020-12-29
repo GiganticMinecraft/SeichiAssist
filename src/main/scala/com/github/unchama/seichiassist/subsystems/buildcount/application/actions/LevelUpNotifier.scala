@@ -1,13 +1,15 @@
-package com.github.unchama.buildassist.application.actions
+package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
 import cats.{Applicative, ~>}
-import com.github.unchama.buildassist.domain.explevel.{BuildAssistExpTable, BuildLevel}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildLevel}
 import org.bukkit.ChatColor.GOLD
 
 /**
  * 建築レベルの変化を通知する機構。
+ *
+ * TODO Tagless algebraにするべきぽい
  */
 case class LevelUpNotifier[F[_], Player]()(implicit F: Applicative[F], send: SendMinecraftMessage[F, Player]) {
 

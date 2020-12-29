@@ -1,7 +1,7 @@
-package com.github.unchama.buildassist.bukkit.listeners
+package com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners
 
 import cats.effect.{SyncEffect, SyncIO}
-import com.github.unchama.buildassist.application.actions.IncrementBuildExpWhenBuiltByHand
+import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltByHand
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.{EventHandler, Listener}

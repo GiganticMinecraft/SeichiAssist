@@ -1,11 +1,11 @@
-package com.github.unchama.buildassist.bukkit.datarepository
+package com.github.unchama.seichiassist.subsystems.buildcount.bukkit.datarepository
 
 import cats.Applicative
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
-import com.github.unchama.buildassist.application.Configuration
-import com.github.unchama.buildassist.domain.explevel.BuildExpAmount
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.ratelimiting.{FixedWindowRateLimiter, RateLimiter}
+import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import org.bukkit.entity.Player
 
 import java.util.UUID

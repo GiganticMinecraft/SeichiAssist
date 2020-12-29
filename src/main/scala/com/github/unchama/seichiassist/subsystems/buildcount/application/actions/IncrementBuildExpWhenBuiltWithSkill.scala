@@ -1,7 +1,7 @@
-package com.github.unchama.buildassist.application.actions
+package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
-import com.github.unchama.buildassist.application.BuildExpMultiplier
-import com.github.unchama.buildassist.domain.explevel.BuildExpAmount
+import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 
 trait IncrementBuildExpWhenBuiltWithSkill[F[_], Player] {
 
