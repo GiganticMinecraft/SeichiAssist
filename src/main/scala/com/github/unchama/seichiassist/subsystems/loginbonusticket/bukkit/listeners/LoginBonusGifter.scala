@@ -9,21 +9,21 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.ChatColor.AQUA
 
-object LoginBonusGifter extends Listener {
+class LoginBonusGifter[F[_] : ConcurrentEffect : NonServerThreadContextShift]
+  (implicit effectEnvironment: EffectEnvironment, repository: LastQuitPersistenceRepository[F, UUID]) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
-    if (event.getPlayer.isDead) {
-      val player = event.getPlayer
+    val player = event.getPlayer
 
-      // TODO lastquitの日付をとる
-      val lastQuitDate = LocalDate.now().minusDays(1)
-      if (!lastQuitDate.isBefore(LocalDate.now())) return;
+    // TODO lastquitの日付をとる
+    val lastQuitDate = LocalDate.now().minusDays(1)
+    if (!lastQuitDate.isBefore(LocalDate.now())) return;
 
-      DefaultEffectEnvironment.runEffectAsync(
-        "ログインボーナスチケットを付与する",
-        grantItemStacksEffect(loginBonusTicket).run(player)
-      )
-      player.sendMessage(s"${AQUA}今日1回目のログインのため、ログインボーナスチケットを配布しました。")
-    }
+    DefaultEffectEnvironment.runEffectAsync(
+      "ログインボーナスチケットを付与する",
+      grantItemStacksEffect(loginBonusTicket).run(player)
+    )
+    player.sendMessage(s"${AQUA}今日1回目のログインのため、ログインボーナスチケットを配布しました。")
+
   }
 }
