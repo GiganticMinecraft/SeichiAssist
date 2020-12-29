@@ -1,8 +1,7 @@
 package com.github.unchama.generic.ratelimiting
 
 import cats.effect.concurrent.Ref
-import cats.kernel.Group
-import com.github.unchama.generic.algebra.typeclasses.TotallyOrderedGroup
+import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 
 /**
  * Rate Limitの実装を提供するオブジェクト。
@@ -22,13 +21,13 @@ import com.github.unchama.generic.algebra.typeclasses.TotallyOrderedGroup
 trait RateLimiter[F[_], A] {
 
   /**
-   * Aは全順序群であることが要求される
+   * Aは全順序モノイドであることが要求される
    */
-  protected val A: TotallyOrderedGroup[A]
+  protected val A: OrderedMonus[A]
 
   /**
    * [[A]] の値によって指定されるリクエスト量を送る申請をする作用。
-   * 作用の結果として、送って良いリクエスト量を表す [[A]] の(全順序群での意味で)非負の値が返される。
+   * 作用の結果として、送って良いリクエスト量を表す [[A]] の(全順序モノイドでの意味で)非負の値が返される。
    *
    * @param a 申請するリクエスト送信量
    * @return 非負の[[A]]の値を返す作用
@@ -39,17 +38,20 @@ trait RateLimiter[F[_], A] {
 
 object RateLimiter {
 
+  import OrderedMonus._
   import cats.implicits._
 
-  def fromPermitRef[F[_], A: TotallyOrderedGroup](permitRef: Ref[F, A]): RateLimiter[F, A] =
+  /**
+   * 送信したリクエスト数を保持する参照セルの情報を見る [[RateLimiter]] を作成する。
+   */
+  def fromCountRef[F[_], A: OrderedMonus](countRef: Ref[F, A])(maxCount: A): RateLimiter[F, A] =
     new RateLimiter[F, A] {
-      override protected val A: TotallyOrderedGroup[A] = implicitly
+      override protected val A: OrderedMonus[A] = implicitly
 
       override def requestPermission(a: A): F[A] =
-        permitRef.modify { permits =>
-          val zero = Group[A].empty
-          val newPermitCount = (permits |+| a.inverse()) max zero
-          (newPermitCount, (permits |+| newPermitCount.inverse()) max zero)
+        countRef.modify { count =>
+          val newCount = (count |+| a) min maxCount
+          (newCount, newCount |-| count)
         }
     }
 

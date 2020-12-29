@@ -1,10 +1,14 @@
 package com.github.unchama.buildassist.domain.explevel
 
-import com.github.unchama.generic.algebra.instances.BigDecimalIsAdditiveTotallyOrderedGroup
-import com.github.unchama.generic.algebra.typeclasses.TotallyOrderedGroup
+import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.seichiassist.util.typeclass.HasMinimum
 
 case class BuildExpAmount(amount: BigDecimal) extends AnyVal {
+  // TODO do not allow constructor invocation
+
+  require {
+    amount >= BigDecimal(0)
+  }
 
   def mapAmount(f: BigDecimal => BigDecimal): BuildExpAmount = BuildExpAmount(f(amount))
 
@@ -21,20 +25,20 @@ private[explevel] abstract class BuildExpAmountInstances {
     HasMinimum.as(BuildExpAmount(0))
   }
 
-  implicit lazy val totallyOrderedGroup: TotallyOrderedGroup[BuildExpAmount] = {
-    val BigDecimal = BigDecimalIsAdditiveTotallyOrderedGroup
-    new TotallyOrderedGroup[BuildExpAmount] {
+  implicit lazy val orderedMonus: OrderedMonus[BuildExpAmount] = {
+    new OrderedMonus[BuildExpAmount] {
       override def compare(x: BuildExpAmount, y: BuildExpAmount): Int =
-        BigDecimal.compare(x.amount, y.amount)
-
-      override def inverse(a: BuildExpAmount): BuildExpAmount =
-        a.mapAmount(BigDecimal.inverse)
+        x.amount.compare(y.amount)
 
       override val empty: BuildExpAmount =
         BuildExpAmount(0)
 
       override def combine(x: BuildExpAmount, y: BuildExpAmount): BuildExpAmount =
-        x.mapAmount(BigDecimal.combine(_, y.amount))
+        BuildExpAmount(x.amount + y.amount)
+
+      override def |-|(x: BuildExpAmount, y: BuildExpAmount): BuildExpAmount = BuildExpAmount {
+        (x.amount - y.amount) max BigDecimal(0)
+      }
     }
   }
 }

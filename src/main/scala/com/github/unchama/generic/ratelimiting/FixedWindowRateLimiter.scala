@@ -4,7 +4,7 @@ import cats.Monad
 import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ConcurrentEffect, IO, Sync, Timer}
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.algebra.typeclasses.TotallyOrderedGroup
+import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 
 import scala.concurrent.duration.FiniteDuration
 import scala.ref.WeakReference
@@ -18,13 +18,15 @@ object FixedWindowRateLimiter {
   def in[
     F[_] : ConcurrentEffect : Timer,
     G[_] : Sync : ContextCoercion[*[_], F],
-    A: TotallyOrderedGroup
-  ](maxPermits: A, resetDuration: FiniteDuration): G[RateLimiter[G, A]] =
-    for {
-      permitRef <- Ref.of[G, A](maxPermits)
+    A: OrderedMonus
+  ](maxPermits: A, resetDuration: FiniteDuration): G[RateLimiter[G, A]] = {
+    val zero = OrderedMonus[A].empty
 
-      rateLimiter = RateLimiter.fromPermitRef(permitRef)
-      refreshPermits = permitRef.set(maxPermits).coerceTo[F]
+    for {
+      countRef <- Ref.of[G, A](zero)
+
+      rateLimiter = RateLimiter.fromCountRef(countRef)(maxPermits)
+      refreshPermits = countRef.set(zero).coerceTo[F]
 
       rateLimiterRef = new WeakReference(rateLimiter)
       rateLimiterStillActive = Sync[F].delay(rateLimiterRef.get.nonEmpty)
@@ -41,4 +43,5 @@ object FixedWindowRateLimiter {
         .runAsync(_ => IO.unit)
         .runSync[G]
     } yield rateLimiter
+  }
 }
