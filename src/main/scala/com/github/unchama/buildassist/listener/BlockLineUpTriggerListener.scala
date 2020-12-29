@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist.listener
 
-import com.github.unchama.buildassist.{BuildAssist, Util}
+import com.github.unchama.buildassist.{BuildAssist, StepPlaceMode, Util, VerticalAlign}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.util.external.ExternalPlugins
@@ -28,7 +28,7 @@ object BlockLineUpTriggerListener extends Listener {
     val playerMineStack = seichiAssistData.minestack
 
     //スキルOFFなら終了
-    if (buildAssistData.line_up_flg == 0) return
+    if (buildAssistData.line_up_flg_e == VerticalAlign.Off) return
 
     //スキル利用可能でないワールドの場合終了
     if (!player.getWorld.isBlockLineUpSkillEnabled) return
@@ -71,7 +71,7 @@ object BlockLineUpTriggerListener extends Listener {
     } else if (pitch < -45) {
       step_y = 1
     } else {
-      if (buildAssistData.line_up_flg == 2) {
+      if (buildAssistData.line_up_flg_e == VerticalAlign.Lower) {
         //下設置設定の場合は一段下げる
         py -= 1
       }
@@ -126,11 +126,11 @@ object BlockLineUpTriggerListener extends Listener {
     }
 
     val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
-    val slabLineUpStepMode = buildAssistData.line_up_step_flg
-    val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
+    val slabLineUpStepMode = buildAssistData.line_up_step_flg_e
+    val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == StepPlaceMode.Both
 
     val placingBlockData: Byte =
-      if (playerHoldsSlabBlock && slabLineUpStepMode == 0)
+      if (playerHoldsSlabBlock && slabLineUpStepMode == StepPlaceMode.Upper)
         (mainHandItemData + 8).toByte
       else mainHandItemData
 
@@ -156,7 +156,7 @@ object BlockLineUpTriggerListener extends Listener {
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる
-          if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.line_up_des_flg == 0) {
+          if (!BuildAssist.material_destruction.contains(block.getType) || !buildAssistData.line_up_des_flg_b) {
             b.break
           }
 

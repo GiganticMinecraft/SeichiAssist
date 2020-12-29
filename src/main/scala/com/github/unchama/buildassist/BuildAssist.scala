@@ -254,8 +254,5 @@ object BuildAssist {
   var plugin: Plugin = _
   val DEBUG: Boolean = false
   var config: BuildAssistConfig = _
-  val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
-  val line_up_step_str: Seq[String] = Seq("上側", "下側", "両方")
-  val line_up_off_on_str: Seq[String] = Seq("OFF", "ON")
   def lineFillSwitchMessage(use: Boolean): String = if (use) "ON" else "OFF"
 }
