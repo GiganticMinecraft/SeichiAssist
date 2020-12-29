@@ -51,7 +51,7 @@ case object ManagedWorld extends Enum[ManagedWorld] {
     }
 
     /**
-     * ブロックがカウントされるワールドかどうか
+     * 建築量をカウントするワールドかどうか
      */
     def shouldTrackBuildBlock: Boolean = managedWorld match {
       case WORLD_2
