@@ -9,6 +9,12 @@ case class PlayerDataFinalizerList[F[_], Player](callbacks: Seq[PlayerDataFinali
     PlayerDataFinalizerList(f +: callbacks)
 
   /**
+   * Appends list of [[PlayerDataFinalizer]] to this object
+   */
+  def withFinalizers(fs: PlayerDataFinalizerList[F, Player]): PlayerDataFinalizerList[F, Player] =
+    PlayerDataFinalizerList(callbacks ++ fs.callbacks)
+
+  /**
    * Get list of all actions, known to this object, that must be run when a given [[Player]] quits the server.
    */
   def allActionsOnQuitOf(player: Player): Seq[F[Unit]] = callbacks.map(_.onQuitOf(player))

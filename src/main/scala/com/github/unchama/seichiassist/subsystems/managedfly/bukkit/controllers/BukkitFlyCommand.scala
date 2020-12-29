@@ -44,7 +44,7 @@ object BukkitFlyCommand {
   def startEndlessCommand[
     F[_] : ConcurrentEffect : Timer,
     G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]],
+  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[G, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]): ContextualExecutor =
     BuilderTemplates.playerCommandBuilder
       .execution { context =>
@@ -60,7 +60,7 @@ object BukkitFlyCommand {
   def addCommand[
     F[_] : ConcurrentEffect : Timer,
     G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]],
+  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[G, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]): ContextualExecutor =
     BuilderTemplates.playerCommandBuilder
       .argumentsParsers(List(durationParser))
@@ -83,7 +83,7 @@ object BukkitFlyCommand {
 
   def finishCommand[
     F[_] : ConcurrentEffect, G[_]
-  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]]): ContextualExecutor =
+  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[G, ActiveSessionReference[F, G]]): ContextualExecutor =
     BuilderTemplates.playerCommandBuilder
       .execution { context =>
         for {
@@ -104,7 +104,7 @@ object BukkitFlyCommand {
   def executor[
     F[_] : ConcurrentEffect : Timer,
     G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]],
+  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[G, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]): TabExecutor =
     BranchedExecutor(
       Map(

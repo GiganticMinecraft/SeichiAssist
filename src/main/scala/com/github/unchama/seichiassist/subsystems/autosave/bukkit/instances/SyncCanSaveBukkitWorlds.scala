@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances
 
 import cats.effect.Sync
-import com.github.unchama.concurrent.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.subsystems.autosave.application.CanSaveWorlds
 import org.bukkit.{Bukkit, World}
 

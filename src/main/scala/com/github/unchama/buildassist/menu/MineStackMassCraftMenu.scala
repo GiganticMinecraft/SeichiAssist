@@ -123,12 +123,14 @@ object MineStackMassCraftMenu {
     val buttonEffect = LeftClickButtonEffect(
         Kleisli { player =>
           for {
-            buildAssistPlayerData <- IO { BuildAssist.playermap(player.getUniqueId) }
-            seichiAssistPlayerData <- IO { SeichiAssist.playermap(player.getUniqueId) }
+            buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).get.toIO
+            seichiAssistPlayerData <- IO {
+              SeichiAssist.playermap(player.getUniqueId)
+            }
             mineStack = seichiAssistPlayerData.minestack
 
             _ <-
-              if (buildAssistPlayerData.level < requiredBuildLevel) {
+              if (buildLevel.levelCorrespondingToExp.level < requiredBuildLevel) {
                 MessageEffect(s"${RED}建築Lvが足りません")(player)
               } else {
                 syncShift.shift >> {

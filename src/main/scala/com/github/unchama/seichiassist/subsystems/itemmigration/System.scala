@@ -37,7 +37,7 @@ object System {
       new PlayerItemsMigrationSlf4jLogger(logger)
     )
 
-    val repository = new PlayerItemMigrationStateRepository[F, G, F]
+    val repository = new PlayerItemMigrationStateRepository[G, F]
     val playerItemMigrationController = new PlayerItemMigrationController[F, G](repository, migrations, service)
 
     val entryPoints = new EntryPoints {

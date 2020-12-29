@@ -19,7 +19,7 @@ import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
 class PlayerItemMigrationController[
   F[_] : ConcurrentEffect,
   G[_] : SyncEffect
-](migrationState: PreLoginToQuitPlayerDataRepository[F, G, TryableDeferred[F, Unit]],
+](migrationState: PreLoginToQuitPlayerDataRepository[G, TryableDeferred[F, Unit]],
   migrations: ItemMigrations, service: ItemMigrationService[F, PlayerInventoriesData[F]])
   extends Listener {
 

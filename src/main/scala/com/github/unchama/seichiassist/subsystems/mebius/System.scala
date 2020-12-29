@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.mebius
 
 import cats.effect.{IO, SyncEffect, SyncIO, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingTaskContext}
+import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.JoinToQuitPlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.PropertyModificationBukkitMessages
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider

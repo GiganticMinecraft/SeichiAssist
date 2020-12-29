@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.seichiskill.assault
 
 import cats.effect.{ExitCase, IO, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
