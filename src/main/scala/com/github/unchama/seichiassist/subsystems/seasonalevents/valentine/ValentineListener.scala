@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import java.util.Random
+import java.util.{Random, UUID}
 
 import cats.effect.{ConcurrentEffect, IO, LiftIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
-import com.github.unchama.seichiassist.subsystems.seasonalevents.service.LastQuitInquiringService
+import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
@@ -29,8 +29,7 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import scala.util.chaining._
 
 class ValentineListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
-  (implicit effectEnvironment: EffectEnvironment, service: LastQuitInquiringService[F])
-  extends Listener {
+  (implicit effectEnvironment: EffectEnvironment, repository: LastQuitPersistenceRepository[F, UUID]) extends Listener {
 
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
@@ -84,7 +83,7 @@ class ValentineListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
     import cats.implicits._
     val program = for {
       _ <- NonServerThreadContextShift[F].shift
-      lastQuit <- service.loadLastQuitDateTime(player.getName)
+      lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
       _ <- LiftIO[F].liftIO(IO{
         val hasNotJoinedInEventYet = lastQuit match {
           case Some(dateTime) => dateTime.isBefore(START_DATE.atStartOfDay())
