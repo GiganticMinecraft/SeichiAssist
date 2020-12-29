@@ -5,7 +5,7 @@ import java.util.UUID
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GridTemplate, RegionMenuData}
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.enumeration.DirectionType
+import com.github.unchama.seichiassist.util.enumeration.{Direction, DirectionType}
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import com.github.unchama.util.external.ExternalPlugins
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -273,25 +273,25 @@ object RegionInventoryListener {
     val end_z = getNearlyUnitEnd(player)("z")
 
     val (start_loc, end_loc) = direction match {
-      case Util.Direction.NORTH =>
+      case Direction.NORTH =>
         (
           new Location(world, start_x - 15 * leftsideUnitAmount, 0.0, start_z - 15 * aheadUnitAmount),
           new Location(world, end_x + 15 * rightsideUnitAmount, 256.0, end_z + 15 * behindUnitAmount)
         )
 
-      case Util.Direction.EAST =>
+      case Direction.EAST =>
         (
           new Location(world, start_x - 15 * behindUnitAmount, 0.0, start_z + 15 * leftsideUnitAmount),
           new Location(world, end_x + 15 * aheadUnitAmount, 256.0, end_z + 15 * rightsideUnitAmount)
         )
 
-      case Util.Direction.SOUTH =>
+      case Direction.SOUTH =>
         (
           new Location(world, start_x - 15 * rightsideUnitAmount, 0.0, start_z - 15 * behindUnitAmount),
           new Location(world, end_x + 15 * leftsideUnitAmount, 256.0, end_z + 15 * aheadUnitAmount)
         )
 
-      case Util.Direction.WEST =>
+      case Direction.WEST =>
         (
           new Location(world, start_x - 15 * aheadUnitAmount, 0.0, start_z - 15 * rightsideUnitAmount),
           new Location(world, end_x + 15 * behindUnitAmount, 256.0, end_z + 15 * leftsideUnitAmount)
