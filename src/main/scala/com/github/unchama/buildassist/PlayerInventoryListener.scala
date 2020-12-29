@@ -108,8 +108,8 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         if (playerdata.level < BuildAssist.config.getblocklineupMinestacklevel()) {
           player.sendMessage(s"${RED.toString}建築Lvが足りません")
         } else {
-          playerdata.line_up_minestack_flg = if (playerdata.line_up_minestack_flg == 0) 1 else 0
-          player.sendMessage(GREEN.toString + "マインスタック優先設定 ：" + BuildAssist.line_up_off_on_str(playerdata.line_up_minestack_flg))
+          playerdata.line_up_minestack_flg_b = !playerdata.line_up_minestack_flg_b
+          player.sendMessage(s"${GREEN}マインスタック優先設定 ：${BuildAssist.lineFillSwitchMessage(playerdata.line_up_minestack_flg_b)}")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }

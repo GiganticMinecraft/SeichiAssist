@@ -222,7 +222,7 @@ object MenuInventoryData {
     //ブロックを並べるスキル一部ブロックを破壊して並べる設定
     itemstack = new ItemStack(Material.TNT, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.TNT)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.line_up_off_on_str(playerdata.line_up_des_flg)}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.lineFillSwitchMessage(playerdata.line_up_des_flg_b)}")
     lore = List(
       s"$RESET${GRAY}ブロックを並べるとき特定のブロックを破壊して並べます。",
       s"$RESET${GRAY}破壊対象ブロック：草,花,水,雪,松明,きのこ",
@@ -235,7 +235,7 @@ object MenuInventoryData {
     //MineStackの方を優先して消費する設定
     itemstack = new ItemStack(Material.CHEST, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.CHEST)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.line_up_off_on_str(playerdata.line_up_minestack_flg)}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.lineFillSwitchMessage(playerdata.line_up_minestack_flg_b)}")
     lore = List(
       s"$RESET${GRAY}スキルでブロックを並べるとき",
       s"$RESET${GRAY}MineStackの在庫を優先して消費します。",

@@ -198,8 +198,8 @@ private case class ButtonComputations(player: Player) extends AnyVal {
         s"$RESET${GRAY}現在の設定",
         s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str(openerData.line_up_flg)}",
         s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.line_up_step_str(openerData.line_up_step_flg)}",
-        s"$RESET${GRAY}破壊設定: ${BuildAssist.line_up_off_on_str(openerData.line_up_des_flg)}",
-        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.line_up_off_on_str(openerData.line_up_minestack_flg)}"
+        s"$RESET${GRAY}破壊設定: ${BuildAssist.lineFillSwitchMessage(openerData.line_up_des_flg_b)}",
+        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.lineFillSwitchMessage(openerData.line_up_minestack_flg_b)}"
       )
       .build()
 
