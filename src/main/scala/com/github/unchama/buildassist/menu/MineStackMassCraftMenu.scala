@@ -130,7 +130,7 @@ object MineStackMassCraftMenu {
             mineStack = seichiAssistPlayerData.minestack
 
             _ <-
-              if (buildLevel.desyncedLevel.level < requiredBuildLevel) {
+              if (buildLevel.levelCorrespondingToExp.level < requiredBuildLevel) {
                 MessageEffect(s"${RED}建築Lvが足りません")(player)
               } else {
                 syncShift.shift >> {

@@ -41,7 +41,6 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
   }
 
   lazy val buildAmountDataRepository: BuildAmountDataRepository[SyncIO, IO] = {
-    import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
 
     implicit val persistence: JdbcBuildAmountDataPersistence[SyncIO] = new JdbcBuildAmountDataPersistence[SyncIO]()
@@ -68,6 +67,7 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
     BuildAssist.config = new BuildAssistConfig(plugin)
     BuildAssist.config.loadConfig()
 
+    import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
     implicit val expMultiplier: BuildExpMultiplier = BuildAssist.config.offerExpMultiplier
     implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[SyncIO, Player] =
       new ClassifyBukkitPlayerWorld[SyncIO]

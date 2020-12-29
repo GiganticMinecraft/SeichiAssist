@@ -33,9 +33,8 @@ private case class ButtonComputations(player: Player) extends AnyVal {
           .enchanted()
           .title(s"$YELLOW$EMPHASIZE${player.getName}の建築データ")
           .lore(
-            s"$RESET${AQUA}建築Lv: ${data.desyncedLevel.level}",
+            s"$RESET${AQUA}建築Lv: ${data.levelCorrespondingToExp.level}",
             s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}",
-            s"$RESET$DARK_GRAY※1分毎に更新"
           )
           .build()
 
@@ -79,7 +78,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap(amountData =>
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
-        val openerLevel = amountData.desyncedLevel.level
+        val openerLevel = amountData.levelCorrespondingToExp.level
 
         val iconItemStack = new IconItemStackBuilder(Material.STONE)
           .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
@@ -143,7 +142,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
               DeferredEffect {
                 IO {
-                  if (amountData.desyncedLevel.level < BuildAssist.config.getblocklineuplevel) {
+                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
                     new BlockPlacementSkillMenu().open
@@ -174,7 +173,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
           action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
             DeferredEffect {
               IO {
-                if (amountData.desyncedLevel.level < BuildAssist.config.getblocklineuplevel) {
+                if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
                   MessageEffect(s"${RED}建築Lvが足りません")
                 } else {
                   SequentialEffect(

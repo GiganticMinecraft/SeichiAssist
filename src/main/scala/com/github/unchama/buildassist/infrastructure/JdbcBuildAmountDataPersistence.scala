@@ -17,10 +17,9 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
              |  where uuid = ${key.toString}"""
           .stripMargin
           .map { rs =>
-            val level = BuildLevel.ofPositive(rs.int("build_lv"))
             val exp = BuildExpAmount(BigDecimal(rs.string("build_count")))
 
-            BuildAmountData(exp, level)
+            BuildAmountData(exp)
           }
           .first().apply()
       }
@@ -30,7 +29,6 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
     F.delay {
       DB.localTx { implicit session =>
         sql"""update playerdata set
-             |  build_lv = ${value.desyncedLevel.level},
              |  build_count = ${value.expAmount.amount}
              |  where uuid = ${key.toString}
              |"""

@@ -283,7 +283,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               DeferredEffect {
                 IO {
-                  if (amountData.desyncedLevel.level < BuildAssist.config.getZoneskillMinestacklevel)
+                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getZoneskillMinestacklevel)
                     MessageEffect(s"${RED}建築Lvが足りません")
                   else
                     SequentialEffect(

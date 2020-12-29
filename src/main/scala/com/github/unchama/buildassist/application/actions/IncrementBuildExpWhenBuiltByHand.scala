@@ -6,7 +6,9 @@ import com.github.unchama.buildassist.application.BuildExpMultiplier
 import com.github.unchama.buildassist.domain.explevel.BuildExpAmount
 import com.github.unchama.buildassist.domain.playerdata.BuildAmountData
 import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.generic.Diff
 import com.github.unchama.generic.ratelimiting.RateLimiter
+import com.github.unchama.minecraft.actions.SendMinecraftMessage
 
 /**
  * [[Player]] が手でブロックを設置した際に建築量を加算するアクションを提供する型クラス。
@@ -28,7 +30,10 @@ object IncrementBuildExpWhenBuiltByHand {
   ](implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
 
   def using[
-    F[_] : Monad : ClassifyPlayerWorld[*[_], Player],
+    F[_]
+    : Monad
+    : ClassifyPlayerWorld[*[_], Player]
+    : SendMinecraftMessage[*[_], Player],
     Player
   ](rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]])
@@ -47,9 +52,11 @@ object IncrementBuildExpWhenBuiltByHand {
           )
         amountToIncrement <-
           rateLimiterRepository(player).requestPermission(amountToRequestIncrement)
-        _ <-
-          dataRepository(player)
-            .update(_.modifyExpAmount(_.add(amountToIncrement)))
+        levelDiff <- dataRepository(player).modify { oldAmount =>
+          val newAmount = oldAmount.modifyExpAmount(_.add(amountToIncrement))
+          (newAmount, Diff.fromValues(oldAmount.levelCorrespondingToExp, newAmount.levelCorrespondingToExp))
+        }
+        _ <- levelDiff.traverse(LevelUpNotifier[F, Player].notifyTo(player))
       } yield ()
     }
 }
