@@ -149,6 +149,15 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.seasonalevents.System.wired[IO, IO](this)
   }
 
+  lazy val LoginBonusTicketSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.loginbonusticket.System.wired[IO, IO]
+  }
+
   lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
     import cats.implicits._
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
