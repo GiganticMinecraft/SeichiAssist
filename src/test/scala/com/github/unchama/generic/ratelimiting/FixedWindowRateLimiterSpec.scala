@@ -37,7 +37,7 @@ class FixedWindowRateLimiterSpec
 
   type Natural = Int Refined NonNegative
 
-  implicit val intOrderedGroup: OrderedMonus[Natural] = new OrderedMonus[Natural] {
+  implicit val intOrderedMonus: OrderedMonus[Natural] = new OrderedMonus[Natural] {
     override def |-|(x: Natural, y: Natural): Natural =
       if (x >= y) refineV[NonNegative](x - y).getOrElse(throw new RuntimeException)
       else 0
