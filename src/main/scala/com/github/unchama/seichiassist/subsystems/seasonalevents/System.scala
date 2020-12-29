@@ -18,7 +18,6 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.infrastructure.
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginBonusGifter
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiListener
-import com.github.unchama.seichiassist.subsystems.seasonalevents.service.LastQuitInquiringService
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineListener
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
