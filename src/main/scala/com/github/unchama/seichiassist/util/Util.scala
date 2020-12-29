@@ -1,24 +1,21 @@
 package com.github.unchama.seichiassist.util
 
-import java.text.SimpleDateFormat
-import java.util.stream.IntStream
-import java.util.{Calendar, Random}
-
 import cats.data
 import cats.effect.IO
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.util.enumeration.Direction
 import com.github.unchama.seichiassist.util.typeclass.Sendable
-import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MineStackObjectList, SeichiAssist}
-import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.targetedeffect.TargetedEffect
-import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
 import org.bukkit.entity.{EntityType, Firework, Player}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
+
+import java.text.SimpleDateFormat
+import java.util.{Calendar, Random}
 
 object Util {
 
@@ -32,6 +29,7 @@ object Util {
     player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
   }
 
+  // TODO: ManagedWorld
   def seichiSkillsAllowedIn(world: World): Boolean = {
     val seichiWorldPrefix = if (SeichiAssist.DEBUG) SeichiAssist.DEBUGWORLDNAME else SeichiAssist.SEICHIWORLDNAME
     val worldNameLowerCase = world.getName.toLowerCase()
@@ -255,6 +253,7 @@ object Util {
     true
   }
 
+  // TODO: Codec
   def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
     val meta = itemstack.getItemMeta
 
@@ -272,6 +271,7 @@ object Util {
   /**
    * GUIメニューアイコン作成用
    *
+   * @deprecated Use [[com.github.unchama.itemstackbuilder.IconItemStackBuilder]]
    * @author karayuu
    * @param material    メニューアイコンMaterial
    * @param amount      メニューアイコンのアイテム個数
@@ -300,6 +300,7 @@ object Util {
   /**
    * GUIメニューアイコン作成用
    *
+   * @deprecated Use [[com.github.unchama.itemstackbuilder.IconItemStackBuilder]]
    * @author karayuu
    * @param material    メニューアイコンMaterial, not `null`
    * @param amount      メニューアイコンのアイテム個数
@@ -407,7 +408,7 @@ object Util {
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.CARROT_STICK &&
-      loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...") >= 0
+      loreIndexOfOpt(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...").nonEmpty
   }
 
   def getSkullDataFromBlock(block: Block): Option[ItemStack] = {
@@ -446,8 +447,7 @@ object Util {
    */
   def isContainedInLore(itemStack: ItemStack, sentence: String): Boolean =
     if (!itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) false
-    else loreIndexOf(itemStack.getItemMeta.getLore.asScala.toList, sentence) >= 0
-
+    else loreIndexOfOpt(itemStack.getItemMeta.getLore.asScala.toList, sentence).nonEmpty
 
   /**
    * loreを捜査して、要素の中に`find`が含まれているかを調べる。
@@ -456,10 +456,14 @@ object Util {
    * @param find 探す文字列
    * @return 見つかった場合はその添字、見つからなかった場合は-1
    */
-  def loreIndexOf(lore: List[String], find: String): Int = {
-    IntStream.range(0, lore.size)
-      .filter { i => lore(i).contains(find) }
-      .findFirst()
-      .orElse(-1)
+  @deprecated def loreIndexOf(lore: List[String], find: String): Int = {
+    loreIndexOfOpt(lore, find)
+      .getOrElse(-1)
+  }
+
+  def loreIndexOfOpt(lore: List[String], find: String): Option[Int] = {
+    lore.zipWithIndex
+      .find(_._1.contains(find))
+      .map(_._2)
   }
 }
