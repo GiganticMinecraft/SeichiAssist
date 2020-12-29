@@ -688,11 +688,11 @@ class PlayerData(
   import com.github.unchama.seichiassist.AntiTypesafe
 
   def addUnitAmount(directionType: DirectionType, amount: Int): Unit = {
-    directionType match {
-      case DirectionType.AHEAD => this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
-      case DirectionType.BEHIND => this.claimUnit = this.claimUnit.copy(behind = this.claimUnit.behind + amount)
-      case DirectionType.RIGHT => this.claimUnit = this.claimUnit.copy(right = this.claimUnit.right + amount)
-      case DirectionType.LEFT => this.claimUnit = this.claimUnit.copy(left = this.claimUnit.left + amount)
+    this.claimUnit = directionType match {
+      case DirectionType.AHEAD => this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
+      case DirectionType.BEHIND => this.claimUnit.copy(behind = this.claimUnit.behind + amount)
+      case DirectionType.RIGHT => this.claimUnit.copy(right = this.claimUnit.right + amount)
+      case DirectionType.LEFT => this.claimUnit.copy(left = this.claimUnit.left + amount)
     }
   }
 
