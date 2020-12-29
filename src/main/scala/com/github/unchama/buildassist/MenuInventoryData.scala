@@ -196,7 +196,7 @@ object MenuInventoryData {
 
     //ブロックを並べるスキル設定
     itemstack = new ItemStack(Material.WOOD, 1)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ブロックを並べるスキル（仮） ：${playerdata.line_up_flg_e.asHumanReadable}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ブロックを並べるスキル（仮） ：${playerdata.lineFillAlign.asHumanReadable}")
     lore = List(
       s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
       s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -210,7 +210,7 @@ object MenuInventoryData {
     //ブロックを並べるスキルハーフブロック設定
     itemstack = new ItemStack(Material.STEP, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.STEP)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ハーフブロック設定 ：${playerdata.line_up_step_flg_e.asHumanReadable}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ハーフブロック設定 ：${playerdata.lineFillStepMode.asHumanReadable}")
     lore = List(
       s"$RESET${GRAY}ハーフブロックを並べる時の位置を決めます。",
       s"$RESET${GRAY}クリックで切り替え"
@@ -222,7 +222,7 @@ object MenuInventoryData {
     //ブロックを並べるスキル一部ブロックを破壊して並べる設定
     itemstack = new ItemStack(Material.TNT, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.TNT)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.lineFillSwitchMessage(playerdata.line_up_des_flg_b)}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.lineFillSwitchMessage(playerdata.lineFillBreakWeakBlocks)}")
     lore = List(
       s"$RESET${GRAY}ブロックを並べるとき特定のブロックを破壊して並べます。",
       s"$RESET${GRAY}破壊対象ブロック：草,花,水,雪,松明,きのこ",
@@ -235,7 +235,7 @@ object MenuInventoryData {
     //MineStackの方を優先して消費する設定
     itemstack = new ItemStack(Material.CHEST, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.CHEST)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.lineFillSwitchMessage(playerdata.line_up_minestack_flg_b)}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.lineFillSwitchMessage(playerdata.lineFillWithMinestack)}")
     lore = List(
       s"$RESET${GRAY}スキルでブロックを並べるとき",
       s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
