@@ -141,7 +141,12 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
-    subsystems.seasonalevents.System.wired(this)
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.seasonalevents.System.wired[IO, IO](this)
   }
 
   lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
