@@ -179,8 +179,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
                   SequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                     UnfocusedEffect {
-                      openerData.lineFillAlign =
-                      openerData.lineFillAlign.next
+                      openerData.lineFillAlign = openerData.lineFillAlign.next
                     },
                     DeferredEffect {
                       IO {
