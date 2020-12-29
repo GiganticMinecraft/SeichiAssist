@@ -6,16 +6,15 @@ import java.util.{Random, UUID}
 import cats.effect.{ConcurrentEffect, IO, LiftIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{START_DATE, isInEvent, itemDropRate}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
-import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
