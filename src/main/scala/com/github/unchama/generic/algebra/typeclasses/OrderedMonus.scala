@@ -3,7 +3,7 @@ package com.github.unchama.generic.algebra.typeclasses
 import cats.kernel.{CommutativeMonoid, Order}
 
 /**
- * 切り捨て減算(truncated subtraction)を提供する全順序可換モノイド。
+ * 切り捨て減算(truncated subtraction)を提供する、全順序構造を備える可換モノイド。
  *
  * 以下の法則を満たす。
  *  - `x lteqv y` <=> `x + z = y` となる `z` が存在する。
