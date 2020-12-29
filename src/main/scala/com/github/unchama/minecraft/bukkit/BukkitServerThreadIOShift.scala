@@ -1,7 +1,7 @@
-package com.github.unchama.concurrent.bukkit
+package com.github.unchama.minecraft.bukkit
 
 import cats.effect.IO
-import com.github.unchama.concurrent.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 

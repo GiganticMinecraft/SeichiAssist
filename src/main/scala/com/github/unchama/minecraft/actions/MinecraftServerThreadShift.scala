@@ -1,4 +1,4 @@
-package com.github.unchama.concurrent
+package com.github.unchama.minecraft.actions
 
 import cats.effect.ContextShift
 
