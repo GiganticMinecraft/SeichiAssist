@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.enumeration.DirectionType
 import org.bukkit.ChatColor._
+import org.bukkit.block.BlockFace
 import org.bukkit.{Bukkit, Material}
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -177,7 +178,7 @@ object RegionMenuData {
     } else {
       Map()
     }
-    theMap.map(tp => {
+    theMap.map((tp: (DirectionType, BlockFace)) => {
       (tp._1, tp._2 match {
         case SOUTH => Some("南(South)")
         case NORTH => Some("北(North)")
