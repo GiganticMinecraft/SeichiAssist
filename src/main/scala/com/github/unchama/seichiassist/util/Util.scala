@@ -8,10 +8,11 @@ import cats.data
 import cats.effect.IO
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.util.typeclass.Sendable
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.targetedeffect.TargetedEffect
 import enumeratum._
-import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
@@ -117,46 +118,18 @@ object Util {
     player.getInventory.addItem(itemstack)
   }
 
-  def sendAdminMessage(str: String): Unit = {
-    Bukkit.getOnlinePlayers.forEach { player =>
-      if (player.hasPermission("SeichiAssist.admin")) {
-        player.sendMessage(str)
-      }
-    }
+  def sendEveryMessage[T : Sendable](message: T): Unit = {
+    Bukkit.getOnlinePlayers.forEach(implicitly[Sendable[T]].sendMessage(_, message))
   }
 
-  def sendEveryMessage(str: String): Unit = {
-    Bukkit.getOnlinePlayers.forEach(_.sendMessage(str))
-  }
-
-  def sendEveryMessageWithoutIgnore(str: String): Unit = {
+  def sendEveryMessageWithoutIgnore[T : Sendable](message: T): Unit = {
     import cats.implicits._
-
     Bukkit.getOnlinePlayers.asScala.map { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO { if (!playerSettings.shouldMuteMessages) player.sendMessage(str) }
+        _ <- IO { if (!playerSettings.shouldMuteMessages) implicitly[Sendable[T]].sendMessage(player, message) }
       } yield ()
     }.toList.sequence.unsafeRunSync()
-  }
-
-  def sendEveryMessageWithoutIgnore(base: BaseComponent): Unit = {
-    import cats.implicits._
-
-    // TODO remove duplicates
-    Bukkit.getOnlinePlayers.asScala.map { player =>
-      for {
-        playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO { if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base) }
-      } yield ()
-    }.toList.sequence.unsafeRunSync()
-  }
-
-  /**
-   * json形式のチャットを送信する際に使用
-   */
-  def sendEveryMessage(base: BaseComponent): Unit = {
-    Bukkit.getOnlinePlayers.asScala.foreach(_.spigot().sendMessage(base))
   }
 
   def getEnchantName(vaname: String, enchlevel: Int): String = {
