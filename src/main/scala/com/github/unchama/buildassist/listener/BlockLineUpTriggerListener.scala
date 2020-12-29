@@ -1,11 +1,11 @@
 package com.github.unchama.buildassist.listener
 
 import cats.effect.{SyncEffect, SyncIO}
-import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.{BuildAssist, StepPlaceMode, Util, VerticalAlign}
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.buildassist.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.buildassist.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.ManagedWorld._
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -36,7 +36,7 @@ class BlockLineUpTriggerListener[
     val playerMineStack = seichiAssistData.minestack
 
     //スキルOFFなら終了
-    if (buildAssistData.line_up_flg == 0) return
+    if (buildAssistData.lineFillAlign == VerticalAlign.Off) return
 
     //スキル利用可能でないワールドの場合終了
     if (!player.getWorld.isBlockLineUpSkillEnabled) return
@@ -79,7 +79,7 @@ class BlockLineUpTriggerListener[
     } else if (pitch < -45) {
       step_y = 1
     } else {
-      if (buildAssistData.line_up_flg == 2) {
+      if (buildAssistData.lineFillAlign == VerticalAlign.Lower) {
         //下設置設定の場合は一段下げる
         py -= 1
       }
@@ -97,7 +97,7 @@ class BlockLineUpTriggerListener[
     val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag
 
     val mineStackObjectToBeUsed =
-      if (buildAssistData.line_up_minestack_flg == 1)
+      if (buildAssistData.lineFillWithMinestack)
         MineStackObjectList.minestacklist.find { obj =>
           mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
         }
@@ -134,11 +134,11 @@ class BlockLineUpTriggerListener[
     }
 
     val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
-    val slabLineUpStepMode = buildAssistData.line_up_step_flg
-    val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
+    val slabLineUpStepMode = buildAssistData.lineFillStepMode
+    val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == StepPlaceMode.Both
 
     val placingBlockData: Byte =
-      if (playerHoldsSlabBlock && slabLineUpStepMode == 0)
+      if (playerHoldsSlabBlock && slabLineUpStepMode == StepPlaceMode.Upper)
         (mainHandItemData + 8).toByte
       else mainHandItemData
 
@@ -164,7 +164,7 @@ class BlockLineUpTriggerListener[
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる
-          if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.line_up_des_flg == 0) {
+          if (!BuildAssist.material_destruction.contains(block.getType) || !buildAssistData.lineFillBreakWeakBlocks) {
             b.break
           }
 

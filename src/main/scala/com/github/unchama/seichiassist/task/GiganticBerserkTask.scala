@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.task
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.util.Util
-import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
