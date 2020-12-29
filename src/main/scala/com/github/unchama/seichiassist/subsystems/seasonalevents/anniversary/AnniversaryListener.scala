@@ -35,6 +35,8 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment) extends
 
   @EventHandler
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
+    if (!LocalDate.now().isEqual(EVENT_DATE)) return
+
     val player = event.getEntity
     val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
     if (playerData.anniversary) return
