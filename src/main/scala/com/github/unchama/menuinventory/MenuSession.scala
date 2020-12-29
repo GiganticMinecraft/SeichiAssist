@@ -3,8 +3,8 @@ package com.github.unchama.menuinventory
 import cats.Eq
 import cats.effect.concurrent.Ref
 import cats.effect.{ContextShift, IO}
-import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.menuinventory.slot.Slot
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects
 import org.bukkit.Material

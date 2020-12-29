@@ -3,10 +3,11 @@ package com.github.unchama.seichiassist.subsystems.managedfly
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadShift, NonServerThreadContextShift, ReadOnlyRef}
+import com.github.unchama.concurrent.{NonServerThreadContextShift, ReadOnlyRef}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, FlyDurationPersistenceRepository, PlayerFlyStatusManipulation, SystemConfiguration}
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitPlayerFlyStatusManipulation
@@ -53,7 +54,7 @@ object System {
       StatefulSubsystem(
         listenersToBeRegistered = Seq(_stateRepository),
         finalizersToBeManaged = Seq(
-          player => _stateRepository.finalizationAction(player)
+          player => _stateRepository.removeValueAndFinalize(player)
         ),
         commandsToBeRegistered = Map(
           "fly" -> BukkitFlyCommand.executor[AsyncContext, SyncContext]

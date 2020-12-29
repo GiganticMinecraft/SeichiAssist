@@ -190,11 +190,6 @@ object PlayerDataSaveTask {
           + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
           + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
-          //建築
-          + ",build_lv = " + playerdata.buildCount.lv
-          + ",build_count = " + playerdata.buildCount.count //.toString()
-          + ",build_count_flg = " + playerdata.buildCount.migrationFlag
-
           //投票
           + ",canVotingFairyUse = " + playerdata.usingVotingFairy
           + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString + "'"
@@ -212,12 +207,6 @@ object PlayerDataSaveTask {
           + ",GBlevel = " + playerdata.giganticBerserk.level
           + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolve
           + ",TitleFlags = '" + flagString + "'"
-
-          //正月イベント
-          + ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
-
-          //バレンタインイベント
-          + ",hasChocoGave = " + playerdata.hasChocoGave
 
           + " where uuid = '" + playerUuid + "'")
       }

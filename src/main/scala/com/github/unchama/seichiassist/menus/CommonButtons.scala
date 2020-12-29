@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.menus
 
 import cats.effect.IO
-import com.github.unchama.concurrent.MinecraftServerThreadShift
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.ColorScheme.{clickResultDescription, navigation}

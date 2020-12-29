@@ -1,9 +1,5 @@
 package com.github.unchama.seichiassist.task
 
-import java.sql.{ResultSet, Statement}
-import java.text.{ParseException, SimpleDateFormat}
-import java.util.{Calendar, UUID}
-
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
@@ -18,6 +14,9 @@ import com.github.unchama.util.MillisecondTimer
 import org.bukkit.ChatColor._
 import org.bukkit.{Bukkit, Location}
 
+import java.sql.{ResultSet, Statement}
+import java.text.{ParseException, SimpleDateFormat}
+import java.util.{Calendar, UUID}
 import scala.collection.mutable
 import scala.util.Using
 
@@ -331,13 +330,6 @@ object PlayerDataLoading {
             playerData.TitleFlags.addOne(1)
         }
 
-        //建築
-        playerData.buildCount = BuildCount(
-          rs.getInt("build_lv"),
-          new java.math.BigDecimal(rs.getString("build_count")),
-          rs.getByte("build_count_flg")
-        )
-
         //マナ妖精
         playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
         playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
@@ -358,12 +350,6 @@ object PlayerDataLoading {
           rs.getBoolean("isGBStageUp")
         )
         playerData.anniversary = rs.getBoolean("anniversary")
-
-        //正月イベント用
-        playerData.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive")
-
-        //バレンタインイベント用
-        playerData.hasChocoGave = rs.getBoolean("hasChocoGave")
       }
     }
     //sqlコネクションチェック

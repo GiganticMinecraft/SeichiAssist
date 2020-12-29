@@ -18,7 +18,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.getUniqueId
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap(uuid) // If NPE, player is already offline
+    val playerdata = BuildAssist.instance.temporaryData(uuid)
 
     val inventory = Bukkit.getServer.createInventory(null, 4 * 9, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
     var itemstack = new ItemStack(Material.BARRIER, 1)
@@ -178,7 +178,7 @@ object MenuInventoryData {
     //UUID取得
     val uuid = player.getUniqueId
     //プレイヤーデータ
-    val playerdata = BuildAssist.playermap(uuid)
+    val playerdata = BuildAssist.instance.temporaryData(uuid)
 
     val inventory = Bukkit.getServer.createInventory(null, 4 * 9, s"$DARK_PURPLE$BOLD「ブロックを並べるスキル（仮）」設定")
     var itemstack = new ItemStack(Material.SKULL_ITEM, 1)
@@ -200,7 +200,7 @@ object MenuInventoryData {
     lore = List(
       s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
       s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel()}以上で利用可能",
+      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel}以上で利用可能",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)
@@ -239,7 +239,7 @@ object MenuInventoryData {
     lore = List(
       s"$RESET${GRAY}スキルでブロックを並べるとき",
       s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineupMinestacklevel()}以上で利用可能",
+      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineupMinestacklevel}以上で利用可能",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)
