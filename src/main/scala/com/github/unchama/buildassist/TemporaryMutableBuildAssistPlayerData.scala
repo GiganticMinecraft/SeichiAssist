@@ -10,10 +10,10 @@ class TemporaryMutableBuildAssistPlayerData {
   /**
    * ブロックを並べるスキル設定フラグ
    */
-  var line_up_flg = 0
-  var line_up_step_flg = 0
-  var line_up_des_flg = 0
-  var line_up_minestack_flg = 0
+  var lineFillAlign: VerticalAlign = VerticalAlign.Off
+  var lineFillStepMode: StepPlaceMode = StepPlaceMode.Upper
+  var lineFillBreakWeakBlocks = false
+  var lineFillWithMinestack = false
 
   /**
    * ブロック範囲設置スキル設定フラグ
