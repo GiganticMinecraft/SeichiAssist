@@ -20,7 +20,7 @@ import java.util.Random
 object NewYearListener extends Listener {
   @EventHandler
   def giveSobaToPlayer(event: PlayerJoinEvent): Unit = {
-    if (!isInEvent) return
+    if (!NewYear.sobaWillBeDistributed) return
 
     val player: Player = event.getPlayer
 
