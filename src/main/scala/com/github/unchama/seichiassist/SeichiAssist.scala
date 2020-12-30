@@ -30,6 +30,7 @@ import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -149,9 +150,19 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.seasonalevents.System.wired[IO, IO](this)
   }
 
+  lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
+    import PluginExecutionContexts.timer
+
+    implicit val configuration: subsystems.buildcount.application.Configuration =
+      seichiAssistConfig.buildCountConfiguration
+
+    subsystems.buildcount.System.wired[IO, SyncIO, SyncIO](loggerF).unsafeRunSync()
+  }
+
   lazy val buildAssist: BuildAssist = {
     implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
-    new BuildAssist(this, loggerF)
+    implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
+    new BuildAssist(this)
   }
 
   lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
@@ -174,7 +185,6 @@ class SeichiAssist extends JavaPlugin() {
       managedFlySystem.managedFinalizers
     )
       .withAnotherFinalizer(savePlayerData)
-      .withFinalizers(buildAssist.finalizers)
 
     new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
   }
@@ -324,7 +334,8 @@ class SeichiAssist extends JavaPlugin() {
       managedFlySystem,
       rescueplayer.System.wired,
       bookedAchievementSystem,
-      seasonalEventsSystem
+      seasonalEventsSystem,
+      buildCountSystem
     )
 
     // コマンドの登録

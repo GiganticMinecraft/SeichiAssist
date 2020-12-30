@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.buildcount
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect, Timer}
-import cats.~>
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.concurrent.{NonServerThreadContextShift, ReadOnlyRef}
 import com.github.unchama.datarepository.KeyedDataRepository
@@ -21,9 +20,9 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
-trait System[F[_]] extends Subsystem[F] {
+trait System[F[_], G[_]] extends Subsystem[F] {
 
-  val api: BuildCountAPI[F, Player]
+  val api: BuildCountAPI[G, Player]
 
 }
 
@@ -37,7 +36,7 @@ object System {
     G[_] : SyncEffect : ContextCoercion[*[_], F],
     H[_] : Sync
   ](rootLogger: Logger[F])
-   (implicit configuration: Configuration): H[System[F]] = {
+   (implicit configuration: Configuration): H[System[F, G]] = {
     import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
@@ -55,17 +54,15 @@ object System {
       implicit val incrementBuildExpWhenBuiltBySkills: IncrementBuildExpWhenBuiltWithSkill[G, Player] =
         IncrementBuildExpWhenBuiltWithSkill.withConfig(expMultiplier)
 
-      implicit val GF: G ~> F = implicitly
-
-      new System[F] {
-        override val api: BuildCountAPI[F, Player] = new BuildCountAPI[F, Player] {
-          override val incrementBuildExpWhenBuiltByHand: IncrementBuildExpWhenBuiltByHand[F, Player] =
-            incrementBuildExp.mapK(GF)
-          override val incrementBuildExpWhenBuiltWithSkill: IncrementBuildExpWhenBuiltWithSkill[F, Player] =
-            incrementBuildExpWhenBuiltBySkills.mapK(GF)
-          override val playerBuildAmountRepository: KeyedDataRepository[Player, ReadOnlyRef[F, BuildAmountData]] =
+      new System[F, G] {
+        override val api: BuildCountAPI[G, Player] = new BuildCountAPI[G, Player] {
+          override val incrementBuildExpWhenBuiltByHand: IncrementBuildExpWhenBuiltByHand[G, Player] =
+            incrementBuildExp
+          override val incrementBuildExpWhenBuiltWithSkill: IncrementBuildExpWhenBuiltWithSkill[G, Player] =
+            incrementBuildExpWhenBuiltBySkills
+          override val playerBuildAmountRepository: KeyedDataRepository[Player, ReadOnlyRef[G, BuildAmountData]] =
             (buildAmountDataRepository: KeyedDataRepository[Player, Ref[G, BuildAmountData]])
-              .map(ref => ReadOnlyRef.fromRef(ref.mapK(implicitly[G ~> F])))
+              .map(ref => ReadOnlyRef.fromRef(ref))
         }
         override val listeners: Seq[Listener] = List(
           rateLimiterRepository,

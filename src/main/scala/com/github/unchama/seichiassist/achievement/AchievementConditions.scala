@@ -37,7 +37,7 @@ object AchievementConditions {
   def placedBlockAmount_>=(amount: BigDecimal, localizedAmount: String): AchievementCondition[String] = {
     val predicate: PlayerPredicate = { player: Player =>
       BuildAssist.instance
-        .buildAmountDataRepository(player).get
+        .buildAmountDataRepository(player).read
         .map(_.expAmount.amount >= amount)
         .toIO
     }

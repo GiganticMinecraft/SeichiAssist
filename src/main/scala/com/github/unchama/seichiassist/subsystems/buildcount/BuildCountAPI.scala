@@ -7,10 +7,10 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.B
 
 trait BuildCountAPI[F[_], Player] {
 
-  val incrementBuildExpWhenBuiltByHand: IncrementBuildExpWhenBuiltByHand[F, Player]
+  implicit val incrementBuildExpWhenBuiltByHand: IncrementBuildExpWhenBuiltByHand[F, Player]
 
-  val incrementBuildExpWhenBuiltWithSkill: IncrementBuildExpWhenBuiltWithSkill[F, Player]
+  implicit val incrementBuildExpWhenBuiltWithSkill: IncrementBuildExpWhenBuiltWithSkill[F, Player]
 
-  val playerBuildAmountRepository: KeyedDataRepository[Player, ReadOnlyRef[F, BuildAmountData]]
+  implicit val playerBuildAmountRepository: KeyedDataRepository[Player, ReadOnlyRef[F, BuildAmountData]]
 
 }

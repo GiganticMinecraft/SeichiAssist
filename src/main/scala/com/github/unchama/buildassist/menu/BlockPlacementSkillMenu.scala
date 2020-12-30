@@ -261,7 +261,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
 
     def computeButtonToToggleConsumingMineStack(): IO[Button] = RecomputedButton {
-      BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+      BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap { amountData =>
         IO {
           val playerData = BuildAssist.instance.temporaryData(getUniqueId)
 
