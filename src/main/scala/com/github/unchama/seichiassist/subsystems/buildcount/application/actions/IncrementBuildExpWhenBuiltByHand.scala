@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
+import cats.Monad
 import cats.effect.concurrent.Ref
-import cats.{Monad, ~>}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.Diff
 import com.github.unchama.generic.ratelimiting.RateLimiter
@@ -18,10 +18,6 @@ trait IncrementBuildExpWhenBuiltByHand[F[_], Player] {
   def of(player: Player): F[Unit] = of(player, BuildExpAmount(1))
 
   def of(player: Player, by: BuildExpAmount): F[Unit]
-
-  def mapK[G[_]](fk: F ~> G): IncrementBuildExpWhenBuiltByHand[G, Player] =
-    (player: Player, by: BuildExpAmount) =>
-      fk(IncrementBuildExpWhenBuiltByHand.this.of(player, by))
 
 }
 

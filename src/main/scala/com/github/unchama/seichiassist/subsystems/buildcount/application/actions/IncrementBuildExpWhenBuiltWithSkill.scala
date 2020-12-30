@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
-import cats.~>
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 
@@ -9,9 +8,6 @@ trait IncrementBuildExpWhenBuiltWithSkill[F[_], Player] {
   def of(player: Player): F[Unit] = of(player, BuildExpAmount(1))
 
   def of(player: Player, by: BuildExpAmount): F[Unit]
-
-  def mapK[G[_]](fk: F ~> G): IncrementBuildExpWhenBuiltWithSkill[G, Player] =
-    (player: Player, by: BuildExpAmount) => fk(IncrementBuildExpWhenBuiltWithSkill.this.of(player, by))
 
 }
 
