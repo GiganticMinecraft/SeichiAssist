@@ -632,8 +632,8 @@ class PlayerData(
 
   def canBreakHalfBlock: Boolean = this.allowBreakingHalfBlocks
 
-  def canGridExtend(directionType: RelativeDirection, world: String): Boolean = {
-    val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world)
+  def canGridExtend(directionType: RelativeDirection, world: World): Boolean = {
+    val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world.getName)
     val chunkMap = unitMap
 
     //チャンクを拡大すると仮定する
