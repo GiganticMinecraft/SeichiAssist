@@ -1,6 +1,6 @@
-package com.github.unchama.buildassist.domain.playerdata
+package com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata
 
-import com.github.unchama.buildassist.domain.explevel.{BuildAssistExpTable, BuildExpAmount, BuildLevel}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildExpAmount, BuildLevel}
 
 /**
  * BuildAssistが管理する建築量データ。

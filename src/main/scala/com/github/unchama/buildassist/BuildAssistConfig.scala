@@ -1,7 +1,5 @@
 package com.github.unchama.buildassist
 
-import com.github.unchama.buildassist.application.{BuildExpMultiplier, Configuration}
-import com.github.unchama.buildassist.domain.explevel.BuildExpAmount
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.Plugin
 
@@ -45,14 +43,4 @@ class BuildAssistConfig(val plugin: Plugin) {
   //ブロック範囲設置スキルのマインスタック優先解放レベル
   def getZoneskillMinestacklevel: Int = config.getString("ZoneSetSkill.minestack").toInt
 
-  def offerExpMultiplier: BuildExpMultiplier = new BuildExpMultiplier() {
-    override val withBuildSkills: BigDecimal = BigDecimal(config.getString("BlockCountMag"))
-    override val whenInSeichiWorld: BigDecimal = scala.math.BigDecimal.decimal(0.1)
-  }
-
-  def offerBuildAssistConfiguration: Configuration = new Configuration() {
-    override val oneMinuteBuildExpLimit: BuildExpAmount =
-      BuildExpAmount(BigDecimal(config.getString("BuildNum1minLimit")))
-    override val multipliers: BuildExpMultiplier = offerExpMultiplier
-  }
 }

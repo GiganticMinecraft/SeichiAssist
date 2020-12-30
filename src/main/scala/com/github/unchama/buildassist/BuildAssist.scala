@@ -1,19 +1,14 @@
 package com.github.unchama.buildassist
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.buildassist.application.actions.{ClassifyPlayerWorld, IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
-import com.github.unchama.buildassist.application.{BuildExpMultiplier, Configuration}
-import com.github.unchama.buildassist.bukkit.actions.ClassifyBukkitPlayerWorld
-import com.github.unchama.buildassist.bukkit.datarepository.{BuildAmountDataRepository, RateLimiterRepository}
-import com.github.unchama.buildassist.bukkit.listeners.BuildExpIncrementer
-import com.github.unchama.buildassist.infrastructure.JdbcBuildAmountDataPersistence
 import com.github.unchama.buildassist.listener._
-import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerDataFinalizerList}
+import com.github.unchama.concurrent.ReadOnlyRef
+import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners.BuildExpIncrementer
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
-import com.github.unchama.util.logging.log4cats.PrefixedLogger
-import io.chrisdavenport.log4cats.Logger
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.{Bukkit, Material}
@@ -22,8 +17,9 @@ import java.util
 import java.util.UUID
 import scala.collection.mutable
 
-class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
-                 (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) {
+class BuildAssist(plugin: Plugin)
+                 (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]],
+                  buildCountAPI: subsystems.buildcount.BuildCountAPI[SyncIO, Player]) {
 
   // TODO この辺のフィールドを整理する
 
@@ -33,29 +29,8 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
    */
   val temporaryData: mutable.HashMap[UUID, TemporaryMutableBuildAssistPlayerData] = mutable.HashMap()
 
-  lazy val rateLimiterRepository: RateLimiterRepository[IO, SyncIO] = {
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
-
-    implicit val config: Configuration = BuildAssist.config.offerBuildAssistConfiguration
-    new RateLimiterRepository[IO, SyncIO]()
-  }
-
-  lazy val buildAmountDataRepository: BuildAmountDataRepository[SyncIO, IO] = {
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
-
-    implicit val persistence: JdbcBuildAmountDataPersistence[SyncIO] = new JdbcBuildAmountDataPersistence[SyncIO]()
-    implicit val logger: Logger[IO] = PrefixedLogger[IO]("BuildAssist-BuildAmount")(loggerIO)
-
-    new BuildAmountDataRepository[SyncIO, IO]
-  }
-
-  lazy val finalizers: PlayerDataFinalizerList[IO, Player] =
-    PlayerDataFinalizerList {
-      List(
-        rateLimiterRepository,
-        buildAmountDataRepository
-      ).map(r => PlayerDataFinalizer(r.removeValueAndFinalize).coerceContextTo[IO])
-    }
+  val buildAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[SyncIO, BuildAmountData]] =
+    buildCountAPI.playerBuildAmountRepository
 
   {
     BuildAssist.plugin = plugin
@@ -67,17 +42,8 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
     BuildAssist.config = new BuildAssistConfig(plugin)
     BuildAssist.config.loadConfig()
 
-    import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
-    implicit val expMultiplier: BuildExpMultiplier = BuildAssist.config.offerExpMultiplier
-    implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[SyncIO, Player] =
-      new ClassifyBukkitPlayerWorld[SyncIO]
-    implicit val incrementBuildExp: IncrementBuildExpWhenBuiltByHand[SyncIO, Player] =
-      IncrementBuildExpWhenBuiltByHand.using(
-        rateLimiterRepository,
-        buildAmountDataRepository
-      )
-    implicit val incrementBuildExpWhenBuiltBySkills: IncrementBuildExpWhenBuiltWithSkill[SyncIO, Player] =
-      IncrementBuildExpWhenBuiltWithSkill.withConfig(expMultiplier)
+    import buildCountAPI._
+
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     val listeners = List(
@@ -88,8 +54,6 @@ class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
       new BlockLineUpTriggerListener[SyncIO],
       new TilingSkillTriggerListener[SyncIO],
       new BuildExpIncrementer[SyncIO],
-      rateLimiterRepository,
-      buildAmountDataRepository
     )
 
     listeners.foreach { listener =>

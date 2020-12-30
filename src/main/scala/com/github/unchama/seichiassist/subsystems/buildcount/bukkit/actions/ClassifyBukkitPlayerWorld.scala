@@ -1,7 +1,7 @@
-package com.github.unchama.buildassist.bukkit.actions
+package com.github.unchama.seichiassist.subsystems.buildcount.bukkit.actions
 
 import cats.effect.Sync
-import com.github.unchama.buildassist.application.actions.ClassifyPlayerWorld
+import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.ClassifyPlayerWorld
 import org.bukkit.entity.Player
 
 class ClassifyBukkitPlayerWorld[F[_] : Sync] extends ClassifyPlayerWorld[F, Player] {

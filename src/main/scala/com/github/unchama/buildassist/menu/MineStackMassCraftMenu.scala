@@ -123,7 +123,7 @@ object MineStackMassCraftMenu {
     val buttonEffect = LeftClickButtonEffect(
         Kleisli { player =>
           for {
-            buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).get.toIO
+            buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).read.toIO
             seichiAssistPlayerData <- IO {
               SeichiAssist.playermap(player.getUniqueId)
             }
