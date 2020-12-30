@@ -47,7 +47,6 @@ class BuildAssist(plugin: Plugin)
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     val listeners = List(
-      new EntityListener(),
       new PlayerLeftClickListener(),
       new PlayerInventoryListener(),
       new TemporaryDataInitializer(this.temporaryData),
