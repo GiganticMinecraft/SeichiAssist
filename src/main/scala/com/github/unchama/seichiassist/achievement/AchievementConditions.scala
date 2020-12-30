@@ -6,6 +6,7 @@ import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.achievement.NamedHoliday._
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
@@ -102,23 +103,15 @@ object AchievementConditions {
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
 
-  def playedOn(day: NamedHoliday, dateSpecification: String): AchievementCondition[String] = {
+  def playedOn(day: NamedHoliday): AchievementCondition[String] = {
     val predicate: PlayerPredicate = _ =>
       IO{
         val now = LocalDate.now()
 
-        val dayOfMonth = floor(day match {
-          case SpringEquinoxDay => 20.8431 + 0.242194 * (now.getYear - 1980) - (now.getYear - 1980) / 4
-        }).toInt
-
-        val month = day match {
-          case SpringEquinoxDay => Month.MARCH
-        }
-
-        now.getMonth == month && now.getDayOfMonth == dayOfMonth
+        now.getMonth == day.month && now.getDayOfMonth == day.getDayOfMonth()
       }
 
-    AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
+    AchievementCondition(predicate, _ + "にプレイ", day.name)
   }
 
   object SecretAchievementConditions {
