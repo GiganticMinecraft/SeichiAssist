@@ -81,10 +81,10 @@ object PlayerDataSaveTask {
         val updateCommand = "insert into seichiassist.grid_template set " +
           "id = " + gridTemplateId + ", " +
           "designer_uuid = '" + playerUuid + "', " +
-          "ahead_length = " + gridTemplate.getAheadAmount + ", " +
-          "behind_length = " + gridTemplate.getBehindAmount + ", " +
-          "right_length = " + gridTemplate.getRightAmount + ", " +
-          "left_length = " + gridTemplate.getLeftAmount
+          "ahead_length = " + gridTemplate.aheadAmount + ", " +
+          "behind_length = " + gridTemplate.behindAmount + ", " +
+          "right_length = " + gridTemplate.rightAmount + ", " +
+          "left_length = " + gridTemplate.leftAmount
 
         stmt.executeUpdate(updateCommand)
       }

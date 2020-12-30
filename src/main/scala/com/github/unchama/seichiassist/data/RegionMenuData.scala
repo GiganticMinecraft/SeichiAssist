@@ -248,10 +248,10 @@ object RegionMenuData {
       case Some(template) =>
         val lore = List(
           s"${GREEN}設定内容",
-          s"${GRAY}前方向：$AQUA${template.getAheadAmount}${GRAY}ユニット",
-          s"${GRAY}後ろ方向：$AQUA${template.getBehindAmount}${GRAY}ユニット",
-          s"${GRAY}右方向：$AQUA${template.getRightAmount}${GRAY}ユニット",
-          s"${GRAY}左方向：$AQUA${template.getLeftAmount}${GRAY}ユニット",
+          s"${GRAY}前方向：$AQUA${template.aheadAmount}${GRAY}ユニット",
+          s"${GRAY}後ろ方向：$AQUA${template.behindAmount}${GRAY}ユニット",
+          s"${GRAY}右方向：$AQUA${template.rightAmount}${GRAY}ユニット",
+          s"${GRAY}左方向：$AQUA${template.leftAmount}${GRAY}ユニット",
           s"${GREEN}左クリックで設定を読み込み",
           s"${RED}右クリックで現在の設定で上書き"
         )
