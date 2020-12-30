@@ -13,8 +13,7 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
   override def read(key: UUID): F[Option[BuildAmountData]] =
     F.delay {
       DB.localTx { implicit session =>
-        sql"""select build_lv, build_count from playerdata
-             |  where uuid = ${key.toString}"""
+        sql"select build_count from playerdata where uuid = ${key.toString}"
           .stripMargin
           .map { rs =>
             val exp = BuildExpAmount(BigDecimal(rs.string("build_count")))
@@ -28,10 +27,7 @@ class JdbcBuildAmountDataPersistence[F[_]](implicit F: Sync[F])
   override def write(key: UUID, value: BuildAmountData): F[Unit] =
     F.delay {
       DB.localTx { implicit session =>
-        sql"""update playerdata set
-             |  build_count = ${value.expAmount.amount}
-             |  where uuid = ${key.toString}
-             |"""
+        sql"update playerdata set build_count = ${value.expAmount.amount} where uuid = ${key.toString}"
           .stripMargin
           .update().apply()
       }
