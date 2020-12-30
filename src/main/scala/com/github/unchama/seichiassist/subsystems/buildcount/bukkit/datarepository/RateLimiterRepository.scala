@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.bukkit.datarepository
 
 import cats.Applicative
-import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, Sync, SyncEffect, Timer}
 import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
 import com.github.unchama.generic.ratelimiting.{FixedWindowRateLimiter, RateLimiter}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration
@@ -13,7 +13,8 @@ import java.util.UUID
 class RateLimiterRepository[
   F[_] : ConcurrentEffect : Timer,
   G[_] : SyncEffect
-](implicit config: Configuration) extends TwoPhasedPlayerDataRepository[G, RateLimiter[G, BuildExpAmount]] {
+] private(implicit config: Configuration)
+  extends TwoPhasedPlayerDataRepository[G, RateLimiter[G, BuildExpAmount]] {
 
   import cats.implicits._
 
@@ -34,4 +35,17 @@ class RateLimiterRepository[
 
   override protected val finalizeBeforeUnload: (Player, Data) => G[Unit] =
     (_, _) => Applicative[G].unit
+}
+
+object RateLimiterRepository {
+
+  def newInstanceIn[
+    H[_] : Sync,
+    F[_] : ConcurrentEffect : Timer,
+    G[_] : SyncEffect
+  ](implicit config: Configuration): H[TwoPhasedPlayerDataRepository[G, RateLimiter[G, BuildExpAmount]]] =
+    Sync[H].delay {
+      new RateLimiterRepository[F, G]
+    }
+
 }
