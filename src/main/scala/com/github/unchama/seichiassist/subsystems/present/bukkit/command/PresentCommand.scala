@@ -102,7 +102,7 @@ object PresentCommand {
               case PresentClaimingState.Claimed =>
                 IO.pure(MessageEffect(s"ID: ${presentId}のプレゼントはすでに受け取っています。"))
               case PresentClaimingState.NotClaimed =>
-                val showType = for {
+                val eff = for {
                   _ <- repo.claimPresent(player, presentId)
                   items <- repo.getAllPresent
                 } yield {
@@ -111,7 +111,7 @@ object PresentCommand {
                     MessageEffect(s"ID: ${presentId}のプレゼントを付与しました。")
                   )
                 }
-                showType.toIO
+                eff.toIO
             }
           case None =>
             IO.pure(MessageEffect(s"ID: ${presentId}のプレゼントは存在しないか、あるいは配布対象ではありません"))
