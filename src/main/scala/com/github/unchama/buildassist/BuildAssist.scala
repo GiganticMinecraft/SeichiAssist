@@ -6,7 +6,6 @@ import com.github.unchama.concurrent.ReadOnlyRef
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
-import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners.BuildExpIncrementer
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
 import org.bukkit.entity.Player
@@ -52,7 +51,6 @@ class BuildAssist(plugin: Plugin)
       new TemporaryDataInitializer(this.temporaryData),
       new BlockLineUpTriggerListener[SyncIO],
       new TilingSkillTriggerListener[SyncIO],
-      new BuildExpIncrementer[SyncIO],
     )
 
     listeners.foreach { listener =>
