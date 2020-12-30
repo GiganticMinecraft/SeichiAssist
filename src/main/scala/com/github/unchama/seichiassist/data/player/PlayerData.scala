@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
+import com.github.unchama.seichiassist.data.{GridTemplate, Mana, SeichiLvUpMessages}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -169,7 +169,7 @@ class PlayerData(
   //トータル破壊ブロック
   var totalbreaknum: Long = 0.toLong
   //合計経験値
-  var totalexp = 0
+  var totalexp = 0L
   //合計経験値統合済みフラグ
   var expmarge: Byte = 0
   //特典受け取り済み投票数
@@ -199,7 +199,7 @@ class PlayerData(
   //実績ポイント用
   var achievePoint: AchievementPoint = AchievementPoint()
 
-  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
+  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO)
   // n周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
@@ -215,10 +215,6 @@ class PlayerData(
   //貢献度pt
   var added_mana = 0
   var contribute_point = 0
-  //正月イベント用
-  var hasNewYearSobaGive = false
-  //バレンタインイベント用
-  var hasChocoGave = false
   var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false
@@ -376,15 +372,10 @@ class PlayerData(
       //レベルアップ時の花火の打ち上げ
       Util.launchFireWorks(player.getLocation) // TODO: fix Util
 
-      val lvMessage = SeichiAssist.seichiAssistConfig.getLvMessage(l+1)
-      if (!lvMessage.isEmpty) {
-        player.sendMessage(AQUA + lvMessage)
-      }
+      SeichiLvUpMessages.get(l + 1).foreach { lvUpMessage => player.sendMessage(s"$AQUA$lvUpMessage") }
 
       //マナ最大値の更新
-      if (manaState.isLoaded) {
-        manaState.onLevelUp(player, l+1)
-      }
+      if (manaState.isLoaded) manaState.onLevelUp(player, l+1)
     }
   }
 
@@ -517,10 +508,6 @@ class PlayerData(
 
     //ブロック別重み分け
     val materialFactor = m match {
-      //DIRTとGRASSは二重カウントされているので半分に
-      case Material.DIRT => 0.5
-      case Material.GRASS => 0.5
-
       //氷塊とマグマブロックの整地量を2倍
       case Material.PACKED_ICE | Material.MAGMA => 2.0
 

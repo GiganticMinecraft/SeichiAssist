@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec
 
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusEnchantmentLevels, MebiusLevel, MebiusProperty}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property._
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks
+import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Material
@@ -23,7 +24,8 @@ object BukkitMebiusItemStackCodec {
 
     val unbreakableLoreRow = s"$RESET${AQUA}耐久無限"
 
-    val mebiusNameDisplayPrefix = s"$RESET$GOLD$BOLD"
+    val mebiusNameStyle = s"$RESET$GOLD$BOLD"
+    val christmasMebiusNameStyle = s"$RESET$WHITE$BOLD"
 
     val ownerLoreRowPrefix = s"$RESET${DARK_GREEN}所有者："
     val levelLoreRowPrefix = s"$RESET$RED${BOLD}アイテムLv. "
@@ -41,9 +43,23 @@ object BukkitMebiusItemStackCodec {
     val nameTag = "mebiusName"
   }
 
+  def encodeTypeId(mebiusType: MebiusType): Int =
+    mebiusType match {
+      case NormalMebius => 1
+      case ChristmasMebius => 2
+    }
+
+  def decodeTypeId(typeIdByte: Byte): Option[MebiusType] =
+    typeIdByte match {
+      case 1 => Some(NormalMebius)
+      case 2 => Some(ChristmasMebius)
+      case _ => None
+    }
+
   def isMebius(itemStack: ItemStack): Boolean =
     itemStack != null && itemStack.getType != Material.AIR && {
-      new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag) == 1
+      val typeIdByte = new NBTItem(itemStack).getByte(NBTTagConstants.typeIdTag)
+      typeIdByte != null && decodeTypeId(typeIdByte).nonEmpty
     }
 
   /**
@@ -56,6 +72,7 @@ object BukkitMebiusItemStackCodec {
 
     import NBTTagConstants._
 
+    val mebiusType = decodeTypeId(nbtItem.getByte(NBTTagConstants.typeIdTag)).get
     val ownerName = nbtItem.getString(ownerNameTag)
     val ownerUuid = nbtItem.getString(ownerUuidTag)
     val enchantments = MebiusEnchantmentLevels.fromUnsafeCounts(
@@ -65,7 +82,7 @@ object BukkitMebiusItemStackCodec {
     val ownerNickname = Some(nbtItem.getString(ownerNicknameTag)).filter(_.nonEmpty)
     val mebiusName = nbtItem.getString(nameTag)
 
-    Some(MebiusProperty(ownerName, ownerUuid, enchantments, mebiusLevel, ownerNickname, mebiusName))
+    Some(MebiusProperty(mebiusType, ownerName, ownerUuid, enchantments, mebiusLevel, ownerNickname, mebiusName))
   }
 
   /**
@@ -105,6 +122,12 @@ object BukkitMebiusItemStackCodec {
             .concat {
               if (property.level.isMaximum) List(unbreakableLoreRow) else Nil
             }
+            .concat {
+              property.mebiusType match {
+                case ChristmasMebius => ChristmasItemData.christmasMebiusLore
+                case _ => Nil
+              }
+            }
             .asJava
         }
       }
@@ -119,7 +142,7 @@ object BukkitMebiusItemStackCodec {
 
       import NBTTagConstants._
 
-      nbtItem.setByte(typeIdTag, 1.toByte)
+      nbtItem.setByte(typeIdTag, encodeTypeId(property.mebiusType).toByte)
       nbtItem.setString(ownerNameTag, property.ownerPlayerId)
       nbtItem.setString(ownerUuidTag, property.ownerUuid)
       nbtItem.setInteger(levelTag, property.level.value)
@@ -133,7 +156,10 @@ object BukkitMebiusItemStackCodec {
   def displayNameOfMaterializedItem(property: MebiusProperty): String = {
     import LoreConstants._
 
-    mebiusNameDisplayPrefix + property.mebiusName
+    property.mebiusType match {
+      case ChristmasMebius => s"$christmasMebiusNameStyle${property.mebiusName} Christmas Ver."
+      case _ => s"$mebiusNameStyle${property.mebiusName}"
+    }
   }
 
   def ownershipMatches(player: Player)(property: MebiusProperty): Boolean =

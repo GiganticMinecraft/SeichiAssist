@@ -64,7 +64,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_2014 extends HiddenAuto(2014, dependsOn(2013,placedBlockAmount_>=(5000000,"500万")))
 
   // 整地量
-  case object No_3001 extends HiddenAuto(3001, dependsOn(3002, brokenBlockAmount_>=(2147483646L, "int型の壁")))
+  case object No_3001 extends HiddenAuto(3001, dependsOn(3002, brokenBlockAmount_>=(Int.MaxValue.toLong, "int型の壁")))
   case object No_3002 extends NormalAuto(3002, brokenBlockAmount_>=(1000000000L, "10億"))
   case object No_3003 extends NormalAuto(3003, brokenBlockAmount_>=(500000000L, "5億"))
   case object No_3004 extends NormalAuto(3004, brokenBlockAmount_>=(100000000L, "1億"))

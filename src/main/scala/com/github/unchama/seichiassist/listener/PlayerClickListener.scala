@@ -21,7 +21,7 @@ import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.material.{MaterialData, Openable}
 import org.bukkit.{GameMode, Material, Sound}
@@ -111,8 +111,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
   @EventHandler
   def onPlayerRightClickGachaEvent(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
-    val uuid = player.getUniqueId
-    val playerData = playerMap.getOrElse(uuid, return)
+    val playerData = playerMap(player.getUniqueId)
 
     //もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return
@@ -153,11 +152,11 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     }
 
     /*
-    AIRもしくはBlockを右クリックしていない、または、Blockのときにチェストやトラップチェストをクリックしていれば処理を終了
+    AIRまたはBlockを右クリックしていない、または、Blockのときにチェストやトラップチェストをクリックしていれば処理を終了
     参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/770
      */
-    if (!(action == Action.RIGHT_CLICK_AIR ||
-      (action == Action.RIGHT_CLICK_BLOCK && clickedBlock.getType != Material.CHEST && clickedBlock.getType != Material.TRAPPED_CHEST))) return
+    if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return
+    if (action == Action.RIGHT_CLICK_BLOCK && (clickedBlock.getType == Material.CHEST || clickedBlock.getType == Material.TRAPPED_CHEST)) return
 
     val count =
       if (player.isSneaking) {
@@ -352,6 +351,18 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
         }
       }
     }
+  }
+
+  @EventHandler(priority = EventPriority.HIGHEST)
+  def onPlayerOpenMenuWithSomething(event: PlayerInteractEvent): Unit = {
+    val player = event.getPlayer
+    val action = event.getAction
+    val inventory = player.getInventory
+
+    if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
+
+    if (inventory.getItemInMainHand.getType == Material.STICK && inventory.getItemInOffHand != null)
+      event.setCancelled(true)
   }
 
   //棒メニューを開くイベント

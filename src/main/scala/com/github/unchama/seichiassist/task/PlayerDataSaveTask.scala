@@ -1,14 +1,16 @@
 package com.github.unchama.seichiassist.task
 
-import java.sql.{SQLException, Statement}
-
+import cats.Monad
+import cats.effect.Sync
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, UnlockableActiveSkillEffect}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
+import org.bukkit.entity.Player
 
+import java.sql.{SQLException, Statement}
 import scala.util.Using
 
 object PlayerDataSaveTask {
@@ -19,7 +21,7 @@ object PlayerDataSaveTask {
    * @param playerdata 保存するプレーヤーデータ
    * @author unchama
    */
-  def savePlayerData(playerdata: PlayerData): Unit = {
+  def savePlayerData[F[_] : Sync](player: Player, playerdata: PlayerData): F[Unit] = {
     val databaseGateway = SeichiAssist.databaseGateway
     val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
@@ -188,11 +190,6 @@ object PlayerDataSaveTask {
           + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
           + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
-          //建築
-          + ",build_lv = " + playerdata.buildCount.lv
-          + ",build_count = " + playerdata.buildCount.count //.toString()
-          + ",build_count_flg = " + playerdata.buildCount.migrationFlag
-
           //投票
           + ",canVotingFairyUse = " + playerdata.usingVotingFairy
           + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString + "'"
@@ -210,12 +207,6 @@ object PlayerDataSaveTask {
           + ",GBlevel = " + playerdata.giganticBerserk.level
           + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolve
           + ",TitleFlags = '" + flagString + "'"
-
-          //正月イベント
-          + ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
-
-          //バレンタインイベント
-          + ",hasChocoGave = " + playerdata.hasChocoGave
 
           + " where uuid = '" + playerUuid + "'")
       }
@@ -245,14 +236,25 @@ object PlayerDataSaveTask {
       }
     }
 
-    (0 until 3).foreach { _ =>
-      val result = executeUpdate()
-      if (result == ActionStatus.Ok) {
-        println(s"$GREEN${playerdata.lowercaseName}のプレイヤーデータ保存完了")
-        return
+
+    val commitUpdate: F[ActionStatus] = Sync[F].delay(executeUpdate())
+
+    import cats.implicits._
+
+    Monad[F].tailRecM(3) { remaining =>
+      if (remaining == 0) {
+        Sync[F].delay {
+          println(s"$RED${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+        }.as(Right(ActionStatus.Fail))
+      } else commitUpdate.flatMap { result =>
+        if (result == ActionStatus.Ok) {
+          Sync[F].delay {
+            println(s"$GREEN${player.getName}のプレイヤーデータ保存完了")
+          }.as(Right(ActionStatus.Ok))
+        } else {
+          Monad[F].pure(Left(remaining - 1))
+        }
       }
     }
-
-    println(s"$RED${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
   }
 }

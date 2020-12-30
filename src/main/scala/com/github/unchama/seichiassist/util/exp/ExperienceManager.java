@@ -22,7 +22,7 @@ public class ExperienceManager implements IExperienceManager {
     // this is to stop the lookup table growing without control
     private static int hardMaxLevel = 100000;
 
-    private static int[] xpTotalToReachLevel;
+    private static long[] xpTotalToReachLevel;
 
     static {
         // 25 is an arbitrary value for the initial table size - the actual
@@ -51,7 +51,7 @@ public class ExperienceManager implements IExperienceManager {
      * @param maxLevel The highest level handled by the lookup tables
      */
     private static void initLookupTables(int maxLevel) {
-        xpTotalToReachLevel = new int[maxLevel];
+        xpTotalToReachLevel = new long[maxLevel];
 
         for (int i = 1; i < xpTotalToReachLevel.length; i++) {
             xpTotalToReachLevel[i] = xpTotalToReachLevel[i-1] + calculateXpNeededToLevelUp(i-1);
@@ -66,9 +66,10 @@ public class ExperienceManager implements IExperienceManager {
      * @param exp
      * @return
      */
-    private static int calculateLevelForExp(int exp) {
+    private static int calculateLevelForExp(long exp) {
         int level = 0;
-        int curExp = 7; // level 1
+        // level 1
+        long curExp = 7;
 
         while (curExp <= exp) {
             curExp += calculateXpNeededToLevelUp(++level);
@@ -109,7 +110,7 @@ public class ExperienceManager implements IExperienceManager {
      * @param amt Amount of XP, may be negative
      */
     @Override
-    public void changeExp(int amt) {
+    public void changeExp(long amt) {
         changeExp((double) amt);
     }
 
@@ -131,7 +132,7 @@ public class ExperienceManager implements IExperienceManager {
      * @param amt Amount of XP, should not be negative
      */
     @Override
-    public void setExp(int amt) {
+    public void setExp(long amt) {
         setExp(0, amt);
     }
 
@@ -150,7 +151,8 @@ public class ExperienceManager implements IExperienceManager {
 
         Player player = getPlayer();
         int curLvl = player.getLevel();
-        int newLvl = getLevelForExp(xp);
+        // 切り捨て
+        int newLvl = (int) getLevelForExp(xp);
 
         // Increment level
         if (curLvl != newLvl) {
@@ -171,11 +173,11 @@ public class ExperienceManager implements IExperienceManager {
      * @return the player's total XP
      */
     @Override
-    public int getCurrentExp() {
+    public long getCurrentExp() {
         Player player = getPlayer();
 
         int lvl = player.getLevel();
-        int cur = getXpForLevel(lvl) + Math.round(getXpNeededToLevelUp(lvl) * player.getExp());
+        long cur = getXpForLevel(lvl) + Math.round(getXpNeededToLevelUp(lvl) * player.getExp());
         return cur;
     }
 
@@ -199,7 +201,7 @@ public class ExperienceManager implements IExperienceManager {
      * @return true if the player has enough XP, false otherwise
      */
     @Override
-    public boolean hasExp(int amt) {
+    public boolean hasExp(long amt) {
         return getCurrentExp() >= amt;
     }
 
@@ -222,7 +224,7 @@ public class ExperienceManager implements IExperienceManager {
      * @throws IllegalArgumentException if the given XP is less than 0
      */
     @Override
-    public int getLevelForExp(int exp) {
+    public long getLevelForExp(long exp) {
         if (exp <= 0) {
             return 0;
         }
@@ -244,7 +246,7 @@ public class ExperienceManager implements IExperienceManager {
      * @throws IllegalArgumentException if the level is less than 0
      */
     @Override
-    public int getXpNeededToLevelUp(int level) {
+    public long getXpNeededToLevelUp(int level) {
         Validate.isTrue(level >= 0, "Level may not be negative.");
         return calculateXpNeededToLevelUp(level);
     }
@@ -257,7 +259,7 @@ public class ExperienceManager implements IExperienceManager {
      * @throws IllegalArgumentException if the level is less than 0 or greater than the current hard maximum
      */
     @Override
-    public int getXpForLevel(int level) {
+    public long getXpForLevel(int level) {
         Validate.isTrue(level >= 0 && level <= hardMaxLevel, "Invalid level " + level + "(must be in range 0.." + hardMaxLevel + ")");
         if (level >= xpTotalToReachLevel.length) {
             initLookupTables(level * 2);

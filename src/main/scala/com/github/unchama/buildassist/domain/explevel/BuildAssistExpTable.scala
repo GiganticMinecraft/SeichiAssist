@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.domain.explevel.ExpLevelTable
 
 private object Constant {
   // 経験値テーブルの生の値
-  val internalTable: Seq[BuildExpAmount] = Seq(
+  val internalTable: Vector[BuildExpAmount] = Vector(
     0, 50, 100, 200, 300,
     450, 600, 900, 1200, 1600, //10
     2000, 2500, 3000, 3600, 4300,
@@ -25,7 +25,7 @@ private object Constant {
     708000, 728000, 748000, 768000, 788000, //90
     808000, 828000, 848000, 868000, 888000,
     908000, 928000, 948000, 968000, 1000000, //100
-  ).map(BuildExpAmount.ofNonNegative(_))
+  ).map(BuildExpAmount.ofNonNegative)
 }
 
 object BuildAssistExpTable extends ExpLevelTable[BuildLevel, BuildExpAmount](Constant.internalTable)

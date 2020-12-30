@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories
 
 import cats.effect.{Resource, Sync}
+import com.github.unchama.itemmigration.bukkit.targets.WorldLevelData
 import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
-import com.github.unchama.itemmigration.targets.WorldLevelData
 import scalikejdbc._
 
 class WorldLevelItemsMigrationVersionRepository[F[_]](serverId: String)(implicit F: Sync[F])

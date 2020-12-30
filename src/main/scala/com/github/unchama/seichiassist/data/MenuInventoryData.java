@@ -107,12 +107,13 @@ public final class MenuInventoryData {
      * @return メニュー
      */
     public static Inventory getRankingBySeichiAmount(final int page) {
-        final int pageLimit = 14;
+        final int perPage = 45;
+        final int pageLimit = 150 / 45 + 1;
         final int lowerBound = 100;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
         final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
         int invIndex = 0;
-        for (int rank = 10 * page; rank < 10 + 10 * page; rank++) {
+        for (int rank = perPage * page; rank < perPage + perPage * page; rank++) {
             if (rank >= SeichiAssist.ranklist().size()) {
                 break;
             }

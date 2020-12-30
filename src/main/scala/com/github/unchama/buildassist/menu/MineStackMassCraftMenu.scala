@@ -1,8 +1,5 @@
 package com.github.unchama.buildassist.menu
 
-import java.text.NumberFormat
-import java.util.Locale
-
 import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.BuildAssist
@@ -22,7 +19,11 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
+import java.text.NumberFormat
+import java.util.Locale
+
 object MineStackMassCraftMenu {
+
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
   type MineStackItemId = String
@@ -49,7 +50,7 @@ object MineStackMassCraftMenu {
      * @param menuPageNumber         このボタンが表示される一括クラフト画面のページ番号
      */
     def computeButton(player: Player, requiredMassCraftLevel: Int, menuPageNumber: Int)
-                     (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
+                     (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
       import cats.implicits._
 
       def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
@@ -122,12 +123,14 @@ object MineStackMassCraftMenu {
     val buttonEffect = LeftClickButtonEffect(
         Kleisli { player =>
           for {
-            buildAssistPlayerData <- IO { BuildAssist.playermap(player.getUniqueId) }
-            seichiAssistPlayerData <- IO { SeichiAssist.playermap(player.getUniqueId) }
+            buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).get.toIO
+            seichiAssistPlayerData <- IO {
+              SeichiAssist.playermap(player.getUniqueId)
+            }
             mineStack = seichiAssistPlayerData.minestack
 
             _ <-
-              if (buildAssistPlayerData.level < requiredBuildLevel) {
+              if (buildLevel.levelCorrespondingToExp.level < requiredBuildLevel) {
                 MessageEffect(s"${RED}建築Lvが足りません")(player)
               } else {
                 syncShift.shift >> {
@@ -173,7 +176,7 @@ object MineStackMassCraftMenu {
 
   case class MassCraftRecipeBlock(recipe: MassCraftRecipe, recipeScales: List[Int], requiredBuildLevel: Int) {
     def toLayout(player: Player, beginIndex: Int, pageNumber: Int)
-                (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): IO[List[(Int, Slot)]] = {
+                (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[List[(Int, Slot)]] = {
       import cats.implicits._
 
       recipeScales.zipWithIndex
@@ -262,11 +265,11 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("red_nether_brick", 10))
           ), oneToThousand, 2
         ),
-        ChestSlotRef(1, 1) -> MassCraftRecipeBlock(
+        ChestSlotRef(1, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-            NonEmptyList.of(("iron_ore", 4), ("coal", 1)),
-            NonEmptyList.of(("iron_ingot", 4))
-          ), oneToHundred, 3
+            NonEmptyList.of(("iron_ore", 40), ("coal", 10)),
+            NonEmptyList.of(("iron_ingot", 40))
+          ), oneToThousand, 3
         ),
         ChestSlotRef(1, 6) -> MassCraftRecipeBlock(
           MassCraftRecipe(
@@ -274,11 +277,11 @@ object MineStackMassCraftMenu {
             NonEmptyList.of(("iron_ingot", 50))
           ), oneToHundred, 3
         ),
-        ChestSlotRef(2, 1) -> MassCraftRecipeBlock(
+        ChestSlotRef(2, 0) -> MassCraftRecipeBlock(
           MassCraftRecipe(
-            NonEmptyList.of(("gold_ore", 4), ("coal", 1)),
-            NonEmptyList.of(("gold_ingot", 4))
-          ), oneToHundred, 3
+            NonEmptyList.of(("gold_ore", 40), ("coal", 10)),
+            NonEmptyList.of(("gold_ingot", 40))
+          ), oneToThousand, 3
         ),
         ChestSlotRef(2, 6) -> MassCraftRecipeBlock(
           MassCraftRecipe(
@@ -489,7 +492,7 @@ object MineStackMassCraftMenu {
   }
 
   def apply(pageNumber: Int = 1)
-           (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]): Menu = {
+           (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): Menu = {
     import eu.timepit.refined.auto._
 
     val menuFrame = {

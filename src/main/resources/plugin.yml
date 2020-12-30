@@ -9,7 +9,7 @@ loadbefore:
   - Shopkeepers
   - WeatherRestrictions
 
-default-permission-message: &denied You don't have <permission>
+default-permission-message: &denied You don't have permission. (<permission>) Please report this if you think this is an error.
 commands:
   gacha:
     description: Gacha operation command.
@@ -43,11 +43,12 @@ commands:
     permission-message: *denied
   map:
     description: Show map URL.
+    usage: /<command>
     permission: seichiassist.map
     permission-message: *denied
-
   stick:
     description: Get a stick.
+    usage: /<command>
     permission: seichiassist.stick
     permission-message: *denied
   shareinv:
@@ -94,9 +95,14 @@ commands:
     permission-message: *denied
   fly:
     description: This is a fly command.
+    usage: /<command>
     permission-message: *denied
-    permission: buildassist.build
-
+    permission: seichiassist.fly
+  stickmenu:
+    description: 棒メニューを開く
+    usage: /<command>
+    permission: seichiassist.stickmenu
+    permission-message: *denied
 permissions:
   seichiassist.*:
     default: false
@@ -120,10 +126,11 @@ permissions:
       - seichiassist.gtfever
       - seichiassist.minehead
       - seichiassist.x-transfer
-      - buildassist.build
+      - seichiassist.fly
+      - seichiassist.stickmenu
   seichiassist.event:
     default: op
   seichiassist.shareinv:
-    default: not op
+    default: true
   seichiassist.mebius:
-    default: not op
+    default: true

@@ -1,29 +1,65 @@
 package com.github.unchama.buildassist
 
-import java.util
-import java.util.UUID
-
-import cats.effect.SyncIO
+import cats.effect.{IO, SyncIO}
+import com.github.unchama.buildassist.application.actions.{ClassifyPlayerWorld, IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
+import com.github.unchama.buildassist.application.{BuildExpMultiplier, Configuration}
+import com.github.unchama.buildassist.bukkit.actions.ClassifyBukkitPlayerWorld
+import com.github.unchama.buildassist.bukkit.datarepository.{BuildAmountDataRepository, RateLimiterRepository}
+import com.github.unchama.buildassist.bukkit.listeners.BuildExpIncrementer
+import com.github.unchama.buildassist.infrastructure.JdbcBuildAmountDataPersistence
 import com.github.unchama.buildassist.listener._
+import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerDataFinalizerList}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
+import com.github.unchama.util.logging.log4cats.PrefixedLogger
+import io.chrisdavenport.log4cats.Logger
+import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Bukkit, Material}
 
+import java.util
+import java.util.UUID
 import scala.collection.mutable
 
-class BuildAssist(plugin: Plugin)
-                 (implicit flySystem: StatefulSubsystem[subsystems.managedfly.InternalState[SyncIO]]) {
+class BuildAssist(plugin: Plugin, loggerIO: Logger[IO])
+                 (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) {
 
-  import scala.jdk.CollectionConverters._
+  // TODO この辺のフィールドを整理する
 
-  //起動するタスクリスト
-  private val tasklist = new util.ArrayList[BukkitTask]()
+  /**
+   * 永続化されない、プレーヤーのセッション内でのみ有効な一時データを管理するMap。
+   * [[TemporaryDataInitializer]] によって初期化、削除される。
+   */
+  val temporaryData: mutable.HashMap[UUID, TemporaryMutableBuildAssistPlayerData] = mutable.HashMap()
+
+  lazy val rateLimiterRepository: RateLimiterRepository[IO, SyncIO] = {
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
+
+    implicit val config: Configuration = BuildAssist.config.offerBuildAssistConfiguration
+    new RateLimiterRepository[IO, SyncIO]()
+  }
+
+  lazy val buildAmountDataRepository: BuildAmountDataRepository[SyncIO, IO] = {
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
+
+    implicit val persistence: JdbcBuildAmountDataPersistence[SyncIO] = new JdbcBuildAmountDataPersistence[SyncIO]()
+    implicit val logger: Logger[IO] = PrefixedLogger[IO]("BuildAssist-BuildAmount")(loggerIO)
+
+    new BuildAmountDataRepository[SyncIO, IO]
+  }
+
+  lazy val finalizers: PlayerDataFinalizerList[IO, Player] =
+    PlayerDataFinalizerList {
+      List(
+        rateLimiterRepository,
+        buildAmountDataRepository
+      ).map(r => PlayerDataFinalizer(r.removeValueAndFinalize).coerceContextTo[IO])
+    }
 
   {
     BuildAssist.plugin = plugin
+    BuildAssist.instance = this
   }
 
   def onEnable(): Unit = {
@@ -31,43 +67,42 @@ class BuildAssist(plugin: Plugin)
     BuildAssist.config = new BuildAssistConfig(plugin)
     BuildAssist.config.loadConfig()
 
+    import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
+    implicit val expMultiplier: BuildExpMultiplier = BuildAssist.config.offerExpMultiplier
+    implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[SyncIO, Player] =
+      new ClassifyBukkitPlayerWorld[SyncIO]
+    implicit val incrementBuildExp: IncrementBuildExpWhenBuiltByHand[SyncIO, Player] =
+      IncrementBuildExpWhenBuiltByHand.using(
+        rateLimiterRepository,
+        buildAmountDataRepository
+      )
+    implicit val incrementBuildExpWhenBuiltBySkills: IncrementBuildExpWhenBuiltWithSkill[SyncIO, Player] =
+      IncrementBuildExpWhenBuiltWithSkill.withConfig(expMultiplier)
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new EntityListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerLeftClickListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
-    Bukkit.getServer.getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
-    Bukkit.getServer.getPluginManager.registerEvents(BlockLineUpTriggerListener, plugin) //ブロックを並べるスキル
-    Bukkit.getServer.getPluginManager.registerEvents(TilingSkillTriggerListener, plugin) //一括設置スキル
+    val listeners = List(
+      new EntityListener(),
+      new PlayerLeftClickListener(),
+      new PlayerInventoryListener(),
+      new TemporaryDataInitializer(this.temporaryData),
+      new BlockLineUpTriggerListener[SyncIO],
+      new TilingSkillTriggerListener[SyncIO],
+      new BuildExpIncrementer[SyncIO],
+      rateLimiterRepository,
+      buildAmountDataRepository
+    )
 
-
-    for (p <- Bukkit.getServer.getOnlinePlayers.asScala) {
-      val uuid = p.getUniqueId
-
-      val playerdata = new PlayerData(p)
-
-      playerdata.updateLevel(p)
-
-      BuildAssist.playermap += uuid -> playerdata
+    listeners.foreach { listener =>
+      Bukkit.getServer.getPluginManager.registerEvents(listener, plugin)
     }
+
     plugin.getLogger.info("BuildAssist is Enabled!")
-
-    tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200))
-  }
-
-  def onDisable(): Unit = {
-    for (task <- this.tasklist.asScala) {
-      task.cancel()
-    }
   }
 
 }
 
 object BuildAssist {
-  //Playerdataに依存するデータリスト
-  val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap[UUID, PlayerData]()
+  var instance: BuildAssist = _
 
   //範囲設置ブロックの対象リスト
   val materiallist: java.util.Set[Material] = util.EnumSet.of(
@@ -253,7 +288,6 @@ object BuildAssist {
   )
 
   var plugin: Plugin = _
-  val DEBUG: Boolean = false
   var config: BuildAssistConfig = _
   val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
   val line_up_step_str: Seq[String] = Seq("上側", "下側", "両方")

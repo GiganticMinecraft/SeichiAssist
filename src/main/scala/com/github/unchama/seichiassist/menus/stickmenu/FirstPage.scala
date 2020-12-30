@@ -5,15 +5,15 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.seasonalevents.valentine.Valentine
-import com.github.unchama.seasonalevents.valentine.ValentineItemData.cookieOf
-import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
+import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.cookieOf
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -76,7 +76,6 @@ object FirstPage extends Menu {
         ChestSlotRef(0, 0) -> computeStatsButton,
         ChestSlotRef(0, 1) -> computeEffectSuppressionButton,
         ChestSlotRef(0, 3) -> computeRegionMenuButton,
-        ChestSlotRef(0, 5) -> computeValentineChocolateButton,
         ChestSlotRef(1, 1) -> computeStarLevelStatsButton,
         ChestSlotRef(1, 4) -> computeActiveSkillButton,
         ChestSlotRef(2, 3) -> computePocketOpenButton,
@@ -520,45 +519,6 @@ object FirstPage extends Menu {
           })
         )
       )
-    })
-
-    val computeValentineChocolateButton: IO[Button] = RecomputedButton(IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-
-      if (playerData.hasChocoGave && Valentine.isInEvent) {
-        val iconItemStack =
-          new IconItemStackBuilder(Material.TRAPPED_CHEST)
-            .enchanted()
-            .title("プレゼントボックス")
-            .lore(List(
-              s"$RESET$RED[バレンタインイベント記念]",
-              s"$RESET${AQUA}記念品として",
-              s"$RESET${GREEN}チョコチップクッキー×64個",
-              s"$RESET${AQUA}を配布します。",
-              s"$RESET$DARK_RED$UNDERLINE${BOLD}クリックで受け取る"
-            ))
-            .build()
-
-        Button(
-          iconItemStack,
-          LeftClickButtonEffect(
-            DeferredEffect(IO {
-              if (Valentine.isInEvent) {
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
-                  Util.grantItemStacksEffect(cookieOf(player)),
-                  targetedeffect.UnfocusedEffect {playerData.hasChocoGave = true},
-                  MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。")
-                )
-              } else {
-                emptyEffect
-              }
-            })
-          )
-        )
-      } else {
-        Button(new ItemStack(Material.AIR))
-      }
     })
   }
 

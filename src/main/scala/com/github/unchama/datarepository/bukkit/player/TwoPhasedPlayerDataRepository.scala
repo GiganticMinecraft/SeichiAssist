@@ -1,13 +1,11 @@
 package com.github.unchama.datarepository.bukkit.player
 
-import java.util.UUID
-
-import cats.effect.{ConcurrentEffect, ContextShift, SyncEffect, SyncIO}
-import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import cats.effect.{Sync, SyncEffect, SyncIO}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
+
+import java.util.UUID
 
 /**
  * プレーヤーに値を関連付けるオンメモリデータリポジトリのクラス。
@@ -21,13 +19,12 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
-abstract class TwoPhasedPlayerDataRepository[
-  AsyncContext[_] : ConcurrentEffect : ContextShift,
-  SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
-  R
-](implicit environment: EffectEnvironment) extends PlayerDataRepository[R] with Listener {
+abstract class TwoPhasedPlayerDataRepository[SyncContext[_] : SyncEffect, R]
+  extends PlayerDataRepository[R] with Listener {
 
   import scala.collection.mutable
+
+  //region 初期化・終了処理
 
   /**
    * 中間データの型
@@ -62,19 +59,25 @@ abstract class TwoPhasedPlayerDataRepository[
   protected def initializeValue(player: Player, temporaryData: TemporaryData): SyncContext[R]
 
   /**
-   * プレーヤーが退出したときに、格納されたデータをもとに終了処理を行う。
+   * 与えられたプレーヤーに紐づいたデータを、データリポジトリが削除する前に必要な終了処理を行う作用。
    */
-  protected val unloadData: (Player, R) => SyncContext[Unit]
+  protected val finalizeBeforeUnload: (Player, R) => SyncContext[Unit]
+
+  //endregion
+
+  //region 内部状態
 
   private val state: mutable.HashMap[UUID, R] = mutable.HashMap()
 
   protected val temporaryState: mutable.HashMap[UUID, TemporaryData] = mutable.HashMap()
 
-  def apply(player: Player): R = state(player.getUniqueId)
+  //endregion
 
-  import ContextCoercion._
+  override def apply(player: Player): R = state(player.getUniqueId)
+
   import cats.effect.implicits._
-  import cats.implicits._
+
+  //region イベントハンドラ
 
   @EventHandler(priority = EventPriority.LOWEST)
   final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
@@ -111,15 +114,16 @@ abstract class TwoPhasedPlayerDataRepository[
     }
   }
 
-  @EventHandler(priority = EventPriority.MONITOR)
-  final def onPlayerLeave(event: PlayerQuitEvent): Unit = {
-    val player = event.getPlayer
-    val uuid = player.getUniqueId
-    val storedValue = state.remove(uuid).get
+  //endregion
 
-    environment.runEffectAsync(
-      s"プレーヤー退出時にデータをアンロードする(${getClass.getName})",
-      ContextShift[AsyncContext].shift >> unloadData(player, storedValue).coerceTo[AsyncContext]
-    )
+  /**
+   * プレーヤーの退出処理。この作用は2度以上呼び出した場合の動作が未定義である。
+   */
+  final def removeValueAndFinalize(key: Player): SyncContext[Unit] = {
+    import cats.implicits._
+
+    Sync[SyncContext].delay {
+      state.remove(key.getUniqueId).get
+    }.flatMap(finalizeBeforeUnload(key, _))
   }
 }
