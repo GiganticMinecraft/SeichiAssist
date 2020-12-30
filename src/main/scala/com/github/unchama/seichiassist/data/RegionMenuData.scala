@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.data
 
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.enumeration.DirectionType
+import com.github.unchama.seichiassist.util.enumeration.RelativeDirection
 import org.bukkit.ChatColor._
 import org.bukkit.block.BlockFace
 import org.bukkit.{Bukkit, Material}
@@ -44,9 +44,9 @@ object RegionMenuData {
     )
     gridInv.setItem(0, Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 0, s"${GREEN}拡張単位の変更", lore0, true))
     //1マス目
-    val lore1 = getGridLore(directionMap(DirectionType.AHEAD), unitMap(DirectionType.AHEAD))
-    if (!playerData.canGridExtend(DirectionType.AHEAD, player.getWorld.getName)) lore1.add(CANNOT_EXPAND)
-    else if (!playerData.canGridReduce(DirectionType.AHEAD)) lore1.add(CANNOT_SHRINK)
+    val lore1 = getGridLore(directionMap(RelativeDirection.AHEAD), unitMap(RelativeDirection.AHEAD))
+    if (!playerData.canGridExtend(RelativeDirection.AHEAD, player.getWorld.getName)) lore1.add(CANNOT_EXPAND)
+    else if (!playerData.canGridReduce(RelativeDirection.AHEAD)) lore1.add(CANNOT_SHRINK)
     val menuicon1 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14, s"${DARK_GREEN}前に${playerData.unitPerClick}ユニット増やす/減らす", lore1.asScala.toList, true)
     gridInv.setItem(1, menuicon1)
     //2マス目
@@ -55,18 +55,18 @@ object RegionMenuData {
     val menuicon2 = Util.getMenuIcon(Material.CHEST, 1, s"${GREEN}設定保存メニュー", lore2.asScala.toList, true)
     gridInv.setItem(2, menuicon2)
     //3マス目
-    val lore3: util.List[String] = getGridLore(directionMap(DirectionType.LEFT), unitMap(DirectionType.LEFT))
-    if (!playerData.canGridExtend(DirectionType.LEFT, player.getWorld.getName)) lore3.add(CANNOT_EXPAND)
-    else if (!playerData.canGridReduce(DirectionType.LEFT)) lore3.add(CANNOT_SHRINK)
+    val lore3: util.List[String] = getGridLore(directionMap(RelativeDirection.LEFT), unitMap(RelativeDirection.LEFT))
+    if (!playerData.canGridExtend(RelativeDirection.LEFT, player.getWorld.getName)) lore3.add(CANNOT_EXPAND)
+    else if (!playerData.canGridReduce(RelativeDirection.LEFT)) lore3.add(CANNOT_SHRINK)
     val menuicon3 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10, s"${DARK_GREEN}左に${playerData.unitPerClick}ユニット増やす/減らす", lore3.asScala.toList, true)
     gridInv.setItem(3, menuicon3)
     //4マス目
     // このエントリ群はOrderedで、順序を変えるとUIの表示が変わる為避けること
     val lore4Map = Map(
-      DirectionType.AHEAD -> "前方向",
-      DirectionType.BEHIND -> "後ろ方向",
-      DirectionType.RIGHT -> "右方向",
-      DirectionType.LEFT -> "左方向",
+      RelativeDirection.AHEAD -> "前方向",
+      RelativeDirection.BEHIND -> "後ろ方向",
+      RelativeDirection.RIGHT -> "右方向",
+      RelativeDirection.LEFT -> "左方向",
     )
 
     val lore4b = lore4Map
@@ -80,9 +80,9 @@ object RegionMenuData {
     val menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, s"${DARK_GREEN}設定", lore4, true)
     gridInv.setItem(4, menuicon4)
     //5マス目
-    val lore5 = getGridLore(directionMap(DirectionType.RIGHT), unitMap(DirectionType.RIGHT))
-    if (!playerData.canGridExtend(DirectionType.RIGHT, player.getWorld.getName)) lore5.add(CANNOT_EXPAND)
-    else if (!playerData.canGridReduce(DirectionType.RIGHT)) lore5.add(CANNOT_SHRINK)
+    val lore5 = getGridLore(directionMap(RelativeDirection.RIGHT), unitMap(RelativeDirection.RIGHT))
+    if (!playerData.canGridExtend(RelativeDirection.RIGHT, player.getWorld.getName)) lore5.add(CANNOT_EXPAND)
+    else if (!playerData.canGridReduce(RelativeDirection.RIGHT)) lore5.add(CANNOT_SHRINK)
     val menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5, s"${DARK_GREEN}右に${playerData.unitPerClick}ユニット増やす/減らす", lore5.asScala.toList, true)
     gridInv.setItem(5, menuicon5)
     //6マス目
@@ -92,9 +92,9 @@ object RegionMenuData {
     val menuicon6 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 4, s"${RED}全設定リセット", lore6, true)
     gridInv.setItem(6, menuicon6)
     //7マス目
-    val lore7 = getGridLore(directionMap(DirectionType.BEHIND), unitMap(DirectionType.BEHIND))
-    if (!playerData.canGridExtend(DirectionType.BEHIND, player.getWorld.getName)) lore7.add(CANNOT_EXPAND)
-    else if (!playerData.canGridReduce(DirectionType.BEHIND)) lore7.add(CANNOT_SHRINK)
+    val lore7 = getGridLore(directionMap(RelativeDirection.BEHIND), unitMap(RelativeDirection.BEHIND))
+    if (!playerData.canGridExtend(RelativeDirection.BEHIND, player.getWorld.getName)) lore7.add(CANNOT_EXPAND)
+    else if (!playerData.canGridReduce(RelativeDirection.BEHIND)) lore7.add(CANNOT_SHRINK)
     val menuicon7 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13, s"${DARK_GREEN}後ろに${playerData.unitPerClick}ユニット増やす/減らす", lore7.asScala.toList, true)
     gridInv.setItem(7, menuicon7)
     //8マス目
@@ -126,59 +126,59 @@ object RegionMenuData {
     ArrayBuffer.from(List(
       s"$RESET${GREEN}左クリックで増加",
       s"$RESET${RED}右クリックで減少",
-      s"$RESET$GRAY$GRAY---------------", 
-      s"${GRAY}方向：$AQUA$direction", 
+      s"$RESET$GRAY$GRAY---------------",
+      s"${GRAY}方向：$AQUA$direction",
       s"${GRAY}現在の指定方向ユニット数：$AQUA$unit$GRAY($AQUA${nfNum.format(unit * 15)}${GRAY}ブロック)"
     )).asJava
   }
 
-  private def getPlayerDirectionString(player: Player): Map[DirectionType, String] = {
+  private def getPlayerDirectionString(player: Player): Map[RelativeDirection, String] = {
     var rotation = (player.getLocation.getYaw + 180) % 360
     if (rotation < 0) rotation += 360
     import org.bukkit.block.BlockFace._
     val theMap = if (0.0 <= rotation && rotation < 45.0) { //前が北(North)
       Map(
-        DirectionType.BEHIND -> SOUTH,
-        DirectionType.AHEAD -> NORTH,
-        DirectionType.LEFT -> WEST,
-        DirectionType.RIGHT -> EAST,
+        RelativeDirection.BEHIND -> SOUTH,
+        RelativeDirection.AHEAD -> NORTH,
+        RelativeDirection.LEFT -> WEST,
+        RelativeDirection.RIGHT -> EAST,
       )
     }
     else if (45.0 <= rotation && rotation < 135.0) { //前が東(East)
       Map(
-        DirectionType.RIGHT -> SOUTH,
-        DirectionType.LEFT -> NORTH,
-        DirectionType.BEHIND -> WEST,
-        DirectionType.AHEAD -> EAST,
+        RelativeDirection.RIGHT -> SOUTH,
+        RelativeDirection.LEFT -> NORTH,
+        RelativeDirection.BEHIND -> WEST,
+        RelativeDirection.AHEAD -> EAST,
       )
     }
     else if (135.0 <= rotation && rotation < 225.0) { //前が南(South)
       Map(
-        DirectionType.AHEAD -> SOUTH,
-        DirectionType.BEHIND -> NORTH,
-        DirectionType.RIGHT -> WEST,
-        DirectionType.LEFT -> EAST,
+        RelativeDirection.AHEAD -> SOUTH,
+        RelativeDirection.BEHIND -> NORTH,
+        RelativeDirection.RIGHT -> WEST,
+        RelativeDirection.LEFT -> EAST,
       )
     }
     else if (225.0 <= rotation && rotation < 315.0) { //前が西(West)
       Map(
-        DirectionType.LEFT -> SOUTH,
-        DirectionType.RIGHT -> NORTH,
-        DirectionType.AHEAD -> WEST,
-        DirectionType.BEHIND -> EAST,
+        RelativeDirection.LEFT -> SOUTH,
+        RelativeDirection.RIGHT -> NORTH,
+        RelativeDirection.AHEAD -> WEST,
+        RelativeDirection.BEHIND -> EAST,
       )
     }
     else if (315.0 <= rotation && rotation < 360.0) {
       Map(
-        DirectionType.BEHIND -> SOUTH,
-        DirectionType.AHEAD -> NORTH,
-        DirectionType.LEFT -> WEST,
-        DirectionType.RIGHT -> EAST,
+        RelativeDirection.BEHIND -> SOUTH,
+        RelativeDirection.AHEAD -> NORTH,
+        RelativeDirection.LEFT -> WEST,
+        RelativeDirection.RIGHT -> EAST,
       )
     } else {
       Map()
     }
-    theMap.map((tp: (DirectionType, BlockFace)) => {
+    theMap.map((tp: (RelativeDirection, BlockFace)) => {
       (tp._1, tp._2 match {
         case SOUTH => Some("南(South)")
         case NORTH => Some("北(North)")

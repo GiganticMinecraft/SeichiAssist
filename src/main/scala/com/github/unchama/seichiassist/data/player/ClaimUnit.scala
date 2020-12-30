@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.data.player
 
-import com.github.unchama.seichiassist.util.enumeration.DirectionType
+import com.github.unchama.seichiassist.util.enumeration.RelativeDirection
 
 case class ClaimUnit(ahead: Int, behind: Int, right: Int, left: Int) {
-  def apply(dt: DirectionType): Int = dt match {
-    case DirectionType.AHEAD => ahead
-    case DirectionType.BEHIND => behind
-    case DirectionType.RIGHT => right
-    case DirectionType.LEFT => left
+  def apply(dt: RelativeDirection): Int = dt match {
+    case RelativeDirection.AHEAD => ahead
+    case RelativeDirection.BEHIND => behind
+    case RelativeDirection.RIGHT => right
+    case RelativeDirection.LEFT => left
   }
 }

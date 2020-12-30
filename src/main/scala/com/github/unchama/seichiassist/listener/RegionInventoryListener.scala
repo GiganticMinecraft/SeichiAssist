@@ -5,7 +5,7 @@ import java.util.UUID
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GridTemplate, RegionMenuData}
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.enumeration.{Direction, DirectionType}
+import com.github.unchama.seichiassist.util.enumeration.{Direction, RelativeDirection}
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import com.github.unchama.util.external.ExternalPlugins
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -84,13 +84,13 @@ class RegionInventoryListener extends Listener {
 
       //チャンク延長
       if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 14) {
-        gridChangeFunction(player, DirectionType.AHEAD, event)
+        gridChangeFunction(player, RelativeDirection.AHEAD, event)
       } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 10) {
-        gridChangeFunction(player, DirectionType.LEFT, event)
+        gridChangeFunction(player, RelativeDirection.LEFT, event)
       } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 5) {
-        gridChangeFunction(player, DirectionType.RIGHT, event)
+        gridChangeFunction(player, RelativeDirection.RIGHT, event)
       } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 13) {
-        gridChangeFunction(player, DirectionType.BEHIND, event)
+        gridChangeFunction(player, RelativeDirection.BEHIND, event)
       } else if (itemstackcurrent.getType == Material.WOOL && itemstackcurrent.getDurability.toInt == 11) {
         player.chat("//expand vert")
         createRegion(player)
@@ -190,10 +190,10 @@ class RegionInventoryListener extends Listener {
         if (event.isLeftClick) {
           player.sendMessage(GREEN.toString + "グリッド式保護設定データ読み込み完了")
           player.playSound(player.getLocation, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-          playerData.setUnitAmount(DirectionType.AHEAD, template.getAheadAmount)
-          playerData.setUnitAmount(DirectionType.BEHIND, template.getBehindAmount)
-          playerData.setUnitAmount(DirectionType.RIGHT, template.getRightAmount)
-          playerData.setUnitAmount(DirectionType.LEFT, template.getLeftAmount)
+          playerData.setUnitAmount(RelativeDirection.AHEAD, template.getAheadAmount)
+          playerData.setUnitAmount(RelativeDirection.BEHIND, template.getBehindAmount)
+          playerData.setUnitAmount(RelativeDirection.RIGHT, template.getRightAmount)
+          playerData.setUnitAmount(RelativeDirection.LEFT, template.getLeftAmount)
           setWGSelection(player)
           canCreateRegion(player)
           player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
@@ -216,10 +216,10 @@ object RegionInventoryListener {
 
   private def gridResetFunction(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-    playerData.setUnitAmount(DirectionType.AHEAD, 0)
-    playerData.setUnitAmount(DirectionType.BEHIND, 0)
-    playerData.setUnitAmount(DirectionType.RIGHT, 0)
-    playerData.setUnitAmount(DirectionType.LEFT, 0)
+    playerData.setUnitAmount(RelativeDirection.AHEAD, 0)
+    playerData.setUnitAmount(RelativeDirection.BEHIND, 0)
+    playerData.setUnitAmount(RelativeDirection.RIGHT, 0)
+    playerData.setUnitAmount(RelativeDirection.LEFT, 0)
     //始点座標Map(最短)
     val start = getNearlyUnitStart(player)
     //終点座標Map(最短)
@@ -234,7 +234,7 @@ object RegionInventoryListener {
     canCreateRegion(player)
   }
 
-  private def gridChangeFunction(player: Player, directionType: DirectionType, event: InventoryClickEvent): Unit = {
+  private def gridChangeFunction(player: Player, directionType: RelativeDirection, event: InventoryClickEvent): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     if (event.isLeftClick) {
       if (playerData.canGridExtend(directionType, player.getWorld.getName)) {
@@ -261,10 +261,10 @@ object RegionInventoryListener {
     val direction = Util.getPlayerDirection(player)
     val world = player.getWorld
 
-    val aheadUnitAmount = unitMap(DirectionType.AHEAD)
-    val leftsideUnitAmount = unitMap(DirectionType.LEFT)
-    val rightsideUnitAmount = unitMap(DirectionType.RIGHT)
-    val behindUnitAmount = unitMap(DirectionType.BEHIND)
+    val aheadUnitAmount = unitMap(RelativeDirection.AHEAD)
+    val leftsideUnitAmount = unitMap(RelativeDirection.LEFT)
+    val rightsideUnitAmount = unitMap(RelativeDirection.RIGHT)
+    val behindUnitAmount = unitMap(RelativeDirection.BEHIND)
 
     //0ユニット指定の始点/終点のx,z座標
     val start_x = getNearlyUnitStart(player)("x")
@@ -373,8 +373,8 @@ object RegionInventoryListener {
 
     player.sendMessage(GREEN.toString + "グリッド式保護の現在の設定を保存しました。")
     player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
-    val template = new GridTemplate(unitMap(DirectionType.AHEAD), unitMap(DirectionType.BEHIND),
-      unitMap(DirectionType.RIGHT), unitMap(DirectionType.LEFT))
+    val template = new GridTemplate(unitMap(RelativeDirection.AHEAD), unitMap(RelativeDirection.BEHIND),
+      unitMap(RelativeDirection.RIGHT), unitMap(RelativeDirection.LEFT))
     playerData.templateMap(i) = template
   }
 }
