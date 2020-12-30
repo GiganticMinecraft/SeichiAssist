@@ -237,7 +237,7 @@ object RegionInventoryListener {
   private def gridChangeFunction(player: Player, directionType: RelativeDirection, event: InventoryClickEvent): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     if (event.isLeftClick) {
-      if (playerData.canGridExtend(directionType, player.getWorld.getName)) {
+      if (playerData.canGridExtend(directionType, player.getWorld)) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         playerData.addUnitAmount(directionType, playerData.unitPerClick)
         setWGSelection(player)
@@ -371,10 +371,13 @@ object RegionInventoryListener {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val unitMap = playerData.unitMap
 
-    player.sendMessage(GREEN.toString + "グリッド式保護の現在の設定を保存しました。")
+    player.sendMessage(s"${GREEN.toString}グリッド式保護の現在の設定を保存しました。")
     player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
-    val template = new GridTemplate(unitMap(RelativeDirection.AHEAD), unitMap(RelativeDirection.BEHIND),
-      unitMap(RelativeDirection.RIGHT), unitMap(RelativeDirection.LEFT))
-    playerData.templateMap(i) = template
+    playerData.templateMap(i) = new GridTemplate(
+      unitMap(RelativeDirection.AHEAD),
+      unitMap(RelativeDirection.BEHIND),
+      unitMap(RelativeDirection.RIGHT),
+      unitMap(RelativeDirection.LEFT)
+    )
   }
 }
