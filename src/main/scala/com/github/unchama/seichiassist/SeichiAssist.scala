@@ -181,12 +181,13 @@ class SeichiAssist extends JavaPlugin() {
         )
     }
 
-    val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
-      managedFlySystem.managedFinalizers
+    new BungeeSemaphoreResponderSystem(
+      PlayerDataFinalizerList[IO, Player](
+        managedFlySystem.managedFinalizers ++
+          buildCountSystem.managedFinalizers.appended(savePlayerData)
+      ),
+      PluginExecutionContexts.asyncShift
     )
-      .withAnotherFinalizer(savePlayerData)
-
-    new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
   }
 
   //endregion
