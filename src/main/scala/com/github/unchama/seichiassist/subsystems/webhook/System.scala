@@ -3,5 +3,5 @@ package com.github.unchama.seichiassist.subsystems.webhook
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 
 object System {
-  def wired: Subsystem = Subsystem(Seq(), Map())
+  def wired[F[_]]: Subsystem[F] = Subsystem(Seq(), Map())
 }
