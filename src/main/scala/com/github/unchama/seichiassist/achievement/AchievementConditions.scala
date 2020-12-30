@@ -102,7 +102,7 @@ object AchievementConditions {
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
 
-  def playedOn(day: NeedToBeCalculatedOfWhen, dateSpecification: String): AchievementCondition[String] = {
+  def playedOn(day: NamedHoliday, dateSpecification: String): AchievementCondition[String] = {
     val predicate: PlayerPredicate = _ =>
       IO{
         val now = LocalDate.now()
