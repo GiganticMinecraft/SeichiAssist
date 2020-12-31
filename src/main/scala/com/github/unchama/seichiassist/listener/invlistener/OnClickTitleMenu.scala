@@ -27,9 +27,6 @@ object OnClickTitleMenu {
   private def isApplicableAsNextPageButton(is: ItemStack): Boolean =
     is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight"
 
-  private def isApplicableAsPrevPageButton(is: ItemStack): Boolean =
-    is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft"
-
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(implicit effectEnvironment: EffectEnvironment): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
