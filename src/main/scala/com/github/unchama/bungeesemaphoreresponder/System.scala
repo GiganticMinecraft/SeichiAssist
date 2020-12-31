@@ -3,14 +3,15 @@ package com.github.unchama.bungeesemaphoreresponder
 import akka.actor.ActorSystem
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Timer}
 import com.github.unchama.bungeesemaphoreresponder.bukkit.listeners.BungeeSemaphoreCooperator
-import com.github.unchama.bungeesemaphoreresponder.domain.{BungeeSemaphoreSynchronization, PlayerDataFinalizerList, PlayerName}
+import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
+import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}
 import com.github.unchama.bungeesemaphoreresponder.infrastructure.redis.RedisBungeeSemaphoreSynchronization
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 class System[
   F[_] : ConcurrentEffect : Timer
-](val playerFinalizerList: PlayerDataFinalizerList[F, Player], messagePublishingContext: ContextShift[IO])
+](val finalizer: PlayerDataFinalizer[F, Player], messagePublishingContext: ContextShift[IO])
  (implicit configuration: Configuration, _akkaSystem: ActorSystem) {
   // We wish to be more explicit on the context shift that will be used within this system,
   // so we don't receive it as an implicit parameter
@@ -21,7 +22,7 @@ class System[
       new RedisBungeeSemaphoreSynchronization[F]()
     }
     Seq(
-      new BungeeSemaphoreCooperator[F](playerFinalizerList)
+      new BungeeSemaphoreCooperator[F](finalizer)
     )
   }
 }

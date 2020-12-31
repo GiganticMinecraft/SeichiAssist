@@ -5,7 +5,7 @@ import cats.Parallel.Aux
 import cats.effect
 import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
-import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerDataFinalizerList}
+import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
@@ -182,8 +182,8 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     new BungeeSemaphoreResponderSystem(
-      PlayerDataFinalizerList[IO, Player](
-        managedFlySystem.managedFinalizers ++
+      PlayerDataFinalizer.concurrently[IO, Player](
+        managedFlySystem.managedFinalizers.toList ++
           buildCountSystem.managedFinalizers.appended(savePlayerData)
       ),
       PluginExecutionContexts.asyncShift
@@ -463,8 +463,7 @@ class SeichiAssist extends JavaPlugin() {
     // BungeeSemaphoreResponderの全ファイナライザを走らせる
     getServer
       .getOnlinePlayers.asScala.toList
-      .flatMap(player => bungeeSemaphoreResponderSystem.playerFinalizerList.allActionsOnQuitOf(player).toList)
-      .sequence
+      .traverse(bungeeSemaphoreResponderSystem.finalizer.onQuitOf)
       .unsafeRunSync()
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
