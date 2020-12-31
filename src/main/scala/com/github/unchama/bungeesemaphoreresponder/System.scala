@@ -3,7 +3,8 @@ package com.github.unchama.bungeesemaphoreresponder
 import akka.actor.ActorSystem
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Timer}
 import com.github.unchama.bungeesemaphoreresponder.bukkit.listeners.BungeeSemaphoreCooperator
-import com.github.unchama.bungeesemaphoreresponder.domain.{BungeeSemaphoreSynchronization, PlayerDataFinalizer, PlayerName}
+import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
+import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}
 import com.github.unchama.bungeesemaphoreresponder.infrastructure.redis.RedisBungeeSemaphoreSynchronization
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener

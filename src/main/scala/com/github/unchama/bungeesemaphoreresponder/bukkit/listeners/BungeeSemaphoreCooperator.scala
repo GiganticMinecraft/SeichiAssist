@@ -3,7 +3,8 @@ package com.github.unchama.bungeesemaphoreresponder.bukkit.listeners
 import cats.ApplicativeError
 import cats.effect.{Async, ConcurrentEffect, Timer}
 import com.github.unchama.bungeesemaphoreresponder.Configuration
-import com.github.unchama.bungeesemaphoreresponder.domain.{BungeeSemaphoreSynchronization, PlayerDataFinalizer, PlayerName}
+import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
+import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerName}
 import com.github.unchama.generic.EitherExtra
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
