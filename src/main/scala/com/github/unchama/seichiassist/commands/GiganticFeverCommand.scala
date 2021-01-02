@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
 object GiganticFeverCommand {
-  private val worldsToToggleDifficulty = ManagedWorld.seichiWorlds.map(_.alphabetName).toList
+  private val worldsToToggleDifficulty = ManagedWorld.seichiWorlds
 
   val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
     .execution { _ =>

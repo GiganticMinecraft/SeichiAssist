@@ -317,13 +317,8 @@ object Util {
     cur.after(start) && cur.before(end)
   }
 
-  def setDifficulty(worldNameList: List[String], difficulty: Difficulty): Unit = {
-    worldNameList.map(name => (name, Option(Bukkit.getWorld(name)))).foreach { worldOpt =>
-      worldOpt._2 match {
-        case Some(value) => value.setDifficulty(difficulty)
-        case None => Bukkit.getLogger.warning(s"${worldOpt._1}という名前のワールドは存在しません。")
-      }
-    }
+  def setDifficulty(worlds: IndexedSeq[ManagedWorld], difficulty: Difficulty): Unit = {
+    worlds.foreach(_.alphabetName.pipe(Bukkit.getWorld).setDifficulty(difficulty))
   }
 
   def isEnemy(entityType: EntityType): Boolean = entityType match {
