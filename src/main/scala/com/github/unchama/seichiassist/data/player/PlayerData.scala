@@ -211,7 +211,7 @@ class PlayerData(
   var toggleGiveApple = 1
   var toggleVotingFairy = 1
   var p_apple: Long = 0
-  var toggleVFSound = true
+  var playFairySound = true
   //貢献度pt
   var added_mana = 0
   var contribute_point = 0

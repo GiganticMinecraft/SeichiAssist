@@ -755,7 +755,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
       } else if (itemstackcurrent.getType == Material.JUKEBOX) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerdata.toggleVFSound = !playerdata.toggleVFSound
+        playerdata.playFairySound = !playerdata.playFairySound
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
       } else if (itemstackcurrent.getType == Material.GHAST_TEAR) {
         player.closeInventory()

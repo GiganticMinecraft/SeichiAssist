@@ -82,11 +82,11 @@ public class VotingFairyListener implements Listener {
         );
 
         if (Util.getTimeZone(playerdata.votingFairyStartTime()).equals("morning"))
-            VotingFairyTask.speak(p, getMessage(morning, p.getName()), playerdata.toggleVFSound());
+            VotingFairyTask.speak(p, getMessage(morning, p.getName()), playerdata.playFairySound());
         else if (Util.getTimeZone(playerdata.votingFairyStartTime()).equals("day"))
-            VotingFairyTask.speak(p, getMessage(day, p.getName()), playerdata.toggleVFSound());
+            VotingFairyTask.speak(p, getMessage(day, p.getName()), playerdata.playFairySound());
         else
-            VotingFairyTask.speak(p, getMessage(night, p.getName()), playerdata.toggleVFSound());
+            VotingFairyTask.speak(p, getMessage(night, p.getName()), playerdata.playFairySound());
     }
 
     public static void regeneMana(Player p) {
@@ -104,7 +104,7 @@ public class VotingFairyListener implements Listener {
                     , "[str1]はどのりんごが好き？僕はがちゃりんご！"
                     , "動いてお腹を空かしていっぱい食べるぞー！"
             );
-            VotingFairyTask.speak(p, getMessage(msg, p.getName()), playerdata.toggleVFSound());
+            VotingFairyTask.speak(p, getMessage(msg, p.getName()), playerdata.playFairySound());
 
         } else {
 
@@ -185,11 +185,11 @@ public class VotingFairyListener implements Listener {
             p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "マナ妖精が" + (int) n + "マナを回復してくれました");
             if (m != 0) {
                 p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あっ！" + m + "個のがちゃりんごが食べられてる！");
-                VotingFairyTask.speak(p, getMessage(yes, p.getName()), playerdata.toggleVFSound());
+                VotingFairyTask.speak(p, getMessage(yes, p.getName()), playerdata.playFairySound());
             } else {
 
                 p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "あなたは妖精にりんごを渡しませんでした。");
-                VotingFairyTask.speak(p, getMessage(no, p.getName()), playerdata.toggleVFSound());
+                VotingFairyTask.speak(p, getMessage(no, p.getName()), playerdata.playFairySound());
             }
         }
 

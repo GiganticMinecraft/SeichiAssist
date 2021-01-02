@@ -888,7 +888,7 @@ public final class MenuInventoryData {
         //妖精音トグル
         {
             final ItemStack itemStack = new ItemStack(Material.JUKEBOX);
-            itemStack.setItemMeta(getVotingFairySoundsToggleMeta(playerdata.toggleVFSound()));
+            itemStack.setItemMeta(getVotingFairySoundsToggleMeta(playerdata.playFairySound()));
             AsyncInventorySetter.setItemAsync(inventory, 20,  itemStack);
         }
 
