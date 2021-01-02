@@ -2,19 +2,20 @@ package com.github.unchama.seichiassist.util
 
 import cats.data
 import cats.effect.IO
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.util.enumeration.Direction
 import com.github.unchama.seichiassist.util.typeclass.Sendable
+import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
 import org.bukkit.entity.{EntityType, Firework, Player}
 import org.bukkit.inventory.meta.SkullMeta
-import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
+import org.bukkit.inventory.{ItemStack, PlayerInventory}
 
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.{Calendar, Random}
 
 object Util {
@@ -288,33 +289,23 @@ object Util {
     else Direction.NORTH
   }
 
-  def showTime(cal: Calendar): String = {
-    val date = cal.getTime
-    val format = new SimpleDateFormat("yyyy/MM/dd HH:mm")
-    format.format(date)
-  }
-
+  @deprecated
   def showHour(cal: Calendar): String = {
-    val date = cal.getTime
-    val format = new SimpleDateFormat("HH:mm")
-    format.format(date)
+    new SimpleDateFormat("HH:mm").format(cal.getTime)
   }
 
   def getTimeZone(cal: Calendar): String = {
-    val date = cal.getTime
-    val format = new SimpleDateFormat("HH")
-    val n = Integer.parseInt(format.format(date))
-    if (4 <= n && n < 10)
-      "morning"
-    else if (10 <= n && n < 18)
-      "day"
-    else
-      "night"
+    val n = cal.get(Calendar.HOUR_OF_DAY)
+    n match {
+      case _ if 4 <= n && n < 10 => "morning"
+      case _ if 10 <= n && n < 18 => "day"
+      case _ => "night"
+    }
   }
 
   def isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean = {
-    val cur = Calendar.getInstance()
-    cur.after(start) && cur.before(end)
+    val now = Calendar.getInstance()
+    now.after(start) && now.before(end)
   }
 
   def setDifficulty(worlds: IndexedSeq[ManagedWorld], difficulty: Difficulty): Unit = {
