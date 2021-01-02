@@ -784,7 +784,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         VotingFairyListener.summon(player)
         player.closeInventory()
       } else if (itemstackcurrent.getType == Material.COMPASS) {
-        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound)
+        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.playFairySound)
         player.closeInventory()
       } //妖精召喚
       //妖精音トグル
