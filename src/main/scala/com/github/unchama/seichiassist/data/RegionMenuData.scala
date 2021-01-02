@@ -1,13 +1,14 @@
 package com.github.unchama.seichiassist.data
 
-import com.github.unchama.seichiassist.{Config, SeichiAssist}
+import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.enumeration.RelativeDirection
 import org.bukkit.ChatColor._
-import org.bukkit.{Bukkit, Material}
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.inventory.{Inventory, ItemStack}
+import org.bukkit.inventory.{Inventory, ItemFlag, ItemStack}
+import org.bukkit.{Bukkit, Material}
 
 import java.text.NumberFormat
 
@@ -38,7 +39,13 @@ object RegionMenuData {
       s"$AQUA${pd.unitPerClick}${GREEN}ユニット($AQUA${pd.unitPerClick * 15}${GREEN}ブロック)/1クリック",
       s"$RED${UNDERLINE}クリックで変更"
     )
-    gridInv.setItem(0, Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 0, s"${GREEN}拡張単位の変更", lore0, true))
+    gridInv.setItem(0, new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 0)
+      .amount(1)
+      .title(s"${GREEN}拡張単位の変更")
+      .lore(lore0)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
+    )
     //1マス目
     val lore1b = getGridLore(directionMap(RelativeDirection.AHEAD), unitMap(RelativeDirection.AHEAD))
     val error1 = if (!pd.canGridExtend(RelativeDirection.AHEAD, player.getWorld))
@@ -49,11 +56,21 @@ object RegionMenuData {
       None
 
     val lore1 = lore1b :++ error1
-    val menuicon1 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 14, s"${DARK_GREEN}前に${pd.unitPerClick}ユニット増やす/減らす", lore1.asScala.toList, true)
+    val menuicon1 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 14)
+      .amount(1)
+      .title(s"${DARK_GREEN}前に${pd.unitPerClick}ユニット増やす/減らす")
+      .lore(lore1)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     gridInv.setItem(1, menuicon1)
     //2マス目
     val lore2 = List(s"$RED${UNDERLINE}クリックで開く")
-    val menuicon2 = Util.getMenuIcon(Material.CHEST, 1, s"${GREEN}設定保存メニュー", lore2, true)
+    val menuicon2 = new IconItemStackBuilder(Material.CHEST)
+      .amount(1)
+      .title(s"${GREEN}設定保存メニュー")
+      .lore(lore2)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     gridInv.setItem(2, menuicon2)
     //3マス目
     val lore3b = getGridLore(directionMap(RelativeDirection.LEFT), unitMap(RelativeDirection.LEFT))
@@ -65,10 +82,14 @@ object RegionMenuData {
       None
 
     val lore3 = lore3b :++ err3
-    val menuicon3 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 10, s"${DARK_GREEN}左に${pd.unitPerClick}ユニット増やす/減らす", lore3.asScala.toList, true)
+    val menuicon3 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 10)
+      .amount(1)
+      .title(s"${DARK_GREEN}左に${pd.unitPerClick}ユニット増やす/減らす")
+      .lore(lore3)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     gridInv.setItem(3, menuicon3)
     //4マス目
-    // このエントリ群はOrderedで、順序を変えるとUIの表示が変わる為避けること
     val lore4Map = Map(
       RelativeDirection.AHEAD -> "前方向",
       RelativeDirection.BEHIND -> "後ろ方向",
@@ -76,19 +97,24 @@ object RegionMenuData {
       RelativeDirection.LEFT -> "左方向",
     )
 
-    val lore4b = lore4Map
-      .map(pair => {
-        val rd = pair._1
-        s"$GRAY${lore4Map(rd)}：$AQUA${unitMap(rd)}${GRAY}ユニット($AQUA${nfNum.format(unitMap(rd) * 15)}${GRAY}ブロック)"
-      })
+    val sizeInfo = lore4Map
+      .map {
+        case (rd, st) =>
+          s"$GRAY$st：$AQUA${unitMap(rd)}${GRAY}ユニット($AQUA${nfNum.format(unitMap(rd) * 15)}${GRAY}ブロック)"
+      }
       .toList
     val lore4 = List(
       s"${GRAY}現在の設定",
-    ) ::: lore4b ::: List (
+    ) ::: sizeInfo ::: List (
       s"${GRAY}保護ユニット数：$AQUA${pd.gridChunkAmount}",
       s"${GRAY}保護ユニット上限値：$RED${config.getGridLimitPerWorld(player.getWorld.getName)}"
     )
-    val menuicon4 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 11, s"${DARK_GREEN}設定", lore4, true)
+    val menuicon4 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 11)
+      .amount(1)
+      .title(s"${DARK_GREEN}設定")
+      .lore(lore4)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     gridInv.setItem(4, menuicon4)
     //5マス目
     val lore5b = getGridLore(directionMap(RelativeDirection.RIGHT), unitMap(RelativeDirection.RIGHT))
@@ -100,13 +126,23 @@ object RegionMenuData {
       None
 
     val lore5 = lore5b :++ error5
-    val menuicon5 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 5, s"${DARK_GREEN}右に${pd.unitPerClick}ユニット増やす/減らす", lore5.asScala.toList, true)
+    val menuicon5 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 5)
+      .amount(1)
+      .title(s"${DARK_GREEN}右に${pd.unitPerClick}ユニット増やす/減らす")
+      .lore(lore5)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     gridInv.setItem(5, menuicon5)
     //6マス目
     val lore6 = List(
       s"$RED${UNDERLINE}取扱注意！！"
     )
-    val menuicon6 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 4, s"${RED}全設定リセット", lore6, true)
+    val menuicon6 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 4)
+      .amount(1)
+      .title(s"${RED}全設定リセット")
+      .lore(lore6)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     gridInv.setItem(6, menuicon6)
     //7マス目
     val lore7b = getGridLore(directionMap(RelativeDirection.BEHIND), unitMap(RelativeDirection.BEHIND))
@@ -118,28 +154,48 @@ object RegionMenuData {
       None
 
     val lore7 = lore7b :++ error7
-    val menuicon7 = Util.getMenuIcon(Material.STAINED_GLASS_PANE, 1, 13, s"${DARK_GREEN}後ろに${pd.unitPerClick}ユニット増やす/減らす", lore7.asScala.toList, true)
+    val menuicon7 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 13)
+      .amount(1)
+      .title(s"${DARK_GREEN}後ろに${pd.unitPerClick}ユニット増やす/減らす")
+      .lore(lore7)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     gridInv.setItem(7, menuicon7)
     //8マス目
-    val menuicon8 = if (!config.isGridProtectionEnabled(player.getWorld)) {
-      val lore = List(
-        s"$RED${UNDERLINE}このワールドでは保護を作成できません"
+    val (lore, durability, titleColor) = if (!config.isGridProtectionEnabled(player.getWorld)) {
+      (
+        List(
+          s"$RED${UNDERLINE}このワールドでは保護を作成できません"
+        ),
+        14,
+        RED
       )
-      Util.getMenuIcon(Material.WOOL, 1, 14, s"${RED}保護作成", lore, true)
     } else if (!pd.canCreateRegion) {
-      val lore = List(
-        s"$RED${UNDERLINE}以下の原因により保護を作成できません",
-        s"$RED・保護の範囲が他の保護と重複している",
-        s"$RED・保護の作成上限に達している"
+      (
+        List(
+          s"$RED${UNDERLINE}以下の原因により保護を作成できません",
+          s"$RED・保護の範囲が他の保護と重複している",
+          s"$RED・保護の作成上限に達している"
+        ),
+        14,
+        RED
       )
-      Util.getMenuIcon(Material.WOOL, 1, 14, s"${RED}保護作成", lore, true)
     } else {
-      val lore = List(
-        s"${DARK_GREEN}保護作成可能です",
-        s"$RED${UNDERLINE}クリックで作成"
+      (
+        List(
+          s"${DARK_GREEN}保護作成可能です",
+          s"$RED${UNDERLINE}クリックで作成"
+        ),
+        11,
+        GREEN
       )
-      Util.getMenuIcon(Material.WOOL, 1, 11, s"${GREEN}保護作成", lore, true)
     }
+    val menuicon8 = new IconItemStackBuilder(Material.WOOL, durability.toShort)
+      .amount(1)
+      .title(s"${titleColor}保護作成")
+      .lore(lore)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     gridInv.setItem(8, menuicon8)
     gridInv
   }
@@ -155,8 +211,8 @@ object RegionMenuData {
   private def getPlayerDirectionString(player: Player): Map[RelativeDirection, String] = {
     var rotation = (player.getLocation.getYaw + 180) % 360
     if (rotation < 0) rotation += 360
-    import com.github.unchama.seichiassist.util.enumeration.Direction._
     import com.github.unchama.seichiassist.util.enumeration.Direction
+    import com.github.unchama.seichiassist.util.enumeration.Direction._
     val theMap = if (0.0 <= rotation && rotation < 45.0) { //前が北(North)
       Map(
         RelativeDirection.BEHIND -> SOUTH,
@@ -223,7 +279,12 @@ object RegionMenuData {
     }
     //戻るボタン
     val lore = List(s"$RED${UNDERLINE}クリックで戻る")
-    val retIcon = Util.getMenuIcon(Material.BARRIER, 1, s"${RED}グリッド式保護メニューに戻る", lore, true)
+    val retIcon = new IconItemStackBuilder(Material.BARRIER)
+      .amount(1)
+      .title(s"${RED}グリッド式保護メニューに戻る")
+      .lore(lore)
+      .flagged(ItemFlag.HIDE_ATTRIBUTES)
+      .build()
     inv.setItem(getAisleAmount * 9, retIcon)
     inv
   }
@@ -255,25 +316,23 @@ object RegionMenuData {
           s"${GREEN}左クリックで設定を読み込み",
           s"${RED}右クリックで現在の設定で上書き"
         )
-        Util.getMenuIcon(
-          Material.CHEST,
-          1,
-          s"${GREEN}テンプレNo.${i + 1}(設定済)",
-          lore,
-          true
-        )
+        new IconItemStackBuilder(Material.CHEST)
+          .amount(1)
+          .title(s"${GREEN}テンプレNo.${i + 1}(設定済)")
+          .lore(lore)
+          .flagged(ItemFlag.HIDE_ATTRIBUTES)
+          .build()
       case None =>
         val lore = List(
           s"${GREEN}未設定",
           s"${RED}左クリックで現在の設定を保存"
         )
-        Util.getMenuIcon(
-          Material.PAPER,
-          1,
-          s"${RED}テンプレNo.${i + 1}",
-          lore,
-          true
-        )
+        new IconItemStackBuilder(Material.PAPER)
+          .amount(1)
+          .title(s"${RED}テンプレNo.${i + 1}")
+          .lore(lore)
+          .flagged(ItemFlag.HIDE_ATTRIBUTES)
+          .build()
     }
   }
 }
