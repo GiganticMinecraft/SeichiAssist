@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.data
 
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.enumeration.RelativeDirection
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -11,6 +10,7 @@ import org.bukkit.inventory.{Inventory, ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material}
 
 import java.text.NumberFormat
+import scala.collection.mutable
 
 /**
  * 保護関連メニュー
@@ -18,10 +18,37 @@ import java.text.NumberFormat
  * @author karayuu
  */
 object RegionMenuData {
+  sealed trait UnitQuantity {
+    def value: Int
+  }
+
+  object UnitQuantity {
+    case object ONE extends UnitQuantity {
+      override def value = 1
+    }
+
+    case object TEN extends UnitQuantity {
+      override def value = 10
+    }
+
+    case object ONE_HUNDRED extends UnitQuantity {
+      override def value = 100
+    }
+  }
   private val config = SeichiAssist.seichiAssistConfig
   private val nfNum = NumberFormat.getNumberInstance
   private val CANNOT_EXPAND = s"$RED${UNDERLINE}これ以上拡張できません"
   private val CANNOT_SHRINK = s"$RED${UNDERLINE}これ以上縮小できません"
+  val canClaim: mutable.Map[Player, Boolean] = new mutable.HashMap().withDefaultValue(true)
+  val units: mutable.Map[Player, UnitQuantity] = new mutable.HashMap().withDefaultValue(UnitQuantity.ONE)
+
+  def toggleUnit(player: Player): Unit = {
+    units(player) = units(player) match {
+      case UnitQuantity.ONE => UnitQuantity.TEN
+      case UnitQuantity.TEN => UnitQuantity.ONE_HUNDRED
+      case UnitQuantity.ONE_HUNDRED => UnitQuantity.ONE
+    }
+  }
   /**
    * グリッド式保護メニュを開きます。
    *
@@ -36,7 +63,7 @@ object RegionMenuData {
     //0マス目
     val lore0 = List(
       s"${GREEN}現在のユニット指定量",
-      s"$AQUA${pd.unitPerClick}${GREEN}ユニット($AQUA${pd.unitPerClick * 15}${GREEN}ブロック)/1クリック",
+      s"$AQUA${units(player).value}${GREEN}ユニット($AQUA${units(player).value * 15}${GREEN}ブロック)/1クリック",
       s"$RED${UNDERLINE}クリックで変更"
     )
     gridInv.setItem(0, new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 0)
@@ -58,7 +85,7 @@ object RegionMenuData {
     val lore1 = lore1b :++ error1
     val menuicon1 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 14)
       .amount(1)
-      .title(s"${DARK_GREEN}前に${pd.unitPerClick}ユニット増やす/減らす")
+      .title(s"${DARK_GREEN}前に${units(player).value}ユニット増やす/減らす")
       .lore(lore1)
       .flagged(ItemFlag.HIDE_ATTRIBUTES)
       .build()
@@ -84,7 +111,7 @@ object RegionMenuData {
     val lore3 = lore3b :++ err3
     val menuicon3 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 10)
       .amount(1)
-      .title(s"${DARK_GREEN}左に${pd.unitPerClick}ユニット増やす/減らす")
+      .title(s"${DARK_GREEN}左に${units(player).value}ユニット増やす/減らす")
       .lore(lore3)
       .flagged(ItemFlag.HIDE_ATTRIBUTES)
       .build()
@@ -128,7 +155,7 @@ object RegionMenuData {
     val lore5 = lore5b :++ error5
     val menuicon5 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 5)
       .amount(1)
-      .title(s"${DARK_GREEN}右に${pd.unitPerClick}ユニット増やす/減らす")
+      .title(s"${DARK_GREEN}右に${units(player).value}ユニット増やす/減らす")
       .lore(lore5)
       .flagged(ItemFlag.HIDE_ATTRIBUTES)
       .build()
@@ -156,7 +183,7 @@ object RegionMenuData {
     val lore7 = lore7b :++ error7
     val menuicon7 = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, 13)
       .amount(1)
-      .title(s"${DARK_GREEN}後ろに${pd.unitPerClick}ユニット増やす/減らす")
+      .title(s"${DARK_GREEN}後ろに${units(player).value}ユニット増やす/減らす")
       .lore(lore7)
       .flagged(ItemFlag.HIDE_ATTRIBUTES)
       .build()
@@ -170,7 +197,7 @@ object RegionMenuData {
         14,
         RED
       )
-    } else if (!pd.canCreateRegion) {
+    } else if (!canClaim(player)) {
       (
         List(
           s"$RED${UNDERLINE}以下の原因により保護を作成できません",

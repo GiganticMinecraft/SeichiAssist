@@ -9,6 +9,7 @@ import com.github.unchama.generic.ClosedRange
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
+import com.github.unchama.seichiassist.data.RegionMenuData.units
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
@@ -128,8 +129,6 @@ class PlayerData(
     chestflag = !chestflag
   }
 
-  var canCreateRegion = true
-  var unitPerClick = 1
   //今回の採掘速度上昇レベルを格納
   var minespeedlv = 0
   //前回の採掘速度上昇レベルを格納
@@ -637,7 +636,7 @@ class PlayerData(
     val chunkMap = unitMap
 
     //チャンクを拡大すると仮定する
-    val assumedAmoont = chunkMap(directionType) + this.unitPerClick
+    val assumedAmoont = chunkMap(directionType) + units(player).value
 
     //一応すべての拡張値を出しておく
     val ahead = chunkMap(RelativeDirection.AHEAD)
@@ -664,7 +663,7 @@ class PlayerData(
     val chunkMap = unitMap
 
     //減らしたと仮定する
-    val sizeAfterShrink = chunkMap(directionType) - unitPerClick
+    val sizeAfterShrink = chunkMap(directionType) - units(player).value
 
     sizeAfterShrink >= 0
   }
@@ -682,14 +681,6 @@ class PlayerData(
 
   def addUnitAmount(directionType: RelativeDirection, amount: Int): Unit = {
     setUnitAmount(directionType, claimUnit(directionType) + amount)
-  }
-
-  def toggleUnitPerGrid(): Unit = {
-    this.unitPerClick = this.unitPerClick match {
-      case 1 => 10
-      case 10 => 100
-      case 100 => 1
-    }
   }
 
   @AntiTypesafe

@@ -346,7 +346,7 @@ object RegionInventoryListener {
     val wcfg = Wg.getGlobalStateManager.get(player.getWorld)
 
     if (selection == null) {
-      playerData.canCreateRegion = false
+      canClaim(player) = false
     }
 
     val region = new ProtectedCuboidRegion(player.getName + "_" + playerData.regionCount,
@@ -354,17 +354,17 @@ object RegionInventoryListener {
     val regions = manager.getApplicableRegions(region)
 
     if (regions.size() != 0) {
-      playerData.canCreateRegion = false
+      canClaim(player) = false
       return
     }
 
     val maxRegionCount = wcfg.getMaxRegionCount(player)
     if (maxRegionCount >= 0 && manager.getRegionCountOfPlayer(Wg.wrapPlayer(player)) >= maxRegionCount) {
-      playerData.canCreateRegion = false
+      canClaim(player) = false
       return
     }
 
-    playerData.canCreateRegion = true
+    canClaim(player) = true
   }
 
   private def playerGridTemplateSave(player: Player, i: Int): Unit = {
