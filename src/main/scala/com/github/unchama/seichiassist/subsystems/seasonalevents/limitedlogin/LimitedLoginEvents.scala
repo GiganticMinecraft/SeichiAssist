@@ -21,15 +21,6 @@ object LimitedLoginEvents extends Enum[LimitedLoginEvent] {
       (20, Set(LoginBonus(LoginBonusGachaTicket, 200)))
     )
 
-    override val EVENT_PERIOD: EventPeriod = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
-  }
-
-  case object Anniversary extends LimitedLoginEvent {
-    override val map = Map(
-      (0, Set(LoginBonus(LoginBonusGachaTicket, 20))),
-      (20, Set(LoginBonus(LoginBonusGachaTicket, 200)))
-    )
-
-    override val EVENT_PERIOD: EventPeriod = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
+    override val EVENT_PERIOD: EventPeriod = EventPeriod(LocalDate.of(2018, 2, 7), LocalDate.of(2018, 2, 21))
   }
 }
