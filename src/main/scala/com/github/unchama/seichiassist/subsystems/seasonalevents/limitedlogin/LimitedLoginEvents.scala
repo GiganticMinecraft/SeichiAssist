@@ -2,33 +2,34 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
 import java.time.LocalDate
 
-sealed trait LimitedLoginEvent
+import enumeratum.{Enum, EnumEntry}
+
+sealed trait LimitedLoginEvent extends EnumEntry with LoginBonusItemList with LimitedLoginPeriod
 
 /**
  * イベントの列挙及びそれぞれに必要なものの定義
  */
-object LimitedLoginEvents {
-  case object A extends LimitedLoginEvent with LoginBonusItemList with LimitedLoginPeriod {
+object LimitedLoginEvents extends Enum[LimitedLoginEvent] {
+
+  val values: IndexedSeq[LimitedLoginEvent] = findValues
+
+  def findActiveEvent: Option[LimitedLoginEvent] = values.find(_.isInEvent)
+
+  case object Valentine extends LimitedLoginEvent {
     override val map = Map(
       (0, Set(LoginBonus(LoginBonusGachaTicket, 20))),
       (20, Set(LoginBonus(LoginBonusGachaTicket, 200)))
     )
 
-    override val EVENT_PERIOD = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
+    override val EVENT_PERIOD: EventPeriod = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
   }
 
-  case object B extends LimitedLoginEvent with LoginBonusItemList with LimitedLoginPeriod {
+  case object Anniversary extends LimitedLoginEvent {
     override val map = Map(
       (0, Set(LoginBonus(LoginBonusGachaTicket, 20))),
       (20, Set(LoginBonus(LoginBonusGachaTicket, 200)))
     )
 
-    override val EVENT_PERIOD = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
+    override val EVENT_PERIOD: EventPeriod = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
   }
-
-  def getEventStatus: Option[LimitedLoginEvent with LoginBonusItemList with LimitedLoginPeriod] =
-    if (LimitedLoginEvents.A.isInEvent) Some(LimitedLoginEvents.A)
-    else if (LimitedLoginEvents.B.isInEvent) Some(LimitedLoginEvents.B)
-    else None
-
 }

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack
 object LimitedLoginBonusGifter extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
-    implicit val eventStatus = LimitedLoginEvents.getEventStatus.getOrElse(return)
+    implicit val eventStatus = LimitedLoginEvents.findActiveEvent.getOrElse(return)
 
     implicit val player = event.getPlayer
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -42,7 +42,7 @@ object LimitedLoginBonusGifter extends Listener {
     playerData.LimitedLoginCount = loginDays
   }
 
-  private def giveLoginBonus(day: Int)(implicit player: Player, eventStatus: LimitedLoginEvent with LoginBonusItemList): Unit = {
+  private def giveLoginBonus(day: Int)(implicit player: Player, eventStatus: LimitedLoginEvent): Unit = {
     val loginBonusSet = eventStatus.loginBonusAt(day) match {
       case Some(loginBonusSet) if !loginBonusSet.isEmpty => loginBonusSet
       case _ => throw new NoSuchElementException("存在しないアイテムデータが指定されました。")
