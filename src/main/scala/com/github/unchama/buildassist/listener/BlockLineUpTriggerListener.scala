@@ -2,7 +2,6 @@ package com.github.unchama.buildassist.listener
 
 import cats.effect.{SyncEffect, SyncIO}
 import com.github.unchama.buildassist.{BuildAssist, StepPlaceMode, VerticalAlign}
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
