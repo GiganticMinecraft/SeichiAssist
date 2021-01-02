@@ -591,7 +591,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
   @EventHandler
   def onTitanRepairEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
-    val uuid = player.getUniqueId
     //エラー分岐
     val inventory = event.getInventory
 

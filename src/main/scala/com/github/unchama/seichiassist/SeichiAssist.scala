@@ -5,7 +5,7 @@ import cats.Parallel.Aux
 import cats.effect
 import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
-import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerDataFinalizerList}
+import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
@@ -30,6 +30,7 @@ import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -149,9 +150,19 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.seasonalevents.System.wired[IO, IO](this)
   }
 
+  lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
+    import PluginExecutionContexts.timer
+
+    implicit val configuration: subsystems.buildcount.application.Configuration =
+      seichiAssistConfig.buildCountConfiguration
+
+    subsystems.buildcount.System.wired[IO, SyncIO, SyncIO](loggerF).unsafeRunSync()
+  }
+
   lazy val buildAssist: BuildAssist = {
     implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
-    new BuildAssist(this, loggerF)
+    implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
+    new BuildAssist(this)
   }
 
   lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
@@ -170,13 +181,13 @@ class SeichiAssist extends JavaPlugin() {
         )
     }
 
-    val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
-      managedFlySystem.managedFinalizers
+    new BungeeSemaphoreResponderSystem(
+      PlayerDataFinalizer.concurrently[IO, Player](
+        managedFlySystem.managedFinalizers.toList ++
+          buildCountSystem.managedFinalizers.appended(savePlayerData)
+      ),
+      PluginExecutionContexts.asyncShift
     )
-      .withAnotherFinalizer(savePlayerData)
-      .withFinalizers(buildAssist.finalizers)
-
-    new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
   }
 
   //endregion
@@ -324,7 +335,8 @@ class SeichiAssist extends JavaPlugin() {
       managedFlySystem,
       rescueplayer.System.wired,
       bookedAchievementSystem,
-      seasonalEventsSystem
+      seasonalEventsSystem,
+      buildCountSystem
     )
 
     // コマンドの登録
@@ -451,8 +463,7 @@ class SeichiAssist extends JavaPlugin() {
     // BungeeSemaphoreResponderの全ファイナライザを走らせる
     getServer
       .getOnlinePlayers.asScala.toList
-      .flatMap(player => bungeeSemaphoreResponderSystem.playerFinalizerList.allActionsOnQuitOf(player).toList)
-      .sequence
+      .traverse(bungeeSemaphoreResponderSystem.finalizer.onQuitOf)
       .unsafeRunSync()
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {

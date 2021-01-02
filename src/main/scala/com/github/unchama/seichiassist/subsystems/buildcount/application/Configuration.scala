@@ -1,6 +1,6 @@
-package com.github.unchama.buildassist.application
+package com.github.unchama.seichiassist.subsystems.buildcount.application
 
-import com.github.unchama.buildassist.domain.explevel.BuildExpAmount
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 
 trait BuildExpMultiplier {
 

@@ -45,7 +45,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     val uuid = player.getUniqueId
 
     val playerdata = BuildAssist.instance.temporaryData(uuid)
-    val playerLevel = BuildAssist.instance.buildAmountDataRepository(player).get.unsafeRunSync().levelCorrespondingToExp.level
+    val playerLevel = BuildAssist.instance.buildAmountDataRepository(player).read.unsafeRunSync().levelCorrespondingToExp.level
 
     //プレイヤーデータが無い場合は処理終了
 

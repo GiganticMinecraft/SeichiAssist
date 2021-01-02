@@ -1,4 +1,4 @@
-package com.github.unchama.buildassist.application.actions
+package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
 trait ClassifyPlayerWorld[F[_], Player] {
 

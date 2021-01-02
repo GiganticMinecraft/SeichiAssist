@@ -27,7 +27,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   import player._
 
   def computeNotationOfStats(): IO[Button] = RecomputedButton {
-    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap(data =>
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap(data =>
       IO {
         val iconItemStack = new SkullItemStackBuilder(getUniqueId)
           .enchanted()
@@ -75,7 +75,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   }
 
   def computeButtonToToggleRangedPlaceSkill(): IO[Button] = RecomputedButton(
-    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap(amountData =>
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap(amountData =>
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
         val openerLevel = amountData.levelCorrespondingToExp.level
@@ -123,7 +123,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
 
   def computeButtonToOpenRangedPlaceSkillMenu()
                                              (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] =
-    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap { amountData =>
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
@@ -156,7 +156,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     }
 
   def computeButtonToLineUpBlocks(): IO[Button] = RecomputedButton(
-    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap { amountData =>
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 

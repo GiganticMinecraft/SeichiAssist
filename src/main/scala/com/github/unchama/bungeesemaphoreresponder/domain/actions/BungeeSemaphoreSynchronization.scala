@@ -1,4 +1,4 @@
-package com.github.unchama.bungeesemaphoreresponder.domain
+package com.github.unchama.bungeesemaphoreresponder.domain.actions
 
 trait BungeeSemaphoreSynchronization[Action, Player] {
 

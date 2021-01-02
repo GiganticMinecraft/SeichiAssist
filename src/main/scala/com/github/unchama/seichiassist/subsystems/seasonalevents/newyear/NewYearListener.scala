@@ -29,7 +29,7 @@ class NewYearListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
 
   @EventHandler
   def giveSobaToPlayer(event: PlayerJoinEvent): Unit = {
-    if (!isInEvent) return
+    if (!NewYear.sobaWillBeDistributed) return
 
     val player = event.getPlayer
 

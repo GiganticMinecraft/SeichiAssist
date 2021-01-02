@@ -2,12 +2,15 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.bungeesemaphoreresponder.{RedisConnectionSettings, Configuration => BungeeSemaphoreResponderConfiguration}
 import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemConfiguration => AutoSaveConfiguration}
+import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
+import scala.math.BigDecimal
 
 object Config {
   def loadFrom(plugin: JavaPlugin): Config = { // config.ymlがない時にDefaultのファイルを生成
@@ -163,5 +166,14 @@ final class Config private(val config: FileConfiguration) {
 
   def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
     override val autoSaveEnabled: Boolean = config.getBoolean("AutoSave.Enable")
+  }
+
+  def buildCountConfiguration: BuildCountConfiguration = new BuildCountConfiguration {
+    override val multipliers: BuildExpMultiplier = new BuildExpMultiplier {
+      override val withBuildSkills: BigDecimal = BigDecimal(config.getString("BlockCountMag"))
+      override val whenInSeichiWorld: BigDecimal = scala.math.BigDecimal.decimal(0.1)
+    }
+    override val oneMinuteBuildExpLimit: BuildExpAmount =
+      BuildExpAmount(BigDecimal(config.getString("BuildNum1minLimit")))
   }
 }
