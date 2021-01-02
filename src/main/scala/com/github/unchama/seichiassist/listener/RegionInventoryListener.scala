@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.listener
 
-import java.util.UUID
+import com.github.unchama.seichiassist.data.RegionMenuData.{canClaim, units}
 
+import java.util.UUID
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GridTemplate, RegionMenuData}
 import com.github.unchama.seichiassist.util.Util
@@ -83,31 +84,47 @@ class RegionInventoryListener extends Listener {
       val playerData = playermap(uuid)
 
       //チャンク延長
-      if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 14) {
-        gridChangeFunction(player, RelativeDirection.AHEAD, event)
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 10) {
-        gridChangeFunction(player, RelativeDirection.LEFT, event)
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 5) {
-        gridChangeFunction(player, RelativeDirection.RIGHT, event)
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 13) {
-        gridChangeFunction(player, RelativeDirection.BEHIND, event)
-      } else if (itemstackcurrent.getType == Material.WOOL && itemstackcurrent.getDurability.toInt == 11) {
-        player.chat("//expand vert")
-        createRegion(player)
-        playerData.regionCount = playerData.regionCount + 1
-        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-        player.closeInventory()
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 4) {
-        gridResetFunction(player)
-        player.playSound(player.getLocation, Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
-        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
-      } else if (itemstackcurrent.getType == Material.STAINED_GLASS_PANE && itemstackcurrent.getDurability.toInt == 0) {
-        playerData.toggleUnitPerGrid()
-        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-        player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
-      } else if (itemstackcurrent.getType == Material.CHEST) {
-        player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-        player.openInventory(RegionMenuData.getGridTemplateInventory(player))
+      val durability = itemstackcurrent.getDurability.toInt
+      val mat = itemstackcurrent.getType
+      mat match {
+        case Material.STAINED_GLASS_PANE =>
+          durability match {
+            case 14 | 10 | 5 | 13 => resizeGrid(
+              player,
+              durability match {
+                case 14 => RelativeDirection.AHEAD
+                case 10 => RelativeDirection.LEFT
+                case 5 => RelativeDirection.RIGHT
+                case 13 => RelativeDirection.BEHIND
+              },
+              event
+            )
+            case 4 =>
+              resetGrid(player)
+              player.playSound(player.getLocation, Sound.BLOCK_ANVIL_DESTROY, 0.5f, 1.0f)
+              player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+
+            case 0 =>
+              RegionMenuData.toggleUnit(player)
+              player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+              player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
+            case _ => return
+          }
+
+        case Material.WOOL =>
+          durability match {
+            case 11 =>
+              player.chat("//expand vert")
+              createRegion(player)
+              playerData.regionCount += 1
+              player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+              player.closeInventory()
+            case _ => return
+          }
+        case Material.CHEST =>
+          player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
+          player.openInventory(RegionMenuData.getGridTemplateInventory(player))
+        case _ => return
       }
     }
   }
@@ -116,17 +133,23 @@ class RegionInventoryListener extends Listener {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val selection = We.getSelection(player)
 
-    val region = new ProtectedCuboidRegion(player.getName + "_" + playerData.regionCount,
-      selection.getNativeMinimumPoint.toBlockVector, selection.getNativeMaximumPoint.toBlockVector)
+    val region = new ProtectedCuboidRegion(
+      player.getName + "_" + playerData.regionCount,
+      selection.getNativeMinimumPoint.toBlockVector, 
+      selection.getNativeMaximumPoint.toBlockVector
+    )
     val manager = Wg.getRegionManager(player.getWorld)
 
+    import scala.util.chaining._
     val task = new RegionAdder(Wg, manager, region)
-    task.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY)
-    task.setOwnersInput(Array(player.getName))
+      .tap(_.setLocatorPolicy(DomainInputResolver.UserLocatorPolicy.UUID_ONLY))
+      .tap(_.setOwnersInput(Array(player.getName)))
     val future = Wg.getExecutorService.submit(task)
 
-    AsyncCommandHelper.wrap(future, Wg, player).formatUsing(player.getName + "_" + playerData.regionCount)
-      .registerWithSupervisor("保護申請中").thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
+    AsyncCommandHelper.wrap(future, Wg, player)
+      .formatUsing(player.getName + "_" + playerData.regionCount)
+      .registerWithSupervisor("保護申請中")
+      .thenRespondWith("保護申請完了。保護名: '%s'", "保護作成失敗")
   }
 
   @EventHandler
@@ -190,10 +213,14 @@ class RegionInventoryListener extends Listener {
         if (event.isLeftClick) {
           player.sendMessage(GREEN.toString + "グリッド式保護設定データ読み込み完了")
           player.playSound(player.getLocation, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-          playerData.setUnitAmount(RelativeDirection.AHEAD, template.aheadAmount)
-          playerData.setUnitAmount(RelativeDirection.BEHIND, template.behindAmount)
-          playerData.setUnitAmount(RelativeDirection.RIGHT, template.rightAmount)
-          playerData.setUnitAmount(RelativeDirection.LEFT, template.leftAmount)
+          Map(
+            RelativeDirection.AHEAD -> template.aheadAmount,
+            RelativeDirection.BEHIND -> template.behindAmount,
+            RelativeDirection.RIGHT -> template.rightAmount,
+            RelativeDirection.LEFT -> template.leftAmount
+          ).foreach {
+            case (rd, amount) => playerData.setUnitAmount(rd, amount)
+          }
           setWGSelection(player)
           canCreateRegion(player)
           player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
@@ -214,18 +241,15 @@ object RegionInventoryListener {
   val We: WorldEditPlugin = ExternalPlugins.getWorldEdit
   var config: Config = SeichiAssist.seichiAssistConfig
 
-  private def gridResetFunction(player: Player): Unit = {
+  private def resetGrid(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-    playerData.setUnitAmount(RelativeDirection.AHEAD, 0)
-    playerData.setUnitAmount(RelativeDirection.BEHIND, 0)
-    playerData.setUnitAmount(RelativeDirection.RIGHT, 0)
-    playerData.setUnitAmount(RelativeDirection.LEFT, 0)
+    RelativeDirection.values.foreach(playerData.setUnitAmount(_, 0))
     //始点座標Map(最短)
     val start = getNearlyUnitStart(player)
     //終点座標Map(最短)
     val end = getNearlyUnitEnd(player)
     //範囲選択
-    wgSelect(
+    invokeSelectCommand(
       new Location(player.getWorld, start("x"), 0.0, start("z")),
       new Location(player.getWorld, end("x"), 256.0, end("z")),
       player
@@ -234,12 +258,13 @@ object RegionInventoryListener {
     canCreateRegion(player)
   }
 
-  private def gridChangeFunction(player: Player, directionType: RelativeDirection, event: InventoryClickEvent): Unit = {
+  private def resizeGrid(player: Player, directionType: RelativeDirection, event: InventoryClickEvent): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
+    val unit = units(player).value
     if (event.isLeftClick) {
       if (playerData.canGridExtend(directionType, player.getWorld)) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerData.addUnitAmount(directionType, playerData.unitPerClick)
+        playerData.addUnitAmount(directionType, unit)
         setWGSelection(player)
         canCreateRegion(player)
         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
@@ -247,7 +272,7 @@ object RegionInventoryListener {
     } else if (event.isRightClick) {
       if (playerData.canGridReduce(directionType)) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerData.addUnitAmount(directionType, playerData.unitPerClick * -1)
+        playerData.addUnitAmount(directionType, -unit)
         setWGSelection(player)
         canCreateRegion(player)
         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
@@ -296,12 +321,12 @@ object RegionInventoryListener {
           new Location(world, start_x - 15 * aheadUnitAmount, 0.0, start_z - 15 * rightsideUnitAmount),
           new Location(world, end_x + 15 * behindUnitAmount, 256.0, end_z + 15 * leftsideUnitAmount)
         )
-      case _ => (null, null)
-    } //わざと何もしない。
-    wgSelect(start_loc, end_loc, player)
+      case _ => return
+    }
+    invokeSelectCommand(start_loc, end_loc, player)
   }
 
-  private def wgSelect(loc1: Location, loc2: Location, player: Player): Unit = {
+  private def invokeSelectCommand(loc1: Location, loc2: Location, player: Player): Unit = {
     player.chat("//;")
     player.chat("//pos1 " + loc1.getX.toInt + "," + loc1.getY.toInt + "," + loc1.getZ.toInt)
     player.chat("//pos2 " + loc2.getX.toInt + "," + loc2.getY.toInt + "," + loc2.getZ.toInt)
@@ -339,6 +364,7 @@ object RegionInventoryListener {
     )
   }
 
+  // DON'T USE PlayerData AS BUFFER :anger:
   private def canCreateRegion(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val selection = We.getSelection(player)
@@ -349,8 +375,11 @@ object RegionInventoryListener {
       canClaim(player) = false
     }
 
-    val region = new ProtectedCuboidRegion(player.getName + "_" + playerData.regionCount,
-      selection.getNativeMinimumPoint.toBlockVector, selection.getNativeMaximumPoint.toBlockVector)
+    val region = new ProtectedCuboidRegion(
+      player.getName + "_" + playerData.regionCount,
+      selection.getNativeMinimumPoint.toBlockVector,
+      selection.getNativeMaximumPoint.toBlockVector
+    )
     val regions = manager.getApplicableRegions(region)
 
     if (regions.size() != 0) {
@@ -371,9 +400,9 @@ object RegionInventoryListener {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val unitMap = playerData.unitMap
 
-    player.sendMessage(s"${GREEN.toString}グリッド式保護の現在の設定を保存しました。")
+    player.sendMessage(s"${GREEN}グリッド式保護の現在の設定を保存しました。")
     player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1f)
-    playerData.templateMap(i) = new GridTemplate(
+    playerData.templateMap(i) = GridTemplate(
       unitMap(RelativeDirection.AHEAD),
       unitMap(RelativeDirection.BEHIND),
       unitMap(RelativeDirection.RIGHT),
