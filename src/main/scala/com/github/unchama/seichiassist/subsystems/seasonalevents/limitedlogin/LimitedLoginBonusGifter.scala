@@ -1,22 +1,22 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
 import org.bukkit.inventory.ItemStack
 
 object LimitedLoginBonusGifter extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
-    implicit val eventStatus = LimitedLoginEvents.findActiveEvent.getOrElse(return)
+    implicit val eventStatus: LimitedLoginEvent = LimitedLoginEvents.findActiveEvent.getOrElse(return)
 
-    implicit val player = event.getPlayer
+    implicit val player: Player = event.getPlayer
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val lastCheckedDate = {
       val lastChecked = playerData.lastcheckdate
@@ -44,7 +44,7 @@ object LimitedLoginBonusGifter extends Listener {
 
   private def giveLoginBonus(day: Int)(implicit player: Player, eventStatus: LimitedLoginEvent): Unit = {
     val loginBonusSet = eventStatus.loginBonusAt(day) match {
-      case Some(loginBonusSet) if !loginBonusSet.isEmpty => loginBonusSet
+      case Some(loginBonusSet) if loginBonusSet.nonEmpty => loginBonusSet
       case _ => throw new NoSuchElementException("存在しないアイテムデータが指定されました。")
     }
 

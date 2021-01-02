@@ -8,5 +8,6 @@ case class EventPeriod(startDate: LocalDate, endDate: LocalDate)
 
 trait LimitedLoginPeriod {
   val EVENT_PERIOD: EventPeriod
+
   def isInEvent: Boolean = dateRangeAsSequence(EVENT_PERIOD.startDate, EVENT_PERIOD.endDate).contains(LocalDate.now())
 }

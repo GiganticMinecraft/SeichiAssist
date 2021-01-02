@@ -23,4 +23,5 @@ object LimitedLoginEvents extends Enum[LimitedLoginEvent] {
 
     override val EVENT_PERIOD: EventPeriod = EventPeriod(LocalDate.of(2018, 2, 7), LocalDate.of(2018, 2, 21))
   }
+
 }
