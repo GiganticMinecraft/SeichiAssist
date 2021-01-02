@@ -7,7 +7,6 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.dateRangeA
 case class EventPeriod(startDate: LocalDate, endDate: LocalDate)
 
 trait LimitedLoginPeriod {
-  protected val EVENT_PERIOD: EventPeriod
-
+  val EVENT_PERIOD: EventPeriod
   def isInEvent: Boolean = dateRangeAsSequence(EVENT_PERIOD.startDate, EVENT_PERIOD.endDate).contains(LocalDate.now())
 }
