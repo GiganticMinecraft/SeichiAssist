@@ -9,20 +9,26 @@ sealed trait LimitedLoginEvent
  */
 object LimitedLoginEvents {
   case object A extends LimitedLoginEvent with LoginBonusItemList with LimitedLoginPeriod {
-    override protected val map = Map(
+    override val map = Map(
       (0, Set(LoginBonus(LoginBonusGachaTicket, 20))),
       (20, Set(LoginBonus(LoginBonusGachaTicket, 200)))
     )
 
-    override protected val EVENT_PERIOD = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
+    override val EVENT_PERIOD = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
   }
 
   case object B extends LimitedLoginEvent with LoginBonusItemList with LimitedLoginPeriod {
-    override protected val map = Map(
+    override val map = Map(
       (0, Set(LoginBonus(LoginBonusGachaTicket, 20))),
       (20, Set(LoginBonus(LoginBonusGachaTicket, 200)))
     )
 
-    override protected val EVENT_PERIOD = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
+    override val EVENT_PERIOD = EventPeriod(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 31))
   }
+
+  def getEventStatus: Option[LimitedLoginEvent with LoginBonusItemList with LimitedLoginPeriod] =
+    if (LimitedLoginEvents.A.isInEvent) Some(LimitedLoginEvents.A)
+    else if (LimitedLoginEvents.B.isInEvent) Some(LimitedLoginEvents.B)
+    else None
+
 }
