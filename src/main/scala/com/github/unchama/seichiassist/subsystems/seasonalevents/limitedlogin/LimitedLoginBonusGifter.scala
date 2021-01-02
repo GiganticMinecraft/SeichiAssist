@@ -1,8 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
 import com.github.unchama.seichiassist.data.GachaSkullData
-import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginPeriods._
-import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LoginBonusItemData.loginBonusAt
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import org.bukkit.entity.Player
@@ -16,9 +14,9 @@ import org.bukkit.inventory.ItemStack
 object LimitedLoginBonusGifter extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
-    if (!isInEvent) return
+    implicit val eventStatus = LimitedLoginEvents.getEventStatus.getOrElse(return)
 
-    implicit val player: Player = event.getPlayer
+    implicit val player = event.getPlayer
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val lastCheckedDate = {
       val lastChecked = playerData.lastcheckdate
@@ -33,8 +31,7 @@ object LimitedLoginBonusGifter extends Listener {
 
     // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）1、そうでなければ（=開催期間中ならば）playerData.LimitedLoginCount + 1
     val loginDays = {
-      // isInEventの条件分岐内なので、getした結果エラーになることはない
-      if (lastCheckedDate.isBefore(isContainedAt.get.startDate)) 1
+      if (lastCheckedDate.isBefore(eventStatus.EVENT_PERIOD.startDate)) 1
       else playerData.LimitedLoginCount + 1
     }
 
@@ -45,10 +42,10 @@ object LimitedLoginBonusGifter extends Listener {
     playerData.LimitedLoginCount = loginDays
   }
 
-  private def giveLoginBonus(day: Int)(implicit player: Player): Unit = {
-    val loginBonusSet = loginBonusAt(day) match {
+  private def giveLoginBonus(day: Int)(implicit player: Player, eventStatus: LimitedLoginEvent with LoginBonusItemList): Unit = {
+    val loginBonusSet = eventStatus.loginBonusAt(day) match {
       case Some(loginBonusSet) if !loginBonusSet.isEmpty => loginBonusSet
-      case None => throw new NoSuchElementException("存在しないアイテムデータが指定されました。")
+      case _ => throw new NoSuchElementException("存在しないアイテムデータが指定されました。")
     }
 
     loginBonusSet.foreach { loginBonus =>
