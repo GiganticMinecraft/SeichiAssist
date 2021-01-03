@@ -300,7 +300,7 @@ class PlayerData(
 
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
-    isVotingFairy()
+    checkVotingFairy()
   }
 
   //レベルを更新
@@ -434,13 +434,14 @@ class PlayerData(
     expmanager.setExp(totalexp)
   }
 
-  private def isVotingFairy(): Unit = {
-    //効果は継続しているか
-    if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
-      this.usingVotingFairy = false
-      player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
-    } else if (this.usingVotingFairy) {
-      VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
+  private def checkVotingFairy(): Unit = {
+    if (usingVotingFairy) {
+      if (Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
+        VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
+      } else {
+        this.usingVotingFairy = false
+        player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
+      }
     }
   }
 
