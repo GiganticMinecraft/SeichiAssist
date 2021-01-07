@@ -29,7 +29,7 @@ trait Menu {
    */
   def open(implicit ctx: LayoutPreparationContext, syncCtx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = data.Kleisli { player =>
     for {
-      session <- frame.createNewSession()
+      session <- MenuSession.createNewSessionWith[IO](frame)
       _ <- session.openInventory.run(player)
       layout <- computeMenuLayout(player)
       _ <- session.overwriteViewWith(layout)
