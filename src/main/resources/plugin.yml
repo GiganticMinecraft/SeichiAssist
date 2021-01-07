@@ -15,10 +15,6 @@ commands:
     description: Gacha operation command.
     permission: seichiassist.seichi
     permission-message: *denied
-  seichihaste:
-    description: Mining speed operation command.
-    permission: seichiassist.seichihaste
-    permission-message: *denied
   seichiassist:
     description: SeichiAssist command.
     permission: seichiassist.seichiassist
@@ -108,7 +104,6 @@ permissions:
     default: false
     children:
       - seichiassist.seichi
-      - seichiassist.seichihaste
       - seichiassist.seichiassist
       - seichiassist.openpocket
       - seichiassist.ef

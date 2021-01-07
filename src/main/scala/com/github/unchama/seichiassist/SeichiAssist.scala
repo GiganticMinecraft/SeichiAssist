@@ -141,6 +141,12 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
+  lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
+    import PluginExecutionContexts.timer
+
+    subsystems.dragonnighttime.System.wired[IO, IO]
+  }
+  
   lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
@@ -344,7 +350,6 @@ class SeichiAssist extends JavaPlugin() {
       "gacha" -> new GachaCommand(),
       "map" -> MapCommand.executor,
       "ef" -> EffectCommand.executor,
-      "seichihaste" -> SeichiHasteCommand.executor,
       "seichiassist" -> SeichiAssistCommand.executor,
       "openpocket" -> OpenPocketCommand.executor,
       "lastquit" -> LastQuitCommand.executor,
@@ -435,7 +440,7 @@ class SeichiAssist extends JavaPlugin() {
               || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
             HalfHourRankingRoutine()
-          ).toList ++ autoSaveSystem.state
+          ).toList ++ autoSaveSystem.state ++ dragonNightTimeSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
