@@ -1,8 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
@@ -10,6 +7,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 object LimitedLoginBonusGifter extends Listener {
   @EventHandler
@@ -35,23 +35,24 @@ object LimitedLoginBonusGifter extends Listener {
       else playerData.LimitedLoginCount + 1
     }
 
-    // 0日目のアイテムは毎日配布される
-    giveLoginBonus(0)
-    giveLoginBonus(loginDays)
+    giveLoginBonus(Everyday)
+    giveLoginBonus(EventLoginCount(loginDays))
 
     playerData.LimitedLoginCount = loginDays
   }
 
-  private def giveLoginBonus(day: Int)(implicit player: Player, eventStatus: LimitedLoginEvent): Unit = {
-    val loginBonusSet = eventStatus.loginBonusAt(day) match {
-      case Some(loginBonusSet) if loginBonusSet.nonEmpty => loginBonusSet
-      case _ => throw new NoSuchElementException("存在しないアイテムデータが指定されました。")
-    }
+  private def giveLoginBonus(index: LoginBonusIndex)(implicit player: Player, eventStatus: LimitedLoginEvent): Unit = {
+    val loginBonusSet = eventStatus.bonusAt(index)
+      .getOrElse(throw new NoSuchElementException("存在しないアイテムデータが指定されました。"))
 
     loginBonusSet.foreach { loginBonus =>
+      val messageOfDay = index match {
+        case EventLoginCount(count) => s"${count}日目"
+        case Everyday => "毎日"
+      }
+
       loginBonus.itemId match {
         case LoginBonusGachaTicket =>
-          val messageOfDay = if (day == 0) "毎日" else s"${day}日目"
           player.sendMessage(s"【限定ログボ：$messageOfDay】${loginBonus.amount}個のガチャ券をプレゼント！")
 
           val skull = GachaSkullData.gachaSkull

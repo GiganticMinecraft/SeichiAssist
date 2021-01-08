@@ -1,13 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
-import java.time.LocalDate
-
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.dateRangeAsSequence
 
-case class EventPeriod(startDate: LocalDate, endDate: LocalDate)
+import java.time.LocalDate
+
+case class EventPeriod(startDate: LocalDate, endDate: LocalDate) {
+  require(startDate.isBefore(endDate), "'startDate' must be before 'endDate'")
+}
 
 trait LimitedLoginPeriod {
   val period: EventPeriod
 
-  def isInEvent: Boolean = dateRangeAsSequence(period.startDate, period.endDate).contains(LocalDate.now())
+  final def isInEvent: Boolean = dateRangeAsSequence(period.startDate, period.endDate).contains(LocalDate.now())
 }
