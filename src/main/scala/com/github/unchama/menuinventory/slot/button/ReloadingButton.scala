@@ -9,7 +9,10 @@ object ReloadingButton {
   /**
    * クリックされるたびに[buttonComputation]に基づいてスロット自体が更新される[Button]を作成する.
    */
-  def apply(menu: Menu)(button: Button)(implicit ctx: LayoutPreparationContext): Button = {
+  def apply[M <: Menu](menu: M)(button: Button)
+                      (implicit
+                       environment: menu.Environment,
+                       ctx: LayoutPreparationContext): Button = {
     button.withAnotherEffect(
       ButtonEffect(scope => {
         val clicker = scope.event.getWhoClicked.asInstanceOf[Player]

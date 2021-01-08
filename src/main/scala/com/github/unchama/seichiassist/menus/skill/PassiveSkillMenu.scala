@@ -2,12 +2,14 @@ package com.github.unchama.seichiassist.menus.skill
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -25,6 +27,8 @@ object PassiveSkillMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
+  class Environment(implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+
   /**
    * メニューのサイズとタイトルに関する情報
    */
@@ -33,8 +37,9 @@ object PassiveSkillMenu extends Menu {
   /**
    * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
+    import environment._
     import eu.timepit.refined.auto._
 
     val buttonComputations = ButtonComputations(player)

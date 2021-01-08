@@ -3,10 +3,12 @@ package com.github.unchama.seichiassist.menus.minestack
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory._
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
 import org.bukkit.ChatColor._
@@ -16,12 +18,16 @@ import org.bukkit.entity.Player
 object MineStackMainMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import eu.timepit.refined.auto._
 
-  override val frame: MenuFrame =
-    MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
-  val categoryButtonLayout: MenuSlotLayout = {
+  class Environment(implicit
+                    val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+
+  override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
+
+  def categoryButtonLayout(implicit ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu): MenuSlotLayout = {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES => Material.DIAMOND_ORE
       case MOB_DROP => Material.ENDER_PEARL
@@ -41,7 +47,7 @@ object MineStackMainMenu extends Menu {
         iconItemStack,
         action.LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          CategorizedMineStackMenu.forCategory(category).open
+          ioCanOpenCategorizedMineStackMenu.open(CategorizedMineStackMenu(category))
         )
       )
       slotIndex -> button
@@ -50,7 +56,9 @@ object MineStackMainMenu extends Menu {
     MenuSlotLayout(layoutMap)
   }
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+    import environment._
+
     for {
       autoMineStackToggleButton <- MineStackButtons(player).computeAutoMineStackToggleButton()
       historicalMineStackSection <- ButtonComputations(player).computeHistoricalMineStackLayout()

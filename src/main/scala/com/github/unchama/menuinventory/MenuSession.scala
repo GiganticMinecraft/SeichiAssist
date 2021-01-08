@@ -2,7 +2,7 @@ package com.github.unchama.menuinventory
 
 import cats.Eq
 import cats.effect.concurrent.Ref
-import cats.effect.{ContextShift, IO}
+import cats.effect.{ContextShift, IO, Sync}
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -14,7 +14,7 @@ import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession private[menuinventory](private val frame: MenuFrame) extends InventoryHolder {
+class MenuSession private(private val frame: MenuFrame) extends InventoryHolder {
 
   val currentLayout: Ref[IO, MenuSlotLayout] = Ref.unsafe(MenuSlotLayout())
 
@@ -86,5 +86,11 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
   }
 
   override def getInventory: Inventory = sessionInventory
+
+}
+
+object MenuSession {
+
+  def createNewSessionWith[F[_] : Sync](frame: MenuFrame): F[MenuSession] = Sync[F].delay(new MenuSession(frame))
 
 }

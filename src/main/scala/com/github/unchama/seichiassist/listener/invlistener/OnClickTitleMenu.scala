@@ -1,12 +1,14 @@
 package com.github.unchama.seichiassist.listener.invlistener
 
+import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -16,10 +18,8 @@ import org.bukkit.{Material, Sound}
 
 object OnClickTitleMenu {
   private final val MAX_LENGTH: Int = 8
-  private final val PER_PAGE: Int = 9*3
+  private final val PER_PAGE: Int = 9 * 3
   private final val LENGTH_LIMIT_EXCEEDED: String = s"全パーツ合計で${MAX_LENGTH}文字以内になるよう設定してください。"
-
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 
   private def clickedSound(player: Player, sound: Sound, pitch: Float): Unit =
     player.playSound(player.getLocation, sound, 1f, pitch)
@@ -27,7 +27,8 @@ object OnClickTitleMenu {
   private def isApplicableAsNextPageButton(is: ItemStack): Boolean =
     is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight"
 
-  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(implicit effectEnvironment: EffectEnvironment): Unit = {
+  def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(implicit effectEnvironment: EffectEnvironment,
+                                                              ioCanOpenStickMenu: IO CanOpen FirstPage.type): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
     //外枠のクリック処理なら終了
@@ -101,12 +102,12 @@ object OnClickTitleMenu {
             player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
 
             effectEnvironment.runAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
-                StickMenu.firstPage.open
+                ioCanOpenStickMenu.open(StickMenu.firstPage)
               ),
               "実績メニューを開く"
             )
