@@ -17,7 +17,8 @@ object CategorizedMineStackMenu {
 
   class Environment(implicit
                     val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
-                    val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu)
+                    val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+                    val syncShift: MinecraftServerThreadShift[IO])
 
 }
 
@@ -95,10 +96,11 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     }
   }
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)
+                                (implicit environment: Environment): IO[MenuSlotLayout] = {
     import MineStackObjectCategory._
     import cats.implicits._
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+    import environment._
 
     val mineStackObjectPerPage = objectSectionRows.chestRows.slotCount
 
@@ -118,7 +120,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     // 自動スタック機能トグルボタンを含むセクションの計算
     val autoMineStackToggleButtonSectionComputation =
-      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton())
+      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton)
         .map(_.sequence)
         .sequence
 

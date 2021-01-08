@@ -59,7 +59,8 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(implicit ctx: MinecraftServerThreadShift[IO]): IO[Button] = RecomputedButton(IO {
+  def getMineStackItemButtonOf(mineStackObj: MineStackObj)
+                              (implicit ctx: MinecraftServerThreadShift[IO]): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -143,49 +144,50 @@ private[minestack] case class MineStackButtons(player: Player) {
     })
   }
 
-  def computeAutoMineStackToggleButton(): IO[Button] = RecomputedButton(IO {
-    val playerData = SeichiAssist.playermap(getUniqueId)
+  def computeAutoMineStackToggleButton(implicit syncShift: MinecraftServerThreadShift[IO]): IO[Button] =
+    RecomputedButton(IO {
+      val playerData = SeichiAssist.playermap(getUniqueId)
 
-    val iconItemStack = {
-      val baseBuilder =
-        new IconItemStackBuilder(Material.IRON_PICKAXE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}対象アイテム自動スタック機能")
+      val iconItemStack = {
+        val baseBuilder =
+          new IconItemStackBuilder(Material.IRON_PICKAXE)
+            .title(s"$YELLOW$UNDERLINE${BOLD}対象アイテム自動スタック機能")
 
-      if (playerData.settings.autoMineStack) {
-        baseBuilder
-          .enchanted()
-          .lore(List(
-            s"$RESET${GREEN}現在ONです",
-            s"$RESET$DARK_RED${UNDERLINE}クリックでOFF"
-          ))
-      } else {
-        baseBuilder
-          .lore(List(
-            s"$RESET${RED}現在OFFです",
-            s"$RESET$DARK_GREEN${UNDERLINE}クリックでON"
-          ))
+        if (playerData.settings.autoMineStack) {
+          baseBuilder
+            .enchanted()
+            .lore(List(
+              s"$RESET${GREEN}現在ONです",
+              s"$RESET$DARK_RED${UNDERLINE}クリックでOFF"
+            ))
+        } else {
+          baseBuilder
+            .lore(List(
+              s"$RESET${RED}現在OFFです",
+              s"$RESET$DARK_GREEN${UNDERLINE}クリックでON"
+            ))
+        }
+      }.build()
+
+      val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
+        SequentialEffect(
+          playerData.settings.toggleAutoMineStack,
+          DeferredEffect(IO {
+            val (message, soundPitch) =
+              if (playerData.settings.autoMineStack) {
+                (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
+              } else {
+                (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
+              }
+
+            SequentialEffect(
+              MessageEffect(message),
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
+            )
+          })
+        )
       }
-    }.build()
 
-    val buttonEffect = action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
-      SequentialEffect(
-        playerData.settings.toggleAutoMineStack,
-        DeferredEffect(IO {
-          val (message, soundPitch) =
-            if (playerData.settings.autoMineStack) {
-              (s"${GREEN}対象アイテム自動スタック機能:ON", 1.0f)
-            } else {
-              (s"${RED}対象アイテム自動スタック機能:OFF", 0.5f)
-            }
-
-          SequentialEffect(
-            MessageEffect(message),
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundPitch)
-          )
-        })
-      )
-    }
-
-    Button(iconItemStack, buttonEffect)
-  })
+      Button(iconItemStack, buttonEffect)
+    })
 }

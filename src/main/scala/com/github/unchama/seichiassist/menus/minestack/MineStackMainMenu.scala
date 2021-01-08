@@ -5,6 +5,7 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, action}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -18,12 +19,12 @@ import org.bukkit.entity.Player
 object MineStackMainMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import eu.timepit.refined.auto._
 
   class Environment(implicit
                     val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+                    val syncShift: MinecraftServerThreadShift[IO])
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
 
@@ -60,8 +61,8 @@ object MineStackMainMenu extends Menu {
     import environment._
 
     for {
-      autoMineStackToggleButton <- MineStackButtons(player).computeAutoMineStackToggleButton()
-      historicalMineStackSection <- ButtonComputations(player).computeHistoricalMineStackLayout()
+      autoMineStackToggleButton <- MineStackButtons(player).computeAutoMineStackToggleButton
+      historicalMineStackSection <- ButtonComputations(player).computeHistoricalMineStackLayout
     } yield {
       MenuSlotLayout(
         ChestSlotRef(0, 0) -> autoMineStackToggleButton,
@@ -82,7 +83,7 @@ object MineStackMainMenu extends Menu {
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
-    def computeHistoricalMineStackLayout(): IO[MenuSlotLayout] = {
+    def computeHistoricalMineStackLayout(implicit syncShift: MinecraftServerThreadShift[IO]): IO[MenuSlotLayout] = {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
       for {

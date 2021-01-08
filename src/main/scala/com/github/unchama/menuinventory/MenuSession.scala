@@ -26,7 +26,9 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
   def openInventory(implicit context: MinecraftServerThreadShift[IO]): TargetedEffect[Player] =
     PlayerEffects.openInventoryEffect(sessionInventory)
 
-  def overwriteViewWith(newLayout: MenuSlotLayout)(implicit ctx: LayoutPreparationContext): IO[Unit] = {
+  def overwriteViewWith(newLayout: MenuSlotLayout)
+                       (implicit ctx: LayoutPreparationContext,
+                        syncShift: MinecraftServerThreadShift[IO]): IO[Unit] = {
     type LayoutDiff = Map[Int, Option[Slot]]
 
     // 差分があるインデックスを列挙する
@@ -64,23 +66,19 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
       diff = differences(oldLayout, newLayout)
       _ <- currentLayout.set(newLayout)
       _ <- updateMenuSlots(diff)
+      _ <- syncShift.shift
+      // sessionInventory.getViewersが返してくるjava.util.ListはConcurrentな変更をされると例外を投げる
+      viewerList <- IO {
+        sessionInventory.getViewers
+      }
+      _ <- IO.shift(ctx)
       _ <- IO {
         import scala.jdk.CollectionConverters._
 
-        val viewerList = sessionInventory.getViewers
-
-        /**
-         * 再現条件が不明であるが、このIOが走っているときに並行して
-         * sessionInventory.getViewersで帰ってくるリストが変更される場合があるらしい。
-         * (実際、2019年11月21日に、合計13000件ほど「BuildMainMenuを開く最中にエラーが発生しました。」
-         * というメッセージとともにConcurrentModificationExceptionが飛ぶという事象があった。原因及び再現方法は不明。)
-         * getViewersのコピーだけ同期的に(toSetすることで)行うような実装とする。
-         */
-        viewerList.synchronized { viewerList.asScala.toSet }
-          .foreach {
-            case p: Player => p.updateInventory()
-            case _ =>
-          }
+        viewerList.asScala.toList.foreach {
+          case p: Player => p.updateInventory()
+          case _ =>
+        }
       }
     } yield ()
   }
