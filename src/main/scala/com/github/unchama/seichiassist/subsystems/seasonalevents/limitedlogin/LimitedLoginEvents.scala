@@ -13,7 +13,7 @@ object LimitedLoginEvents extends Enum[LimitedLoginEvent] {
 
   val values: IndexedSeq[LimitedLoginEvent] = findValues
 
-  def findActiveEvent: Option[LimitedLoginEvent] = values.find(_.isInEvent)
+  def findActiveEvent: Option[LimitedLoginEvent] = values.find(_.isInEvent(LocalDate.now()))
 
   case object Valentine extends LimitedLoginEvent {
     override val map = Map(
