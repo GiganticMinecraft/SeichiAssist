@@ -31,7 +31,7 @@ object LimitedLoginBonusGifter extends Listener {
 
     // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）1、そうでなければ（=開催期間中ならば）playerData.LimitedLoginCount + 1
     val loginDays = {
-      if (lastCheckedDate.isBefore(eventStatus.EVENT_PERIOD.startDate)) 1
+      if (lastCheckedDate.isBefore(eventStatus.period.startDate)) 1
       else playerData.LimitedLoginCount + 1
     }
 
