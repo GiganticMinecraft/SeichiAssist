@@ -22,6 +22,10 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import menuinventory.syntax._
 
+  class Environment(implicit
+                    val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type],
+                    val flyState: subsystems.managedfly.InternalState[SyncIO])
+
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
 
@@ -42,7 +46,6 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
 
   private case class ButtonComputations(player: Player) {
 
-    import BlockPlacementSkillMenu._
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
 

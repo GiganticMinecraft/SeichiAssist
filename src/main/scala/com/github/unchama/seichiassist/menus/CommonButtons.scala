@@ -2,13 +2,13 @@ package com.github.unchama.seichiassist.menus
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory.Menu
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.ColorScheme.{clickResultDescription, navigation}
-import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 
 /**
  * メニューUIに頻繁に現れるような[Button]を生成する、または定数として持っているオブジェクト.
@@ -17,11 +17,11 @@ object CommonButtons {
 
   import com.github.unchama.targetedeffect._
 
-  def transferButton(partialBuilder: AbstractItemStackBuilder[Nothing],
-                     transferDescription: String,
-                     target: Menu,
-                     actionDescription: String = "クリックで移動")
-                    (implicit layoutPreparationContext: LayoutPreparationContext, syncCtx: MinecraftServerThreadShift[IO]): Button =
+  def transferButton[M <: Menu](partialBuilder: AbstractItemStackBuilder[Nothing],
+                                transferDescription: String,
+                                target: M,
+                                actionDescription: String = "クリックで移動")
+                               (implicit canOpenM: CanOpen[IO, M]): Button =
     Button(
       partialBuilder
         .title(navigation(transferDescription))
@@ -30,14 +30,16 @@ object CommonButtons {
       action.LeftClickButtonEffect(
         SequentialEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          target.open
+          canOpenM.open(target)
         )
       )
     )
 
-  val openStickMenu: Button = {
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
-
-    transferButton(new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft), "木の棒メニューホームへ", StickMenu.firstPage)
+  def openStickMenu(implicit canOpenStickMenu: CanOpen[IO, FirstPage.type]): Button = {
+    transferButton(
+      new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+      "木の棒メニューホームへ",
+      StickMenu.firstPage
+    )
   }
 }

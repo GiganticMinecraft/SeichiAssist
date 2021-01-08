@@ -2,6 +2,7 @@ package com.github.unchama.buildassist
 
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.listener._
+import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.concurrent.ReadOnlyRef
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -37,16 +38,24 @@ class BuildAssist(plugin: Plugin)
   }
 
   def onEnable(): Unit = {
+    implicit val menuRouter: BuildAssistMenuRouter[IO] = {
+      import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+      implicit val flySystemState: subsystems.managedfly.InternalState[SyncIO] = flySystem.state
+
+      BuildAssistMenuRouter.apply
+    }
+
     //コンフィグ系の設定は全てConfig.javaに移動
     BuildAssist.config = new BuildAssistConfig(plugin)
     BuildAssist.config.loadConfig()
 
     import buildCountAPI._
+    import menuRouter._
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     val listeners = List(
-      new PlayerLeftClickListener(),
+      new BuildMainMenuOpener(),
       new PlayerInventoryListener(),
       new TemporaryDataInitializer(this.temporaryData),
       new BlockLineUpTriggerListener[SyncIO],

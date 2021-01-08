@@ -8,7 +8,6 @@ import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
 import com.github.unchama.seichiassist.{SkullOwners, subsystems}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -221,8 +220,8 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     )
   }
 
-  def computeButtonToOpenMenuToCraftItemsWhereMineStack()
-                                                       (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = IO {
+  def computeButtonToOpenMenuToCraftItemsWhereMineStack(implicit
+                                                        canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]): IO[Button] = IO {
     val iconItemStackBuilder = new IconItemStackBuilder(Material.WORKBENCH)
       .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
       .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
@@ -232,7 +231,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
       action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          MineStackMassCraftMenu().open
+          canOpenMassCraftMenu.open(MineStackMassCraftMenu())
         )
       }
     )
@@ -341,9 +340,16 @@ class BuildMainMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managed
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import menuinventory.syntax._
 
+  class Environment(implicit
+                    val flyState: subsystems.managedfly.InternalState[SyncIO],
+                    val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
+                    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu])
+
+  val EMPHASIZE = s"$UNDERLINE$BOLD"
+
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニューB")
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -355,6 +361,7 @@ class BuildMainMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managed
     )
 
     import cats.implicits._
+    import environment._
 
     val dynamicPartComputation: IO[List[(Int, Button)]] =
       List(
@@ -364,7 +371,7 @@ class BuildMainMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managed
         19 -> computeButtonToOpenRangedPlaceSkillMenu(),
         27 -> computeButtonToLineUpBlocks(),
         28 -> computeButtonToOpenLineUpBlocksMenu(),
-        35 -> computeButtonToOpenMenuToCraftItemsWhereMineStack()
+        35 -> computeButtonToOpenMenuToCraftItemsWhereMineStack
       )
         .map(_.sequence)
         .sequence

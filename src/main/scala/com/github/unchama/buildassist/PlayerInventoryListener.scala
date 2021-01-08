@@ -1,11 +1,10 @@
 package com.github.unchama.buildassist
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
-import com.github.unchama.seichiassist.subsystems
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -13,7 +12,8 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{Material, Sound}
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
-                              flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
+                              ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type) extends Listener {
+
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
@@ -62,12 +62,11 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 			 */
       if (itemstackcurrent.getType == Material.SKULL_ITEM) {
         //ホームメニューへ帰還
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
         effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
-            new BuildMainMenu().open
+            ioCanOpenBuildMainMenu.open(BuildMainMenu)
           ),
           "BuildMainMenuを開く"
         )
