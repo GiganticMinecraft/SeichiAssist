@@ -14,35 +14,38 @@ import java.time.format.DateTimeFormatter
 object LimitedLoginBonusGifter extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
-    implicit val eventStatus: LimitedLoginEvent = LimitedLoginEvents.findActiveEvent.getOrElse(return)
+    val activeEvents: Set[LimitedLoginEvent] = LimitedLoginEvents.findActiveEvents
+    if (activeEvents.isEmpty) return
 
-    implicit val player: Player = event.getPlayer
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-    val lastCheckedDate = {
-      val lastChecked = playerData.lastcheckdate
-      val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
+    activeEvents.foreach { implicit activeEvent =>
+      implicit val player: Player = event.getPlayer
+      val playerData = SeichiAssist.playermap(player.getUniqueId)
+      val lastCheckedDate = {
+        val lastChecked = playerData.lastcheckdate
+        val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
 
-      LocalDate.parse(lastChecked, formatter)
+        LocalDate.parse(lastChecked, formatter)
+      }
+
+      // 今日すでにこの処理をしていたならば
+      // TODO この処理javaの頃はなかったが、なくても大丈夫なのか？
+      if (lastCheckedDate.equals(LocalDate.now())) return
+
+      // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）1、そうでなければ（=開催期間中ならば）playerData.LimitedLoginCount + 1
+      val loginDays = {
+        if (lastCheckedDate.isBefore(activeEvent.period.startDate)) 1
+        else playerData.LimitedLoginCount + 1
+      }
+
+      giveLoginBonus(Everyday)
+      giveLoginBonus(EventLoginCount(loginDays))
+
+      playerData.LimitedLoginCount = loginDays
     }
-
-    // 今日すでにこの処理をしていたならば
-    // TODO この処理javaの頃はなかったが、なくても大丈夫なのか？
-    if (lastCheckedDate.equals(LocalDate.now())) return
-
-    // 開催期間内初のログイン時だったら（=lastCheckedDateがイベント開始日より前だったら）1、そうでなければ（=開催期間中ならば）playerData.LimitedLoginCount + 1
-    val loginDays = {
-      if (lastCheckedDate.isBefore(eventStatus.period.startDate)) 1
-      else playerData.LimitedLoginCount + 1
-    }
-
-    giveLoginBonus(Everyday)
-    giveLoginBonus(EventLoginCount(loginDays))
-
-    playerData.LimitedLoginCount = loginDays
   }
 
-  private def giveLoginBonus(index: LoginBonusIndex)(implicit player: Player, eventStatus: LimitedLoginEvent): Unit = {
-    val loginBonusSet = eventStatus.bonusAt(index)
+  private def giveLoginBonus(index: LoginBonusIndex)(implicit player: Player, event: LimitedLoginEvent): Unit = {
+    val loginBonusSet = event.bonusAt(index)
       .getOrElse(throw new NoSuchElementException("存在しないアイテムデータが指定されました。"))
 
     loginBonusSet.foreach { loginBonus =>
