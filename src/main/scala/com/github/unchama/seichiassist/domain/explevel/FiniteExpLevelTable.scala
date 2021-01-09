@@ -6,13 +6,14 @@ import com.github.unchama.generic.algebra.typeclasses.PositiveInt
 import scala.collection.Searching
 
 /**
- * 経験値量のテーブル。
+ * 経験値量とレベルを相互変換する有限のテーブル。
+ * [[ExpLevelConversion]] と似ているが、こちらはレベルに有限性を仮定していることに注意。
  *
  * @param internalTable 経験値の遷移を記述するSeq。
  *                      i番目の要素に、レベルi+1になるのに必要な経験値量が入る。
  *                      この列は単調増加であることが要求される。
  */
-class ExpLevelTable[
+class FiniteExpLevelTable[
   L: PositiveInt,
   ExpAmount: Order : LowerBounded
 ](private val internalTable: Vector[ExpAmount]) {
@@ -69,12 +70,12 @@ class ExpLevelTable[
      * [[extensionTarget]] まで、レベルを1延長するごとに必要な経験値量を `exp` 増やすよう延長したテーブルを返す。
      */
     def withLinearIncreaseOf(exp: ExpAmount)
-                            (implicit addition: Monoid[ExpAmount]): ExpLevelTable[L, ExpAmount] = {
+                            (implicit addition: Monoid[ExpAmount]): FiniteExpLevelTable[L, ExpAmount] = {
       val lengthToFill = (PositiveInt[L].asInt(extensionTarget) - PositiveInt[L].asInt(maxLevel)) max 0
       val lastThreshold = internalTable.last
       val extension = Vector.iterate(lastThreshold, lengthToFill)(addition.combine(_, exp))
 
-      new ExpLevelTable(internalTable.appendedAll(extension))
+      new FiniteExpLevelTable(internalTable.appendedAll(extension))
     }
   }
 
