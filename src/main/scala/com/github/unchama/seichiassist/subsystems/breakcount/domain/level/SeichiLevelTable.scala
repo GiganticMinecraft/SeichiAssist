@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.breakcount.domain.level
 
 import com.github.unchama.seichiassist.domain.explevel.ExpLevelTable
 
-object SeichiAssistExpTable {
+object SeichiLevelTable {
 
   import SeichiExpAmount.ofNonNegative
 

@@ -31,6 +31,9 @@ class ExpLevelTable[
     internalTable.head == LowerBounded[ExpAmount].minBound
   }, "first element of the table must be the minimum amount")
 
+  /**
+   * 与えられた経験値量 `expAmount` で到達できるレベルを計算する。
+   */
   def levelAt(expAmount: ExpAmount): L = PositiveInt[L].wrapPositive {
     internalTable.search(expAmount) match {
       case Searching.Found(foundIndex) => foundIndex + 1
@@ -38,6 +41,20 @@ class ExpLevelTable[
     }
   }
 
+  /**
+   * 与えられたレベル `level` に上がるのに必要な経験値量を計算する。
+   * `level` が `maxLevel` よりも真に大きい場合、 `maxLevel` に到達するのに必要な経験値量が返される。
+   */
+  def expAt(level: L): ExpAmount = {
+    val rawLevel = PositiveInt[L].asInt(level)
+
+    if (rawLevel > internalTable.size) expAt(maxLevel)
+    else internalTable(rawLevel - 1)
+  }
+
+  /**
+   * このテーブルが定義する最大のレベル。
+   */
   def maxLevel: L = PositiveInt[L].wrapPositive {
     internalTable.size
   }
