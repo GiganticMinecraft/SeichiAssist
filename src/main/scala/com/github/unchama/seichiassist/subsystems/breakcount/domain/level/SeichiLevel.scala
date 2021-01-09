@@ -8,7 +8,7 @@ import com.github.unchama.generic.algebra.typeclasses.PositiveInt
  */
 case class SeichiLevel private(level: Int) extends AnyVal
 
-private[explevel] abstract class SeichiLevelInstances {
+private[level] abstract class SeichiLevelInstances {
 
   import cats.implicits._
 

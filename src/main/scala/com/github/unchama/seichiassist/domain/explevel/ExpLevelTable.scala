@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.domain.explevel
 
-import cats.kernel.Monoid
+import cats.kernel.{LowerBounded, Monoid, Order}
 import com.github.unchama.generic.algebra.typeclasses.PositiveInt
-import com.github.unchama.seichiassist.util.typeclass.HasMinimum
 
 import scala.collection.Searching
 
@@ -15,12 +14,10 @@ import scala.collection.Searching
  */
 class ExpLevelTable[
   L: PositiveInt,
-  ExpAmount: Ordering : HasMinimum
+  ExpAmount: Order : LowerBounded
 ](private val internalTable: Vector[ExpAmount]) {
 
-  private val order = implicitly[Ordering[ExpAmount]]
-
-  import order._
+  import cats.implicits._
 
   require({
     internalTable.sliding(2).forall { case Seq(x1, x2) =>
@@ -28,10 +25,10 @@ class ExpLevelTable[
     }
   }, "internalTable must be sorted")
 
-  require(internalTable.nonEmpty)
+  require(internalTable.nonEmpty, "table must be nonempty")
 
   require({
-    internalTable.head == HasMinimum[ExpAmount].minimum
+    internalTable.head == LowerBounded[ExpAmount].minBound
   }, "first element of the table must be the minimum amount")
 
   def levelAt(expAmount: ExpAmount): L = PositiveInt[L].wrapPositive {

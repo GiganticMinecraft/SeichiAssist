@@ -7,7 +7,7 @@ object SeichiAssistExpTable {
   import SeichiExpAmount.ofNonNegative
 
   //@formatter:off
-  private val tableUpToLevel51: ExpLevelTable[SeichiLevel, SeichiExpAmount] = new ExpLevelTable(
+  private val tableUpToLevel51: ExpLevelTable[SeichiLevel, SeichiExpAmount] = new ExpLevelTable[SeichiLevel, SeichiExpAmount](
     Vector(
       0,       15,      49,      106,       198,       //5
       333,     705,     1_265,   2_105,     3_347,     //10
