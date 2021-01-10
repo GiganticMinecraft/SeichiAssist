@@ -60,7 +60,7 @@ object PlayerDataRecalculationRoutine {
         playerData.updatePlayTick()
 
         //スターレベル更新
-        playerData.updateStarLevel()
+        playerData.updateStarLevel().run(player)
 
         //１分間のブロック破壊量による上昇
         playerData.effectdatalist.addOne {
@@ -80,19 +80,11 @@ object PlayerDataRecalculationRoutine {
 
         //effectflag ONの時のみ実行
         if (playerData.settings.fastDiggingEffectSuppression.isSuppressionActive.unsafeRunSync()) {
-          //合計effect量
-          var sum = 0.0
-          //最大持続時間
-          var maxduration = 0
           //effectdatalistにある全てのeffectについて計算
-          for (ed <- playerData.effectdatalist) {
-            //effect量を加算
-            sum += ed.amplifier
-            //持続時間の最大値を取得
-            if (maxduration < ed.duration) {
-              maxduration = ed.duration
-            }
-          }
+          //合計effect量
+          val sum = playerData.effectdatalist.map(_.amplifier).sum
+          //最大持続時間
+          val maxduration = playerData.effectdatalist.map(_.duration).maxOption.getOrElse(0)
           //実際のeffect値をsum-1の切り捨て整数値に設定
           minespeedlv = (sum - 1).toInt
 
@@ -104,11 +96,7 @@ object PlayerDataRecalculationRoutine {
           if (minespeedlv < 0 || maxSpeed == 0) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false), true)
           } else {
-            if (minespeedlv > maxSpeed) {
-              player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, maxSpeed, false, false), true)
-            } else {
-              player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, minespeedlv, false, false), true)
-            }
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, maxduration, maxSpeed.min(minespeedlv), false, false), true)
           }
 
           //プレイヤーデータを更新
