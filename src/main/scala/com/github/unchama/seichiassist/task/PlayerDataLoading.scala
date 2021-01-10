@@ -240,7 +240,7 @@ object PlayerDataLoading {
 
         playerData.totalexp = rs.getInt("totalexp")
 
-        playerData.expmarge = rs.getByte("expmarge")
+        playerData.expMergingFlag = rs.getByte("expmarge")
         playerData.contentsPresentInSharedInventory = {
           val serializedInventory = rs.getString("shareinv")
           serializedInventory != null && serializedInventory != ""
