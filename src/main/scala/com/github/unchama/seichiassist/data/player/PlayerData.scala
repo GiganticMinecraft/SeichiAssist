@@ -288,7 +288,7 @@ class PlayerData(
     // 前回統計を取った時との差分から整地量を計算するため、最初は統計量を0にしておく
     // FIX(#542): 即時反映にする
     {
-      (MaterialSets.materials -- PlayerData.exclude).foreach { m =>
+      (MaterialSets.materials -- MaterialSets.noTrackingSeichiAmount).foreach { m =>
         player.setStatistic(Statistic.MINE_BLOCK, m, 0)
       }
     }
@@ -490,7 +490,7 @@ class PlayerData(
   //総破壊ブロック数を更新する
   def updateAndCalcMinedBlockAmount(): Int = {
     val blockIncreases =
-      (MaterialSets.materials -- PlayerData.exclude).map { m =>
+      (MaterialSets.materials -- MaterialSets.noTrackingSeichiAmount).map { m =>
         val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
         player.setStatistic(Statistic.MINE_BLOCK, m, 0)
 
@@ -803,12 +803,8 @@ class PlayerData(
 
 object PlayerData {
   //TODO:もちろんここにあるべきではない
-  val passiveSkillProbability = 10
-
-  val exclude: Set[Material] = Set(
-    Material.GRASS_PATH,
-    Material.SOIL, Material.MOB_SPAWNER,
-    Material.CAULDRON, Material.ENDER_CHEST,
-    Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL
-  )
+  import eu.timepit.refined.api.Refined
+  import eu.timepit.refined.auto._
+  import eu.timepit.refined.numeric._
+  val passiveSkillProbability: Int Refined Positive = 10
 }

@@ -71,6 +71,16 @@ object MaterialSets {
     Material.LOG, Material.LOG_2, Material.LEAVES, Material.LEAVES_2
   )
 
+  /**
+   * PlayerDataから移動、何を指すかはまだよく分かっていない
+   */
+  val noTrackingSeichiAmount: Set[Material] = Set(
+    Material.GRASS_PATH,
+    Material.SOIL, Material.MOB_SPAWNER,
+    Material.CAULDRON, Material.ENDER_CHEST,
+    Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL
+  )
+
   trait MaterialOf[S <: Set[Material]]
 
   type ItemStackOf[S <: Set[Material]] = ItemStack @@ MaterialOf[S]
