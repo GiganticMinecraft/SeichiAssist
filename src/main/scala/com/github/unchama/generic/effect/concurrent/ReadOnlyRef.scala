@@ -1,4 +1,4 @@
-package com.github.unchama.concurrent
+package com.github.unchama.generic.effect.concurrent
 
 import cats.effect.concurrent.Ref
 

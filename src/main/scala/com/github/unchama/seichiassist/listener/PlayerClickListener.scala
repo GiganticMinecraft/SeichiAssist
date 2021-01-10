@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
-import com.github.unchama.generic.effect.TryableFiber
+import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.data.GachaPrize

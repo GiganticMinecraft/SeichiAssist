@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus.skill
 import cats.data.Kleisli
 import cats.effect.IO
 import cats.effect.concurrent.Ref
-import com.github.unchama.generic.effect.TryableFiber
+import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}

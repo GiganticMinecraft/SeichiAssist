@@ -1,4 +1,4 @@
-package com.github.unchama.generic.effect
+package com.github.unchama.generic.effect.concurrent
 
 import cats.effect.concurrent.{MVar, Ref}
 import cats.effect.{Bracket, Concurrent, ExitCase, Sync}
