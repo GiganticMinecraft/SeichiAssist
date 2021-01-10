@@ -6,7 +6,6 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.{Diff, RefExtra}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
-import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.ClassifyPlayerWorld
 
 trait IncrementSeichiExp[F[_], Player] {
 
@@ -28,14 +27,19 @@ object IncrementSeichiExp {
     Player
   ](dataRepository: KeyedDataRepository[Player, Ref[F, SeichiAmountData]]): IncrementSeichiExp[F, Player] =
     (player, by) => {
-      for {
-        dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(_.addExpAmount(by))
-        _ <- Diff
-          .ofPairBy(dataPair)(_.levelCorrespondingToExp)
-          .traverse(NotifyLevelUp[F, Player].ofSeichiLevelTo(player))
-        _ <- Diff
-          .ofPairBy(dataPair)(_.starLevelCorrespondingToExp)
-          .traverse(NotifyLevelUp[F, Player].ofSeichiStarLevelTo(player))
-      } yield ()
+      val F: Monad[F] = implicitly
+
+      F.ifM(ClassifyPlayerWorld[F, Player].isInSeichiCountingWorld(player))(
+        for {
+          dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(_.addExpAmount(by))
+          _ <- Diff
+            .ofPairBy(dataPair)(_.levelCorrespondingToExp)
+            .traverse(NotifyLevelUp[F, Player].ofSeichiLevelTo(player))
+          _ <- Diff
+            .ofPairBy(dataPair)(_.starLevelCorrespondingToExp)
+            .traverse(NotifyLevelUp[F, Player].ofSeichiStarLevelTo(player))
+        } yield (),
+        F.unit
+      )
     }
 }
