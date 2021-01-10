@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.menus.skill
 import cats.data.Kleisli
 import cats.effect.IO
 import cats.effect.concurrent.Ref
-import com.github.unchama.generic.CachedFunction
 import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
@@ -14,6 +14,7 @@ import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.data.player.PlayerSkillState
 import com.github.unchama.seichiassist.effects.unfocused.{BroadcastMessageEffect, BroadcastSoundEffect}
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
@@ -27,17 +28,28 @@ import org.bukkit.potion.PotionType
 import org.bukkit.{Material, Sound}
 
 object ActiveSkillMenu extends Menu {
+
   private sealed trait SkillSelectionState
+
   private case object Locked extends SkillSelectionState
+
   private case object Unlocked extends SkillSelectionState
+
   private case object Selected extends SkillSelectionState
 
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
-override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
+
+  class Environment(implicit val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
+                    val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+
+  override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
   private def skillStateRef(player: Player): IO[Ref[IO, PlayerSkillState]] =
-    IO { SeichiAssist.playermap(player.getUniqueId).skillState }
+    IO {
+      SeichiAssist.playermap(player.getUniqueId).skillState
+    }
 
   private def totalActiveSkillPoint(player: Player): IO[Int] =
     IO {
@@ -92,11 +104,14 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
       }
     )
 
-    def computeSkillButtonFor(skill: SeichiSkill): IO[Button] = {
+    def computeSkillButtonFor(skill: SeichiSkill)(implicit environment: Environment): IO[Button] = {
       for {
         ref <- skillStateRef(player)
         state <- ref.get
-      } yield ButtonComputations.seichiSkillButton((ButtonComputations.selectionStateOf(skill)(state), skill))
+      } yield {
+        val selectionState = ButtonComputations.selectionStateOf(skill)(state)
+        ButtonComputations.seichiSkillButton(selectionState, skill)
+      }
     }
   }
 
@@ -232,164 +247,164 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
       }
     }
 
-    val seichiSkillButton: CachedFunction[(SkillSelectionState, SeichiSkill), Button] =
-      CachedFunction { case (state, skill) =>
-        val itemStack = {
-          val base = state match {
-            case Locked =>
-              new IconItemStackBuilder(Material.BEDROCK)
-            case Selected | Unlocked =>
-              baseSkillIcon(skill)
-          }
-
-          val clickEffectDescription: List[String] = state match {
-            case Locked =>
-              val requiredPointDescription =
-                s"$RESET${YELLOW}必要アクティブスキルポイント：${skill.requiredActiveSkillPoint}"
-
-              val defaultDescription =
-                List(
-                  requiredPointDescription,
-                  s"$RESET${DARK_RED}前提スキル：${prerequisiteSkillName(skill)}",
-                  s"$RESET$AQUA${UNDERLINE}クリックで解除"
-                )
-
-              skill match {
-                case skill: AssaultSkill => skill match {
-                  case SeichiSkill.VenderBlizzard =>
-                    List(
-                      requiredPointDescription,
-                      s"$RESET${DARK_RED}水凝固/熔岩凝固の双方を扱える者にのみ発現する上位凝固スキル",
-                      s"$RESET${DARK_RED}アサルト・アーマーの発現には影響しない",
-                      s"$RESET$AQUA${UNDERLINE}クリックで解除"
-                    )
-                  case SeichiSkill.AssaultArmor =>
-                    List(s"$RESET${YELLOW}全てのスキルを獲得すると解除されます")
-                  case _ => defaultDescription
-                }
-                case _: ActiveSkill => defaultDescription
-              }
-            case Unlocked => List(s"$RESET$DARK_RED${UNDERLINE}クリックでセット")
-            case Selected => List(s"$RESET$DARK_RED${UNDERLINE}クリックで選択解除")
-          }
-
-          base
-            .title(s"$RED$UNDERLINE$BOLD${skill.name}")
-            .lore(
-              List(
-                s"$RESET$GREEN${breakRangeDescription(skill.range)}",
-                s"$RESET${DARK_GRAY}クールダウン：${coolDownDescription(skill)}",
-                s"$RESET${BLUE}消費マナ：${skill.manaCost}",
-              ) ++ clickEffectDescription
-            )
-
-          if (state == Selected) base.enchanted()
-
-          base.build()
+    def seichiSkillButton(state: SkillSelectionState, skill: SeichiSkill)
+                         (implicit environment: Environment): Button = {
+      val itemStack = {
+        val base = state match {
+          case Locked =>
+            new IconItemStackBuilder(Material.BEDROCK)
+          case Selected | Unlocked =>
+            baseSkillIcon(skill)
         }
 
-        val effect: ButtonEffect = LeftClickButtonEffect(Kleisli { player =>
-          for {
-            // アクティブスキルポイント全体の真の値はtotalPoints以上になる
-            totalPoints <- totalActiveSkillPoint(player)
-            playerSkillStateRef <- skillStateRef(player)
+        val clickEffectDescription: List[String] = state match {
+          case Locked =>
+            val requiredPointDescription =
+              s"$RESET${YELLOW}必要アクティブスキルポイント：${skill.requiredActiveSkillPoint}"
 
-            feedbackEffect <- playerSkillStateRef.modify { skillState =>
-              selectionStateOf(skill)(skillState) match {
-                case Locked =>
-                  val availablePoints = totalPoints - skillState.consumedActiveSkillPoint
+            val defaultDescription =
+              List(
+                requiredPointDescription,
+                s"$RESET${DARK_RED}前提スキル：${prerequisiteSkillName(skill)}",
+                s"$RESET$AQUA${UNDERLINE}クリックで解除"
+              )
 
-                  if (availablePoints >= skill.requiredActiveSkillPoint)
-                    skillState.lockedDependency(skill) match {
-                      case None =>
-                        val unlockedState = skillState.obtained(skill)
-                        val (newState, assaultSkillUnlockEffects) =
-                          if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
-                            unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
-                            (
-                              unlockedState.obtained(SeichiSkill.AssaultArmor),
-                              SequentialEffect(
-                                MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
-                                BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-                                BroadcastMessageEffect(s"$GOLD$BOLD${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
-                              )
-                            )
-                          } else
-                            (unlockedState, emptyEffect)
-
-                        (
-                          newState,
-                          SequentialEffect(
-                            FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f),
-                            MessageEffect(s"$AQUA$BOLD${skill.name}を解除しました"),
-                            assaultSkillUnlockEffects
-                          )
-                        )
-                      case Some(locked) =>
-                        (
-                          skillState,
-                          SequentialEffect(
-                            FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
-                            MessageEffect(s"${DARK_RED}前提スキル[${locked.name}]を習得する必要があります")
-                          )
-                        )
-                    }
-                  else
-                    (
-                      skillState,
-                      SequentialEffect(
-                        FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
-                        MessageEffect(s"${DARK_RED}アクティブスキルポイントが足りません")
-                      )
-                    )
-                case Unlocked =>
-                  val skillType =
-                    skill match {
-                      case _: ActiveSkill => "アクティブスキル"
-                      case _: AssaultSkill => "アサルトスキル"
-                    }
-
-                  (
-                    skillState.select(skill),
-                    SequentialEffect(
-                      skill match {
-                        case skill: AssaultSkill =>
-                          import cats.implicits._
-                          import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
-
-                          val tryStartRoutine = TryableFiber.start(AssaultRoutine.tryStart(player, skill))
-                          val fiberRepository = SeichiAssist.instance.assaultSkillRoutines
-                          val tryStart =
-                            fiberRepository.stopAnyFiber(player) >>
-                              fiberRepository.flipState(player)(tryStartRoutine).as(())
-
-                          Kleisli.liftF(tryStart)
-                        case _ => emptyEffect
-                      },
-                      FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
-                      MessageEffect(s"$GREEN$skillType：${skill.name} が選択されました")
-                    )
+            skill match {
+              case skill: AssaultSkill => skill match {
+                case SeichiSkill.VenderBlizzard =>
+                  List(
+                    requiredPointDescription,
+                    s"$RESET${DARK_RED}水凝固/熔岩凝固の双方を扱える者にのみ発現する上位凝固スキル",
+                    s"$RESET${DARK_RED}アサルト・アーマーの発現には影響しない",
+                    s"$RESET$AQUA${UNDERLINE}クリックで解除"
                   )
-                case Selected =>
+                case SeichiSkill.AssaultArmor =>
+                  List(s"$RESET${YELLOW}全てのスキルを獲得すると解除されます")
+                case _ => defaultDescription
+              }
+              case _: ActiveSkill => defaultDescription
+            }
+          case Unlocked => List(s"$RESET$DARK_RED${UNDERLINE}クリックでセット")
+          case Selected => List(s"$RESET$DARK_RED${UNDERLINE}クリックで選択解除")
+        }
+
+        base
+          .title(s"$RED$UNDERLINE$BOLD${skill.name}")
+          .lore(
+            List(
+              s"$RESET$GREEN${breakRangeDescription(skill.range)}",
+              s"$RESET${DARK_GRAY}クールダウン：${coolDownDescription(skill)}",
+              s"$RESET${BLUE}消費マナ：${skill.manaCost}",
+            ) ++ clickEffectDescription
+          )
+
+        if (state == Selected) base.enchanted()
+
+        base.build()
+      }
+
+      val effect: ButtonEffect = LeftClickButtonEffect(Kleisli { player =>
+        for {
+          // アクティブスキルポイント全体の真の値はtotalPoints以上になる
+          totalPoints <- totalActiveSkillPoint(player)
+          playerSkillStateRef <- skillStateRef(player)
+
+          feedbackEffect <- playerSkillStateRef.modify { skillState =>
+            selectionStateOf(skill)(skillState) match {
+              case Locked =>
+                val availablePoints = totalPoints - skillState.consumedActiveSkillPoint
+
+                if (availablePoints >= skill.requiredActiveSkillPoint)
+                  skillState.lockedDependency(skill) match {
+                    case None =>
+                      val unlockedState = skillState.obtained(skill)
+                      val (newState, assaultSkillUnlockEffects) =
+                        if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
+                          unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
+                          (
+                            unlockedState.obtained(SeichiSkill.AssaultArmor),
+                            SequentialEffect(
+                              MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
+                              BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
+                              BroadcastMessageEffect(s"$GOLD$BOLD${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
+                            )
+                          )
+                        } else
+                          (unlockedState, emptyEffect)
+
+                      (
+                        newState,
+                        SequentialEffect(
+                          FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f),
+                          MessageEffect(s"$AQUA$BOLD${skill.name}を解除しました"),
+                          assaultSkillUnlockEffects
+                        )
+                      )
+                    case Some(locked) =>
+                      (
+                        skillState,
+                        SequentialEffect(
+                          FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
+                          MessageEffect(s"${DARK_RED}前提スキル[${locked.name}]を習得する必要があります")
+                        )
+                      )
+                  }
+                else
                   (
-                    skillState.deselect(skill),
+                    skillState,
                     SequentialEffect(
                       FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
-                      MessageEffect(s"${YELLOW}選択を解除しました")
+                      MessageEffect(s"${DARK_RED}アクティブスキルポイントが足りません")
                     )
                   )
-              }
-            }
-            _ <- feedbackEffect.run(player)
-          } yield ()
-        })
+              case Unlocked =>
+                val skillType =
+                  skill match {
+                    case _: ActiveSkill => "アクティブスキル"
+                    case _: AssaultSkill => "アサルトスキル"
+                  }
 
-        ReloadingButton(ActiveSkillMenu)(Button(itemStack, effect))
-      }
+                (
+                  skillState.select(skill),
+                  SequentialEffect(
+                    skill match {
+                      case skill: AssaultSkill =>
+                        import cats.implicits._
+                        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+
+                        val tryStartRoutine = TryableFiber.start(AssaultRoutine.tryStart(player, skill))
+                        val fiberRepository = SeichiAssist.instance.assaultSkillRoutines
+                        val tryStart =
+                          fiberRepository.stopAnyFiber(player) >>
+                            fiberRepository.flipState(player)(tryStartRoutine).as(())
+
+                        Kleisli.liftF(tryStart)
+                      case _ => emptyEffect
+                    },
+                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 0.1f),
+                    MessageEffect(s"$GREEN$skillType：${skill.name} が選択されました")
+                  )
+                )
+              case Selected =>
+                (
+                  skillState.deselect(skill),
+                  SequentialEffect(
+                    FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f),
+                    MessageEffect(s"${YELLOW}選択を解除しました")
+                  )
+                )
+            }
+          }
+          _ <- feedbackEffect.run(player)
+        } yield ()
+      })
+
+      ReloadingButton(ActiveSkillMenu)(Button(itemStack, effect))
+    }
   }
 
   private object ConstantButtons {
-    val skillEffectMenuButton: Button = {
+    def skillEffectMenuButton(implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type): Button = {
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
           .title(s"$UNDERLINE$BOLD${LIGHT_PURPLE}演出効果設定")
@@ -400,33 +415,36 @@ override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整�
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_BREWING_STAND_BREW, 1f, 0.5f),
-          ActiveSkillEffectMenu.open
+          ioCanOpenActiveSkillEffectMenu.open(ActiveSkillEffectMenu)
         )
       )
     }
 
-    val resetSkillsButton: Button = ReloadingButton(ActiveSkillMenu) {
-      Button(
-        new IconItemStackBuilder(Material.GLASS)
-          .title(s"$UNDERLINE$BOLD${YELLOW}スキルを使用しない")
-          .lore(s"$RESET$UNDERLINE${DARK_RED}クリックでセット")
-          .build(),
-        LeftClickButtonEffect(
-          Kleisli { p =>
-            for {
-              ref <- skillStateRef(p)
-              _ <- ref.update(_.deselected())
-            } yield ()
-          },
-          MessageEffect(s"${YELLOW}スキルの選択をすべて解除しました"),
-          FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
+    def resetSkillsButton(implicit environment: Environment): Button = {
+      ReloadingButton(ActiveSkillMenu) {
+        Button(
+          new IconItemStackBuilder(Material.GLASS)
+            .title(s"$UNDERLINE$BOLD${YELLOW}スキルを使用しない")
+            .lore(s"$RESET$UNDERLINE${DARK_RED}クリックでセット")
+            .build(),
+          LeftClickButtonEffect(
+            Kleisli { p =>
+              for {
+                ref <- skillStateRef(p)
+                _ <- ref.update(_.deselected())
+              } yield ()
+            },
+            MessageEffect(s"${YELLOW}スキルの選択をすべて解除しました"),
+            FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.1f)
+          )
         )
-      )
+      }
     }
   }
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
+    import environment._
     import eu.timepit.refined.auto._
 
     val buttonComputations = ButtonComputations(player)

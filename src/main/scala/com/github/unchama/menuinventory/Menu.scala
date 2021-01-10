@@ -15,6 +15,12 @@ import org.bukkit.entity.Player
 trait Menu {
 
   /**
+   * メニューを開く操作に必要な環境情報の型。
+   * 例えば、メニューが利用するAPIなどをここを通して渡すことができる。
+   */
+  type Environment
+
+  /**
    * メニューのサイズとタイトルに関する情報
    */
   val frame: MenuFrame
@@ -22,14 +28,16 @@ trait Menu {
   /**
    * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  def computeMenuLayout(player: Player): IO[MenuSlotLayout]
+  def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout]
 
   /**
    * メニューを[Player]に開かせる[TargetedEffect].
    */
-  def open(implicit ctx: LayoutPreparationContext, syncCtx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = data.Kleisli { player =>
+  def open(implicit environment: Environment,
+           ctx: LayoutPreparationContext,
+           syncCtx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = data.Kleisli { player =>
     for {
-      session <- frame.createNewSession()
+      session <- MenuSession.createNewSessionWith[IO](frame)
       _ <- session.openInventory.run(player)
       layout <- computeMenuLayout(player)
       _ <- session.overwriteViewWith(layout)

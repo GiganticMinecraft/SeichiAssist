@@ -143,7 +143,7 @@ object AchievementGroupMenuButtons {
     )
   )
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
   def entryComputationFor(viewer: Player): GroupMenuEntry => IO[Button] = {
     case AchievementEntry(achievement) => RecomputedButton {

@@ -3,9 +3,10 @@ package com.github.unchama.seichiassist.listener
 import cats.effect.IO
 import com.github.unchama.generic.effect.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.seichiskill.ActiveSkill
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
@@ -28,7 +29,8 @@ import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
+                          ioCanOpenStickMenu: IO CanOpen FirstPage.type) extends Listener {
 
   import com.github.unchama.generic.ContextCoercion._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
@@ -381,12 +383,10 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     if (event.getHand == EquipmentSlot.OFF_HAND) return
     event.setCancelled(true)
 
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-
     effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        StickMenu.firstPage.open
+        ioCanOpenStickMenu.open(StickMenu.firstPage)
       ),
       "棒メニューの1ページ目を開く"
     )

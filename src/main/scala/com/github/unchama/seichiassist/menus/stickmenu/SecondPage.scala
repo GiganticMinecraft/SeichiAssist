@@ -4,6 +4,7 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -35,13 +36,16 @@ object SecondPage extends Menu {
   import eu.timepit.refined.auto._
   import menuinventory.syntax._
 
+  class Environment(implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
+    import environment._
 
     val constantPart = Map(
       ChestSlotRef(0, 0) -> officialWikiNavigationButton,

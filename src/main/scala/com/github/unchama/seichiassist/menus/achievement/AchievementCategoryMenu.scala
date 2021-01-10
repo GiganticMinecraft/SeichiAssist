@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.menus.achievement
 
 import cats.effect.IO
-import com.github.unchama.generic.CachedFunction
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.achievement.hierarchy.AchievementCategory
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.achievement.hierarchy.{AchievementCategory, AchievementGroup}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu.{buttonFor, groupsLayoutFor}
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
 import org.bukkit.ChatColor._
@@ -19,7 +20,6 @@ import org.bukkit.entity.Player
 
 object AchievementCategoryMenu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
 
   type AchievementGroupRepr = (AchievementGroup, Material)
@@ -54,56 +54,68 @@ object AchievementCategoryMenu {
       )
   }
 
-  val buttonFor: AchievementGroupRepr => Button = CachedFunction {
-    case (group, material) =>
-      val partialBuilder =
-        new IconItemStackBuilder(material)
-          .title(ColorScheme.navigation(s"実績「${group.name}」"))
+  def buttonFor(groupRepr: AchievementGroupRepr)
+               (implicit ioCanOpenGroupMenu: IO CanOpen AchievementGroupMenu): Button = {
+    val (group, material) = groupRepr
+    val partialBuilder =
+      new IconItemStackBuilder(material)
+        .title(ColorScheme.navigation(s"実績「${group.name}」"))
 
-      if (AchievementGroupMenu.sequentialEntriesIn(group).nonEmpty) {
-        Button(
-          partialBuilder
-            .lore(s"${RED}獲得状況を表示します。")
-            .build(),
-          LeftClickButtonEffect(
-            CommonSoundEffects.menuTransitionFenceSound,
-            AchievementGroupMenu(group).open
-          )
+    if (AchievementGroupMenu.sequentialEntriesIn(group).nonEmpty) {
+      Button(
+        partialBuilder
+          .lore(s"${RED}獲得状況を表示します。")
+          .build(),
+        LeftClickButtonEffect(
+          CommonSoundEffects.menuTransitionFenceSound,
+          ioCanOpenGroupMenu.open(AchievementGroupMenu(group))
         )
-      } else {
-        Button(
-          partialBuilder
-            .lore(s"${RED}獲得状況を表示します。※未実装")
-            .build()
-        )
-      }
-    }
-
-  val toMainMenuButton: Button =
-    CommonButtons.transferButton(
-      new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-      "実績・二つ名メニューへ",
-      AchievementMenu,
-    )
-
-  // メモ化
-  private val _apply: AchievementCategory => Menu = CachedFunction { category =>
-    val groupButtons = groupsLayoutFor(category).view.mapValues(buttonFor).toMap
-
-    val layout = MenuSlotLayout(
-      groupButtons ++ Map(
-        ChestSlotRef(3, 0) -> toMainMenuButton
       )
-    )
-
-    import com.github.unchama.menuinventory.syntax._
-    val menuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}カテゴリ「${category.name}」")
-
-    new Menu {
-      override val frame: MenuFrame = menuFrame
-      override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = IO.pure(layout)
+    } else {
+      Button(
+        partialBuilder
+          .lore(s"${RED}獲得状況を表示します。※未実装")
+          .build()
+      )
     }
   }
 
-  def apply(c: AchievementCategory): Menu = _apply(c)
+  class Environment(implicit
+                    val ioCanOpenAchievementMainMenu: IO CanOpen AchievementMenu.type,
+                    val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu)
+
+}
+
+case class AchievementCategoryMenu(category: AchievementCategory) extends Menu {
+
+  import com.github.unchama.menuinventory.syntax._
+
+  override type Environment = AchievementCategoryMenu.Environment
+
+  val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}カテゴリ「${category.name}」")
+
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+    import environment._
+    import eu.timepit.refined.auto._
+
+    val groupButtons =
+      groupsLayoutFor(category)
+        .view
+        .mapValues(repr => buttonFor(repr)).toMap
+
+    val toMainMenuButton: Button =
+      CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+        "実績・二つ名メニューへ",
+        AchievementMenu,
+      )
+
+    IO.pure {
+      MenuSlotLayout(
+        groupButtons ++ Map(
+          ChestSlotRef(3, 0) -> toMainMenuButton
+        )
+      )
+    }
+  }
 }

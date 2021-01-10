@@ -1,19 +1,18 @@
 package com.github.unchama.buildassist.listener
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
-import com.github.unchama.seichiassist.subsystems
 import org.bukkit.Material
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 
-class PlayerLeftClickListener(implicit effectEnvironment: EffectEnvironment,
-                              flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Listener {
+class BuildMainMenuOpener(implicit effectEnvironment: EffectEnvironment,
+                          ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type) extends Listener {
 
   import com.github.unchama.targetedeffect._
 
@@ -33,12 +32,10 @@ class PlayerLeftClickListener(implicit effectEnvironment: EffectEnvironment,
       if (!hasStickOnMainHand || !actionWasOnMainHand) return
     }
 
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
-
     effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        new BuildMainMenu().open
+        ioCanOpenBuildMainMenu.open(BuildMainMenu)
       ),
       "BuildMainMenuを開く"
     )

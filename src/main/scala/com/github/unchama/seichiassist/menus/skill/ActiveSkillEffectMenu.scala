@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.menus.skill
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
@@ -18,11 +19,18 @@ import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
 object ActiveSkillEffectMenu extends Menu {
+
   import cats.implicits._
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import com.github.unchama.targetedeffect._
-override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
+
+  class Environment(implicit
+                    val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
+                    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
+                    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu)
+
+  override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
 
   def setEffectSelectionTo(effect: ActiveSkillEffect)(player: Player): IO[Unit] = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -101,7 +109,8 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
     }
   }
 
-  private case class ButtonComputations(player: Player) {
+  private case class ButtonComputations(player: Player)(implicit environment: Environment) {
+
     import player._
 
     def effectButton(effect: UnlockableActiveSkillEffect): IO[Button] = {
@@ -174,7 +183,7 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
   }
 
   private object ConstantButtons {
-    val resetEffectButton: Button =
+    def resetEffectButton(implicit environment: Environment): Button =
       ReloadingButton(ActiveSkillEffectMenu) {
         Button(
           new IconItemStackBuilder(Material.GLASS)
@@ -188,7 +197,7 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
         )
       }
 
-    val effectPurchaseHistoryMenuButton: Button =
+    def effectPurchaseHistoryMenuButton(implicit ioCanOpenPremiumPointMenu: IO CanOpen PremiumPointTransactionHistoryMenu): Button =
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
           .title(s"$UNDERLINE$BOLD${BLUE}プレミアムエフェクト購入履歴")
@@ -198,11 +207,11 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1f),
-          PremiumPointTransactionHistoryMenu(1).open
+          ioCanOpenPremiumPointMenu.open(PremiumPointTransactionHistoryMenu(1))
         )
       )
 
-    val goBackToSkillMenuButton: Button =
+    def goBackToSkillMenuButton(implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
         "スキルメニューへ",
@@ -213,12 +222,13 @@ override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整�
   /**
    * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     val c = ButtonComputations(player)
 
     import ConstantButtons._
     import c._
     import cats.implicits._
+    import environment._
     import eu.timepit.refined.auto._
 
     val computeDynamicPart = {

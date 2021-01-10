@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.menus.stickmenu
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
@@ -12,8 +13,6 @@ import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.cookieOf
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -25,7 +24,6 @@ import com.github.unchama.util.InventoryUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import org.bukkit.ChatColor.{DARK_RED, RESET, _}
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
 /**
@@ -40,15 +38,26 @@ object FirstPage extends Menu {
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import eu.timepit.refined.auto._
 
+  class Environment(implicit
+                    val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
+                    val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type,
+                    val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type,
+                    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
+                    val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type,
+                    val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
+                    val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type,
+                    val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type)
+
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
 
   import com.github.unchama.targetedeffect._
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
+    import environment._
 
     val constantPart =
       Map(
@@ -93,7 +102,7 @@ object FirstPage extends Menu {
     } yield MenuSlotLayout(constantPart ++ dynamicPart.toMap)
   }
 
-  private case class ButtonComputations(player: Player) {
+  private case class ButtonComputations(player: Player)(implicit environment: Environment) {
 
     import player._
 
@@ -189,7 +198,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f),
-          RegionMenu.open
+          environment.ioCanOpenRegionMenu.open(RegionMenu)
         )
       )
     }
@@ -231,7 +240,7 @@ object FirstPage extends Menu {
           if (openerData.level >= minimumLevelRequired) {
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-              MineStackMainMenu.open
+              environment.ioCanOpenMineStackMenu.open(MineStackMainMenu)
             )
           } else FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
         }
@@ -419,7 +428,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
-          ActiveSkillMenu.open,
+          environment.ioCanOpenActiveSkillMenu.open(ActiveSkillMenu),
         )
       )
     }
@@ -523,7 +532,7 @@ object FirstPage extends Menu {
   }
 
   private object ConstantButtons {
-    val teleportServerButton: Button = {
+    def teleportServerButton(implicit ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type): Button = {
       val buttonLore = List(
         s"$GRAY・各サバイバルサーバー",
         s"$GRAY・建築サーバー",
@@ -539,7 +548,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f),
-          ServerSwitchMenu.open
+          ioCanOpenServerSwitchMenu.open(ServerSwitchMenu)
         )
       )
     }
@@ -565,7 +574,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val achievementSystemButton: Button = {
+    def achievementSystemButton(implicit ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type): Button = {
       val buttonLore = List(
         s"${GRAY}様々な実績に挑んで、",
         s"${GRAY}いろんな二つ名を手に入れよう！",
@@ -579,7 +588,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-          AchievementMenu.open
+          ioCanOpenAchievementMenu.open(AchievementMenu)
         )
       )
     }
@@ -643,7 +652,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val secondPageButton: Button =
+    def secondPageButton(implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",
@@ -680,7 +689,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val homePointMenuButton: Button = {
+    def homePointMenuButton(implicit ioCanOpenHomeMenu: IO CanOpen HomeMenu.type): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.BED)
           .title(s"$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
@@ -694,7 +703,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-          HomeMenu.open
+          ioCanOpenHomeMenu.open(HomeMenu)
         )
       )
     }
@@ -743,7 +752,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val passiveSkillBookButton: Button = {
+    def passiveSkillBookButton(implicit ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.ENCHANTED_BOOK)
           .enchanted()
@@ -758,7 +767,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
-          PassiveSkillMenu.open
+          ioCanOpenPassiveSkillMenu.open(PassiveSkillMenu)
         )
       )
     }

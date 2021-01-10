@@ -1,18 +1,18 @@
 package com.github.unchama.buildassist.menu
 
 import cats.data.{Kleisli, NonEmptyList}
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist, SkullOwners, subsystems}
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -28,6 +28,10 @@ object MineStackMassCraftMenu {
 
   type MineStackItemId = String
 
+  class Environment(implicit
+                    val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
+                    val canOpenItself: CanOpen[IO, MineStackMassCraftMenu])
+
   case class MassCraftRecipe(ingredients: NonEmptyList[(MineStackItemId, Int)],
                              products: NonEmptyList[(MineStackItemId, Int)]) {
     /**
@@ -35,7 +39,9 @@ object MineStackMassCraftMenu {
      */
     def scaleBy(scale: Int): MassCraftRecipe = {
       def scaleChunk(chunk: (MineStackItemId, Int)): (MineStackItemId, Int) =
-        chunk match { case (id, amount) => (id, amount * scale) }
+        chunk match {
+          case (id, amount) => (id, amount * scale)
+        }
 
       MassCraftRecipe(ingredients.map(scaleChunk), products.map(scaleChunk))
     }
@@ -50,7 +56,7 @@ object MineStackMassCraftMenu {
      * @param menuPageNumber         このボタンが表示される一括クラフト画面のページ番号
      */
     def computeButton(player: Player, requiredMassCraftLevel: Int, menuPageNumber: Int)
-                     (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
+                     (implicit environment: Environment): IO[Button] = {
       import cats.implicits._
 
       def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
@@ -120,7 +126,7 @@ object MineStackMassCraftMenu {
 
       }
 
-    val buttonEffect = LeftClickButtonEffect(
+      val buttonEffect = LeftClickButtonEffect(
         Kleisli { player =>
           for {
             buildLevel <- BuildAssist.instance.buildAmountDataRepository(player).read.toIO
@@ -176,7 +182,7 @@ object MineStackMassCraftMenu {
 
   case class MassCraftRecipeBlock(recipe: MassCraftRecipe, recipeScales: List[Int], requiredBuildLevel: Int) {
     def toLayout(player: Player, beginIndex: Int, pageNumber: Int)
-                (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[List[(Int, Slot)]] = {
+                (implicit environment: Environment): IO[List[(Int, Slot)]] = {
       import cats.implicits._
 
       recipeScales.zipWithIndex
@@ -490,65 +496,64 @@ object MineStackMassCraftMenu {
       )
     )
   }
+}
 
-  def apply(pageNumber: Int = 1)
-           (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): Menu = {
-    import eu.timepit.refined.auto._
+case class MineStackMassCraftMenu(pageNumber: Int = 1) extends Menu {
+  override type Environment = MineStackMassCraftMenu.Environment
 
-    val menuFrame = {
-      import com.github.unchama.menuinventory.syntax._
-      MenuFrame(6.chestRows, ColorScheme.purpleBold(s"MineStackブロック一括クラフト$pageNumber"))
-    }
+  override val frame: MenuFrame = {
+    import com.github.unchama.menuinventory.syntax._
+    MenuFrame(6.chestRows, ColorScheme.purpleBold(s"MineStackブロック一括クラフト$pageNumber"))
+  }
 
-    new Menu {
-      override val frame: MenuFrame = menuFrame
+  import eu.timepit.refined.auto._
 
-      override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
-        def buttonToTransferTo(newPageNumber: Int, skullOwnerReference: SkullOwnerReference): Button =
-          CommonButtons.transferButton(
-            new SkullItemStackBuilder(skullOwnerReference),
-            s"${newPageNumber}ページ目へ",
-            MineStackMassCraftMenu(newPageNumber)
-          )
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+    import environment._
 
-        val previousPageButtonSection =
-          if (pageNumber > 1) {
-            Map(ChestSlotRef(5, 7) -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowUp))
-          } else {
-            Map()
-          }
+    def buttonToTransferTo(newPageNumber: Int, skullOwnerReference: SkullOwnerReference): Button =
+      CommonButtons.transferButton(
+        new SkullItemStackBuilder(skullOwnerReference),
+        s"${newPageNumber}ページ目へ",
+        MineStackMassCraftMenu(newPageNumber)
+      )
 
-        val nextPageButtonSection =
-          if (recipeBlocks.isDefinedAt(pageNumber)) {
-            Map(ChestSlotRef(5, 8) -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowDown))
-          } else {
-            Map()
-          }
-
-        val backToMenuButtonSection =
-          Map(
-            ChestSlotRef(5, 0) -> CommonButtons.transferButton(
-              new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-              "ホームへ", new BuildMainMenu()
-            )
-          )
-
-        import cats.implicits._
-
-        for {
-          recipeSectionBlocks <-
-            recipeBlocks(pageNumber - 1)
-              .traverse { case (beginIndex, recipeBlock) =>
-                recipeBlock.toLayout(player, beginIndex, pageNumber)
-              }
-
-          recipeSection = recipeSectionBlocks.flatten.toMap
-        } yield {
-          MenuSlotLayout(
-            recipeSection ++ previousPageButtonSection ++ nextPageButtonSection ++ backToMenuButtonSection
-          )
-        }
+    val previousPageButtonSection =
+      if (pageNumber > 1) {
+        Map(ChestSlotRef(5, 7) -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowUp))
+      } else {
+        Map()
       }
+
+    val nextPageButtonSection =
+      if (MineStackMassCraftMenu.recipeBlocks.isDefinedAt(pageNumber)) {
+        Map(ChestSlotRef(5, 8) -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowDown))
+      } else {
+        Map()
+      }
+
+    val backToMenuButtonSection =
+      Map(
+        ChestSlotRef(5, 0) -> CommonButtons.transferButton(
+          new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+          "ホームへ", BuildMainMenu
+        )
+      )
+
+    import cats.implicits._
+
+    for {
+      recipeSectionBlocks <-
+        MineStackMassCraftMenu.recipeBlocks(pageNumber - 1)
+          .traverse { case (beginIndex, recipeBlock) =>
+            recipeBlock.toLayout(player, beginIndex, pageNumber)
+          }
+
+      recipeSection = recipeSectionBlocks.flatten.toMap
+    } yield {
+      MenuSlotLayout(
+        recipeSection ++ previousPageButtonSection ++ nextPageButtonSection ++ backToMenuButtonSection
+      )
     }
   }
 }
