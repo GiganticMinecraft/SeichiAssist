@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.breakcount.application.action
 
 trait UpdateProgressBar[F[_], Player] {
 
-  def of(player: Player, by:)
+  def of(player: Player)
 
 }
 
