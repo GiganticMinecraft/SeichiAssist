@@ -5,7 +5,7 @@ import cats.Parallel.Aux
 import cats.effect
 import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
-import com.github.unchama.bungeesemaphoreresponder.domain.{PlayerDataFinalizer, PlayerDataFinalizerList}
+import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
@@ -27,9 +27,11 @@ import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystem
 import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
+import com.github.unchama.seichiassist.menus.TopLevelRouter
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -140,8 +142,34 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
+  lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
+    import PluginExecutionContexts.timer
+
+    subsystems.dragonnighttime.System.wired[IO, IO]
+  }
+  
   lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
-    subsystems.seasonalevents.System.wired(this)
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.seasonalevents.System.wired[IO, IO](this)
+  }
+
+  lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
+    import PluginExecutionContexts.timer
+
+    implicit val configuration: subsystems.buildcount.application.Configuration =
+      seichiAssistConfig.buildCountConfiguration
+
+    subsystems.buildcount.System.wired[IO, SyncIO, SyncIO](loggerF).unsafeRunSync()
+  }
+
+  lazy val buildAssist: BuildAssist = {
+    implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
+    implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
+    new BuildAssist(this)
   }
 
   lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
@@ -160,11 +188,13 @@ class SeichiAssist extends JavaPlugin() {
         )
     }
 
-    val playerDataFinalizers = PlayerDataFinalizerList[IO, Player](
-      managedFlySystem.managedFinalizers
-    ).withAnotherFinalizer(savePlayerData)
-
-    new BungeeSemaphoreResponderSystem(playerDataFinalizers, PluginExecutionContexts.asyncShift)
+    new BungeeSemaphoreResponderSystem(
+      PlayerDataFinalizer.concurrently[IO, Player](
+        managedFlySystem.managedFinalizers.toList ++
+          buildCountSystem.managedFinalizers.appended(savePlayerData)
+      ),
+      PluginExecutionContexts.asyncShift
+    )
   }
 
   //endregion
@@ -181,11 +211,10 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreate
   }
 
-  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[SyncIO, IO, SyncIO, Boolean] = {
-    import PluginExecutionContexts.asyncShift
+  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[SyncIO, SyncIO, Boolean] = {
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    new NonPersistentPlayerDataRefRepository[SyncIO, IO, SyncIO, Boolean](true)
+    new NonPersistentPlayerDataRefRepository[SyncIO, SyncIO, Boolean](true)
   }
 
   val assaultSkillRoutines: TryableFiberRepository[IO, SyncIO] = {
@@ -292,6 +321,9 @@ class SeichiAssist extends JavaPlugin() {
 
     import PluginExecutionContexts._
 
+    val menuRouter = TopLevelRouter.apply
+    import menuRouter.canOpenStickMenu
+
     MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
 
     MineStackObjectList.minestacklist.clear()
@@ -304,6 +336,8 @@ class SeichiAssist extends JavaPlugin() {
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
+    buildAssist.onEnable()
+
     val subsystems = Seq(
       mebius.System.wired,
       expBottleStackSystem,
@@ -311,7 +345,8 @@ class SeichiAssist extends JavaPlugin() {
       managedFlySystem,
       rescueplayer.System.wired,
       bookedAchievementSystem,
-      seasonalEventsSystem
+      seasonalEventsSystem,
+      buildCountSystem
     )
 
     // コマンドの登録
@@ -319,7 +354,6 @@ class SeichiAssist extends JavaPlugin() {
       "gacha" -> new GachaCommand(),
       "map" -> MapCommand.executor,
       "ef" -> EffectCommand.executor,
-      "seichihaste" -> SeichiHasteCommand.executor,
       "seichiassist" -> SeichiAssistCommand.executor,
       "openpocket" -> OpenPocketCommand.executor,
       "lastquit" -> LastQuitCommand.executor,
@@ -377,12 +411,6 @@ class SeichiAssist extends JavaPlugin() {
 
     startRepeatedJobs()
 
-    SeichiAssist.buildAssist = {
-      implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
-      new BuildAssist(this)
-    }
-    SeichiAssist.buildAssist.onEnable()
-
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
 
@@ -416,7 +444,7 @@ class SeichiAssist extends JavaPlugin() {
               || SeichiAssist.seichiAssistConfig.getServerNum == 8
           )(
             HalfHourRankingRoutine()
-          ).toList ++ autoSaveSystem.state
+          ).toList ++ autoSaveSystem.state ++ dragonNightTimeSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
@@ -444,15 +472,12 @@ class SeichiAssist extends JavaPlugin() {
     // BungeeSemaphoreResponderの全ファイナライザを走らせる
     getServer
       .getOnlinePlayers.asScala.toList
-      .flatMap(player => bungeeSemaphoreResponderSystem.playerFinalizerList.allActionsOnQuitOf(player).toList)
-      .sequence
+      .traverse(bungeeSemaphoreResponderSystem.finalizer.onQuitOf)
       .unsafeRunSync()
 
     if (SeichiAssist.databaseGateway.disconnect() == ActionStatus.Fail) {
       logger.info("データベース切断に失敗しました")
     }
-
-    SeichiAssist.buildAssist.onDisable()
 
     logger.info("SeichiAssistが無効化されました!")
   }
@@ -495,7 +520,6 @@ object SeichiAssist {
   // TODO staticであるべきではない
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _
-  var buildAssist: BuildAssist = _
   //(minestackに格納する)Gachadataに依存するデータリスト
   val msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
   //総採掘量表示用

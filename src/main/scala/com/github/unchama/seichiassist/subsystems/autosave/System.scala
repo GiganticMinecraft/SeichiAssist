@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.autosave
 
 import cats.effect.{Sync, Timer}
-import com.github.unchama.concurrent.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.autosave.application.{CanNotifySaves, CanSaveWorlds, SystemConfiguration, WorldSaveRoutine}

@@ -17,7 +17,7 @@ class PlayerItemMigrationEntryPoints[
 ](migrations: ItemMigrations, service: ItemMigrationService[F, PlayerInventoriesData[F]])
  (implicit effectEnvironment: EffectEnvironment) {
 
-  private val repository = new PlayerItemMigrationStateRepository[F, G, F]
+  private val repository = new PlayerItemMigrationStateRepository[G, F]
   private val controller = new PlayerItemMigrationController[F, G](repository, migrations, service)
 
   val listenersToBeRegistered = Seq(

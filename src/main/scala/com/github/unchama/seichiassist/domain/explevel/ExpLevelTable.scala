@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.domain.explevel
 
 import com.github.unchama.seichiassist.util.typeclass.HasMinimum
 
+import scala.collection.Searching
+
 /**
  * 経験値量のテーブル。
  *
@@ -9,7 +11,7 @@ import com.github.unchama.seichiassist.util.typeclass.HasMinimum
  *                      i番目の要素に、レベルi+1になるのに必要な経験値量が入る。
  *                      この列は単調増加であることが要求される。
  */
-class ExpLevelTable[L: Level, ExpAmount: Ordering : HasMinimum](private val internalTable: Seq[ExpAmount]) {
+class ExpLevelTable[L: Level, ExpAmount: Ordering : HasMinimum](private val internalTable: IndexedSeq[ExpAmount]) {
 
   private val order = implicitly[Ordering[ExpAmount]]
 
@@ -28,7 +30,10 @@ class ExpLevelTable[L: Level, ExpAmount: Ordering : HasMinimum](private val inte
   }, "first element of the table must be the minimum amount")
 
   def levelAt(expAmount: ExpAmount): L = Level[L].wrapPositive {
-    internalTable.lastIndexWhere(_ <= expAmount) + 1
+    internalTable.search(expAmount) match {
+      case Searching.Found(foundIndex) => foundIndex + 1
+      case Searching.InsertionPoint(insertionPoint) => insertionPoint
+    }
   }
 
   def maxLevel: L = Level[L].wrapPositive {

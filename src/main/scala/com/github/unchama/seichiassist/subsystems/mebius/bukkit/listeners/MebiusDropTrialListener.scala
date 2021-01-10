@@ -4,6 +4,7 @@ import cats.effect.{IO, SyncEffect, SyncIO, Timer}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.MebiusDrop
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
@@ -17,8 +18,8 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
-
 import java.util.concurrent.TimeUnit
+
 import scala.concurrent.duration.FiniteDuration
 
 class MebiusDropTrialListener[
@@ -34,6 +35,8 @@ class MebiusDropTrialListener[
     if (!MaterialSets.materials.contains(event.getBlock.getType)) return
 
     val player = event.getPlayer
+
+    if (player.getWorld.isSeichi) return
 
     val droppedMebiusProperty = MebiusDrop
       .tryOnce[G](player.getName, player.getUniqueId.toString)

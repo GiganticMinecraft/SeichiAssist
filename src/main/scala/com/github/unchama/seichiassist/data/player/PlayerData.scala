@@ -169,7 +169,7 @@ class PlayerData(
   //トータル破壊ブロック
   var totalbreaknum: Long = 0.toLong
   //合計経験値
-  var totalexp = 0
+  var totalexp = 0L
   //合計経験値統合済みフラグ
   var expmarge: Byte = 0
   //特典受け取り済み投票数
@@ -199,7 +199,7 @@ class PlayerData(
   //実績ポイント用
   var achievePoint: AchievementPoint = AchievementPoint()
 
-  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
+  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO)
   // n周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
@@ -215,10 +215,6 @@ class PlayerData(
   //貢献度pt
   var added_mana = 0
   var contribute_point = 0
-  //正月イベント用
-  var hasNewYearSobaGive = false
-  //バレンタインイベント用
-  var hasChocoGave = false
   var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false

@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.listener
 
-import java.util.UUID
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.SeichiLvUpMessages
 import com.github.unchama.seichiassist.data.player.PlayerData
@@ -18,6 +17,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
+import java.util.UUID
 import scala.collection.mutable
 
 class PlayerJoinListener extends Listener {
@@ -112,7 +112,7 @@ class PlayerJoinListener extends Listener {
 
       player.sendMessage("初期装備を配布しました。Eキーで確認してネ")
       //初見さんにLv1メッセージを送信
-      SeichiLvUpMessages.get(1).foreach(player.sendMessage(_))
+      SeichiLvUpMessages.get(1).foreach(player.sendMessage)
     }
 
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知

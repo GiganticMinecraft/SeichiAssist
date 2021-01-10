@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.task.global
 
 import cats.effect.{IO, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.GachaSkullData
@@ -51,8 +52,6 @@ object PlayerDataRecalculationRoutine {
           playerData.idleMinute = 0
         }
 
-        //プレイヤー名を取得
-        val name = player.getName
         //総整地量を更新(返り値で重み分け済みの1分間のブロック破壊量が返ってくる)
         val increase = playerData.updateAndCalcMinedBlockAmount()
         //Levelを設定(必ず総整地量更新後に実施！)

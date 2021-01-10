@@ -1,23 +1,28 @@
 package com.github.unchama.seichiassist.achievement
 
-import java.time.temporal.TemporalAdjusters
-import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
-
 import cats.effect.IO
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
+import java.time.temporal.TemporalAdjusters
+import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 import scala.concurrent.duration.FiniteDuration
 
 object AchievementConditions {
   def playerDataPredicate(predicate: PlayerData => IO[Boolean]): PlayerPredicate = { player =>
-    IO { SeichiAssist.playermap(player.getUniqueId) }.flatMap(predicate)
+    IO {
+      SeichiAssist.playermap(player.getUniqueId)
+    }.flatMap(predicate)
   }
 
-  def hasUnlocked(id: Int): PlayerPredicate = playerDataPredicate(d => IO { d.TitleFlags.contains(id) })
+  def hasUnlocked(id: Int): PlayerPredicate = playerDataPredicate(d => IO {
+    d.TitleFlags.contains(id)
+  })
 
   def dependsOn[A: WithPlaceholder](id: Int, condition: AchievementCondition[A]): HiddenAchievementCondition[A] = {
     HiddenAchievementCondition(hasUnlocked(id), condition)
@@ -30,11 +35,12 @@ object AchievementConditions {
   }
 
   def placedBlockAmount_>=(amount: BigDecimal, localizedAmount: String): AchievementCondition[String] = {
-    val predicate = playerDataPredicate(d => IO {
-      val playerBuildCount: BigDecimal = d.buildCount.count
-
-      playerBuildCount >= amount
-    })
+    val predicate: PlayerPredicate = { player: Player =>
+      BuildAssist.instance
+        .buildAmountDataRepository(player).read
+        .map(_.expAmount.amount >= amount)
+        .toIO
+    }
 
     AchievementCondition(predicate, "建築量が " + _ + "を超える", localizedAmount)
   }

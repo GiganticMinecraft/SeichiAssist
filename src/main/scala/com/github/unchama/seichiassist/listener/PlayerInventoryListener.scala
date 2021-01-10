@@ -1,12 +1,14 @@
 package com.github.unchama.seichiassist.listener
 
+import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
-import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -22,9 +24,9 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
 
-class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
+                              ioCanOpenStickMenu: IO CanOpen FirstPage.type) extends Listener {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.InventoryUtil._
   import com.github.unchama.util.syntax._
@@ -79,12 +81,12 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         val name = skullMeta.getDisplayName
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
+
 
             effectEnvironment.runAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
-                StickMenu.firstPage.open
+                ioCanOpenStickMenu.open(StickMenu.firstPage)
               ),
               "棒メニューの1ページ目を開く"
             )
@@ -156,12 +158,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
 			 */
       //ページ変更処理
       if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-
         effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
-            StickMenu.firstPage.open
+            ioCanOpenStickMenu.open(StickMenu.firstPage)
           ),
           "棒メニューの1ページ目を開く"
         )
@@ -231,12 +231,12 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         val skullMeta = itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+
 
             effectEnvironment.runAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
-                StickMenu.firstPage.open
+                ioCanOpenStickMenu.open(StickMenu.firstPage)
               ),
               "棒メニューの1ページ目を開く"
             )
@@ -591,7 +591,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
   @EventHandler
   def onTitanRepairEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
-    val uuid = player.getUniqueId
     //エラー分岐
     val inventory = event.getInventory
 
@@ -735,12 +734,11 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.closeInventory()
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
-            StickMenu.firstPage.open
+            ioCanOpenStickMenu.open(StickMenu.firstPage)
           ),
           "棒メニューの1ページ目を開く"
         )

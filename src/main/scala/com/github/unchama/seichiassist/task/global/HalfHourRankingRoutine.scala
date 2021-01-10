@@ -74,7 +74,7 @@ object HalfHourRankingRoutine {
               if(starLevel == 0) 
                 s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}$WHITE"
               else
-                s"$positionColor[ Lv${playerData.level}☆${starLevel} ]${playerData.lowercaseName}$WHITE"
+                s"$positionColor[ Lv${playerData.level}☆$starLevel ]${playerData.lowercaseName}$WHITE"
             val increaseAmountText = s"$AQUA${playerData.halfhourblock.increase}$WHITE"
 
             Util.sendEveryMessage(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")

@@ -2,9 +2,9 @@ package com.github.unchama.menuinventory
 
 import cats.Eq
 import cats.effect.concurrent.Ref
-import cats.effect.{ContextShift, IO}
-import com.github.unchama.concurrent.MinecraftServerThreadShift
+import cats.effect.{ContextShift, IO, Sync}
 import com.github.unchama.menuinventory.slot.Slot
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects
 import org.bukkit.Material
@@ -14,7 +14,7 @@ import org.bukkit.inventory.{Inventory, InventoryHolder, ItemStack}
 /**
  * 共有された[sessionInventory]を作用付きの「メニュー」として扱うインベントリを保持するためのセッション.
  */
-class MenuSession private[menuinventory](private val frame: MenuFrame) extends InventoryHolder {
+class MenuSession private(private val frame: MenuFrame) extends InventoryHolder {
 
   val currentLayout: Ref[IO, MenuSlotLayout] = Ref.unsafe(MenuSlotLayout())
 
@@ -26,7 +26,9 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
   def openInventory(implicit context: MinecraftServerThreadShift[IO]): TargetedEffect[Player] =
     PlayerEffects.openInventoryEffect(sessionInventory)
 
-  def overwriteViewWith(newLayout: MenuSlotLayout)(implicit ctx: LayoutPreparationContext): IO[Unit] = {
+  def overwriteViewWith(newLayout: MenuSlotLayout)
+                       (implicit ctx: LayoutPreparationContext,
+                        syncShift: MinecraftServerThreadShift[IO]): IO[Unit] = {
     type LayoutDiff = Map[Int, Option[Slot]]
 
     // 差分があるインデックスを列挙する
@@ -64,27 +66,29 @@ class MenuSession private[menuinventory](private val frame: MenuFrame) extends I
       diff = differences(oldLayout, newLayout)
       _ <- currentLayout.set(newLayout)
       _ <- updateMenuSlots(diff)
+      _ <- syncShift.shift
+      // sessionInventory.getViewersが返してくるjava.util.ListはConcurrentな変更をされると例外を投げる
+      viewerList <- IO {
+        sessionInventory.getViewers
+      }
+      _ <- IO.shift(ctx)
       _ <- IO {
         import scala.jdk.CollectionConverters._
 
-        val viewerList = sessionInventory.getViewers
-
-        /**
-         * 再現条件が不明であるが、このIOが走っているときに並行して
-         * sessionInventory.getViewersで帰ってくるリストが変更される場合があるらしい。
-         * (実際、2019年11月21日に、合計13000件ほど「BuildMainMenuを開く最中にエラーが発生しました。」
-         * というメッセージとともにConcurrentModificationExceptionが飛ぶという事象があった。原因及び再現方法は不明。)
-         * getViewersのコピーだけ同期的に(toSetすることで)行うような実装とする。
-         */
-        viewerList.synchronized { viewerList.asScala.toSet }
-          .foreach {
-            case p: Player => p.updateInventory()
-            case _ =>
-          }
+        viewerList.asScala.toList.foreach {
+          case p: Player => p.updateInventory()
+          case _ =>
+        }
       }
     } yield ()
   }
 
   override def getInventory: Inventory = sessionInventory
+
+}
+
+object MenuSession {
+
+  def createNewSessionWith[F[_] : Sync](frame: MenuFrame): F[MenuSession] = Sync[F].delay(new MenuSession(frame))
 
 }

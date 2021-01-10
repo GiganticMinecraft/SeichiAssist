@@ -2,7 +2,8 @@ package com.github.unchama.targetedeffect.player
 
 import cats.data.Kleisli
 import cats.effect.IO
-import com.github.unchama.concurrent.{Execution, MinecraftServerThreadShift}
+import com.github.unchama.concurrent.Execution
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
