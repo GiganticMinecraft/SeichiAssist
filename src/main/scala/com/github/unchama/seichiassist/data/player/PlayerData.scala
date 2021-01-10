@@ -312,21 +312,21 @@ class PlayerData(
   //レベルを更新
   def updateLevel(): Unit = {
     updatePlayerLevel()
-    updateStarLevel()
-    setDisplayName()
+    updateStarLevel().run(player)
+    updateDisplayName().run(player)
     SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
     manaState.display(player, level)
   }
 
-  //表示される名前に整地Lvor二つ名を追加
-  def setDisplayName(): Unit = {
+  def updateDisplayName(): TargetedEffect[Player] = TargetedEffect.delay { player =>
     val playerName = player.getName
 
     //放置時に色を変える
-    val idleColor: String =
-      if (idleMinute >= 10) s"$DARK_GRAY"
-      else if (idleMinute >= 3) s"$GRAY"
-      else ""
+    val idleColor = idleMinute match {
+      case _ >= 10 => Some(DARK_GRAY)
+      case _ >= 3 => Some(GRAY)
+      case _ => None
+    }
 
     val newDisplayName = idleColor + {
       val nicknameSettings = settings.nickname
@@ -391,14 +391,13 @@ class PlayerData(
 
   /**
    * スターレベルの計算、更新を行う。
-   * このメソッドはスター数が増えたときにメッセージを送信する副作用を持つ。
+   * このメソッドが返すエフェクトはスター数が増えたときにメッセージを送信する副作用を持つ。
    */
-  def updateStarLevel(): Unit = {
+  def updateStarLevel(): TargetedEffect[Player] = TargetedEffect.delay { player =>
     //処理前の各レベルを取得
     val oldStars = starLevels.total()
     val oldBreakStars = starLevels.fromBreakAmount
     val oldTimeStars = starLevels.fromConnectionTime
-    //処理後のレベルを保存する入れ物
     val newBreakStars = totalbreaknum / 87115000
 
     //整地量の確認
@@ -440,14 +439,20 @@ class PlayerData(
     expmanager.setExp(totalexp)
   }
 
-  private def checkVotingFairy(): Unit = {
+  private def votingFairyEffect(): TargetedEffect[Player] = {
     if (usingVotingFairy) {
       if (Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
-        VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
+        TargetedEffect.delay(player => VotingFairyTask.speak(player, "おかえり！" + player.getName, true))
       } else {
-        this.usingVotingFairy = false
-        player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
+        SequentialEffect(
+          UnfocusedEffect {
+            this.usingVotingFairy = false
+          },
+          TargetedEffect.delay[Player](_.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ..."))
+        )
       }
+    } else {
+      TargetedEffect.emptyEffect
     }
   }
 
