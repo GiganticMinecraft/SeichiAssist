@@ -121,6 +121,8 @@ logLevel := Level.Debug
 PB.protoSources in Compile := Seq(baseDirectory.value / "protocol")
 PB.targets in Compile := Seq(scalapb.gen() -> (sourceManaged in Compile).value / "scalapb")
 
+testOptions in Test += Tests.Argument("-oS")
+
 lazy val root = (project in file("."))
   .settings(
     name := "SeichiAssist",
