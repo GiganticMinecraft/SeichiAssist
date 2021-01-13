@@ -12,45 +12,41 @@ object SignallingRepository {
 
   import cats.implicits._
 
-  trait RepositoryFactory[F[_], Key, Value] {
-
-    /**
-     * 可変参照を作成する関数 `(Key, Value) => F[Ref[F, Value]]` から [[KeyedDataRepository]] を作成する。
-     *
-     * 作成された [[KeyedDataRepository]] の可変参照セルが必ず `refCreator` によって作成されたということを保証するため、
-     * この関数は [[Ref]] について多相的になっている。
-     */
-    def instantiate[
-      Ref[_[_], _]
-    ](refCreator: (Key, Value) => F[Ref[F, Value]]): F[KeyedDataRepository[Key, Ref[F, Value]]]
-
-  }
+  /**
+   * 可変参照を値に持つ [[KeyedDataRepository]] と、
+   * それに対する更新を通知する [[Stream]] の組を作成する。
+   *
+   * 返される [[Stream]] は、[[KeyedDataRepository]] が保持するレコードの書き換えのみ出力し、
+   * 追加や削除を出力しない。
+   */
+  def apply[F[_]]: ApplyPartiallyApplied[F] = new ApplyPartiallyApplied[F]()
 
   /**
-   * [[Value]] の可変参照を値に持つ [[KeyedDataRepository]] と、
-   * それに対する更新を通知する [[Stream]] の組を作成する。
+   * Uses the [[https://typelevel.org/cats/guidelines.html#partially-applied-type-params Partially Applied Type Params technique]] for ergonomics.
    */
-  def apply[
-    G[_] : Sync,
-    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]],
-    Key, Value
-  ](factory: RepositoryFactory[G, Key, Value],
-    subscriptionMaxQueue: Int = 10): G[(KeyedDataRepository[Key, Ref[G, Value]], Stream[F, (Key, Value)])] =
-    for {
-      topic <- Topic.in[G, F, Option[(Key, Value)]](None)
-      repository <- factory.instantiate[Ref] { case (key, value) =>
-        for {
-          ref <- AsymmetricSignallingRef[G, F, Value](value)
-          _ <- EffectExtra.runAsyncAndForget[F, G, Unit] {
-            val updateStream = ref.signal.discrete.map(Some(key, _): Option[(Key, Value)])
-            topic.publish(updateStream).compile.drain
-          }
-        } yield ref: Ref[G, Value]
-      }
-    } yield {
-      val filteredTopic = topic.subscribe(subscriptionMaxQueue).mapFilter(x => x)
+  //noinspection ScalaUnusedSymbol
+  final class ApplyPartiallyApplied[F[_]] private[SignallingRepository](private val dummy: Boolean = true) extends AnyVal {
+    def apply[
+      G[_] : Sync, Key, Value, Repository[ref[_], x] <: KeyedDataRepository[Key, ref[x]]
+    ](factory: RefRepositoryFactory[G, Key, Value, Repository],
+      subscriptionMaxQueue: Int = 10)(implicit F: ConcurrentEffect[F], GtoF: ContextCoercion[G, F])
+    : G[(Repository[Ref[G, *], Value], Stream[F, (Key, Value)])] =
+      for {
+        topic <- Topic.in[G, F, Option[(Key, Value)]](None)
+        repository <- factory.instantiate[Ref[G, *]] { case (key, value) =>
+          for {
+            ref <- AsymmetricSignallingRef[G, F, Value](value)
+            _ <- EffectExtra.runAsyncAndForget[F, G, Unit] {
+              val keyedUpdateStream = ref.subscribeToUpdates.map(Some(key, _))
+              topic.publish(keyedUpdateStream).compile.drain
+            }
+          } yield ref: Ref[G, Value]
+        }
+      } yield {
+        val filteredTopic = topic.subscribe(subscriptionMaxQueue).mapFilter(x => x)
 
-      (repository, filteredTopic)
-    }
+        (repository, filteredTopic)
+      }
+  }
 
 }
