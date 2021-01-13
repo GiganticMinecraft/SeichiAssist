@@ -1,14 +1,18 @@
 package com.github.unchama.generic.effect.concurrent
 
+import cats.Applicative
 import cats.data.State
-import cats.effect.concurrent.{Deferred, Ref}
-import cats.effect.{ConcurrentEffect, IO, Sync}
-import com.github.unchama.generic.ContextCoercion
+import cats.effect.concurrent.Ref
+import cats.effect.{ConcurrentEffect, Sync}
+import com.github.unchama.generic.effect.EffectExtra
+import com.github.unchama.generic.effect.stream.ReorderingPipe
+import com.github.unchama.generic.effect.stream.ReorderingPipe.TimeStamped
+import com.github.unchama.generic.{ContextCoercion, Token}
 import fs2.Stream
-import fs2.concurrent.Signal
+import fs2.concurrent.Topic
 
 /**
- * 更新が [[Signal]] により読め出せるような可変参照セル。
+ * 更新が [[Stream]] により読め出せるような可変参照セル。
  *
  * [[fs2.concurrent.SignallingRef]] とほぼ同等だが、
  * 可変参照セルへの変更を行うコンテキストと更新を読みだすコンテキストが区別されている。
@@ -17,10 +21,9 @@ import fs2.concurrent.Signal
 abstract class AsymmetricSignallingRef[G[_], F[_], A] extends Ref[G, A] {
 
   /**
-   * この参照セルの更新を通知する [[Signal]]。
-   * [[Signal.get]] と [[Ref.get]] を衝突させないために、mixinではなくcomposeしている。
+   * pullした時点からの [[Ref]] への変更をすべて出力する [[Stream]]。
    */
-  val signal: Signal[F, A]
+  val subscribeToUpdates: Stream[F, A]
 
 }
 
@@ -49,16 +52,10 @@ object AsymmetricSignallingRef {
    * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
    */
 
-  private final class Token extends Serializable {
-    override def toString: String = s"Token(${hashCode.toHexString})"
-  }
-
-  import cats.effect.implicits._
   import cats.implicits._
 
   /**
-   * Builds a `SignallingRef` for a `Concurrent` datatype, initialized
-   * to a supplied value.
+   * 指定された値で初期化された[[AsymmetricSignallingRef]]を作成する作用。
    */
   def apply[
     G[_] : Sync,
@@ -66,108 +63,82 @@ object AsymmetricSignallingRef {
     A
   ](initial: A): G[AsymmetricSignallingRef[G, F, A]] = in[G, G, F, A](initial)
 
-  /** Builds a `SignallingRef` for `Concurrent` datatype.
-   * Like [[apply]], but initializes state using another effect constructor.
+  /**
+   * 指定された値で初期化された[[AsymmetricSignallingRef]]を作成する作用。
+   *
+   * [[apply]] とほぼ等価であるが、状態の作成を別の作用型の中で行う。
    */
   def in[
     H[_] : Sync,
     G[_] : Sync,
     F[_] : ConcurrentEffect : ContextCoercion[G, *[_]],
     A
-  ](initial: A): H[AsymmetricSignallingRef[G, F, A]] =
-    Ref
-      .in[H, G, (A, Long, Map[Token, Deferred[F, (A, Long)]])]((initial, 0L, Map.empty))
-      .map(state => new AsymmetricSignallingRefImpl[G, F, A](state))
+  ](initial: A): H[AsymmetricSignallingRef[G, F, A]] = {
+    val initialState = TimeStamped(new Token, new Token, initial)
+
+    Applicative[H].map2(
+      Ref.in[H, G, TimeStamped[A]](initialState),
+      Topic.in[H, F, TimeStamped[A]](initialState)
+    ) { case (ref, topic) =>
+      new AsymmetricSignallingRefImpl[G, F, A](ref, topic)
+    }
+  }
 
   private final class AsymmetricSignallingRefImpl[
     G[_],
     F[_],
     A
-  ](state: Ref[G, (A, Long, Map[Token, Deferred[F, (A, Long)]])])
+  ](state: Ref[G, TimeStamped[A]], changeTopic: Topic[F, TimeStamped[A]])
    (implicit G: Sync[G], F: ConcurrentEffect[F], GToF: ContextCoercion[G, F])
     extends AsymmetricSignallingRef[G, F, A] {
 
-    private type InternalState = (A, Long, Map[Token, Deferred[F, (A, Long)]])
+    private val topicQueueSize = 10
 
-    override val signal: Signal[F, A] = new Signal[F, A] {
-      override def discrete: Stream[F, A] = {
-        def go(id: Token, lastUpdate: Long): Stream[F, A] = {
-          def getNext: F[(A, Long)] =
-            Deferred[F, (A, Long)]
-              .flatMap { deferred =>
-                GToF {
-                  state.modify { case s@(a, updates, listeners) =>
-                    if (updates != lastUpdate) s -> (a -> updates).pure[F]
-                    else (a, updates, listeners + (id -> deferred)) -> deferred.get
-                  }
-                }.flatten
-              }
+    override val subscribeToUpdates: Stream[F, A] =
+      changeTopic
+        .subscribe(topicQueueSize)
+        .through(ReorderingPipe[F, A])
+        .drop(1) // topicはsubscribe時点での値も流してくるため、最初の一要素を落とす
 
-          Stream.eval(getNext).flatMap { case (a, l) => Stream.emit(a) ++ go(id, l) }
-        }
-
-        def cleanup(id: Token): F[Unit] = GToF {
-          state.update(s => s.copy(_3 = s._3 - id))
-        }
-
-        Stream.bracket(F.delay(new Token))(cleanup).flatMap { id =>
-          Stream.eval(GToF(state.get)).flatMap { case (a, l, _) =>
-            Stream.emit(a) ++ go(id, l)
-          }
-        }
-      }
-
-      override def continuous: Stream[F, A] = Stream.repeatEval(get)
-
-      override def get: F[A] = GToF(AsymmetricSignallingRefImpl.this.get)
-    }
-
-    override def get: G[A] = state.get.map(_._1)
+    override def get: G[A] = state.get.map(_.value)
 
     override def set(a: A): G[Unit] = update(_ => a)
 
+    /**
+     * 状態更新関数 `A => (A, B)` を基に、
+     * 内部状態の置き換え `InternalState[A] => InternalState[A]` と
+     * それに伴って必要である通知作用 `A => G[B]` の積を作成する。
+     */
+    private def updateAndNotify[B](f: A => (A, B)): TimeStamped[A] => (TimeStamped[A], G[B]) = {
+      case TimeStamped(_, nextStamp, a) =>
+        val (newA, result) = f(a)
+        val newATimeStamped = TimeStamped(nextStamp, new Token, newA)
+        val action = EffectExtra.runAsyncAndForget[F, G, Unit](changeTopic.publish1(newATimeStamped))
+        newATimeStamped -> action.as(result)
+    }
+
     override def access: G[(A, A => G[Boolean])] =
-      state.access.flatMap { case (snapshot, set) =>
-        G.delay {
-          val hasBeenCalled = new java.util.concurrent.atomic.AtomicBoolean(false)
-          val setter =
-            (a: A) =>
-              G.delay(hasBeenCalled.compareAndSet(false, true))
-                .ifM(
-                  if (a == snapshot._1) set((a, snapshot._2, snapshot._3)) else G.pure(false),
-                  G.pure(false)
-                )
-          (snapshot._1, setter)
+      state.access.map { case (snapshot, set) =>
+        val setter = { (newValue: A) =>
+          val (newState, notify) = updateAndNotify(_ => (newValue, ()))(snapshot)
+          set(newState).flatTap { succeeded =>
+            notify.whenA(succeeded)
+          }
         }
+
+        (snapshot.value, setter)
       }
 
     override def tryUpdate(f: A => A): G[Boolean] =
       G.map(tryModify(a => (f(a), ())))(_.isDefined)
 
-    /**
-     * 状態更新関数 `A => (A, B)` を基に、
-     * 内部状態の置き換え `InternalState => InternalState` と
-     * それに伴って必要である更新作用 `InternalState => G[B]` の積を作成する。
-     */
-    private def modification[B](f: A => (A, B)): InternalState => (InternalState, G[B]) = {
-      case (a, updates, listeners) =>
-        val (newA, result) = f(a)
-        val newUpdates = updates + 1
-        val newState = (newA, newUpdates, Map.empty[Token, Deferred[F, (A, Long)]])
-        val action = listeners.toVector
-          .traverse { case (_, deferred) => F.start(deferred.complete(newA -> newUpdates)) }
-          .runAsync(_ => IO.unit)
-          .runSync[G]
-        newState -> action.as(result)
-    }
-
     override def tryModify[B](f: A => (A, B)): G[Option[B]] =
-      state.tryModify(modification(f)).flatMap {
+      state.tryModify(updateAndNotify(f)).flatMap {
         case None => G.pure(None)
         case Some(action) => G.map(action)(Some(_))
       }
 
-    override def modify[B](f: A => (A, B)): G[B] = state.modify(modification(f)).flatten
+    override def modify[B](f: A => (A, B)): G[B] = state.modify(updateAndNotify(f)).flatten
 
     override def update(f: A => A): G[Unit] =
       modify(a => (f(a), ()))
