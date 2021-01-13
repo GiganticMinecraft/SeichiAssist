@@ -37,9 +37,7 @@ object ReorderingPipe {
         }
       }
 
-      val result = go(combinedMap, nextToken, Vector.empty)
-      println(nextChunk, result)
-      result
+      go(combinedMap, nextToken, Vector.empty)
     }
   }
 
