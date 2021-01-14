@@ -6,7 +6,9 @@ import com.github.unchama.generic.algebra.typeclasses.PositiveInt
 /**
  * 整地レベル。正の[[Int]]と対応する。
  */
-case class SeichiLevel private(level: Int) extends AnyVal
+case class SeichiLevel private(level: Int) extends AnyVal {
+  def increment: SeichiLevel = SeichiLevel.ofPositive(level + 1)
+}
 
 private[level] abstract class SeichiLevelInstances {
 

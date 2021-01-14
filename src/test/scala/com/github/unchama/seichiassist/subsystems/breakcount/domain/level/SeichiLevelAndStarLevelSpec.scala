@@ -9,17 +9,16 @@ class SeichiLevelAndStarLevelSpec
     with ScalaCheckPropertyChecks
     with Matchers {
 
-  import LocalArbitrary._
-  import cats.implicits._
-
   "SeichiLevel and StarLevel" should {
     "be continuous" in {
       val levelTable = SeichiLevelTable.table
       val starLevelTable = SeichiStarLevelTable
 
-      forAll(minSuccessful(100000)) { seichiExpAmount: SeichiExpAmount =>
-        (levelTable.levelAt(seichiExpAmount) < levelTable.maxLevel) shouldEqual
-          (starLevelTable.levelAt(seichiExpAmount) == SeichiStarLevel.ofNonNegative(0))
+      assert {
+        starLevelTable.levelAt(levelTable.expAt(levelTable.maxLevel)) != SeichiStarLevel.zero
+      }
+      assert {
+        levelTable.expAt(levelTable.maxLevel) == starLevelTable.expAt(SeichiStarLevel.ofNonNegative(1))
       }
     }
   }

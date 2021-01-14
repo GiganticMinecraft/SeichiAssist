@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.domain.level
 
-import cats.Order
-import cats.kernel.{CommutativeMonoid, LowerBounded, PartialOrder}
+import cats.kernel.{LowerBounded, PartialOrder}
+import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 
 /**
  * 整地量を表す値のクラス。非負の値に対応する。
@@ -15,24 +15,7 @@ case class SeichiExpAmount private(amount: Long) extends AnyVal {
 
 }
 
-private[level] abstract class SeichiExpAmountInstances {
-
-  import cats.implicits._
-
-  implicit lazy val order: Order[SeichiExpAmount] = Order.by(_.amount)
-
-  lazy val zero: SeichiExpAmount = SeichiExpAmount.ofNonNegative(0)
-
-  implicit lazy val lowerBounded: LowerBounded[SeichiExpAmount] = new LowerBounded[SeichiExpAmount] {
-    override val partialOrder: PartialOrder[SeichiExpAmount] = order
-    override val minBound: SeichiExpAmount = zero
-  }
-
-  implicit lazy val addition: CommutativeMonoid[SeichiExpAmount] =
-    CommutativeMonoid.instance(zero, (a, b) => SeichiExpAmount.ofNonNegative(a.amount + b.amount))
-}
-
-object SeichiExpAmount extends SeichiExpAmountInstances {
+object SeichiExpAmount {
   def ofNonNegative(amount: Long): SeichiExpAmount = {
     require(
       amount >= 0L,
@@ -41,5 +24,26 @@ object SeichiExpAmount extends SeichiExpAmountInstances {
 
     SeichiExpAmount(amount)
   }
+
+  lazy val zero: SeichiExpAmount = ofNonNegative(0)
+
+  // region instances
+  implicit lazy val orderedMonus: OrderedMonus[SeichiExpAmount] = new OrderedMonus[SeichiExpAmount] {
+    override def |-|(x: SeichiExpAmount, y: SeichiExpAmount): SeichiExpAmount = ofNonNegative {
+      if (x.amount > y.amount) x.amount - y.amount else 0
+    }
+
+    override def empty: SeichiExpAmount = zero
+
+    override def combine(x: SeichiExpAmount, y: SeichiExpAmount): SeichiExpAmount = ofNonNegative(x.amount + y.amount)
+
+    override def compare(x: SeichiExpAmount, y: SeichiExpAmount): Int = x.amount.compareTo(y.amount)
+  }
+
+  implicit lazy val lowerBounded: LowerBounded[SeichiExpAmount] = new LowerBounded[SeichiExpAmount] {
+    override val partialOrder: PartialOrder[SeichiExpAmount] = orderedMonus
+    override val minBound: SeichiExpAmount = zero
+  }
+  //endregion
 }
 

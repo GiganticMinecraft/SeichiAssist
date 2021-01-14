@@ -1,11 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.domain.level
 
 import cats.Order
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel.ofNonNegative
 
 /**
  * 整地スターレベル。
  */
-case class SeichiStarLevel private(level: Int) extends AnyVal
+case class SeichiStarLevel private(level: Int) extends AnyVal {
+  def increment: SeichiStarLevel = ofNonNegative(level + 1)
+}
 
 private[level] abstract class SeichiStarLevelInstances {
 
@@ -21,5 +24,7 @@ object SeichiStarLevel extends SeichiStarLevelInstances {
     require(n >= 0, "整地スターレベルは非負である必要があります。")
     SeichiStarLevel(n)
   }
+
+  val zero: SeichiStarLevel = ofNonNegative(0)
 
 }

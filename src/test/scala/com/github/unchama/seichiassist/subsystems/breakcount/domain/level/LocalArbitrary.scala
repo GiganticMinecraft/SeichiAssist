@@ -10,4 +10,8 @@ private[level] object LocalArbitrary {
     Gen.choose(0, 1_0000_0000_0000_0000L).map(SeichiExpAmount.ofNonNegative)
   }
 
+  implicit val arbitraryStarLevel: Arbitrary[SeichiStarLevel] = Arbitrary {
+    Gen.choose(0, 100_0000).map(SeichiStarLevel.ofNonNegative)
+  }
+
 }
