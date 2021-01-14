@@ -51,30 +51,32 @@ class SignallingRepositorySpec
   "KeyedWrappedValueRepository when made with SignallingRepository" should {
     import cats.implicits._
 
-    "Signal all the updates" in {
+    "signal all the updates" in {
       val initialValue: Value = 0
 
       forAll(minSuccessful(100)) { updates: List[(Key, Value)] =>
         val updateMap: Map[Key, List[Value]] = updates.groupMap(_._1)(_._2)
+        val keys: Set[Key] = updateMap.keySet
+        val valueMap: Map[Key, List[Value]] = updateMap.view.mapValues(initialValue +: _).toMap
 
         val task = for {
           signallingRepository <- Task.liftFrom[SyncIO].apply(newSignallingRepository)
-          (repository, stream) = signallingRepository
+          (repository, valueStream) = signallingRepository
           // リポジトリを初期化する
-          _ <- Task.liftFrom[SyncIO].apply(updateMap.keySet.toList.traverse(repository.add(_, initialValue)))
-          getAllUpdatesFiber <- stream.take(updates.size).compile.toList.start
+          _ <- Task.liftFrom[SyncIO].apply(keys.toList.traverse(repository.add(_, initialValue)))
+          getAllUpdatesFiber <- valueStream.take(keys.size + updates.size).compile.toList.start
           _ <- monixTimer.sleep(1.second)
           _ <- updateMap.toList.parTraverse { case (key, updates) =>
             Task.liftFrom[SyncIO].apply {
               updates.traverse(value => repository(key).set(value))
             }
           }
-          updates <- getAllUpdatesFiber.join
+          values <- getAllUpdatesFiber.join
         } yield {
-          updates.groupMap(_._1)(_._2)
+          values.groupMap(_._1)(_._2)
         }
 
-        assertResult(updateMap)(awaitForProgram(task, 1.second))
+        assertResult(valueMap)(awaitForProgram(task, 1.second))
       }
     }
   }

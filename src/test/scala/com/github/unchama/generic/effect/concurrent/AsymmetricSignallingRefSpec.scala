@@ -32,7 +32,7 @@ class AsymmetricSignallingRefSpec
   "KeyedWrappedValueRepository when made with SignallingRepository" should {
     import cats.implicits._
 
-    "Signal all the updates" in {
+    "signal all the values" in {
       val initialValue: Value = 0
 
       forAll(minSuccessful(100)) { updates: List[Value] =>
@@ -40,8 +40,8 @@ class AsymmetricSignallingRefSpec
           ref <- AsymmetricSignallingRef.in[Task, SyncIO, Task, Value](initialValue)
           fiber <-
             ref
-              .subscribeToUpdates
-              .take(updates.size)
+              .subscribeToValues
+              .take(updates.size + 1)
               .compile.toList.start
           // subscriptionのpullが優先されるようにsleepする
           _ <- monixTimer.sleep(1.second)
@@ -49,7 +49,7 @@ class AsymmetricSignallingRefSpec
           updateResult <- fiber.join
         } yield updateResult
 
-        assertResult(updates)(awaitForProgram(task, 1.second))
+        assertResult(initialValue +: updates)(awaitForProgram(task, 1.second))
       }
     }
   }

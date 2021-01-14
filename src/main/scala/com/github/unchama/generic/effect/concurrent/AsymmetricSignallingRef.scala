@@ -21,9 +21,9 @@ import fs2.concurrent.Topic
 abstract class AsymmetricSignallingRef[G[_], F[_], A] extends Ref[G, A] {
 
   /**
-   * pullした時点からの [[Ref]] への変更をすべて出力する [[Stream]]。
+   * pullした時点での [[Ref]] の値と、その後に変更された値をすべて出力する [[Stream]]。
    */
-  val subscribeToUpdates: Stream[F, A]
+  val subscribeToValues: Stream[F, A]
 
 }
 
@@ -94,11 +94,10 @@ object AsymmetricSignallingRef {
 
     private val topicQueueSize = 10
 
-    override val subscribeToUpdates: Stream[F, A] =
+    override val subscribeToValues: Stream[F, A] =
       changeTopic
         .subscribe(topicQueueSize)
         .through(ReorderingPipe[F, A])
-        .drop(1) // topicはsubscribe時点での値も流してくるため、最初の一要素を落とす
 
     override def get: G[A] = state.get.map(_.value)
 

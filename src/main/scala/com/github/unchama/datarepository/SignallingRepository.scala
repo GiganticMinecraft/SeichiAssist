@@ -16,8 +16,8 @@ object SignallingRepository {
    * 可変参照を値に持つ [[KeyedDataRepository]] と、
    * それに対する更新を通知する [[Stream]] の組を作成する。
    *
-   * 返される [[Stream]] は、[[KeyedDataRepository]] が保持するレコードの書き換えのみ出力し、
-   * 追加や削除を出力しない。
+   * 返される [[Stream]] は、[[KeyedDataRepository]] が保持するレコードの追加と書き換えのみ出力し、
+   * 削除は出力しない。
    */
   def apply[F[_]]: ApplyPartiallyApplied[F] = new ApplyPartiallyApplied[F]()
 
@@ -37,7 +37,7 @@ object SignallingRepository {
           for {
             ref <- AsymmetricSignallingRef[G, F, Value](value)
             _ <- EffectExtra.runAsyncAndForget[F, G, Unit] {
-              val keyedUpdateStream = ref.subscribeToUpdates.map(Some(key, _))
+              val keyedUpdateStream = ref.subscribeToValues.map(Some(key, _))
               topic.publish(keyedUpdateStream).compile.drain
             }
           } yield ref: Ref[G, Value]
