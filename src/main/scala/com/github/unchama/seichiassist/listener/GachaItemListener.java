@@ -28,7 +28,7 @@ public class GachaItemListener implements Listener {
         PlayerData playerdata = playermap.apply(player.getUniqueId());
         //念のためエラー分岐
         if (playerdata == null) {
-            Util.sendPlayerDataNullMessage(player);
+            Util.playerDataErrorEffect().run().apply(player).unsafeRunAsyncAndForget();
             Bukkit.getLogger().warning(player.getName() + " -> PlayerData not found.");
             Bukkit.getLogger().warning("GachaItemListener.onPlayerItemConsumeEvent");
             return;
@@ -43,27 +43,27 @@ public class GachaItemListener implements Listener {
         if (!itemmeta.hasLore()) return;
         List<String> lore = CollectionConverters.ListHasAsScala(itemmeta.getLore()).asScala().toList();
 
-        if (Util.loreIndexOf(lore, "マナ完全回復") > 0) {
+        if (Util.loreIndexOf(lore, "マナ完全回復").nonEmpty()) {
             mana.setFull(player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }
 
-        if (Util.loreIndexOf(lore, "マナ回復（小）") > 0) {
+        if (Util.loreIndexOf(lore, "マナ回復（小）").nonEmpty()) {
             mana.increase(300, player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }
 
-        if (Util.loreIndexOf(lore, "マナ回復（中）") > 0) {
+        if (Util.loreIndexOf(lore, "マナ回復（中）").nonEmpty()) {
             mana.increase(1500, player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }
 
-        if (Util.loreIndexOf(lore, "マナ回復（大）") > 0) {
+        if (Util.loreIndexOf(lore, "マナ回復（大）").nonEmpty()) {
             mana.increase(10000, player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }
 
-        if (Util.loreIndexOf(lore, "マナ回復（極）") > 0) {
+        if (Util.loreIndexOf(lore, "マナ回復（極）").nonEmpty()) {
             mana.increase(100000, player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }

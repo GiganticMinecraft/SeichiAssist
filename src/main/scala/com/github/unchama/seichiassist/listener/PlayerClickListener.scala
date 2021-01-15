@@ -411,7 +411,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
       val playerdata = playerMap(uuid)
       //念のためエラー分岐
       if (playerdata == null) {
-        Util.sendPlayerDataNullMessage(player)
+        Util.playerDataErrorEffect.run(player).unsafeRunAsyncAndForget()
         plugin.getLogger.warning(player.getName + " => PlayerData not found.")
         plugin.getLogger.warning("PlayerClickListener.onPlayerOpenInventorySkillEvent")
         return

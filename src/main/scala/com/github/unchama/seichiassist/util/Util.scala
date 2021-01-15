@@ -31,10 +31,10 @@ object Util {
     FireworkEffect.Type.STAR
   )
 
-  def sendPlayerDataNullMessage(player: Player): Unit = {
-    player.sendMessage(s"${RED}初回ログイン時の読み込み中か、読み込みに失敗しています")
-    player.sendMessage(s"${RED}再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
-  }
+  def playerDataErrorEffect: TargetedEffect[Player] = SequentialEffect(
+    MessageEffect(s"${RED}初回ログイン時の読み込み中か、読み込みに失敗しています"),
+    MessageEffect(s"${RED}再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
+  )
 
   // TODO: ManagedWorld
   def seichiSkillsAllowedIn(world: World): Boolean = {
@@ -339,7 +339,7 @@ object Util {
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.CARROT_STICK &&
-      loreIndexOfOpt(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...").nonEmpty
+      loreIndexOf(itemstack.getItemMeta.getLore.asScala.toList, "頭を狩り取る形をしている...").nonEmpty
   }
 
   def getSkullDataFromBlock(block: Block): Option[ItemStack] = {
@@ -379,21 +379,16 @@ object Util {
    */
   def isContainedInLore(itemStack: ItemStack, sentence: String): Boolean =
     if (!itemStack.hasItemMeta || !itemStack.getItemMeta.hasLore) false
-    else loreIndexOfOpt(itemStack.getItemMeta.getLore.asScala.toList, sentence).nonEmpty
+    else loreIndexOf(itemStack.getItemMeta.getLore.asScala.toList, sentence).nonEmpty
 
   /**
    * loreを捜査して、要素の中に`find`が含まれているかを調べる。
    *
    * @param lore 探される対象
    * @param find 探す文字列
-   * @return 見つかった場合はその添字、見つからなかった場合は-1
+   * @return 見つかった場合は`Some(index)`、見つからなかった場合は[[None]]
    */
-  @deprecated def loreIndexOf(lore: List[String], find: String): Int = {
-    loreIndexOfOpt(lore, find)
-      .getOrElse(-1)
-  }
-
-  def loreIndexOfOpt(lore: List[String], find: String): Option[Int] = {
+  def loreIndexOf(lore: List[String], find: String): Option[Int] = {
     lore.zipWithIndex
       .find(_._1.contains(find))
       .map(_._2)
