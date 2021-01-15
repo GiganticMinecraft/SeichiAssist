@@ -309,7 +309,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
           //ガチャ景品リスト上を線形探索する
           val matchingGachaData = gachaDataList.find { gachadata =>
             //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
-            if (gachadata.itemStack.hasItemMeta && gachadata.itemStack.getItemMeta.hasLore && gachadata.compare(m, name)) {
+            if (gachadata.itemStack.hasItemMeta && gachadata.itemStack.getItemMeta.hasLore && gachadata.canExchange(m, name)) {
               if (SeichiAssist.DEBUG) player.sendMessage(gachadata.itemStack.getItemMeta.getDisplayName)
               val amount = m.getAmount
 
@@ -527,7 +527,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         case m =>
           //ガチャ景品リストを一個ずつ見ていくfor文
           gachaDataList.find { gachadata =>
-            if (gachadata.itemStack.hasItemMeta && gachadata.itemStack.getItemMeta.hasLore && gachadata.compare(m, name)) {
+            if (gachadata.itemStack.hasItemMeta && gachadata.itemStack.getItemMeta.hasLore && gachadata.canExchange(m, name)) {
               if (SeichiAssist.DEBUG) {
                 player.sendMessage(gachadata.itemStack.getItemMeta.getDisplayName)
               }

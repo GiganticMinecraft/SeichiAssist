@@ -5,6 +5,7 @@ import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
+// TODO イミュータブル化
 class GachaPrize(_itemStack: ItemStack, var probability: Double) {
   //アイテムデータ格納
   val itemStack: ItemStack = _itemStack.clone()
@@ -18,21 +19,13 @@ class GachaPrize(_itemStack: ItemStack, var probability: Double) {
    * @deprecated ここをなんのデータクラスだと思っているんだ
    */
   @Deprecated()
-  def compare(m: ItemStack, name: String): Boolean = {
-    val mlore: List[String] = m.getItemMeta.getLore.asScala.toList
-    val lore: List[String] = this.itemStack.getItemMeta.getLore.asScala.toList
+  def canExchange(m: ItemStack, name: String): Boolean = {
+    val mlore = m.getItemMeta.getLore.asScala.toList
+    val lore = this.itemStack.getItemMeta.getLore.asScala.toList
 
-    if (lore.forall(line => mlore.contains(line)) && this.itemStack.getItemMeta.getDisplayName == m.getItemMeta.getDisplayName) {
-      val index = Util.loreIndexOf(mlore, "所有者")
-
-      if (index >= 0) {
-        //保有者であれば交換
-        //保有者でなければ交換できない
-        mlore(index).toLowerCase().contains(name)
-      } else {
-        //所有者の記載がなければ交換できる。
-        true
-      }
+    //　TODO: UUID
+    if (lore.forall(mlore.contains) && this.itemStack.getItemMeta.getDisplayName == m.getItemMeta.getDisplayName) {
+      Util.loreIndexOf(mlore, "所有者").forall(mlore(_).toLowerCase().contains(name))
     } else false
   }
 
