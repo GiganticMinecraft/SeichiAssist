@@ -376,7 +376,7 @@ class PlayerData(
 
     for (l <- previousLevel until level) {
       //レベルアップ時のメッセージ
-      player.sendMessage(s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv($l)→Lv(${l+1})】")
+      player.sendTitle(s"Lv$l -> Lv${l + 1}", s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww", 1, 20, 1)
 
       //レベルアップイベント着火
       Bukkit.getPluginManager.callEvent(new SeichiLevelUpEvent(player, this, l+1))
