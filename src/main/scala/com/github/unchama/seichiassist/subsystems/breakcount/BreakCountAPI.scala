@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.breakcount
 
 import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.generic.Diff
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.IncrementSeichiExp
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 
 trait BreakCountAPI[F[_], G[_], Player] {
 
@@ -20,6 +22,11 @@ trait BreakCountAPI[F[_], G[_], Player] {
   /**
    * プレーヤーの整地量データの更新が流れる [[fs2.Stream]]。
    */
-  val breakCountUpdates: fs2.Stream[F, (Player, SeichiAmountData)]
+  val breakCountUpdates: fs2.Stream[F, (Player, Diff[SeichiAmountData])]
+
+  /**
+   * プレーヤーの整地レベルの更新差分が流れる [[fs2.Stream]]
+   */
+  val levelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])]
 
 }

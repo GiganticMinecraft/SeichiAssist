@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.domain
 
+import cats.Eq
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level._
 
 case class SeichiAmountData(expAmount: SeichiExpAmount) {
@@ -45,4 +46,6 @@ case class SeichiAmountData(expAmount: SeichiExpAmount) {
 
 object SeichiAmountData {
   val initial: SeichiAmountData = SeichiAmountData(SeichiExpAmount.zero)
+
+  implicit val eq: Eq[SeichiAmountData] = Eq.by(_.expAmount)
 }

@@ -18,4 +18,7 @@ object Diff {
 
   def fromValues[A: Eq](left: A, right: A): Option[Diff[A]] =
     if (left neqv right) Some(Diff(left, right)) else None
+
+  def ofPair[A: Eq](pair: (A, A)): Option[Diff[A]] = fromValues(pair._1, pair._2)
+
 }
