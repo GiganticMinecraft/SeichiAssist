@@ -129,16 +129,23 @@ class PlayerData(
   }
 
   //今回の採掘速度上昇レベルを格納
+  @TemporaryProperty
   var minespeedlv = 0
   //前回の採掘速度上昇レベルを格納
+  @TemporaryProperty
   var lastminespeedlv = 0
   //投票受け取りボタン連打防止用
+  @TemporaryProperty
   var votecooldownflag = true
   //ガチャボタン連打防止用
+  @TemporaryProperty
   var gachacooldownflag = true
   //インベントリ共有ボタン連打防止用
+  @TemporaryProperty
   var shareinvcooldownflag = true
+  @TemporaryProperty
   var selectHomeNum = 0
+  @TemporaryProperty
   var samepageflag = false //実績ショップ用
 
   //endregion
