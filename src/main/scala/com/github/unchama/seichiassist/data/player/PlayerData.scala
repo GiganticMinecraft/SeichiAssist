@@ -119,6 +119,7 @@ class PlayerData(
   private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
   private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
   //チェスト破壊トグル
+  @TemporaryProperty
   var chestflag = true
 
   /**
