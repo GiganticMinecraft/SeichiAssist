@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.data.player
 
-import java.text.SimpleDateFormat
-import java.util.{GregorianCalendar, UUID}
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.ClosedRange
@@ -28,6 +26,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.{GregorianCalendar, UUID}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -314,7 +316,7 @@ class PlayerData(
 
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
-    checkVotingFairy()
+    votingFairyEffect().run(player)
   }
 
   //レベルを更新
@@ -456,7 +458,7 @@ class PlayerData(
           UnfocusedEffect {
             this.usingVotingFairy = false
           },
-          TargetedEffect.delay[Player](_.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ..."))
+          MessageEffect(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
         )
       }
     } else {
@@ -507,7 +509,7 @@ class PlayerData(
         val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
         player.setStatistic(Statistic.MINE_BLOCK, m, 0)
 
-        calcBlockExp(m, increase)
+        calcBlockExp(m, increase, player.getWorld)
       }
 
     val sum = blockIncreases.sum.round.toInt
@@ -518,21 +520,17 @@ class PlayerData(
     sum
   }
 
-  //スターレベルの計算、更新
-
   //ブロック別整地数反映量の調節
-  private def calcBlockExp(m: Material, i: Int): Double = {
-    val amount = i.toDouble
-
+  private def calcBlockExp(mat: Material, amount: Double, world: World): Double = {
     //ブロック別重み分け
-    val materialFactor = m match {
+    val materialFactor = mat match {
       //氷塊とマグマブロックの整地量を2倍
       case Material.PACKED_ICE | Material.MAGMA => 2.0
 
       case _ => 1.0
     }
 
-    val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
+    val managedWorld = ManagedWorld.fromBukkitWorld(world)
     val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
     val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0	
 
@@ -579,20 +577,15 @@ class PlayerData(
 
   def calcPlayerApple(): Int = {
     //ランク用関数
-    var i = 0
-    val t = p_apple
+    val myAppleCount = p_apple
 
     if (SeichiAssist.ranklist_p_apple.isEmpty) return 1
 
-    var rankdata = SeichiAssist.ranklist_p_apple(i)
-
-    //ランクが上がらなくなるまで処理
-    while (rankdata.p_apple > t) {
-      i += 1
-      rankdata = SeichiAssist.ranklist_p_apple(i)
-    }
-
-    i + 1
+    // 順位は1以上、
+    // このモデリングが対応するplayerよりも`p_apple`が多いPlayerをカウントすれば話は済む
+    1 + SeichiAssist.ranklist_p_apple
+      .map(_.p_apple)
+      .count(_ > myAppleCount)
   }
 
   //パッシブスキルの獲得量表示

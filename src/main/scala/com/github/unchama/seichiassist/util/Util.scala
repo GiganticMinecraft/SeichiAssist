@@ -5,7 +5,8 @@ import cats.effect.IO
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.util.typeclass.Sendable
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
