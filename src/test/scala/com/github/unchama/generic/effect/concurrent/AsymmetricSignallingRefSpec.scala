@@ -40,7 +40,7 @@ class AsymmetricSignallingRefSpec
           ref <- AsymmetricSignallingRef.in[Task, SyncIO, Task, Value](initialValue)
           fiber <-
             ref
-              .subscribeToValues
+              .values.discrete
               .take(updates.size + 1)
               .compile.toList.start
           // subscriptionのpullが優先されるようにsleepする

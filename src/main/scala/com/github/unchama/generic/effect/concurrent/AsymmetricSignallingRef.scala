@@ -9,7 +9,7 @@ import com.github.unchama.generic.effect.stream.ReorderingPipe
 import com.github.unchama.generic.effect.stream.ReorderingPipe.TimeStamped
 import com.github.unchama.generic.{ContextCoercion, Token}
 import fs2.Stream
-import fs2.concurrent.Topic
+import fs2.concurrent.{Signal, Topic}
 
 /**
  * 更新が [[Stream]] により読め出せるような可変参照セル。
@@ -21,9 +21,9 @@ import fs2.concurrent.Topic
 abstract class AsymmetricSignallingRef[G[_], F[_], A] extends Ref[G, A] {
 
   /**
-   * pullした時点での [[Ref]] の値と、その後に変更された値をすべて出力する [[Stream]]。
+   * pullした時点での [[Ref]] の値と、その後に変更された値をすべて出力する [[Signal]]。
    */
-  val subscribeToValues: Stream[F, A]
+  val values: Signal[F, A]
 
 }
 
@@ -94,10 +94,16 @@ object AsymmetricSignallingRef {
 
     private val topicQueueSize = 10
 
-    override val subscribeToValues: Stream[F, A] =
-      changeTopic
-        .subscribe(topicQueueSize)
-        .through(ReorderingPipe[F, A])
+    override val values: Signal[F, A] = new Signal[F, A] {
+      override def discrete: Stream[F, A] =
+        changeTopic
+          .subscribe(topicQueueSize)
+          .through(ReorderingPipe[F, A])
+
+      override def continuous: Stream[F, A] = Stream.repeatEval(get)
+
+      override def get: F[A] = GToF(AsymmetricSignallingRefImpl.this.get)
+    }
 
     override def get: G[A] = state.get.map(_.value)
 
