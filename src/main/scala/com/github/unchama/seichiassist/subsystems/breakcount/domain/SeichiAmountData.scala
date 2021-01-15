@@ -42,3 +42,7 @@ case class SeichiAmountData(expAmount: SeichiExpAmount) {
   def addExpAmount(another: SeichiExpAmount): SeichiAmountData = SeichiAmountData(expAmount.add(another))
 
 }
+
+object SeichiAmountData {
+  val initial: SeichiAmountData = SeichiAmountData(SeichiExpAmount.zero)
+}
