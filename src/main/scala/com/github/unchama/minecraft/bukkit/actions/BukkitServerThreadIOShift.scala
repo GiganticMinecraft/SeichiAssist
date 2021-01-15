@@ -1,4 +1,4 @@
-package com.github.unchama.minecraft.bukkit
+package com.github.unchama.minecraft.bukkit.actions
 
 import cats.effect.IO
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift

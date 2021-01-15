@@ -38,7 +38,7 @@ object System {
     H[_] : Sync
   ](rootLogger: Logger[F])
    (implicit configuration: Configuration): H[System[F, G]] = {
-    import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
+    import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage._
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] = new JdbcBuildAmountDataPersistence[G]()

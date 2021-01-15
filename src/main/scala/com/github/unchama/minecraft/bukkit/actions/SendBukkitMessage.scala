@@ -1,4 +1,4 @@
-package com.github.unchama.minecraft.bukkit
+package com.github.unchama.minecraft.bukkit.actions
 
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
