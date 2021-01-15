@@ -7,13 +7,14 @@ import com.github.unchama.seichiassist.subsystems.breakcount.application.actions
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 
-trait BreakCountAPI[F[_], G[_], Player] {
-
+trait BreakCountWriteAPI[G[_], Player] {
   /**
    * プレーヤーの整地量データを増加させるアクション
    */
   val incrementSeichiExp: IncrementSeichiExp[G, Player]
+}
 
+trait BreakCountReadAPI[F[_], G[_], Player] {
   /**
    * プレーヤーの整地量データの読み取り専用リポジトリ
    */
@@ -28,5 +29,6 @@ trait BreakCountAPI[F[_], G[_], Player] {
    * プレーヤーの整地レベルの更新差分が流れる [[fs2.Stream]]
    */
   val levelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])]
-
 }
+
+trait BreakCountAPI[F[_], G[_], Player] extends BreakCountWriteAPI[G, Player] with BreakCountReadAPI[F, G, Player]
