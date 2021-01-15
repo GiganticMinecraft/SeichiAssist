@@ -55,13 +55,13 @@ object System {
 
       new System[F, G] {
         override val api: BreakCountAPI[F, G, Player] = new BreakCountAPI[F, G, Player] {
-          override val breakCountRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]] =
+          override val seichiAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]] =
             _breakCountRepository.map(ReadOnlyRef.fromRef)
           override val incrementSeichiExp: IncrementSeichiExp[G, Player] =
             IncrementSeichiExp.using(_breakCountRepository, breakCountTopic)
-          override val breakCountUpdates: fs2.Stream[F, (Player, Diff[SeichiAmountData])] =
+          override val seichiAmountUpdates: fs2.Stream[F, (Player, Diff[SeichiAmountData])] =
             breakCountTopic.subscribe(1).mapFilter(identity)
-          override val levelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])] =
+          override val seichiLevelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])] =
             levelTopic.subscribe(1).mapFilter(identity)
         }
         override val listeners: Seq[Listener] = Seq()

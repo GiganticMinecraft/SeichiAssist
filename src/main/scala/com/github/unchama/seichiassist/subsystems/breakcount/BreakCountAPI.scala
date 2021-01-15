@@ -18,17 +18,17 @@ trait BreakCountReadAPI[F[_], G[_], Player] {
   /**
    * プレーヤーの整地量データの読み取り専用リポジトリ
    */
-  val breakCountRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]]
+  val seichiAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]]
 
   /**
    * プレーヤーの整地量データの更新が流れる [[fs2.Stream]]。
    */
-  val breakCountUpdates: fs2.Stream[F, (Player, Diff[SeichiAmountData])]
+  val seichiAmountUpdates: fs2.Stream[F, (Player, Diff[SeichiAmountData])]
 
   /**
    * プレーヤーの整地レベルの更新差分が流れる [[fs2.Stream]]
    */
-  val levelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])]
+  val seichiLevelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])]
 }
 
 trait BreakCountAPI[F[_], G[_], Player] extends BreakCountWriteAPI[G, Player] with BreakCountReadAPI[F, G, Player]
