@@ -335,7 +335,7 @@ class PlayerData(
       case _ => None
     }
 
-    val newDisplayName = idleColor + {
+    val newDisplayName = idleColor.map(_.toString).getOrElse("") + {
       val nicknameSettings = settings.nickname
       val currentNickname =
         Option.unless(nicknameSettings.style == NicknameStyle.Level)(
@@ -566,20 +566,11 @@ class PlayerData(
 
   //エフェクトデータのdurationを60秒引く
   def calcEffectData(): Unit = {
-    val tmplist = mutable.Buffer[FastDiggingEffect]()
-
     //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
-    effectdatalist.foreach { effectData =>
-      effectData.duration -= 1200
-      tmplist += effectData
-    }
+    effectdatalist.foreach(_.duration -= 1200)
 
     //tmplistのdurationが3秒以下（60tick）のものはeffectdatalistから削除
-    effectdatalist.foreach { effectData =>
-      if (effectData.duration <= 60) {
-        effectdatalist -= effectData
-      }
-    }
+    effectdatalist.filterInPlace(_.duration > 60)
   }
 
   //現在の採掘量順位
@@ -655,7 +646,7 @@ class PlayerData(
     val chunkMap = unitMap
 
     //チャンクを拡大すると仮定する
-    val assumedAmoont = chunkMap(directionType) + units(player).value
+    val assumedAmount = chunkMap(directionType) + units(player).value
 
     //一応すべての拡張値を出しておく
     val ahead = chunkMap(RelativeDirection.AHEAD)
@@ -665,10 +656,10 @@ class PlayerData(
 
     //合計チャンク再計算値
     val assumedUnitAmount = directionType match {
-      case RelativeDirection.AHEAD => (assumedAmoont + 1 + behind) * (right + 1 + left)
-      case RelativeDirection.BEHIND => (ahead + 1 + assumedAmoont) * (right + 1 + left)
-      case RelativeDirection.RIGHT => (ahead + 1 + behind) * (assumedAmoont + 1 + left)
-      case RelativeDirection.LEFT => (ahead + 1 + behind) * (right + 1 + assumedAmoont)
+      case RelativeDirection.AHEAD => (assumedAmount + 1 + behind) * (right + 1 + left)
+      case RelativeDirection.BEHIND => (ahead + 1 + assumedAmount) * (right + 1 + left)
+      case RelativeDirection.RIGHT => (ahead + 1 + behind) * (assumedAmount + 1 + left)
+      case RelativeDirection.LEFT => (ahead + 1 + behind) * (right + 1 + assumedAmount)
     }
 
     assumedUnitAmount <= limit
