@@ -63,7 +63,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
     val isSkull = itemstackcurrent.getType == Material.SKULL_ITEM
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "整地神ランキング") {
+    if (topinventory.getTitle == s"$DARK_PURPLE${BOLD}整地神ランキング") {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
@@ -75,45 +75,47 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 			 * クリックしたボタンに応じた各処理内容の記述ここから
 			 */
       //ページ変更処理
-      if (isSkull) {
-        // safe cast
-        val skullMeta = itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]
-        val name = skullMeta.getDisplayName
-        skullMeta.getOwner match {
-          case "MHF_ArrowLeft" =>
 
-
-            effectEnvironment.runAsyncTargetedEffect(player)(
-              SequentialEffect(
-                CommonSoundEffects.menuTransitionFenceSound,
-                ioCanOpenStickMenu.open(StickMenu.firstPage)
-              ),
-              "棒メニューの1ページ目を開く"
-            )
-
-          case "MHF_ArrowDown" =>
-            itemstackcurrent.getItemMeta
-            if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
-
-              //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-              player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
-            }
-
-          case "MHF_ArrowUp" =>
-            itemstackcurrent.getItemMeta
-            if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
-
-              //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-              player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
-            }
-
-          case _ =>
-        }
+      if (!isSkull) {
+        return
       }
+
+      // safe cast
+      val skullMeta = itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]
+      val name = skullMeta.getDisplayName
+      skullMeta.getOwner match {
+        case "MHF_ArrowLeft" =>
+          effectEnvironment.runAsyncTargetedEffect(player)(
+            SequentialEffect(
+              CommonSoundEffects.menuTransitionFenceSound,
+              ioCanOpenStickMenu.open(StickMenu.firstPage)
+            ),
+            "棒メニューの1ページ目を開く"
+          )
+
+        case "MHF_ArrowDown" =>
+          itemstackcurrent.getItemMeta
+          if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
+            val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
+
+            //開く音を再生
+            player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+            player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
+          }
+
+        case "MHF_ArrowUp" =>
+          itemstackcurrent.getItemMeta
+          if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
+            val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
+
+            //開く音を再生
+            player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
+            player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
+          }
+
+        case _ =>
+      }
+
     }
   }
 
