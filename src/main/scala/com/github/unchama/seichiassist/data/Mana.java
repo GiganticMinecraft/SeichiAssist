@@ -12,7 +12,9 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-
+/**
+ * マナ量を表すデータクラス
+ */
 public class Mana {
     //マナの値
     private double value;
@@ -23,6 +25,10 @@ public class Mana {
     //読み込まれているかどうかのフラグ
     private boolean loadflag;
 
+    private Player player;
+
+    private int level;
+
     //引数なしのコンストラクタ
     @Deprecated
     public Mana() {
@@ -31,7 +37,15 @@ public class Mana {
         loadflag = false;
     }
 
+    public Mana(Player player, int level) {
+        this.value = 0;
+        loadflag = false;
+        this.player = player;
+        this.level = level;
+    }
+
     //必ず最初のみ実行してほしいメソッド
+    @Deprecated
     public void initialize(Player player, int level) {
         //現在のレベルでのマナ上限値を計算しバーに表示
         //mの値は既に得られているはず。

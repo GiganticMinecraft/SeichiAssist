@@ -708,6 +708,7 @@ class PlayerData(
     voteFairyPeriod = new ClosedRange(value, voteFairyPeriod.endInclusive)
   }
 
+  @deprecated
   def setVotingFairyTime(@AntiTypesafe str: String): Unit = {
     val s = str.split(",")
     if (s.size < 5) return
@@ -732,6 +733,10 @@ class PlayerData(
       this.votingFairyStartTime = starts
       this.votingFairyEndTime = ends
     }
+  }
+
+  def setVotingFairyTime(ldt: LocalDateTime): Unit = {
+    setVotingFairyTime(ldt.format(DateTimeFormatter.ofPattern("yyyy,MM,dd,HH,mm")))
   }
 
   def setContributionPoint(addAmount: Int): Unit = {
