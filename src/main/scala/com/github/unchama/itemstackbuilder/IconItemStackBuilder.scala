@@ -1,13 +1,8 @@
 package com.github.unchama.itemstackbuilder
 
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.numeric.Positive
 import org.bukkit.Material
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
-
-import scala.collection.mutable
 
 /**
  * ItemStack, 特にメニューに使用するスロットのIconを生成するBuilderです.
