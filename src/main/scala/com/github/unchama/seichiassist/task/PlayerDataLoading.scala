@@ -238,7 +238,7 @@ object PlayerDataLoading {
         //マナの情報
         playerData.manaState.setMana(rs.getDouble("mana"))
 
-        playerData.totalexp = rs.getInt("totalexp")
+        playerData.globalExpPoint = rs.getInt("totalexp")
 
         playerData.expMergingFlag = rs.getByte("expmarge")
         playerData.contentsPresentInSharedInventory = {

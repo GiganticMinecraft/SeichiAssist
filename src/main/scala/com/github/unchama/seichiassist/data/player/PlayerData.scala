@@ -173,9 +173,9 @@ class PlayerData(
   //プレイ時間
   var playTick = 0
   //トータル破壊ブロック
-  var totalbreaknum: Long = 0.toLong
+  var totalbreaknum = 0L
   //合計経験値
-  var totalexp = 0L
+  var globalExpPoint = 0L
   //合計経験値統合済みフラグ
   var expMergingFlag: Byte = 0
   //特典受け取り済み投票数
@@ -436,14 +436,14 @@ class PlayerData(
       if (expMergingFlag.&(0x01 << internalServerId - 1).toByte == 0.toByte) {
         if (expMergingFlag.toInt == 0) {
           // 初回は加算じゃなくベースとして代入にする
-          totalexp = expmanager.getCurrentExp
+          globalExpPoint = expmanager.getCurrentExp
         } else {
-          totalexp += expmanager.getCurrentExp
+          globalExpPoint += expmanager.getCurrentExp
         }
         expMergingFlag = (expMergingFlag | (0x01 << internalServerId - 1).toByte).toByte
       }
     }
-    expmanager.setExp(totalexp)
+    expmanager.setExp(globalExpPoint)
   }
 
   private def votingFairyEffect(): TargetedEffect[Player] = {
@@ -535,7 +535,7 @@ class PlayerData(
   }
 
   private def saveTotalExp(): Unit = {
-    totalexp = expmanager.getCurrentExp
+    globalExpPoint = expmanager.getCurrentExp
   }
 
   def giganticBerserkLevelUp(): Unit = {

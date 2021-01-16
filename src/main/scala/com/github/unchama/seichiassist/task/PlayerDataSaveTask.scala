@@ -167,7 +167,7 @@ object PlayerDataSaveTask {
           + ",effectpoint = " + playerdata.effectPoint
           + ",mana = " + playerdata.manaState.getMana
           + ",expvisible = " + playerdata.settings.isExpBarVisible
-          + ",totalexp = " + playerdata.totalexp
+          + ",totalexp = " + playerdata.globalExpPoint
           + ",expmarge = " + playerdata.expMergingFlag
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
           + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteMessages
