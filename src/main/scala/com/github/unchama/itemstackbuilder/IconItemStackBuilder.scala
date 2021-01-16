@@ -1,8 +1,13 @@
 package com.github.unchama.itemstackbuilder
 
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.numeric.Positive
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
+
+import scala.collection.mutable
 
 /**
  * ItemStack, 特にメニューに使用するスロットのIconを生成するBuilderです.
@@ -14,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta
 class IconItemStackBuilder(material: Material, durability: Short = 0.toShort) extends
   AbstractItemStackBuilder[ItemMeta](material, durability) {
   private var shouldShowAttribute: Boolean = false
+  private val enchants: mutable.Map[Enchantment, Int] = new mutable.HashMap()
 
   /**
    * ItemStack(IconItemStackBuilder)の各種情報を表示させます.(シャベルの採掘速度等)
@@ -29,5 +35,11 @@ class IconItemStackBuilder(material: Material, durability: Short = 0.toShort) ex
     if (!shouldShowAttribute) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
     }
+    enchants.foreach { case (ench, lv) => meta.addEnchant(ench, lv, true) }
+  }
+
+  def addEnchant(enchant: Enchantment, level: Int): this.type = {
+    enchants(enchant) = level
+    this
   }
 }
