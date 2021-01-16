@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist
 
-trait StepPlaceMode {
+sealed trait StepPlaceMode {
   def asHumanReadable: String
 
   def next: StepPlaceMode
