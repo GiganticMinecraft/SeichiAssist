@@ -359,67 +359,30 @@ object MenuInventoryData { // 実際には60人も入ることは無いのでは
     inventory
   }
 
-  object MenuType extends Enumeration {
-
-    case object HEAD extends MenuType {
-      override def invName: String = s"$DARK_PURPLE${BOLD}二つ名組合せ「前」"
-    }
-
-    case object MIDDLE extends MenuType {
-      override def invName: String = s"$DARK_PURPLE${BOLD}二つ名組合せ「中」"
-    }
-
-    case object TAIL extends MenuType {
-      override def invName: String = s"$DARK_PURPLE${BOLD}二つ名組合せ「後」"
-    }
-
-    case object SHOP extends MenuType {
-      override def invName: String = s"$DARK_PURPLE${BOLD}実績ポイントショップ"
-    }
-
-    case object COMBINE extends MenuType {
-      override def invName: String = s"$DARK_PURPLE${BOLD}二つ名組合せシステム"
-    }
-
-    private def apply(s: String): MenuType = new MenuType {
-      override def invName: String = s
-    }
-  }
-
-  sealed trait MenuType {
-    def invName: String
-  }
-
-  def setHeadingIndex(uuid: UUID, k: MenuInventoryData.MenuType, index: Int): Unit = {
+  def setHeadingIndex(uuid: UUID, k: MenuType, index: Int): Unit = {
     k match {
-      case HEAD =>
-        headPartIndex.put(uuid, index)
-
-      case MIDDLE =>
-        middlePartIndex.put(uuid, index)
-
-      case TAIL =>
-        tailPartIndex.put(uuid, index)
-
-      case SHOP =>
-        shopIndex.put(uuid, index)
-
+      case MenuType.HEAD => headPartIndex.put(uuid, index)
+      case MenuType.MIDDLE => middlePartIndex.put(uuid, index)
+      case MenuType.TAIL => tailPartIndex.put(uuid, index)
+      case MenuType.SHOP => shopIndex.put(uuid, index)
     }
   }
 
-  def getHeadingIndex(uuid: UUID, k: MenuInventoryData.MenuType): Option[Int] = {
+  def getHeadingIndex(uuid: UUID, k: MenuType): Option[Int] = {
     k match {
-      case HEAD =>
-        return headPartIndex.get(uuid)
-      case MIDDLE =>
-        return middlePartIndex.get(uuid)
-      case TAIL =>
-        return tailPartIndex.get(uuid)
-      case SHOP =>
-        return shopIndex.get(uuid)
+      case MenuType.HEAD => headPartIndex.get(uuid)
+      case MenuType.MIDDLE => middlePartIndex.get(uuid)
+      case MenuType.TAIL => tailPartIndex.get(uuid)
+      case MenuType.SHOP => shopIndex.get(uuid)
+      case _ =>
+        throw new AssertionError("This statement shouldn't be reached!")
     }
-    throw new AssertionError("This statement shouldn't be reached!")
   }
+
+  private val commonNextPageButton = new SkullItemStackBuilder("MHF_ArrowRight")
+    .title(s"$YELLOW$UNDERLINE${BOLD}次ページへ")
+    .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
+    .build()
 
   /**
    * 二つ名 - 前パーツ
