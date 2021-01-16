@@ -147,8 +147,6 @@ class PlayerData(
   @TemporaryProperty
   var shareinvcooldownflag = true
   @TemporaryProperty
-  var selectHomeNum = 0
-  @TemporaryProperty
   var samepageflag = false //実績ショップ用
 
   //endregion
@@ -531,7 +529,7 @@ class PlayerData(
 
     val managedWorld = ManagedWorld.fromBukkitWorld(world)
     val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0	
+    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
 
     amount * materialFactor * swMult * sw01PenaltyMult
   }
