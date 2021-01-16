@@ -120,7 +120,9 @@ class PlayerData(
     }
   }
 
-  private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
+  private val _subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
+
+  def subHomeMap = _subHomeMap.toMap
   //チェスト破壊トグル
   @TemporaryProperty
   var chestflag = true
@@ -260,7 +262,7 @@ class PlayerData(
     case _ => 9 * 6
   }
 
-  def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
+  def subHomeEntries: Set[(Int, SubHome)] = _subHomeMap.toSet
 
   def gridChunkAmount: Int = (claimUnit.ahead + claimUnit.behind + 1) * (claimUnit.right + claimUnit.left + 1)
 
@@ -502,15 +504,12 @@ class PlayerData(
 
   //総破壊ブロック数を更新する
   def updateAndCalcMinedBlockAmount(): Int = {
-    val blockIncreases =
-      (MaterialSets.materials -- MaterialSets.noTrackingSeichiAmount).map { m =>
-        val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
-        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
+    val sum = (MaterialSets.materials -- MaterialSets.noTrackingSeichiAmount).map { m =>
+      val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
+      player.setStatistic(Statistic.MINE_BLOCK, m, 0)
 
-        calcBlockExp(m, increase, player.getWorld)
-      }
-
-    val sum = blockIncreases.sum.round.toInt
+      calcBlockExp(m, increase, player.getWorld)
+    }.sum.round.toInt
 
     totalbreaknum += sum
     gachapoint += sum
@@ -524,7 +523,6 @@ class PlayerData(
     val materialFactor = mat match {
       //氷塊とマグマブロックの整地量を2倍
       case Material.PACKED_ICE | Material.MAGMA => 2.0
-
       case _ => 1.0
     }
 
@@ -562,7 +560,7 @@ class PlayerData(
   }
 
   //エフェクトデータのdurationを60秒引く
-  def calcEffectData(): Unit = {
+  def updateEffectsDuration(): Unit = {
     //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
     effectdatalist.foreach(_.duration -= 1200)
 
@@ -604,29 +602,29 @@ class PlayerData(
   //サブホームの位置をセットする
   def setSubHomeLocation(location: Location, subHomeIndex: Int): Unit = {
     if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
-      val currentSubHome = this.subHomeMap.get(subHomeIndex)
+      val currentSubHome = this._subHomeMap.get(subHomeIndex)
       val currentSubHomeName = currentSubHome.map(_.name).orNull
 
-      this.subHomeMap(subHomeIndex) = new SubHome(location, currentSubHomeName)
+      this._subHomeMap(subHomeIndex) = new SubHome(location, currentSubHomeName)
     }
   }
 
   def setSubHomeName(name: String, subHomeIndex: Int): Unit = {
     if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
-      val currentSubHome = this.subHomeMap.getOrElse(subHomeIndex, return)
+      val currentSubHome = this._subHomeMap.getOrElse(subHomeIndex, return)
 
-      this.subHomeMap(subHomeIndex) = new SubHome(currentSubHome.getLocation, name)
+      this._subHomeMap(subHomeIndex) = new SubHome(currentSubHome.getLocation, name)
     }
   }
 
   // サブホームの位置を読み込む
   def getSubHomeLocation(subHomeIndex: Int): Option[Location] = {
-    val subHome = this.subHomeMap.get(subHomeIndex)
+    val subHome = this._subHomeMap.get(subHomeIndex)
     subHome.map(_.getLocation)
   }
 
   def getSubHomeName(subHomeIndex: Int): String = {
-    val subHome = this.subHomeMap.get(subHomeIndex)
+    val subHome = this._subHomeMap.get(subHomeIndex)
     val subHomeName = subHome.map(_.name)
     subHomeName.getOrElse(s"サブホームポイント${subHomeIndex + 1}")
   }
@@ -689,7 +687,7 @@ class PlayerData(
   def getVotingFairyStartTimeAsString: String = {
     val cal = this.votingFairyStartTime
 
-    if (votingFairyStartTime == dummyDate) {
+    if (votingFairyStartTime == PlayerData.dummyDate) {
       //設定されてない場合
       ",,,,,"
     } else {

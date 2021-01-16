@@ -42,7 +42,7 @@ object PlayerDataSaveTask {
 
     def updateSubHome(): Unit = {
       val playerUuid = playerdata.uuid.toString
-      playerdata.subHomeEntries.foreach { case (subHomeId, subHome) =>
+      playerdata.subHomeMap.toSet.foreach { case (subHomeId, subHome) =>
         val subHomeLocation = subHome.getLocation
 
         val template = ("insert into seichiassist.sub_home"

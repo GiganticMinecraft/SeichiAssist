@@ -39,7 +39,7 @@ object PlayerDataRecalculationRoutine {
         val playerData = SeichiAssist.playermap(player.getUniqueId)
 
         //エフェクトデータの持続時間を1200tick引いて、０以下のものを削除
-        playerData.calcEffectData()
+        playerData.updateEffectsDuration()
 
         //放置判定
         if (playerData.loc.contains(player.getLocation)) {
