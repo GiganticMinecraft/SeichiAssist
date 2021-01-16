@@ -31,9 +31,9 @@ class IconItemStackBuilder(material: Material, durability: Short = 0.toShort) ex
   }
 
   override def transformItemMetaOnBuild(meta: ItemMeta): Unit = {
+    super.transformItemMetaOnBuild(meta)
     if (!shouldShowAttribute) {
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
     }
-    enchants.foreach { case (ench, lv) => meta.addEnchant(ench, lv, true) }
   }
 }

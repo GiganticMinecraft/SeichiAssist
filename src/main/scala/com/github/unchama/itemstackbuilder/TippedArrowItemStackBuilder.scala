@@ -13,6 +13,7 @@ class TippedArrowItemStackBuilder(val potionData: PotionData)
    * 生成されるアイテムスタックに入る[ItemMeta]を, ビルダー内の情報に基づいて変更する.
    */
   override protected def transformItemMetaOnBuild(meta: PotionMeta): Unit = {
+    super.transformItemMetaOnBuild(meta)
     meta.setBasePotionData(potionData)
   }
 }

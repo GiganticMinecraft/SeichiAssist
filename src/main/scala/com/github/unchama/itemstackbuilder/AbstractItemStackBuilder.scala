@@ -65,7 +65,9 @@ abstract class AbstractItemStackBuilder[-M <: ItemMeta] protected
   /**
    * 生成されるアイテムスタックに入る[ItemMeta]を, ビルダー内の情報に基づいて変更する.
    */
-  protected def transformItemMetaOnBuild(meta: M): Unit
+  protected def transformItemMetaOnBuild(meta: M): Unit = {
+    enchants.foreach { case (ench, lv) => meta.addEnchant(ench, lv, true) }
+  }
 
   final def addEnchant(enchant: Enchantment, level: Int): this.type = {
     enchants(enchant) = level
