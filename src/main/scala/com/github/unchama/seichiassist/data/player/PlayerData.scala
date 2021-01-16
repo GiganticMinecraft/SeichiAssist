@@ -282,7 +282,6 @@ class PlayerData(
 
   import com.github.unchama.generic.ratelimiting.FixedWindowRateLimiter
   import scala.concurrent.duration._
-  import cats.implicits._
   val GBRateLimitter = FixedWindowRateLimiter.in(
     SeichiAssist.seichiAssistConfig.getGiganticBerserkLimitRatePerMinute,
     1.minute
@@ -425,7 +424,7 @@ class PlayerData(
 
     //TODO: 今後実装予定。
 
-    val newStars: Int = starLevels.total()
+    val newStars = starLevels.total()
     //合計値の確認
     if (oldStars < newStars) {
       player.sendMessage(s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆($oldStars))→Lv200(☆($newStars))】")
