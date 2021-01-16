@@ -69,7 +69,7 @@ abstract class AbstractItemStackBuilder[-M <: ItemMeta] protected
     enchants.foreach { case (ench, lv) => meta.addEnchant(ench, lv, true) }
   }
 
-  final def addEnchant(enchant: Enchantment, level: Int): this.type = {
+  override final def addEnchant(enchant: Enchantment, level: Int): this.type = {
     enchants(enchant) = level
     this
   }

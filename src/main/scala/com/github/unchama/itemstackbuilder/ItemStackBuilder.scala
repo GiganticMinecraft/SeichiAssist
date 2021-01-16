@@ -1,5 +1,6 @@
 package com.github.unchama.itemstackbuilder
 
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 
 /**
@@ -79,4 +80,6 @@ trait ItemStackBuilder {
    * @return 生成された [ItemStack]
    */
   def build(): ItemStack
+
+  def addEnchant(enchant: Enchantment, level: Int): ItemStackBuilder
 }
