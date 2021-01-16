@@ -418,7 +418,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
       }
       //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
       if (playerdata.level < SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel) {
-        player.sendMessage(s"${GREEN.toString}4次元ポケットを入手するには整地Lvが${SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel}以上必要です。")
+        player.sendMessage(s"${GREEN}4次元ポケットを入手するには整地Lvが${SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel}以上必要です。")
         return
       }
       if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
