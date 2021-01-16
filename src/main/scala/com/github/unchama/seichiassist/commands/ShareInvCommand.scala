@@ -5,7 +5,7 @@ import cats.data.EitherT
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.util.{ItemListSerialization, Util}
+import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -48,7 +48,7 @@ import scala.jdk.CollectionConverters._
               .filterNot(_ == null)
               .filterNot(_.getType == Material.AIR)
               .foreach(stack => dropIfNotEmpty(Some(stack), player))
-            playerInventory.setContents(ItemListSerialization.deserializeFromBase64(serial).asScala.toArray)
+            playerInventory.setContents(BukkitSerialization.deserializeFromBase64(serial).toArray)
 
             playerData.contentsPresentInSharedInventory = false
             Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB書き換え成功)")
@@ -77,10 +77,10 @@ import scala.jdk.CollectionConverters._
 
     {
       for {
-        inventory <- EitherT.rightT[IO, TargetedEffect[Player]](playerInventory.getContents.toList.asJava)
+        inventory <- EitherT.rightT[IO, TargetedEffect[Player]](playerInventory.getContents.toList)
         serializedInventory <-
           takeIfNotNull[IO, TargetedEffect[Player], String](
-            ItemListSerialization.serializeToBase64(inventory),
+            BukkitSerialization.serializeToBase64(inventory),
             MessageEffect(s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。")
           )
         _ <- EitherT(databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory))

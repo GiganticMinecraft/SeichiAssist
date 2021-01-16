@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.
 import cats.effect.Sync
 import com.github.unchama.itemmigration.bukkit.util.MigrationHelper
 import com.github.unchama.itemmigration.domain.{ItemMigrationTarget, ItemStackConversion}
-import com.github.unchama.seichiassist.util.{BukkitSerialization, ItemListSerialization}
+import com.github.unchama.seichiassist.util.BukkitSerialization
 import org.bukkit.Material
 import scalikejdbc._
 
@@ -12,10 +12,8 @@ class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]
   import scala.jdk.CollectionConverters._
 
   private def convertSharedInventory(persistedSharedInventory: String)(conversion: ItemStackConversion): String = {
-    ItemListSerialization.serializeToBase64 {
-      ItemListSerialization
-        .deserializeFromBase64(persistedSharedInventory)
-        .asScala
+    BukkitSerialization.serializeToBase64 {
+      BukkitSerialization.deserializeFromBase64(persistedSharedInventory)
         .map { stack =>
           if (stack != null && stack.getType != Material.AIR) {
             conversion(stack)
@@ -23,7 +21,6 @@ class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]
             stack
           }
         }
-        .asJava
     }
   }
 
