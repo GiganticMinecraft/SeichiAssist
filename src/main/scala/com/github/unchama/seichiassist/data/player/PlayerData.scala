@@ -52,9 +52,11 @@ class PlayerData(
   val hisotryData: MineStackUsageHistory = new MineStackUsageHistory()
 
   //現在座標
+  @TemporaryProperty
   var loc: Option[Location] = None
 
   //放置時間
+  @TemporaryProperty
   var idleMinute = 0
 
   //経験値マネージャ
@@ -119,7 +121,6 @@ class PlayerData(
   }
 
   private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
-  private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
   //チェスト破壊トグル
   @TemporaryProperty
   var chestflag = true
@@ -211,7 +212,7 @@ class PlayerData(
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
   //投票妖精関連
   var usingVotingFairy = false
-  var voteFairyPeriod = new ClosedRange(dummyDate, dummyDate)
+  var voteFairyPeriod = new ClosedRange(PlayerData.dummyDate, PlayerData.dummyDate)
   var hasVotingFairyMana = 0
   var VotingFairyRecoveryValue = 0
   var toggleGiveApple = 1
@@ -713,11 +714,11 @@ class PlayerData(
       val year = s(0).toInt
       val month = s(1).toInt - 1
       val dayOfMonth = s(2).toInt
-      val starts = new GregorianCalendar(year, month, dayOfMonth, Integer.parseInt(s(3)), Integer.parseInt(s(4)))
+      var hour = s(3).toInt
+      val i4 = s(4).toInt
+      val starts = new GregorianCalendar(year, month, dayOfMonth, hour, i4)
 
-      var min = Integer.parseInt(s(4)) + 1
-      var hour = Integer.parseInt(s(3))
-
+      var min = i4 + 1
       min = if (this.toggleVotingFairy % 2 != 0) min + 30 else min
       hour = this.toggleVotingFairy match {
         case 2 | 3 => hour + 1
@@ -806,4 +807,5 @@ object PlayerData {
   import eu.timepit.refined.auto._
   import eu.timepit.refined.numeric._
   val passiveSkillProbability: Int Refined Positive = 10
+  private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
 }
