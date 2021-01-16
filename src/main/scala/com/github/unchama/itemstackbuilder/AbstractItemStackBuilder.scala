@@ -2,8 +2,11 @@ package com.github.unchama.itemstackbuilder
 
 import com.github.unchama.itemstackbuilder.component.IconComponent
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
+
+import scala.collection.mutable
 
 /**
  * ItemStackBuilderのベースとなる抽象クラス.
@@ -15,6 +18,7 @@ abstract class AbstractItemStackBuilder[-M <: ItemMeta] protected
 (material: Material, durability: Short) extends ItemStackBuilder {
 
   private val component: IconComponent = new IconComponent(material, durability)
+  protected val enchants: mutable.Map[Enchantment, Int] = new mutable.HashMap()
 
   final override def build(): ItemStack = {
     val itemStack = component.itemStack()
@@ -62,4 +66,9 @@ abstract class AbstractItemStackBuilder[-M <: ItemMeta] protected
    * 生成されるアイテムスタックに入る[ItemMeta]を, ビルダー内の情報に基づいて変更する.
    */
   protected def transformItemMetaOnBuild(meta: M): Unit
+
+  final def addEnchant(enchant: Enchantment, level: Int): this.type = {
+    enchants(enchant) = level
+    this
+  }
 }
