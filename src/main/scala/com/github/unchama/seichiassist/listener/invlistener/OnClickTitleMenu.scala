@@ -6,7 +6,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
-import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
+import com.github.unchama.seichiassist.MenuType
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.targetedeffect.SequentialEffect
@@ -123,7 +123,7 @@ object OnClickTitleMenu {
 
           case _ =>
         }
-        
+
       case MenuType.HEAD.invName =>
         event.setCancelled(true)
         mat match {
@@ -154,7 +154,7 @@ object OnClickTitleMenu {
             // 次ページ
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
-            val menuType = MenuInventoryData.MenuType.HEAD
+            val menuType = MenuType.HEAD
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeHeadPartCustomMenu(player))
 
@@ -189,7 +189,7 @@ object OnClickTitleMenu {
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
-            val menuType = MenuInventoryData.MenuType.MIDDLE
+            val menuType = MenuType.MIDDLE
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeMiddlePartCustomMenu(player))
 
@@ -224,7 +224,7 @@ object OnClickTitleMenu {
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
-            val menuType = MenuInventoryData.MenuType.TAIL
+            val menuType = MenuType.TAIL
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
 
@@ -271,7 +271,7 @@ object OnClickTitleMenu {
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             val uuid = player.getUniqueId
-            val menuType = MenuInventoryData.MenuType.SHOP
+            val menuType = MenuType.SHOP
             MenuInventoryData.setHeadingIndex(uuid, menuType, MenuInventoryData.getHeadingIndex(uuid, menuType).get + PER_PAGE)
             player.openInventory(MenuInventoryData.computePartsShopMenu(player))
 
