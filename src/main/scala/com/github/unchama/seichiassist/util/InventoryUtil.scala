@@ -50,17 +50,26 @@ object InventoryUtil {
     player.getInventory.addItem(itemstack)
   }
 
-  def removeItemfromPlayerInventory(inventory: PlayerInventory,
+  /**
+   * ItemStackの個数を減らすことを試みる
+   * @param inventory 対象インベントリ
+   * @param itemstack 使うアイテム
+   * @param count 使用する個数
+   * @return 実際に減算したかどうか
+   */
+  def removeItemFromPlayerInventory(inventory: PlayerInventory,
                                     itemstack: ItemStack, count: Int): Boolean = {
-    //持っているアイテムを減らす処理
-    if (itemstack.getAmount == count) {
-      // アイテムをcount個使うので、プレイヤーの手を素手にする
-      inventory.setItemInMainHand(new ItemStack(Material.AIR))
-    } else if (itemstack.getAmount > count) {
+    val amount = itemstack.getAmount
+    if (amount == count) {
+      // TODO: もともとのコードはメインハンドから減算していた。デグレードしたら要調査
+      itemstack.setType(Material.AIR)
+      true
+    } else if (amount > count) {
       // プレイヤーが持っているアイテムをcount個減らす
-      itemstack.setAmount(itemstack.getAmount - count)
-    } else
-      return itemstack.getAmount >= count
-    true
+      itemstack.setAmount(amount - count)
+      true
+    } else {
+      false
+    }
   }
 }

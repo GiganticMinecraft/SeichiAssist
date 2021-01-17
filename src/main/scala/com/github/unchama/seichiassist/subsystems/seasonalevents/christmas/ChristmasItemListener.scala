@@ -5,7 +5,7 @@ import java.util.Random
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
-import com.github.unchama.seichiassist.util.InventoryUtil.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
+import com.github.unchama.seichiassist.util.InventoryUtil.{addItem, dropItem, isPlayerInventoryFull, removeItemFromPlayerInventory}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.seichiassist.ManagedWorld._
 import de.tr7zw.itemnbtapi.NBTItem
@@ -51,7 +51,7 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
     val potionEffectType = if (rand > 0.5) PotionEffectType.LUCK else PotionEffectType.UNLUCK
     player.addPotionEffect(new PotionEffect(potionEffectType, 20 * 30, 0), true)
 
-    removeItemfromPlayerInventory(player.getInventory, item, 1)
+    removeItemFromPlayerInventory(player.getInventory, item, 1)
 
     val remainingPiece = new NBTItem(item).getByte(NBTTagConstants.cakePieceTag).toInt
     if (remainingPiece != 0) {

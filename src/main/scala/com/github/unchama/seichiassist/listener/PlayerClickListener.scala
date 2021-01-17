@@ -168,7 +168,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
       }
       else 1
 
-    if (!InventoryUtil.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)) {
+    if (!InventoryUtil.removeItemFromPlayerInventory(player.getInventory, clickedItemStack, count)) {
       player.sendMessage(RED.toString + "ガチャ券の数が不正です。")
       return
     }
