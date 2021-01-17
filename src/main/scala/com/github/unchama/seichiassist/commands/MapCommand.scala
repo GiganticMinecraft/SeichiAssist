@@ -13,7 +13,7 @@ object MapCommand {
       IO {
         val location = context.sender.getLocation
         val url =
-          s"$RED${UNDERLINE}http://s${SeichiAssist.seichiAssistConfig.getServerNum}.map.gigantic.seichi.click" +
+          s"$RED${UNDERLINE}http://s${SeichiAssist.seichiAssistConfig.getServerNum}-map-gigantic.seichi.click" +
             s"/?worldname=${location.getWorld.getName}&mapname=flat&zoom=2&" +
             s"x=${location.getBlockX}&y=${location.getBlockY}&z=${location.getBlockZ}"
         MessageEffect(url)
