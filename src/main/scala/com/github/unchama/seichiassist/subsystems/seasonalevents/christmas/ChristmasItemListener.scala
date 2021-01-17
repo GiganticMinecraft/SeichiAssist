@@ -5,7 +5,7 @@ import java.util.Random
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
-import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
+import com.github.unchama.seichiassist.util.InventoryUtil.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.seichiassist.ManagedWorld._
 import de.tr7zw.itemnbtapi.NBTItem

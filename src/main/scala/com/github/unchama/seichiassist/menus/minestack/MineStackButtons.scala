@@ -9,7 +9,7 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, a
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.InventoryUtil
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -138,7 +138,7 @@ private[minestack] case class MineStackButtons(player: Player) {
             },
             // アイテム付与はアトミックな操作ではない(コンテキストシフトを含む)ので、
             // subtractが終わってから行わなければならない
-            Util.grantItemStacksEffect(itemStackToGrant)
+            InventoryUtil.grantItemStacksEffect(itemStackToGrant)
           ).run(player)
       } yield ()
     })

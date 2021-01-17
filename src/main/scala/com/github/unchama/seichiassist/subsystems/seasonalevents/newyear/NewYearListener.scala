@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{START_DATE, isInEvent, itemDropRate}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
+import com.github.unchama.seichiassist.util.InventoryUtil.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect

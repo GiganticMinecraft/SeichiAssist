@@ -368,7 +368,7 @@ object FirstPage extends Menu {
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
-                Util.grantItemStacksEffect(itemStacksToGive: _*),
+                InventoryUtil.grantItemStacksEffect(itemStacksToGive: _*),
                 UnfocusedEffect {
                   playerData.unclaimedApologyItems -= numberOfItemsToGive
                 },
@@ -471,7 +471,7 @@ object FirstPage extends Menu {
               val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
 
               SequentialEffect(
-                Util.grantItemStacksEffect(itemStacksToGive: _*),
+                InventoryUtil.grantItemStacksEffect(itemStacksToGive: _*),
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                 },

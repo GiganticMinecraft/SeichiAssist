@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.InventoryUtil
 import org.bukkit.ChatColor._
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
@@ -124,11 +124,11 @@ object PlayerDataRecalculationRoutine {
         if (playerData.gachapoint >= config.getGachaPresentInterval && playerData.settings.receiveGachaTicketEveryMinute) {
           val skull = GachaSkullData.gachaSkull
           playerData.gachapoint = playerData.gachapoint - config.getGachaPresentInterval
-          if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
-            Util.addItem(player, skull)
+          if (player.getInventory.contains(skull) || !InventoryUtil.isPlayerInventoryFull(player)) {
+            InventoryUtil.addItem(player, skull)
             player.sendMessage(s"${GOLD}ガチャ券${WHITE}プレゼントフォーユー。右クリックで使えるゾ")
           } else {
-            Util.dropItem(player, skull)
+            InventoryUtil.dropItem(player, skull)
             player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
             player.sendMessage(s"${GOLD}ガチャ券${WHITE}がドロップしました。右クリックで使えるゾ")
           }

@@ -5,7 +5,7 @@ import cats.data.EitherT
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{InventoryUtil, BukkitSerialization}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -15,9 +15,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
 
 object ShareInvCommand {
-
-import scala.jdk.CollectionConverters._
-
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val senderData = SeichiAssist.playermap(context.sender.getUniqueId)
@@ -48,7 +45,7 @@ import scala.jdk.CollectionConverters._
               .filterNot(_ == null)
               .filterNot(_.getType == Material.AIR)
               .foreach(stack => dropIfNotEmpty(Some(stack), player))
-            playerInventory.setContents(BukkitSerialization.deserializeFromBase64(serial).toArray)
+            playerInventory.setContents(BukkitSerialization.fromBase64(serial).toArray)
 
             playerData.contentsPresentInSharedInventory = false
             Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB書き換え成功)")
@@ -61,7 +58,7 @@ import scala.jdk.CollectionConverters._
 
   def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): Unit = {
     itemStackOption match {
-      case Some(itemStack) => Util.dropItem(to, itemStack)
+      case Some(itemStack) => InventoryUtil.dropItem(to, itemStack)
       case None =>
     }
   }
@@ -80,7 +77,7 @@ import scala.jdk.CollectionConverters._
         inventory <- EitherT.rightT[IO, TargetedEffect[Player]](playerInventory.getContents.toList)
         serializedInventory <-
           takeIfNotNull[IO, TargetedEffect[Player], String](
-            BukkitSerialization.serializeToBase64(inventory),
+            BukkitSerialization.toBase64(inventory),
             MessageEffect(s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。")
           )
         _ <- EitherT(databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory))

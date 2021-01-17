@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.DefaultEffectEnvironment
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
 import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
-import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
+import com.github.unchama.seichiassist.util.InventoryUtil.grantItemStacksEffect
 import org.bukkit.entity.Player
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack

@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.InventoryUtil
 import com.github.unchama.targetedeffect.TargetedEffect._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -15,7 +15,7 @@ object EventCommand {
   import com.github.unchama.targetedeffect._
 
   val christsmasGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
+    InventoryUtil.grantItemStacksEffect(
       christmasCake(christmasCakeDefaultPieces),
       christmasTurkey,
       christmasPotion,
@@ -25,13 +25,13 @@ object EventCommand {
     )
 
   val newYearGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
+    InventoryUtil.grantItemStacksEffect(
       newYearApple,
       newYearBag
     )
 
   val halloweenGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
+    InventoryUtil.grantItemStacksEffect(
       halloweenPotion,
       halloweenHoe
     )

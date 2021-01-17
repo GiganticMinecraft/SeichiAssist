@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginEvent.{START_DATE, isInEvent}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LoginBonusItemData.loginBonusAt
-import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
+import com.github.unchama.seichiassist.util.InventoryUtil.grantItemStacksEffect
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent

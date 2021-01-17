@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
-import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
+import com.github.unchama.seichiassist.util.InventoryUtil.grantItemStacksEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect

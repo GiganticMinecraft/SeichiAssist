@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Chris
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData.christmasPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.valentinePlayerHead
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{Util, InventoryUtil}
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -117,7 +117,7 @@ object SecondPage extends Menu {
             }
 
             SequentialEffect(
-              Util.grantItemStacksEffect(skullToGive),
+              InventoryUtil.grantItemStacksEffect(skullToGive),
               UnfocusedEffect { expManager.changeExp(-10000) },
               MessageEffect(s"${GOLD}経験値10000を消費して自分の頭を召喚しました"),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)

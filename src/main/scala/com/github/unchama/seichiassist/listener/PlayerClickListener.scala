@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.{BreakUtil, Util, InventoryUtil}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
@@ -168,7 +168,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
       }
       else 1
 
-    if (!Util.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)) {
+    if (!InventoryUtil.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)) {
       player.sendMessage(RED.toString + "ガチャ券の数が不正です。")
       return
     }
@@ -193,8 +193,8 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
 
       //メッセージ設定
       val additionalMessage =
-        if (!Util.isPlayerInventoryFull(player)) {
-          Util.addItem(player, givenItem)
+        if (!InventoryUtil.isPlayerInventoryFull(player)) {
+          InventoryUtil.addItem(player, givenItem)
           ""
         } else {
           //アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
@@ -204,7 +204,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
           } else {
             // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
             // ...ドロップする
-            Util.dropItem(player, givenItem)
+            InventoryUtil.dropItem(player, givenItem)
             s"${AQUA}景品がドロップしました。"
           }
         }
@@ -463,7 +463,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     }
 
     //インベントリに空がない場合無視
-    if (Util.isPlayerInventoryFull(p)) {
+    if (InventoryUtil.isPlayerInventoryFull(p)) {
       p.sendMessage(RED.toString + "インベントリがいっぱいです")
       return
     }

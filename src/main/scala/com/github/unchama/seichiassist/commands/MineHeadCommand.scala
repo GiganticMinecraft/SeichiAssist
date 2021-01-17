@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
+import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, InventoryUtil}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
@@ -13,7 +13,7 @@ object MineHeadCommand {
 
   val effect: TargetedEffect[Player] =
     SequentialEffect(
-      Util.grantItemStacksEffect(StaticGachaPrizeFactory.getMineHeadItem),
+      InventoryUtil.grantItemStacksEffect(StaticGachaPrizeFactory.getMineHeadItem),
       MessageEffect(s"${GREEN}専用アイテムを付与しました。")
     )
 
