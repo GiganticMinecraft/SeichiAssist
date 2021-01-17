@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.{BreakUtil, Util, InventoryUtil}
+import com.github.unchama.seichiassist.util.{BreakUtil, Util, InventoryUtil, EnchantUtil}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
@@ -231,7 +231,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
 
         val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq
           .map { case (enchantment, level) =>
-            s"$GRAY${Util.getEnchantName(enchantment.getName, level)}"
+            s"$GRAY${EnchantUtil.getEnchantName(enchantment.getName, level)}"
           }
 
         import scala.util.chaining._
