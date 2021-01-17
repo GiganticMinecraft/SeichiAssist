@@ -25,7 +25,7 @@ class GachaDataManipulator(private val gateway: DatabaseGateway) {
     val command = s"select * from $tableReference"
     try {
       gateway.executeQuery(command).recordIteration { lrs =>
-        val restoredInventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"))
+        val restoredInventory = BukkitSerialization.fromBase64forPocket(lrs.getString("itemstack"))
         val restoredItemStack = restoredInventory.getItem(0)
 
         val prize = new GachaPrize(restoredItemStack, lrs.getDouble("probability"))

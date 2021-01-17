@@ -25,7 +25,7 @@ class MineStackGachaDataManipulator(private val gateway: DatabaseGateway) {
     val command = s"select * from $tableReference"
     try {
       gateway.executeQuery(command).recordIteration { lrs =>
-        val savedInventory = BukkitSerialization.fromBase64(lrs.getString("itemstack"))
+        val savedInventory = BukkitSerialization.fromBase64forPocket(lrs.getString("itemstack"))
         val itemStack = savedInventory.getItem(0)
 
         val gachaData = new MineStackGachaData(

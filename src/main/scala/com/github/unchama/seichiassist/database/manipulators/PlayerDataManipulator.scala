@@ -482,7 +482,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
     val executeQuery = IO {
       gateway.executeQuery(command).recordIteration { lrs =>
-        BukkitSerialization.fromBase64(lrs.getString("inventory"))
+        BukkitSerialization.fromBase64forPocket(lrs.getString("inventory"))
       }.head
     }
 

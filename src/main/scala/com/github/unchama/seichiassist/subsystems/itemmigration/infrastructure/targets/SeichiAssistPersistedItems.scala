@@ -8,12 +8,9 @@ import org.bukkit.Material
 import scalikejdbc._
 
 class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]) extends ItemMigrationTarget[F] {
-
-  import scala.jdk.CollectionConverters._
-
   private def convertSharedInventory(persistedSharedInventory: String)(conversion: ItemStackConversion): String = {
-    BukkitSerialization.serializeToBase64 {
-      BukkitSerialization.deserializeFromBase64(persistedSharedInventory)
+    BukkitSerialization.toBase64 {
+      BukkitSerialization.fromBase64(persistedSharedInventory)
         .map { stack =>
           if (stack != null && stack.getType != Material.AIR) {
             conversion(stack)
