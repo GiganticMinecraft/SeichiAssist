@@ -18,7 +18,7 @@ object HalfHourRankingRoutine {
     }
 
     val routineAction: IO[Unit] = IO {
-      Util.sendEveryMessage("--------------30分間整地ランキング--------------")
+      Util.sendEveryMessageWithoutIgnore("--------------30分間整地ランキング--------------")
 
       var totalBreakCount = 0
 
@@ -59,7 +59,7 @@ object HalfHourRankingRoutine {
         }
         .reverse
 
-      Util.sendEveryMessage("全体の整地量は " + AQUA + totalBreakCount + WHITE + " でした")
+      Util.sendEveryMessageWithoutIgnore("全体の整地量は " + AQUA + totalBreakCount + WHITE + " でした")
 
       sortedPlayerData.headOption.foreach { _ =>
         val rankingPositionColor = List(DARK_PURPLE, BLUE, DARK_AQUA)
@@ -71,17 +71,17 @@ object HalfHourRankingRoutine {
           .foreach { case ((playerData, positionColor), index) =>
             val starLevel = playerData.starLevels.total()
             val playerNameText =
-              if(starLevel == 0) 
+              if(starLevel == 0)
                 s"$positionColor[ Lv${playerData.level} ]${playerData.lowercaseName}$WHITE"
               else
                 s"$positionColor[ Lv${playerData.level}☆$starLevel ]${playerData.lowercaseName}$WHITE"
             val increaseAmountText = s"$AQUA${playerData.halfhourblock.increase}$WHITE"
 
-            Util.sendEveryMessage(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
+            Util.sendEveryMessageWithoutIgnore(s"整地量第${index + 1}位は${playerNameText}で${increaseAmountText}でした")
           }
       }
 
-      Util.sendEveryMessage("--------------------------------------------------")
+      Util.sendEveryMessageWithoutIgnore("--------------------------------------------------")
     }
 
     implicit val timer: Timer[IO] = IO.timer(context)

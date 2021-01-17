@@ -7,7 +7,7 @@ import org.bukkit.Bukkit
 
 object SyncNotifiable {
   def apply[F[_] : Sync]: Notifiable[F] = (message: String) => Sync[F].delay {
-    Util.sendEveryMessage(message)
+    Util.sendEveryMessageWithoutIgnore(message)
     Bukkit.getLogger.info(message)
   }
 }

@@ -46,7 +46,7 @@ object GiganticBerserkTask {
       //最大レベルになった時の処理
       if (pd.giganticBerserk.reachedLimit()) {
         Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
-        Util.sendEveryMessage(s"$GOLD$BOLD${pd.lowercaseName}がパッシブスキル:$BERSERK$GOLD${BOLD}を完成させました！")
+        Util.sendEveryMessageWithoutIgnore(s"$GOLD$BOLD${pd.lowercaseName}がパッシブスキル:$BERSERK$GOLD${BOLD}を完成させました！")
       }
     } else {
       //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ

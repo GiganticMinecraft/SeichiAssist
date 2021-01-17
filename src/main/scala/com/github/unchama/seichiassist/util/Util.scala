@@ -55,11 +55,11 @@ object Util {
     }
   }
 
-  def sendEveryMessage[T : Sendable](message: T): Unit = {
+  def sendEveryMessageWithoutIgnore[T : Sendable](message: T): Unit = {
     Bukkit.getOnlinePlayers.forEach(implicitly[Sendable[T]].sendMessage(_, message))
   }
 
-  def sendEveryMessageWithoutIgnore[T : Sendable](message: T): Unit = {
+  def sendEveryMessage[T : Sendable](message: T): Unit = {
     import cats.implicits._
     Bukkit.getOnlinePlayers.asScala.map { player =>
       for {

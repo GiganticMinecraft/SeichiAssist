@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
-import com.github.unchama.seichiassist.util.Util.sendEveryMessage
+import com.github.unchama.seichiassist.util.Util.sendEveryMessageWithoutIgnore
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Sound
@@ -61,7 +61,7 @@ object SeizonsikiListener extends Listener {
       player.setHealth(0)
 
       val messages = deathMessages(player.getName)
-      sendEveryMessage(messages(new Random().nextInt(messages.size)))
+      sendEveryMessageWithoutIgnore(messages(new Random().nextInt(messages.size)))
     }
   }
 }

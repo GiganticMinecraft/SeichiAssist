@@ -19,8 +19,8 @@ object GiganticFeverCommand {
     .execution { _ =>
       val config = SeichiAssist.seichiAssistConfig
 
-      Util.sendEveryMessage(s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
-      Util.sendEveryMessage(s"$AQUA(${config.getGiganticFeverDisplayTime}間)")
+      Util.sendEveryMessageWithoutIgnore(s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
+      Util.sendEveryMessageWithoutIgnore(s"$AQUA(${config.getGiganticFeverDisplayTime}間)")
 
       Util.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL)
 
@@ -28,7 +28,7 @@ object GiganticFeverCommand {
         scala.concurrent.duration.MINUTES))(IO.timer(ExecutionContext.global))
 
       Util.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD)
-      Util.sendEveryMessage(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
+      Util.sendEveryMessageWithoutIgnore(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
 
       IO(emptyEffect)
     }
