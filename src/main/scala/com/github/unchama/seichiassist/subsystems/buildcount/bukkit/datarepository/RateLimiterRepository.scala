@@ -27,7 +27,7 @@ class RateLimiterRepository[
     (_, _) =>
       FixedWindowRateLimiter.in[F, G, BuildExpAmount](
         config.oneMinuteBuildExpLimit,
-        1.second
+        1.minute
       ).map(Right.apply)
 
   override protected def initializeValue(player: Player, temporaryData: TemporaryData): G[Data] =
