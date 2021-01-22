@@ -18,8 +18,11 @@ class BuildExpIncrementer[
   import cats.effect.implicits._
 
   @EventHandler(ignoreCancelled = true)
-  def onEvent(event: BlockPlaceEvent): Unit =
-    IncrementBuildExpWhenBuiltByHand[F, Player]
-      .of(event.getPlayer)
-      .runSync[SyncIO].unsafeRunSync()
+  def onEvent(event: BlockPlaceEvent): Unit = {
+    if (event.getBlockPlaced.getType.isSolid) {
+      IncrementBuildExpWhenBuiltByHand[F, Player]
+        .of(event.getPlayer)
+        .runSync[SyncIO].unsafeRunSync()
+    }
+  }
 }
