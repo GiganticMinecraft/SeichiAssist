@@ -8,6 +8,7 @@ import org.bukkit.entity.Player
 
 import java.util.UUID
 
+@deprecated("Move to BukkitRepositoryControls for compositionality")
 class TryableFiberRepository[
   AsyncContext[_] : ConcurrentEffect : ContextShift,
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]

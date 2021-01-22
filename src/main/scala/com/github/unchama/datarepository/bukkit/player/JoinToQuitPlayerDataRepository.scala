@@ -15,6 +15,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
+@deprecated("Move to BukkitRepositoryControls for compositionality")
 abstract class JoinToQuitPlayerDataRepository[R] extends PlayerDataRepository[R] with Listener {
 
   import scala.collection.mutable
