@@ -28,3 +28,15 @@ trait TwoPhasedRepositoryInitialization[F[_], Player, R] {
   val prepareData: (Player, IntermediateData) => F[R]
 
 }
+
+object TwoPhasedRepositoryInitialization {
+  def augment[F[_], Player, R, T](singlePhasedRepositoryInitialization: SinglePhasedRepositoryInitialization[F, T])
+                                 (prepareFinalData: (Player, T) => F[R]): TwoPhasedRepositoryInitialization[F, Player, R] = {
+    new TwoPhasedRepositoryInitialization[F, Player, R] {
+      override type IntermediateData = T
+      override val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[T]] =
+        singlePhasedRepositoryInitialization.prepareData
+      override val prepareData: (Player, T) => F[R] = prepareFinalData
+    }
+  }
+}
