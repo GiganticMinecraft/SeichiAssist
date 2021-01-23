@@ -34,6 +34,6 @@ trait SinglePhasedRepositoryInitialization[F[_], R] {
 object SinglePhasedRepositoryInitialization {
 
   def constant[F[_] : Applicative, R](v: R): SinglePhasedRepositoryInitialization[F, R] =
-    (_, _) => Applicative[F].pure(v)
+    (_, _) => Applicative[F].pure(PrefetchResult.Success(v))
 
 }
