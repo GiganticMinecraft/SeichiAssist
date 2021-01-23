@@ -1,7 +1,6 @@
 package com.github.unchama.datarepository.template
 
-import cats.{Contravariant, Monad}
-import com.github.unchama.generic.RefDict
+import cats.Monad
 
 import java.util.UUID
 
@@ -29,22 +28,5 @@ trait SinglePhasedRepositoryInitialization[F[_], R] {
 
   def extendPreparation[S](f: (UUID, String) => R => F[S])(implicit F: Monad[F]): SinglePhasedRepositoryInitialization[F, S] =
     (uuid, name) => prepareData(uuid, name) >>= (_.traverse(f(uuid, name)))
-
-}
-
-object SinglePhasedRepositoryInitialization {
-
-  import cats.implicits._
-
-  def fromRefDict[F[_] : Monad, R](refDict: RefDict[F, (UUID, String), R])
-                                  (getDefaultValue: F[R]): SinglePhasedRepositoryInitialization[F, R] =
-    (uuid, name) => refDict.read((uuid, name)).flatMap {
-      case Some(value) => Monad[F].pure(value)
-      case None => getDefaultValue.map(PrefetchResult.Success.apply)
-    }
-
-  def fromUuidRefDict[F[_] : Monad, R](refDict: RefDict[F, UUID, R])
-                                      (getDefaultValue: F[R]): SinglePhasedRepositoryInitialization[F, R] =
-    fromRefDict(Contravariant[RefDict[F, *, R]].contramap(refDict)(_._1))(getDefaultValue)
 
 }
