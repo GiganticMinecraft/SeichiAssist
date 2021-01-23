@@ -13,8 +13,8 @@ object RefDictBackedRepositoryInitialization {
                             (getDefaultValue: F[R]): SinglePhasedRepositoryInitialization[F, R] =
     (uuid, name) => refDict.read((uuid, name)).flatMap {
       case Some(value) => Monad[F].pure(value)
-      case None => getDefaultValue.map(PrefetchResult.Success.apply)
-    }
+      case None => getDefaultValue
+    }.map(PrefetchResult.Success.apply)
 
   def usingUuidRefDict[F[_] : Monad, R](refDict: RefDict[F, UUID, R])
                                        (getDefaultValue: F[R]): SinglePhasedRepositoryInitialization[F, R] =
