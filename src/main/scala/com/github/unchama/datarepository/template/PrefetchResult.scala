@@ -7,7 +7,7 @@ package com.github.unchama.datarepository.template
  *
  * のどちらかである。
  */
-trait PrefetchResult[+R]
+sealed trait PrefetchResult[+R]
 
 object PrefetchResult {
 
