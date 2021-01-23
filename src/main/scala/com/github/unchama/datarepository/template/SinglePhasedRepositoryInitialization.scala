@@ -25,6 +25,11 @@ trait SinglePhasedRepositoryInitialization[F[_], R] {
    */
   def prepareData(uuid: UUID, name: String): F[PrefetchResult[R]]
 
+  import cats.implicits._
+
+  def extendPreparation[S](f: (UUID, String) => R => F[S])(implicit F: Monad[F]): SinglePhasedRepositoryInitialization[F, S] =
+    (uuid, name) => prepareData(uuid, name) >>= (_.traverse(f(uuid, name)))
+
 }
 
 object SinglePhasedRepositoryInitialization {

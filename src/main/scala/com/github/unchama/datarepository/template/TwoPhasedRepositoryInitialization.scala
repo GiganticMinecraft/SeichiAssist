@@ -1,5 +1,7 @@
 package com.github.unchama.datarepository.template
 
+import cats.Monad
+
 import java.util.UUID
 
 /**
@@ -27,6 +29,18 @@ trait TwoPhasedRepositoryInitialization[F[_], Player, R] {
 
   val prepareData: (Player, IntermediateData) => F[R]
 
+  import cats.implicits._
+
+  def extendPreparation[S](f: Player => R => F[S])(implicit F: Monad[F]): TwoPhasedRepositoryInitialization[F, Player, S] =
+    new TwoPhasedRepositoryInitialization[F, Player, S] {
+      type I = TwoPhasedRepositoryInitialization.this.IntermediateData
+
+      override type IntermediateData = I
+      override val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[I]] =
+        TwoPhasedRepositoryInitialization.this.prefetchIntermediateValue
+      override val prepareData: (Player, I) => F[S] =
+        (player, i) => TwoPhasedRepositoryInitialization.this.prepareData(player, i).flatMap(f(player))
+    }
 }
 
 object TwoPhasedRepositoryInitialization {

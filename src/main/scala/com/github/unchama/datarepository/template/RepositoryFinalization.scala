@@ -1,6 +1,6 @@
 package com.github.unchama.datarepository.template
 
-import cats.Applicative
+import cats.{Applicative, Monad}
 import com.github.unchama.generic.RefDict
 
 /**
@@ -17,6 +17,16 @@ trait RepositoryFinalization[F[_], Player, R] {
   val persistPair: (Player, R) => F[Unit]
 
   val finalizeBeforeUnload: (Player, R) => F[Unit]
+
+  import cats.implicits._
+
+  def contraFlatMap[S](sFr: S => F[R])(implicit F: Monad[F]): RepositoryFinalization[F, Player, S] =
+    new RepositoryFinalization[F, Player, S] {
+      override val persistPair: (Player, S) => F[Unit] =
+        (p, s) => sFr(s).flatMap(r => RepositoryFinalization.this.persistPair(p, r))
+      override val finalizeBeforeUnload: (Player, S) => F[Unit] =
+        (p, s) => sFr(s).flatMap(r => RepositoryFinalization.this.finalizeBeforeUnload(p, r))
+    }
 
 }
 
