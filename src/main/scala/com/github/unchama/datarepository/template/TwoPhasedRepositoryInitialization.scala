@@ -18,6 +18,11 @@ trait TwoPhasedRepositoryInitialization[F[_], Player, R] {
 
   type IntermediateData
 
+  /**
+   * 参加したプレーヤーのUUID/名前から[[IntermediateData]]を生成する作用。
+   *
+   * [[IntermediateData]] が何らかの理由により生成できなかった場合、[[PrefetchResult.Failed]]を返す可能性がある。
+   */
   val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[IntermediateData]]
 
   val prepareData: (Player, IntermediateData) => F[R]
