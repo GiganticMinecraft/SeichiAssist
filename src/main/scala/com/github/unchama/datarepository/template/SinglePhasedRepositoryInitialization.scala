@@ -1,6 +1,6 @@
 package com.github.unchama.datarepository.template
 
-import cats.Monad
+import cats.{Applicative, Monad}
 
 import java.util.UUID
 
@@ -28,5 +28,12 @@ trait SinglePhasedRepositoryInitialization[F[_], R] {
 
   def extendPreparation[S](f: (UUID, String) => R => F[S])(implicit F: Monad[F]): SinglePhasedRepositoryInitialization[F, S] =
     (uuid, name) => prepareData(uuid, name) >>= (_.traverse(f(uuid, name)))
+
+}
+
+object SinglePhasedRepositoryInitialization {
+
+  def constant[F[_] : Applicative, R](v: R): SinglePhasedRepositoryInitialization[F, R] =
+    (_, _) => Applicative[F].pure(v)
 
 }

@@ -1,6 +1,6 @@
 package com.github.unchama.datarepository.template
 
-import cats.Monad
+import cats.{Applicative, Monad}
 
 import java.util.UUID
 
@@ -53,4 +53,14 @@ object TwoPhasedRepositoryInitialization {
       override val prepareData: (Player, T) => F[R] = prepareFinalData
     }
   }
+
+  def canonicallyFrom[
+    F[_] : Applicative, Player, R
+  ](initialization: SinglePhasedRepositoryInitialization[F, R]): TwoPhasedRepositoryInitialization[F, Player, R] =
+    augment(initialization) { case (_, r) => Applicative[F].pure(r) }
+
+  def withoutPrefetching[
+    F[_] : Applicative, Player, R
+  ](f: Player => F[R]): TwoPhasedRepositoryInitialization[F, Player, R] =
+    augment(SinglePhasedRepositoryInitialization.constant(())) { case (player, _) => f(player) }
 }
