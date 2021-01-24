@@ -1,5 +1,7 @@
 package com.github.unchama.generic.effect.stream
 
+import cats.effect.Concurrent
+import cats.effect.concurrent.Ref
 import fs2.{Pull, Stream}
 
 object StreamExtra {
@@ -18,4 +20,24 @@ object StreamExtra {
 
   def filterKeys[F[_], K, O](stream: Stream[F, (K, O)], key: K): Stream[F, O] =
     stream.mapFilter { case (k, out) => Option.when(k == key)(out) }
+
+  /**
+   * 与えられた `stream` に対してfoldの操作を行う。
+   *
+   * 結果として返されるストリームは、
+   *  - 内部状態 [[B]] を持つ。 `initial` から開始し、 `stream` から値を受け取る度に `f` で内部状態を更新する。
+   *  - 離散的なストリームである `flushSignal` が出力するのと同じタイミングで内部状態を出力し、
+   *    内部状態を `initial` へと戻す
+   */
+  def foldGate[F[_] : Concurrent, A, B](initial: B, f: (B, A) => B)
+                                       (stream: Stream[F, A])
+                                       (flushSignal: Stream[F, Unit]): Stream[F, B] = {
+    Stream.force {
+      Ref[F].of(initial).map { ref =>
+        flushSignal
+          .evalMap(_ => ref.get)
+          .concurrently(stream.evalTap(a => ref.update(f(_, a))))
+      }
+    }
+  }
 }
