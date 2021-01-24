@@ -29,14 +29,14 @@ object StreamExtra {
    *  - 離散的なストリームである `flushSignal` が出力するのと同じタイミングで内部状態を出力し、
    *    内部状態を `initial` へと戻す
    */
-  def foldGate[F[_] : Concurrent, A, B](initial: B, f: (B, A) => B)
-                                       (stream: Stream[F, A])
-                                       (flushSignal: Stream[F, Unit]): Stream[F, B] = {
+  def foldGate[F[_] : Concurrent, A, B, U](stream: Stream[F, A],
+                                           flushSignal: Stream[F, U],
+                                           initial: B)(f: B => A => B): Stream[F, B] = {
     Stream.force {
       Ref[F].of(initial).map { ref =>
         flushSignal
           .evalMap(_ => ref.get)
-          .concurrently(stream.evalTap(a => ref.update(f(_, a))))
+          .concurrently(stream.evalTap(a => ref.update(f(_)(a))))
       }
     }
   }
