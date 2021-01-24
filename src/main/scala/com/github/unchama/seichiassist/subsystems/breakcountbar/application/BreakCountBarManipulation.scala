@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.breakcountbar.domain
+package com.github.unchama.seichiassist.subsystems.breakcountbar.application
 
 import cats.Applicative
 import com.github.unchama.minecraft.objects.MinecraftBossBar

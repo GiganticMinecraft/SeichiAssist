@@ -1,10 +1,11 @@
-package com.github.unchama.seichiassist.subsystems.breakcountbar.domain
+package com.github.unchama.seichiassist.subsystems.breakcountbar.application
 
 import cats.Applicative
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.datarepository.template._
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
 import fs2.concurrent.Topic
 
 import java.util.UUID
