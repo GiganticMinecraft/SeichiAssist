@@ -12,6 +12,6 @@ class SendBukkitMessage[F[_] : Sync] extends SendMinecraftMessage[F, Player] {
 
 object SendBukkitMessage {
 
-  implicit def apply[F[_] : Sync]: SendBukkitMessage[F] = new SendBukkitMessage[F]
+  implicit def apply[F[_] : Sync]: SendMinecraftMessage[F, Player] = new SendBukkitMessage[F]
 
 }
