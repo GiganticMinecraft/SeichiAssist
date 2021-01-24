@@ -1,6 +1,6 @@
 package com.github.unchama.datarepository.template
 
-import cats.Monad
+import cats.{Applicative, Monad}
 
 /**
  * データレポジトリの終了処理を記述するオブジェクト。
@@ -25,6 +25,18 @@ trait RepositoryFinalization[F[_], Player, R] {
         (p, s) => sFr(s).flatMap(r => RepositoryFinalization.this.persistPair(p, r))
       override val finalizeBeforeUnload: (Player, S) => F[Unit] =
         (p, s) => sFr(s).flatMap(r => RepositoryFinalization.this.finalizeBeforeUnload(p, r))
+    }
+
+}
+
+object RepositoryFinalization {
+
+  def withoutAnyPersistence[
+    F[_] : Applicative, Player, R
+  ](finalization: (Player, R) => F[Unit]): RepositoryFinalization[F, Player, R] =
+    new RepositoryFinalization[F, Player, R] {
+      override val persistPair: (Player, R) => F[Unit] = (_, _) => Applicative[F].unit
+      override val finalizeBeforeUnload: (Player, R) => F[Unit] = finalization
     }
 
 }
