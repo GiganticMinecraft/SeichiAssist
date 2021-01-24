@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.breakcountbar.application
 
-import cats.effect.concurrent.{Deferred, Ref}
-import cats.effect.{Async, ConcurrentEffect, Fiber, Sync}
+import cats.effect.concurrent.Deferred
+import cats.effect.{ConcurrentEffect, Fiber, Sync}
 import com.github.unchama.datarepository.template.{RepositoryFinalization, TwoPhasedRepositoryInitialization}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
@@ -40,8 +40,6 @@ object ExpBarSynchronizationRepositoryTemplate {
           .filterKeys(visibilityValues, player)
           .evalTap(v => bossBar.visibility.write(BreakCountBarVisibility.Shown == v))
 
-        ref <- Ref.of[G, Fiber[F, Unit]](Fiber(Async[F].never, Async[F].unit))
-
         fiberPromise <- Deferred.in[G, F, Fiber[F, Unit]]
 
         _ <- EffectExtra.runAsyncAndForget[F, G, Unit](bossBar.players.add(player))
@@ -52,7 +50,7 @@ object ExpBarSynchronizationRepositoryTemplate {
             .start
             .flatMap(fiberPromise.complete)
         }
-      } yield (bossBar, ref)
+      } yield (bossBar, fiberPromise)
     }
 
   def finalization[

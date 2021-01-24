@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.breakcountbar.application
 
-import cats.Applicative
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
+import cats.{Applicative, Monad}
 import com.github.unchama.datarepository.template._
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
@@ -27,8 +27,10 @@ object BreakCountBarVisibilityRepositoryTemplate {
     }
 
   def finalization[
-    F[_] : Applicative, Player
+    F[_] : Monad, Player
   ](persistence: BreakCountBarVisibilityPersistence[F])
-   (keyExtractor: Player => UUID): RepositoryFinalization[F, Player, BreakCountBarVisibility] =
-    RefDictBackedRepositoryFinalization.using(persistence)(keyExtractor)
+   (keyExtractor: Player => UUID): RepositoryFinalization[F, Player, Ref[F, BreakCountBarVisibility]] =
+    RepositoryFinalization.liftToRefFinalization {
+      RefDictBackedRepositoryFinalization.using(persistence)(keyExtractor)
+    }
 }

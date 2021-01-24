@@ -1,5 +1,6 @@
 package com.github.unchama.datarepository.template
 
+import cats.effect.concurrent.Ref
 import cats.{Applicative, Monad}
 
 /**
@@ -38,5 +39,10 @@ object RepositoryFinalization {
       override val persistPair: (Player, R) => F[Unit] = (_, _) => Applicative[F].unit
       override val finalizeBeforeUnload: (Player, R) => F[Unit] = finalization
     }
+
+  def liftToRefFinalization[
+    F[_] : Monad, Player, R
+  ](finalization: RepositoryFinalization[F, Player, R]): RepositoryFinalization[F, Player, Ref[F, R]] =
+    finalization.contraFlatMap[Ref[F, R]](_.get)
 
 }
