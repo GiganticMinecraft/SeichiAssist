@@ -32,7 +32,7 @@ object System {
         fs2.Stream.awakeEvery[F](30.minutes),
         RankingRecord.empty[Player]
       )(record => (record.addCount _).tupled)
-      .evalTap(AnnounceRankingRecord[F, Player](p => Applicative[F].pure(p.getUniqueId)))
+      .evalTap(AnnounceRankingRecord[F, Player](p => Applicative[F].pure(p.getDisplayName)))
       .compile.drain
       .start
       .as(())
