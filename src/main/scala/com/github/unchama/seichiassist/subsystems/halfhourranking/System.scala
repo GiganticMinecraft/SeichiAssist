@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.halfhourranking
 
 import cats.Applicative
-import cats.effect.{ConcurrentEffect, Timer}
+import cats.effect.{Async, Concurrent, Timer}
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{BroadcastMinecraftMessage, MinecraftServerThreadShift, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.{BroadcastBukkitMessage, SendBukkitMessage}
@@ -12,17 +12,16 @@ import org.bukkit.entity.Player
 
 object System {
 
-  import cats.effect.implicits._
   import cats.implicits._
 
   import scala.concurrent.duration._
 
-  def startBackgroundProcess[
+  def backgroundProcess[
     F[_]
     : MinecraftServerThreadShift
     : Timer
-    : ConcurrentEffect, G[_]
-  ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Unit] = {
+    : Concurrent, G[_]
+  ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
     implicit val sendBukkitMessage: SendMinecraftMessage[F, Player] = SendBukkitMessage[F]
     implicit val broadcastBukkitMessage: BroadcastMinecraftMessage[F] = BroadcastBukkitMessage[F]
 
@@ -34,7 +33,6 @@ object System {
       )(record => (record.addCount _).tupled)
       .evalTap(AnnounceRankingRecord[F, Player](p => Applicative[F].pure(p.getDisplayName)))
       .compile.drain
-      .start
-      .as(())
+      .flatMap[Nothing](_ => Async[F].never)
   }
 }
