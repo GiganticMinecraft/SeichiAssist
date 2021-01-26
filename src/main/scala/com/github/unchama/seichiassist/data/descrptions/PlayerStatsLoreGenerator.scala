@@ -1,10 +1,13 @@
 package com.github.unchama.seichiassist.data.descrptions
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
+import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
 import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
-import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -12,7 +15,7 @@ import org.bukkit.entity.Player
 /**
  * Created by karayuu on 2019/05/05
  */
-class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
+class PlayerStatsLoreGenerator(playerData: PlayerData, seichiAmountData: SeichiAmountData, expBarVisibility: BreakCountBarVisibility) {
   private val targetPlayer: Player = Bukkit.getPlayer(playerData.uuid)
 
   /**
@@ -54,13 +57,13 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * スターレベルを保持していたら,スターレベルも同時に表示します.
    */
   private def seichiLevelDescription(): String = {
-    val starLevel = playerData.totalStarLevel
-    val level = playerData.level
+    val starLevel = seichiAmountData.starLevelCorrespondingToExp
+    val level = seichiAmountData.levelCorrespondingToExp.level
 
-    if (starLevel <= 0) {
-      s"${AQUA}整地Lv:$level"
+    if (starLevel != SeichiStarLevel.zero) {
+      s"${AQUA}整地Lv:$level☆${starLevel.level}"
     } else {
-      s"${AQUA}整地Lv:$level☆$starLevel"
+      s"${AQUA}整地Lv:$level"
     }
   }
 
@@ -68,11 +71,8 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
    * 次のレベルまでの残り必要整地量の説明文
    */
   private def levelProgressionDescription(): List[String] = {
-    if (playerData.level < LevelThresholds.levelExpThresholds.size) {
-      //TODO:この計算は,ここにあるべきではない.
-      val expRequiredToLevelUp = LevelThresholds.levelExpThresholds(playerData.level) - playerData.totalbreaknum
-
-      List(s"${AQUA}次のレベルまで:$expRequiredToLevelUp")
+    if (seichiAmountData.starLevelCorrespondingToExp == SeichiStarLevel.zero) {
+      List(s"${AQUA}次のレベルまで:${seichiAmountData.levelProgress.expAmountToNextLevel.amount}")
     } else {
       Nil
     }
@@ -93,7 +93,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   /**
    * 総整地量の説明文
    */
-  private def totalBreakAmountDescription(): String = s"${AQUA}総整地量：${playerData.totalbreaknum}"
+  private def totalBreakAmountDescription(): String = s"${AQUA}総整地量：${seichiAmountData.expAmount.amount}"
 
   /**
    * ランキングの順位の説明文
@@ -108,7 +108,7 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
     if (playerData.calcPlayerRank() != 1) {
       val playerRanking = playerData.calcPlayerRank()
       val rankData = SeichiAssist.ranklist(playerRanking - 2)
-      val differenceToTheBest = rankData.totalbreaknum - playerData.totalbreaknum
+      val differenceToTheBest = rankData.totalbreaknum - seichiAmountData.expAmount.amount
 
       List(s"$AQUA${playerRanking - 1}位(${rankData.name})との差：$differenceToTheBest")
     } else {
@@ -143,12 +143,18 @@ class PlayerStatsLoreGenerator(private val playerData: PlayerData) {
   /**
    * Expバーの説明文.
    */
-  private def expBarDescription(): List[String] =
-    if (playerData.settings.isExpBarVisible) List(
-      s"${GREEN}整地量バーを表示",
-      s"$DARK_RED${UNDERLINE}クリックで非表示"
-    ) else List(
-      s"${RED}整地量バーを非表示",
-      s"$DARK_GREEN${UNDERLINE}クリックで表示"
-    )
+  private def expBarDescription(): List[String] = {
+    expBarVisibility match {
+      case BreakCountBarVisibility.Shown =>
+        List(
+          s"${GREEN}整地量バーを表示",
+          s"$DARK_RED${UNDERLINE}クリックで非表示"
+        )
+      case BreakCountBarVisibility.Hidden =>
+        List(
+          s"${RED}整地量バーを非表示",
+          s"$DARK_GREEN${UNDERLINE}クリックで表示"
+        )
+    }
+  }
 }

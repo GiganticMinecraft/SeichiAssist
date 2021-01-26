@@ -53,14 +53,15 @@ object PlayerDataRecalculationRoutine {
         }
 
         //総整地量を更新(返り値で重み分け済みの1分間のブロック破壊量が返ってくる)
-        val increase = playerData.updateAndCalcMinedBlockAmount()
-        //Levelを設定(必ず総整地量更新後に実施！)
-        playerData.updateLevel()
+        val increase: Long = ??? // TODO
+
+        // Levelを設定(必ず総整地量更新後に実施！)
+        playerData.synchronizeDisplayNameAndManaStateToLevelState()
+
         //総プレイ時間更新
         playerData.updatePlayTick()
 
-        //スターレベル更新
-        playerData.updateStarLevel()
+        // TODO: 整地量上昇と同量のガチャポイントの追加が必要
 
         //１分間のブロック破壊量による上昇
         playerData.effectdatalist.addOne {

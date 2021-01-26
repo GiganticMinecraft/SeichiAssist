@@ -1,8 +1,5 @@
 package com.github.unchama.seichiassist.util
 
-import java.util.Random
-import java.util.stream.IntStream
-
 import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
@@ -21,6 +18,9 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Dye
+
+import java.util.Random
+import java.util.stream.IntStream
 
 
 object BreakUtil {
@@ -368,13 +368,21 @@ object BreakUtil {
     }
 
     MineStackObjectList.minestacklist.foreach { mineStackObj =>
-      def addToMineStackAfterLevelCheck(): Boolean =
-        if (playerData.level < config.getMineStacklevel(mineStackObj.level)) {
+      def addToMineStackAfterLevelCheck(): Boolean = {
+        val level =
+          SeichiAssist.instance
+            .breakCountSystem.api
+            .seichiAmountDataRepository(player)
+            .read.unsafeRunSync()
+            .levelCorrespondingToExp
+
+        if (level.level < config.getMineStacklevel(mineStackObj.level)) {
           false
         } else {
           playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
           true
         }
+      }
 
       //IDとサブIDが一致している
       if (material == mineStackObj.material && itemstack.getDurability.toInt == mineStackObj.durability) {
