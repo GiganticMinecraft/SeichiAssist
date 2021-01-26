@@ -657,6 +657,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     val uuid = player.getUniqueId
     val playerdata = playerMap(uuid)
 
+    val playerLevel = SeichiAssist.instance
+      .breakCountSystem.api.seichiAmountDataRepository(player)
+      .read.unsafeRunSync().levelCorrespondingToExp.level
+
     //インベントリ名が以下の時処理
     if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "投票ptメニュー") {
       event.setCancelled(true)
@@ -697,7 +701,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
           }
 
           //ピッケルプレゼント処理(レベル50になるまで)
-          if (playerdata.level < 50) {
+          if (playerLevel < 50) {
             val pickaxe = ItemData.getSuperPickaxe(1)
             if (Util.isPlayerInventoryFull(player)) {
               Util.dropItem(player, pickaxe)
@@ -707,7 +711,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
           }
 
           //投票ギフト処理(レベル50から)
-          if (playerdata.level >= 50) {
+          if (playerLevel >= 50) {
             val gift = ItemData.getVotingGift(1)
             if (Util.isPlayerInventoryFull(player)) {
               Util.dropItem(player, gift)
@@ -760,7 +764,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         player.closeInventory()
 
         //プレイヤーレベルが10に達していないとき
-        if (playerdata.level < 10) {
+        if (playerLevel < 10) {
           player.sendMessage(GOLD.toString + "プレイヤーレベルが足りません")
           player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
           return

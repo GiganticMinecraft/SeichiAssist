@@ -177,7 +177,6 @@ object PlayerDataSaveTask {
           + ",achvPointMAX = " + playerdata.achievePoint.fromUnlockedAchievements
           + ",achvPointUSE = " + playerdata.achievePoint.used
           + ",achvChangenum = " + playerdata.achievePoint.conversionCount
-          + ",starlevel = " + playerdata.totalStarLevel
 
           + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
           + ",ChainJoin = " + playerdata.loginStatus.consecutiveLoginDays

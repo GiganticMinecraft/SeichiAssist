@@ -49,11 +49,13 @@ object SeizonsikiListener extends Listener {
     val today = LocalDate.now()
     val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(exp)) {
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
-      val manaState = playerData.manaState
-      val maxMana = manaState.calcMaxManaOnly(player, playerData.level)
+      val playerLevel = SeichiAssist.instance
+        .breakCountSystem.api.seichiAmountDataRepository(player)
+        .read.unsafeRunSync().levelCorrespondingToExp.level
+      val manaState = SeichiAssist.playermap(player.getUniqueId).manaState
+      val maxMana = manaState.calcMaxManaOnly(player, playerLevel)
       // マナを10%回復する
-      manaState.increase(maxMana * 0.1, player, playerData.level)
+      manaState.increase(maxMana * 0.1, player, playerLevel)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     } else {
       // END_DATEと同じ日かその翌日以降なら

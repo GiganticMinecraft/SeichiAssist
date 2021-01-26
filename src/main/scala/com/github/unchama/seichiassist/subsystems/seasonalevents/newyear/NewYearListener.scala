@@ -1,8 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
-import java.time.LocalDate
-import java.util.{Random, UUID}
-
 import cats.effect.{ConcurrentEffect, IO, LiftIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -22,8 +19,11 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
+import java.time.LocalDate
+import java.util.{Random, UUID}
+
 class NewYearListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
-  (implicit effectEnvironment: EffectEnvironment, repository: LastQuitPersistenceRepository[F, UUID]) extends Listener {
+(implicit effectEnvironment: EffectEnvironment, repository: LastQuitPersistenceRepository[F, UUID]) extends Listener {
 
   import cats.implicits._
 
@@ -65,11 +65,13 @@ class NewYearListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
     val today = LocalDate.now()
     val expiryDate = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(expiryDate) || today.isEqual(expiryDate)) {
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
-      val manaState = playerData.manaState
-      val maxMana = manaState.calcMaxManaOnly(player, playerData.level)
+      val playerLevel = SeichiAssist.instance
+        .breakCountSystem.api.seichiAmountDataRepository(player)
+        .read.unsafeRunSync().levelCorrespondingToExp.level
+      val manaState = SeichiAssist.playermap(player.getUniqueId).manaState
+      val maxMana = manaState.calcMaxManaOnly(player, playerLevel)
       // マナを10%回復する
-      manaState.increase(maxMana * 0.1, player, playerData.level)
+      manaState.increase(maxMana * 0.1, player, playerLevel)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     }
   }

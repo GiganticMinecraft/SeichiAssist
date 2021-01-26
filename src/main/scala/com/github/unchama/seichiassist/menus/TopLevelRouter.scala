@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
@@ -10,6 +10,8 @@ import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMen
 import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu}
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import org.bukkit.entity.Player
 
 trait TopLevelRouter[F[_]] {
 
@@ -20,7 +22,8 @@ trait TopLevelRouter[F[_]] {
 object TopLevelRouter {
 
   def apply(implicit layoutPreparationContext: LayoutPreparationContext,
-            syncShift: MinecraftServerThreadShift[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
+            syncShift: MinecraftServerThreadShift[IO],
+            breakCountApi: BreakCountAPI[IO, SyncIO, Player]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment
     implicit lazy val mineStackMainMenuEnv: MineStackMainMenu.Environment = new MineStackMainMenu.Environment
     implicit lazy val categorizedMineStackMenuEnv: CategorizedMineStackMenu.Environment = new CategorizedMineStackMenu.Environment

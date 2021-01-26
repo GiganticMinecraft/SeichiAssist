@@ -1,13 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
-import java.util.Random
-
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
-import com.github.unchama.seichiassist.ManagedWorld._
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
@@ -20,6 +18,8 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
+
+import java.util.Random
 
 class ChristmasItemListener(instance: JavaPlugin) extends Listener {
   @EventHandler
@@ -74,16 +74,18 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
     if (!isChristmasPotion(event.getItem)) return
 
     val player = event.getPlayer
+    val playerLevel = SeichiAssist.instance
+      .breakCountSystem.api.seichiAmountDataRepository(player)
+      .read.unsafeRunSync().levelCorrespondingToExp.level
 
     // 1分おきに計5回マナを一定量回復する
     for (i <- 1 to 5) {
       Bukkit.getServer.getScheduler.runTaskLater(instance, new Runnable {
         override def run(): Unit = {
-          val playerData = SeichiAssist.playermap(player.getUniqueId)
-          val manaState = playerData.manaState
-          val maxMana = manaState.calcMaxManaOnly(player, playerData.level)
+          val manaState = SeichiAssist.playermap(player.getUniqueId).manaState
+          val maxMana = manaState.calcMaxManaOnly(player, playerLevel)
           // マナを15%回復する
-          manaState.increase(maxMana * 0.15, player, playerData.level)
+          manaState.increase(maxMana * 0.15, player, playerLevel)
           player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
         }
       }, (20 * 60 * i).toLong)

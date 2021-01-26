@@ -71,7 +71,11 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val skillState = playerData.skillState.get.unsafeRunSync()
-    val playerLevel = playerData.level
+    val playerLevel = SeichiAssist.instance
+      .breakCountSystem.api
+      .seichiAmountDataRepository(player).read
+      .unsafeRunSync()
+      .levelCorrespondingToExp.level
 
     //クールダウンタイム中は処理を終了
     if (!activeSkillAvailability(player).get.unsafeRunSync()) {
