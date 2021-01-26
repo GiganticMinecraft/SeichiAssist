@@ -80,7 +80,6 @@ class SeichiAssist extends JavaPlugin() {
 
   //endregion
 
-  val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
   //region resource scopes
@@ -392,7 +391,6 @@ class SeichiAssist extends JavaPlugin() {
     //リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),
-      new ExpBarDesynchronizationListener(),
       new PlayerClickListener(),
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
