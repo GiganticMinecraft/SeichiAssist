@@ -96,6 +96,7 @@ class SeichiAssist extends JavaPlugin() {
   //endregion
 
   //region subsystems
+  // TODO コンテキスト境界明確化のため、これらはすべてprivateであるべきである
 
   lazy val expBottleStackSystem: StatefulSubsystem[IO, subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
     import PluginExecutionContexts.asyncShift
@@ -148,15 +149,6 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.dragonnighttime.System.wired[IO, IO]
   }
   
-  lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
-    import PluginExecutionContexts.asyncShift
-
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-
-    subsystems.seasonalevents.System.wired[IO, IO](this)
-  }
-
   lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.timer
 
@@ -170,6 +162,16 @@ class SeichiAssist extends JavaPlugin() {
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
+  lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+
+    subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
 
   lazy val breakCountBarSystem: subsystems.breakcountbar.System[IO, SyncIO, Player] = {

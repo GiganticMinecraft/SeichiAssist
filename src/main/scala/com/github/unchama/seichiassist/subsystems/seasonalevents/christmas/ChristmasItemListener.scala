@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
+import cats.effect.{SyncEffect, SyncIO}
 import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
@@ -21,7 +23,11 @@ import org.bukkit.{Bukkit, Sound}
 
 import java.util.Random
 
-class ChristmasItemListener(instance: JavaPlugin) extends Listener {
+class ChristmasItemListener[
+  F[_],
+  G[_] : SyncEffect
+](instance: JavaPlugin)
+ (implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     if (isInEventNow) {
@@ -73,10 +79,13 @@ class ChristmasItemListener(instance: JavaPlugin) extends Listener {
   def onPlayerConsumeChristmasPotion(event: PlayerItemConsumeEvent): Unit = {
     if (!isChristmasPotion(event.getItem)) return
 
+    import cats.effect.implicits._
+
     val player = event.getPlayer
-    val playerLevel = SeichiAssist.instance
-      .breakCountSystem.api.seichiAmountDataRepository(player)
-      .read.unsafeRunSync().levelCorrespondingToExp.level
+    val playerLevel = breakCountReadAPI
+      .seichiAmountDataRepository(player).read
+      .runSync[SyncIO].unsafeRunSync()
+      .levelCorrespondingToExp.level
 
     // 1分おきに計5回マナを一定量回復する
     for (i <- 1 to 5) {

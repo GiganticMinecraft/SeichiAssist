@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki
 
+import cats.effect.{SyncEffect, SyncIO}
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
@@ -8,7 +10,7 @@ import com.github.unchama.seichiassist.util.Util.sendEveryMessage
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Sound
-import org.bukkit.entity.EntityType
+import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
@@ -16,7 +18,13 @@ import org.bukkit.event.{EventHandler, Listener}
 import java.time.LocalDate
 import java.util.Random
 
-object SeizonsikiListener extends Listener {
+class SeizonsikiListener[
+  F[_],
+  G[_] : SyncEffect
+](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]) extends Listener {
+
+  import cats.effect.implicits._
+
   @EventHandler
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity
@@ -49,9 +57,9 @@ object SeizonsikiListener extends Listener {
     val today = LocalDate.now()
     val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(exp)) {
-      val playerLevel = SeichiAssist.instance
-        .breakCountSystem.api.seichiAmountDataRepository(player)
-        .read.unsafeRunSync().levelCorrespondingToExp.level
+      val playerLevel = breakCountReadAPI.seichiAmountDataRepository(player)
+        .read.runSync[SyncIO]
+        .unsafeRunSync().levelCorrespondingToExp.level
       val manaState = SeichiAssist.playermap(player.getUniqueId).manaState
       val maxMana = manaState.calcMaxManaOnly(player, playerLevel)
       // マナを10%回復する
