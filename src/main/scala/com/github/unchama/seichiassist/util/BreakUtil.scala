@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -248,6 +249,7 @@ object BreakUtil {
    * ブロックの書き換えを行い、ドロップ処理と統計増加の処理を行う`IO`を返す。
    *
    * 返される`IO`は、終了時点で同期スレッドで実行を行っている。
+   *
    * @return
    */
   def massBreakBlock(player: Player,
@@ -255,7 +257,17 @@ object BreakUtil {
                      dropLocation: Location,
                      miningTool: BreakTool,
                      shouldPlayBreakSound: Boolean,
-                     toMaterial: Material = Material.AIR): IO[Unit] =
+                     toMaterial: Material = Material.AIR): IO[Unit] = {
+
+    // 整地数反映量の調節
+    val weight: IO[Double] = IO {
+      val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
+      val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
+      val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
+
+      seichiWorldFactor * sw01Penalty
+    }
+
     for {
       _ <- PluginExecutionContexts.syncShift.shift
 
@@ -306,28 +318,25 @@ object BreakUtil {
           }
         }
       }
-      _ <- IO {
-        //プレイヤーの統計を増やす
-        targetBlocksInformation.map { case (_, m, _) => m }
-          .map {
-            case Material.GLOWING_REDSTONE_ORE => Material.REDSTONE_ORE
-            case others@_ => others
-          }
-          .filter {
-            case Material.GRASS_PATH | Material.SOIL |
-                 Material.MOB_SPAWNER | Material.ENDER_PORTAL_FRAME |
-                 Material.ENDER_PORTAL => false
-            case _ => true
-          }
-          .foreach(m =>
-            try player.incrementStatistic(Statistic.MINE_BLOCK, m)
-            catch {
-              case _: IllegalArgumentException =>
-                Bukkit.getLogger
-                  .warning(s"${m.toString}の破壊統計のインクリメントに失敗しました。")
-            }
-          )
-      }
+
+      totalCount = targetBlocksInformation
+        .map { case (_, m, _) => m }
+        .filter(MaterialSets.materialsToCountBlockBreak.contains)
+        .map {
+          //氷塊とマグマブロックの整地量を2倍
+          case Material.PACKED_ICE | Material.MAGMA => 2
+          case _ => 1
+        }
+        .sum
+
+      blockCountWeight <- weight
+
+      //プレイヤーの統計を増やす
+      // TODO 切り捨てられておりブロックを単体で掘っても増えない
+      _ <- SeichiAssist.instance
+        .breakCountSystem.api
+        .incrementSeichiExp.of(player, SeichiExpAmount.ofNonNegative((totalCount * blockCountWeight).toLong))
+        .toIO
 
       _ <- PluginExecutionContexts.syncShift.shift
 
@@ -336,6 +345,7 @@ object BreakUtil {
         itemsToBeDropped.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
       }
     } yield ()
+  }
 
   def tryAddItemIntoMineStack(player: Player, itemstack: ItemStack): Boolean = {
     //もしサバイバルでなければ処理を終了

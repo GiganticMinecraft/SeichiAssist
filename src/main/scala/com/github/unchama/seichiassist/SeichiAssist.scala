@@ -454,19 +454,33 @@ class SeichiAssist extends JavaPlugin() {
         PlayerDataBackupRoutine()
       }
 
-      val halfHourRankingRoutineOption: Option[IO[Nothing]] = {
-        import PluginExecutionContexts._
-        implicit val api: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
-        implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+      import PluginExecutionContexts._
+      implicit val api: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
+      implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
-        // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
+      val manaUpdate: IO[Nothing] =
+        subsystems.mana.System.backgroundProcess[IO, SyncIO]
+
+      val fastDiggingEffectUpdate: IO[Nothing] =
+        subsystems.fastdiggingeffect.System.backgroundProcess[IO, SyncIO](SeichiAssist.seichiAssistConfig)
+
+      val gachaPointUpdate: IO[Nothing] =
+        subsystems.gachapoint.System.backgroundProcess[IO, SyncIO]
+
+      val halfHourRankingRoutineOption: Option[IO[Nothing]] =
+      // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
         Option.unless(Set(7, 8).contains(SeichiAssist.seichiAssistConfig.getServerNum)) {
           subsystems.halfhourranking.System.backgroundProcess
         }
-      }
 
       val programs: List[IO[Nothing]] =
-        List(dataRecalculationRoutine, dataBackupRoutine) ++
+        List(
+          dataRecalculationRoutine,
+          dataBackupRoutine,
+          manaUpdate,
+          fastDiggingEffectUpdate,
+          gachaPointUpdate
+        ) ++
           halfHourRankingRoutineOption.toList ++
           autoSaveSystem.state ++
           dragonNightTimeSystem.state

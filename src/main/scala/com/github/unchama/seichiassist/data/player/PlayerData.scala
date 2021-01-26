@@ -280,7 +280,6 @@ class PlayerData(
   def synchronizeDisplayNameAndManaStateToLevelState(): Unit = {
     setDisplayName()
 
-    // TODO: マナの最大値の更新とレベルアップ時全回復のフックの追加が必要
     manaState.display(
       player,
       SeichiAssist.instance
@@ -399,26 +398,6 @@ class PlayerData(
 
     totalPlayTick = Some(nowTotalPlayTick)
     playTick += diff
-  }
-
-  // ブロック別整地数反映量の調節
-  // TODO 整地量加算側にロジックを移す
-  private def calcBlockExp(m: Material, i: Int): Double = {
-    val amount = i.toDouble
-
-    //ブロック別重み分け
-    val materialFactor = m match {
-      //氷塊とマグマブロックの整地量を2倍
-      case Material.PACKED_ICE | Material.MAGMA => 2.0
-
-      case _ => 1.0
-    }
-
-    val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
-    val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0	
-
-    amount * materialFactor * swMult * sw01PenaltyMult
   }
 
   private def saveTotalExp(): Unit = {
