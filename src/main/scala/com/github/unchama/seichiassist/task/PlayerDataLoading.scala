@@ -190,7 +190,6 @@ object PlayerDataLoading {
         playerData.settings.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 
         playerData.settings.pvpflag = rs.getBoolean("pvpflag")
-        playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
         playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
         playerData.settings.nickname = PlayerNickname(
           NicknameStyle.marshal(rs.getBoolean("displayTypeLv")),
@@ -227,11 +226,9 @@ object PlayerDataLoading {
         ).unsafeRunSync()
 
         playerData.gachapoint = rs.getInt("gachapoint")
-        playerData.level = rs.getInt("level")
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
         playerData.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
-        playerData.totalbreaknum = rs.getLong("totalbreaknum")
         playerData.playTick = rs.getInt("playtick")
         playerData.p_givenvote = rs.getInt("p_givenvote")
         playerData.effectPoint = rs.getInt("effectpoint")
@@ -255,13 +252,6 @@ object PlayerDataLoading {
           rs.getInt("achvPointMAX"),
           rs.getInt("achvPointUSE"),
           rs.getInt("achvChangenum")
-        )
-
-        //スターレベルの情報
-        playerData.starLevels = StarLevel(
-          rs.getInt("starlevel_Break"),
-          rs.getInt("starlevel_Time"),
-          rs.getInt("starlevel_Event")
         )
 
         //期間限定ログインイベント専用の累計ログイン日数
