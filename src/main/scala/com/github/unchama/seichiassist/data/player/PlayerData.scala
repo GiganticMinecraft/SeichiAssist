@@ -1,8 +1,5 @@
 package com.github.unchama.seichiassist.data.player
 
-import java.text.SimpleDateFormat
-import java.util.{GregorianCalendar, UUID}
-
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.ClosedRange
@@ -28,6 +25,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import java.text.SimpleDateFormat
+import java.util.{GregorianCalendar, UUID}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -58,8 +57,6 @@ class PlayerData(
   //経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
-  //３０分間のデータを保存する．
-  val halfhourblock: MineBlock = new MineBlock()
   //持ってるポーションエフェクト全てを格納する．
   val effectdatalist: mutable.ListBuffer[FastDiggingEffect] = mutable.ListBuffer.empty
   //プレイヤー名
@@ -91,29 +88,6 @@ class PlayerData(
         new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
 
     effect.asTargetedEffect()
-  }
-
-  /**
-   * @deprecated Should be moved to external scope
-   */
-  @Deprecated()
-  val toggleExpBarVisibility: TargetedEffect[Player] = {
-    import com.github.unchama.generic.syntax._
-
-    UnfocusedEffect {
-      this.settings.isExpBarVisible = !this.settings.isExpBarVisible
-    }.followedBy {
-      val isVisible = IO { this.settings.isExpBarVisible }
-      DeferredEffect {
-        isVisible
-          .map(visible => if (visible) s"${GREEN}整地量バー表示" else s"${RED}整地量バー非表示")
-          .map(MessageEffect.apply)
-      }
-    }.followedBy {
-      UnfocusedEffect {
-        SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-      }
-    }
   }
 
   private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
@@ -149,8 +123,6 @@ class PlayerData(
   var contentsPresentInSharedInventory = false
   //ガチャの基準となるポイント
   var gachapoint = 0
-  //現在のプレイヤーレベル
-  var level = 1
   //詫び券をあげる数
   var unclaimedApologyItems = 0
   //ワールドガード保護自動設定用
@@ -162,12 +134,9 @@ class PlayerData(
     this.regionCount += 1
   }
 
-  var starLevels: StarLevel = StarLevel(0, 0)
   var minestack = new MineStack()
   //プレイ時間
   var playTick = 0
-  //トータル破壊ブロック
-  var totalbreaknum: Long = 0.toLong
   //合計経験値
   var totalexp = 0L
   //合計経験値統合済みフラグ

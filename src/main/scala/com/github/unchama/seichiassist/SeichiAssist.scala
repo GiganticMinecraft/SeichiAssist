@@ -31,6 +31,7 @@ import com.github.unchama.seichiassist.menus.TopLevelRouter
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
@@ -164,6 +165,16 @@ class SeichiAssist extends JavaPlugin() {
       seichiAssistConfig.buildCountConfiguration
 
     subsystems.buildcount.System.wired[IO, SyncIO, SyncIO](loggerF).unsafeRunSync()
+  }
+
+  lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+
+    subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
+  lazy val breakCountBarSystem: subsystems.breakcountbar.System[IO, SyncIO, Player] = {
+    subsystems.breakcountbar.System.wired[SyncIO, IO](breakCountSystem.api).unsafeRunSync()
   }
 
   lazy val buildAssist: BuildAssist = {
@@ -430,21 +441,34 @@ class SeichiAssist extends JavaPlugin() {
 
   private def startRepeatedJobs(): Unit = {
     val startTask = {
-      import PluginExecutionContexts._
       import cats.implicits._
 
-      // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
+      val dataRecalculationRoutine = {
+        import PluginExecutionContexts._
+        PlayerDataRecalculationRoutine()
+      }
+
+      val dataBackupRoutine = {
+        import PluginExecutionContexts._
+        PlayerDataBackupRoutine()
+      }
+
+      val halfHourRankingRoutineOption: Option[IO[Nothing]] = {
+        import PluginExecutionContexts._
+        implicit val api: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
+        implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+        // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
+        Option.unless(Set(7, 8).contains(SeichiAssist.seichiAssistConfig.getServerNum)) {
+          subsystems.halfhourranking.System.backgroundProcess
+        }
+      }
+
       val programs: List[IO[Nothing]] =
-        List(
-          PlayerDataRecalculationRoutine(),
-          PlayerDataBackupRoutine()
-        ) ++
-          Option.unless(
-            SeichiAssist.seichiAssistConfig.getServerNum == 7
-              || SeichiAssist.seichiAssistConfig.getServerNum == 8
-          )(
-            HalfHourRankingRoutine()
-          ).toList ++ autoSaveSystem.state ++ dragonNightTimeSystem.state
+        List(dataRecalculationRoutine, dataBackupRoutine) ++
+          halfHourRankingRoutineOption.toList ++
+          autoSaveSystem.state ++
+          dragonNightTimeSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
