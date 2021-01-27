@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -58,8 +58,6 @@ class SeichiAssist extends JavaPlugin() {
   private var hasBeenLoadedAlready = false
 
   //region application infrastructure
-
-  implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
   /*
    * JDK14LoggerFactoryは `java.util.logging.Logger.getLogger` によりロガーを解決している。
@@ -180,8 +178,8 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.breakcountbar.System.wired[SyncIO, IO](breakCountSystem.api).unsafeRunSync()
   }
 
-  lazy val rankingSystemApi: subsystems.ranking.RankingApi[IO, IO] = {
-    import PluginExecutionContexts.asyncShift
+  implicit lazy val rankingSystemApi: subsystems.ranking.RankingApi[IO] = {
+    import PluginExecutionContexts.{asyncShift, timer}
 
     subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
   }
@@ -206,6 +204,8 @@ class SeichiAssist extends JavaPlugin() {
         PlayerDataSaveTask.savePlayerData[IO](player, playerData)
         )
     }
+
+    import PluginExecutionContexts.timer
 
     new BungeeSemaphoreResponderSystem(
       PlayerDataFinalizer.concurrently[IO, Player](
