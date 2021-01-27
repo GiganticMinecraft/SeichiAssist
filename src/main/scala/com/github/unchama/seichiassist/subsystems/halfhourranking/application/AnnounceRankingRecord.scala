@@ -51,7 +51,7 @@ object AnnounceRankingRecord {
       )
     ) ++ individualAnnouncements ++ List(
       BroadcastMinecraftMessage[F].string(
-        s"全体の整地量は $AQUA$totalBreakCount$WHITE でした"
+        s"全体の整地量は $AQUA${totalBreakCount.amount}$WHITE でした"
       )
     ) ++ rankingAnnouncement ++ List(
       BroadcastMinecraftMessage[F].string(
