@@ -46,7 +46,7 @@ object FirstPage extends Menu {
 
   class Environment(implicit
                     val breakCountAPI: BreakCountReadAPI[IO, SyncIO, Player],
-                    val breakCountBarApi: BreakCountBarAPI[IO, SyncIO],
+                    val breakCountBarApi: BreakCountBarAPI[SyncIO, Player],
                     val rankingApi: RankingApi[IO],
                     val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
                     val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type,
@@ -140,7 +140,7 @@ object FirstPage extends Menu {
         ranking <-
           environment.rankingApi
             .getSeichiRanking
-        visibility <- visibilityRef.get
+        visibility <- visibilityRef.get.toIO
         lore <- new PlayerStatsLoreGenerator(
           openerData, ranking, seichiAmountData, visibility
         ).computeLore()
@@ -152,7 +152,7 @@ object FirstPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           DeferredEffect {
             visibilityRef
-              .updateAndGet(_.nextValue)
+              .updateAndGet(_.nextValue).toIO
               .map { updatedVisibility =>
                 val toggleSoundPitch = if (updatedVisibility == BreakCountBarVisibility.Shown) 1.0f else 0.5f
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)

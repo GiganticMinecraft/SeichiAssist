@@ -27,7 +27,7 @@ object TopLevelRouter {
   def apply(implicit layoutPreparationContext: LayoutPreparationContext,
             syncShift: MinecraftServerThreadShift[IO],
             breakCountApi: BreakCountAPI[IO, SyncIO, Player],
-            breakCountBarAPI: BreakCountBarAPI[IO, SyncIO],
+            breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
             seichiRankingApi: RankingApi[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     implicit lazy val seichiRankingMenuEnv: SeichiRankingMenu.Environment = new SeichiRankingMenu.Environment
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment
