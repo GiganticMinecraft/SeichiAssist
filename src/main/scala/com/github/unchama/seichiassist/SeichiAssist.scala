@@ -211,6 +211,8 @@ class SeichiAssist extends JavaPlugin() {
     new BungeeSemaphoreResponderSystem(
       PlayerDataFinalizer.concurrently[IO, Player](
         managedFlySystem.managedFinalizers.toList ++
+          breakCountSystem.managedFinalizers ++
+          breakCountBarSystem.managedFinalizers ++
           buildCountSystem.managedFinalizers.appended(savePlayerData)
       ),
       PluginExecutionContexts.asyncShift
@@ -368,6 +370,8 @@ class SeichiAssist extends JavaPlugin() {
       rescueplayer.System.wired,
       bookedAchievementSystem,
       seasonalEventsSystem,
+      breakCountSystem,
+      breakCountBarSystem,
       buildCountSystem,
     )
 
