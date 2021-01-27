@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
+import com.github.unchama.seichiassist.menus.ranking.SeichiRankingMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
@@ -50,7 +51,8 @@ object FirstPage extends Menu {
                     val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type,
                     val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
                     val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type,
-                    val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type)
+                    val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
+                    val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu)
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
@@ -639,7 +641,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val seichiGodRankingButton: Button = {
+    def seichiGodRankingButton(implicit ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.COOKIE)
           .title(s"$YELLOW$UNDERLINE${BOLD}整地神ランキングを見る")
@@ -653,8 +655,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingBySeichiAmount(0)),
+          ioCanOpenSeichiRankingMenu.open(SeichiRankingMenu(0)),
         )
       )
     }
