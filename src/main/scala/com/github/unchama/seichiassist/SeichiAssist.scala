@@ -57,7 +57,9 @@ class SeichiAssist extends JavaPlugin() {
 
   private var hasBeenLoadedAlready = false
 
-  //region logging infrastructure
+  //region application infrastructure
+
+  implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
   /*
    * JDK14LoggerFactoryは `java.util.logging.Logger.getLogger` によりロガーを解決している。
@@ -178,6 +180,12 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.breakcountbar.System.wired[SyncIO, IO](breakCountSystem.api).unsafeRunSync()
   }
 
+  lazy val rankingSystemApi: subsystems.ranking.RankingApi[IO, IO] = {
+    import PluginExecutionContexts.asyncShift
+
+    subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
+  }
+
   lazy val buildAssist: BuildAssist = {
     implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
     implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
@@ -186,7 +194,6 @@ class SeichiAssist extends JavaPlugin() {
 
   lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
     import cats.implicits._
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
       seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
@@ -359,7 +366,7 @@ class SeichiAssist extends JavaPlugin() {
       rescueplayer.System.wired,
       bookedAchievementSystem,
       seasonalEventsSystem,
-      buildCountSystem
+      buildCountSystem,
     )
 
     // コマンドの登録
