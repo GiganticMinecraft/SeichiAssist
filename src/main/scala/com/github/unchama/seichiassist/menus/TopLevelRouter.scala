@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.menus.ranking.SeichiRankingMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import org.bukkit.entity.Player
 
@@ -26,6 +27,7 @@ object TopLevelRouter {
   def apply(implicit layoutPreparationContext: LayoutPreparationContext,
             syncShift: MinecraftServerThreadShift[IO],
             breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+            breakCountBarAPI: BreakCountBarAPI[IO, SyncIO],
             seichiRankingApi: RankingApi[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     implicit lazy val seichiRankingMenuEnv: SeichiRankingMenu.Environment = new SeichiRankingMenu.Environment
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment

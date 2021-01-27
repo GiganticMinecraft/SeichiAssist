@@ -30,7 +30,13 @@ object AchievementConditions {
   }
 
   def brokenBlockRankingPosition_<=(n: Int): AchievementCondition[Int] = {
-    val predicate = playerDataPredicate(d => IO { d.calcPlayerRank() <= n })
+    val predicate: PlayerPredicate = { player: Player =>
+      SeichiAssist.instance
+        .rankingSystemApi
+        .getSeichiRanking
+        .map(_.positionOf(player.getName))
+        .map(_.exists(_ <= n))
+    }
 
     AchievementCondition(predicate, "「整地神ランキング」" + _ + "位達成", n)
   }

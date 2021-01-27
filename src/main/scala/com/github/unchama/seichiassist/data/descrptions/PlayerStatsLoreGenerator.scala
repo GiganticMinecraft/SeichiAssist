@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.data.descrptions
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiStarLevel}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
+import com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking
 import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
@@ -15,7 +15,10 @@ import org.bukkit.entity.Player
 /**
  * Created by karayuu on 2019/05/05
  */
-class PlayerStatsLoreGenerator(playerData: PlayerData, seichiAmountData: SeichiAmountData, expBarVisibility: BreakCountBarVisibility) {
+class PlayerStatsLoreGenerator(playerData: PlayerData,
+                               seichiRanking: SeichiRanking,
+                               seichiAmountData: SeichiAmountData,
+                               expBarVisibility: BreakCountBarVisibility) {
   private val targetPlayer: Player = Bukkit.getPlayer(playerData.uuid)
 
   /**
@@ -31,11 +34,9 @@ class PlayerStatsLoreGenerator(playerData: PlayerData, seichiAmountData: SeichiA
       levelProgressionDescription(),
       noRewardsOutsideSeichiWorld,
       passiveSkillDescription(),
-      List(
-        totalBreakAmountDescription(),
-        rankingDescription()
-      ),
-      rankingDiffDescription(),
+      List(totalBreakAmountDescription()),
+      rankingDescription().toList,
+      rankingDiffDescription().toList,
       List(
         totalLoginTimeDescrpition(),
         totalLoginDaysDescrption(),
@@ -98,22 +99,34 @@ class PlayerStatsLoreGenerator(playerData: PlayerData, seichiAmountData: SeichiA
   /**
    * ランキングの順位の説明文
    */
-  private def rankingDescription(): String =
-    s"${GOLD}ランキング：${playerData.calcPlayerRank()}位$GRAY(${SeichiAssist.ranklist.size}人中)"
+  private def rankingDescription(): Option[String] =
+    seichiRanking
+      .positionOf(targetPlayer.getName)
+      .map { rank =>
+        s"${GOLD}ランキング：${rank}位$GRAY(${seichiRanking.recordCount}人中)"
+      }
 
   /**
    * 一つ前のランキングのプレイヤーとの整地量の差を表す説明文を返します.
    */
-  private def rankingDiffDescription(): List[String] =
-    if (playerData.calcPlayerRank() != 1) {
-      val playerRanking = playerData.calcPlayerRank()
-      val rankData = SeichiAssist.ranklist(playerRanking - 2)
-      val differenceToTheBest = rankData.totalbreaknum - seichiAmountData.expAmount.amount
-
-      List(s"$AQUA${playerRanking - 1}位(${rankData.name})との差：$differenceToTheBest")
-    } else {
-      Nil
-    }
+  private def rankingDiffDescription(): Option[String] =
+    seichiRanking
+      .positionAndRecordOf(targetPlayer.getName)
+      .flatMap { case (position, record) =>
+        if (position > 1) {
+          val positionOneAbove = position - 1
+          val recordOneAbove = seichiRanking.recordsWithPositions(positionOneAbove - 1)._2
+          val difference =
+            SeichiExpAmount.orderedMonus.subtractTruncate(
+              recordOneAbove.seichiAmountData.expAmount,
+              record.seichiAmountData.expAmount
+            )
+          Some(
+            s"$AQUA${positionOneAbove}位(${recordOneAbove.playerName})との差：${difference.amount}"
+          )
+        } else
+          None
+      }
 
   /**
    * 総ログイン時間の説明文

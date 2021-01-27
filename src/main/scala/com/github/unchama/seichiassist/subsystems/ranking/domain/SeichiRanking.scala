@@ -8,6 +8,8 @@ class SeichiRanking(records: Vector[SeichiRankingRecord]) {
 
   private val sortedRecords: Vector[SeichiRankingRecord] = records.sortBy(_.seichiAmountData.expAmount)
 
+  val recordCount: Int = records.size
+
   val totalBreakAmount: SeichiExpAmount =
     records
       .map(_.seichiAmountData.expAmount)
@@ -15,4 +17,11 @@ class SeichiRanking(records: Vector[SeichiRankingRecord]) {
 
   val recordsWithPositions: Vector[(Int, SeichiRankingRecord)] =
     sortedRecords.zipWithIndex.map { case (record, i) => (i + 1, record) }
+
+  def positionAndRecordOf(playerName: String): Option[(Int, SeichiRankingRecord)] =
+    recordsWithPositions
+      .find { case (_, record) => record.playerName == playerName }
+
+  def positionOf(playerName: String): Option[Int] =
+    positionAndRecordOf(playerName).map(_._1)
 }

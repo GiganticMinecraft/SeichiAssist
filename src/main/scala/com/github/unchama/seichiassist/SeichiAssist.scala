@@ -548,8 +548,6 @@ object SeichiAssist {
   val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
   //Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
-  //総採掘量ランキング表示用データリスト
-  val ranklist: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   //プレイ時間ランキング表示用データリスト
   val ranklist_playtick: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   //投票ポイント表示用データリスト

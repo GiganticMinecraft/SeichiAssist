@@ -14,9 +14,11 @@ import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.ranking.SeichiRankingMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
+import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
+import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -43,7 +45,9 @@ object FirstPage extends Menu {
   import eu.timepit.refined.auto._
 
   class Environment(implicit
-                    val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
+                    val breakCountAPI: BreakCountReadAPI[IO, SyncIO, Player],
+                    val breakCountBarApi: BreakCountBarAPI[IO, SyncIO],
+                    val rankingApi: RankingApi[IO],
                     val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
                     val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type,
                     val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type,
@@ -125,15 +129,21 @@ object FirstPage extends Menu {
     val computeStatsButton: IO[Button] = RecomputedButton {
       val openerData = SeichiAssist.playermap(getUniqueId)
 
-      val seichiAmountDataRef =
-        SeichiAssist.instance.breakCountSystem.api.seichiAmountDataRepository(player)
       val visibilityRef =
-        SeichiAssist.instance.breakCountBarSystem.api.breakCountBarVisibility(player)
+        environment.breakCountBarApi.breakCountBarVisibility(player)
 
       for {
-        seichiAmountData <- seichiAmountDataRef.read.toIO
-        visibility <- visibilityRef.get.toIO
-        lore <- new PlayerStatsLoreGenerator(openerData, seichiAmountData, visibility).computeLore()
+        seichiAmountData <-
+          environment.breakCountAPI
+            .seichiAmountDataRepository(player)
+            .read.toIO
+        ranking <-
+          environment.rankingApi
+            .getSeichiRanking
+        visibility <- visibilityRef.get
+        lore <- new PlayerStatsLoreGenerator(
+          openerData, ranking, seichiAmountData, visibility
+        ).computeLore()
       } yield Button(
         new SkullItemStackBuilder(getUniqueId)
           .title(s"$YELLOW$BOLD$UNDERLINE${getName}の統計データ")
@@ -142,7 +152,7 @@ object FirstPage extends Menu {
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           DeferredEffect {
             visibilityRef
-              .updateAndGet(_.nextValue).toIO
+              .updateAndGet(_.nextValue)
               .map { updatedVisibility =>
                 val toggleSoundPitch = if (updatedVisibility == BreakCountBarVisibility.Shown) 1.0f else 0.5f
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)

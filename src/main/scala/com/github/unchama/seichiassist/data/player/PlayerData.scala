@@ -444,18 +444,6 @@ class PlayerData(
     }
   }
 
-  //現在の採掘量順位
-  def calcPlayerRank(): Int = {
-    val totalBreakCount =
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player)
-        .read.unsafeRunSync()
-        .expAmount.amount
-
-    1 + SeichiAssist.ranklist.count(rank => rank.totalbreaknum > totalBreakCount)
-  }
-
   def calcPlayerApple(): Int = {
     //ランク用関数
     var i = 0
