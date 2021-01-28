@@ -1,5 +1,6 @@
 package com.github.unchama.datarepository.bukkit.player
 
+import cats.Monad
 import cats.effect.{Sync, SyncEffect, SyncIO}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryFinalization, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
@@ -30,9 +31,9 @@ object BukkitRepositoryControls {
     def singlePhased[
       F[_] : SyncEffect, R
     ](initialization: SinglePhasedRepositoryInitialization[F, R])
+     (tapOnJoin: (Player, R) => F[Unit])
      (dataMap: TrieMap[UUID, R]): PreLoginListener = {
       //noinspection ScalaUnusedSymbol
-      //noinspection ConvertExpressionToSAM
       new PreLoginListener {
         @EventHandler(priority = EventPriority.LOWEST)
         override final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
@@ -46,6 +47,15 @@ object BukkitRepositoryControls {
               dataMap(event.getUniqueId) = data
           }
         }
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        final def onPlayerJoin(event: PlayerJoinEvent): Unit = {
+          val player = event.getPlayer
+
+          tapOnJoin(player, dataMap(player.getUniqueId))
+            .runSync[SyncIO]
+            .unsafeRunSync()
+        }
       }
     }
 
@@ -55,7 +65,7 @@ object BukkitRepositoryControls {
      (temporaryDataMap: TrieMap[UUID, initialization.IntermediateData], dataMap: TrieMap[Player, R]): Listener = {
 
       val temporaryDataMapInitializer =
-        singlePhased(initialization.prefetchIntermediateValue(_, _))(temporaryDataMap)
+        singlePhased(initialization.prefetchIntermediateValue(_, _))((_, _) => Monad[F].unit)(temporaryDataMap)
 
       new Listener {
         //noinspection ScalaUnusedSymbol
@@ -125,6 +135,25 @@ object BukkitRepositoryControls {
     }
   }
 
+  def createTappingSinglePhasedRepositoryAndHandles[
+    F[_] : SyncEffect, R
+  ](initialization: SinglePhasedRepositoryInitialization[F, R],
+    onPlayerJoin: (Player, R) => F[Unit],
+    finalization: RepositoryFinalization[F, UUID, R]): F[BukkitRepositoryControls[F, R]] = Sync[F].delay {
+
+    val dataMap: TrieMap[UUID, R] = TrieMap.empty
+
+    // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
+    val i: initialization.type = initialization
+
+    BukkitRepositoryControls(
+      player => dataMap(player.getUniqueId),
+      Initializers.singlePhased(i)(onPlayerJoin)(dataMap),
+      backupProcess(finalization)(dataMap),
+      player => Finalizers.singlePhased(finalization)(dataMap).onQuitOf(player.getUniqueId)
+    )
+  }
+
   def createSinglePhasedRepositoryAndHandles[
     F[_] : SyncEffect, R
   ](initialization: SinglePhasedRepositoryInitialization[F, R],
@@ -137,7 +166,7 @@ object BukkitRepositoryControls {
 
     BukkitRepositoryControls(
       player => dataMap(player.getUniqueId),
-      Initializers.singlePhased(i)(dataMap),
+      Initializers.singlePhased(i)((_, _) => Monad[F].unit)(dataMap),
       backupProcess(finalization)(dataMap),
       player => Finalizers.singlePhased(finalization)(dataMap).onQuitOf(player.getUniqueId)
     )

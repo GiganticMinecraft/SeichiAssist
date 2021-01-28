@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.breakcount
 
+import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
@@ -48,8 +49,9 @@ object System {
       levelTopic <- Topic[F, Option[(Player, Diff[SeichiLevel])]](None)
       breakCountRepositoryControls <-
         ContextCoercion(
-          BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles(
+          BukkitRepositoryControls.createTappingSinglePhasedRepositoryAndHandles[G, Ref[G, SeichiAmountData]](
             BreakCountRepositoryDefinitions.initialization(persistence),
+            BreakCountRepositoryDefinitions.tappingAction(breakCountTopic),
             BreakCountRepositoryDefinitions.finalization(persistence)
           )
         )
