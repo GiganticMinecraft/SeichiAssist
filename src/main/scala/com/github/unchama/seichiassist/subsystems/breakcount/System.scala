@@ -44,7 +44,7 @@ object System {
     implicit val persistence: SeichiAmountDataPersistence[G] = new JdbcSeichiAmountDataPersistence[G]
 
     for {
-      breakCountTopic <- Topic[F, Option[(Player, Diff[SeichiAmountData])]](None)
+      breakCountTopic <- Topic[F, Option[(Player, SeichiAmountData)]](None)
       levelTopic <- Topic[F, Option[(Player, Diff[SeichiLevel])]](None)
       breakCountRepositoryControls <-
         ContextCoercion(
@@ -66,7 +66,7 @@ object System {
             breakCountRepository.map(ReadOnlyRef.fromRef)
           override val incrementSeichiExp: IncrementSeichiExp[G, Player] =
             IncrementSeichiExp.using(breakCountRepository, breakCountTopic)
-          override val seichiAmountUpdates: fs2.Stream[F, (Player, Diff[SeichiAmountData])] =
+          override val seichiAmountUpdates: fs2.Stream[F, (Player, SeichiAmountData)] =
             breakCountTopic.subscribe(1).mapFilter(identity)
           override val seichiLevelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])] =
             levelTopic.subscribe(1).mapFilter(identity)

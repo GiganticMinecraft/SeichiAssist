@@ -5,10 +5,9 @@ import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.generic.{ContextCoercion, Diff}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcountbar.application.{BreakCountBarVisibilityRepositoryTemplate, ExpBarSynchronizationRepositoryTemplate}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.bukkit.CreateFreshBossBar
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
@@ -37,9 +36,6 @@ object System {
     val persistence: BreakCountBarVisibilityPersistence[G] =
       new JdbcBreakCountBarVisibilityPersistence[G]
 
-    val breakCountValues: fs2.Stream[F, (Player, SeichiAmountData)] =
-      breakCountReadAPI.seichiAmountUpdates.map { case (player, Diff(_, right)) => (player, right) }
-
     for {
       topic <- Topic[F, Option[(Player, BreakCountBarVisibility)]](None)
 
@@ -62,7 +58,10 @@ object System {
       expBarSynchronizationRepositoryHandles <- {
         val initialization =
           ExpBarSynchronizationRepositoryTemplate
-            .initialization[G, F, Player](breakCountValues, visibilityValues)(CreateFreshBossBar.in[G, F])
+            .initialization[G, F, Player](
+              breakCountReadAPI.seichiAmountUpdates,
+              visibilityValues
+            )(CreateFreshBossBar.in[G, F])
 
         val finalization =
           ExpBarSynchronizationRepositoryTemplate

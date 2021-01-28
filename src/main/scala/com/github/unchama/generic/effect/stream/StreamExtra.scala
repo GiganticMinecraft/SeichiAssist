@@ -1,7 +1,9 @@
 package com.github.unchama.generic.effect.stream
 
+import cats.Eq
 import cats.effect.Concurrent
 import cats.effect.concurrent.Ref
+import com.github.unchama.generic.Diff
 import fs2.{Pull, Stream}
 
 object StreamExtra {
@@ -17,9 +19,6 @@ object StreamExtra {
       case Some((head, tail)) => Pull.output1(head, tail)
       case None => Pull.done
     }.stream
-
-  def filterKeys[F[_], K, O](stream: Stream[F, (K, O)], key: K): Stream[F, O] =
-    stream.mapFilter { case (k, out) => Option.when(k == key)(out) }
 
   /**
    * 与えられた `stream` に対してfoldの操作を行う。
@@ -39,5 +38,26 @@ object StreamExtra {
           .concurrently(stream.evalTap(a => ref.update(f(_)(a))))
       }
     }
+  }
+
+  /**
+   * 与えられたキーと出力のストリームから、与えられたキーを左成分に持つ要素のみを取り出すストリームを作成する。
+   */
+  def filterKeys[F[_], K, O](stream: Stream[F, (K, O)], key: K): Stream[F, O] =
+    stream.mapFilter { case (k, out) => Option.when(k == key)(out) }
+
+  def keyedValueDiffs[F[_], K, O: Eq](stream: Stream[F, (K, O)]): Stream[F, (K, Diff[O])] = {
+    stream
+      .mapAccumulate(Map.empty[K, O]) { case (map, (key, o)) =>
+        val output: Option[(K, Diff[O])] = map.get(key) match {
+          case Some(previousValue) =>
+            Diff.fromValues(previousValue, o).map(key -> _)
+          case None =>
+            None
+        }
+
+        (map.updated(key, o), output)
+      }
+      .mapFilter(_._2)
   }
 }

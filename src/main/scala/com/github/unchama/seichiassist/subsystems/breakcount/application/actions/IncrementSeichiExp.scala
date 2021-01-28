@@ -30,18 +30,14 @@ object IncrementSeichiExp {
     G[_] : Effect : ContextCoercion[F, *[_]],
     Player
   ](dataRepository: KeyedDataRepository[Player, Ref[F, SeichiAmountData]],
-    topic: Topic[G, Option[(Player, Diff[SeichiAmountData])]]): IncrementSeichiExp[F, Player] =
+    topic: Topic[G, Option[(Player, SeichiAmountData)]]): IncrementSeichiExp[F, Player] =
     (player, by) => {
       val F: Monad[F] = implicitly
 
       F.ifM(ClassifyPlayerWorld[F, Player].isInSeichiCountingWorld(player))(
         for {
           dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(_.addExpAmount(by))
-          _ <- EffectExtra.runAsyncAndForget[G, F, Option[Unit]] {
-            Diff
-              .ofPair(dataPair)
-              .traverse(diff => topic.publish1(Some(player, diff)))
-          }
+          _ <- EffectExtra.runAsyncAndForget[G, F, Unit](topic.publish1(Some(player, dataPair._2)))
           _ <- Diff
             .ofPairBy(dataPair)(_.levelCorrespondingToExp)
             .traverse(NotifyLevelUp[F, Player].ofSeichiLevelTo(player))
