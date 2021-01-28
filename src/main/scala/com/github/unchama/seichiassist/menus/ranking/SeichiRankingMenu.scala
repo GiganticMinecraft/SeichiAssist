@@ -82,7 +82,7 @@ case class SeichiRankingMenu(pageIndex: Int) extends Menu {
     def entry(position: Int, record: SeichiRankingRecord): Button = {
       Button(
         new SkullItemStackBuilder(record.playerName)
-          .title(s"$YELLOW$BOLD${position}位:$WHITE")
+          .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
           .lore(
             s"$RESET${GREEN}整地Lv:${record.seichiAmountData.levelCorrespondingToExp.level}",
             s"$RESET${GREEN}総整地量:${record.seichiAmountData.expAmount.amount}"
