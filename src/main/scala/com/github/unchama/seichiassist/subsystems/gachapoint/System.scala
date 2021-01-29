@@ -14,10 +14,11 @@ object System {
   ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
     breakCountReadAPI
       .seichiAmountIncreases
-      .evalTap { case (player, amount) => Sync[F].delay {
-        // TODO: gachapointのリポジトリをこのsubsystemで持ってplayermapを参照しないようにする
-        SeichiAssist.playermap.get(player.getUniqueId).foreach(_.gachapoint += amount.amount.toInt)
-      }
+      .evalTap { case (player, amount) =>
+        Sync[F].delay {
+          // TODO: gachapointのリポジトリをこのsubsystemで持ってplayermapを参照しないようにする
+          SeichiAssist.playermap.get(player.getUniqueId).foreach(_.gachapoint += amount.amount.toInt)
+        }
       }
       .compile.drain
       .flatMap[Nothing](_ => Async[F].never)
