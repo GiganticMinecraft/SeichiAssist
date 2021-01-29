@@ -27,9 +27,14 @@ trait BreakCountReadAPI[F[_], G[_], Player] {
   val seichiAmountUpdates: fs2.Stream[F, (Player, SeichiAmountData)]
 
   /**
+   * プレーヤーの整地レベルの更新差分が流れる [[fs2.Stream]]
+   */
+  val seichiLevelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])]
+
+  /**
    * プレーヤーの整地量データの差分が流れる [[fs2.Stream]]。
    */
-  val seichiAmountUpdateDiffs: fs2.Stream[F, (Player, Diff[SeichiAmountData])] =
+  final lazy val seichiAmountUpdateDiffs: fs2.Stream[F, (Player, Diff[SeichiAmountData])] =
     StreamExtra.keyedValueDiffs(seichiAmountUpdates)
 
   /**
@@ -40,11 +45,6 @@ trait BreakCountReadAPI[F[_], G[_], Player] {
       val expDiff = SeichiExpAmount.orderedMonus.subtractTruncate(newData.expAmount, oldData.expAmount)
       (player, expDiff)
     }
-
-  /**
-   * プレーヤーの整地レベルの更新差分が流れる [[fs2.Stream]]
-   */
-  val seichiLevelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])]
 }
 
 trait BreakCountAPI[F[_], G[_], Player] extends BreakCountWriteAPI[G, Player] with BreakCountReadAPI[F, G, Player]
