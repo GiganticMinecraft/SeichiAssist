@@ -44,7 +44,7 @@ case class SeichiRankingMenu(pageIndex: Int) extends Menu {
     def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(skullOwnerReference),
-        s"MineStack${pageIndex + 1}ページ目へ",
+        s"整地神ランキング${pageIndex + 1}ページ目へ",
         SeichiRankingMenu(pageIndex)
       )
 
@@ -107,7 +107,7 @@ case class SeichiRankingMenu(pageIndex: Int) extends Menu {
       ranking <- environment.seichiRankingApi.getSeichiRanking
     } yield {
       val records = ranking.recordsWithPositions
-      val recordsToInclude = records.size max rankCutoff
+      val recordsToInclude = records.size min rankCutoff
       val totalNumberOfPages = Math.ceil(recordsToInclude / 45.0).toInt
 
       val combinedLayout =
