@@ -20,7 +20,7 @@ class RankingRecord[Player](internalMap: Map[Player, SeichiExpAmount]) {
     internalMap
       .toList
       .filter(_._2 != SeichiExpAmount.zero)
-      .sortBy(_._2)(SeichiExpAmount.orderedMonus.toOrdering)
+      .sortBy(_._2)(SeichiExpAmount.orderedMonus.toOrdering.reverse)
 
 }
 

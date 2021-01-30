@@ -6,7 +6,7 @@ class SeichiRanking(records: Vector[SeichiRankingRecord]) {
 
   import cats.implicits._
 
-  private val sortedRecords: Vector[SeichiRankingRecord] = records.sortBy(_.seichiAmountData.expAmount)
+  private val sortedRecords: Vector[SeichiRankingRecord] = records.sortBy(_.seichiAmountData.expAmount).reverse
 
   val recordCount: Int = records.size
 
