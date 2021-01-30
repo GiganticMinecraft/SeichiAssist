@@ -16,7 +16,7 @@ object BreakCountBarManipulation {
     val level = seichiAmountData.levelCorrespondingToExp
     val starLevel = seichiAmountData.starLevelCorrespondingToExp
 
-    def formatAmount(expAmount: SeichiExpAmount): String = String.format("%,d", expAmount.amount)
+    def formatAmount(expAmount: SeichiExpAmount): String = expAmount.amount.toString()
 
     val text = if (starLevel != SeichiStarLevel.zero) {
       val levelText = s"Lv ${level.level}☆${starLevel.level}"
