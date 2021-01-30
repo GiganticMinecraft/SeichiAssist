@@ -332,7 +332,6 @@ object BreakUtil {
       //プレイヤーの統計を増やす
       blockCountWeight <- weight
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
-      _ = println(expIncrease)
       _ <- SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, expIncrease).toIO
 
       _ <- PluginExecutionContexts.syncShift.shift

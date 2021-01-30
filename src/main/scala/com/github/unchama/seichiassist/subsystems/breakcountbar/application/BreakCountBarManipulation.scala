@@ -6,6 +6,8 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmount
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiStarLevel}
 import org.bukkit.ChatColor.{BOLD, GOLD}
 
+import java.text.DecimalFormat
+
 object BreakCountBarManipulation {
 
   import cats.implicits._
@@ -16,7 +18,11 @@ object BreakCountBarManipulation {
     val level = seichiAmountData.levelCorrespondingToExp
     val starLevel = seichiAmountData.starLevelCorrespondingToExp
 
-    def formatAmount(expAmount: SeichiExpAmount): String = expAmount.amount.toString()
+    // 3桁毎カンマ区切り、小数点以下一桁を表示
+    def formatAmount(expAmount: SeichiExpAmount): String = {
+      val decimalFormat = new DecimalFormat("#,###.0")
+      decimalFormat.format(expAmount.amount.bigDecimal)
+    }
 
     val text = if (starLevel != SeichiStarLevel.zero) {
       val levelText = s"Lv ${level.level}☆${starLevel.level}"
