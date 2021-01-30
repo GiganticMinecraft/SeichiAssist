@@ -329,14 +329,11 @@ object BreakUtil {
         }
         .sum
 
-      blockCountWeight <- weight
-
       //プレイヤーの統計を増やす
-      // TODO 切り捨てられておりブロックを単体で掘っても増えない
-      _ <- SeichiAssist.instance
-        .breakCountSystem.api
-        .incrementSeichiExp.of(player, SeichiExpAmount.ofNonNegative((totalCount * blockCountWeight).toLong))
-        .toIO
+      blockCountWeight <- weight
+      expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
+      _ = println(expIncrease)
+      _ <- SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, expIncrease).toIO
 
       _ <- PluginExecutionContexts.syncShift.shift
 
