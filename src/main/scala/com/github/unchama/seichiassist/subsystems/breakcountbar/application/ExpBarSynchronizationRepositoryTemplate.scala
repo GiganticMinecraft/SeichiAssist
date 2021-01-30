@@ -14,7 +14,18 @@ object ExpBarSynchronizationRepositoryTemplate {
 
   type BossBarWithPlayer[F[_], P] = MinecraftBossBar[F] {type Player = P}
 
-  type RepositoryValueType[G[_], F[_], P] =
+  /**
+   * レポジトリが保持する値の型。
+   *
+   * 一つ目の成分にプレーヤーが持つ整地量ボスバー、
+   * 二つ目の成分にボスバーを可視設定と同期するためのファイバーへの参照を持つ。
+   *
+   * ファイバーへの参照は、プレーヤーがサーバーに参加しているほとんどのタイミングにおいて
+   * すでにcompleteされていることが期待される。
+   * このようなデザインになっているのは、[[F]] とは異なる文脈でレポジトリのデータを初期化する必要があり、
+   * `Fiber[F, Unit]` が `G` のコンテキストで入手できない可能性があるからである。
+   */
+  type RepositoryValueType[F[_], P] =
     (BossBarWithPlayer[F, P], Deferred[F, Fiber[F, Unit]])
 
   import cats.effect.implicits._
@@ -27,7 +38,7 @@ object ExpBarSynchronizationRepositoryTemplate {
   ](breakCountValues: fs2.Stream[F, (Player, SeichiAmountData)],
     visibilityValues: fs2.Stream[F, (Player, BreakCountBarVisibility)])
    (createFreshBossBar: G[BossBarWithPlayer[F, Player]])
-  : TwoPhasedRepositoryInitialization[G, Player, RepositoryValueType[G, F, Player]] =
+  : TwoPhasedRepositoryInitialization[G, Player, RepositoryValueType[F, Player]] =
     TwoPhasedRepositoryInitialization.withoutPrefetching { player =>
       for {
         bossBar <- createFreshBossBar
@@ -57,7 +68,7 @@ object ExpBarSynchronizationRepositoryTemplate {
     G[_] : Sync,
     F[_] : ConcurrentEffect : ContextCoercion[G, *[_]],
     Player,
-  ]: RepositoryFinalization[G, Player, RepositoryValueType[G, F, Player]] =
+  ]: RepositoryFinalization[G, Player, RepositoryValueType[F, Player]] =
     RepositoryFinalization.withoutAnyPersistence { case (_, (_, fiberPromise)) =>
       EffectExtra.runAsyncAndForget[F, G, Unit](fiberPromise.get.flatMap(_.cancel))
     }
