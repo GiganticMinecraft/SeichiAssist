@@ -5,14 +5,14 @@ import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.generic.{ContextCoercion, Diff}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.application.BreakCountRepositoryDefinitions
-import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.{ClassifyPlayerWorld, IncrementSeichiExp, NotifyLevelUp}
-import com.github.unchama.seichiassist.subsystems.breakcount.bukkit.actions.{SyncBukkitNotifyLevelUp, SyncClassifyBukkitPlayerWorld}
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
+import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.{ClassifyPlayerWorld, IncrementSeichiExp}
+import com.github.unchama.seichiassist.subsystems.breakcount.bukkit.actions.SyncClassifyBukkitPlayerWorld
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmountData, SeichiAmountDataPersistence}
 import com.github.unchama.seichiassist.subsystems.breakcount.infrastructure.JdbcSeichiAmountDataPersistence
 import fs2.concurrent.Topic
@@ -36,17 +36,17 @@ trait System[F[_], G[_]] extends Subsystem[F] {
 
 object System {
 
+  import cats.effect.implicits._
   import cats.implicits._
 
   def wired[
-    F[_] : ConcurrentEffect,
+    F[_] : ConcurrentEffect : MinecraftServerThreadShift,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
   ](implicit effectEnvironment: EffectEnvironment): F[System[F, G]] = {
     implicit val persistence: SeichiAmountDataPersistence[G] = new JdbcSeichiAmountDataPersistence[G]
 
-    for {
+    val createSystem: F[System[F, G]] = for {
       breakCountTopic <- Topic[F, Option[(Player, SeichiAmountData)]](None)
-      levelTopic <- Topic[F, Option[(Player, Diff[SeichiLevel])]](None)
       breakCountRepositoryControls <-
         ContextCoercion(
           BukkitRepositoryControls.createTappingSinglePhasedRepositoryAndHandles[G, Ref[G, SeichiAmountData]](
@@ -57,8 +57,6 @@ object System {
         )
     } yield {
       implicit val classifyPlayerWorld: ClassifyPlayerWorld[G, Player] = SyncClassifyBukkitPlayerWorld[G]
-      implicit val notifyLevelUp: NotifyLevelUp[G, Player] =
-        SyncBukkitNotifyLevelUp[G].alsoNotifyTo(levelTopic)
 
       val breakCountRepository = breakCountRepositoryControls.repository
 
@@ -67,11 +65,9 @@ object System {
           override val seichiAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]] =
             breakCountRepository.map(ReadOnlyRef.fromRef)
           override val incrementSeichiExp: IncrementSeichiExp[G, Player] =
-            IncrementSeichiExp.using(breakCountRepository, breakCountTopic)
+            IncrementSeichiExp.using(breakCountRepository)
           override val seichiAmountUpdates: fs2.Stream[F, (Player, SeichiAmountData)] =
             breakCountTopic.subscribe(1).mapFilter(identity)
-          override val seichiLevelUpdates: fs2.Stream[F, (Player, Diff[SeichiLevel])] =
-            levelTopic.subscribe(1).mapFilter(identity)
         }
         override val listeners: Seq[Listener] = Seq(
           breakCountRepositoryControls.initializer
@@ -81,6 +77,12 @@ object System {
         )
         override val commands: Map[String, TabExecutor] = Map()
       }
+    }
+
+    createSystem.flatTap { system =>
+      subsystems.notification.System
+        .backgroundProcess(system.api)
+        .start
     }
   }
 

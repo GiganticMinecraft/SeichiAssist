@@ -160,7 +160,10 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
+    import PluginExecutionContexts.{asyncShift, syncShift}
+
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
     subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
