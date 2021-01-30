@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
@@ -8,8 +8,13 @@ import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenu
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
 import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu}
+import com.github.unchama.seichiassist.menus.ranking.SeichiRankingMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
+import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
+import org.bukkit.entity.Player
 
 trait TopLevelRouter[F[_]] {
 
@@ -20,7 +25,11 @@ trait TopLevelRouter[F[_]] {
 object TopLevelRouter {
 
   def apply(implicit layoutPreparationContext: LayoutPreparationContext,
-            syncShift: MinecraftServerThreadShift[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
+            syncShift: MinecraftServerThreadShift[IO],
+            breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+            breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
+            seichiRankingApi: RankingApi[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
+    implicit lazy val seichiRankingMenuEnv: SeichiRankingMenu.Environment = new SeichiRankingMenu.Environment
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment
     implicit lazy val mineStackMainMenuEnv: MineStackMainMenu.Environment = new MineStackMainMenu.Environment
     implicit lazy val categorizedMineStackMenuEnv: CategorizedMineStackMenu.Environment = new CategorizedMineStackMenu.Environment
@@ -37,6 +46,7 @@ object TopLevelRouter {
     implicit lazy val passiveSkillMenuEnv: PassiveSkillMenu.Environment = new PassiveSkillMenu.Environment
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
+    implicit lazy val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu = _.open
     implicit lazy val ioCanOpenAchievementGroupMenu: IO CanOpen AchievementGroupMenu = _.open
     implicit lazy val ioCanOpenHomeConfirmationMenu: IO CanOpen HomeMenu.ConfirmationMenu = _.open
     implicit lazy val ioCanOpenAchievementCategoryMenu: IO CanOpen AchievementCategoryMenu = _.open

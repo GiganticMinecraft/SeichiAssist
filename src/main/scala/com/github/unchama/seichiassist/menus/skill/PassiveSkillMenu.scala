@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus.skill
 
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
@@ -10,6 +10,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -27,7 +28,9 @@ object PassiveSkillMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
-  class Environment(implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+  class Environment(implicit
+                    val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
 
   /**
    * メニューのサイズとタイトルに関する情報
@@ -42,7 +45,7 @@ object PassiveSkillMenu extends Menu {
     import environment._
     import eu.timepit.refined.auto._
 
-    val buttonComputations = ButtonComputations(player)
+    val buttonComputations = new ButtonComputations(player)
     import buttonComputations._
 
     val constantPart = Map(
@@ -62,60 +65,66 @@ object PassiveSkillMenu extends Menu {
     } yield MenuSlotLayout(constantPart ++ dynamicPart)
   }
 
-  private case class ButtonComputations(player: Player) {
+  private class ButtonComputations(player: Player)(implicit environment: Environment) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
     import player._
 
     import scala.util.chaining._
 
-    val computeToggleMultipleBlockTypeDestructionButton: IO[Button] = RecomputedButton(IO {
-      val openerData = SeichiAssist.playermap(getUniqueId)
+    val computeToggleMultipleBlockTypeDestructionButton: IO[Button] = RecomputedButton {
+      environment.breakCountApi
+        .seichiAmountDataRepository(player)
+        .read.toIO
+        .flatMap(amountData => IO {
+          val level = amountData.levelCorrespondingToExp.level
+          val openerData = SeichiAssist.playermap(getUniqueId)
 
-      val baseLore = List(
-        s"${GREEN}複数種類ブロック同時破壊",
-        s"${GRAY}ブロックに対応するツールを無視してスキルで",
-        s"${GRAY}破壊可能な全種類のブロックを同時に破壊します",
-        s"${DARK_RED}整地ワールドではON/OFFに関わらず同時破壊されます")
-      val statusLore = if (openerData.settings.multipleidbreakflag) {
-        List(s"${GREEN}ON", s"${DARK_RED}クリックでOFF")
-      } else {
-        List(s"${RED}OFF", s"${DARK_GREEN}クリックでON")
-      }
-
-      Button(
-        new IconItemStackBuilder(Material.DIAMOND_PICKAXE)
-          .tap { builder => if (openerData.settings.multipleidbreakflag) builder.enchanted() }
-          .title(s"$YELLOW$UNDERLINE${BOLD}複数種類同時破壊スキル切替")
-          .lore(baseLore ++ statusLore)
-          .build(),
-        LeftClickButtonEffect {
-          if (openerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel) {
-            SequentialEffect(
-              openerData.settings.toggleMultipleIdBreakFlag,
-              DeferredEffect(IO {
-                if (openerData.settings.multipleidbreakflag) {
-                  SequentialEffect(
-                    MessageEffect(s"${GREEN}複数種類同時破壊:ON"),
-                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-                  )
-                } else {
-                  SequentialEffect(
-                    MessageEffect(s"${RED}複数種類同時破壊:OFF"),
-                    FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
-                  )
-                }
-              })
-            )
+          val baseLore = List(
+            s"${GREEN}複数種類ブロック同時破壊",
+            s"${GRAY}ブロックに対応するツールを無視してスキルで",
+            s"${GRAY}破壊可能な全種類のブロックを同時に破壊します",
+            s"${DARK_RED}整地ワールドではON/OFFに関わらず同時破壊されます")
+          val statusLore = if (openerData.settings.multipleidbreakflag) {
+            List(s"${GREEN}ON", s"${DARK_RED}クリックでOFF")
           } else {
-            SequentialEffect(
-              MessageEffect("整地Lvが足りません"),
-              FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1f, 0.1f),
-            )
+            List(s"${RED}OFF", s"${DARK_GREEN}クリックでON")
           }
-        }
-      )
-    })
+
+          Button(
+            new IconItemStackBuilder(Material.DIAMOND_PICKAXE)
+              .tap { builder => if (openerData.settings.multipleidbreakflag) builder.enchanted() }
+              .title(s"$YELLOW$UNDERLINE${BOLD}複数種類同時破壊スキル切替")
+              .lore(baseLore ++ statusLore)
+              .build(),
+            LeftClickButtonEffect {
+              if (level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel) {
+                SequentialEffect(
+                  openerData.settings.toggleMultipleIdBreakFlag,
+                  DeferredEffect(IO {
+                    if (openerData.settings.multipleidbreakflag) {
+                      SequentialEffect(
+                        MessageEffect(s"${GREEN}複数種類同時破壊:ON"),
+                        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+                      )
+                    } else {
+                      SequentialEffect(
+                        MessageEffect(s"${RED}複数種類同時破壊:OFF"),
+                        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+                      )
+                    }
+                  })
+                )
+              } else {
+                SequentialEffect(
+                  MessageEffect("整地Lvが足りません"),
+                  FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1f, 0.1f),
+                )
+              }
+            }
+          )
+        })
+    }
 
     val computeToggleChestBreakButton: IO[Button] = RecomputedButton(IO {
       val openerData = SeichiAssist.playermap(getUniqueId)
@@ -163,73 +172,80 @@ object PassiveSkillMenu extends Menu {
         })
     })
 
-    val computeGiganticBerserkButton: IO[Button] = RecomputedButton(IO {
-      val openerData = SeichiAssist.playermap(getUniqueId)
+    val computeGiganticBerserkButton: IO[Button] = RecomputedButton {
+      environment.breakCountApi
+        .seichiAmountDataRepository(player)
+        .read.toIO
+        .flatMap(amountData => IO {
+          val level = amountData.levelCorrespondingToExp.level
 
-      val material = if (openerData.level < 10) Material.STICK else openerData.giganticBerserk.materialOnUI()
-      val baseLore = if (openerData.level < 10) {
-        List(s"${WHITE}このパッシブスキルは", s"${WHITE}整地Lvが10以上になると解放されます")
-      } else {
-        List(
-          s"${RED}敵MOBを倒した時",
-          s"${RED}その魂を吸収しマナへと変換するスキル",
-          s"$DARK_GRAY※成功率は高くなく",
-          s"${DARK_GRAY}整地中でなければその効果を発揮しない",
-          "",
-          s"${DARK_GRAY}実装は試験的であり、変更される場合があります"
-        )
-      }
-      val lengthInfoLore = if (openerData.giganticBerserk.reachedLimit()) {
-        List(s"${GRAY}MOBの魂を極限まで吸収し最大限の力を発揮する")
-      } else {
-        List(
-          s"${GRAY}MOBの魂を${openerData.giganticBerserk.requiredExpToNextLevel()}回吸収すると更なる力が得られる",
-          s"$GRAY${openerData.giganticBerserk.exp}/${openerData.giganticBerserk.requiredExpToNextLevel()}"
-        )
-      }
-      val probability = 100 * openerData.giganticBerserk.manaRegenerationProbability()
-      val formatted = f"$probability%2.0f"
-      // 細かい数字が表示されないようにする
-      val levelInfoLore = List(s"${GRAY}現在 ${openerData.giganticBerserk.level + 1}レベル,回復率 $formatted%")
-      val evolutionLore = if (openerData.giganticBerserk.canEvolve) {
-        List(
-          "",
-          s"${DARK_RED}沢山の魂を吸収したことで",
-          s"${DARK_RED}スキルの秘めたる力を解放できそうだ…!",
-          s"$DARK_RED${UNDERLINE}クリックで開放する"
-        )
-      } else {
-        List()
-      }
+          val openerData = SeichiAssist.playermap(getUniqueId)
 
-      Button(
-        new IconItemStackBuilder(material)
-          .title(s"$YELLOW$UNDERLINE${BOLD}Gigantic$RED$UNDERLINE${BOLD}Berserk")
-          .lore(baseLore ++ lengthInfoLore ++ levelInfoLore ++ evolutionLore)
-          .tap(builder => if (openerData.giganticBerserk.canEvolve || openerData.giganticBerserk.reachedLimit()) {
-            builder.enchanted()
-          })
-          .build(),
-        LeftClickButtonEffect {
-          if (openerData.level < 10) {
-            val message =
-              s"${WHITE}パッシブスキル$YELLOW$UNDERLINE${BOLD}Gigantic$RED$UNDERLINE${BOLD}Berserk${WHITE}はレベル10以上から使用可能です"
-            SequentialEffect(
-              MessageEffect(message),
-              FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
+          val material = if (level < 10) Material.STICK else openerData.giganticBerserk.materialOnUI()
+          val baseLore = if (level < 10) {
+            List(s"${WHITE}このパッシブスキルは", s"${WHITE}整地Lvが10以上になると解放されます")
+          } else {
+            List(
+              s"${RED}敵MOBを倒した時",
+              s"${RED}その魂を吸収しマナへと変換するスキル",
+              s"$DARK_GRAY※成功率は高くなく",
+              s"${DARK_GRAY}整地中でなければその効果を発揮しない",
+              "",
+              s"${DARK_GRAY}実装は試験的であり、変更される場合があります"
             )
-          } else if (openerData.giganticBerserk.canEvolve) {
-            //TODO: メニューに置き換える
-            SequentialEffect(
-              ComputedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkBeforeEvolutionMenu(player))),
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+          }
+          val lengthInfoLore = if (openerData.giganticBerserk.reachedLimit()) {
+            List(s"${GRAY}MOBの魂を極限まで吸収し最大限の力を発揮する")
+          } else {
+            List(
+              s"${GRAY}MOBの魂を${openerData.giganticBerserk.requiredExpToNextLevel()}回吸収すると更なる力が得られる",
+              s"$GRAY${openerData.giganticBerserk.exp}/${openerData.giganticBerserk.requiredExpToNextLevel()}"
+            )
+          }
+          val probability = 100 * openerData.giganticBerserk.manaRegenerationProbability()
+          val formatted = f"$probability%2.0f"
+          // 細かい数字が表示されないようにする
+          val levelInfoLore = List(s"${GRAY}現在 ${openerData.giganticBerserk.level + 1}レベル,回復率 $formatted%")
+          val evolutionLore = if (openerData.giganticBerserk.canEvolve) {
+            List(
+              "",
+              s"${DARK_RED}沢山の魂を吸収したことで",
+              s"${DARK_RED}スキルの秘めたる力を解放できそうだ…!",
+              s"$DARK_RED${UNDERLINE}クリックで開放する"
             )
           } else {
-            MessageEffect(s"${RED}進化条件を満たしていません")
+            List()
           }
-        }
-      )
-    })
+
+          Button(
+            new IconItemStackBuilder(material)
+              .title(s"$YELLOW$UNDERLINE${BOLD}Gigantic$RED$UNDERLINE${BOLD}Berserk")
+              .lore(baseLore ++ lengthInfoLore ++ levelInfoLore ++ evolutionLore)
+              .tap(builder => if (openerData.giganticBerserk.canEvolve || openerData.giganticBerserk.reachedLimit()) {
+                builder.enchanted()
+              })
+              .build(),
+            LeftClickButtonEffect {
+              if (level < 10) {
+                val message =
+                  s"${WHITE}パッシブスキル$YELLOW$UNDERLINE${BOLD}Gigantic$RED$UNDERLINE${BOLD}Berserk${WHITE}はレベル10以上から使用可能です"
+                SequentialEffect(
+                  MessageEffect(message),
+                  FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
+                )
+              } else if (openerData.giganticBerserk.canEvolve) {
+                //TODO: メニューに置き換える
+                SequentialEffect(
+                  ComputedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkBeforeEvolutionMenu(player))),
+                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
+                )
+              } else {
+                MessageEffect(s"${RED}進化条件を満たしていません")
+              }
+            }
+          )
+        })
+    }
   }
 
 }

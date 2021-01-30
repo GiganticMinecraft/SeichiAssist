@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.subsystems.buildcount.application.action
 import cats.Monad
 import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.generic.Diff
 import com.github.unchama.generic.ratelimiting.RateLimiter
+import com.github.unchama.generic.{Diff, RefExtra}
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
@@ -52,11 +52,10 @@ object IncrementBuildExpWhenBuiltByHand {
           )
         amountToIncrement <-
           rateLimiterRepository(player).requestPermission(amountToRequestIncrement)
-        levelDiff <- dataRepository(player).modify { oldAmount =>
-          val newAmount = oldAmount.modifyExpAmount(_.add(amountToIncrement))
-          (newAmount, Diff.fromValues(oldAmount.levelCorrespondingToExp, newAmount.levelCorrespondingToExp))
-        }
-        _ <- levelDiff.traverse(LevelUpNotifier[F, Player].notifyTo(player))
+        dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(_.modifyExpAmount(_.add(amountToIncrement)))
+        _ <- Diff
+          .ofPairBy(dataPair)(_.levelCorrespondingToExp)
+          .traverse(LevelUpNotifier[F, Player].notifyTo(player))
       } yield ()
     }
 }

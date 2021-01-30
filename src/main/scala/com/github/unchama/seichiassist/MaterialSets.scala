@@ -14,7 +14,7 @@ object MaterialSets {
     Material.QUARTZ_ORE
   )
 
-  // このMaterialは整地スキルに対応するブロック群を示しています。
+  // このMaterialは整地スキルに対応する
   val materials: Set[Material] = Set(
     Material.STONE, Material.NETHERRACK, Material.NETHER_BRICK, Material.DIRT, Material.GRAVEL, Material.LOG,
     Material.LOG_2, Material.GRASS, Material.IRON_ORE, Material.GOLD_ORE, Material.SAND,
@@ -34,8 +34,18 @@ object MaterialSets {
     Material.MOB_SPAWNER, Material.WORKBENCH, Material.FURNACE, Material.QUARTZ_BLOCK, Material.CHEST,
     Material.TRAPPED_CHEST, Material.NETHER_FENCE, Material.NETHER_BRICK_STAIRS, Material.CAULDRON, Material.END_ROD,
     Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST, Material.PURPUR_SLAB, Material.STEP,
-    Material.DOUBLE_STEP,Material.ENDER_PORTAL_FRAME,Material.ENDER_PORTAL, Material.VINE
+    Material.DOUBLE_STEP, Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL, Material.VINE
   ) ++ fortuneMaterials
+
+  // これらのマテリアルを持つブロックは破壊を整地量に計上しない
+  val exclude: Set[Material] = Set(
+    Material.GRASS_PATH,
+    Material.SOIL, Material.MOB_SPAWNER,
+    Material.CAULDRON, Material.ENDER_CHEST,
+    Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL
+  )
+
+  val materialsToCountBlockBreak: Set[Material] = materials -- exclude
 
   /**
    * これらのマテリアルを用いてブロックの破壊試行を行う。
