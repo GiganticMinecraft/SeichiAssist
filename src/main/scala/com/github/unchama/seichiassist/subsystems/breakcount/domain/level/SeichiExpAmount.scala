@@ -3,12 +3,14 @@ package com.github.unchama.seichiassist.subsystems.breakcount.domain.level
 import cats.kernel.{LowerBounded, PartialOrder}
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 
+import scala.math.BigDecimal.RoundingMode
+
 /**
  * 整地量を表す値のクラス。非負の値に対応する。
  */
-case class SeichiExpAmount private(amount: Long) extends AnyVal {
+case class SeichiExpAmount private(amount: BigDecimal) extends AnyVal {
 
-  def mapAmount(f: Long => Long): SeichiExpAmount =
+  def mapAmount(f: BigDecimal => BigDecimal): SeichiExpAmount =
     SeichiExpAmount.ofNonNegative(f(amount))
 
   def add(a: SeichiExpAmount): SeichiExpAmount = mapAmount(_ + a.amount)
@@ -16,13 +18,16 @@ case class SeichiExpAmount private(amount: Long) extends AnyVal {
 }
 
 object SeichiExpAmount {
-  def ofNonNegative(amount: Long): SeichiExpAmount = {
+  // 整地量のデータが保持する桁数
+  final private val seichiExpScale = 1
+
+  def ofNonNegative(amount: BigDecimal): SeichiExpAmount = {
     require(
       amount >= 0L,
       "整地経験値量は非負である必要があります。"
     )
 
-    SeichiExpAmount(amount)
+    SeichiExpAmount(amount.setScale(seichiExpScale, RoundingMode.DOWN))
   }
 
   lazy val zero: SeichiExpAmount = ofNonNegative(0)
