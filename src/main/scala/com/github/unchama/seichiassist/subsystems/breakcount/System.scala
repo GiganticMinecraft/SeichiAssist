@@ -47,6 +47,17 @@ object System {
 
     val createSystem: F[System[F, G]] = for {
       breakCountTopic <- Topic[F, Option[(Player, SeichiAmountData)]](None)
+      /*
+       * NOTE:
+       *
+       * SignallingRepositoryInitializationを用いてプレーヤーで添え字付いたトピックを通知する場合、
+       * 必然的にリポジトリがTwoPhasedになってしまい他システムの初期化に支障が出る。
+       * TODO TwoPhased/SinglePhasedの違いにより支障が出ることは型により表明されるべき
+       *
+       * このシステムのAPIによると、Playerのインスタンスが取れてからのみ整地量の加算が行われる。
+       * そこで、SinglePhasedなリポジトリを作り、加算が行われる際に明示的にトピックに通知する
+       * (レポジトリに通知機構を埋め込まない)ような設計にした。
+       */
       breakCountRepositoryControls <-
         ContextCoercion(
           BukkitRepositoryControls.createTappingSinglePhasedRepositoryAndHandles[G, Ref[G, SeichiAmountData]](
@@ -65,7 +76,7 @@ object System {
           override val seichiAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]] =
             breakCountRepository.map(ReadOnlyRef.fromRef)
           override val incrementSeichiExp: IncrementSeichiExp[G, Player] =
-            IncrementSeichiExp.using(breakCountRepository)
+            IncrementSeichiExp.using(breakCountRepository, breakCountTopic)
           override val seichiAmountUpdates: fs2.Stream[F, (Player, SeichiAmountData)] =
             breakCountTopic.subscribe(1).mapFilter(identity)
         }
