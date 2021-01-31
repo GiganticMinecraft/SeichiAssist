@@ -1,12 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.breakcount
 
+import cats.effect.{Concurrent, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.Diff
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.IncrementSeichiExp
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiLevel, SeichiStarLevel}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.{BatchedSeichiExpMap, SeichiAmountData}
+
+import scala.concurrent.duration.FiniteDuration
 
 trait BreakCountWriteAPI[G[_], Player] {
   /**
@@ -59,6 +62,20 @@ trait BreakCountReadAPI[F[_], G[_], Player] {
       val expDiff = SeichiExpAmount.orderedMonus.subtractTruncate(newData.expAmount, oldData.expAmount)
       (player, expDiff)
     }
+
+  /**
+   * `duration` 毎に纏められた、プレーヤーの整地量増加を流すストリーム。
+   */
+  def batchedIncreases(duration: FiniteDuration)
+                      (implicit FTimer: Timer[F],
+                       FConcurrent: Concurrent[F]): fs2.Stream[F, BatchedSeichiExpMap[Player]] =
+    StreamExtra
+      .foldGate(
+        seichiAmountIncreases,
+        fs2.Stream.awakeEvery[F](duration),
+        BatchedSeichiExpMap.empty[Player]
+      )(_.combine)
+
 }
 
 trait BreakCountAPI[F[_], G[_], Player] extends BreakCountWriteAPI[G, Player] with BreakCountReadAPI[F, G, Player]
