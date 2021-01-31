@@ -34,7 +34,7 @@ object StreamExtra {
     Stream.force {
       Ref[F].of(initial).map { ref =>
         flushSignal
-          .evalMap(_ => ref.get)
+          .evalMap(_ => ref.getAndSet(initial))
           .concurrently(stream.evalTap(a => ref.update(f(_)(a))))
       }
     }
