@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.util
 
-import cats.data
 import cats.effect.IO
 import com.github.unchama.seichiassist.util.OrderedCollectionOps._
 import com.github.unchama.seichiassist.util.enumeration.TimePeriodOfDay
@@ -9,16 +8,14 @@ import com.github.unchama.seichiassist.util.typeclass.Sendable
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
+import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
 import org.bukkit.entity.{EntityType, Firework, Player}
-import org.bukkit.inventory.meta.SkullMeta
-import org.bukkit.inventory.{ItemStack, PlayerInventory}
+import org.bukkit.inventory.ItemStack
 
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.{Calendar, Random}
 
 object Util {
@@ -140,7 +137,7 @@ object Util {
     // 24ビットカラーの範囲でランダムな色を決める
 
     // 配列を返す
-    (0 until length).map { _ => Color.fromBGR(rand.nextInt(1 << 24)) }.toArray
+    (0 until length).map(_ => Color.fromBGR(rand.nextInt(1 << 24))).toArray
   }
 
   import com.github.unchama.seichiassist.util.enumeration.Direction
