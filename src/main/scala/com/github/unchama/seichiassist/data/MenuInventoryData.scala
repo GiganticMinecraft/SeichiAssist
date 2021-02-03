@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.MenuType
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{AsyncInventorySetter, TypeConverter}
-import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist, VotingFairyStrategy}
+import com.github.unchama.seichiassist.{SeichiAssist, VotingFairyStrategy}
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{Inventory, ItemStack}
@@ -60,79 +60,6 @@ object MenuInventoryData {
     s"$RESET${AQUA}特典受取済投票回数：${playerdata.p_givenvote}",
     s"$RESET${AQUA}所有投票pt：${playerdata.effectPoint}"
   )
-
-  /**
-   * 整地量
-   *
-   * @param page ページ
-   * @return メニュー
-   */
-  def getRankingBySeichiAmount(page: Int): Inventory = {
-    val perPage = 45
-    val pageLimit = 150 / perPage + 1
-    val lowerBound = 100
-    val inventory = getEmptyInventory(6, s"$DARK_PURPLE${BOLD}整地神ランキング")
-    val main = (perPage * page to (perPage + perPage * page - 1).min(SeichiAssist.ranklist.size))
-      .filter(rank => SeichiAssist.ranklist(rank).totalbreaknum >= LevelThresholds.levelExpThresholds(lowerBound - 1))
-      .zipWithIndex
-      .map { case (rank, invIndex) =>
-        val rankdata = SeichiAssist.ranklist(rank)
-        val itemstack = new SkullItemStackBuilder(rankdata.name)
-          .title(s"$YELLOW$BOLD${rank + 1}位:$WHITE${rankdata.name}")
-          .lore(
-            s"$RESET${GREEN}整地Lv:${rankdata.level}",
-            s"$RESET${GREEN}総整地量:${rankdata.totalbreaknum}"
-          )
-
-        (invIndex, itemstack)
-      }
-
-    val nextPage = Option.when (page != pageLimit) {
-      // 整地神ランキング次ページ目を開く
-      val itemstack = new SkullItemStackBuilder("MHF_ArrowDown")
-        .title(s"$YELLOW$UNDERLINE${BOLD}整地神ランキング${page + 2}ページ目へ")
-        .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
-
-      (52, itemstack)
-    }
-
-    val prevPage = {
-      // 1ページ目を開く
-      val (name, lore, ign) = if (page == 0) (
-        s"$YELLOW$UNDERLINE${BOLD}ホームへ",
-        s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
-        "MHF_ArrowLeft"
-      ) else (
-        // 整地神ランキング前ページ目を開く
-        s"$YELLOW$UNDERLINE${BOLD}整地神ランキング${page}ページ目へ",
-        s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
-        "MHF_ArrowUp"
-      )
-      val itemstack = new SkullItemStackBuilder(ign)
-        .title(name)
-        .lore(lore)
-
-      (45, itemstack)
-    }
-
-    val globalTotal = {
-      // 総整地量の表記
-      val itemstack = new SkullItemStackBuilder("unchama")
-        .title(s"$YELLOW$UNDERLINE${BOLD}整地鯖統計データ")
-        .lore(
-          s"$RESET${AQUA}全プレイヤー総整地量:",
-          s"$RESET$AQUA${SeichiAssist.allplayerbreakblockint}"
-        )
-
-      (53, itemstack)
-    }
-
-    (main :++ nextPage :+ prevPage :+ globalTotal).foreach { case (i, is) =>
-      AsyncInventorySetter.setItemAsync(inventory, i, is.build())
-    }
-
-    inventory
-  }
 
   /**
    * ログイン時間
