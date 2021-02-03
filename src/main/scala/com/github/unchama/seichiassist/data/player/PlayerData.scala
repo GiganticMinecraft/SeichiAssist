@@ -1,8 +1,5 @@
 package com.github.unchama.seichiassist.data.player
 
-import java.text.SimpleDateFormat
-import java.util.{GregorianCalendar, UUID}
-
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.ClosedRange
@@ -12,9 +9,9 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{GridTemplate, Mana, SeichiLvUpMessages}
-import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
+import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
@@ -28,6 +25,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import java.text.SimpleDateFormat
+import java.util.{GregorianCalendar, UUID}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -58,8 +57,6 @@ class PlayerData(
   //経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
-  //３０分間のデータを保存する．
-  val halfhourblock: MineBlock = new MineBlock()
   //持ってるポーションエフェクト全てを格納する．
   val effectdatalist: mutable.ListBuffer[FastDiggingEffect] = mutable.ListBuffer.empty
   //プレイヤー名
@@ -91,29 +88,6 @@ class PlayerData(
         new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
 
     effect.asTargetedEffect()
-  }
-
-  /**
-   * @deprecated Should be moved to external scope
-   */
-  @Deprecated()
-  val toggleExpBarVisibility: TargetedEffect[Player] = {
-    import com.github.unchama.generic.syntax._
-
-    UnfocusedEffect {
-      this.settings.isExpBarVisible = !this.settings.isExpBarVisible
-    }.followedBy {
-      val isVisible = IO { this.settings.isExpBarVisible }
-      DeferredEffect {
-        isVisible
-          .map(visible => if (visible) s"${GREEN}整地量バー表示" else s"${RED}整地量バー非表示")
-          .map(MessageEffect.apply)
-      }
-    }.followedBy {
-      UnfocusedEffect {
-        SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-      }
-    }
   }
 
   private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
@@ -149,8 +123,6 @@ class PlayerData(
   var contentsPresentInSharedInventory = false
   //ガチャの基準となるポイント
   var gachapoint = 0
-  //現在のプレイヤーレベル
-  var level = 1
   //詫び券をあげる数
   var unclaimedApologyItems = 0
   //ワールドガード保護自動設定用
@@ -162,14 +134,11 @@ class PlayerData(
     this.regionCount += 1
   }
 
-  var starLevels: StarLevel = StarLevel(0, 0)
   var minestack = new MineStack()
   //プレイ時間
   var playTick = 0
-  //トータル破壊ブロック
-  var totalbreaknum: Long = 0.toLong
   //合計経験値
-  var totalexp = 0
+  var totalexp = 0L
   //合計経験値統合済みフラグ
   var expmarge: Byte = 0
   //特典受け取り済み投票数
@@ -199,7 +168,7 @@ class PlayerData(
   //実績ポイント用
   var achievePoint: AchievementPoint = AchievementPoint()
 
-  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO, 0)
+  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO)
   // n周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
@@ -215,10 +184,6 @@ class PlayerData(
   //貢献度pt
   var added_mana = 0
   var contribute_point = 0
-  //正月イベント用
-  var hasNewYearSobaGive = false
-  //バレンタインイベント用
-  var hasChocoGave = false
   var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false
@@ -250,11 +215,18 @@ class PlayerData(
   }
 
   //四次元ポケットのサイズを取得
-  private def pocketSize: Int = level match {
-    case _ if level < 46 => 9 * 3
-    case _ if level < 56 => 9 * 4
-    case _ if level < 66 => 9 * 5
-    case _ => 9 * 6
+  private def pocketSize: Int = {
+    val seichiAmountData = SeichiAssist.instance
+      .breakCountSystem.api
+      .seichiAmountDataRepository(player).read
+      .unsafeRunSync()
+
+    seichiAmountData.levelCorrespondingToExp.level match {
+      case level if level < 46 => 9 * 3
+      case level if level < 56 => 9 * 4
+      case level if level < 66 => 9 * 5
+      case _ => 9 * 6
+    }
   }
 
   def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
@@ -285,24 +257,19 @@ class PlayerData(
 
   //join時とonenable時、プレイヤーデータを最新の状態に更新
   def updateOnJoin(): Unit = {
-    // 前回統計を取った時との差分から整地量を計算するため、最初は統計量を0にしておく
-    // FIX(#542): 即時反映にする
-    {
-      (MaterialSets.materials -- PlayerData.exclude).foreach { m =>
-        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
-      }
-    }
-
-    //破壊量データ(before)を設定
-    halfhourblock.before = totalbreaknum
-    updateLevel()
-
     if (unclaimedApologyItems > 0) {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       player.sendMessage(s"${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
     }
 
-    manaState.initialize(player, level)
+    manaState.initialize(
+      player,
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+        .unsafeRunSync()
+        .levelCorrespondingToExp.level
+    )
 
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
@@ -310,12 +277,17 @@ class PlayerData(
   }
 
   //レベルを更新
-  def updateLevel(): Unit = {
-    updatePlayerLevel()
-    updateStarLevel()
+  def synchronizeDisplayNameAndManaStateToLevelState(): Unit = {
     setDisplayName()
-    SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-    manaState.display(player, level)
+
+    manaState.display(
+      player,
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+        .unsafeRunSync()
+        .levelCorrespondingToExp.level
+    )
   }
 
   //表示される名前に整地Lvor二つ名を追加
@@ -328,6 +300,15 @@ class PlayerData(
       else if (idleMinute >= 3) s"$GRAY"
       else ""
 
+    val amountData =
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+        .unsafeRunSync()
+
+    val level = amountData.levelCorrespondingToExp.level
+    val starLevel = amountData.starLevelCorrespondingToExp
+
     val newDisplayName = idleColor + {
       val nicknameSettings = settings.nickname
       val currentNickname =
@@ -337,10 +318,10 @@ class PlayerData(
 
       currentNickname.fold {
         val levelPart =
-          if (totalStarLevel <= 0)
-            s"[ Lv$level ]"
+          if (starLevel != SeichiStarLevel.zero)
+            s"[Lv$level☆${starLevel.level}]"
           else
-            s"[Lv$level☆$totalStarLevel]"
+            s"[ Lv$level ]"
 
         s"$levelPart$playerName$WHITE"
       } { nickname =>
@@ -353,75 +334,10 @@ class PlayerData(
   }
 
   /**
-   * スターレベルの合計を返すショートカットフィールド。
-   */
-  def totalStarLevel: Int = starLevels.total()
-
-  //プレイヤーレベルを計算し、更新する。
-  private def updatePlayerLevel(): Unit = {
-    //既にレベル上限に達していたら終了
-    if (level >= LevelThresholds.levelExpThresholds.size) return
-
-    val previousLevel = level
-    level = LevelThresholds.levelExpThresholds
-      .lastIndexWhere(threshold => threshold <= totalbreaknum) + 1
-
-    for (l <- previousLevel until level) {
-      //レベルアップ時のメッセージ
-      player.sendMessage(s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv($l)→Lv(${l+1})】")
-
-      //レベルアップイベント着火
-      Bukkit.getPluginManager.callEvent(new SeichiLevelUpEvent(player, this, l+1))
-
-      //レベルアップ時の花火の打ち上げ
-      Util.launchFireWorks(player.getLocation) // TODO: fix Util
-
-      SeichiLvUpMessages.get(l + 1).foreach { lvUpMessage => player.sendMessage(s"$AQUA$lvUpMessage") }
-
-      //マナ最大値の更新
-      if (manaState.isLoaded) manaState.onLevelUp(player, l+1)
-    }
-  }
-
-  /**
    * @deprecated PlayerDataはPlayerに依存するべきではない。
    */
   @Deprecated()
   def player: Player = Bukkit.getPlayer(uuid)
-
-  /**
-   * スターレベルの計算、更新を行う。
-   * このメソッドはスター数が増えたときにメッセージを送信する副作用を持つ。
-   */
-  def updateStarLevel(): Unit = {
-    //処理前の各レベルを取得
-    val oldStars = starLevels.total()
-    val oldBreakStars = starLevels.fromBreakAmount
-    val oldTimeStars = starLevels.fromConnectionTime
-    //処理後のレベルを保存する入れ物
-    val newBreakStars = totalbreaknum / 87115000
-
-    //整地量の確認
-    if (oldBreakStars < newBreakStars) {
-      player.sendMessage(s"${GOLD}ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆($oldBreakStars)→☆($newBreakStars)】")
-      starLevels = starLevels.copy(fromBreakAmount = newBreakStars.toInt)
-    }
-
-    //参加時間の確認(19/4/3撤廃)
-    if (oldTimeStars > 0) {
-      starLevels = starLevels.copy(fromConnectionTime = 0)
-    }
-
-    //TODO: イベント入手分スターの確認
-
-    //TODO: 今後実装予定。
-
-    val newStars: Int = starLevels.total()
-    //合計値の確認
-    if (oldStars < newStars) {
-      player.sendMessage(s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆($oldStars))→Lv200(☆($newStars))】")
-    }
-  }
 
   private def loadTotalExp(): Unit = {
     val internalServerId = SeichiAssist.seichiAssistConfig.getServerNum
@@ -465,8 +381,6 @@ class PlayerData(
 
   //quit時とondisable時、プレイヤーデータを最新の状態に更新
   def updateOnQuit(): Unit = {
-    //総整地量を更新
-    updateAndCalcMinedBlockAmount()
     //総プレイ時間更新
     updatePlayTick()
 
@@ -484,45 +398,6 @@ class PlayerData(
 
     totalPlayTick = Some(nowTotalPlayTick)
     playTick += diff
-  }
-
-  //総破壊ブロック数を更新する
-  def updateAndCalcMinedBlockAmount(): Int = {
-    val blockIncreases =
-      (MaterialSets.materials -- PlayerData.exclude).map { m =>
-        val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
-        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
-
-        calcBlockExp(m, increase)
-      }
-
-    val sum = blockIncreases.sum.round.toInt
-
-    totalbreaknum += sum
-    gachapoint += sum
-
-    sum
-  }
-
-  //スターレベルの計算、更新
-
-  //ブロック別整地数反映量の調節
-  private def calcBlockExp(m: Material, i: Int): Double = {
-    val amount = i.toDouble
-
-    //ブロック別重み分け
-    val materialFactor = m match {
-      //氷塊とマグマブロックの整地量を2倍
-      case Material.PACKED_ICE | Material.MAGMA => 2.0
-
-      case _ => 1.0
-    }
-
-    val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
-    val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0	
-
-    amount * materialFactor * swMult * sw01PenaltyMult
   }
 
   private def saveTotalExp(): Unit = {
@@ -569,9 +444,6 @@ class PlayerData(
     }
   }
 
-  //現在の採掘量順位
-  def calcPlayerRank(): Int = 1 + SeichiAssist.ranklist.count(rank => rank.totalbreaknum > totalbreaknum)
-
   def calcPlayerApple(): Int = {
     //ランク用関数
     var i = 0
@@ -592,6 +464,13 @@ class PlayerData(
 
   //パッシブスキルの獲得量表示
   def getPassiveExp: Double = {
+    val level =
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+        .unsafeRunSync()
+        .levelCorrespondingToExp.level
+
     if (level < 8) 0.0
     else if (level < 18) SeichiAssist.seichiAssistConfig.getDropExplevel(1)
     else if (level < 28) SeichiAssist.seichiAssistConfig.getDropExplevel(2)
@@ -769,7 +648,14 @@ class PlayerData(
     }
     this.added_mana += addAmount
 
-    mana.calcAndSetMax(player, this.level)
+    mana.calcAndSetMax(
+      player,
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+        .unsafeRunSync()
+        .levelCorrespondingToExp.level
+    )
   }
 
   def toggleMessageFlag(): TargetedEffect[Player] = DeferredEffect(IO {
@@ -823,11 +709,4 @@ class PlayerData(
 object PlayerData {
   //TODO:もちろんここにあるべきではない
   val passiveSkillProbability = 10
-
-  val exclude: Set[Material] = Set(
-    Material.GRASS_PATH,
-    Material.SOIL, Material.MOB_SPAWNER,
-    Material.CAULDRON, Material.ENDER_CHEST,
-    Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL
-  )
 }

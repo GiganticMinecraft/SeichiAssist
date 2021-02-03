@@ -3,18 +3,23 @@ package com.github.unchama.seichiassist.menus.achievement.group
 import cats.effect.IO
 import com.github.unchama.generic.CachedFunction
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
+import com.github.unchama.menuinventory._
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
 import com.github.unchama.seichiassist.menus.achievement.AchievementCategoryMenu
+import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu.sequentialEntriesIn
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 
 object AchievementGroupMenu {
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
-  import eu.timepit.refined.auto._
+
+  class Environment(implicit val ioCanOpenGroupMenu: IO CanOpen AchievementGroupMenu,
+                    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu)
 
   val sequentialEntriesIn: AchievementGroup => List[GroupMenuEntry] = CachedFunction {
 
@@ -56,95 +61,99 @@ object AchievementGroupMenu {
     case StarLevel =>
       AchievementEntry.within(0 until 0)
   }
+}
 
-  private val apply_ : ((AchievementGroup, Int)) => Menu = CachedFunction { case (group, pageNumber) =>
-    val groupEntries = sequentialEntriesIn(group)
-    val entriesToDisplay = {
-      import com.github.unchama.menuinventory.syntax._
+case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) extends Menu {
 
-      val displayPerPage = 3.chestRows.slotCount
-      val displayFromIndex = displayPerPage * (pageNumber - 1)
-      val displayUptoIndex = displayFromIndex + displayPerPage
+  import com.github.unchama.menuinventory.syntax._
 
-      groupEntries.slice(displayFromIndex, displayUptoIndex)
-    }
+  override type Environment = AchievementGroupMenu.Environment
+  override val frame: MenuFrame = MenuFrame(4.chestRows, ColorScheme.purpleBold(s"実績「${group.name}」"))
 
-    val groupAchievementsCount = groupEntries.size
-    val maxPageNumber = Math.ceil(groupAchievementsCount / 27.0).toInt
+  private val groupEntries = sequentialEntriesIn(group)
+  private val entriesToDisplay = {
+    import com.github.unchama.menuinventory.syntax._
 
-    if (entriesToDisplay.isEmpty) {
-      if (groupAchievementsCount == 0)
-        AchievementCategoryMenu(group.parent)
-      else
-        apply_(group, maxPageNumber)
-    } else {
-      val menuFrame = {
-        import com.github.unchama.menuinventory.syntax._
-        MenuFrame(4.chestRows, ColorScheme.purpleBold(s"実績「${group.name}」"))
-      }
+    val displayPerPage = 3.chestRows.slotCount
+    val displayFromIndex = displayPerPage * (pageNumber - 1)
+    val displayUptoIndex = displayFromIndex + displayPerPage
 
-      def buttonToTransferTo(newPageNumber: Int, skullOwnerReference: SkullOwnerReference): Button =
-        CommonButtons.transferButton(
-          new SkullItemStackBuilder(skullOwnerReference),
-          s"${newPageNumber}ページ目へ",
-          AchievementGroupMenu(group, newPageNumber)
-        )
-
-      /**
-       *  上位メニューはこのメニューを参照していて、
-       *  このセクションのボタンは上位メニューを参照するので、
-       *  貪欲に計算すると計算が再帰する。
-       *
-       *  `computeMenuLayout`にて初めて参照されるため、
-       *  lazyにすることで実際にプレーヤーがこのメニューを開くまで評価されず、
-       *  再帰自体は回避される。
-       */
-      lazy val toCategoryMenuButtonSection = Map(
-        ChestSlotRef(3, 0) -> CommonButtons.transferButton(
-          new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-          s"「${group.parent.name}」カテゴリメニューへ",
-          AchievementCategoryMenu(group.parent)
-        )
-      )
-
-      // 同じ階層のメニューを参照しているので貪欲に計算すると計算が再帰する
-      lazy val previousPageButtonSection =
-        if (pageNumber > 1) {
-          Map(ChestSlotRef(3, 7) -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowLeft))
-        } else {
-          Map()
-        }
-
-      lazy val nextPageButtonSection =
-        if (pageNumber < maxPageNumber) {
-          Map(ChestSlotRef(3, 8) -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowRight))
-        } else {
-          Map()
-        }
-
-      new Menu {
-        override val frame: MenuFrame = menuFrame
-
-        override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
-          import cats.implicits._
-
-          val dynamicPartComputation =
-            entriesToDisplay
-              .traverse(AchievementGroupMenuButtons.entryComputationFor(player))
-              .map(_.zipWithIndex.map(_.swap))
-
-          for {
-            dynamicPart <- dynamicPartComputation
-            combinedLayout =
-            toCategoryMenuButtonSection ++
-              previousPageButtonSection ++
-              nextPageButtonSection ++
-              dynamicPart
-          } yield MenuSlotLayout(combinedLayout)
-        }
-      }
-    }
+    groupEntries.slice(displayFromIndex, displayUptoIndex)
   }
 
-  def apply(group: AchievementGroup, pageNumber: Int = 1): Menu = apply_(group, pageNumber)
+  private val groupAchievementsCount = groupEntries.size
+  private val maxPageNumber = Math.ceil(groupAchievementsCount / 27.0).toInt
+
+  override def open(implicit
+                    environment: AchievementGroupMenu.Environment,
+                    ctx: LayoutPreparationContext,
+                    syncCtx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = {
+    // redirect
+    if (entriesToDisplay.isEmpty) {
+      if (groupAchievementsCount == 0) {
+        environment.ioCanOpenCategoryMenu.open(AchievementCategoryMenu(group.parent))
+      } else {
+        environment.ioCanOpenGroupMenu.open(AchievementGroupMenu(group, maxPageNumber))
+      }
+    } else super.open
+  }
+
+  override def computeMenuLayout(player: Player)(implicit environment: AchievementGroupMenu.Environment): IO[MenuSlotLayout] = {
+    import cats.implicits._
+    import environment._
+    import eu.timepit.refined.auto._
+
+    def buttonToTransferTo(newPageNumber: Int, skullOwnerReference: SkullOwnerReference): Button =
+      CommonButtons.transferButton(
+        new SkullItemStackBuilder(skullOwnerReference),
+        s"${newPageNumber}ページ目へ",
+        AchievementGroupMenu(group, newPageNumber)
+      )
+
+    /**
+     * 上位メニューはこのメニューを参照していて、
+     * このセクションのボタンは上位メニューを参照するので、
+     * 貪欲に計算すると計算が再帰する。
+     *
+     * `computeMenuLayout`にて初めて参照されるため、
+     * lazyにすることで実際にプレーヤーがこのメニューを開くまで評価されず、
+     * 再帰自体は回避される。
+     */
+    lazy val toCategoryMenuButtonSection = Map(
+      ChestSlotRef(3, 0) -> CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+        s"「${group.parent.name}」カテゴリメニューへ",
+        AchievementCategoryMenu(group.parent)
+      )
+    )
+
+    // 同じ階層のメニューを参照しているので貪欲に計算すると計算が再帰する
+    lazy val previousPageButtonSection =
+      if (pageNumber > 1) {
+        Map(ChestSlotRef(3, 7) -> buttonToTransferTo(pageNumber - 1, SkullOwners.MHF_ArrowLeft))
+      } else {
+        Map()
+      }
+
+    lazy val nextPageButtonSection =
+      if (pageNumber < maxPageNumber) {
+        Map(ChestSlotRef(3, 8) -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowRight))
+      } else {
+        Map()
+      }
+
+    val dynamicPartComputation =
+      entriesToDisplay
+        .traverse(AchievementGroupMenuButtons.entryComputationFor(player))
+        .map(_.zipWithIndex.map(_.swap))
+
+    for {
+      dynamicPart <- dynamicPartComputation
+      combinedLayout =
+      toCategoryMenuButtonSection ++
+        previousPageButtonSection ++
+        nextPageButtonSection ++
+        dynamicPart
+    } yield MenuSlotLayout(combinedLayout)
+  }
 }

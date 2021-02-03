@@ -1,13 +1,12 @@
 package com.github.unchama.datarepository.bukkit.player
 
-import java.util.UUID
-
-import cats.effect.{ConcurrentEffect, ContextShift, SyncEffect}
-import com.github.unchama.generic.ContextCoercion
+import cats.effect.SyncEffect
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerQuitEvent}
 import org.bukkit.event.{EventPriority, Listener}
+
+import java.util.UUID
 
 /**
  * プレーヤーに値を関連付けるオンメモリデータリポジトリのクラス。
@@ -17,12 +16,12 @@ import org.bukkit.event.{EventPriority, Listener}
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
+@deprecated("Move to BukkitRepositoryControls for compositionality")
 abstract class PreLoginToQuitPlayerDataRepository[
-  AsyncContext[_] : ConcurrentEffect : ContextShift,
-  SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext],
+  SyncContext[_] : SyncEffect,
   R
 ](implicit environment: EffectEnvironment)
-  extends TwoPhasedPlayerDataRepository[AsyncContext, SyncContext, R] with Listener {
+  extends TwoPhasedPlayerDataRepository[SyncContext, R] with Listener {
 
   override protected type TemporaryData = R
 

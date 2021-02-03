@@ -152,9 +152,7 @@ object PlayerDataSaveTask {
 
           + ",gachapoint = " + playerdata.gachapoint
           + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
-          + ",level = " + playerdata.level
           + ",rgnum = " + playerdata.regionCount
-          + ",totalbreaknum = " + playerdata.totalbreaknum
           + ",inventory = '" + BukkitSerialization.toBase64(playerdata.pocketInventory) + "'"
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"
@@ -166,7 +164,6 @@ object PlayerDataSaveTask {
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.effectPoint
           + ",mana = " + playerdata.manaState.getMana
-          + ",expvisible = " + playerdata.settings.isExpBarVisible
           + ",totalexp = " + playerdata.totalexp
           + ",expmarge = " + playerdata.expmarge
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
@@ -180,20 +177,11 @@ object PlayerDataSaveTask {
           + ",achvPointMAX = " + playerdata.achievePoint.fromUnlockedAchievements
           + ",achvPointUSE = " + playerdata.achievePoint.used
           + ",achvChangenum = " + playerdata.achievePoint.conversionCount
-          + ",starlevel = " + playerdata.totalStarLevel
-          + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
-          + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime
-          + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
 
           + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
           + ",ChainJoin = " + playerdata.loginStatus.consecutiveLoginDays
           + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
           + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
-
-          //建築
-          + ",build_lv = " + playerdata.buildCount.lv
-          + ",build_count = " + playerdata.buildCount.count //.toString()
-          + ",build_count_flg = " + playerdata.buildCount.migrationFlag
 
           //投票
           + ",canVotingFairyUse = " + playerdata.usingVotingFairy
@@ -212,12 +200,6 @@ object PlayerDataSaveTask {
           + ",GBlevel = " + playerdata.giganticBerserk.level
           + ",isGBStageUp = " + playerdata.giganticBerserk.canEvolve
           + ",TitleFlags = '" + flagString + "'"
-
-          //正月イベント
-          + ",hasNewYearSobaGive = " + playerdata.hasNewYearSobaGive
-
-          //バレンタインイベント
-          + ",hasChocoGave = " + playerdata.hasChocoGave
 
           + " where uuid = '" + playerUuid + "'")
       }

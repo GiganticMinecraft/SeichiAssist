@@ -1,12 +1,21 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
+import java.util.{Random, UUID}
+
+import cats.effect.{ConcurrentEffect, IO, LiftIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
+import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
-import com.github.unchama.seichiassist.util.Util.sendEveryMessage
+import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendEveryMessage}
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import de.tr7zw.itemnbtapi.NBTItem
-import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
+import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.{EntityType, Monster, Player}
@@ -17,10 +26,11 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
-import java.util.Random
 import scala.util.chaining._
 
-object ValentineListener extends Listener {
+class ValentineListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
+  (implicit effectEnvironment: EffectEnvironment, repository: LastQuitPersistenceRepository[F, UUID]) extends Listener {
+
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
     val entity = event.getEntity
@@ -62,6 +72,36 @@ object ValentineListener extends Listener {
         event.getPlayer.sendMessage(_)
       )
     }
+  }
+
+  @EventHandler
+  def giveValentineCookieToPlayer(event: PlayerJoinEvent): Unit = {
+    if (!isInEvent) return
+
+    val player = event.getPlayer
+
+    import cats.implicits._
+    val program = for {
+      _ <- NonServerThreadContextShift[F].shift
+      lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
+      _ <- LiftIO[F].liftIO(IO{
+        val hasNotJoinedInEventYet = lastQuit match {
+          case Some(dateTime) => dateTime.isBefore(START_DATE.atStartOfDay())
+          case None => true
+        }
+
+        val effects =
+          if (hasNotJoinedInEventYet) List(
+            grantItemStacksEffect(cookieOf(player)),
+            MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
+            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
+          else List(emptyEffect)
+
+        effects.traverse(_.run(player))
+      })
+    } yield ()
+
+    effectEnvironment.runEffectAsync("チョコチップクッキーを付与するかどうかを判定する", program)
   }
 
   @EventHandler

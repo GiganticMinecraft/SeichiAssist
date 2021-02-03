@@ -1,17 +1,17 @@
 package com.github.unchama.seichiassist.concurrent
 
-import java.util.concurrent.Executors
-
 import cats.effect.{ContextShift, IO, Timer}
 import com.github.unchama.concurrent._
-import com.github.unchama.concurrent.bukkit.BukkitServerThreadIOShift
 import com.github.unchama.generic
 import com.github.unchama.generic.tag.tag
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.Tags.LayoutPreparationContextTag
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.bukkit.actions.BukkitServerThreadIOShift
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.plugin.java.JavaPlugin
 
+import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext
 
 object PluginExecutionContexts {

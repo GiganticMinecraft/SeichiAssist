@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.task.global
 
 import cats.effect.{IO, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.data.GachaSkullData
@@ -15,9 +16,11 @@ import org.bukkit.{Bukkit, Sound}
 import scala.concurrent.duration.FiniteDuration
 
 object PlayerDataRecalculationRoutine {
+
   import cats.implicits._
 
-  def apply()(implicit syncContext: MinecraftServerThreadShift[IO], context: RepeatingTaskContext): IO[Nothing] = {
+  def apply()
+           (implicit syncContext: MinecraftServerThreadShift[IO], context: RepeatingTaskContext): IO[Nothing] = {
     val getRepeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
 
@@ -51,23 +54,11 @@ object PlayerDataRecalculationRoutine {
           playerData.idleMinute = 0
         }
 
-        //プレイヤー名を取得
-        val name = player.getName
-        //総整地量を更新(返り値で重み分け済みの1分間のブロック破壊量が返ってくる)
-        val increase = playerData.updateAndCalcMinedBlockAmount()
-        //Levelを設定(必ず総整地量更新後に実施！)
-        playerData.updateLevel()
+        // 表示名とマナをレベルと同期する
+        playerData.synchronizeDisplayNameAndManaStateToLevelState()
+
         //総プレイ時間更新
         playerData.updatePlayTick()
-
-        //スターレベル更新
-        playerData.updateStarLevel()
-
-        //１分間のブロック破壊量による上昇
-        playerData.effectdatalist.addOne {
-          val amplifier = increase.toDouble * config.getMinuteMineSpeed
-          new FastDiggingEffect(amplifier, 2)
-        }
 
         //プレイヤー数による上昇
         playerData.effectdatalist.addOne {
@@ -145,9 +136,11 @@ object PlayerDataRecalculationRoutine {
             player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
             player.sendMessage(s"${GOLD}ガチャ券${WHITE}がドロップしました。右クリックで使えるゾ")
           }
-        } else {
-          if (increase != 0 && playerData.settings.receiveGachaTicketEveryMinute) {
-            player.sendMessage(s"あと$AQUA${config.getGachaPresentInterval - playerData.gachapoint % config.getGachaPresentInterval}${WHITE}ブロック整地すると${GOLD}ガチャ券${WHITE}獲得ダヨ")
+        } else if (playerData.settings.receiveGachaTicketEveryMinute) {
+          // TODO: 1分間整地量が0だったら通知しない
+          if (playerData.idleMinute == 0) {
+            val blocksToGo = config.getGachaPresentInterval - playerData.gachapoint % config.getGachaPresentInterval
+            player.sendMessage(s"あと$AQUA$blocksToGo${WHITE}ブロック整地すると${GOLD}ガチャ券${WHITE}獲得ダヨ")
           }
         }
 
@@ -188,6 +181,9 @@ object PlayerDataRecalculationRoutine {
 
     implicit val timer: Timer[IO] = IO.timer(context)
 
-    RepeatingRoutine.permanentRoutine(getRepeatInterval, syncContext.shift >> routineOnMainThread)
+    RepeatingRoutine.permanentRoutine(
+      getRepeatInterval,
+      syncContext.shift >> routineOnMainThread
+    )
   }
 }

@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.seichiskill.assault
 
 import cats.effect.{ExitCase, IO, Timer}
-import com.github.unchama.concurrent.{MinecraftServerThreadShift, RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
@@ -136,7 +137,12 @@ object AssaultRoutine {
       if (toolToBeUsed.getType.getMaxDurability <= durability && !toolToBeUsed.getItemMeta.isUnbreakable) return None
 
       // 経験値を減らす
-      playerMana.decrease(manaUsage, player, playerData.level)
+      playerMana.decrease(
+        manaUsage, player,
+        SeichiAssist.instance
+          .breakCountSystem.api.seichiAmountDataRepository(player)
+          .read.unsafeRunSync().levelCorrespondingToExp.level
+      )
 
       // 耐久値を減らす
       if (!toolToBeUsed.getItemMeta.isUnbreakable) toolToBeUsed.setDurability(durability)

@@ -198,15 +198,12 @@ public class GachaCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.YELLOW + lowerCasePlayerName + "の投票特典配布処理開始…");
 
                 //mysqlにも書き込んどく
-                if (databaseGateway.playerDataManipulator.incrementVotePoint(lowerCasePlayerName) == Fail) {
-                    sender.sendMessage(ChatColor.RED + "失敗");
-                } else {
-                    sender.sendMessage(ChatColor.GREEN + "成功");
-                }
-                if (!databaseGateway.playerDataManipulator.addChainVote(lowerCasePlayerName)) {
-                    sender.sendMessage(ChatColor.RED + "連続投票数の記録に失敗");
-                } else {
+                databaseGateway.playerDataManipulator.incrementVotePoint(lowerCasePlayerName);
+
+                if (databaseGateway.playerDataManipulator.addChainVote(lowerCasePlayerName)) {
                     sender.sendMessage(ChatColor.GREEN + "連続投票数の記録に成功");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "連続投票数の記録に失敗");
                 }
                 return true;
             }

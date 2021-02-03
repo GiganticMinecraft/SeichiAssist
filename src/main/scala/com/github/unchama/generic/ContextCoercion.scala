@@ -27,6 +27,8 @@ object ContextCoercion extends ContextCoercionOps {
 
   def apply[F[_], G[_], A](fa: F[A])(implicit coercion: ContextCoercion[F, G]): G[A] = coercion(fa)
 
+  def asFunctionK[F[_], G[_]](implicit ev: ContextCoercion[F, G]): F ~> G = ev
+
   def fromFunctionK[F[_], G[_]](functionK: F ~> G): ContextCoercion[F, G] = {
     new ContextCoercion[F, G] {
       def apply[A](fa: F[A]): G[A] = functionK(fa)

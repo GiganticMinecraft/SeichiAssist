@@ -5,8 +5,8 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.validateUr
 import java.time.LocalDate
 
 object Anniversary {
+  val EVENT_YEAR = 2021
   val ANNIVERSARY_COUNT = EVENT_YEAR - 2016
-  val EVENT_YEAR = 2020
   val EVENT_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 6, 29)
-  val blogArticleUrl: String = validateUrl("https://www.seichi.network/post/anniversary2020")
+  val blogArticleUrl: String = validateUrl(s"https://www.seichi.network/post/anniversary$EVENT_YEAR")
 }

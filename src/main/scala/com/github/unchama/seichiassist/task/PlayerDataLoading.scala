@@ -1,9 +1,5 @@
 package com.github.unchama.seichiassist.task
 
-import java.sql.{ResultSet, Statement}
-import java.text.{ParseException, SimpleDateFormat}
-import java.util.{Calendar, UUID}
-
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
@@ -18,6 +14,9 @@ import com.github.unchama.util.MillisecondTimer
 import org.bukkit.ChatColor._
 import org.bukkit.{Bukkit, Location}
 
+import java.sql.{ResultSet, Statement}
+import java.text.{ParseException, SimpleDateFormat}
+import java.util.{Calendar, UUID}
 import scala.collection.mutable
 import scala.util.Using
 
@@ -191,7 +190,6 @@ object PlayerDataLoading {
         playerData.settings.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 
         playerData.settings.pvpflag = rs.getBoolean("pvpflag")
-        playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
         playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
         playerData.settings.nickname = PlayerNickname(
           NicknameStyle.marshal(rs.getBoolean("displayTypeLv")),
@@ -228,11 +226,9 @@ object PlayerDataLoading {
         ).unsafeRunSync()
 
         playerData.gachapoint = rs.getInt("gachapoint")
-        playerData.level = rs.getInt("level")
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
         playerData.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
-        playerData.totalbreaknum = rs.getLong("totalbreaknum")
         playerData.playTick = rs.getInt("playtick")
         playerData.p_givenvote = rs.getInt("p_givenvote")
         playerData.effectPoint = rs.getInt("effectpoint")
@@ -256,13 +252,6 @@ object PlayerDataLoading {
           rs.getInt("achvPointMAX"),
           rs.getInt("achvPointUSE"),
           rs.getInt("achvChangenum")
-        )
-
-        //スターレベルの情報
-        playerData.starLevels = StarLevel(
-          rs.getInt("starlevel_Break"),
-          rs.getInt("starlevel_Time"),
-          rs.getInt("starlevel_Event")
         )
 
         //期間限定ログインイベント専用の累計ログイン日数
@@ -331,13 +320,6 @@ object PlayerDataLoading {
             playerData.TitleFlags.addOne(1)
         }
 
-        //建築
-        playerData.buildCount = BuildCount(
-          rs.getInt("build_lv"),
-          new java.math.BigDecimal(rs.getString("build_count")),
-          rs.getByte("build_count_flg")
-        )
-
         //マナ妖精
         playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
         playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
@@ -358,12 +340,6 @@ object PlayerDataLoading {
           rs.getBoolean("isGBStageUp")
         )
         playerData.anniversary = rs.getBoolean("anniversary")
-
-        //正月イベント用
-        playerData.hasNewYearSobaGive = rs.getBoolean("hasNewYearSobaGive")
-
-        //バレンタインイベント用
-        playerData.hasChocoGave = rs.getBoolean("hasChocoGave")
       }
     }
     //sqlコネクションチェック

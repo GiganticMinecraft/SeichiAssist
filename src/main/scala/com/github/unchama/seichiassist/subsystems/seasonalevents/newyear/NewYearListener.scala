@@ -1,12 +1,18 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
-import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{isInEvent, itemDropRate}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull}
-import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import cats.effect.{ConcurrentEffect, IO, LiftIO, SyncEffect, SyncIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.ManagedWorld._
-import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{START_DATE, isInEvent, itemDropRate}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
+import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
+import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
@@ -14,31 +20,46 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
-import java.time.LocalDate
-import java.util.Random
 
-object NewYearListener extends Listener {
+import java.time.LocalDate
+import java.util.{Random, UUID}
+
+class NewYearListener[
+  F[_] : ConcurrentEffect : NonServerThreadContextShift,
+  G[_] : SyncEffect
+](implicit effectEnvironment: EffectEnvironment,
+  repository: LastQuitPersistenceRepository[F, UUID],
+  breakCountReadAPI: BreakCountReadAPI[F, G, Player]) extends Listener {
+
+  import cats.implicits._
+
   @EventHandler
   def giveSobaToPlayer(event: PlayerJoinEvent): Unit = {
-    if (!isInEvent) return
+    if (!NewYear.sobaWillBeDistributed) return
 
-    val player: Player = event.getPlayer
+    val player = event.getPlayer
 
-    val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
-    if (playerData.hasNewYearSobaGive) return
+    val program = for {
+      _ <- NonServerThreadContextShift[F].shift
+      lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
+      _ <- LiftIO[F].liftIO(IO{
+        val hasNotJoinedInEventYet = lastQuit match {
+          case Some(dateTime) => dateTime.isBefore(START_DATE.atStartOfDay())
+          case None => true
+        }
 
-    if (isPlayerInventoryFull(player)) {
-      List(
-        "インベントリに空きがなかったため、アイテムを配布できませんでした。",
-        "インベントリに空きを作ってから、再度サーバーに参加してください。"
-      ).map(str => s"$RED$UNDERLINE$str")
-        .foreach(player.sendMessage)
-    } else {
-      addItem(player, sobaHead)
-      playerData.hasNewYearSobaGive = true
-      player.sendMessage(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。")
-    }
-    player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+        val effects =
+          if (hasNotJoinedInEventYet) List(
+            grantItemStacksEffect(sobaHead),
+            MessageEffect(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。"),
+            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
+          else List(emptyEffect)
+
+        effects.traverse(_.run(player))
+      })
+    } yield ()
+
+    effectEnvironment.runEffectAsync("大晦日ログインボーナスヘッドを付与するかどうかを判定する", program)
   }
 
   @EventHandler
@@ -46,15 +67,20 @@ object NewYearListener extends Listener {
     val item = event.getItem
     if (!isNewYearApple(item)) return
 
+    import cats.effect.implicits._
+
     val player = event.getPlayer
     val today = LocalDate.now()
     val expiryDate = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(expiryDate) || today.isEqual(expiryDate)) {
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
-      val manaState = playerData.manaState
-      val maxMana = manaState.calcMaxManaOnly(player, playerData.level)
+      val playerLevel = breakCountReadAPI
+        .seichiAmountDataRepository(player).read
+        .runSync[SyncIO].unsafeRunSync()
+        .levelCorrespondingToExp.level
+      val manaState = SeichiAssist.playermap(player.getUniqueId).manaState
+      val maxMana = manaState.calcMaxManaOnly(player, playerLevel)
       // マナを10%回復する
-      manaState.increase(maxMana * 0.1, player, playerData.level)
+      manaState.increase(maxMana * 0.1, player, playerLevel)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     }
   }
