@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
+import com.github.unchama.seichiassist.util.{ItemUtil, StaticGachaPrizeFactory, Util}
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
@@ -25,7 +25,7 @@ class GachaPrize(_itemStack: ItemStack, var probability: Double) {
 
     //　TODO: UUID
     if (lore.forall(mlore.contains) && this.itemStack.getItemMeta.getDisplayName == m.getItemMeta.getDisplayName) {
-      Util.loreIndexOf(mlore, "所有者").forall(mlore(_).toLowerCase().contains(name))
+      ItemUtil.loreIndexOf(mlore, "所有者").forall(mlore(_).toLowerCase().contains(name))
     } else false
   }
 

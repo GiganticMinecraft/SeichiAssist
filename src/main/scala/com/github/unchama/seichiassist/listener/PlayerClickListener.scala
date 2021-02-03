@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.{BreakUtil, Util, InventoryUtil, EnchantUtil}
+import com.github.unchama.seichiassist.util.{BreakUtil, EnchantUtil, InventoryUtil, ItemUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
@@ -123,7 +123,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     }
 
     //ガチャ用の頭でなければ終了
-    if (!Util.isGachaTicket(clickedItemStack)) return
+    if (!ItemUtil.isGachaTicket(clickedItemStack)) return
 
     event.setCancelled(true)
 
@@ -441,7 +441,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     val p = e.getPlayer
     val useItem = p.getInventory.getItemInMainHand
     //専用アイテムを持っていない場合無視
-    if (!Util.isMineHeadItem(useItem)) {
+    if (!ItemUtil.isMineHeadItem(useItem)) {
       return
     }
 

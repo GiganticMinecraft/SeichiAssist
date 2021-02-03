@@ -392,7 +392,7 @@ object BreakUtil {
             val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
 
             //名前が記入されているはずのアイテムで名前がなければ
-            if (g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemstack, player.getName)) return false
+            if (g.probability < 0.1 && !ItemUtil.itemStackContainsOwnerName(itemstack, player.getName)) return false
 
             if (g.itemStackEquals(itemstack)) {
               return addToMineStackAfterLevelCheck()

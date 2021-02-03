@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.listener;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.Mana;
 import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.util.ItemUtil;
 import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -43,27 +44,27 @@ public class GachaItemListener implements Listener {
         if (!itemmeta.hasLore()) return;
         List<String> lore = CollectionConverters.ListHasAsScala(itemmeta.getLore()).asScala().toList();
 
-        if (Util.loreIndexOf(lore, "マナ完全回復").nonEmpty()) {
+        if (ItemUtil.loreIndexOf(lore, "マナ完全回復").nonEmpty()) {
             mana.setFull(player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }
 
-        if (Util.loreIndexOf(lore, "マナ回復（小）").nonEmpty()) {
+        if (ItemUtil.loreIndexOf(lore, "マナ回復（小）").nonEmpty()) {
             mana.increase(300, player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }
 
-        if (Util.loreIndexOf(lore, "マナ回復（中）").nonEmpty()) {
+        if (ItemUtil.loreIndexOf(lore, "マナ回復（中）").nonEmpty()) {
             mana.increase(1500, player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }
 
-        if (Util.loreIndexOf(lore, "マナ回復（大）").nonEmpty()) {
+        if (ItemUtil.loreIndexOf(lore, "マナ回復（大）").nonEmpty()) {
             mana.increase(10000, player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }
 
-        if (Util.loreIndexOf(lore, "マナ回復（極）").nonEmpty()) {
+        if (ItemUtil.loreIndexOf(lore, "マナ回復（極）").nonEmpty()) {
             mana.increase(100000, player, level);
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F);
         }

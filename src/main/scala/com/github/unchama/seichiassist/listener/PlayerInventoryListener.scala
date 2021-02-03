@@ -10,9 +10,9 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util, InventoryUtil}
+import com.github.unchama.seichiassist.util.{InventoryUtil, ItemUtil, StaticGachaPrizeFactory, Util}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, PlayerEffects}
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{EntityType, Player}
@@ -610,7 +610,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       for (m <- item) {
         if (m != null) {
           if (m.getItemMeta.hasLore) {
-            if (Util.isLimitedTitanItem(m)) {
+            if (ItemUtil.isLimitedTitanItem(m)) {
               m.setDurability(1.toShort)
               count += 1
             }
@@ -785,14 +785,11 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         VotingFairyListener.summon(player)
         player.closeInventory()
       } else if (itemstackcurrent.getType == Material.COMPASS) {
-        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.playFairySound)
-        player.closeInventory()
-      } //妖精召喚
-      //妖精音トグル
-      //妖精リンゴトグル
-      //妖精時間トグル
-      //棒メニューに戻る
-
+        SequentialEffect(
+          VotingFairyTask.speak("僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.playFairySound),
+          PlayerEffects.closeInventoryEffect
+        ).run(player).unsafeRunAsyncAndForget()
+      }
     }
   }
 

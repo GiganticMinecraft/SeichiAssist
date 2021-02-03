@@ -218,6 +218,7 @@ class PlayerData(
   var hasVotingFairyMana = 0
   var VotingFairyRecoveryValue = 0
   var toggleGiveApple = 1
+  // actual type: 1 | 2 | 3 | 4
   var toggleVotingFairy = 1
   var p_apple: Long = 0
   var playFairySound = true
@@ -452,7 +453,7 @@ class PlayerData(
   private def votingFairyEffect(): TargetedEffect[Player] = {
     if (usingVotingFairy) {
       if (Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
-        TargetedEffect.delay(player => VotingFairyTask.speak(player, "おかえり！" + player.getName, true))
+        VotingFairyTask.speak(s"おかえり！${player.getName}", true)
       } else {
         SequentialEffect(
           UnfocusedEffect {
