@@ -122,15 +122,15 @@ object VotingFairyListener {
       .unsafeRunAsyncAndForget()
   }
 
-  def regeneMana(p: Player): Unit = {
+  def regeneMana(player: Player): Unit = {
     val playermap = SeichiAssist.playermap
-    val uuid = p.getUniqueId
+    val uuid = player.getUniqueId
     val playerdata = playermap(uuid)
     val mana = playerdata.manaState
     if (mana.getMana == mana.getMax) {
       //マナが最大だった場合はメッセージを送信して終わり
-      VotingFairyTask.speak(getMessage(mesWhenFull, p.getName), playerdata.playFairySound)
-        .run(p)
+      VotingFairyTask.speak(getMessage(mesWhenFull, player.getName), playerdata.playFairySound)
+        .run(player)
         .unsafeRunAsyncAndForget()
     } else {
       val playerLevel =
@@ -179,7 +179,7 @@ object VotingFairyListener {
           increasingMana /= 2
           if (playerdata.toggleGiveApple == 1) increasingMana /= 2
           if (playerdata.toggleGiveApple == 2 && (mana.getMana / mana.getMax < 0.75)) increasingMana /= 2
-          p.sendMessage(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
+          player.sendMessage(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         }
         else {
           val M = consumingQuantity.toDouble
@@ -193,7 +193,7 @@ object VotingFairyListener {
       //回復量に若干乱数をつける
       increasingMana = (increasingMana - increasingMana / 100) + new Random().nextInt((increasingMana / 50).toInt)
       //マナ回復
-      mana.increase(increasingMana, p, playerdata.level)
+      mana.increase(increasingMana, player, playerLevel.level)
       //りんごを減らす
       playerdata.minestack.subtractStackedAmountOf(MineStackObjectList.findByName("gachaimo").get, consumingQuantity)
       //減ったりんごの数をplayerdataに加算
@@ -202,12 +202,12 @@ object VotingFairyListener {
       val afterEffect = if (consumingQuantity == 0) {
         List(
           MessageEffect(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。"),
-          VotingFairyTask.speak(getMessage(no, p.getName), playerdata.playFairySound),
+          VotingFairyTask.speak(getMessage(no, player.getName), playerdata.playFairySound),
         )
       } else {
         List(
           MessageEffect(s"$RESET$YELLOW${BOLD}あっ！${consumingQuantity}個のがちゃりんごが食べられてる！"),
-          VotingFairyTask.speak(getMessage(yes, p.getName), playerdata.playFairySound)
+          VotingFairyTask.speak(getMessage(yes, player.getName), playerdata.playFairySound)
         )
       }
 
@@ -215,7 +215,7 @@ object VotingFairyListener {
         List(
           MessageEffect(s"$RESET$YELLOW${BOLD}マナ妖精が${increasingMana.toInt}マナを回復してくれました"),
         ) ::: afterEffect
-      ).run(p).unsafeRunAsyncAndForget()
+      ).run(player).unsafeRunAsyncAndForget()
     }
   }
 
