@@ -16,6 +16,7 @@ import java.util.UUID
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
+@deprecated("Move to BukkitRepositoryControls for compositionality")
 abstract class PreLoginToQuitPlayerDataRepository[
   SyncContext[_] : SyncEffect,
   R

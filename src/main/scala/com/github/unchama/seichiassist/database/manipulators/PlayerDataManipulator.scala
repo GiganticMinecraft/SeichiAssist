@@ -353,38 +353,9 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
    *         TODO この処理はDB上と通信を行う為非同期にすべき
    */
   def successRankingUpdate(): Boolean = {
-    if (!successBlockRankingUpdate()) return false
     if (!successPlayTickRankingUpdate()) return false
     if (!successVoteRankingUpdate()) return false
     successAppleNumberRankingUpdate()
-
-  }
-
-  //ランキング表示用に総破壊ブロック数のカラムだけ全員分引っ張る
-  private def successBlockRankingUpdate(): Boolean = {
-    val ranklist = mutable.ArrayBuffer[RankData]()
-    SeichiAssist.allplayerbreakblockint = 0
-    val command = ("select name,level,totalbreaknum from " + tableReference
-      + " order by totalbreaknum desc")
-    try {
-      gateway.executeQuery(command).recordIteration { lrs =>
-        val rankdata = new RankData()
-        rankdata.name = lrs.getString("name")
-        rankdata.level = lrs.getInt("level")
-        rankdata.totalbreaknum = lrs.getLong("totalbreaknum")
-        ranklist += rankdata
-        SeichiAssist.allplayerbreakblockint += rankdata.totalbreaknum
-      }
-    } catch {
-      case e: SQLException =>
-        println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
-        e.printStackTrace()
-        return false
-    }
-
-    SeichiAssist.ranklist.clear()
-    SeichiAssist.ranklist.addAll(ranklist)
-    true
   }
 
   //ランキング表示用にプレイ時間のカラムだけ全員分引っ張る

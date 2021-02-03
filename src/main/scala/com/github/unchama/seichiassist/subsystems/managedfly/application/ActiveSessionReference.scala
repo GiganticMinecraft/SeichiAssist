@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.effect.{Concurrent, ConcurrentEffect, Sync}
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.Mutex
+import com.github.unchama.generic.effect.concurrent.Mutex
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{NotFlying, PlayerFlyStatus}
 
 /**

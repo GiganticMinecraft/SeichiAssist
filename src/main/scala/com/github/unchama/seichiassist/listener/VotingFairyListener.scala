@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.enumeration.TimePeriodOfDay
@@ -10,8 +12,10 @@ import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 
-import java.util.{Calendar, GregorianCalendar, Random}
+import java.util.{Calendar, GregorianCalendar}
+import scala.util.Random
 
 object VotingFairyListener {
   /**
@@ -129,8 +133,15 @@ object VotingFairyListener {
         .run(p)
         .unsafeRunAsyncAndForget()
     } else {
+      val playerLevel =
+        SeichiAssist.instance
+          .breakCountSystem.api
+          .seichiAmountDataRepository(player)
+          .read.unsafeRunSync()
+          .levelCorrespondingToExp
+
       var increasingMana = playerdata.VotingFairyRecoveryValue.toDouble
-      var consumingQuantity = getGiveAppleValue(playerdata)
+      var consumingQuantity = getGiveAppleValue(playerLevel)
       //連続投票によってりんご消費量を抑える
       val discountRate = playerdata.ChainVote match {
         case _ >= 30 => 2
@@ -208,11 +219,11 @@ object VotingFairyListener {
     }
   }
 
-  private def getGiveAppleValue(playerdata: PlayerData): Int = {
-    val i: Int = playerdata.level / 10
-    val s = i * i
-    //0になるなら1を返す (2乗がマイナスになることはない)
-    Math.max(s, 1)
+  private def getGiveAppleValue(playerLevel: SeichiLevel): Int = {
+    // 10で切り捨て除算して二乗する。最低でも1は返す。
+    val levelDividedByTen = playerLevel.level / 10
+
+    (levelDividedByTen * levelDividedByTen) max 1
   }
 
   private def getMessage(messages: OrderedCollection[String], playerName: String): String = {
@@ -222,3 +233,5 @@ object VotingFairyListener {
       .replace(playerNameMacro, playerName + RESET)
   }
 }
+
+class VotingFairyListener extends Listener {}

@@ -9,7 +9,6 @@ import org.bukkit.entity.Player
 
 import java.util.Random
 
-
 object GiganticBerserkTask {
   private val playermap = SeichiAssist.playermap
   private val BERSERK = s"$YELLOW$BOLD${UNDERLINE}Gigantic$RED$BOLD${UNDERLINE}Berserk${RESET}"
@@ -22,38 +21,51 @@ object GiganticBerserkTask {
       if (SeichiAssist.DEBUG) p.sendMessage("上限到達")
       return
     }
-    if (pd.idleMinute >= 3) return
+    if (playerdata.idleMinute >= 3) return
+
     //確率でマナを回復させる
-    if (Math.random < pd.giganticBerserk.manaRegenerationProbability) {
-      val qty = getIncreasingMana(pd)
-      mana.increase(qty, p, pd.level)
-      p.sendMessage(s"${BERSERK}の効果でマナが${qty}回復しました")
-      p.playSound(p.getLocation, Sound.ENTITY_WITHER_SHOOT, 1, 0.5f)
+    val d = Math.random
+    if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
+      val i = getRecoveryValue(playerdata)
+      val level =
+        SeichiAssist.instance
+          .breakCountSystem.api
+          .seichiAmountDataRepository(player)
+          .read.unsafeRunSync()
+          .levelCorrespondingToExp.level
+
+      mana.increase(i, p, level)
+      player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "の効果でマナが" + i + "回復しました")
+      player.playSound(player.getLocation, Sound.ENTITY_WITHER_SHOOT, 1, 0.5f)
     }
+
     //最大レベルの場合終了
-    if (pd.giganticBerserk.reachedLimit()) return
+    if (playerdata.giganticBerserk.reachedLimit()) return
+
     //進化待機状態の場合終了
-    if (pd.giganticBerserk.canEvolve) return
-    val level = pd.giganticBerserk.level
-    val n = (pd.giganticBerserk.stage * 10) + level
-    pd.GBexp = pd.giganticBerserk.exp + 1
+    if (playerdata.giganticBerserk.canEvolve) return
+
+    // stage * level
+    val level = playerdata.giganticBerserk.level
+    val n = (playerdata.giganticBerserk.stage * 10) + level
+    playerdata.GBexp = playerdata.giganticBerserk.exp + 1
+
     //レベルアップするかどうか判定
-    if (LevelThresholds.giganticBerserkLevelList(n) <= pd.giganticBerserk.exp) if (level <= 8) {
-      pd.giganticBerserkLevelUp()
+    if (LevelThresholds.giganticBerserkLevelList.apply(n).asInstanceOf[Integer] <= playerdata.giganticBerserk.exp) if (level <= 8) {
+      playerdata.giganticBerserkLevelUp()
       //プレイヤーにメッセージ
-      p.sendMessage(s"${BERSERK}のレベルがアップし、確率が上昇しました")
-      p.playSound(p.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
+      player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "のレベルがアップし、確率が上昇しました")
+      player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
       //最大レベルになった時の処理
-      if (pd.giganticBerserk.reachedLimit()) {
+      if (playerdata.giganticBerserk.reachedLimit()) {
         Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
-        Util.sendEveryMessageWithoutIgnore(s"$GOLD$BOLD${pd.lowercaseName}がパッシブスキル:$BERSERK$GOLD${BOLD}を完成させました！")
+        Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.lowercaseName + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！")
       }
-    } else {
-      //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ
-      if (pd.giganticBerserk.stage <= 4) {
-        p.sendMessage(s"${GREEN}パッシブスキルメニューより$BERSERK${GREEN}スキルが進化可能です。")
-        p.playSound(p.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
-        pd.isGBStageUp = true
+    } else { //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ
+      if (playerdata.giganticBerserk.stage <= 4) {
+        player.sendMessage(ChatColor.GREEN + "パッシブスキルメニューより" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GREEN + "スキルが進化可能です。")
+        player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
+        playerdata.isGBStageUp_$eq(true)
       }
     }
   }
