@@ -6,12 +6,17 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.enumeration.TimePeriodOfDay
 import com.github.unchama.seichiassist.util.typeclass.OrderedCollection
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.targetedeffect.SequentialEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 import java.util.{Calendar, GregorianCalendar, Random}
 
 object VotingFairyListener {
+  /**
+   * メッセージが送信されるときにプレイヤー名に置き換えられる任意のプレースホルダー
+   */
   private val playerNameMacro = "[str1]"
   private val messagesOnSummon: Map[TimePeriodOfDay, List[String]] = Map(
     TimePeriodOfDay.Morning -> List(
@@ -100,13 +105,17 @@ object VotingFairyListener {
     val n = mana.getMax
     val increasingMana = ((n / 10 - n / 30 + new Random().nextInt((n / 20).toInt)) / 2.9).toInt + 200
     playerdata.VotingFairyRecoveryValue = increasingMana
-    p.sendMessage(s"$RESET$YELLOW${BOLD}妖精を呼び出しました！")
-    p.sendMessage(s"$RESET$YELLOW${BOLD}この子は1分間に約${increasingMana}マナ")
-    p.sendMessage(s"$RESET$YELLOW${BOLD}回復させる力を持っているようです。")
-
-    VotingFairyTask.speak(p,
-      getMessage(messagesOnSummon(Util.getTimePeriod(playerdata.votingFairyStartTime)), p.getName), playerdata.playFairySound
+    SequentialEffect(
+      MessageEffect(s"$RESET$YELLOW${BOLD}妖精を呼び出しました！"),
+      MessageEffect(s"$RESET$YELLOW${BOLD}この子は1分間に約${increasingMana}マナ"),
+      MessageEffect(s"$RESET$YELLOW${BOLD}回復させる力を持っているようです。"),
+      VotingFairyTask.speak(
+        getMessage(messagesOnSummon(Util.getTimePeriod(playerdata.votingFairyStartTime)), p.getName),
+        playerdata.playFairySound
+      )
     )
+      .run(p)
+      .unsafeRunAsyncAndForget()
   }
 
   def regeneMana(p: Player): Unit = {
@@ -116,8 +125,9 @@ object VotingFairyListener {
     val mana = playerdata.manaState
     if (mana.getMana == mana.getMax) {
       //マナが最大だった場合はメッセージを送信して終わり
-
-      VotingFairyTask.speak(p, getMessage(mesWhenFull, p.getName), playerdata.playFairySound)
+      VotingFairyTask.speak(getMessage(mesWhenFull, p.getName), playerdata.playFairySound)
+        .run(p)
+        .unsafeRunAsyncAndForget()
     } else {
       var increasingMana = playerdata.VotingFairyRecoveryValue.toDouble
       var consumingQuantity = getGiveAppleValue(playerdata)
@@ -177,14 +187,23 @@ object VotingFairyListener {
       //減ったりんごの数をplayerdataに加算
       playerdata.p_apple += consumingQuantity
 
-      p.sendMessage(s"$RESET$YELLOW${BOLD}マナ妖精が${increasingMana.toInt}マナを回復してくれました")
-      if (consumingQuantity == 0) {
-        p.sendMessage(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。")
-        VotingFairyTask.speak(p, getMessage(no, p.getName), playerdata.playFairySound)
+      val afterEffect = if (consumingQuantity == 0) {
+        List(
+          MessageEffect(s"$RESET$YELLOW${BOLD}あなたは妖精にりんごを渡しませんでした。"),
+          VotingFairyTask.speak(getMessage(no, p.getName), playerdata.playFairySound),
+        )
       } else {
-        p.sendMessage(s"$RESET$YELLOW${BOLD}あっ！${consumingQuantity}個のがちゃりんごが食べられてる！")
-        VotingFairyTask.speak(p, getMessage(yes, p.getName), playerdata.playFairySound)
+        List(
+          MessageEffect(s"$RESET$YELLOW${BOLD}あっ！${consumingQuantity}個のがちゃりんごが食べられてる！"),
+          VotingFairyTask.speak(getMessage(yes, p.getName), playerdata.playFairySound)
+        )
       }
+
+      SequentialEffect(
+        List(
+          MessageEffect(s"$RESET$YELLOW${BOLD}マナ妖精が${increasingMana.toInt}マナを回復してくれました"),
+        ) ::: afterEffect
+      ).run(p).unsafeRunAsyncAndForget()
     }
   }
 

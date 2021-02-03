@@ -2,11 +2,15 @@ package com.github.unchama.seichiassist.task
 
 import com.github.unchama.contextualexecutor.builder.Result
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.timer
 import com.github.unchama.seichiassist.listener.VotingFairyListener
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.{DelayEffect, SequentialEffect, TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
+import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.{Bukkit, Sound}
 
 object VotingFairyTask { //MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
   def run(p: Player): Unit = {
@@ -15,33 +19,37 @@ object VotingFairyTask { //MinuteTaskRunnableから、妖精召喚中のプレ�
     val playerdata = playermap.apply(uuid)
     //マナ回復
     VotingFairyListener.regeneMana(p)
-    //効果時間中か
-    if (!Util.isVotingFairyPeriod(playerdata.votingFairyStartTime, playerdata.votingFairyEndTime)) {
-      speak(p, "あっ、もうこんな時間だ！", false)
-      speak(p, s"じゃーねー！${p.getName}", true)
-      p.sendMessage(s"$RESET$YELLOW${BOLD}妖精はどこかへ行ってしまった")
-      playerdata.usingVotingFairy = false
+    //効果時間中なら表示しない
+    if (Util.isVotingFairyPeriod(playerdata.votingFairyStartTime, playerdata.votingFairyEndTime)) {
+      return
     }
-  }
 
-  def speak(p: Player, msg: String, b: Boolean): Unit = {
-    if (b) playSe(p)
-    p.sendMessage(s"$AQUA$BOLD<マナ妖精>$RESET$msg")
-  }
-
-  //妖精効果音
-  private def playSe(p: Player): Unit = {
-    p.playSound(p.getLocation, Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f)
-    // TODO: [[PlaySoundEffect]]
-    Bukkit.getServer.getScheduler.runTaskLater(SeichiAssist.instance, () => {
-      // TODO: Remove this nest
-      def foo() = {
-        p.playSound(p.getLocation, Sound.BLOCK_NOTE_PLING, 2.0f, 1.5f)
-        Bukkit.getServer.getScheduler.runTaskLater(SeichiAssist.instance, () => p.playSound(p.getLocation, Sound.BLOCK_NOTE_PLING, 2.0f, 2.0f), 2)
+    SequentialEffect(
+      speak("あっ、もうこんな時間だ！", false),
+      speak(s"じゃーねー！${p.getName}", true),
+      MessageEffect(s"$RESET$YELLOW${BOLD}妖精はどこかへ行ってしまった"),
+      UnfocusedEffect {
+        playerdata.usingVotingFairy = false
       }
+    ).run(p).unsafeRunAsyncAndForget()
+  }
 
-      foo()
-    }, 2)
+  def speak(mes: String, playSound: Boolean): TargetedEffect[Player] = {
+    SequentialEffect(
+      if (playSound) {
+        import com.github.unchama.concurrent.syntax._
+        SequentialEffect(
+          FocusedSoundEffect(Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f),
+          DelayEffect(2.ticks),
+          FocusedSoundEffect(Sound.BLOCK_NOTE_PLING, 2.0f, 1.5f),
+          DelayEffect(2.ticks),
+          FocusedSoundEffect(Sound.BLOCK_NOTE_PLING, 2.0f, 2.0f),
+        )
+      } else {
+        TargetedEffect.emptyEffect
+      },
+      MessageEffect(s"$AQUA$BOLD<マナ妖精>$RESET$mes")
+    )
   }
 
   def dispToggleVFTimeZ(toggle: Int): Result[String, String] = toggle match {
