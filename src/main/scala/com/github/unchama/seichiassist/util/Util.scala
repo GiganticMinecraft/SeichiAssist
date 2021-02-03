@@ -162,14 +162,7 @@ object Util {
     new SimpleDateFormat("HH:mm").format(cal.getTime)
   }
 
-  def getTimeZone(cal: Calendar): String = {
-    val n = cal.get(Calendar.HOUR_OF_DAY)
-    n match {
-      case _ if 4 <= n && n < 10 => "morning"
-      case _ if 10 <= n && n < 18 => "day"
-      case _ => "night"
-    }
-  }
+  def getTimePeriod(cal: Calendar): TimePeriodOfDay = TimePeriodOfDay(cal.get(Calendar.HOUR_OF_DAY))
 
   def isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean = {
     val now = Calendar.getInstance()
