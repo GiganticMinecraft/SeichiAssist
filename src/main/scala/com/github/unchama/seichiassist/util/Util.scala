@@ -2,7 +2,9 @@ package com.github.unchama.seichiassist.util
 
 import cats.data
 import cats.effect.IO
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
+import com.github.unchama.seichiassist.util.OrderedCollectionOps._
+import com.github.unchama.seichiassist.util.enumeration.TimePeriodOfDay
+import com.github.unchama.seichiassist.util.typeclass.OrderedCollection._
 import com.github.unchama.seichiassist.util.typeclass.Sendable
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -106,7 +108,8 @@ object Util {
     val rand = new Random()
 
     // 形状をランダムに決める
-    effect.`with`(types(rand.nextInt(types.size)))
+    // * 多段implicitは探索の対象にならない
+    effect.`with`(types.pipe(new ForList(_)).sample)
 
     // 基本の色を単色～5色以内でランダムに決める
     effect.withColor(getRandomColors(1 + rand.nextInt(5)): _*)
