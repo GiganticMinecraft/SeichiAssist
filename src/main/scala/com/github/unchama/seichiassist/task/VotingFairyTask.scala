@@ -12,7 +12,10 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
-object VotingFairyTask { //MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
+object VotingFairyTask {
+  /**
+   *   MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
+   */
   def run(p: Player): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = p.getUniqueId

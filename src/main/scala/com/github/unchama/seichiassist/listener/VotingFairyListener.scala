@@ -162,9 +162,9 @@ object VotingFairyListener {
       }
       //りんご所持数で値変更
       val gachaimoObject = MineStackObjectList.findByName("gachaimo").get
-      val l = playerdata.minestack.getStackedAmountOf(gachaimoObject)
-      if (consumingQuantity > l) {
-        if (l == 0) {
+      val left = playerdata.minestack.getStackedAmountOf(gachaimoObject)
+      if (consumingQuantity > left) {
+        if (left == 0) {
           increasingMana /= 2
           if (playerdata.toggleGiveApple == 1) increasingMana /= 2
           if (playerdata.toggleGiveApple == 2 && (mana.getMana / mana.getMax < 0.75)) increasingMana /= 2
@@ -172,11 +172,12 @@ object VotingFairyListener {
         }
         else {
           val M = consumingQuantity.toDouble
-          val L = l.toDouble
-          increasingMana = if ((L / M) <= 0.5) increasingMana * 0.5
-          else increasingMana * L / M
+          val L = left.toDouble
+          val percentage = L / M
+          increasingMana = if (percentage <= 0.5) increasingMana * 0.5
+          else increasingMana * percentage
         }
-        consumingQuantity = l.toInt
+        consumingQuantity = left.toInt
       }
       //回復量に若干乱数をつける
       increasingMana = (increasingMana - increasingMana / 100) + new Random().nextInt((increasingMana / 50).toInt)
