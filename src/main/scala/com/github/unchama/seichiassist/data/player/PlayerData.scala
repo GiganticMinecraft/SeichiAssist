@@ -257,12 +257,6 @@ class PlayerData(
     giganticBerserk = giganticBerserk.copy(canEvolve = value)
   }
 
-  import com.github.unchama.generic.ratelimiting.FixedWindowRateLimiter
-  import scala.concurrent.duration._
-  val GBRateLimitter = FixedWindowRateLimiter.in(
-    SeichiAssist.seichiAssistConfig.getGiganticBerserkLimitRatePerMinute,
-    1.minute
-  )
   def GBkillsPerMinute: Int = giganticBerserk.killsPerMinute
 
   def GBkillsPerMinute_=(value: Int): Unit = {

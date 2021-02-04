@@ -16,8 +16,8 @@ object GiganticBerserkTask {
     val uuid = p.getUniqueId
     val pd = playermap(uuid)
     val mana = pd.manaState
-    pd.GBkillsPerMinute = pd.GBkillsPerMinute + 1
-    if (pd.GBkillsPerMinute >= SeichiAssist.seichiAssistConfig.getGiganticBerserkLimitRatePerMinute) {
+    pd.GBkillsPerMinute = pd.giganticBerserk.killsPerMinute + 1
+    if (pd.giganticBerserk.killsPerMinute >= SeichiAssist.seichiAssistConfig.getGiganticBerserkLimitRatePerMinute) {
       if (SeichiAssist.DEBUG) p.sendMessage("上限到達")
       return
     }
