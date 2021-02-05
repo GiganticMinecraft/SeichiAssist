@@ -246,6 +246,31 @@ object BreakUtil {
   }
 
   /**
+   * world 内での整地量倍率を計算する。
+   * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
+   */
+  def blockCountWeight(world: World): Double = {
+    val managedWorld = ManagedWorld.fromBukkitWorld(world)
+    val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
+    val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
+
+    seichiWorldFactor * sw01Penalty
+  }
+
+  /**
+   * マテリアルごとに倍率を掛けた整地量を計算する。
+   * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
+   */
+  def totalBreakCount(materials: Seq[Material]): Long =
+    materials
+      .map {
+        //氷塊とマグマブロックの整地量を2倍
+        case Material.PACKED_ICE | Material.MAGMA => 2L
+        case _ => 1L
+      }
+      .sum
+
+  /**
    * ブロックの書き換えを行い、ドロップ処理と統計増加の処理を行う`IO`を返す。
    *
    * 返される`IO`は、終了時点で同期スレッドで実行を行っている。
@@ -258,15 +283,6 @@ object BreakUtil {
                      miningTool: BreakTool,
                      shouldPlayBreakSound: Boolean,
                      toMaterial: Material = Material.AIR): IO[Unit] = {
-
-    // 整地数反映量の調節
-    val weight: IO[Double] = IO {
-      val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
-      val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-      val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
-
-      seichiWorldFactor * sw01Penalty
-    }
 
     for {
       _ <- PluginExecutionContexts.syncShift.shift
@@ -319,19 +335,11 @@ object BreakUtil {
         }
       }
 
-      totalCount = targetBlocksInformation
-        .map { case (_, m, _) => m }
-        .filter(MaterialSets.materialsToCountBlockBreak.contains)
-        .map {
-          //氷塊とマグマブロックの整地量を2倍
-          case Material.PACKED_ICE | Material.MAGMA => 2
-          case _ => 1
-        }
-        .sum
-
       //プレイヤーの統計を増やす
-      blockCountWeight <- weight
+      totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m, _) => m })
+      blockCountWeight <- IO(blockCountWeight(player.getWorld))
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
+
       _ <- SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, expIncrease).toIO
 
       _ <- PluginExecutionContexts.syncShift.shift

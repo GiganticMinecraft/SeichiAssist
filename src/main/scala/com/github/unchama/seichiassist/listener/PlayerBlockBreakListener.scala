@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -49,6 +50,8 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
       return
     }
 
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
+
     //破壊不可能ブロックの時処理を終了
     if (!BreakUtil.canBreak(player, block)) {
       event.setCancelled(true)
@@ -75,16 +78,6 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
       .unsafeRunSync()
       .levelCorrespondingToExp.level
 
-    // 追加マナ獲得
-    val manaState = playerData.manaState
-    manaState.increase(BreakUtil.calcManaDrop(player), player, playerLevel)
-
-    // 破壊点のブロックを先に破壊しておく。
-    // アクティブスキルそのものは破壊点のブロックを起点として破壊点以外の範囲を破壊するものとするが、
-    // 必要マナ量の計算には最初のブロックを含むこととする。
-    val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
-    BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
-
     if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
 
     //クールダウンタイム中は処理を終了
@@ -93,6 +86,11 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
       player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1)
       return
     }
+
+    val manaState = playerData.manaState
+
+    // 追加マナ獲得
+    manaState.increase(BreakUtil.calcManaDrop(player), player, playerLevel)
 
     val selectedSkill = skillState.activeSkill.getOrElse(return)
 
@@ -103,6 +101,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
     {
       //プレイヤーの足のy座標を取得
       val playerLocY = player.getLocation.getBlockY - 1
+      val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
 
       val skillArea = BreakArea(selectedSkill, skillState.usageMode)
       val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
@@ -120,16 +119,11 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
 
       //エフェクト用に壊されるブロック全てのリストデータ
       val multiBreakList = new ArrayBuffer[Set[BlockBreakableBySkill]]
-
       //壊される溶岩の全てのリストデータ
       val multiLavaList = new ArrayBuffer[Set[Block]]
-
-      // マナ消費量合計
-      // スキル起点の破壊に使用するマナを初期値とする
-      var manaConsumption: Double =
-      (gravity + 1) * selectedSkill.manaCost * 1.0 / totalBreakRangeVolume
-
-      // 耐久消費量合計
+      // 全てのマナ消費量
+      var manaConsumption = 0.0
+      // 全ての耐久消費量
       var toolDamageToSet = tool.getDurability.toInt
 
       //繰り返し回数だけ繰り返す
@@ -170,8 +164,10 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
         }
       }
 
-      // スキルで破壊できるブロックが一番最初の範囲に存在した場合
-      if (multiBreakList.headOption.exists(_.nonEmpty)) {
+      if (multiBreakList.headOption.forall(_.size == 1)) {
+        // 破壊するブロックがプレーヤーが最初に破壊を試みたブロックだけの場合
+        BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
+      } else {
         // スキルの処理
         import cats.implicits._
         import com.github.unchama.concurrent.syntax._
@@ -234,6 +230,24 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
         )
       }
     }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  def onPlayerBreakBlockFinally(event: BlockBreakEvent): Unit = {
+    val player = event.getPlayer
+    val block = event.getBlock
+    val amount =
+      SeichiExpAmount.ofNonNegative {
+        BreakUtil.blockCountWeight(event.getPlayer.getWorld) * BreakUtil.totalBreakCount(Seq(block.getType))
+      }
+
+    effectEnvironment.runEffectAsync(
+      "通常破壊されたブロックを整地量に計上する",
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .incrementSeichiExp.of(player, amount)
+        .toIO
+    )
   }
 
   /**
