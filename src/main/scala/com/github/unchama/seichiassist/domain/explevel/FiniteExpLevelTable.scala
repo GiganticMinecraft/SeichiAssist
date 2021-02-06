@@ -73,7 +73,8 @@ class FiniteExpLevelTable[
                             (implicit addition: Monoid[ExpAmount]): FiniteExpLevelTable[L, ExpAmount] = {
       val lengthToFill = (PositiveInt[L].asInt(extensionTarget) - PositiveInt[L].asInt(maxLevel)) max 0
       val lastThreshold = internalTable.last
-      val extension = Vector.iterate(lastThreshold, lengthToFill)(addition.combine(_, exp))
+      val extensionHead = addition.combine(lastThreshold, exp)
+      val extension = Vector.iterate(extensionHead, lengthToFill)(addition.combine(_, exp))
 
       new FiniteExpLevelTable(internalTable.appendedAll(extension))
     }
