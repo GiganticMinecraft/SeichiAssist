@@ -489,13 +489,17 @@ class SeichiAssist extends JavaPlugin() {
           subsystems.halfhourranking.System.backgroundProcess
         }
 
+      val levelUpGiftProcess: IO[Nothing] =
+        subsystems.seichilevelupgift.System.backGroundProcess[SyncIO]
+
       val programs: List[IO[Nothing]] =
         List(
           dataRecalculationRoutine,
           dataBackupRoutine,
           manaUpdate,
           fastDiggingEffectUpdate,
-          gachaPointUpdate
+          gachaPointUpdate,
+          levelUpGiftProcess
         ) ++
           halfHourRankingRoutineOption.toList ++
           autoSaveSystem.state ++
