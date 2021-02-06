@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 object System {
 
   import cats.implicits._
+  import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
   import scala.concurrent.duration._
 

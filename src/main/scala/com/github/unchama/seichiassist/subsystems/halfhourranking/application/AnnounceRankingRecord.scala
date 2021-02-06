@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.halfhourranking.application
 
 import cats.Monad
 import com.github.unchama.minecraft.actions.{BroadcastMinecraftMessage, SendMinecraftMessage}
+import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.halfhourranking.domain.RankingRecord
 import org.bukkit.ChatColor._
@@ -15,7 +16,7 @@ object AnnounceRankingRecord {
     : Monad
     : SendMinecraftMessage[*[_], Player]
     : BroadcastMinecraftMessage,
-    Player
+    Player: HasUuid
   ](resolveName: Player => F[String]): RankingRecord[Player] => F[Unit] = { rankingRecord =>
     val rankingPositionColor = List(DARK_PURPLE, BLUE, DARK_AQUA)
     val sortedNonzeroRecords = rankingRecord.getSortedNonzeroRecords
