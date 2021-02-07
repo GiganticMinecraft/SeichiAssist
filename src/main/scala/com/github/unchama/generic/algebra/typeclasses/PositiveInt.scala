@@ -1,5 +1,6 @@
 package com.github.unchama.generic.algebra.typeclasses
 
+import cats.Order
 import simulacrum.typeclass
 
 /**
@@ -22,5 +23,11 @@ import simulacrum.typeclass
    * [[T]] を正整数に変換する。
    */
   def asInt(t: T): Int
+
+}
+
+object PositiveInt {
+
+  implicit def positiveIntHasOrder[T: PositiveInt]: Order[T] = Order.by(PositiveInt[T].asInt)
 
 }

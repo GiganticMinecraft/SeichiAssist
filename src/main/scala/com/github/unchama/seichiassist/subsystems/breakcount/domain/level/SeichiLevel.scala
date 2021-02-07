@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.domain.level
 
 import cats.Order
-import com.github.unchama.generic.algebra.typeclasses.PositiveInt
+import com.github.unchama.generic.algebra.typeclasses.{HasSuccessor, PositiveInt}
 
 /**
  * 整地レベル。正の[[Int]]と対応する。
@@ -24,6 +24,8 @@ private[level] abstract class SeichiLevelInstances {
   }
 
   implicit lazy val order: Order[SeichiLevel] = Order.by(_.level)
+
+  implicit lazy val hasSuccessor: HasSuccessor[SeichiLevel] = HasSuccessor.positiveIntHasSuccessor
 }
 
 object SeichiLevel extends SeichiLevelInstances {
