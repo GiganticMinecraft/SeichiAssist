@@ -30,9 +30,9 @@ object System {
   ](implicit breakCountReadApi: BreakCountReadAPI[IO, G, Player]): IO[Nothing] = {
     breakCountReadApi
       .seichiLevelUpdates
-      .evalMap { case (player, Diff(left, right)) =>
+      .evalTap { case (player, Diff(left, right)) =>
         HasSuccessor[SeichiLevel]
-          .range(left, right)
+          .leftOpenRightClosedRange(left, right)
           .toList
           .traverse { level =>
             val bundle = GiftBundleTable.bundleAt(level)
