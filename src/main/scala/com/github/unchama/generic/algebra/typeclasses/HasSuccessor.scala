@@ -10,7 +10,7 @@ import simulacrum.typeclass
  *  - `x < y` ならば `x < x.successor <= y`
  *    を満たす。
  */
-@typeclass trait HasSuccessor[T] {
+@typeclass trait HasSuccessor[T] extends AnyRef {
 
   import cats.implicits._
 
@@ -25,12 +25,13 @@ import simulacrum.typeclass
   def successor(x: T): Option[T]
 
   /**
-   * `lower` 以上 `upper` 未満の要素の順序付けられた [[LazyList]] を作成する。
+   * `lower` 以上 `upper` 以下の要素の順序付けられた [[LazyList]] を作成する。
    *
    * 返される [[LazyList]] を `l` とし、 `0 <= i < (l.size - 1)`、
    * `0 <= j < l.size` であるとき、
+   *  - `i == 0` ならば、 `l(i) = lower`
    *  - `successor(l(i)) = l(i + 1)`
-   *  - `lower <= l(i) < upper`
+   *  - `lower <= l(j) <= upper`
    *    を満たす。
    *
    * この関数が返す [[LazyList]] は、
@@ -38,10 +39,20 @@ import simulacrum.typeclass
    * 具体的には、自然数の二つ組の辞書式順序において `(1, 0)` はいかなる要素の後者でもないから、
    * `range((0, 0), (2, 0))` は (`(0, 0) < (1, 0) < (2, 0)` であるにもかかわらず) `(1, 0)` を含まない。
    */
-  final def range(lower: T, upper: T): LazyList[T] =
-    LazyList.unfold(lower) { current =>
-      successor(current).filter(_ < upper).map(t => (t, t))
+  final def closedRange(lower: T, upper: T): LazyList[T] = {
+    if (lower > upper) {
+      LazyList.empty
+    } else {
+      LazyList(lower).combine {
+        LazyList.unfold(lower) { current =>
+          successor(current).filter(_ <= upper).map(t => (t, t))
+        }
+      }
     }
+  }
+
+  final def leftOpenRightClosedRange(lower: T, upper: T): LazyList[T] =
+    closedRange(lower, upper).drop(1)
 
 }
 
