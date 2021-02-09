@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect
 
 import cats.data.Kleisli
 import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingEffect, FastDiggingEffectList}
 
 import scala.concurrent.duration.FiniteDuration
@@ -17,7 +18,7 @@ trait FastDiggingEffectReadApi[F[_], Player] {
   /**
    * プレーヤーに付与される採掘速度上昇効果の最新の値を保持するデータリポジトリ。
    */
-  val currentEffect: KeyedDataRepository[Player, FastDiggingEffectList]
+  val currentEffect: KeyedDataRepository[Player, ReadOnlyRef[F, FastDiggingEffectList]]
 
 }
 
