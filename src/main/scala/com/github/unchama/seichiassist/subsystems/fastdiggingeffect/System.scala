@@ -8,6 +8,14 @@ import org.bukkit.entity.Player
 
 import scala.concurrent.duration.DurationInt
 
+trait System[F[_], Player] {
+
+  val effectApi: FastDiggingEffectApi[F, Player]
+
+  val settingsApi: FastDiggingSettingsApi[F, Player]
+
+}
+
 object System {
 
   import cats.implicits._
