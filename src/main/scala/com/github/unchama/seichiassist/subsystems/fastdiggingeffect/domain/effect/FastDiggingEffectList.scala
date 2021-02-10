@@ -1,33 +1,42 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect
 
+import cats.Functor
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
+import io.chrisdavenport.cats.effect.time.JavaTime
 
-import java.time.LocalDateTime
 import scala.concurrent.duration.FiniteDuration
 
 class FastDiggingEffectList(private val list: List[FastDiggingEffectTimings]) {
-  def appendEffect(effect: FastDiggingEffect, duration: FiniteDuration)
-                  (currentTime: LocalDateTime): FastDiggingEffectList = {
-    val timings = FastDiggingEffectTimings(currentTime, duration, effect)
 
-    new FastDiggingEffectList(list.appended(timings))
+  import cats.implicits._
+
+  def appendEffect[
+    F[_] : JavaTime : Functor
+  ](effect: FastDiggingEffect, duration: FiniteDuration): F[FastDiggingEffectList] = {
+    JavaTime[F].getLocalDateTimeUTC.fmap { currentTime =>
+      val timings = FastDiggingEffectTimings(currentTime, duration, effect)
+      new FastDiggingEffectList(list.appended(timings))
+    }
   }
 
-  def filterInactive(currentTime: LocalDateTime): FastDiggingEffectList = {
-    new FastDiggingEffectList(list.filter(_.isActiveAt(currentTime)))
+  def filterInactive[F[_] : JavaTime : Functor]: F[FastDiggingEffectList] = {
+    JavaTime[F].getLocalDateTimeUTC.fmap { currentTime =>
+      new FastDiggingEffectList(list.filter(_.isActiveAt(currentTime)))
+    }
   }
 
-  def toFilteredList(currentTime: LocalDateTime): List[FastDiggingEffectTimings] = filterInactive(currentTime).list
+  def filteredList[F[_] : JavaTime : Functor]: F[List[FastDiggingEffectTimings]] = filterInactive[F].fmap(_.list)
 
-  def totalEffectAmplifier(suppressionSettings: FastDiggingEffectSuppressionState)
-                          (currentTime: LocalDateTime): Int = {
-    val totalAmplifier: Int =
-      toFilteredList(currentTime)
-        .map(_.effect.amplifier)
-        .sum
-        .toInt
+  def totalEffectAmplifier[F[_] : JavaTime : Functor](suppressionSettings: FastDiggingEffectSuppressionState): F[Int] = {
+    filteredList[F].map { list =>
+      val totalAmplifier: Int =
+        list
+          .map(_.effect.amplifier)
+          .sum
+          .toInt
 
-    (totalAmplifier - 1) min suppressionSettings.effectAmplifierCap
+      (totalAmplifier - 1) min suppressionSettings.effectAmplifierCap
+    }
   }
 }
 
