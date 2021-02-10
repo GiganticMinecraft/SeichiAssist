@@ -9,7 +9,6 @@ import fs2.concurrent.Topic
 
 object EffectListRepositoryDefinitions {
 
-  import cats.effect.implicits._
   import cats.implicits._
 
   import scala.concurrent.duration._
@@ -37,13 +36,14 @@ object EffectListRepositoryDefinitions {
 
       val programToRun: F[Unit] = for {
         publishingEffectFiber <-
-          fs2.Stream
-            .awakeEvery[F](1.second)
-            .evalMap(_ => ref.get)
-            .evalTap(effectList => effectTopic.publish1(player, effectList))
-            .compile.drain
-            .flatMap(_ => Async[F].never[Nothing])
-            .start
+          Concurrent[F].start[Nothing] {
+            fs2.Stream
+              .awakeEvery[F](1.second)
+              .evalMap(_ => ref.get)
+              .evalTap(effectList => effectTopic.publish1(player, effectList))
+              .compile.drain
+              .flatMap[Nothing](_ => Async[F].never[Nothing])
+          }
         _ <- fiberPromise.complete(publishingEffectFiber)
       } yield ()
 
