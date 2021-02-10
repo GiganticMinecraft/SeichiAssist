@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.setti
 import java.time.LocalDateTime
 import scala.concurrent.duration.FiniteDuration
 
-class FastDiggingEffectList(list: List[FastDiggingEffectTimings]) {
+class FastDiggingEffectList(private val list: List[FastDiggingEffectTimings]) {
   def appendEffect(effect: FastDiggingEffect, duration: FiniteDuration)
                   (currentTime: LocalDateTime): FastDiggingEffectList = {
     val timings = FastDiggingEffectTimings(currentTime, duration, effect)
