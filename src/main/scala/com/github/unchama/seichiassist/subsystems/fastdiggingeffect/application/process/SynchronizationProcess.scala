@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application
+package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process
 
 import cats.MonadError
 import com.github.unchama.datarepository.KeyedDataRepository

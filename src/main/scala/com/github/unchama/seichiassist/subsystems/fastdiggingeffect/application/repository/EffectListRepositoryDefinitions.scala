@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application
+package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository
 
 import cats.effect.concurrent.{Deferred, Ref}
 import cats.effect.{Async, Concurrent, ConcurrentEffect, Effect, Fiber, Sync, SyncEffect, Timer}

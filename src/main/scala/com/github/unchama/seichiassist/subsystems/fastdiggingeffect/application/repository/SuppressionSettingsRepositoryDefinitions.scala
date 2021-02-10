@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application
+package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository
 
 import cats.effect.ConcurrentEffect
 import cats.effect.concurrent.Ref
