@@ -30,3 +30,9 @@ class FastDiggingEffectList(private val list: List[FastDiggingEffectTimings]) {
     (totalAmplifier - 1) min suppressionSettings.effectAmplifierCap
   }
 }
+
+object FastDiggingEffectList {
+
+  val empty: FastDiggingEffectList = new FastDiggingEffectList(List.empty)
+
+}
