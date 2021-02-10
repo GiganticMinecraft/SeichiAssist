@@ -2,13 +2,14 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect
 
 import cats.effect.{Async, Concurrent, Sync, Timer}
 import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
+import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import org.bukkit.entity.Player
 
 import scala.concurrent.duration.DurationInt
 
-trait System[F[_], Player] {
+trait System[F[_], G[_], Player] extends Subsystem[G] {
 
   val effectApi: FastDiggingEffectApi[F, Player]
 
