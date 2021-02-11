@@ -7,7 +7,8 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
-import com.github.unchama.seichiassist.task.{CoolDownTask, PlayerDataLoading}
+import com.github.unchama.seichiassist.task.PlayerDataLoading
+import com.github.unchama.seichiassist.task.cooldown.{SharedInventoryCoolDownResetTask, VoteCoolDownResetTask}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -111,7 +112,8 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       player.sendMessage(RED.toString + "しばらく待ってからやり直してください")
       return 0
     }
-    new CoolDownTask(player, true, false).runTaskLater(plugin, 1200)
+
+    new VoteCoolDownResetTask(player).runTaskLater(plugin, 1200)
 
     supplier
   }
@@ -305,7 +307,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       if (!playerData.shareinvcooldownflag)
         Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
       else {
-        new CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
+        new SharedInventoryCoolDownResetTask(player).runTaskLater(plugin, 200)
         Right(())
       }
     }

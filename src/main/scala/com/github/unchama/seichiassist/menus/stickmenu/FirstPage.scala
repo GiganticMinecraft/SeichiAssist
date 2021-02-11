@@ -19,8 +19,8 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
-import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.task.cooldown.GachaCoolDownResetTask
+import com.github.unchama.seichiassist.util.{Util, InventoryUtil => SInventoryUtil}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -409,7 +409,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(DeferredEffect(IO {
           if (playerData.gachacooldownflag) {
-            new CoolDownTask(player, false, true).runTaskLater(SeichiAssist.instance, 20)
+            new GachaCoolDownResetTask(player).runTaskLater(SeichiAssist.instance, 20)
 
             // NOTE: playerData.unclaimedApologyItemsは信頼できる値ではない
             // プレーヤーがログインしている最中に配布処理が行われた場合DB上の値とメモリ上の値に差分が出る。
@@ -421,7 +421,7 @@ object FirstPage extends Menu {
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
-                InventoryUtil.grantItemStacksEffect(itemStacksToGive: _*),
+                SInventoryUtil.grantItemStacksEffect(itemStacksToGive: _*),
                 UnfocusedEffect {
                   playerData.unclaimedApologyItems -= numberOfItemsToGive
                 },
@@ -519,7 +519,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect {
           if (playerData.gachacooldownflag) {
-            new CoolDownTask(player, false, true).runTaskLater(SeichiAssist.instance, 20)
+            new GachaCoolDownResetTask(player).runTaskLater(SeichiAssist.instance, 20)
 
             val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
             val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
@@ -529,7 +529,7 @@ object FirstPage extends Menu {
               val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
 
               SequentialEffect(
-                InventoryUtil.grantItemStacksEffect(itemStacksToGive: _*),
+                SInventoryUtil.grantItemStacksEffect(itemStacksToGive: _*),
                 targetedeffect.UnfocusedEffect {
                   playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
                 },
