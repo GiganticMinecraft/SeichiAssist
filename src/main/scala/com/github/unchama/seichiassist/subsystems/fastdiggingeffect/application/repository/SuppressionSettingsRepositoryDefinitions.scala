@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository
 
-import cats.effect.ConcurrentEffect
+import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.{Applicative, Monad}
 import com.github.unchama.datarepository.template._
@@ -16,7 +16,7 @@ object SuppressionSettingsRepositoryDefinitions {
     Applicative[G].pure(FastDiggingEffectSuppressionState.EnabledWithoutLimit)
 
   def initialization[
-    F[_] : ConcurrentEffect,
+    F[_] : Sync,
     Player
   ](persistence: FastDiggingEffectSuppressionStatePersistence[F])
   : TwoPhasedRepositoryInitialization[F, Player, RepositoryValue[F]] =

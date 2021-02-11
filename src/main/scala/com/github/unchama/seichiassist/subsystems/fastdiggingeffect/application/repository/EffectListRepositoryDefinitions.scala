@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository
 
-import cats.effect.concurrent.{Deferred, Ref}
+import cats.effect.concurrent.Deferred
 import cats.effect.{Async, Concurrent, ConcurrentEffect, Effect, Fiber, Sync, SyncEffect, Timer}
 import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
+import com.github.unchama.generic.effect.concurrent.Mutex
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.FastDiggingEffectList
 import fs2.concurrent.Topic
 
@@ -16,31 +18,34 @@ object EffectListRepositoryDefinitions {
   /**
    * [[FastDiggingEffectList]] と、それを1秒ごとにトピックへ通知するファイバーの組。
    */
-  type RepositoryValue[F[_]] = (Ref[F, FastDiggingEffectList], Deferred[F, Fiber[F, Nothing]])
+  type RepositoryValue[F[_], G[_]] = (Mutex[F, G, FastDiggingEffectList], Deferred[F, Fiber[F, Nothing]])
 
-  def initialization[F[_] : Concurrent, G[_] : Sync]: SinglePhasedRepositoryInitialization[G, RepositoryValue[F]] =
+  def initialization[
+    F[_] : Concurrent,
+    G[_] : Sync : ContextCoercion[*[_], F]
+  ]: SinglePhasedRepositoryInitialization[G, RepositoryValue[F, G]] =
     (_, _) => {
       for {
-        ref <- Ref.in[G, F, FastDiggingEffectList](FastDiggingEffectList.empty)
+        ref <- Mutex.of[F, G, FastDiggingEffectList](FastDiggingEffectList.empty)
         deferred <- Deferred.in[G, F, Fiber[F, Nothing]]
       } yield PrefetchResult.Success(ref, deferred)
     }
 
   def tappingAction[
     F[_] : ConcurrentEffect : Timer,
-    G[_] : SyncEffect,
+    G[_] : SyncEffect : ContextCoercion[*[_], F],
     Player
-  ](effectTopic: Topic[F, (Player, FastDiggingEffectList)]): (Player, RepositoryValue[F]) => G[Unit] =
+  ](effectTopic: Topic[F, Option[(Player, FastDiggingEffectList)]]): (Player, RepositoryValue[F, G]) => G[Unit] =
     (player, value) => {
-      val (ref, fiberPromise) = value
+      val (mutexRef, fiberPromise) = value
 
       val programToRun: F[Unit] = for {
         publishingEffectFiber <-
           Concurrent[F].start[Nothing] {
             fs2.Stream
               .awakeEvery[F](1.second)
-              .evalMap(_ => ref.get)
-              .evalTap(effectList => effectTopic.publish1(player, effectList))
+              .evalMap[F, FastDiggingEffectList](_ => ContextCoercion(mutexRef.readLatest))
+              .evalTap[F, Unit](effectList => effectTopic.publish1(Some(player, effectList)))
               .compile.drain
               .flatMap[Nothing](_ => Async[F].never[Nothing])
           }
@@ -54,8 +59,8 @@ object EffectListRepositoryDefinitions {
     F[_] : Effect,
     G[_] : SyncEffect,
     Player
-  ]: RepositoryFinalization[G, Player, RepositoryValue[F]] =
-    RepositoryFinalization.withoutAnyPersistence[G, Player, RepositoryValue[F]] { (_, value) =>
+  ]: RepositoryFinalization[G, Player, RepositoryValue[F, G]] =
+    RepositoryFinalization.withoutAnyPersistence[G, Player, RepositoryValue[F, G]] { (_, value) =>
       val (_, fiberPromise) = value
 
       EffectExtra.runAsyncAndForget[F, G, Unit] {

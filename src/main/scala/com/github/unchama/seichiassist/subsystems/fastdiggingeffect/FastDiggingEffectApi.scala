@@ -24,6 +24,11 @@ trait FastDiggingEffectReadApi[F[_], Player] {
    */
   val currentEffect: KeyedDataRepository[Player, ReadOnlyRef[F, FastDiggingEffectList]]
 
+  /**
+   * 参加しているプレーヤーの [[FastDiggingEffectList]] を1秒ごとに流すストリーム
+   */
+  val effectClock: fs2.Stream[F, (Player, FastDiggingEffectList)]
+
 }
 
 trait FastDiggingEffectApi[F[_], Player]
