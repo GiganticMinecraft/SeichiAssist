@@ -1,13 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect
 
 import cats.data.Kleisli
-import cats.effect.{Concurrent, ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.seichiassist.Config
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
@@ -134,12 +133,4 @@ object System {
       ).traverse(_.compile.drain.start)
     }
   }
-
-  // TODO configを丸々受け取らずシステムのコンフィグを用意する
-  def backgroundProcess[
-    F[_]
-    : Timer
-    : Concurrent, G[_]
-  ](config: Config)(implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = ???
-
 }

@@ -488,9 +488,6 @@ class SeichiAssist extends JavaPlugin() {
       val manaUpdate: IO[Nothing] =
         subsystems.mana.System.backgroundProcess[IO, SyncIO]
 
-      val fastDiggingEffectUpdate: IO[Nothing] =
-        subsystems.fastdiggingeffect.System.backgroundProcess[IO, SyncIO](SeichiAssist.seichiAssistConfig)
-
       val gachaPointUpdate: IO[Nothing] =
         subsystems.gachapoint.System.backgroundProcess[IO, SyncIO]
 
@@ -508,7 +505,6 @@ class SeichiAssist extends JavaPlugin() {
           dataRecalculationRoutine,
           dataBackupRoutine,
           manaUpdate,
-          fastDiggingEffectUpdate,
           gachaPointUpdate,
           levelUpGiftProcess
         ) ++
