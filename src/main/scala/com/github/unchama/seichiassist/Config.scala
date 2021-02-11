@@ -4,6 +4,7 @@ import com.github.unchama.bungeesemaphoreresponder.{RedisConnectionSettings, Con
 import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemConfiguration => AutoSaveConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -25,28 +26,28 @@ final class Config private(val config: FileConfiguration) {
 
   // NOTE:
   //   config.getInt/config.getDoubleはnull値の場合0を返す
-  //   getIntFailSafe/getDoubleFailSafeはNumberFormatExceptionを投げる
-  private def getIntFailSafe(path: String) = config.getString(path).toInt
+  //   getIntFailFast/getDoubleFailFastはNumberFormatExceptionを投げる
+  private def getIntFailFast(path: String) = config.getString(path).toInt
 
-  private def getDoubleFailSafe(path: String) = config.getString(path).toDouble
+  private def getDoubleFailFast(path: String) = config.getString(path).toDouble
 
-  def getMinuteMineSpeed: Double = getDoubleFailSafe("minutespeedamount")
+  def getMinuteMineSpeed: Double = getDoubleFailFast("minutespeedamount")
 
-  def getLoginPlayerMineSpeed: Double = getDoubleFailSafe("onlineplayersamount")
+  def getLoginPlayerMineSpeed: Double = getDoubleFailFast("onlineplayersamount")
 
-  def getGachaPresentInterval: Int = getIntFailSafe("presentinterval")
+  def getGachaPresentInterval: Int = getIntFailFast("presentinterval")
 
-  def getDualBreaklevel: Int = getIntFailSafe("dualbreaklevel")
+  def getDualBreaklevel: Int = getIntFailFast("dualbreaklevel")
 
-  def getMultipleIDBlockBreaklevel: Int = getIntFailSafe("multipleidblockbreaklevel")
+  def getMultipleIDBlockBreaklevel: Int = getIntFailFast("multipleidblockbreaklevel")
 
-  def getDropExplevel(i: Int): Double = getDoubleFailSafe("dropexplevel" + i)
+  def getDropExplevel(i: Int): Double = getDoubleFailFast("dropexplevel" + i)
 
-  def getPassivePortalInventorylevel: Int = getIntFailSafe("passiveportalinventorylevel")
+  def getPassivePortalInventorylevel: Int = getIntFailFast("passiveportalinventorylevel")
 
-  def getDokodemoEnderlevel: Int = getIntFailSafe("dokodemoenderlevel")
+  def getDokodemoEnderlevel: Int = getIntFailFast("dokodemoenderlevel")
 
-  def getMineStacklevel(i: Int): Int = getIntFailSafe("minestacklevel" + i)
+  def getMineStacklevel(i: Int): Int = getIntFailFast("minestacklevel" + i)
 
   def getDB: String = config.getString("db")
 
@@ -67,20 +68,20 @@ final class Config private(val config: FileConfiguration) {
   }
 
   //サーバー番号取得
-  def getServerNum: Int = getIntFailSafe("servernum")
+  def getServerNum: Int = getIntFailFast("servernum")
 
   def getServerId: String = config.getString("server-id")
 
   def chunkSearchCommandBase: String = config.getString("chunk-search-command-base")
 
   //サブホーム最大数取得
-  def getSubHomeMax: Int = getIntFailSafe("subhomemax")
+  def getSubHomeMax: Int = getIntFailFast("subhomemax")
 
-  def getDebugMode: Int = getIntFailSafe("debugmode")
+  def getDebugMode: Int = getIntFailFast("debugmode")
 
-  def getMebiusDebug: Int = getIntFailSafe("mebiusdebug")
+  def getMebiusDebug: Int = getIntFailFast("mebiusdebug")
 
-  def rateGiganticToRingo: Int = getIntFailSafe("rategigantictoringo")
+  def rateGiganticToRingo: Int = getIntFailFast("rategigantictoringo")
 
   /**
    * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
@@ -98,30 +99,30 @@ final class Config private(val config: FileConfiguration) {
    */
   def getGridLimitPerWorld(world: String): Int = config.getString("GridLimitPerWorld." + world, config.getString("GridLimitDefault")).toInt
 
-  def getTemplateKeepAmount: Int = getIntFailSafe("GridTemplateKeepAmount")
+  def getTemplateKeepAmount: Int = getIntFailFast("GridTemplateKeepAmount")
 
-  def getRoadY: Int = getIntFailSafe("road_Y")
+  def getRoadY: Int = getIntFailFast("road_Y")
 
-  def getRoadLength: Int = getIntFailSafe("road_length")
+  def getRoadLength: Int = getIntFailFast("road_length")
 
-  def getSpaceHeight: Int = getIntFailSafe("space_height")
+  def getSpaceHeight: Int = getIntFailFast("space_height")
 
-  def getRoadBlockID: Int = getIntFailSafe("road_blockid")
+  def getRoadBlockID: Int = getIntFailFast("road_blockid")
 
-  def getRoadBlockDamage: Int = getIntFailSafe("road_blockdamage")
+  def getRoadBlockDamage: Int = getIntFailFast("road_blockdamage")
 
-  def getContributeAddedMana: Int = getIntFailSafe("contribute_added_mana")
+  def getContributeAddedMana: Int = getIntFailFast("contribute_added_mana")
 
-  def getWorldSize: Int = getIntFailSafe("world_size")
+  def getWorldSize: Int = getIntFailFast("world_size")
 
-  def getGiganticFeverMinutes: Int = getIntFailSafe("gigantic_fever_minutes")
+  def getGiganticFeverMinutes: Int = getIntFailFast("gigantic_fever_minutes")
 
   def getGiganticFeverDisplayTime: String = {
     val totalMinutes = getGiganticFeverMinutes
     (totalMinutes / 60) + "時間" + (totalMinutes % 60) + "分"
   }
 
-  def getGiganticBerserkLimit: Int = getIntFailSafe("GBLimit")
+  def getGiganticBerserkLimit: Int = getIntFailFast("GBLimit")
 
   /**
    * 各種URLを返します.
@@ -130,6 +131,12 @@ final class Config private(val config: FileConfiguration) {
    * @return 該当URL.ただし, typeNameが誤っていた場合は""を返します.
    */
   def getUrl(typeName: String): String = config.getString("Url." + typeName, "")
+
+  def getFastDiggingEffectSystemConfiguration: FastDiggingEffectConfiguration = {
+    new FastDiggingEffectConfiguration {
+      override val amplifierPerBlockMined: Double = getDoubleFailFast("minutespeedamount")
+    }
+  }
 
   def getBungeeSemaphoreSystemConfiguration: BungeeSemaphoreResponderConfiguration = {
     val systemSettingsSection = config.getConfigurationSection("BungeeSemaphoreResponder")

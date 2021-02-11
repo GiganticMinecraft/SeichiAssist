@@ -34,6 +34,7 @@ import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -188,6 +189,15 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
   }
 
+  private lazy val fastDiggingEffectSystem: subsystems.fastdiggingeffect.System[IO, IO, Player] = {
+    import PluginExecutionContexts.{asyncShift, timer}
+
+    implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+
+    subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
+  }
+
   lazy val buildAssist: BuildAssist = {
     implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
     implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
@@ -216,6 +226,7 @@ class SeichiAssist extends JavaPlugin() {
         managedFlySystem.managedFinalizers.toList ++
           breakCountSystem.managedFinalizers ++
           breakCountBarSystem.managedFinalizers ++
+          fastDiggingEffectSystem.managedFinalizers ++
           buildCountSystem.managedFinalizers.appended(savePlayerData)
       ),
       PluginExecutionContexts.asyncShift
@@ -376,6 +387,7 @@ class SeichiAssist extends JavaPlugin() {
       breakCountSystem,
       breakCountBarSystem,
       buildCountSystem,
+      fastDiggingEffectSystem
     )
 
     // コマンドの登録
