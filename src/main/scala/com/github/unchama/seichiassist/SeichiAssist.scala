@@ -147,12 +147,6 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
-  lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
-    import PluginExecutionContexts.timer
-
-    subsystems.dragonnighttime.System.wired[IO, IO]
-  }
-  
   lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.timer
 
@@ -494,6 +488,9 @@ class SeichiAssist extends JavaPlugin() {
       val gachaPointUpdate: IO[Nothing] =
         subsystems.gachapoint.System.backgroundProcess[IO, SyncIO]
 
+      val dragonNightTimeProcess: IO[Nothing] =
+        subsystems.dragonnighttime.System.backgroundProcess[IO](fastDiggingEffectSystem.effectApi)
+
       val halfHourRankingRoutineOption: Option[IO[Nothing]] =
       // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
         Option.unless(Set(7, 8).contains(SeichiAssist.seichiAssistConfig.getServerNum)) {
@@ -509,11 +506,11 @@ class SeichiAssist extends JavaPlugin() {
           dataBackupRoutine,
           manaUpdate,
           gachaPointUpdate,
-          levelUpGiftProcess
+          levelUpGiftProcess,
+          dragonNightTimeProcess
         ) ++
           halfHourRankingRoutineOption.toList ++
-          autoSaveSystem.state ++
-          dragonNightTimeSystem.state
+          autoSaveSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
