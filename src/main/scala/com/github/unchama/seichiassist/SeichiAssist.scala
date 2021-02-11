@@ -23,7 +23,9 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncS
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.domain.playercount.GetConnectedPlayerCount
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
+import com.github.unchama.seichiassist.infrastructure.bukkit.playercount.GetConnectedBukkitPlayerCount
 import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
@@ -194,6 +196,7 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val playerCount: GetConnectedPlayerCount[IO] = new GetConnectedBukkitPlayerCount[IO]
 
     subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
   }

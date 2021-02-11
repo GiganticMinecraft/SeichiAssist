@@ -4,4 +4,6 @@ trait Configuration {
 
   val amplifierPerBlockMined: Double
 
+  val amplifierPerPlayerConnection: Double
+
 }

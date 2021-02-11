@@ -135,6 +135,7 @@ final class Config private(val config: FileConfiguration) {
   def getFastDiggingEffectSystemConfiguration: FastDiggingEffectConfiguration = {
     new FastDiggingEffectConfiguration {
       override val amplifierPerBlockMined: Double = getDoubleFailFast("minutespeedamount")
+      override val amplifierPerPlayerConnection: Double = getDoubleFailFast("onlineplayersamount")
     }
   }
 

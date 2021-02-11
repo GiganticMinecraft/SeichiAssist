@@ -7,10 +7,11 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
+import com.github.unchama.seichiassist.domain.playercount.GetConnectedPlayerCount
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process.{BreakCountEffectSynchronization, SynchronizationProcess}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process.{BreakCountEffectSynchronization, PlayerCountEffectSynchronization, SynchronizationProcess}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{EffectListRepositoryDefinitions, SuppressionSettingsRepositoryDefinitions}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.bukkit.actions.GrantBukkitFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actions.GrantFastDiggingEffect
@@ -45,7 +46,8 @@ object System {
     F[_]
     : Timer
     : ConcurrentEffect
-    : ContextCoercion[G, *[_]],
+    : ContextCoercion[G, *[_]]
+    : GetConnectedPlayerCount,
     H[_]
   ](implicit breakCountReadAPI: BreakCountReadAPI[F, H, Player], config: Configuration): F[System[F, F, Player]] = {
 
@@ -126,6 +128,7 @@ object System {
 
       List(
         BreakCountEffectSynchronization.using[F, H, Player],
+        PlayerCountEffectSynchronization.using[F, Player],
         SynchronizationProcess.using[F, Player](
           system.settingsApi.currentSuppressionSettings,
           system.effectApi.effectClock
