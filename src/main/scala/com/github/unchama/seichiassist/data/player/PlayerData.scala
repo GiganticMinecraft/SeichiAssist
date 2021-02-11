@@ -238,7 +238,7 @@ class PlayerData(
     }
   }
 
-  def subHomeEntries: Set[(Int, SubHome)] = _subHomeMap.toSet
+  def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
 
   def gridChunkAmount: Int = (claimUnit.ahead + claimUnit.behind + 1) * (claimUnit.right + claimUnit.left + 1)
 
@@ -298,7 +298,7 @@ class PlayerData(
     )
   }
 
-  def updateDisplayName(): TargetedEffect[Player] = TargetedEffect.delay { player =>
+  def setDisplayName(): TargetedEffect[Player] = TargetedEffect.delay { player =>
     val playerName = player.getName
 
     //放置時に色を変える
@@ -488,29 +488,29 @@ class PlayerData(
   //サブホームの位置をセットする
   def setSubHomeLocation(location: Location, subHomeIndex: Int): Unit = {
     if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
-      val currentSubHome = this._subHomeMap.get(subHomeIndex)
+      val currentSubHome = this.subHomeMap.get(subHomeIndex)
       val currentSubHomeName = currentSubHome.map(_.name).orNull
 
-      this._subHomeMap(subHomeIndex) = new SubHome(location, currentSubHomeName)
+      this.subHomeMap(subHomeIndex) = new SubHome(location, currentSubHomeName)
     }
   }
 
   def setSubHomeName(name: String, subHomeIndex: Int): Unit = {
     if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
-      val currentSubHome = this._subHomeMap.getOrElse(subHomeIndex, return)
+      val currentSubHome = this.subHomeMap.getOrElse(subHomeIndex, return)
 
-      this._subHomeMap(subHomeIndex) = new SubHome(currentSubHome.getLocation, name)
+      this.subHomeMap(subHomeIndex) = new SubHome(currentSubHome.getLocation, name)
     }
   }
 
   // サブホームの位置を読み込む
   def getSubHomeLocation(subHomeIndex: Int): Option[Location] = {
-    val subHome = this._subHomeMap.get(subHomeIndex)
+    val subHome = this.subHomeMap.get(subHomeIndex)
     subHome.map(_.getLocation)
   }
 
   def getSubHomeName(subHomeIndex: Int): String = {
-    val subHome = this._subHomeMap.get(subHomeIndex)
+    val subHome = this.subHomeMap.get(subHomeIndex)
     val subHomeName = subHome.map(_.name)
     subHomeName.getOrElse(s"サブホームポイント${subHomeIndex + 1}")
   }
