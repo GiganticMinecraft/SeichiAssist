@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.data
 
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.enumeration.RelativeDirection
+import com.github.unchama.seichiassist.util.enumeration.{RelativeDirection, UnitQuantity}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -18,23 +18,6 @@ import scala.collection.mutable
  * @author karayuu
  */
 object RegionMenuData {
-  sealed trait UnitQuantity {
-    def value: Int
-  }
-
-  object UnitQuantity {
-    case object ONE extends UnitQuantity {
-      override def value = 1
-    }
-
-    case object TEN extends UnitQuantity {
-      override def value = 10
-    }
-
-    case object ONE_HUNDRED extends UnitQuantity {
-      override def value = 100
-    }
-  }
   private val config = SeichiAssist.seichiAssistConfig
   private val nfNum = NumberFormat.getNumberInstance
   private val CANNOT_EXPAND = s"$RED${UNDERLINE}これ以上拡張できません"
