@@ -561,7 +561,7 @@ object MenuInventoryData {
         //妖精戦略トグル
         new IconItemStackBuilder(Material.PAPER)
           .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
-          .lore(vfStrategyMapping(VotingFairyStrategy(playerdata.toggleGiveApple)))
+          .lore(vfStrategyMapping(playerdata.toggleGiveApple))
       },
       20 -> {
         //妖精音トグル

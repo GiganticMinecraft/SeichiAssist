@@ -185,7 +185,7 @@ class PlayerData(
   var voteFairyPeriod = new ClosedRange(PlayerData.dummyDate, PlayerData.dummyDate)
   var hasVotingFairyMana = 0
   var VotingFairyRecoveryValue = 0
-  var toggleGiveApple = 1
+  var toggleGiveApple: VotingFairyStrategy = VotingFairyStrategy.Much
   // actual type: 1 | 2 | 3 | 4
   var toggleVotingFairy = 1
   var p_apple: Long = 0

@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEf
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
 import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, AssaultSkill, SeichiSkill, SeichiSkillUsageMode}
 import com.github.unchama.seichiassist.util.BukkitSerialization
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist, VotingFairyStrategy}
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.ChatColor._
 import org.bukkit.{Bukkit, Location}
@@ -322,7 +322,7 @@ object PlayerDataLoading {
         playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
         playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
         playerData.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
-        playerData.toggleGiveApple = rs.getInt("toggleGiveApple")
+        playerData.toggleGiveApple = VotingFairyStrategy(rs.getInt("toggleGiveApple"))
         playerData.toggleVotingFairy = rs.getInt("toggleVotingFairy")
         playerData.setVotingFairyTime(rs.getString("newVotingFairyTime"))
         playerData.p_apple = rs.getLong("p_apple")

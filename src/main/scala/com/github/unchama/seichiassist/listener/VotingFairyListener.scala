@@ -1,13 +1,12 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist, VotingFairyStrategy}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.enumeration.TimePeriodOfDay
 import com.github.unchama.seichiassist.util.typeclass.OrderedCollection
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -153,19 +152,19 @@ object VotingFairyListener {
       consumingQuantity /= discountRate
 
       //トグルで数値変更
-      if (playerdata.toggleGiveApple == 2) {
+      if (playerdata.toggleGiveApple == VotingFairyStrategy.More) {
         if (mana.getMana / mana.getMax >= 0.75) {
           increasingMana /= 2
           consumingQuantity /= 2
         }
-      } else if (playerdata.toggleGiveApple == 3) {
+      } else if (playerdata.toggleGiveApple == VotingFairyStrategy.Less) {
         increasingMana /= 2
         consumingQuantity /= 2
       }
 
       if (consumingQuantity == 0) consumingQuantity = 1
 
-      if (playerdata.toggleGiveApple == 4) {
+      if (playerdata.toggleGiveApple == VotingFairyStrategy.None) {
         increasingMana /= 4
         consumingQuantity = 0
       } else { //ちょっとつまみ食いする
@@ -173,22 +172,23 @@ object VotingFairyListener {
       }
       //りんご所持数で値変更
       val gachaimoObject = MineStackObjectList.findByName("gachaimo").get
-      val left = playerdata.minestack.getStackedAmountOf(gachaimoObject)
-      if (consumingQuantity > left) {
-        if (left == 0) {
+      val currentQuantity = playerdata.minestack.getStackedAmountOf(gachaimoObject)
+      if (consumingQuantity > currentQuantity) {
+        if (currentQuantity == 0) {
           increasingMana /= 2
-          if (playerdata.toggleGiveApple == 1) increasingMana /= 2
-          if (playerdata.toggleGiveApple == 2 && (mana.getMana / mana.getMax < 0.75)) increasingMana /= 2
+          if (playerdata.toggleGiveApple == VotingFairyStrategy.Much) increasingMana /= 2
+          val manaRate = mana.getMana / mana.getMax
+          if (playerdata.toggleGiveApple == VotingFairyStrategy.More && manaRate < 0.75) increasingMana /= 2
           player.sendMessage(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         }
         else {
           val M = consumingQuantity.toDouble
-          val L = left.toDouble
+          val L = currentQuantity.toDouble
           val percentage = L / M
           increasingMana = if (percentage <= 0.5) increasingMana * 0.5
           else increasingMana * percentage
         }
-        consumingQuantity = left.toInt
+        consumingQuantity = currentQuantity.toInt
       }
       //回復量に若干乱数をつける
       increasingMana = (increasingMana - increasingMana / 100) + new Random().nextInt((increasingMana / 50).toInt)

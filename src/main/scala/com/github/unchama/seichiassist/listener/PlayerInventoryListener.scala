@@ -672,7 +672,12 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
       } else if (itemstackcurrent.getType == Material.PAPER) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerdata.toggleGiveApple = playerdata.toggleGiveApple % 4 + 1
+        playerdata.toggleGiveApple = playerdata.toggleGiveApple match {
+          case VotingFairyStrategy.Much => VotingFairyStrategy.More
+          case VotingFairyStrategy.More => VotingFairyStrategy.Less
+          case VotingFairyStrategy.Less => VotingFairyStrategy.None
+          case VotingFairyStrategy.None => VotingFairyStrategy.Much
+        }
         player.openInventory(MenuInventoryData.getVotingMenuData(player))
       } else if (itemstackcurrent.getType == Material.JUKEBOX) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)

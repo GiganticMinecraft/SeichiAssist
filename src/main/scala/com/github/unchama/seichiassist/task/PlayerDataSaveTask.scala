@@ -188,7 +188,7 @@ object PlayerDataSaveTask {
           + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString + "'"
           + ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
           + ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
-          + ",toggleGiveApple = " + playerdata.toggleGiveApple
+          + ",toggleGiveApple = " + playerdata.toggleGiveApple.internalId
           + ",toggleVotingFairy = " + playerdata.toggleVotingFairy
           + ",p_apple = " + playerdata.p_apple
 
