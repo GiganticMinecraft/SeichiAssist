@@ -10,37 +10,51 @@ class BuildAssistConfig(val plugin: Plugin) {
 
   saveDefaultConfig()
 
-  //コンフィグのロード
   def loadConfig(): Unit = {
     config = getConfig
   }
 
-  //plugin.ymlがない時にDefaultのファイルを生成
+  /**
+   * config.ymlがない時にDefaultのファイルを生成
+   */
   private def saveDefaultConfig(): Unit = plugin.saveDefaultConfig()
 
-  //plugin.ymlファイルからの読み込み
+  /**
+   * config.ymlファイルからの読み込み
+   */
   private def getConfig: FileConfiguration = plugin.getConfig
 
-  def getFlyExp: Int = config.getString("flyexp").toInt
+  def getFlyExpCostPerMinute: Int = config.getInt("flyexp")
 
-  //ブロックを並べるスキル開放LV
-  def getblocklineuplevel: Int = config.getString("blocklineup.level").toInt
+  /**
+   * ブロックを並べるスキル開放LV
+   */
+  def getUnlockLevelForLineUp: Int = config.getInt("blocklineup.level")
 
-  //ブロックを並べるスキルのマナ消費倍率
-  def getblocklineupmana_mag: Double = config.getString("blocklineup.mana_mag").toDouble
+  /**
+   * ブロックを並べるスキルのマナ消費倍率
+   */
+  def getLineUpManaCostMultiplier: Double = config.getDouble("blocklineup.mana_mag")
 
-  //ブロックを並べるスキルマインスタック優先開放LV
-  def getblocklineupMinestacklevel: Int = config.getString("blocklineup.minestack_level").toInt
+  /**
+   * ブロックを並べるスキルマインスタック優先開放LV
+   */
+  def getLineFillPreferMineStackLevel: Int = config.getInt("blocklineup.minestack_level")
 
-  def getZoneSetSkillLevel: Int = config.getString("ZoneSetSkill.level").toInt
+  def getUnlockLevelForZoneSet: Int = config.getInt("ZoneSetSkill.level")
 
-  //MineStackブロック一括クラフト開放LV
-  def getMinestackBlockCraftlevel(lv: Int): Int = config.getString("minestack_BlockCraft.level" + lv).toInt
+  /**
+   * MineStackブロック一括クラフト開放LV
+   */
+  def getUnlockLevelForMineStackBulkCraft(lv: Int): Int = config.getInt("minestack_BlockCraft.level" + lv)
 
-  //ブロック設置カウントの1分上限
-  def getBuildNum1minLimit: BigDecimal = BigDecimal(config.getString("BuildNum1minLimit"))
+  /**
+   * ブロック設置カウントの1分上限
+   */
+  def getBuildingRatelimitPerMinute: BigDecimal = BigDecimal(config.getString("BuildNum1minLimit"))
 
-  //ブロック範囲設置スキルのマインスタック優先解放レベル
-  def getZoneskillMinestacklevel: Int = config.getString("ZoneSetSkill.minestack").toInt
-
+  /**
+   * ブロック範囲設置スキルのマインスタック優先解放レベル
+   */
+  def getZoneFillPreferMineStackLevel: Int = config.getInt("ZoneSetSkill.minestack")
 }

@@ -72,7 +72,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         )
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //ブロックを並べるスキル設定
-        if (playerLevel < BuildAssist.config.getblocklineuplevel) {
+        if (playerLevel < BuildAssist.config.getUnlockLevelForLineUp) {
           player.sendMessage(s"${RED}建築Lvが足りません")
         } else {
           playerdata.lineFillAlign = playerdata.lineFillAlign.next
@@ -97,7 +97,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
       } else if (itemstackcurrent.getType == Material.CHEST) {
         //マインスタックの方を優先して消費する設定
-        if (playerLevel < BuildAssist.config.getblocklineupMinestacklevel) {
+        if (playerLevel < BuildAssist.config.getLineFillPreferMineStackLevel) {
           player.sendMessage(s"${RED}建築Lvが足りません")
         } else {
           playerdata.lineFillWithMinestack = !playerdata.lineFillWithMinestack

@@ -117,7 +117,7 @@ object MenuInventoryData {
         .lore(
           s"$RESET${GRAY}スキルでブロックを並べるとき",
           s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-          s"$RESET${GRAY}建築Lv${BuildAssist.config.getZoneskillMinestacklevel}以上で利用可能",
+          s"$RESET${GRAY}建築Lv${BuildAssist.config.getZoneFillPreferMineStackLevel}以上で利用可能",
           s"$RESET${GRAY}クリックで切り替え"
         )
     ).foreach(t => AsyncInventorySetter.setItemAsync(inventory, t._1, t._2.build()))
@@ -151,7 +151,7 @@ object MenuInventoryData {
         .lore(
           s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
           s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-          s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel}以上で利用可能",
+          s"$RESET${GRAY}建築Lv${BuildAssist.config.getUnlockLevelForLineUp}以上で利用可能",
           s"$RESET${GRAY}クリックで切り替え"
         ),
 
@@ -181,7 +181,7 @@ object MenuInventoryData {
         .lore(
           s"$RESET${GRAY}スキルでブロックを並べるとき",
           s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-          s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineupMinestacklevel}以上で利用可能",
+          s"$RESET${GRAY}建築Lv${BuildAssist.config.getLineFillPreferMineStackLevel}以上で利用可能",
           s"$RESET${GRAY}クリックで切り替え"
         )
     ).foreach(t => AsyncInventorySetter.setItemAsync(inventory, t._1, t._2.build()))

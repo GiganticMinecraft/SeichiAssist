@@ -279,7 +279,7 @@ object BlockPlacementSkillMenu extends Menu {
             .lore(
               s"$RESET${GRAY}スキルでブロックを並べるとき",
               s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-              s"$RESET${GRAY}建築Lv ${BuildAssist.config.getblocklineupMinestacklevel} 以上で利用可能",
+              s"$RESET${GRAY}建築Lv ${BuildAssist.config.getLineFillPreferMineStackLevel} 以上で利用可能",
               s"$RESET${GRAY}クリックで切り替え"
             )
             .build()
@@ -290,7 +290,7 @@ object BlockPlacementSkillMenu extends Menu {
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               DeferredEffect {
                 IO {
-                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getZoneskillMinestacklevel)
+                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getZoneFillPreferMineStackLevel)
                     MessageEffect(s"${RED}建築Lvが足りません")
                   else
                     SequentialEffect(

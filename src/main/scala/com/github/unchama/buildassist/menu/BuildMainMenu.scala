@@ -96,7 +96,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               DeferredEffect {
                 IO {
-                  if (openerLevel < BuildAssist.config.getZoneSetSkillLevel) {
+                  if (openerLevel < BuildAssist.config.getUnlockLevelForZoneSet) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
                     if (openerData.ZoneSetSkillFlag) SequentialEffect(
@@ -140,7 +140,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
               DeferredEffect {
                 IO {
-                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
+                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getUnlockLevelForLineUp) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
                     canOpenBlockPlacementSkillMenu.open(BlockPlacementSkillMenu)
@@ -171,7 +171,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
           action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
             DeferredEffect {
               IO {
-                if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
+                if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getUnlockLevelForLineUp) {
                   MessageEffect(s"${RED}建築Lvが足りません")
                 } else {
                   SequentialEffect(
@@ -248,7 +248,7 @@ private object ConstantButtons {
       .lore(
         s"$RESET${YELLOW}クリックすると以降1分間に渡り",
         s"$RESET${YELLOW}経験値を消費しつつFlyが可能になります。",
-        s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
+        s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExpCostPerMinute}"
       )
       .build()
 
@@ -272,7 +272,7 @@ private object ConstantButtons {
       .lore(
         s"$RESET${YELLOW}クリックすると以降5分間に渡り",
         s"$RESET${YELLOW}経験値を消費しつつFlyが可能になります。",
-        s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
+        s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExpCostPerMinute}"
       )
       .build()
 
@@ -294,7 +294,7 @@ private object ConstantButtons {
       .lore(
         s"$RESET${YELLOW}クリックすると以降OFFにするまで",
         s"$RESET${YELLOW}経験値を消費しつつFlyが可能になります。",
-        s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExp}"
+        s"$RESET$DARK_GREEN${UNDERLINE}必要経験値量: 毎分${BuildAssist.config.getFlyExpCostPerMinute}"
       )
       .build()
 
