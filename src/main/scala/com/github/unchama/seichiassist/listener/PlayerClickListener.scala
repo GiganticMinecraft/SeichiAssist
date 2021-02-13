@@ -39,9 +39,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
 
   import scala.jdk.CollectionConverters._
 
-  private val plugin = SeichiAssist.instance
-
-  import plugin.activeSkillAvailability
+  val activeSkillAvailability = SeichiAssist.instance.activeSkillAvailability
 
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
@@ -131,7 +129,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     if (!playerData.gachacooldownflag) return
 
     //連打による負荷防止の為クールダウン処理
-    new GachaCoolDownResetTask(player).runTaskLater(plugin, 4)
+    new GachaCoolDownResetTask(player).runTaskLater(SeichiAssist.instance, 4)
 
     //オフハンドから実行された時処理を終了
     if (event.getHand == EquipmentSlot.OFF_HAND) return
