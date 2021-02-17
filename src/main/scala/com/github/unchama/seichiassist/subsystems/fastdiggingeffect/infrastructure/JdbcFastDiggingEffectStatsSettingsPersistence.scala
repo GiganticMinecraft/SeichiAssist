@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
@@ -13,14 +13,14 @@ class JdbcFastDiggingEffectStatsSettingsPersistence[F[_] : Sync]
 
   private def booleanToSettings(b: Boolean): FastDiggingEffectStatsSettings =
     if (b)
-      FastDiggingEffectStatsSettings.Receive
+      FastDiggingEffectStatsSettings.AlwaysReceive
     else
-      FastDiggingEffectStatsSettings.Mute
+      FastDiggingEffectStatsSettings.ReceiveOnUpdate
 
   private def settingsToBoolean(s: FastDiggingEffectStatsSettings): Boolean =
     s match {
-      case FastDiggingEffectStatsSettings.Receive => true
-      case FastDiggingEffectStatsSettings.Mute => false
+      case FastDiggingEffectStatsSettings.AlwaysReceive => true
+      case FastDiggingEffectStatsSettings.ReceiveOnUpdate => false
     }
 
   //endregion

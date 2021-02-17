@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings
+package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats
 
 import com.github.unchama.generic.RefDict
 
