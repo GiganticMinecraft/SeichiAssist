@@ -19,7 +19,7 @@ class FastDiggingEffectList(private val list: List[FastDiggingEffectTimings]) {
   def filteredList[F[_] : JavaTime : Functor]: F[List[FastDiggingEffectTimings]] = filterInactive[F].fmap(_.list)
 
   /**
-   * 効果を追加し、不要になった効果を削除した新しいリストを作成する
+   * 効果を追加し、不要になった効果を削除した新しいリストを作成する作用。
    */
   def appendEffect[
     F[_] : JavaTime : Applicative
@@ -34,15 +34,20 @@ class FastDiggingEffectList(private val list: List[FastDiggingEffectTimings]) {
     }
   }
 
-  def totalEffectAmplifier[F[_] : JavaTime : Functor](suppressionSettings: FastDiggingEffectSuppressionState): F[Int] = {
+  /**
+   * [[FastDiggingEffectSuppressionState]] を考慮した、
+   * 現在有効な採掘速度上昇効果の合計値をポーション効果値として得る作用。
+   */
+  def totalPotionAmplifier[F[_] : JavaTime : Functor](suppressionSettings: FastDiggingEffectSuppressionState): F[Int] = {
     filteredList[F].map { list =>
-      val totalAmplifier: Int =
-        list
-          .map(_.effect.amplifier)
-          .sum
-          .toInt
+      val totalAmplifier: FastDiggingAmplifier = list.map(_.effect.amplifier).combineAll
+      val capped =
+        FastDiggingAmplifier.order.min(
+          totalAmplifier,
+          suppressionSettings.effectAmplifierCap
+        )
 
-      (totalAmplifier - 1) min suppressionSettings.effectAmplifierCap
+      capped.toMinecraftPotionAmplifier
     }
   }
 }

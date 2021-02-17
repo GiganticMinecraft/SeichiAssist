@@ -23,7 +23,7 @@ object SynchronizationProcess {
         //      attemptで潰せるが、そうならないように設計できないか？
         val program = for {
           state <- suppressionState(player).read
-          totalAmplifier <- list.totalEffectAmplifier[F](state)
+          totalAmplifier <- list.totalPotionAmplifier[F](state)
 
           _ <- GrantFastDiggingEffect[F, Player].forASecond(player)(totalAmplifier)
         } yield ()

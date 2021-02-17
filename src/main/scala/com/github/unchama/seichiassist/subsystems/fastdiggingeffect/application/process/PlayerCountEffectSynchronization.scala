@@ -5,7 +5,7 @@ import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.domain.playercount.GetConnectedPlayerCount
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingEffect, FastDiggingEffectCause}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingAmplifier, FastDiggingEffect, FastDiggingEffectCause}
 
 object PlayerCountEffectSynchronization {
 
@@ -27,7 +27,7 @@ object PlayerCountEffectSynchronization {
       .evalMap { case (player, count) =>
         api.addEffect(
           FastDiggingEffect(
-            configuration.amplifierPerPlayerConnection * count,
+            FastDiggingAmplifier(configuration.amplifierPerPlayerConnection * count),
             FastDiggingEffectCause.FromConnectionNumber(count)
           ),
           1.second

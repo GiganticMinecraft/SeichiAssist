@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect
 
+import cats.kernel.{Monoid, Order}
+
 /**
  * @param hasteEffectLevel 付与すべき Haste 効果の強さ。たとえば、この値が 2.0 であれば Haste II が付与される。
  */
@@ -9,13 +11,32 @@ case class FastDiggingAmplifier(hasteEffectLevel: Double) {
     FastDiggingAmplifier(hasteEffectLevel + another.hasteEffectLevel)
 
   /**
+   * [[hasteEffectLevel]] を切り捨て、 0 とのmaxを取った値。
+   * ポーション効果の強さとしてクライアントのUIに表示される値と同じ値が得られる。
+   */
+  val normalizedEffectLevel: Int = hasteEffectLevel.floor.toInt max 0
+
+  /**
    * マインクラフトの "amplifier" 値としてこの値を変換する。
    *
    * マインクラフトはポーション効果値を "amplifier" という値を持っているが、
    * たとえば Haste II に対応する "amplifier" 値は 1 である。
+   *
    * このように、表示される値より 1 少ない値を内部的に保持しているため、
-   * [[hasteEffectLevel]] から1を引いた数を切り捨て、0とのmaxを取っている。
+   * この関数では [[normalizedEffectLevel]] から1を引いた数と0とのmaxを取っている。
    */
-  def toMinecraftPotionAmplifier: Int = (hasteEffectLevel - 1).floor.toInt max 0
+  val toMinecraftPotionAmplifier: Int = (normalizedEffectLevel - 1) max 0
+
+}
+
+object FastDiggingAmplifier {
+
+  final val zero = FastDiggingAmplifier(0)
+
+  implicit val monoid: Monoid[FastDiggingAmplifier] =
+    Monoid.instance(zero, (a, b) => a.combine(b))
+
+  implicit val order: Order[FastDiggingAmplifier] =
+    Order.by(_.hasteEffectLevel)
 
 }

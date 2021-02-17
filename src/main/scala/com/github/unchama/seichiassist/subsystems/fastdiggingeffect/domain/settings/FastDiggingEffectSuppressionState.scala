@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings
 
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.FastDiggingAmplifier
+
 
 sealed trait FastDiggingEffectSuppressionState {
 
@@ -15,15 +17,15 @@ sealed trait FastDiggingEffectSuppressionState {
       case Disabled => EnabledWithoutLimit
     }
 
-  lazy val effectAmplifierCap: Int =
-    this match {
-      case EnabledWithoutLimit => 65535
-      case EnabledWithLimit.Of_127 => 127
-      case EnabledWithLimit.Of_200 => 200
-      case EnabledWithLimit.Of_400 => 400
-      case EnabledWithLimit.Of_600 => 600
-      case Disabled => 0
+  lazy val effectAmplifierCap: FastDiggingAmplifier = {
+    FastDiggingAmplifier {
+      this match {
+        case EnabledWithoutLimit => 65535
+        case withLimit: EnabledWithLimit => withLimit.limit
+        case Disabled => 0
+      }
     }
+  }
 }
 
 object FastDiggingEffectSuppressionState {
