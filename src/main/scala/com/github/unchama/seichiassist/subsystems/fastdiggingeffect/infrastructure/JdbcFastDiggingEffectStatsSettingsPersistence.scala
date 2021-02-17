@@ -13,14 +13,14 @@ class JdbcFastDiggingEffectStatsSettingsPersistence[F[_] : Sync]
 
   private def booleanToSettings(b: Boolean): FastDiggingEffectStatsSettings =
     if (b)
-      FastDiggingEffectStatsSettings.AlwaysReceive
+      FastDiggingEffectStatsSettings.AlwaysReceiveDetails
     else
-      FastDiggingEffectStatsSettings.ReceiveOnUpdate
+      FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate
 
   private def settingsToBoolean(s: FastDiggingEffectStatsSettings): Boolean =
     s match {
-      case FastDiggingEffectStatsSettings.AlwaysReceive => true
-      case FastDiggingEffectStatsSettings.ReceiveOnUpdate => false
+      case FastDiggingEffectStatsSettings.AlwaysReceiveDetails => true
+      case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate => false
     }
 
   //endregion
