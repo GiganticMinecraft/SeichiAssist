@@ -7,8 +7,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.RankData
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
-import com.github.unchama.seichiassist.task.PlayerDataLoading
-import com.github.unchama.seichiassist.task.cooldown.{SharedInventoryCoolDownResetTask, VoteCoolDownResetTask}
+import com.github.unchama.seichiassist.task.{PlayerDataCoolDownResetEffects, PlayerDataLoading}
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -107,13 +106,14 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   @inline private def ifCoolDownDoneThenGet(player: Player, playerdata: PlayerData)(supplier: => Int): Int = {
+    import eu.timepit.refined.auto._
     //連打による負荷防止の為クールダウン処理
-    if (!playerdata.votecooldownflag) {
+    if (!playerdata.coolingDownForVotePrize) {
       player.sendMessage(RED.toString + "しばらく待ってからやり直してください")
       return 0
     }
 
-    new VoteCoolDownResetTask(player).runTaskLater(plugin, 1200)
+    PlayerDataCoolDownResetEffects.forVote(1200, playerdata).unsafeRunAsyncAndForget()
 
     supplier
   }
@@ -179,7 +179,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
       sql"""update playerdata set chainvote = $newCount where name = $name"""
       true
-  }
+    }
 
   def addContributionPoint(targetPlayerName: String, point: Int): IO[ResponseEffectOrResult[CommandSender, Unit]] = {
     val executeUpdate: IO[ResponseEffectOrResult[CommandSender, Unit]] = IO {
@@ -208,7 +208,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       _ <- EitherT(executeUpdate)
       _ <- EitherT.right[TargetedEffect[CommandSender]](updatePlayerDataMemoryCache)
     } yield ()
-    }.value
+  }.value
 
   private def assertPlayerDataExistenceFor(playerName: String): IO[ResponseEffectOrResult[CommandSender, Unit]] =
     IO {
@@ -272,7 +272,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       _ <- assertSharedInventoryBeEmpty
       _ <- EitherT(writeInventoryData)
     } yield ()
-    }.value
+  }.value
 
   def loadShareInv(player: Player): IO[ResponseEffectOrResult[CommandSender, String]] = {
     val loadInventoryData: IO[Either[Nothing, String]] = EitherT.right(IO {
@@ -285,7 +285,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       _ <- EitherT(checkInventoryOperationCoolDown(player))
       serializedInventory <- EitherT(catchingDatabaseErrors(player.getName, loadInventoryData))
     } yield serializedInventory
-    }.value
+  }.value
 
   private def catchingDatabaseErrors[R](targetName: String,
                                         program: IO[Either[TargetedEffect[CommandSender], R]]): IO[Either[TargetedEffect[CommandSender], R]] = {
@@ -301,14 +301,15 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   private def checkInventoryOperationCoolDown(player: Player): IO[Either[TargetedEffect[CommandSender], Unit]] = {
+    import eu.timepit.refined.auto._
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     IO {
       //連打による負荷防止
-      if (!playerData.shareinvcooldownflag)
-        Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
-      else {
-        new SharedInventoryCoolDownResetTask(player).runTaskLater(plugin, 200)
+      if (playerData.coolingDownForSharedInventory) {
+        PlayerDataCoolDownResetEffects.forSharedInventory(200, playerData).unsafeRunAsyncAndForget()
         Right(())
+      } else {
+        Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
       }
     }
   }

@@ -115,13 +115,13 @@ class PlayerData(
   var lastminespeedlv = 0
   //投票受け取りボタン連打防止用
   @TemporaryProperty
-  var votecooldownflag = true
+  var coolingDownForVotePrize = true
   //ガチャボタン連打防止用
   @TemporaryProperty
-  var gachacooldownflag = true
+  var coolingDownForGacha = true
   //インベントリ共有ボタン連打防止用
   @TemporaryProperty
-  var shareinvcooldownflag = true
+  var coolingDownForSharedInventory = true
   @TemporaryProperty
   var samepageflag = false //実績ショップ用
 

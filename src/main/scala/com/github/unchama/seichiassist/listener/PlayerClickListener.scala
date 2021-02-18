@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.seichiskill.ActiveSkill
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
-import com.github.unchama.seichiassist.task.cooldown.GachaCoolDownResetTask
+import com.github.unchama.seichiassist.task.PlayerDataCoolDownResetEffects
 import com.github.unchama.seichiassist.util._
 import com.github.unchama.seichiassist.{SeichiAssist, _}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -126,10 +126,11 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     event.setCancelled(true)
 
     //連打防止クールダウン処理
-    if (!playerData.gachacooldownflag) return
+    if (!playerData.coolingDownForGacha) return
 
     //連打による負荷防止の為クールダウン処理
-    new GachaCoolDownResetTask(player).runTaskLater(SeichiAssist.instance, 4)
+    import eu.timepit.refined.auto._
+    PlayerDataCoolDownResetEffects.forGacha(4, playerData).unsafeRunAsyncAndForget()
 
     //オフハンドから実行された時処理を終了
     if (event.getHand == EquipmentSlot.OFF_HAND) return

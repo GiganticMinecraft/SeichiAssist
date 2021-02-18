@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
-import com.github.unchama.seichiassist.task.cooldown.GachaCoolDownResetTask
+import com.github.unchama.seichiassist.task.PlayerDataCoolDownResetEffects
 import com.github.unchama.seichiassist.util.{Util, InventoryUtil => SInventoryUtil}
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect
@@ -408,8 +408,8 @@ object FirstPage extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect(DeferredEffect(IO {
-          if (playerData.gachacooldownflag) {
-            new GachaCoolDownResetTask(player).runTaskLater(SeichiAssist.instance, 20)
+          if (playerData.coolingDownForGacha) {
+            PlayerDataCoolDownResetEffects.forGacha(20, playerData).unsafeRunAsyncAndForget()
 
             // NOTE: playerData.unclaimedApologyItemsは信頼できる値ではない
             // プレーヤーがログインしている最中に配布処理が行われた場合DB上の値とメモリ上の値に差分が出る。
@@ -518,8 +518,8 @@ object FirstPage extends Menu {
       Button(
         iconItemStack,
         LeftClickButtonEffect {
-          if (playerData.gachacooldownflag) {
-            new GachaCoolDownResetTask(player).runTaskLater(SeichiAssist.instance, 20)
+          if (playerData.coolingDownForGacha) {
+            PlayerDataCoolDownResetEffects.forGacha(20, playerData).unsafeRunAsyncAndForget()
 
             val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
             val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
