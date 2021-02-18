@@ -5,7 +5,7 @@ import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingEffect, FastDiggingEffectCause}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingAmplifier, FastDiggingEffect, FastDiggingEffectCause}
 
 import scala.concurrent.duration.DurationInt
 
@@ -30,7 +30,7 @@ object BreakCountEffectSynchronization {
           .traverse { case (player, amount) =>
             api.addEffect(
               FastDiggingEffect(
-                (amount.amount * configuration.amplifierPerBlockMined).toDouble,
+                FastDiggingAmplifier((amount.amount * configuration.amplifierPerBlockMined).toDouble),
                 FastDiggingEffectCause.FromMinuteBreakCount(amount)
               ),
               1.minute
