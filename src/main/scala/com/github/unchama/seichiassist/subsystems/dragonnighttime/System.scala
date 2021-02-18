@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 object System {
   def backgroundProcess[F[_] : Sync : Timer](fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player])
                                             (implicit ctx: RepeatingTaskContext): F[Nothing] = {
-    implicit val _addableWithContext: AddableWithContext[F] = SyncAddableWithContext[F](fastDiggingEffectApi)
+    implicit val _addableWithContext: AddableWithContext[F] = ApplicativeAddableWithContext[F](fastDiggingEffectApi)
     implicit val _notifiable: Notifiable[F] = SyncNotifiable[F]
 
     DragonNightTimeRoutine()
