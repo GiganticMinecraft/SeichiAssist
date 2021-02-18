@@ -44,11 +44,11 @@ object ExpBarSynchronizationRepositoryTemplate {
         bossBar <- createFreshBossBar
 
         synchronization = StreamExtra
-          .filterKeys(breakCountValues, player)
+          .valuesWithKey(breakCountValues, player)
           .evalTap(BreakCountBarManipulation.write(_, bossBar))
 
         switching = StreamExtra
-          .filterKeys(visibilityValues, player)
+          .valuesWithKey(visibilityValues, player)
           .evalTap(v => bossBar.visibility.write(BreakCountBarVisibility.Shown == v))
 
         fiberPromise <- Deferred.in[G, F, Fiber[F, Unit]]

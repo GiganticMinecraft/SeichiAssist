@@ -7,17 +7,20 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
+import com.github.unchama.minecraft.actions.SendMinecraftMessage
+import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage
 import com.github.unchama.seichiassist.domain.playercount.GetConnectedPlayerCount
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process.{BreakCountEffectSynchronization, PlayerCountEffectSynchronization, SynchronizationProcess}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{EffectListRepositoryDefinitions, SuppressionSettingsRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process.{BreakCountEffectSynchronization, EffectStatsNotification, PlayerCountEffectSynchronization, SynchronizationProcess}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{EffectListRepositoryDefinitions, EffectStatsSettingsRepository, SuppressionSettingsRepositoryDefinitions}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.bukkit.actions.GrantBukkitFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actions.GrantFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingEffect, FastDiggingEffectList}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectSuppressionState, FastDiggingEffectSuppressionStatePersistence}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.JdbcFastDiggingEffectSuppressionStatePersistence
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{JdbcFastDiggingEffectStatsSettingsPersistence, JdbcFastDiggingEffectSuppressionStatePersistence}
 import fs2.concurrent.Topic
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -51,14 +54,20 @@ object System {
     H[_]
   ](implicit breakCountReadAPI: BreakCountReadAPI[F, H, Player], config: Configuration): F[System[F, F, Player]] = {
 
-    implicit val suppressionStatePersistence: FastDiggingEffectSuppressionStatePersistence[G] =
+    val settingsPersistence: FastDiggingEffectStatsSettingsPersistence[G] =
+      new JdbcFastDiggingEffectStatsSettingsPersistence[G]
+
+    val suppressionStatePersistence: FastDiggingEffectSuppressionStatePersistence[G] =
       new JdbcFastDiggingEffectSuppressionStatePersistence[G]
+
+    implicit val FSendMinecraftMessage: SendMinecraftMessage[F, Player] = new SendBukkitMessage[F]
 
     implicit val grantFastDiggingEffect: GrantFastDiggingEffect[F, Player] =
       new GrantBukkitFastDiggingEffect[F]
 
     val yieldSystem: F[System[F, F, Player]] = for {
       effectListTopic <- Topic[F, Option[(Player, FastDiggingEffectList)]](None)
+      effectListDiffTopic <- Topic[F, Option[(Player, (EffectListDiff, FastDiggingEffectStatsSettings))]](None)
 
       effectListRepositoryHandles <- {
         ContextCoercion {
@@ -80,6 +89,24 @@ object System {
             )
         }
       }
+
+      statsSettingsRepositoryHandles <- {
+        ContextCoercion {
+          BukkitRepositoryControls
+            .createTappingSinglePhasedRepositoryAndHandles(
+              EffectStatsSettingsRepository.initialization[F, G](settingsPersistence),
+              EffectStatsSettingsRepository.tappingAction[F, G, Player](
+                effectListDiffTopic,
+                effectListTopic.subscribe(1).mapFilter(identity)
+              ),
+              EffectStatsSettingsRepository.finalization[F, G, Player](settingsPersistence)
+            )
+        }
+      }
+
+      _ <- EffectStatsNotification.using[F, Player](
+        effectListDiffTopic.subscribe(1).mapFilter(identity)
+      ).compile.drain.start
 
     } yield new System[F, F, Player] {
       override val effectApi: FastDiggingEffectApi[F, Player] = new FastDiggingEffectApi[F, Player] {
@@ -114,11 +141,13 @@ object System {
 
       override val listeners: Seq[Listener] = Seq(
         effectListRepositoryHandles.initializer,
-        suppressionSettingsRepositoryHandles.initializer
+        suppressionSettingsRepositoryHandles.initializer,
+        statsSettingsRepositoryHandles.initializer
       )
       override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = Seq(
         effectListRepositoryHandles.finalizer.coerceContextTo[F],
-        suppressionSettingsRepositoryHandles.finalizer.coerceContextTo[F]
+        suppressionSettingsRepositoryHandles.finalizer.coerceContextTo[F],
+        statsSettingsRepositoryHandles.finalizer.coerceContextTo[F]
       )
       override val commands: Map[String, TabExecutor] = Map.empty
     }
