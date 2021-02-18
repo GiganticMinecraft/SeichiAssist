@@ -11,6 +11,11 @@ case class FastDiggingAmplifier(hasteEffectLevel: Double) {
     FastDiggingAmplifier(hasteEffectLevel + another.hasteEffectLevel)
 
   /**
+   * 表示用に小数点以下2桁までにフォーマットした文字列。
+   */
+  val formatted: String = String.format("%.2f", hasteEffectLevel)
+
+  /**
    * [[hasteEffectLevel]] を切り捨て、 0 とのmaxを取った値。
    * ポーション効果の強さとしてクライアントのUIに表示される値と同じ値が得られる。
    */
