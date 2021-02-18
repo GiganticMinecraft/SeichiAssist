@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 final class SharedInventoryCoolDownResetTask(player: Player) extends BukkitRunnable {
-  private val pd = SeichiAssist.playermap(player)
+  private val pd = SeichiAssist.playermap(player.getUniqueId)
 
   override def run(): Unit = {
     pd.shareinvcooldownflag = false

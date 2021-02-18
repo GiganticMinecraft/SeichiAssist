@@ -143,13 +143,13 @@ object VotingFairyListener {
       var consumingQuantity = getGiveAppleValue(playerLevel)
       //連続投票によってりんご消費量を抑える
       val discountRate = playerdata.ChainVote match {
-        case _ >= 30 => 2
-        case _ >= 10 => 1.5
-        case _ >= 5  => 1.25
-        case _       => 1
+        case d: Int if d >= 30 => 2
+        case d: Int if d >= 10 => 1.5
+        case d: Int if d >= 5  => 1.25
+        case _                 => 1
       }
 
-      consumingQuantity /= discountRate
+      consumingQuantity = (consumingQuantity / discountRate).toInt
 
       //トグルで数値変更
       if (playerdata.toggleGiveApple == VotingFairyStrategy.More) {

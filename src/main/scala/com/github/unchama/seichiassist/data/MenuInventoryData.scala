@@ -185,7 +185,7 @@ object MenuInventoryData {
     val playerdata = SeichiAssist.playermap(uuid)
     //念のためエラー分岐
     if (isError(p, playerdata, "二つ名組み合わせ")) return null
-    val inventory = getEmptyInventory(4, MenuType.COMBINE.invName)
+    val inventory = getEmptyInventory(4, MenuType.COMBINE.inventoryTitle)
     //各ボタンの設定
     headPartIndex.put(uuid, 0)
     middlePartIndex.put(uuid, 0)
@@ -282,7 +282,7 @@ object MenuInventoryData {
     val uuid = p.getUniqueId
     val playerdata = SeichiAssist.playermap(uuid)
     if (isError(p, playerdata, "二つ名/前パーツ")) return null
-    val inventory = getEmptyInventory(4, MenuType.HEAD.invName)
+    val inventory = getEmptyInventory(4, MenuType.HEAD.inventoryTitle)
     // TODO
     val headIndex = 1000
     val headParts = (headIndex until 9900)
@@ -336,7 +336,7 @@ object MenuInventoryData {
     val uuid = p.getUniqueId
     val playerdata = SeichiAssist.playermap(uuid)
     if (isError(p, playerdata, "二つ名/中パーツ")) return null
-    val inventory = getEmptyInventory(4, MenuType.MIDDLE.invName)
+    val inventory = getEmptyInventory(4, MenuType.MIDDLE.inventoryTitle)
     // TODO
     val headIndex = 9900
     val partButtons = (headIndex until 9999)
@@ -390,7 +390,7 @@ object MenuInventoryData {
     val uuid = p.getUniqueId
     val playerdata = SeichiAssist.playermap(uuid)
     if (isError(p, playerdata, "二つ名/後パーツ")) return null
-    val inventory = getEmptyInventory(4, MenuType.TAIL.invName)
+    val inventory = getEmptyInventory(4, MenuType.TAIL.inventoryTitle)
     // TODO
     val headIndex = 1000
     val partButtons = (headIndex until 9900)
@@ -442,7 +442,7 @@ object MenuInventoryData {
     //プレイヤーデータ
     val playerdata = SeichiAssist.playermap(uuid)
     if (isError(p, playerdata, "実績ポイントショップ")) return null
-    val inventory = getEmptyInventory(4, MenuType.SHOP.invName)
+    val inventory = getEmptyInventory(4, MenuType.SHOP.inventoryTitle)
     val ap = playerdata.achievePoint
     val currentPoints = {
       val itemstack = new IconItemStackBuilder(Material.EMERALD_ORE)
@@ -498,8 +498,8 @@ object MenuInventoryData {
         )
       }
 
-    val backButton = (27, _, toMoveNicknameMenu)
-    (currentPoints +: headTailParts :++ middleSellingParts :+ backButton).foreach { case (invIndex, _, item) =>
+    val backButton = (27, null, toMoveNicknameMenu)
+    (currentPoints +: headTailParts :++ middleSellingParts :+ backButton).foreach { case (invIndex: Int, _, item: ItemStack) =>
       AsyncInventorySetter.setItemAsync(inventory, invIndex, item)
     }
 

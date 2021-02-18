@@ -32,11 +32,10 @@ object ItemData {
   }
 
   def getGachaApple(amount: Int): ItemStack = {
-    import scala.jdk.CollectionConverters._
     new IconItemStackBuilder(Material.GOLDEN_APPLE)
       .amount(amount)
       .title(StaticGachaPrizeFactory.getGachaRingoName)
-      .lore(StaticGachaPrizeFactory.getGachaRingoLore.asScala.toList)
+      .lore(StaticGachaPrizeFactory.getGachaRingoLore)
       .build()
   }
 
@@ -45,10 +44,10 @@ object ItemData {
       .amount(amount)
       .title(s"$AQUA${ITALIC}エルサ")
       .lore(
-        "", 
-        s"${GREEN}装備中の移動速度$YELLOW(中)$GREEN", 
+        "",
+        s"${GREEN}装備中の移動速度$YELLOW(中)$GREEN",
         s"",
-        s"${YELLOW}金床${RED}不可", 
+        s"${YELLOW}金床${RED}不可",
         s"${YELLOW}修繕エンチャント${AQUA}可"
       )
       .addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 5)

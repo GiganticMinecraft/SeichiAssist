@@ -95,7 +95,7 @@ class PlayerData(
     effect.asTargetedEffect()
   }
 
-  private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
+  val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
   //チェスト破壊トグル
   @TemporaryProperty
   var chestflag = true
@@ -303,9 +303,9 @@ class PlayerData(
 
     //放置時に色を変える
     val idleColor = idleMinute match {
-      case _ >= 10 => Some(DARK_GRAY)
-      case _ >= 3 => Some(GRAY)
-      case _ => None
+      case x if x >= 10 => Some(DARK_GRAY)
+      case x if x >= 3  => Some(GRAY)
+      case _            => None
     }
 
     val amountData =

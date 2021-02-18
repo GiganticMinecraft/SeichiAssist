@@ -245,7 +245,7 @@ object RegionMenuData {
     } else {
       Map()
     }
-    theMap.map { case (rd, d) =>
+    theMap.map { case (rd: RelativeDirection, d: Direction) =>
       (rd, d match {
         case SOUTH => Some("南(South)")
         case NORTH => Some("北(North)")
@@ -253,8 +253,8 @@ object RegionMenuData {
         case EAST => Some("東(East)")
         case _ => None
       })
-    }.filter(_._2.nonEmpty).map { case(rd, d) =>
-      (rd, d.get)
+    }.filter(_._2.nonEmpty).map { case (rd: RelativeDirection, os: Option[String]) =>
+      (rd, os.get)
     }
   }
 

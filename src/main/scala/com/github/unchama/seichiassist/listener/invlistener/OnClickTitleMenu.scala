@@ -64,7 +64,7 @@ object OnClickTitleMenu {
     val mat = current.getType
     val isSkull = mat == Material.SKULL_ITEM
     topInventory.getTitle match {
-      case MenuType.COMBINE.invName =>
+      case MenuType.COMBINE.`inventoryTitle` =>
         event.setCancelled(true)
         // 二つ名組み合わせトップ
         mat match {
@@ -124,7 +124,7 @@ object OnClickTitleMenu {
           case _ =>
         }
 
-      case MenuType.HEAD.invName =>
+      case MenuType.HEAD.`inventoryTitle` =>
         event.setCancelled(true)
         mat match {
           case Material.WATER_BUCKET =>
@@ -161,7 +161,7 @@ object OnClickTitleMenu {
           case _ =>
         }
 
-      case MenuType.MIDDLE.invName =>
+      case MenuType.MIDDLE.`inventoryTitle` =>
         event.setCancelled(true)
         mat match {
           case Material.MILK_BUCKET =>
@@ -196,7 +196,7 @@ object OnClickTitleMenu {
           case _ =>
         }
 
-      case MenuType.TAIL.invName =>
+      case MenuType.TAIL.`inventoryTitle` =>
         event.setCancelled(true)
         mat match {
           case Material.LAVA_BUCKET =>
@@ -231,7 +231,7 @@ object OnClickTitleMenu {
           case _ =>
         }
 
-      case MenuType.SHOP.invName =>
+      case MenuType.SHOP.`inventoryTitle` =>
         event.setCancelled(true)
         mat match {
           //実績ポイント最新化

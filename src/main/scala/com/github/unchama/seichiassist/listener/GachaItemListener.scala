@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{ItemUtil, Util}
 import org.bukkit.{Bukkit, Sound}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.event.player.PlayerItemConsumeEvent
@@ -30,28 +30,27 @@ class GachaItemListener extends Listener {
         .levelCorrespondingToExp.level
     val mana = playerdata.manaState
     val i = e.getItem
-    //Material m = i.getType();
     val itemmeta = i.getItemMeta
     //これ以降は説明文あり
     if (!itemmeta.hasLore) return
     val lore = CollectionConverters.ListHasAsScala(itemmeta.getLore).asScala.toList
-    if (Util.loreIndexOf(lore, "マナ完全回復") > 0) {
+    if (ItemUtil.loreIndexOf(lore, "マナ完全回復").exists(_ > 0)) {
       mana.setFull(player, level)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     }
-    if (Util.loreIndexOf(lore, "マナ回復（小）") > 0) {
+    if (ItemUtil.loreIndexOf(lore, "マナ回復（小）").exists(_ > 0)) {
       mana.increase(300, player, level)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     }
-    if (Util.loreIndexOf(lore, "マナ回復（中）") > 0) {
+    if (ItemUtil.loreIndexOf(lore, "マナ回復（中）").exists(_ > 0)) {
       mana.increase(1500, player, level)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     }
-    if (Util.loreIndexOf(lore, "マナ回復（大）") > 0) {
+    if (ItemUtil.loreIndexOf(lore, "マナ回復（大）").exists(_ > 0)) {
       mana.increase(10000, player, level)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     }
-    if (Util.loreIndexOf(lore, "マナ回復（極）") > 0) {
+    if (ItemUtil.loreIndexOf(lore, "マナ回復（極）").exists(_ > 0)) {
       mana.increase(100000, player, level)
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     }

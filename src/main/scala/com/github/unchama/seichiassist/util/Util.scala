@@ -9,6 +9,8 @@ import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.Positive
+import eu.timepit.refined.refineV
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
@@ -159,7 +161,7 @@ object Util {
     new SimpleDateFormat("HH:mm").format(cal.getTime)
   }
 
-  def getTimePeriod(cal: Calendar): TimePeriodOfDay = TimePeriodOfDay(cal.get(Calendar.HOUR_OF_DAY))
+  def getTimePeriod(cal: Calendar): TimePeriodOfDay = TimePeriodOfDay(refineV[Positive](cal.get(Calendar.HOUR_OF_DAY)).toOption.get)
 
   def isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean = {
     val now = Calendar.getInstance()
