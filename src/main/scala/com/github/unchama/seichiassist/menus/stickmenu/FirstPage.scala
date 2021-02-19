@@ -217,7 +217,7 @@ object FirstPage extends Menu {
         val effectStats =
           List(s"$RESET$YELLOW${UNDERLINE}上昇量の内訳") ++
             currentEffects.map { effectTimings =>
-              s"$RESET$RED${effectTimings.effect.cause.description}"
+              s"$RESET$RED +${effectTimings.effect.amplifier.formatted} ${effectTimings.effect.cause.description}"
             }
 
         toggleNavigation ++ explanation ++ effectStats
