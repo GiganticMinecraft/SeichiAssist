@@ -7,7 +7,6 @@ import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
-import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
@@ -17,13 +16,11 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.ForcedPotionEffect
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
-import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
 import java.text.SimpleDateFormat
 import java.util.{GregorianCalendar, UUID}
@@ -39,7 +36,6 @@ class PlayerData(
                 ) {
 
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
   import com.github.unchama.util.InventoryUtil._
 
   //region session-specific data
@@ -57,38 +53,8 @@ class PlayerData(
   //経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
-  //持ってるポーションエフェクト全てを格納する．
-  val effectdatalist: mutable.ListBuffer[FastDiggingEffect] = mutable.ListBuffer.empty
   //プレイヤー名
   val lowercaseName: String = name.toLowerCase()
-
-  /**
-   * プレーヤーに付与されるべき採掘速度上昇効果を計算する.
-   */
-  val computeFastDiggingEffect: IO[ForcedPotionEffect] = for {
-    activeEffects <- IO {
-      effectdatalist.toList
-    }
-    computedAmplifier <- IO {
-      val amplifierSum = activeEffects.map(_.amplifier).sum
-      Math.floor(amplifierSum - 1).toInt
-    }
-    maxSpeed <- settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
-    maxDuration <- IO {
-      activeEffects.map(_.duration).maxOption.getOrElse(0)
-    }
-  } yield {
-    // 実際に適用されるeffect量
-    val amplifier = Math.min(computedAmplifier, maxSpeed)
-
-    val effect =
-      if (amplifier >= 0)
-        new PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
-      else
-        new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
-
-    effect.asTargetedEffect()
-  }
 
   private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
   private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
@@ -104,10 +70,6 @@ class PlayerData(
 
   var canCreateRegion = true
   var unitPerClick = 1
-  //今回の採掘速度上昇レベルを格納
-  var minespeedlv = 0
-  //前回の採掘速度上昇レベルを格納
-  var lastminespeedlv = 0
   //投票受け取りボタン連打防止用
   var votecooldownflag = true
   //ガチャボタン連打防止用
@@ -426,24 +388,6 @@ class PlayerData(
     effectPoint -= 10
   }
 
-  //エフェクトデータのdurationを60秒引く
-  def calcEffectData(): Unit = {
-    val tmplist = mutable.Buffer[FastDiggingEffect]()
-
-    //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
-    effectdatalist.foreach { effectData =>
-      effectData.duration -= 1200
-      tmplist += effectData
-    }
-
-    //tmplistのdurationが3秒以下（60tick）のものはeffectdatalistから削除
-    effectdatalist.foreach { effectData =>
-      if (effectData.duration <= 60) {
-        effectdatalist -= effectData
-      }
-    }
-  }
-
   def calcPlayerApple(): Int = {
     //ランク用関数
     var i = 0
@@ -657,18 +601,6 @@ class PlayerData(
         .levelCorrespondingToExp.level
     )
   }
-
-  def toggleMessageFlag(): TargetedEffect[Player] = DeferredEffect(IO {
-    settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
-
-    val responseMessage = if (settings.receiveFastDiggingEffectStats) {
-      s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
-    } else {
-      s"${GREEN}内訳表示:OFF"
-    }
-
-    MessageEffect(responseMessage)
-  })
 
   /**
    * 運営権限により強制的に実績を解除することを試みる。
