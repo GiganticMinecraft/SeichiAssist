@@ -198,9 +198,7 @@ object PlayerDataLoading {
           rs.getInt("displayTitle3No")
         )
 
-        playerData.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag")).unsafeRunSync()
         playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
-        playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
 
         playerData.skillEffectState = {
           val selectedEffect =

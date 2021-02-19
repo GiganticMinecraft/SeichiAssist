@@ -13,7 +13,9 @@ import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, Activ
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
+import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
 trait TopLevelRouter[F[_]] {
@@ -24,11 +26,15 @@ trait TopLevelRouter[F[_]] {
 
 object TopLevelRouter {
 
-  def apply(implicit layoutPreparationContext: LayoutPreparationContext,
+  def apply(implicit
+            javaTime: JavaTime[IO],
+            layoutPreparationContext: LayoutPreparationContext,
             syncShift: MinecraftServerThreadShift[IO],
             breakCountApi: BreakCountAPI[IO, SyncIO, Player],
             breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
-            seichiRankingApi: RankingApi[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
+            seichiRankingApi: RankingApi[IO],
+            fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
+            fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     implicit lazy val seichiRankingMenuEnv: SeichiRankingMenu.Environment = new SeichiRankingMenu.Environment
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment
     implicit lazy val mineStackMainMenuEnv: MineStackMainMenu.Environment = new MineStackMainMenu.Environment

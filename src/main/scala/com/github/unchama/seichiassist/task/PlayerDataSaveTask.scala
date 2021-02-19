@@ -136,9 +136,7 @@ object PlayerDataSaveTask {
         ("update seichiassist.playerdata set"
           + " name = '" + playerdata.lowercaseName + "'"
 
-          + ",effectflag = " + playerdata.settings.fastDiggingEffectSuppression.serialized().unsafeRunSync()
           + ",minestackflag = " + playerdata.settings.autoMineStack
-          + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
 
           + ",serialized_usage_mode = " + skillState.usageMode.value
           + ",selected_effect = " + {

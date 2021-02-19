@@ -23,7 +23,9 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncS
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.domain.playercount.GetConnectedPlayerCount
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
+import com.github.unchama.seichiassist.infrastructure.bukkit.playercount.GetConnectedBukkitPlayerCount
 import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
@@ -34,6 +36,8 @@ import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -144,12 +148,6 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
-  lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
-    import PluginExecutionContexts.timer
-
-    subsystems.dragonnighttime.System.wired[IO, IO]
-  }
-  
   lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.timer
 
@@ -188,6 +186,16 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
   }
 
+  private lazy val fastDiggingEffectSystem: subsystems.fastdiggingeffect.System[IO, IO, Player] = {
+    import PluginExecutionContexts.{asyncShift, timer}
+
+    implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val playerCount: GetConnectedPlayerCount[IO] = new GetConnectedBukkitPlayerCount[IO]
+
+    subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
+  }
+
   lazy val buildAssist: BuildAssist = {
     implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
     implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
@@ -216,6 +224,7 @@ class SeichiAssist extends JavaPlugin() {
         managedFlySystem.managedFinalizers.toList ++
           breakCountSystem.managedFinalizers ++
           breakCountBarSystem.managedFinalizers ++
+          fastDiggingEffectSystem.managedFinalizers ++
           buildCountSystem.managedFinalizers.appended(savePlayerData)
       ),
       PluginExecutionContexts.asyncShift
@@ -347,6 +356,8 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts._
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
+    implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] = fastDiggingEffectSystem.effectApi
+    implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] = fastDiggingEffectSystem.settingsApi
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
@@ -376,13 +387,14 @@ class SeichiAssist extends JavaPlugin() {
       breakCountSystem,
       breakCountBarSystem,
       buildCountSystem,
+      fastDiggingEffectSystem
     )
 
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
       "map" -> MapCommand.executor,
-      "ef" -> EffectCommand.executor,
+      "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
       "openpocket" -> OpenPocketCommand.executor,
       "lastquit" -> LastQuitCommand.executor,
@@ -476,11 +488,11 @@ class SeichiAssist extends JavaPlugin() {
       val manaUpdate: IO[Nothing] =
         subsystems.mana.System.backgroundProcess[IO, SyncIO]
 
-      val fastDiggingEffectUpdate: IO[Nothing] =
-        subsystems.fastdiggingeffect.System.backgroundProcess[IO, SyncIO](SeichiAssist.seichiAssistConfig)
-
       val gachaPointUpdate: IO[Nothing] =
         subsystems.gachapoint.System.backgroundProcess[IO, SyncIO]
+
+      val dragonNightTimeProcess: IO[Nothing] =
+        subsystems.dragonnighttime.System.backgroundProcess[IO](fastDiggingEffectSystem.effectApi)
 
       val halfHourRankingRoutineOption: Option[IO[Nothing]] =
       // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
@@ -496,13 +508,12 @@ class SeichiAssist extends JavaPlugin() {
           dataRecalculationRoutine,
           dataBackupRoutine,
           manaUpdate,
-          fastDiggingEffectUpdate,
           gachaPointUpdate,
-          levelUpGiftProcess
+          levelUpGiftProcess,
+          dragonNightTimeProcess
         ) ++
           halfHourRankingRoutineOption.toList ++
-          autoSaveSystem.state ++
-          dragonNightTimeSystem.state
+          autoSaveSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)

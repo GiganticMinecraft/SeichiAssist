@@ -11,6 +11,25 @@ object StreamExtra {
   import cats.implicits._
 
   /**
+   * 与えられた [[Stream]] から `n` 個に一個の要素を取り出す [[Stream]] を作成する。
+   */
+  def takeEvery[F[_], O](n: Int)(stream: Stream[F, O]): Stream[F, O] = {
+    require(n >= 1, "n must be positive")
+
+    stream
+      .scan((0, None: Option[O])) { (pair, o) =>
+        val (oldCounter, previous) = pair
+        val newCounter = oldCounter + 1
+
+        if (previous.isEmpty || newCounter == n)
+          (0, Some(o))
+        else
+          (newCounter, None)
+      }
+      .mapFilter(_._2)
+  }
+
+  /**
    * 与えられた [[Stream]] の最初の要素とその後続の [[Stream]] を高々一度だけ流す [[Stream]] を作成する。
    * 与えられた [[Stream]] が空だった場合、空の [[Stream]] が返る。
    */
@@ -41,10 +60,16 @@ object StreamExtra {
   }
 
   /**
-   * 与えられたキーと出力のストリームから、与えられたキーを左成分に持つ要素のみを取り出すストリームを作成する。
+   * キーと出力の組の[[fs2.Stream]]から、キーが `filter` を満たす出力のみを取り出してストリームを作成する。
    */
-  def filterKeys[F[_], K, O](stream: Stream[F, (K, O)], key: K): Stream[F, O] =
-    stream.mapFilter { case (k, out) => Option.when(k == key)(out) }
+  def valuesWithKeyFilter[F[_], K, O](stream: Stream[F, (K, O)])(filter: K => Boolean): Stream[F, O] =
+    stream.mapFilter { case (k, out) => Option.when(filter(k))(out) }
+
+  /**
+   * 与えられたキーと出力の組のストリームから、与えられたキーを左成分に持つ要素のみを取り出してストリームを作成する。
+   */
+  def valuesWithKey[F[_], K, O](stream: Stream[F, (K, O)], key: K): Stream[F, O] =
+    valuesWithKeyFilter(stream)(_ == key)
 
   def keyedValueDiffs[F[_], K, O: Eq](stream: Stream[F, (K, O)]): Stream[F, (K, Diff[O])] = {
     stream
