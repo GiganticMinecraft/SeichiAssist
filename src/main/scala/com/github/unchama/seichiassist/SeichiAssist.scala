@@ -37,6 +37,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -355,6 +356,8 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts._
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
+    implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] = fastDiggingEffectSystem.effectApi
+    implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] = fastDiggingEffectSystem.settingsApi
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu

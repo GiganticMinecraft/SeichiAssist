@@ -18,6 +18,8 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
@@ -28,6 +30,7 @@ import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.util.InventoryUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
+import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor.{DARK_RED, RESET, _}
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -47,7 +50,10 @@ object FirstPage extends Menu {
   class Environment(implicit
                     val breakCountAPI: BreakCountReadAPI[IO, SyncIO, Player],
                     val breakCountBarApi: BreakCountBarAPI[SyncIO, Player],
+                    val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
+                    val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
                     val rankingApi: RankingApi[IO],
+                    val ioJavaTime: JavaTime[IO],
                     val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
                     val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type,
                     val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type,
@@ -163,28 +169,56 @@ object FirstPage extends Menu {
     }
 
     val computeEffectSuppressionButton: IO[Button] = RecomputedButton {
-      val openerData = SeichiAssist.playermap(getUniqueId)
+      import cats.implicits._
+      import environment._
 
       val computeButtonLore: IO[List[String]] = for {
-        toggleNavigation <- for {
-          currentStatus <- openerData.settings.fastDiggingEffectSuppression.currentStatus()
-          nextStatus <- openerData.settings.fastDiggingEffectSuppression.nextToggledStatus()
-        } yield
-          List(
-            currentStatus,
-            s"$RESET$DARK_RED${UNDERLINE}クリックで" + nextStatus
-          )
+        currentStatus <- environment.fastDiggingSettingsApi.currentSuppressionSettings(player).read
+        effectList <- environment.fastDiggingEffectApi.currentEffect(player).read
+        currentEffects <- effectList.filteredList[IO]
+        currentAmplifier = currentEffects.map(_.effect.amplifier).combineAll
       } yield {
+        val toggleNavigation = {
+          val currentStatusDescription =
+            currentStatus match {
+              case FastDiggingEffectSuppressionState.EnabledWithoutLimit =>
+                s"${GREEN}現在有効です(無制限)"
+              case limit: FastDiggingEffectSuppressionState.EnabledWithLimit =>
+                s"${GREEN}現在有効です$YELLOW(${limit.limit}制限)"
+              case FastDiggingEffectSuppressionState.Disabled =>
+                s"${RED}現在OFFです"
+            }
+
+          val nextStatusDescription = {
+            val nextStatus = currentStatus.nextState
+
+            s"$RESET$DARK_RED${UNDERLINE}クリックで" + {
+              nextStatus match {
+                case FastDiggingEffectSuppressionState.EnabledWithoutLimit =>
+                  "無制限"
+                case limit: FastDiggingEffectSuppressionState.EnabledWithLimit =>
+                  s"${limit.limit}制限"
+                case FastDiggingEffectSuppressionState.Disabled =>
+                  "OFF"
+              }
+            }
+          }
+
+          List(currentStatusDescription, nextStatusDescription)
+        }
+
         val explanation = List(
           s"$RESET${GRAY}採掘速度上昇効果とは",
           s"$RESET${GRAY}接続人数と1分間の採掘量に応じて",
           s"$RESET${GRAY}採掘速度が変化するシステムです",
-          s"$RESET${GOLD}現在の採掘速度上昇Lv：${openerData.minespeedlv + 1}"
+          s"$RESET${GOLD}現在の採掘速度上昇Lv：${currentAmplifier.formatted}"
         )
 
         val effectStats =
           List(s"$RESET$YELLOW${UNDERLINE}上昇量の内訳") ++
-            openerData.effectdatalist.map(effect => s"$RESET$RED${effect.effectDescription}")
+            currentEffects.map { effectTimings =>
+              s"$RESET$RED${effectTimings.effect.cause.description}"
+            }
 
         toggleNavigation ++ explanation ++ effectStats
       }
@@ -201,8 +235,7 @@ object FirstPage extends Menu {
           action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              openerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect,
-              DeferredEffect[IO, Player, Unit](openerData.computeFastDiggingEffect)
+              environment.fastDiggingSettingsApi.toggleEffectSuppression.as(()),
             )
           }
         )
