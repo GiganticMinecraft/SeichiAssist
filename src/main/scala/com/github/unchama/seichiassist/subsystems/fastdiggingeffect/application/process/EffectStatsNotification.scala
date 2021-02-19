@@ -17,9 +17,11 @@ object EffectStatsNotification {
         case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate => effectListDiff.hasDifference
       }
 
-      val shouldNotifyEffectStats = settings == FastDiggingEffectStatsSettings.AlwaysReceiveDetails
-
       val newEffectList = effectListDiff.newList
+
+      val shouldNotifyEffectStats =
+        (settings == FastDiggingEffectStatsSettings.AlwaysReceiveDetails) &&
+          newEffectList.nonEmpty
 
       val messages = {
         val ofNewValue = {
