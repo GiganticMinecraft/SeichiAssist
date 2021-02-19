@@ -25,7 +25,9 @@ object SynchronizationProcess {
           state <- suppressionState(player).read
           totalAmplifier <- list.totalPotionAmplifier[F](state)
 
-          _ <- GrantFastDiggingEffect[F, Player].forASecond(player)(totalAmplifier)
+          _ <- totalAmplifier.traverse {
+            GrantFastDiggingEffect[F, Player].forASecond(player)
+          }
         } yield ()
 
         program.attempt

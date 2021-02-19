@@ -187,8 +187,9 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val fastDiggingEffectSystem: subsystems.fastdiggingeffect.System[IO, IO, Player] = {
-    import PluginExecutionContexts.{asyncShift, timer}
+    import PluginExecutionContexts.{asyncShift, syncShift, timer}
 
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val playerCount: GetConnectedPlayerCount[IO] = new GetConnectedBukkitPlayerCount[IO]

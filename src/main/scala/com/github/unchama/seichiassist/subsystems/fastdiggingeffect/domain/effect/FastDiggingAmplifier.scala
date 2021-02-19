@@ -29,8 +29,14 @@ case class FastDiggingAmplifier(hasteEffectLevel: Double) {
    *
    * このように、表示される値より 1 少ない値を内部的に保持しているため、
    * この関数では [[normalizedEffectLevel]] から1を引いた数と0とのmaxを取っている。
+   *
+   * [[hasteEffectLevel]] が一未満、つまり [[normalizedEffectLevel]] が0以下であるならば、
+   * [[None]] となる。
    */
-  val toMinecraftPotionAmplifier: Int = (normalizedEffectLevel - 1) max 0
+  val toMinecraftPotionAmplifier: Option[Int] = {
+    val level = normalizedEffectLevel - 1
+    Option.when(level >= 0)(level)
+  }
 
 }
 

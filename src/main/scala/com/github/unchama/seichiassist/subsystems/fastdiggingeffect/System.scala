@@ -7,7 +7,7 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.minecraft.actions.SendMinecraftMessage
+import com.github.unchama.minecraft.actions.{MinecraftServerThreadShift, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage
 import com.github.unchama.seichiassist.domain.playercount.GetConnectedPlayerCount
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -47,6 +47,7 @@ object System {
     G[_]
     : SyncEffect,
     F[_]
+    : MinecraftServerThreadShift
     : Timer
     : ConcurrentEffect
     : ContextCoercion[G, *[_]]

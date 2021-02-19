@@ -36,9 +36,13 @@ class FastDiggingEffectList(private val list: List[FastDiggingEffectTimings]) {
 
   /**
    * [[FastDiggingEffectSuppressionState]] を考慮した、
-   * 現在有効な採掘速度上昇効果の合計値をポーション効果値として得る作用。
+   * 現在有効な採掘速度上昇効果の合計値をMinecraftのポーション効果値として得る作用。
+   *
+   * 合計値が1未満だった場合、[[None]]が得られる。
    */
-  def totalPotionAmplifier[F[_] : JavaTime : Functor](suppressionSettings: FastDiggingEffectSuppressionState): F[Int] = {
+  def totalPotionAmplifier[
+    F[_] : JavaTime : Functor
+  ](suppressionSettings: FastDiggingEffectSuppressionState): F[Option[Int]] = {
     filteredList[F].map { list =>
       val totalAmplifier: FastDiggingAmplifier = list.map(_.effect.amplifier).combineAll
       val capped =
