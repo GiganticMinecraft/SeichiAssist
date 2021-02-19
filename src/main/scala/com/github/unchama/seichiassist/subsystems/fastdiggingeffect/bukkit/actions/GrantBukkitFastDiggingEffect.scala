@@ -17,7 +17,6 @@ class GrantBukkitFastDiggingEffect[
 
     // ポーション効果付与はメインスレッドでのみ許可される(Spigot 1.12)
     MinecraftServerThreadShift[F].shift >> Sync[F].delay {
-      println(potionEffect, potionEffect.getAmplifier)
       player.addPotionEffect(potionEffect)
     }.as(())
   }
