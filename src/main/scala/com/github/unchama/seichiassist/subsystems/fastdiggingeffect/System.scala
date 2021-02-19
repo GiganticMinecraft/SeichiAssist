@@ -132,11 +132,20 @@ object System {
           suppressionSettingsRepositoryHandles
             .repository
             .map(ref => ReadOnlyRef.fromRef(ref.mapK(ContextCoercion.asFunctionK)))
-        override val toggleEffectSuppression: Kleisli[F, Player, Unit] = Kleisli { player =>
+        override val toggleEffectSuppression: Kleisli[F, Player, FastDiggingEffectSuppressionState] = Kleisli { player =>
           ContextCoercion {
-            suppressionSettingsRepositoryHandles.repository(player).update(_.nextState)
+            suppressionSettingsRepositoryHandles.repository(player).updateAndGet(_.nextState)
           }
         }
+        override val toggleStatsSettings: Kleisli[F, Player, FastDiggingEffectStatsSettings] = Kleisli { player =>
+          ContextCoercion {
+            statsSettingsRepositoryHandles.repository(player)._1.updateAndGet(_.nextValue)
+          }
+        }
+        override val currentStatsSettings: KeyedDataRepository[Player, ReadOnlyRef[F, FastDiggingEffectStatsSettings]] =
+          statsSettingsRepositoryHandles
+            .repository
+            .map(pair => ReadOnlyRef.fromRef(pair._1.mapK(ContextCoercion.asFunctionK)))
       }
 
       override val listeners: Seq[Listener] = Seq(
