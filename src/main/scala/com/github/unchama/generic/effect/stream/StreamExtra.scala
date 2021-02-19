@@ -17,11 +17,10 @@ object StreamExtra {
     require(n >= 1, "n must be positive")
 
     stream
-      .scan((0, None: Option[O])) { (pair, o) =>
-        val (oldCounter, previous) = pair
-        val newCounter = oldCounter + 1
+      .scan((n - 1, None: Option[O])) { (pair, o) =>
+        val newCounter = pair._1 + 1
 
-        if (previous.isEmpty || newCounter == n)
+        if (newCounter == n)
           (0, Some(o))
         else
           (newCounter, None)
