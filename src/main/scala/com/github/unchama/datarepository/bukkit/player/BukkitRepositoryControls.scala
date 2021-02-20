@@ -65,26 +65,26 @@ object BukkitRepositoryControls {
     ](initialization: TwoPhasedRepositoryInitialization[F, Player, R])
      (temporaryDataMap: TrieMap[UUID, initialization.IntermediateData], dataMap: TrieMap[Player, R]): Listener = {
 
-      // コールスタックをロギング用に取っておくために例外を作成する
-      val exceptionToInspect = new RuntimeException()
+      import cats.implicits._
 
       new Listener {
         //noinspection ScalaUnusedSymbol
         @EventHandler(priority = EventPriority.LOWEST)
         final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
-          println("loading...")
-          exceptionToInspect.printStackTrace()
-
-          initialization.prefetchIntermediateValue(event.getUniqueId, event.getName)
+          initialization
+            .prefetchIntermediateValue(event.getUniqueId, event.getName)
+            .attempt
             .runSync[SyncIO]
             .unsafeRunSync() match {
-            case PrefetchResult.Failed(errorMessageOption) =>
-              println(s"failed loading data for ${event.getUniqueId}")
+            case Left(error) =>
+              event.setKickMessage("初期化処理中にエラーが発生しました。")
+              event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
+              error.printStackTrace()
+            case Right(PrefetchResult.Failed(errorMessageOption)) =>
               errorMessageOption.foreach(event.setKickMessage)
               event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
-            case PrefetchResult.Success(data) =>
+            case Right(PrefetchResult.Success(data)) =>
               temporaryDataMap(event.getUniqueId) = data
-              println(temporaryDataMap.toList)
           }
         }
 
@@ -108,8 +108,6 @@ object BukkitRepositoryControls {
                    |整地鯖公式Discordサーバーからお知らせ下さい。
                    |""".stripMargin
 
-              exceptionToInspect.printStackTrace()
-              println(temporaryDataMap.toList)
               player.kickPlayer(message)
           }
         }
