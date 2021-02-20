@@ -64,6 +64,9 @@ object BukkitRepositoryControls {
     ](initialization: TwoPhasedRepositoryInitialization[F, Player, R])
      (temporaryDataMap: TrieMap[UUID, initialization.IntermediateData], dataMap: TrieMap[Player, R]): Listener = {
 
+      // コールスタックをロギング用に取っておくために例外を作成する
+      val exceptionToInspect = new RuntimeException()
+
       val temporaryDataMapInitializer =
         singlePhased(initialization.prefetchIntermediateValue(_, _))((_, _) => Monad[F].unit)(temporaryDataMap)
 
@@ -91,10 +94,9 @@ object BukkitRepositoryControls {
                    |データの読み込みに失敗しました。
                    |再接続しても改善されない場合は、
                    |整地鯖公式Discordサーバーからお知らせ下さい。
-                   |
-                   |エラー： $getClass の初期化に失敗しています。
                    |""".stripMargin
 
+              exceptionToInspect.printStackTrace()
               player.kickPlayer(message)
           }
         }
