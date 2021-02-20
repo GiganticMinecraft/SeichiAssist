@@ -23,7 +23,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
 import java.text.SimpleDateFormat
-import java.util.{GregorianCalendar, UUID}
+import java.util.{GregorianCalendar, NoSuchElementException, UUID}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
@@ -296,10 +296,29 @@ class PlayerData(
   }
 
   /**
+   * キャッシュされた [[Player]] のインスタンス。
+   * プレーヤーの参加前や退出後は `Bukkit.getPlayer(uuid)` にてインスタンスが取得できないので、
+   * 暫定的にこう実装している。
+   *
    * @deprecated PlayerDataはPlayerに依存するべきではない。
    */
   @Deprecated()
-  def player: Player = Bukkit.getPlayer(uuid)
+  private var cachedPlayer: Option[Player] = None
+
+  /**
+   * @deprecated PlayerDataはPlayerに依存するべきではない。
+   */
+  @Deprecated()
+  def player: Player = {
+    cachedPlayer = cachedPlayer.orElse {
+      Bukkit.getPlayer(uuid) match {
+        case null => throw new NoSuchElementException("プレーヤーがオンラインではありません")
+        case p => Some(p)
+      }
+    }
+
+    cachedPlayer.get
+  }
 
   private def loadTotalExp(): Unit = {
     val internalServerId = SeichiAssist.seichiAssistConfig.getServerNum
