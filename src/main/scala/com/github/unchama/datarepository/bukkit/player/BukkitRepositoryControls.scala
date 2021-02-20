@@ -71,18 +71,22 @@ object BukkitRepositoryControls {
       new Listener {
         //noinspection ScalaUnusedSymbol
         @EventHandler(priority = EventPriority.LOWEST)
-        final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit =
+        final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
+          println("loading...")
+          exceptionToInspect.printStackTrace()
+
           initialization.prefetchIntermediateValue(event.getUniqueId, event.getName)
             .runSync[SyncIO]
             .unsafeRunSync() match {
             case PrefetchResult.Failed(errorMessageOption) =>
+              println(s"failed loading data for ${event.getUniqueId}")
               errorMessageOption.foreach(event.setKickMessage)
               event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
             case PrefetchResult.Success(data) =>
               temporaryDataMap(event.getUniqueId) = data
-              exceptionToInspect.printStackTrace()
               println(temporaryDataMap.toList)
           }
+        }
 
         //noinspection ScalaUnusedSymbol
         @EventHandler(priority = EventPriority.LOWEST)
