@@ -37,13 +37,20 @@ object BukkitRepositoryControls {
       new PreLoginListener {
         @EventHandler(priority = EventPriority.LOWEST)
         override final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit = {
-          initialization.prepareData(event.getUniqueId, event.getName)
+          initialization
+            .prepareData(event.getUniqueId, event.getName)
             .runSync[SyncIO]
+            .attempt
             .unsafeRunSync() match {
-            case PrefetchResult.Failed(errorMessageOption) =>
+            case Left(error) =>
+              // TODO use Logger
+              error.printStackTrace()
+              event.setKickMessage("初期化処理中にエラーが発生しました。")
+              event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
+            case Right(PrefetchResult.Failed(errorMessageOption)) =>
               errorMessageOption.foreach(event.setKickMessage)
               event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
-            case PrefetchResult.Success(data) =>
+            case Right(PrefetchResult.Success(data)) =>
               dataMap(event.getUniqueId) = data
           }
         }
@@ -63,9 +70,6 @@ object BukkitRepositoryControls {
       F[_] : SyncEffect, R
     ](initialization: TwoPhasedRepositoryInitialization[F, Player, R])
      (temporaryDataMap: TrieMap[UUID, initialization.IntermediateData], dataMap: TrieMap[Player, R]): Listener = {
-
-      // コールスタックをロギング用に取っておくために例外を作成する
-      val exceptionToInspect = new RuntimeException()
 
       val temporaryDataMapInitializer =
         singlePhased(initialization.prefetchIntermediateValue(_, _))((_, _) => Monad[F].unit)(temporaryDataMap)
@@ -96,7 +100,6 @@ object BukkitRepositoryControls {
                    |整地鯖公式Discordサーバーからお知らせ下さい。
                    |""".stripMargin
 
-              exceptionToInspect.printStackTrace()
               player.kickPlayer(message)
           }
         }
