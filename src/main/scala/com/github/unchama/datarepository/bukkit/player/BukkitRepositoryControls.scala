@@ -33,6 +33,10 @@ object BukkitRepositoryControls {
     ](initialization: SinglePhasedRepositoryInitialization[F, R])
      (tapOnJoin: (Player, R) => F[Unit])
      (dataMap: TrieMap[UUID, R]): PreLoginListener = {
+
+      // コールスタックをロギング用に取っておくために例外を作成する
+      val exceptionToInspect = new RuntimeException()
+
       //noinspection ScalaUnusedSymbol
       new PreLoginListener {
         @EventHandler(priority = EventPriority.LOWEST)
@@ -41,12 +45,12 @@ object BukkitRepositoryControls {
             .runSync[SyncIO]
             .unsafeRunSync() match {
             case PrefetchResult.Failed(errorMessageOption) =>
-              println(s"no data loaded for ${event.getUniqueId}")
               errorMessageOption.foreach(event.setKickMessage)
               event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
             case PrefetchResult.Success(data) =>
-              println(s"loaded $data on ${event.getUniqueId}")
               dataMap(event.getUniqueId) = data
+              exceptionToInspect.printStackTrace()
+              println(dataMap.toList)
           }
         }
 
@@ -99,6 +103,7 @@ object BukkitRepositoryControls {
                    |""".stripMargin
 
               exceptionToInspect.printStackTrace()
+              println(temporaryDataMap.toList)
               player.kickPlayer(message)
           }
         }
