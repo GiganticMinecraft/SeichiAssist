@@ -34,9 +34,6 @@ object BukkitRepositoryControls {
      (tapOnJoin: (Player, R) => F[Unit])
      (dataMap: TrieMap[UUID, R]): PreLoginListener = {
 
-      // コールスタックをロギング用に取っておくために例外を作成する
-      val exceptionToInspect = new RuntimeException()
-
       //noinspection ScalaUnusedSymbol
       new PreLoginListener {
         @EventHandler(priority = EventPriority.LOWEST)
@@ -49,8 +46,6 @@ object BukkitRepositoryControls {
               event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
             case PrefetchResult.Success(data) =>
               dataMap(event.getUniqueId) = data
-              exceptionToInspect.printStackTrace()
-              println(dataMap.toList)
           }
         }
 
@@ -73,14 +68,21 @@ object BukkitRepositoryControls {
       // コールスタックをロギング用に取っておくために例外を作成する
       val exceptionToInspect = new RuntimeException()
 
-      val temporaryDataMapInitializer =
-        singlePhased(initialization.prefetchIntermediateValue(_, _))((_, _) => Monad[F].unit)(temporaryDataMap)
-
       new Listener {
         //noinspection ScalaUnusedSymbol
         @EventHandler(priority = EventPriority.LOWEST)
         final def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit =
-          temporaryDataMapInitializer.onPlayerPreLogin(event)
+          initialization.prefetchIntermediateValue(event.getUniqueId, event.getName)
+            .runSync[SyncIO]
+            .unsafeRunSync() match {
+            case PrefetchResult.Failed(errorMessageOption) =>
+              errorMessageOption.foreach(event.setKickMessage)
+              event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER)
+            case PrefetchResult.Success(data) =>
+              temporaryDataMap(event.getUniqueId) = data
+              exceptionToInspect.printStackTrace()
+              println(temporaryDataMap.toList)
+          }
 
         //noinspection ScalaUnusedSymbol
         @EventHandler(priority = EventPriority.LOWEST)
