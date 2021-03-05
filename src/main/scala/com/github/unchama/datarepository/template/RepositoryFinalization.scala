@@ -23,9 +23,9 @@ trait RepositoryFinalization[F[_], Player, R] {
   /**
    * 永続化前に `beforePersisting` を、終了処理前に `beforeFinalization` を実行するような終了処理を定義する。
    */
-  def contraBiFlatMap[S](beforePersisting: S => F[R])
-                        (beforeFinalization: S => F[R])
-                        (implicit F: FlatMap[F]): RepositoryFinalization[F, Player, S] =
+  def withIntermediateEffects[S](beforePersisting: S => F[R])
+                                (beforeFinalization: S => F[R])
+                                (implicit F: FlatMap[F]): RepositoryFinalization[F, Player, S] =
     new RepositoryFinalization[F, Player, S] {
       override val persistPair: (Player, S) => F[Unit] =
         (p, s) => beforePersisting(s).flatMap(r => RepositoryFinalization.this.persistPair(p, r))
@@ -33,8 +33,9 @@ trait RepositoryFinalization[F[_], Player, R] {
         (p, s) => beforeFinalization(s).flatMap(r => RepositoryFinalization.this.finalizeBeforeUnload(p, r))
     }
 
-  def contraFlatMap[S](sFr: S => F[R])(implicit F: FlatMap[F]): RepositoryFinalization[F, Player, S] =
-    contraBiFlatMap(sFr)(sFr)
+  def withIntermediateEffect[S](sFr: S => F[R])
+                               (implicit F: FlatMap[F]): RepositoryFinalization[F, Player, S] =
+    withIntermediateEffects(sFr)(sFr)
 
 }
 
@@ -51,6 +52,6 @@ object RepositoryFinalization {
   def liftToRefFinalization[
     F[_] : FlatMap, Player, R
   ](finalization: RepositoryFinalization[F, Player, R]): RepositoryFinalization[F, Player, Ref[F, R]] =
-    finalization.contraFlatMap[Ref[F, R]](_.get)
+    finalization.withIntermediateEffect[Ref[F, R]](_.get)
 
 }

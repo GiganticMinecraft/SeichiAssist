@@ -79,7 +79,7 @@ object EffectStatsSettingsRepository {
   ](persistence: FastDiggingEffectStatsSettingsPersistence[G]): RepositoryFinalization[G, UUID, RepositoryValue[F, G]] = {
     RepositoryFinalization.liftToRefFinalization[G, UUID, FastDiggingEffectStatsSettings] {
       RefDictBackedRepositoryFinalization.using(persistence)(identity)
-    }.contraBiFlatMap[RepositoryValue[F, G]] {
+    }.withIntermediateEffects[RepositoryValue[F, G]] {
       case (ref, _) =>
         Applicative[G].pure(ref)
     } {
