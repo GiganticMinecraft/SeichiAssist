@@ -18,3 +18,9 @@ trait PocketInventoryAlgebra[F[_], Player, Inventory] {
   def extendSize(newSize: PocketSize)(inventory: Inventory): F[Inventory]
 
 }
+
+object PocketInventoryAlgebra {
+
+  def apply[F[_], P, I](implicit ev: PocketInventoryAlgebra[F, P, I]): PocketInventoryAlgebra[F, P, I] = ev
+
+}

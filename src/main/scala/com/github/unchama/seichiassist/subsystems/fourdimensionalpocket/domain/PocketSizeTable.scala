@@ -16,4 +16,6 @@ object PocketSizeTable extends (SeichiLevel => PocketSize) {
     else PocketSize(6)
   }
 
+  val default: PocketSize = apply(SeichiLevel.ofPositive(1))
+
 }
