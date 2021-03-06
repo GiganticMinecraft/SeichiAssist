@@ -17,9 +17,7 @@ trait FourDimensionalPocketApi[F[_], Player] {
 
   /**
    * プレーヤーの四次元ポケットのサイズを提供する [[KeyedDataRepository]]。
-   *
-   * プレーヤーが四次元ポケットへのアクセス権を（整地レベル制約により）持っていない場合、[[None]]が入る。
    */
-  val currentPocketSize: KeyedDataRepository[Player, ReadOnlyRef[F, Option[PocketSize]]]
+  val currentPocketSize: KeyedDataRepository[Player, ReadOnlyRef[F, PocketSize]]
 
 }
