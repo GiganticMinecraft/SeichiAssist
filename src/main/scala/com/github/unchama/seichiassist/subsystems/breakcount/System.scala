@@ -20,6 +20,8 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
+import java.util.UUID
+
 /**
  * 整地量データを管理するシステム。
  * このシステムは次の責務を持つ。
@@ -75,6 +77,10 @@ object System {
         override val api: BreakCountAPI[F, G, Player] = new BreakCountAPI[F, G, Player] {
           override val seichiAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]] =
             breakCountRepository.map(ReadOnlyRef.fromRef)
+          override val persistedSeichiAmountDataRepository: UUID => ReadOnlyRef[G, Option[SeichiAmountData]] =
+            uuid => ReadOnlyRef.fromAnySource {
+              persistence.read(uuid)
+            }
           override val incrementSeichiExp: IncrementSeichiExp[G, Player] =
             IncrementSeichiExp.using(breakCountRepository, breakCountTopic)
           override val seichiAmountUpdates: fs2.Stream[F, (Player, SeichiAmountData)] =

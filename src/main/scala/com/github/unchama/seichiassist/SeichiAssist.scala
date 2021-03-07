@@ -510,7 +510,7 @@ class SeichiAssist extends JavaPlugin() {
       val halfHourRankingRoutineOption: Option[IO[Nothing]] =
       // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
         Option.unless(Set(7, 8).contains(SeichiAssist.seichiAssistConfig.getServerNum)) {
-          subsystems.halfhourranking.System.backgroundProcess
+          subsystems.halfhourranking.System.backgroundProcess[IO, SyncIO]
         }
 
       val levelUpGiftProcess: IO[Nothing] =

@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.application.actions
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiLevel, SeichiStarLevel}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.{BatchedSeichiExpMap, SeichiAmountData}
 
+import java.util.UUID
 import scala.concurrent.duration.FiniteDuration
 
 trait BreakCountWriteAPI[G[_], Player] {
@@ -23,6 +24,14 @@ trait BreakCountReadAPI[F[_], G[_], Player] {
    * プレーヤーの整地量データの読み取り専用リポジトリ
    */
   val seichiAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]]
+
+  /**
+   * プレーヤーの永続化された整地量データの読み取り専用リポジトリ。
+   *
+   * このリポジトリは統計量表示等には利用できるが、
+   * 最新の整地量データは [[seichiAmountDataRepository]] より取得すること。
+   */
+  val persistedSeichiAmountDataRepository: UUID => ReadOnlyRef[G, Option[SeichiAmountData]]
 
   /**
    * プレーヤーの整地量データの最新値が流れる [[fs2.Stream]]。
