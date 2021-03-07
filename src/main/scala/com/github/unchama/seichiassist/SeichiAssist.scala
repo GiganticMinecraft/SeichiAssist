@@ -13,6 +13,8 @@ import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.minecraft.actions.GetConnectedPlayers
+import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -23,9 +25,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncS
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.domain.playercount.GetConnectedPlayerCount
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
-import com.github.unchama.seichiassist.infrastructure.bukkit.playercount.GetConnectedBukkitPlayerCount
 import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
@@ -202,7 +202,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    implicit val playerCount: GetConnectedPlayerCount[IO] = new GetConnectedBukkitPlayerCount[IO]
+    implicit val playerCount: GetConnectedPlayers[IO, Player] = new GetConnectedBukkitPlayers[IO]
 
     subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
   }
