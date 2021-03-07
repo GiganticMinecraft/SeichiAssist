@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
+import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
@@ -20,6 +21,8 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
@@ -50,6 +53,7 @@ object FirstPage extends Menu {
   class Environment(implicit
                     val breakCountAPI: BreakCountReadAPI[IO, SyncIO, Player],
                     val breakCountBarApi: BreakCountBarAPI[SyncIO, Player],
+                    val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
                     val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
                     val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
                     val rankingApi: RankingApi[IO],
@@ -321,53 +325,37 @@ object FirstPage extends Menu {
           )
         }
 
-    val computePocketOpenButton: IO[Button] =
-      environment
-        .breakCountAPI
-        .seichiAmountDataRepository(player)
-        .read.toIO
-        .flatMap(breakAmountData => IO {
-          val playerData = SeichiAssist.playermap(getUniqueId)
+    val computePocketOpenButton: IO[Button] = {
+      val api = environment.fourDimensionalPocketApi
 
-          val level = breakAmountData.levelCorrespondingToExp.level
-          val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel
-          val hasEnoughLevel = level >= minimumRequiredLevel
-          val pocketInventory = playerData.pocketInventory
+      val readCurrentSize: IO[PocketSize] = api.currentPocketSize(player).read
 
-          val iconItemStack = {
-            val loreAnnotation = List(
-              s"$RESET$DARK_GRAY※4次元ポケットの中身は",
-              s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
-              s"$RESET${DARK_GRAY}共有されます"
-            )
-            val loreHeading = if (hasEnoughLevel) {
-              List(
-                s"$RESET${GRAY}ポケットサイズ:${pocketInventory.getSize}スタック",
-                s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
-              )
-            } else {
-              List(s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です")
-            }
+      val openPocket: Kleisli[IO, Player, Unit] = api.openPocketInventory
 
-            new IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
-              .title(s"$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
-              .lore(loreHeading ++ loreAnnotation)
-              .build()
-          }
-
-          Button(
-            iconItemStack,
-            LeftClickButtonEffect {
-              if (hasEnoughLevel)
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
-                  openInventoryEffect(pocketInventory),
-                )
-              else
-                FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
-            }
+      for {
+        currentSize <- readCurrentSize
+      } yield {
+        val iconItemStack = {
+          val loreAnnotation = List(
+            s"$RESET$DARK_GRAY※4次元ポケットの中身は",
+            s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
+            s"$RESET${DARK_GRAY}共有されます"
           )
-        })
+
+          val loreHeading = List(
+            s"$RESET${GRAY}ポケットサイズ:${currentSize.totalStackCount}スタック",
+            s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+          )
+
+          new IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
+            .title(s"$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
+            .lore(loreHeading ++ loreAnnotation)
+            .build()
+        }
+
+        Button(iconItemStack, LeftClickButtonEffect(openPocket))
+      }
+    }
 
     val computeEnderChestButton: IO[Button] =
       environment

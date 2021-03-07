@@ -4,7 +4,6 @@ import cats.Monad
 import cats.effect.Sync
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, UnlockableActiveSkillEffect}
-import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
@@ -151,7 +150,6 @@ object PlayerDataSaveTask {
           + ",gachapoint = " + playerdata.gachapoint
           + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
           + ",rgnum = " + playerdata.regionCount
-          + ",inventory = '" + BukkitSerialization.toBase64(playerdata.pocketInventory) + "'"
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"
           + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages

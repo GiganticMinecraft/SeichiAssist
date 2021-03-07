@@ -37,8 +37,7 @@ object System {
 
   def wired[
     F[_] : ConcurrentEffect : MinecraftServerThreadShift,
-    G[_] : SyncEffect : ContextCoercion[*[_], F],
-    H[_]
+    G[_] : SyncEffect : ContextCoercion[*[_], F]
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
    (implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
     val persistence: PocketInventoryPersistence[G, Inventory] =

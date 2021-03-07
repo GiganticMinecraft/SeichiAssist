@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.data.player
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.ClosedRange
-import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
@@ -20,12 +19,10 @@ import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
 
 import java.text.SimpleDateFormat
 import java.util.{GregorianCalendar, NoSuchElementException, UUID}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters._
 
 /**
  * @deprecated PlayerDataはuuidに依存するべきではない
@@ -36,7 +33,6 @@ class PlayerData(
                 ) {
 
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.util.InventoryUtil._
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
@@ -154,42 +150,8 @@ class PlayerData(
 
   //region calculated
   // TODO many properties here may be inlined and deleted
-  //拡張インベントリ
-  private var _pocketInventory: Inventory = createInventory(None, 1.chestRows, Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
   //グリッド式保護関連
   private var claimUnit = ClaimUnit(0, 0, 0, 0)
-
-  def pocketInventory: Inventory = {
-    // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
-    if (_pocketInventory.getSize < pocketSize) {
-      val newInventory =
-        Bukkit.getServer
-          .createInventory(null, pocketSize, s"$DARK_PURPLE${BOLD}4次元ポケット")
-      _pocketInventory.asScala.zipWithIndex.map(_.swap).foreach { case (i, is) => newInventory.setItem(i, is) }
-      _pocketInventory = newInventory
-    }
-
-    _pocketInventory
-  }
-
-  def pocketInventory_=(inventory: Inventory): Unit = {
-    _pocketInventory = inventory
-  }
-
-  //四次元ポケットのサイズを取得
-  private def pocketSize: Int = {
-    val seichiAmountData = SeichiAssist.instance
-      .breakCountSystem.api
-      .seichiAmountDataRepository(player).read
-      .unsafeRunSync()
-
-    seichiAmountData.levelCorrespondingToExp.level match {
-      case level if level < 46 => 9 * 3
-      case level if level < 56 => 9 * 4
-      case level if level < 66 => 9 * 5
-      case _ => 9 * 6
-    }
-  }
 
   def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
 

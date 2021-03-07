@@ -398,44 +398,6 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     )
   }
 
-  //プレイヤーの拡張インベントリを開くイベント
-  @EventHandler
-  def onPlayerOpenInventorySkillEvent(event: PlayerInteractEvent): Unit = {
-    //プレイヤーを取得
-    val player = event.getPlayer
-    //プレイヤーが起こしたアクションを取得
-    val action = event.getAction
-    //使った手を取得
-    val equipmentslot = event.getHand
-
-    if (event.getMaterial == Material.ENDER_PORTAL_FRAME) {
-      //設置をキャンセル
-      event.setCancelled(true)
-
-      val playerData = playerMap(player.getUniqueId)
-
-      val playerLevel = SeichiAssist.instance
-        .breakCountSystem.api.seichiAmountDataRepository(player)
-        .read.unsafeRunSync().levelCorrespondingToExp.level
-
-      //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
-      if (playerLevel < SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel) {
-        player.sendMessage(GREEN.toString + "4次元ポケットを入手するには整地Lvが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
-        return
-      }
-      if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-        //オフハンドから実行された時処理を終了
-        if (equipmentslot == EquipmentSlot.OFF_HAND) {
-          return
-        }
-        //開く音を再生
-        player.playSound(player.getLocation, Sound.BLOCK_ENDERCHEST_OPEN, 1f, 0.1f)
-        //インベントリを開く
-        player.openInventory(playerData.pocketInventory)
-      }
-    }
-  }
-
   //頭の即時回収
   @EventHandler
   def onPlayerRightClickMineHeadEvent(e: PlayerInteractEvent): Unit = {
