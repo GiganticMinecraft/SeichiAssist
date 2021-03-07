@@ -2,12 +2,13 @@ package com.github.unchama.datarepository.bukkit.player
 
 import cats.effect.{ConcurrentEffect, ContextShift, IO, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.concurrent.{Mutex, TryableFiber}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.generic.effect.{Mutex, TryableFiber}
 import org.bukkit.entity.Player
 
 import java.util.UUID
 
+@deprecated("Move to BukkitRepositoryControls for compositionality")
 class TryableFiberRepository[
   AsyncContext[_] : ConcurrentEffect : ContextShift,
   SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]

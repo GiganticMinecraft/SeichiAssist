@@ -2,16 +2,16 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingSettingsWriteApi
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.FastDiggingEffectStatsSettings
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
-object EffectCommand {
+class EffectCommand[F[_]](api: FastDiggingSettingsWriteApi[IO, Player]) {
   private val printUsageExecutor = playerCommandBuilder
     .execution { _ =>
       val message = List(
@@ -28,34 +28,41 @@ object EffectCommand {
     }
     .build()
 
+  import cats.implicits._
+
   private val toggleExecutor = playerCommandBuilder
-    .execution { context =>
-      val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
-      val guidance = MessageEffect("再度 /ef コマンドを実行することでトグルします。")
-
-      def execution(): TargetedEffect[Player] = {
-        import com.github.unchama.generic.syntax._
-
-        if (playerData == null) return emptyEffect
-
-        val toggleResponse = playerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect
-        toggleResponse.followedBy(guidance)
-      }
-
-      IO.pure(execution())
+    .withEffectAsExecution {
+      api
+        .toggleEffectSuppression
+        .flatMap { newState =>
+          MessageEffect {
+            newState match {
+              case FastDiggingEffectSuppressionState.EnabledWithoutLimit =>
+                s"${GREEN}採掘速度上昇効果:ON(無制限)"
+              case limit: FastDiggingEffectSuppressionState.EnabledWithLimit =>
+                s"${GREEN}採掘速度上昇効果:ON(${limit.limit}制限)"
+              case FastDiggingEffectSuppressionState.Disabled =>
+                s"${RED}採掘速度上昇効果:OFF"
+            }
+          }
+        } >> MessageEffect("再度 /ef コマンドを実行することでトグルします。")
     }
     .build()
 
   private val messageFlagToggleExecutor = playerCommandBuilder
-    .execution { context =>
-      val playerData = SeichiAssist.playermap(context.sender.getUniqueId)
-
-      def execution(): TargetedEffect[Player] = {
-        if (playerData == null) return emptyEffect
-        playerData.toggleMessageFlag()
-      }
-
-      IO.pure(execution())
+    .withEffectAsExecution {
+      api
+        .toggleStatsSettings
+        .flatMap { newSettings =>
+          MessageEffect {
+            newSettings match {
+              case FastDiggingEffectStatsSettings.AlwaysReceiveDetails =>
+                s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
+              case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate =>
+                s"${GREEN}内訳表示:OFF"
+            }
+          }
+        }
     }
     .build()
 

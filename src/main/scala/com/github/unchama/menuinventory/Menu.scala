@@ -39,6 +39,7 @@ trait Menu {
     for {
       session <- MenuSession.createNewSessionWith[IO](frame)
       _ <- session.openInventory.run(player)
+      _ <- IO.shift(ctx)
       layout <- computeMenuLayout(player)
       _ <- session.overwriteViewWith(layout)
     } yield ()

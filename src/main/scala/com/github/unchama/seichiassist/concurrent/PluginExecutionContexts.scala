@@ -7,7 +7,7 @@ import com.github.unchama.generic.tag.tag
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.Tags.LayoutPreparationContextTag
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
-import com.github.unchama.minecraft.bukkit.BukkitServerThreadIOShift
+import com.github.unchama.minecraft.bukkit.actions.BukkitServerThreadIOShift
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.plugin.java.JavaPlugin
 

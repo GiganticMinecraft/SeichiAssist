@@ -37,88 +37,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
   //ランキングメニュー
   @EventHandler
-  def onPlayerClickSeichiRankingMenuEvent(event: InventoryClickEvent): Unit = {
-    //外枠のクリック処理なら終了
-    if (event.getClickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.getCurrentItem
-    val view = event.getView
-    val he = view.getPlayer
-    //インベントリを開けたのがプレイヤーではない時終了
-    if (he.getType != EntityType.PLAYER) {
-      return
-    }
-
-    val topinventory = view.getTopInventory.ifNull {
-      return
-    }
-    //インベントリが存在しない時終了
-    //インベントリサイズが54でない時終了
-    if (topinventory.row != 6) {
-      return
-    }
-    val player = he.asInstanceOf[Player]
-
-    val isSkull = itemstackcurrent.getType == Material.SKULL_ITEM
-    //インベントリ名が以下の時処理
-    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "整地神ランキング") {
-      event.setCancelled(true)
-
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-      //ページ変更処理
-      if (isSkull) {
-        // safe cast
-        val skullMeta = itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]
-        val name = skullMeta.getDisplayName
-        skullMeta.getOwner match {
-          case "MHF_ArrowLeft" =>
-
-
-            effectEnvironment.runAsyncTargetedEffect(player)(
-              SequentialEffect(
-                CommonSoundEffects.menuTransitionFenceSound,
-                ioCanOpenStickMenu.open(StickMenu.firstPage)
-              ),
-              "棒メニューの1ページ目を開く"
-            )
-
-          case "MHF_ArrowDown" =>
-            itemstackcurrent.getItemMeta
-            if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
-
-              //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-              player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
-            }
-
-          case "MHF_ArrowUp" =>
-            itemstackcurrent.getItemMeta
-            if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
-
-              //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-              player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
-            }
-
-          case _ =>
-        }
-      }
-    }
-  }
-
-  //ランキングメニュー
-  @EventHandler
   def onPlayerClickSeichiRankingMenuEvent1(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {
@@ -657,6 +575,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     val uuid = player.getUniqueId
     val playerdata = playerMap(uuid)
 
+    val playerLevel = SeichiAssist.instance
+      .breakCountSystem.api.seichiAmountDataRepository(player)
+      .read.unsafeRunSync().levelCorrespondingToExp.level
+
     //インベントリ名が以下の時処理
     if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "投票ptメニュー") {
       event.setCancelled(true)
@@ -697,7 +619,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
           }
 
           //ピッケルプレゼント処理(レベル50になるまで)
-          if (playerdata.level < 50) {
+          if (playerLevel < 50) {
             val pickaxe = ItemData.getSuperPickaxe(1)
             if (Util.isPlayerInventoryFull(player)) {
               Util.dropItem(player, pickaxe)
@@ -707,7 +629,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
           }
 
           //投票ギフト処理(レベル50から)
-          if (playerdata.level >= 50) {
+          if (playerLevel >= 50) {
             val gift = ItemData.getVotingGift(1)
             if (Util.isPlayerInventoryFull(player)) {
               Util.dropItem(player, gift)
@@ -760,7 +682,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         player.closeInventory()
 
         //プレイヤーレベルが10に達していないとき
-        if (playerdata.level < 10) {
+        if (playerLevel < 10) {
           player.sendMessage(GOLD.toString + "プレイヤーレベルが足りません")
           player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
           return

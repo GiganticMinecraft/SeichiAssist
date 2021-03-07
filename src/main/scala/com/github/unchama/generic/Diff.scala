@@ -14,6 +14,11 @@ object Diff {
 
   import cats.implicits._
 
+  def ofPairBy[A, B: Eq](pair: (A, A))(f: A => B): Option[Diff[B]] = fromValues(f(pair._1), f(pair._2))
+
   def fromValues[A: Eq](left: A, right: A): Option[Diff[A]] =
     if (left neqv right) Some(Diff(left, right)) else None
+
+  def ofPair[A: Eq](pair: (A, A)): Option[Diff[A]] = fromValues(pair._1, pair._2)
+
 }
