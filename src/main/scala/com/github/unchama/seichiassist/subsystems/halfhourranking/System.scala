@@ -32,7 +32,7 @@ object System {
     breakCountReadAPI
       .batchedIncreases(30.minutes)
       .map(RankingRecord.apply)
-      .evalTap(AnnounceRankingRecord[F, G, Player](breakCountReadAPI)(p => Applicative[F].pure(p.getDisplayName)))
+      .evalTap(AnnounceRankingRecord[F, G, Player](breakCountReadAPI)(p => Applicative[F].pure(p.getName)))
       .compile.drain
       .flatMap[Nothing](_ => Async[F].never)
   }

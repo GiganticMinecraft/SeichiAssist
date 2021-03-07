@@ -58,13 +58,17 @@ object AnnounceRankingRecord {
                     .read
                 }
             }
-          playerNameText = {
-            seichiExpAmountData.map(_.levelCorrespondingToExp.level) match {
-              case Some(level) =>
+          playerNameText = seichiExpAmountData match {
+            case Some(data) =>
+              val level = data.levelCorrespondingToExp.level
+              val starLevel = data.starLevelCorrespondingToExp.level
+
+              if (starLevel != 0)
+                s"$decorationColorCode[Lv $level☆$starLevel] $name$WHITE"
+              else
                 s"$decorationColorCode[Lv $level] $name$WHITE"
-              case None =>
-                s"$decorationColorCode$name$WHITE"
-            }
+            case None =>
+              s"$decorationColorCode$name$WHITE"
           }
           _ <- BroadcastMinecraftMessage[F].string(
             s"整地量第${position}位は${playerNameText}で、整地量は${increaseAmountText}でした"
