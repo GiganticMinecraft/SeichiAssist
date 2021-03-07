@@ -1,6 +1,6 @@
 package com.github.unchama.generic
 
-import cats.Contravariant
+import cats.{Contravariant, ~>}
 
 /**
  * [[Key]] をキーとした参照セルの辞書型データ構造の抽象。
@@ -10,11 +10,20 @@ import cats.Contravariant
  * このI/Fは一切の等式を保証しない。
  */
 trait RefDict[F[_], Key, Value] {
+  self =>
 
   def read(key: Key): F[Option[Value]]
 
   def write(key: Key, value: Value): F[Unit]
 
+  final def mapK[G[_]](fK: F ~> G): RefDict[G, Key, Value] =
+    new RefDict[G, Key, Value] {
+      override def read(key: Key): G[Option[Value]] = fK(self.read(key))
+
+      override def write(key: Key, value: Value): G[Unit] = fK(self.write(key, value))
+    }
+
+  final def coerceContextTo[G[_]](implicit ev: ContextCoercion[F, G]): RefDict[G, Key, Value] = mapK(ev)
 }
 
 object RefDict {

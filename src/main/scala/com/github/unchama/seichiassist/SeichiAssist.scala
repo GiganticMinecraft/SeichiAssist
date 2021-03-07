@@ -38,6 +38,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -186,6 +187,15 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
   }
 
+  private lazy val fourDimensionalPocketSystem: subsystems.fourdimensionalpocket.System[IO, Player] = {
+    import PluginExecutionContexts.{asyncShift, syncShift}
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.fourdimensionalpocket.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
+  }
+
   private lazy val fastDiggingEffectSystem: subsystems.fastdiggingeffect.System[IO, IO, Player] = {
     import PluginExecutionContexts.{asyncShift, syncShift, timer}
 
@@ -226,6 +236,7 @@ class SeichiAssist extends JavaPlugin() {
           breakCountSystem.managedFinalizers ++
           breakCountBarSystem.managedFinalizers ++
           fastDiggingEffectSystem.managedFinalizers ++
+          fourDimensionalPocketSystem.managedFinalizers ++
           buildCountSystem.managedFinalizers.appended(savePlayerData)
       ),
       PluginExecutionContexts.asyncShift
@@ -359,6 +370,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
     implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] = fastDiggingEffectSystem.effectApi
     implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] = fastDiggingEffectSystem.settingsApi
+    implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
@@ -388,7 +400,8 @@ class SeichiAssist extends JavaPlugin() {
       breakCountSystem,
       breakCountBarSystem,
       buildCountSystem,
-      fastDiggingEffectSystem
+      fastDiggingEffectSystem,
+      fourDimensionalPocketSystem
     )
 
     // コマンドの登録
@@ -397,7 +410,6 @@ class SeichiAssist extends JavaPlugin() {
       "map" -> MapCommand.executor,
       "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
-      "openpocket" -> OpenPocketCommand.executor,
       "lastquit" -> LastQuitCommand.executor,
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
