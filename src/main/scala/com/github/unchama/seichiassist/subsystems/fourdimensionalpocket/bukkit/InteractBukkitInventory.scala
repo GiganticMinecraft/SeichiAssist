@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure
+package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit
 
 import cats.Monad
 import cats.effect.Sync

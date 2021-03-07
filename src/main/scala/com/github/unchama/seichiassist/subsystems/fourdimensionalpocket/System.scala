@@ -12,10 +12,11 @@ import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinitions
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.OpenPocketInventoryOnPlacingEnderPortalFrame
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.{CreateBukkitInventory, InteractBukkitInventory, JdbcBukkitPocketInventoryPersistence}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
 import org.bukkit.Sound
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure
+package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize

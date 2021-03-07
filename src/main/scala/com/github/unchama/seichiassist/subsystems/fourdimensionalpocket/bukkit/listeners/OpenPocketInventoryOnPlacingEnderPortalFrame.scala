@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit
+package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners
 
 import cats.effect.Effect
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
