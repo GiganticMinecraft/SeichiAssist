@@ -75,10 +75,12 @@ object System {
         }
         override val currentPocketSize: KeyedDataRepository[Player, ReadOnlyRef[F, PocketSize]] =
           player => ReadOnlyRef.fromAnySource {
-            pocketInventoryRepositoryHandles
-              .repository(player)._1
-              .readLatest
-              .map(inventory => PocketSize.fromTotalStackCount(inventory.getSize))
+            ContextCoercion {
+              pocketInventoryRepositoryHandles
+                .repository(player)._1
+                .readLatest
+                .map(inventory => PocketSize.fromTotalStackCount(inventory.getSize))
+            }
           }
       }
 

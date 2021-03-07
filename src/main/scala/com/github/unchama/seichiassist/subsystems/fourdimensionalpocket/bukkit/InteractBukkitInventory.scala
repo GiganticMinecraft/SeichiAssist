@@ -39,7 +39,7 @@ class InteractBukkitInventory[
             newInventory.setItem(i, stack)
           }
         }
-      } yield (),
+      } yield newInventory,
       Monad[F].pure(inventory)
     )
   }

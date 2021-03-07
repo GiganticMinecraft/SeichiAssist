@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application
 
-import cats.Applicative
 import cats.effect.concurrent.Deferred
 import cats.effect.{Async, Concurrent, ConcurrentEffect, Effect, Fiber, Sync}
 import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization, RepositoryFinalization, SinglePhasedRepositoryInitialization}
@@ -82,8 +81,7 @@ object PocketInventoryRepositoryDefinitions {
     RefDictBackedRepositoryFinalization
       .using(persistence)(identity[UUID])
       .withIntermediateEffects[RepositoryValue[F, G, Inventory]] {
-        case (ref, _) =>
-          Applicative[G].pure(ref.readLatest)
+        case (ref, _) => ref.readLatest
       } {
         case (ref, fiber) =>
           // 終了時にファイバーの開始を待ち、開始されたものをすぐにcancelする
