@@ -7,6 +7,7 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinitions
@@ -30,7 +31,7 @@ object System {
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
   def wired[
-    F[_] : ConcurrentEffect,
+    F[_] : ConcurrentEffect : MinecraftServerThreadShift,
     G[_] : SyncEffect : ContextCoercion[*[_], F],
     H[_]
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, Player]] = {

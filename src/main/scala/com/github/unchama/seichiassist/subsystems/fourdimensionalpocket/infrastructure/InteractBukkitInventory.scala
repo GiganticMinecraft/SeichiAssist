@@ -2,13 +2,15 @@ package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrast
 
 import cats.Monad
 import cats.effect.Sync
+import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.InteractInventory
+import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.{Inventory, ItemStack}
 
 class InteractBukkitInventory[
-  F[_] : Sync
+  F[_] : Sync : MinecraftServerThreadShift
 ] extends InteractInventory[F, Player, Inventory] {
   override def open(inventory: Inventory)(player: Player): F[Unit] =
     Sync[F].delay {
@@ -24,13 +26,20 @@ class InteractBukkitInventory[
     val shouldCreateNew: F[Boolean] = Sync[F].delay(inventory.getSize < newSize.totalStackCount)
 
     Monad[F].ifM(shouldCreateNew)(
-      new CreateBukkitInventory[F].create(newSize).flatTap { newInventory =>
-        Sync[F].delay {
-          // 内容物をコピーする。サイズが上回っているため必ず格納ができる
-          // TODO メインスレッドで閉じさせてアイテムを移行する
-          inventory.asScala.zipWithIndex.foreach { case (stack, i) => newInventory.setItem(i, stack) }
+      for {
+        _ <- MinecraftServerThreadShift[F].shift
+        _ <- Sync[F].delay {
+          inventory.getViewers.forEach(_.closeInventory())
         }
-      },
+        newInventory <- new CreateBukkitInventory[F].create(newSize)
+        _ <- Sync[F].delay {
+          // 内容物を移動する。
+          inventory.asScala.zipWithIndex.foreach { case (stack, i) =>
+            inventory.setItem(i, new ItemStack(Material.AIR, 0))
+            newInventory.setItem(i, stack)
+          }
+        }
+      } yield (),
       Monad[F].pure(inventory)
     )
   }
