@@ -10,7 +10,8 @@ import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.generic.{ContextCoercion, Diff}
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryAlgebra, PocketInventoryPersistence, PocketSizeTable}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSizeTable}
 
 import java.util.UUID
 
@@ -29,12 +30,12 @@ object PocketInventoryRepositoryDefinitions {
     F[_] : ConcurrentEffect,
     G[_] : Sync : ContextCoercion[*[_], F],
     Player,
-    Inventory: PocketInventoryAlgebra[G, Player, *]
+    Inventory: CreateInventory[G, *]
   ](persistence: PocketInventoryPersistence[G, Inventory])
   : SinglePhasedRepositoryInitialization[G, RepositoryValue[F, G, Inventory]] = {
     RefDictBackedRepositoryInitialization
       .usingUuidRefDict(persistence) {
-        PocketInventoryAlgebra.apply.create(PocketSizeTable.default)
+        CreateInventory.apply.create(PocketSizeTable.default)
       }
       .extendPreparation { (_, _) =>
         inventory =>
@@ -49,7 +50,7 @@ object PocketInventoryRepositoryDefinitions {
     F[_] : ConcurrentEffect,
     G[_] : Sync : ContextCoercion[*[_], F],
     Player: HasUuid,
-    Inventory: PocketInventoryAlgebra[G, Player, *]
+    Inventory: InteractInventory[F, Player, *]
   ](levelStream: fs2.Stream[F, (Player, Diff[SeichiLevel])]): (Player, RepositoryValue[F, G, Inventory]) => G[Unit] =
     (player, pair) => {
       val uuid = HasUuid[Player].of(player)
@@ -61,12 +62,10 @@ object PocketInventoryRepositoryDefinitions {
           .valuesWithKeyFilter(levelStream)(HasUuid[Player].of(_) == uuid)
           .evalMap { case Diff(_, right) =>
             val newSize = PocketSizeTable(right)
+            val update: Inventory => F[Inventory] =
+              InteractInventory[F, Player, Inventory].extendSize(newSize)(_)
 
-            ref.lockAndUpdate { inventory =>
-              ContextCoercion {
-                PocketInventoryAlgebra[G, Player, Inventory].extendSize(newSize)(inventory)
-              }
-            }.as(())
+            ref.lockAndUpdate(update).as(())
           }
 
       EffectExtra.runAsyncAndForget[F, G, Unit] {

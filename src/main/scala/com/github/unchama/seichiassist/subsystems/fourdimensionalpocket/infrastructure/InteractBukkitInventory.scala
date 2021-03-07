@@ -2,13 +2,14 @@ package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrast
 
 import cats.Monad
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryAlgebra, PocketSize}
-import org.bukkit.Bukkit
-import org.bukkit.ChatColor.{BOLD, DARK_PURPLE}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.InteractInventory
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
-class BukkitPocketInventoryAlgebra[F[_] : Sync] extends PocketInventoryAlgebra[F, Player, Inventory] {
+class InteractBukkitInventory[
+  F[_] : Sync
+] extends InteractInventory[F, Player, Inventory] {
   override def open(inventory: Inventory)(player: Player): F[Unit] =
     Sync[F].delay {
       player.openInventory(inventory)
@@ -18,21 +19,15 @@ class BukkitPocketInventoryAlgebra[F[_] : Sync] extends PocketInventoryAlgebra[F
 
   import scala.jdk.CollectionConverters._
 
-  override def create(size: PocketSize): F[Inventory] =
-    Sync[F].delay {
-      Bukkit
-        .getServer
-        .createInventory(null, size.totalStackCount, s"$DARK_PURPLE${BOLD}4次元ポケット")
-    }
-
   override def extendSize(newSize: PocketSize)
                          (inventory: Inventory): F[Inventory] = {
     val shouldCreateNew: F[Boolean] = Sync[F].delay(inventory.getSize < newSize.totalStackCount)
 
     Monad[F].ifM(shouldCreateNew)(
-      create(newSize).flatTap { newInventory =>
+      new CreateBukkitInventory[F].create(newSize).flatTap { newInventory =>
         Sync[F].delay {
           // 内容物をコピーする。サイズが上回っているため必ず格納ができる
+          // TODO メインスレッドで閉じさせてアイテムを移行する
           inventory.asScala.zipWithIndex.foreach { case (stack, i) => newInventory.setItem(i, stack) }
         }
       },

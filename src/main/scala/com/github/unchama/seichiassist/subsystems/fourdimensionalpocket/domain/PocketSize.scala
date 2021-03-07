@@ -8,3 +8,13 @@ case class PocketSize(chestRows: Int) {
 
   lazy val totalStackCount: Int = chestRows * 9
 }
+
+object PocketSize {
+
+  def fromTotalStackCount(totalStackCount: Int): PocketSize = {
+    require(totalStackCount % 9 == 0)
+
+    PocketSize(totalStackCount / 9)
+  }
+
+}
