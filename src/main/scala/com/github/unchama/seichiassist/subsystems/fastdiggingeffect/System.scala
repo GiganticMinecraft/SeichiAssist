@@ -121,8 +121,11 @@ object System {
         override def addEffect(effect: FastDiggingEffect, duration: FiniteDuration): Kleisli[F, Player, Unit] =
           Kleisli { player =>
             effectListRepositoryHandles
-              .repository(player)._1
-              .lockAndUpdate(_.appendEffect[F](effect, duration))
+              .repository
+              .lift(player)
+              .traverse { pair =>
+                pair._1.lockAndUpdate(_.appendEffect[F](effect, duration)).as(())
+              }
               .as(())
           }
 
