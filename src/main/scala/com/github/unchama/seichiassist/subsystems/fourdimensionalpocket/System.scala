@@ -12,6 +12,7 @@ import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.OpenPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
@@ -85,6 +86,16 @@ object System {
       val openPocketListener =
         new OpenPocketInventoryOnPlacingEnderPortalFrame[F](systemApi, effectEnvironment)
 
+      val openPocketCommand =
+        new OpenPocketCommand[F](
+          pocketInventoryRepositoryHandles
+            .repository
+            .map {
+              case (mutex, _) => ReadOnlyRef.fromAnySource(ContextCoercion(mutex.readLatest))
+            },
+          persistence.coerceContextTo[F]
+        )
+
       new System[F, Player] {
         override val api: FourDimensionalPocketApi[F, Player] = systemApi
         override val listeners: Seq[Listener] = Vector(
@@ -94,7 +105,10 @@ object System {
         override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = Vector(
           pocketInventoryRepositoryHandles.finalizer.coerceContextTo[F]
         )
-        override val commands: Map[String, TabExecutor] = Map()
+        override val commands: Map[String, TabExecutor] =
+          Map(
+            "openpocket" -> openPocketCommand.executor
+          )
       }
     }
   }
