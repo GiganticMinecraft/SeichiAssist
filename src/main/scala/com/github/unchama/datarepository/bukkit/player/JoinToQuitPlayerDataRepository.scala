@@ -39,6 +39,8 @@ abstract class JoinToQuitPlayerDataRepository[R] extends PlayerDataRepository[R]
 
   override def apply(player: Player): R = state(player)
 
+  override def isDefinedAt(x: Player): Boolean = state.isDefinedAt(x)
+
   @EventHandler(priority = EventPriority.LOWEST)
   final def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     val jointPlayer = event.getPlayer

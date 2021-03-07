@@ -73,15 +73,22 @@ object System {
               .readLatest
           }.flatMap(inventory => interactInventory.open(inventory)(player))
         }
-        override val currentPocketSize: KeyedDataRepository[Player, ReadOnlyRef[F, PocketSize]] =
-          player => ReadOnlyRef.fromAnySource {
-            ContextCoercion {
-              pocketInventoryRepositoryHandles
-                .repository(player)._1
-                .readLatest
-                .map(inventory => PocketSize.fromTotalStackCount(inventory.getSize))
-            }
+        override val currentPocketSize: KeyedDataRepository[Player, ReadOnlyRef[F, PocketSize]] = {
+          KeyedDataRepository.unlift { player =>
+            pocketInventoryRepositoryHandles
+              .repository
+              .lift(player)
+              .map { case (mutex, _) =>
+                ReadOnlyRef.fromAnySource {
+                  ContextCoercion {
+                    mutex
+                      .readLatest
+                      .map(inventory => PocketSize.fromTotalStackCount(inventory.getSize))
+                  }
+                }
+              }
           }
+        }
       }
 
       val openPocketListener =

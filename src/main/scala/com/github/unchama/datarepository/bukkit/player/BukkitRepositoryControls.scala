@@ -152,7 +152,7 @@ object BukkitRepositoryControls {
     val i: initialization.type = initialization
 
     BukkitRepositoryControls(
-      player => dataMap(player.getUniqueId),
+      PlayerDataRepository.unlift(player => dataMap.get(player.getUniqueId)),
       Initializers.singlePhased(i)(onPlayerJoin)(dataMap),
       backupProcess(finalization)(dataMap),
       player => Finalizers.singlePhased(finalization)(dataMap).onQuitOf(player.getUniqueId)
@@ -170,7 +170,7 @@ object BukkitRepositoryControls {
     val i: initialization.type = initialization
 
     BukkitRepositoryControls(
-      player => dataMap(player.getUniqueId),
+      PlayerDataRepository.unlift(player => dataMap.get(player.getUniqueId)),
       Initializers.singlePhased(i)((_, _) => Monad[F].unit)(dataMap),
       backupProcess(finalization)(dataMap),
       player => Finalizers.singlePhased(finalization)(dataMap).onQuitOf(player.getUniqueId)
@@ -189,7 +189,7 @@ object BukkitRepositoryControls {
     val i: initialization.type = initialization
 
     BukkitRepositoryControls(
-      player => dataMap(player),
+      PlayerDataRepository.unlift(player => dataMap.get(player)),
       Initializers.twoPhased(i)(temporaryDataMap, dataMap),
       backupProcess(finalization)(dataMap),
       Finalizers.twoPhased(finalization)(temporaryDataMap, dataMap)

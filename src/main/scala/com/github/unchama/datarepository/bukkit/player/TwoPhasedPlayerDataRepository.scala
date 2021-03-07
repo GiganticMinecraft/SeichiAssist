@@ -76,6 +76,8 @@ abstract class TwoPhasedPlayerDataRepository[SyncContext[_] : SyncEffect, R]
 
   override def apply(player: Player): R = state(player.getUniqueId)
 
+  override def isDefinedAt(x: Player): Boolean = state.isDefinedAt(x.getUniqueId)
+
   import cats.effect.implicits._
 
   //region イベントハンドラ
