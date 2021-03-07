@@ -26,7 +26,8 @@ object SynchronizationProcess {
           totalAmplifier <- list.totalPotionAmplifier[F](state)
 
           _ <- totalAmplifier.traverse {
-            GrantFastDiggingEffect[F, Player].forASecond(player)
+            // クロックが完全に同期していない(厳密に20ティックに1回ではない)ため、2秒間の効果を付与する
+            GrantFastDiggingEffect[F, Player].forTwoSeconds(player)
           }
         } yield ()
 

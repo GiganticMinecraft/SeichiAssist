@@ -2,7 +2,13 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.acti
 
 trait GrantFastDiggingEffect[F[_], Player] {
 
-  def forASecond(player: Player)(amount: Int): F[Unit]
+  /**
+   * `player` に、Minecraftのポーション効果値 `amount` に対応する採掘速度上昇効果を二秒間付与する作用。
+   *
+   * もしプレーヤーがすでに採掘速度上昇効果を付与されていた場合、既存の効果に上書きする。
+   * これによりバニラのビーコンで得られるレベル1及びレベル2の採掘速度上昇効果が無効化されるが、仕様とする。
+   */
+  def forTwoSeconds(player: Player)(amount: Int): F[Unit]
 
 }
 
