@@ -181,7 +181,7 @@ object RegionMenu extends Menu {
           s"${GRAY}該当保護を削除する",
           s"$RED$UNDERLINE/rg addmem 保護名 プレイヤー名",
           s"${GRAY}該当保護に指定メンバーを追加",
-          s"$RED$UNDERLINE/rg removemenber 保護名 プレイヤー名",
+          s"$RED$UNDERLINE/rg removemember 保護名 プレイヤー名",
           s"${GRAY}該当保護の指定メンバーを削除",
           s"${DARK_GRAY}その他のコマンドはwikiを参照",
           s"${DARK_GRAY}command=>[/rg list]")
