@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerChangedWorldEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
@@ -90,25 +91,34 @@ class PlayerJoinListener extends Listener {
       Util.sendEveryMessage(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
-      player.getInventory.addItem(new ItemStack(Material.STICK))
-      player.getInventory.addItem(new ItemStack(Material.ELYTRA))
-      player.getInventory.addItem(new ItemStack(Material.DIAMOND_PICKAXE))
-      player.getInventory.addItem(new ItemStack(Material.DIAMOND_SPADE))
+      val inv = player.getInventory
+      inv.addItem(new ItemStack(Material.STICK))
+      inv.addItem(new ItemStack(Material.ELYTRA))
 
-      player.getInventory.addItem(new ItemStack(Material.LOG, 64, 0.toShort),
+      import scala.util.chaining._
+      val pickaxe = new ItemStack(Material.DIAMOND_PICKAXE)
+        .tap(_.addEnchantment(Enchantment.DURABILITY, 3))
+      inv.addItem(pickaxe)
+      inv.addItem(new ItemStack(Material.DIAMOND_SPADE))
+
+      inv.addItem(new ItemStack(Material.LOG, 64, 0.toShort),
         new ItemStack(Material.LOG, 64, 0.toShort),
         new ItemStack(Material.LOG, 64, 2.toShort),
         new ItemStack(Material.LOG_2, 64, 1.toShort))
 
+      inv.addItem(new ItemStack(Material.BAKED_POTATO, 64))
+      // TODO: 本の中身
+      inv.addItem(new ItemStack(Material.WRITTEN_BOOK))
+
       //メビウスおひとつどうぞ
-      player.getInventory.setHelmet(BukkitMebiusItemStackCodec.materialize(
+      inv.setHelmet(BukkitMebiusItemStackCodec.materialize(
         // **getDisplayNameは二つ名も含むのでMCIDにはgetNameが適切**
         MebiusProperty.initialProperty(NormalMebius, player.getName, player.getUniqueId.toString),
         damageValue = 0.toShort
       ))
 
       /* 期間限定ダイヤ配布.期間終了したので64→32に変更して恒久継続 */
-      player.getInventory.addItem(new ItemStack(Material.DIAMOND, 32))
+      inv.addItem(new ItemStack(Material.DIAMOND, 32))
 
       player.sendMessage("初期装備を配布しました。Eキーで確認してネ")
       //初見さんにLv1メッセージを送信
