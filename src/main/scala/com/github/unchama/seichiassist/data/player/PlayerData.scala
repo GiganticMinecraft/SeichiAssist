@@ -126,7 +126,6 @@ class PlayerData(
   //実績ポイント用
   var achievePoint: AchievementPoint = AchievementPoint()
 
-  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO)
   // n周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
