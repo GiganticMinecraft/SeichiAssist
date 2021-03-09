@@ -12,14 +12,17 @@ import org.bukkit.inventory.{Inventory, ItemStack}
 class InteractBukkitInventory[
   F[_] : Sync : MinecraftServerThreadShift
 ] extends InteractInventory[F, Player, Inventory] {
-  override def open(inventory: Inventory)(player: Player): F[Unit] =
-    Sync[F].delay {
-      player.openInventory(inventory)
-    }
 
   import cats.implicits._
 
   import scala.jdk.CollectionConverters._
+
+  override def open(inventory: Inventory)(player: Player): F[Unit] =
+  // インベントリの開閉はパケットが送られるためメインスレッドからのみ許可される(Spigot 1.12.2)
+    MinecraftServerThreadShift[F].shift >>
+      Sync[F].delay {
+        player.openInventory(inventory)
+      }.as(())
 
   override def extendSize(newSize: PocketSize)
                          (inventory: Inventory): F[Inventory] = {

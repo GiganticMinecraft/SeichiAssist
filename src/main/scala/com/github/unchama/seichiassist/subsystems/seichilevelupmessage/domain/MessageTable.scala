@@ -1,8 +1,11 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seichiassist.subsystems.seichilevelupmessage.domain
 
-object SeichiLvUpMessages {
+import com.github.unchama.generic.Diff
+import com.github.unchama.generic.algebra.typeclasses.HasSuccessor
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
+
+object MessageTable {
   private val messages = Map(
-    1 -> "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！",
     2 -> "おめでとうございます！最初のレベルアップです！\nレベル8に到達すると整地するだけでマナがもらえるようになります。",
     3 -> "やけに早く掘れる気がする…？それは仕様です＾＾\n整地鯖では接続人数や採掘量に応じて採掘速度にブーストが掛かります。",
     4 -> "整地鯖では死んでもロストしません。気軽に冒険、整地してくださいね。\nそういえば当鯖の「ルール」もう確認しましたか？\n手遅れになる前に確認しておきましょうネ。木の棒メニューからどうぞ。",
@@ -35,5 +38,11 @@ object SeichiLvUpMessages {
     98 -> "整地の際に獲得できるマナ量が増えました。"
   )
 
-  def get(level: Int): Option[String] = messages.get(level)
+  def messageOnReaching(seichiLevel: SeichiLevel): Option[String] = messages.get(seichiLevel.level)
+
+  def messagesOnDiff(levelDiff: Diff[SeichiLevel]): List[String] =
+    HasSuccessor[SeichiLevel]
+      .leftOpenRightClosedRange(levelDiff.left, levelDiff.right)
+      .toList
+      .flatMap(messageOnReaching)
 }
