@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.data;
 
+import com.github.unchama.seichiassist.LevelThresholds;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.achievement.Nicknames;
 import com.github.unchama.seichiassist.data.player.AchievementPoint;
@@ -98,6 +99,93 @@ public final class MenuInventoryData {
                 ChatColor.RESET + "" + ChatColor.AQUA + "特典受取済投票回数：" + playerdata.p_givenvote(),
                 ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.effectPoint()
         );
+    }
+
+    /**
+     * 整地量
+     * @param page ページ
+     * @return メニュー
+     */
+    public static Inventory getRankingBySeichiAmount(final int page) {
+        final int perPage = 45;
+        final int pageLimit = 150 / 45 + 1;
+        final int lowerBound = 100;
+        final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "整地神ランキング");
+        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
+        int invIndex = 0;
+        for (int rank = perPage * page; rank < perPage + perPage * page; rank++) {
+            if (rank >= SeichiAssist.ranklist().size()) {
+                break;
+            }
+
+            final RankData rankdata = SeichiAssist.ranklist().apply(rank);
+            if (rankdata.totalbreaknum < (Long) LevelThresholds.levelExpThresholds().apply(lowerBound - 1)) { //レベル100相当の総整地量判定に変更
+                break;
+            }
+
+            final List<String> lore = Arrays.asList(
+                    ChatColor.RESET + "" + ChatColor.GREEN + "整地Lv:" + rankdata.level,
+                    ChatColor.RESET + "" + ChatColor.GREEN + "総整地量:" + rankdata.totalbreaknum
+            );
+
+            final SkullMeta skullmeta = buildSkullMeta(
+                    ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (rank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
+                    lore,
+                    rankdata.name
+            );
+            itemstack.setItemMeta(skullmeta);
+            AsyncInventorySetter.setItemAsync(inventory, invIndex, itemstack.clone());
+            invIndex++;
+        }
+
+        if (page != pageLimit) {
+            // 整地神ランキング次ページ目を開く
+            final SkullMeta skullMeta = buildSkullMeta(
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング" + (page + 2) + "ページ目へ",
+                    Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"), "MHF_ArrowDown"
+            );
+            itemstack.setItemMeta(skullMeta);
+            AsyncInventorySetter.setItemAsync(inventory, 52, itemstack.clone());
+        }
+
+        // 1ページ目を開く
+        {
+            final String name;
+            final List<String> lore;
+            final String ign;
+            if (page == 0) {
+                name = ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ";
+                lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+                ign = "MHF_ArrowLeft";
+            } else {
+                // 整地神ランキング前ページ目を開く
+                name = ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地神ランキング" + page + "ページ目へ";
+                lore = Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動");
+                ign = "MHF_ArrowUp";
+            }
+            final SkullMeta skullmeta = buildSkullMeta(name, lore, ign);
+            itemstack.setItemMeta(skullmeta);
+            AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
+        }
+
+
+        // 総整地量の表記
+        {
+            final List<String> lore = Arrays.asList(
+                    ChatColor.RESET + "" + ChatColor.AQUA + "全プレイヤー総整地量:",
+                    ChatColor.RESET + "" + ChatColor.AQUA + SeichiAssist.allplayerbreakblockint()
+            );
+
+            final SkullMeta skullmeta = buildSkullMeta(
+                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "整地鯖統計データ",
+                    lore,
+                    "unchama"
+            );
+            itemstack.setItemMeta(skullmeta);
+            AsyncInventorySetter.setItemAsync(inventory, 53, itemstack.clone());
+        }
+
+        return inventory;
     }
 
     /**

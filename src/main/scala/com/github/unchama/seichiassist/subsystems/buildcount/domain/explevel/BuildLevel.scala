@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel
 
 import cats.{Eq, Order}
-import com.github.unchama.generic.algebra.typeclasses.PositiveInt
+import com.github.unchama.seichiassist.domain.explevel.Level
 
 case class BuildLevel private(level: Int) extends AnyVal
 
@@ -9,13 +9,9 @@ private[explevel] abstract class SeichiLevelInstances {
 
   import cats.implicits._
 
-  implicit val positiveInt: PositiveInt[BuildLevel] = new PositiveInt[BuildLevel] {
-    override def wrapPositive(int: Int): BuildLevel = {
-      require(int >= 1)
-      BuildLevel(int)
-    }
-
-    override def asInt(t: BuildLevel): Int = t.level
+  implicit val level: Level[BuildLevel] = (rawLevel: Int) => {
+    require(rawLevel >= 1)
+    BuildLevel(rawLevel)
   }
 
   implicit val eq: Eq[BuildLevel] = Eq.by(_.level)
@@ -25,6 +21,6 @@ private[explevel] abstract class SeichiLevelInstances {
 
 object BuildLevel extends SeichiLevelInstances {
 
-  def ofPositive(rawLevel: Int): BuildLevel = positiveInt.wrapPositive(rawLevel)
+  def ofPositive(rawLevel: Int): BuildLevel = level.wrapPositive(rawLevel)
 
 }

@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
-import cats.effect.{SyncEffect, SyncIO}
-import com.github.unchama.seichiassist.ManagedWorld._
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import java.util.Random
+
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, isPlayerInventoryFull, removeItemfromPlayerInventory}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.seichiassist.ManagedWorld._
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._
@@ -21,13 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import org.bukkit.{Bukkit, Sound}
 
-import java.util.Random
-
-class ChristmasItemListener[
-  F[_],
-  G[_] : SyncEffect
-](instance: JavaPlugin)
- (implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]) extends Listener {
+class ChristmasItemListener(instance: JavaPlugin) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     if (isInEventNow) {
@@ -79,22 +73,17 @@ class ChristmasItemListener[
   def onPlayerConsumeChristmasPotion(event: PlayerItemConsumeEvent): Unit = {
     if (!isChristmasPotion(event.getItem)) return
 
-    import cats.effect.implicits._
-
     val player = event.getPlayer
-    val playerLevel = breakCountReadAPI
-      .seichiAmountDataRepository(player).read
-      .runSync[SyncIO].unsafeRunSync()
-      .levelCorrespondingToExp.level
 
     // 1分おきに計5回マナを一定量回復する
     for (i <- 1 to 5) {
       Bukkit.getServer.getScheduler.runTaskLater(instance, new Runnable {
         override def run(): Unit = {
-          val manaState = SeichiAssist.playermap(player.getUniqueId).manaState
-          val maxMana = manaState.calcMaxManaOnly(player, playerLevel)
+          val playerData = SeichiAssist.playermap(player.getUniqueId)
+          val manaState = playerData.manaState
+          val maxMana = manaState.calcMaxManaOnly(player, playerData.level)
           // マナを15%回復する
-          manaState.increase(maxMana * 0.15, player, playerLevel)
+          manaState.increase(maxMana * 0.15, player, playerData.level)
           player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
         }
       }, (20 * 60 * i).toLong)

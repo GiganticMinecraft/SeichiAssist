@@ -1,6 +1,6 @@
 package com.github.unchama.contextualexecutor.builder
 
-import cats.data.{Kleisli, OptionT}
+import cats.data.OptionT
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
@@ -71,15 +71,6 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
    */
   def execution(execution: ScopedContextualExecution[CS]): ContextualExecutorBuilder[CS] =
     this.copy(contextualExecution = execution)
-
-  /**
-   * [[contextualExecution]]に、コンテキストを利用せずに走る `effect` が入った
-   * 新しい[[ContextualExecutorBuilder]]を作成する.
-   *
-   * [[ContextualExecutor]]の制約にあるとおり, effect`は任意スレッドからの呼び出しに対応しなければならない.
-   */
-  def withEffectAsExecution[T](effect: Kleisli[IO, CS, T]): ContextualExecutorBuilder[CS] =
-    execution(_ => IO.pure(effect.map(_ => ())))
 
   /**
    * @return [CS]を[CS1]へ狭めるキャストを試み,

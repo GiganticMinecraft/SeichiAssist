@@ -4,7 +4,6 @@ import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -30,13 +29,7 @@ object AchievementConditions {
   }
 
   def brokenBlockRankingPosition_<=(n: Int): AchievementCondition[Int] = {
-    val predicate: PlayerPredicate = { player: Player =>
-      SeichiAssist.instance
-        .rankingSystemApi
-        .getSeichiRanking
-        .map(_.positionOf(player.getName))
-        .map(_.exists(_ <= n))
-    }
+    val predicate = playerDataPredicate(d => IO { d.calcPlayerRank() <= n })
 
     AchievementCondition(predicate, "「整地神ランキング」" + _ + "位達成", n)
   }
@@ -52,17 +45,8 @@ object AchievementConditions {
     AchievementCondition(predicate, "建築量が " + _ + "を超える", localizedAmount)
   }
 
-  def brokenBlockAmountPredicate(f: SeichiExpAmount => Boolean): PlayerPredicate = { player =>
-    SeichiAssist.instance
-      .breakCountSystem.api
-      .seichiAmountDataRepository(player)
-      .read.map(amount => f(amount.expAmount))
-      .toIO
-  }
-
   def brokenBlockAmount_>=(amount: Long, localizedAmount: String): AchievementCondition[String] = {
-    import cats.implicits._
-    val predicate = brokenBlockAmountPredicate(_ >= SeichiExpAmount.ofNonNegative(amount))
+    val predicate = playerDataPredicate(d => IO { d.totalbreaknum >= amount })
 
     AchievementCondition(predicate, "整地量が " + _ + "を超える", localizedAmount)
   }
@@ -155,14 +139,14 @@ object AchievementConditions {
 
     val conditionFor8002: HiddenAchievementCondition[Unit] = {
       val shouldDisplay: PlayerPredicate =
-        brokenBlockAmountPredicate { case SeichiExpAmount(amount) =>
-          amount % 1000000L == 0L && amount != 0L
-        }
+        playerDataPredicate(p => IO {
+          p.totalbreaknum % 1000000L == 0L && p.totalbreaknum != 0L
+        })
 
       val unlockCondition: PlayerPredicate =
-        brokenBlockAmountPredicate { case SeichiExpAmount(amount) =>
-          amount % 1000000L == 777777L
-        }
+        playerDataPredicate(p => IO {
+          p.totalbreaknum % 1000000L == 777777L
+        })
 
       HiddenAchievementCondition(shouldDisplay, AchievementCondition(unlockCondition, _ => "[[[[[[LuckyNumber]]]]]]", ()))
     }

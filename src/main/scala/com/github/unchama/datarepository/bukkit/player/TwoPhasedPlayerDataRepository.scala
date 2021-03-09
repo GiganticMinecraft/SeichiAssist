@@ -19,7 +19,6 @@ import java.util.UUID
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
-@deprecated("Move to BukkitRepositoryControls for compositionality")
 abstract class TwoPhasedPlayerDataRepository[SyncContext[_] : SyncEffect, R]
   extends PlayerDataRepository[R] with Listener {
 
@@ -75,8 +74,6 @@ abstract class TwoPhasedPlayerDataRepository[SyncContext[_] : SyncEffect, R]
   //endregion
 
   override def apply(player: Player): R = state(player.getUniqueId)
-
-  override def isDefinedAt(x: Player): Boolean = state.isDefinedAt(x.getUniqueId)
 
   import cats.effect.implicits._
 

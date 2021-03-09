@@ -25,43 +25,23 @@ trait PlayerDataRepository[R] extends KeyedDataRepository[Player, R] {
 
 object PlayerDataRepository {
 
-  def unlift[R](f: Player => Option[R]): PlayerDataRepository[R] =
-    new PlayerDataRepository[R] {
-      override def apply(player: Player): R = f(player).get
-
-      override def isDefinedAt(x: Player): Boolean = f(x).isDefined
-    }
+  def fromFunction[R](f: Player => R): PlayerDataRepository[R] = (player: Player) => f(player)
 
   implicit def playerDataRefRepositoryMonad: Monad[PlayerDataRepository] = new Monad[PlayerDataRepository] {
-    override def pure[A](x: A): PlayerDataRepository[A] = {
-      new PlayerDataRepository[A] {
-        override def apply(player: Player): A = x
+    override def pure[A](x: A): PlayerDataRepository[A] = (_: Player) => x
 
-        override def isDefinedAt(x: Player): Boolean = true
-      }
-    }
-
-    override def flatMap[A, B](fa: PlayerDataRepository[A])(f: A => PlayerDataRepository[B]): PlayerDataRepository[B] = {
-      new PlayerDataRepository[B] {
-        override def apply(player: Player): B = f(fa(player))(player)
-
-        override def isDefinedAt(x: Player): Boolean = fa.isDefinedAt(x)
-      }
-    }
+    override def flatMap[A, B](fa: PlayerDataRepository[A])(f: A => PlayerDataRepository[B]): PlayerDataRepository[B] =
+      player => f(fa(player))(player)
 
     override def tailRecM[A, B](a: A)(f: A => PlayerDataRepository[Either[A, B]]): PlayerDataRepository[B] = {
-      @tailrec
-      def go(player: Player)(current: A): Option[B] =
-        f(current).lift(player) match {
-          case Some(Left(nextA)) => go(player)(nextA)
-          case Some(Right(value)) => Some(value)
-          case None => None
+      player => {
+        @tailrec
+        def go(current: A): B = f(current)(player) match {
+          case Left(nextA) => go(nextA)
+          case Right(value) => value
         }
 
-      new PlayerDataRepository[B] {
-        override def apply(player: Player): B = go(player)(a).get
-
-        override def isDefinedAt(x: Player): Boolean = go(x)(a).isDefined
+        go(a)
       }
     }
   }

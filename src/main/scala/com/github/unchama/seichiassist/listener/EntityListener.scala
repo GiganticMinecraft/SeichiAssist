@@ -79,17 +79,10 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment) extends List
       breakLength.x * breakLength.y * breakLength.z
     }
 
-    val level =
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-        .unsafeRunSync()
-        .levelCorrespondingToExp.level
-
     val isMultiTypeBreakingSkillEnabled = {
       import ManagedWorld._
 
-      level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
+      playerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
         (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
     }
 
@@ -138,7 +131,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment) extends List
     }
 
     //経験値を減らす
-    mana.decrease(manaConsumption, player, level)
+    mana.decrease(manaConsumption, player, playerData.level)
 
     //耐久値を減らす
     if (!tool.getItemMeta.isUnbreakable) tool.setDurability(nextDurability)

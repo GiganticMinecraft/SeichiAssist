@@ -4,7 +4,6 @@ import com.github.unchama.bungeesemaphoreresponder.{RedisConnectionSettings, Con
 import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemConfiguration => AutoSaveConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -26,28 +25,28 @@ final class Config private(val config: FileConfiguration) {
 
   // NOTE:
   //   config.getInt/config.getDoubleはnull値の場合0を返す
-  //   getIntFailFast/getDoubleFailFastはNumberFormatExceptionを投げる
-  private def getIntFailFast(path: String) = config.getString(path).toInt
+  //   getIntFailSafe/getDoubleFailSafeはNumberFormatExceptionを投げる
+  private def getIntFailSafe(path: String) = config.getString(path).toInt
 
-  private def getDoubleFailFast(path: String) = config.getString(path).toDouble
+  private def getDoubleFailSafe(path: String) = config.getString(path).toDouble
 
-  def getMinuteMineSpeed: Double = getDoubleFailFast("minutespeedamount")
+  def getMinuteMineSpeed: Double = getDoubleFailSafe("minutespeedamount")
 
-  def getLoginPlayerMineSpeed: Double = getDoubleFailFast("onlineplayersamount")
+  def getLoginPlayerMineSpeed: Double = getDoubleFailSafe("onlineplayersamount")
 
-  def getGachaPresentInterval: Int = getIntFailFast("presentinterval")
+  def getGachaPresentInterval: Int = getIntFailSafe("presentinterval")
 
-  def getDualBreaklevel: Int = getIntFailFast("dualbreaklevel")
+  def getDualBreaklevel: Int = getIntFailSafe("dualbreaklevel")
 
-  def getMultipleIDBlockBreaklevel: Int = getIntFailFast("multipleidblockbreaklevel")
+  def getMultipleIDBlockBreaklevel: Int = getIntFailSafe("multipleidblockbreaklevel")
 
-  def getDropExplevel(i: Int): Double = getDoubleFailFast("dropexplevel" + i)
+  def getDropExplevel(i: Int): Double = getDoubleFailSafe("dropexplevel" + i)
 
-  def getPassivePortalInventorylevel: Int = getIntFailFast("passiveportalinventorylevel")
+  def getPassivePortalInventorylevel: Int = getIntFailSafe("passiveportalinventorylevel")
 
-  def getDokodemoEnderlevel: Int = getIntFailFast("dokodemoenderlevel")
+  def getDokodemoEnderlevel: Int = getIntFailSafe("dokodemoenderlevel")
 
-  def getMineStacklevel(i: Int): Int = getIntFailFast("minestacklevel" + i)
+  def getMineStacklevel(i: Int): Int = getIntFailSafe("minestacklevel" + i)
 
   def getDB: String = config.getString("db")
 
@@ -68,20 +67,20 @@ final class Config private(val config: FileConfiguration) {
   }
 
   //サーバー番号取得
-  def getServerNum: Int = getIntFailFast("servernum")
+  def getServerNum: Int = getIntFailSafe("servernum")
 
   def getServerId: String = config.getString("server-id")
 
   def chunkSearchCommandBase: String = config.getString("chunk-search-command-base")
 
   //サブホーム最大数取得
-  def getSubHomeMax: Int = getIntFailFast("subhomemax")
+  def getSubHomeMax: Int = getIntFailSafe("subhomemax")
 
-  def getDebugMode: Int = getIntFailFast("debugmode")
+  def getDebugMode: Int = getIntFailSafe("debugmode")
 
-  def getMebiusDebug: Int = getIntFailFast("mebiusdebug")
+  def getMebiusDebug: Int = getIntFailSafe("mebiusdebug")
 
-  def rateGiganticToRingo: Int = getIntFailFast("rategigantictoringo")
+  def rateGiganticToRingo: Int = getIntFailSafe("rategigantictoringo")
 
   /**
    * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
@@ -99,30 +98,30 @@ final class Config private(val config: FileConfiguration) {
    */
   def getGridLimitPerWorld(world: String): Int = config.getString("GridLimitPerWorld." + world, config.getString("GridLimitDefault")).toInt
 
-  def getTemplateKeepAmount: Int = getIntFailFast("GridTemplateKeepAmount")
+  def getTemplateKeepAmount: Int = getIntFailSafe("GridTemplateKeepAmount")
 
-  def getRoadY: Int = getIntFailFast("road_Y")
+  def getRoadY: Int = getIntFailSafe("road_Y")
 
-  def getRoadLength: Int = getIntFailFast("road_length")
+  def getRoadLength: Int = getIntFailSafe("road_length")
 
-  def getSpaceHeight: Int = getIntFailFast("space_height")
+  def getSpaceHeight: Int = getIntFailSafe("space_height")
 
-  def getRoadBlockID: Int = getIntFailFast("road_blockid")
+  def getRoadBlockID: Int = getIntFailSafe("road_blockid")
 
-  def getRoadBlockDamage: Int = getIntFailFast("road_blockdamage")
+  def getRoadBlockDamage: Int = getIntFailSafe("road_blockdamage")
 
-  def getContributeAddedMana: Int = getIntFailFast("contribute_added_mana")
+  def getContributeAddedMana: Int = getIntFailSafe("contribute_added_mana")
 
-  def getWorldSize: Int = getIntFailFast("world_size")
+  def getWorldSize: Int = getIntFailSafe("world_size")
 
-  def getGiganticFeverMinutes: Int = getIntFailFast("gigantic_fever_minutes")
+  def getGiganticFeverMinutes: Int = getIntFailSafe("gigantic_fever_minutes")
 
   def getGiganticFeverDisplayTime: String = {
     val totalMinutes = getGiganticFeverMinutes
     (totalMinutes / 60) + "時間" + (totalMinutes % 60) + "分"
   }
 
-  def getGiganticBerserkLimit: Int = getIntFailFast("GBLimit")
+  def getGiganticBerserkLimit: Int = getIntFailSafe("GBLimit")
 
   /**
    * 各種URLを返します.
@@ -131,13 +130,6 @@ final class Config private(val config: FileConfiguration) {
    * @return 該当URL.ただし, typeNameが誤っていた場合は""を返します.
    */
   def getUrl(typeName: String): String = config.getString("Url." + typeName, "")
-
-  def getFastDiggingEffectSystemConfiguration: FastDiggingEffectConfiguration = {
-    new FastDiggingEffectConfiguration {
-      override val amplifierPerBlockMined: Double = getDoubleFailFast("minutespeedamount")
-      override val amplifierPerPlayerConnection: Double = getDoubleFailFast("onlineplayersamount")
-    }
-  }
 
   def getBungeeSemaphoreSystemConfiguration: BungeeSemaphoreResponderConfiguration = {
     val systemSettingsSection = config.getConfigurationSection("BungeeSemaphoreResponder")
