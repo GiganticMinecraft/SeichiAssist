@@ -13,8 +13,8 @@ import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
-import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
-import com.github.unchama.minecraft.bukkit.actions.{GetConnectedBukkitPlayers, SendBukkitMessage}
+import com.github.unchama.minecraft.actions.GetConnectedPlayers
+import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
@@ -495,10 +495,8 @@ class SeichiAssist extends JavaPlugin() {
       }
 
       import PluginExecutionContexts._
-
       implicit val api: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-      implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 
       val manaUpdate: IO[Nothing] =
         subsystems.mana.System.backgroundProcess[IO, SyncIO]
@@ -518,9 +516,6 @@ class SeichiAssist extends JavaPlugin() {
       val levelUpGiftProcess: IO[Nothing] =
         subsystems.seichilevelupgift.System.backGroundProcess[SyncIO]
 
-      val levelUpMessagesProcess: IO[Nothing] =
-        subsystems.seichilevelupmessage.System.backgroundProcess[IO, SyncIO, Player]
-
       val programs: List[IO[Nothing]] =
         List(
           dataRecalculationRoutine,
@@ -528,8 +523,7 @@ class SeichiAssist extends JavaPlugin() {
           manaUpdate,
           gachaPointUpdate,
           levelUpGiftProcess,
-          dragonNightTimeProcess,
-          levelUpMessagesProcess
+          dragonNightTimeProcess
         ) ++
           halfHourRankingRoutineOption.toList ++
           autoSaveSystem.state

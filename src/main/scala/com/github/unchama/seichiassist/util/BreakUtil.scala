@@ -263,7 +263,6 @@ object BreakUtil {
    */
   def totalBreakCount(materials: Seq[Material]): Long =
     materials
-      .filter(MaterialSets.materialsToCountBlockBreak.contains)
       .map {
         //氷塊とマグマブロックの整地量を2倍
         case Material.PACKED_ICE | Material.MAGMA => 2L
