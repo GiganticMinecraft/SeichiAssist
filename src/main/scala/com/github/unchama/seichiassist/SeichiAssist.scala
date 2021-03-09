@@ -30,7 +30,7 @@ import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.menus.TopLevelRouter
-import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
+import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
@@ -39,7 +39,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
-import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
+import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
@@ -102,21 +102,21 @@ class SeichiAssist extends JavaPlugin() {
   //endregion
 
   //region subsystems
-  private lazy val expBottleStackSystem: StatefulSubsystem[IO, subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
+  private lazy val expBottleStackSystem: subsystems.expbottlestack.System[IO, SyncIO, IO] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.expbottlestack.System.wired[IO, SyncIO, IO].unsafeRunSync()
   }
 
-  private lazy val itemMigrationSystem: StatefulSubsystem[IO, subsystems.itemmigration.InternalState[IO]] = {
+  private lazy val itemMigrationSystem: subsystems.itemmigration.System[IO, IO] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     subsystems.itemmigration.System.wired[IO, SyncIO, IO].unsafeRunSync()
   }
 
-  private lazy val managedFlySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]] = {
+  private lazy val managedFlySystem: subsystems.managedfly.System[SyncIO, IO] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
 
     implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
@@ -127,15 +127,7 @@ class SeichiAssist extends JavaPlugin() {
       expConsumptionAmount = seichiAssistConfig.getFlyExp
     )
 
-    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync().coerceFinalizationContextTo[IO]
-  }
-
-  private lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
-    import PluginExecutionContexts.{syncShift, timer}
-
-    val configuration = seichiAssistConfig.getAutoSaveSystemConfiguration
-
-    subsystems.autosave.System.wired[IO, IO](configuration)
+    subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync()
   }
 
   private lazy val bookedAchievementSystem: Subsystem[IO] = {
@@ -208,7 +200,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildAssist: BuildAssist = {
-    implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
+    implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
     new BuildAssist(this)
   }
@@ -347,8 +339,8 @@ class SeichiAssist extends JavaPlugin() {
       )
     }
 
-    itemMigrationSystem.state.entryPoints.runDatabaseMigration[SyncIO].unsafeRunSync()
-    itemMigrationSystem.state.entryPoints.runWorldMigration.unsafeRunSync()
+    itemMigrationSystem.entryPoints.runDatabaseMigration[SyncIO].unsafeRunSync()
+    itemMigrationSystem.entryPoints.runWorldMigration.unsafeRunSync()
 
     SeichiAssist.databaseGateway = DatabaseGateway.createInitializedInstance(
       SeichiAssist.seichiAssistConfig.getURL, SeichiAssist.seichiAssistConfig.getDB,
@@ -521,6 +513,12 @@ class SeichiAssist extends JavaPlugin() {
       val levelUpMessagesProcess: IO[Nothing] =
         subsystems.seichilevelupmessage.System.backgroundProcess[IO, SyncIO, Player]
 
+      val autoSaveProcess: IO[Nothing] = {
+        val configuration = seichiAssistConfig.getAutoSaveSystemConfiguration
+
+        subsystems.autosave.System.backgroundProcess[IO, IO](configuration)
+      }
+
       val programs: List[IO[Nothing]] =
         List(
           dataRecalculationRoutine,
@@ -529,10 +527,10 @@ class SeichiAssist extends JavaPlugin() {
           gachaPointUpdate,
           levelUpGiftProcess,
           dragonNightTimeProcess,
-          levelUpMessagesProcess
+          levelUpMessagesProcess,
+          autoSaveProcess
         ) ++
-          halfHourRankingRoutineOption.toList ++
-          autoSaveSystem.state
+          halfHourRankingRoutineOption.toList
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
@@ -553,7 +551,7 @@ class SeichiAssist extends JavaPlugin() {
     arrowSkillProjectileScope.getReleaseAllAction.unsafeRunSync().unsafeRunSync()
     magicEffectEntityScope.getReleaseAllAction.unsafeRunSync().value.unsafeRunSync()
 
-    expBottleStackSystem.state.managedBottleScope.getReleaseAllAction.unsafeRunSync().unsafeRunSync()
+    expBottleStackSystem.managedBottleScope.getReleaseAllAction.unsafeRunSync().unsafeRunSync()
 
     import cats.implicits._
 
