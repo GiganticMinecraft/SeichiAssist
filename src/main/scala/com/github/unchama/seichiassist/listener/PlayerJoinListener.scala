@@ -16,6 +16,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerChangedWorldEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.{Material, Sound}
 
 import java.util.UUID
@@ -97,6 +98,7 @@ class PlayerJoinListener extends Listener {
 
       import scala.util.chaining._
       val pickaxe = new ItemStack(Material.DIAMOND_PICKAXE)
+        // 耐久Ⅲ
         .tap(_.addEnchantment(Enchantment.DURABILITY, 3))
       inv.addItem(pickaxe)
       inv.addItem(new ItemStack(Material.DIAMOND_SPADE))
@@ -107,8 +109,35 @@ class PlayerJoinListener extends Listener {
         new ItemStack(Material.LOG_2, 64, 1.toShort))
 
       inv.addItem(new ItemStack(Material.BAKED_POTATO, 64))
-      // TODO: 本の中身
-      inv.addItem(new ItemStack(Material.WRITTEN_BOOK))
+
+      inv.addItem(new ItemStack(Material.WRITTEN_BOOK).tap { is =>
+        val meta = is.getItemMeta.asInstanceOf[BookMeta]
+        // per https://github.com/GiganticMinecraft/SeichiAssist/issues/914#issuecomment-792534164
+        meta.addPage(
+          "基本的にはこの４つを守ってください。",
+          "ルール違反をした場合、BANなどの処罰が与えられます。",
+          "・正規のアカウントを使用する",
+          "・他人に迷惑をかけない",
+          "・掘るときは上から綺麗に",
+          "・サーバーに負荷をかけない"
+        )
+        meta.addPage(
+          "整地の心得",
+          "整地ワールドでは以下のことを守って整地してください。",
+          "・下から掘らず、上から掘るべし！",
+          "・空中にブロックが残らないようにすべし！",
+          "・水やマグマは除去すべし！",
+          "・掘りぬいた後は綺麗に整えるべし！"
+        )
+        meta.addPage(
+          "上記、整地の心得に抵触するような掘り方をした場合は、72時間(3日)以内に状態の復旧をお願いします。",
+          "なお、第1整地ワールドのみ、整地の心得違反による処罰は実施致しません。",
+          "",
+          "この他細かなルールや処罰の具体的な内容はHPをご確認ください。",
+          "ルールはサーバー内の情勢に応じて予告なく更新されることがあります。その際プレイヤーに個別通知することは致しませんので、ご利用の際にはお手数ですが随時最新のルールをご確認ください。"
+        )
+        is.setItemMeta(meta)
+      })
 
       //メビウスおひとつどうぞ
       inv.setHelmet(BukkitMebiusItemStackCodec.materialize(
