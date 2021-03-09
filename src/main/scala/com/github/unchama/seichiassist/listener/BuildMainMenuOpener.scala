@@ -1,10 +1,10 @@
-package com.github.unchama.buildassist.listener
+package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
-import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.BuildMainMenu
 import org.bukkit.Material
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent

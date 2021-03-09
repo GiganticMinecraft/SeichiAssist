@@ -1,7 +1,7 @@
-package com.github.unchama.buildassist.menu
+package com.github.unchama.seichiassist.menus
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.buildassist.menu.BuildMainMenu.EMPHASIZE
+import com.github.unchama.buildassist.menu.{BlockPlacementSkillMenu, MineStackMassCraftMenu}
 import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
@@ -9,6 +9,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.menus.BuildMainMenu.EMPHASIZE
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
 import com.github.unchama.seichiassist.{SkullOwners, subsystems}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect

@@ -9,7 +9,7 @@ import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
+import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}

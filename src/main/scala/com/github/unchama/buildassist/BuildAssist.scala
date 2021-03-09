@@ -6,6 +6,7 @@ import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.listener.BuildMainMenuOpener
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}

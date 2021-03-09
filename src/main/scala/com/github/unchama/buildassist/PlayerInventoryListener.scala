@@ -1,10 +1,10 @@
 package com.github.unchama.buildassist
 
 import cats.effect.IO
-import com.github.unchama.buildassist.menu.BuildMainMenu
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.BuildMainMenu
 import net.md_5.bungee.api.ChatColor._
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}

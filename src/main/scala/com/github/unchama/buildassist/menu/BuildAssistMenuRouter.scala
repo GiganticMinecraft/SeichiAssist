@@ -4,6 +4,7 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.seichiassist.subsystems
 
 trait BuildAssistMenuRouter[F[_]] {
