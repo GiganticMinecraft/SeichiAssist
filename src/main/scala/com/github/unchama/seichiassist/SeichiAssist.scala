@@ -102,8 +102,6 @@ class SeichiAssist extends JavaPlugin() {
   //endregion
 
   //region subsystems
-  // TODO コンテキスト境界明確化のため、これらはすべてprivateであるべきである
-
   private lazy val expBottleStackSystem: StatefulSubsystem[IO, subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
@@ -158,6 +156,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.buildcount.System.wired[IO, SyncIO, SyncIO](loggerF).unsafeRunSync()
   }
 
+  // TODO コンテキスト境界明確化のため、privateであるべきである
   lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.{asyncShift, syncShift}
 
@@ -181,6 +180,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.breakcountbar.System.wired[SyncIO, IO](breakCountSystem.api).unsafeRunSync()
   }
 
+  // TODO コンテキスト境界明確化のため、privateであるべきである
   implicit lazy val rankingSystemApi: subsystems.ranking.RankingApi[IO] = {
     import PluginExecutionContexts.{asyncShift, timer}
 
