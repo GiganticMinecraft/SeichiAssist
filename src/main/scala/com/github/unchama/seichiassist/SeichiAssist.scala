@@ -199,6 +199,31 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
   }
 
+  private lazy val mebiusSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.{sleepAndRoutineContext, syncShift, timer}
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
+    implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] = seasonalEventsSystem.api[SyncIO]
+
+    subsystems.mebius.System.wired
+  }
+
+  private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
+    mebiusSystem,
+    expBottleStackSystem,
+    itemMigrationSystem,
+    managedFlySystem,
+    rescueplayer.System.wired,
+    bookedAchievementSystem,
+    seasonalEventsSystem,
+    breakCountSystem,
+    breakCountBarSystem,
+    buildCountSystem,
+    fastDiggingEffectSystem,
+    fourDimensionalPocketSystem
+  )
+
   private lazy val buildAssist: BuildAssist = {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
@@ -224,12 +249,7 @@ class SeichiAssist extends JavaPlugin() {
 
     new BungeeSemaphoreResponderSystem(
       PlayerDataFinalizer.concurrently[IO, Player](
-        managedFlySystem.managedFinalizers.toList ++
-          breakCountSystem.managedFinalizers ++
-          breakCountBarSystem.managedFinalizers ++
-          fastDiggingEffectSystem.managedFinalizers ++
-          fourDimensionalPocketSystem.managedFinalizers ++
-          buildCountSystem.managedFinalizers.appended(savePlayerData)
+        wiredSubsystems.flatMap(_.managedFinalizers).appended(savePlayerData)
       ),
       PluginExecutionContexts.asyncShift
     )
@@ -289,7 +309,6 @@ class SeichiAssist extends JavaPlugin() {
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
     implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
-    implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] = seasonalEventsSystem.api[SyncIO]
 
     //チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
@@ -381,21 +400,6 @@ class SeichiAssist extends JavaPlugin() {
 
     buildAssist.onEnable()
 
-    val subsystems = Seq(
-      mebius.System.wired,
-      expBottleStackSystem,
-      itemMigrationSystem,
-      managedFlySystem,
-      rescueplayer.System.wired,
-      bookedAchievementSystem,
-      seasonalEventsSystem,
-      breakCountSystem,
-      breakCountBarSystem,
-      buildCountSystem,
-      fastDiggingEffectSystem,
-      fourDimensionalPocketSystem
-    )
-
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
@@ -414,7 +418,7 @@ class SeichiAssist extends JavaPlugin() {
       "x-transfer" -> RegionOwnerTransferCommand.executor,
       "stickmenu" -> StickMenuCommand.executor
     )
-      .concat(subsystems.flatMap(_.commands))
+      .concat(wiredSubsystems.flatMap(_.commands))
       .foreach {
         case (commandName, executor) => getCommand(commandName).setExecutor(executor)
       }
@@ -442,7 +446,7 @@ class SeichiAssist extends JavaPlugin() {
     )
       .concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat(repositories)
-      .concat(subsystems.flatMap(_.listeners))
+      .concat(wiredSubsystems.flatMap(_.listeners))
 
     listeners.foreach {
       getServer.getPluginManager.registerEvents(_, this)
