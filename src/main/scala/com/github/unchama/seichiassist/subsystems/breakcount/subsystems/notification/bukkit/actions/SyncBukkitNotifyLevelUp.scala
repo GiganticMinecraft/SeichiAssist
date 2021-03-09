@@ -32,7 +32,13 @@ object SyncBukkitNotifyLevelUp {
 
     override def ofSeichiStarLevelTo(player: Player)(diff: Diff[SeichiStarLevel]): F[Unit] = {
       val Diff(oldStars, newStars) = diff
-      val message = s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆(${oldStars.level}))→Lv200(☆(${newStars.level}))】"
+      val message = {
+        if (oldStars == SeichiStarLevel.zero) {
+          s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv199→Lv200(☆(${newStars.level}))】"
+        } else {
+          s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆(${oldStars.level}))→Lv200(☆(${newStars.level}))】"
+        }
+      }
 
       if (oldStars < newStars) F.delay(player.sendMessage(message))
       else F.unit

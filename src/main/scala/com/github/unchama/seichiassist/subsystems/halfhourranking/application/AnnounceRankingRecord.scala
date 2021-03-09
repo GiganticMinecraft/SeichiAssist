@@ -64,9 +64,9 @@ object AnnounceRankingRecord {
               val starLevel = data.starLevelCorrespondingToExp.level
 
               if (starLevel != 0)
-                s"$decorationColorCode[Lv $level☆$starLevel] $name$WHITE"
+                s"$decorationColorCode[Lv$level☆$starLevel] $name$WHITE"
               else
-                s"$decorationColorCode[Lv $level] $name$WHITE"
+                s"$decorationColorCode[Lv$level] $name$WHITE"
             case None =>
               s"$decorationColorCode$name$WHITE"
           }

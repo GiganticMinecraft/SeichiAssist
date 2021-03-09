@@ -194,6 +194,8 @@ class PlayerData(
         .levelCorrespondingToExp.level
     )
 
+    synchronizeDisplayNameAndManaStateToLevelState()
+
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
     isVotingFairy()

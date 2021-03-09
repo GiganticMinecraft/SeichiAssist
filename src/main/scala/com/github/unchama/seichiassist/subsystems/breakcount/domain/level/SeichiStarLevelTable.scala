@@ -13,7 +13,10 @@ object SeichiStarLevelTable extends ExpLevelConversion[SeichiStarLevel, SeichiEx
   val gradient: SeichiExpAmount = SeichiLevelTable.table.expAt(SeichiLevelTable.table.maxLevel)
 
   override def levelAt(expAmount: SeichiExpAmount): SeichiStarLevel = SeichiStarLevel.ofNonNegative {
-    expAmount.amount.bigDecimal.divide(gradient.amount.bigDecimal, 0).toBigInteger
+    expAmount.amount.bigDecimal.divide(
+      gradient.amount.bigDecimal,
+      java.math.BigDecimal.ROUND_DOWN
+    ).toBigInteger
   }
 
   override def expAt(starLevel: SeichiStarLevel): SeichiExpAmount = SeichiExpAmount.ofNonNegative {

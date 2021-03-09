@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process
 
-import cats.MonadError
+import cats.{Monad, MonadError}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actions.GrantFastDiggingEffect
@@ -19,10 +19,12 @@ object SynchronizationProcess {
     effectClock: fs2.Stream[F, (Player, FastDiggingEffectList)]): fs2.Stream[F, Unit] =
     effectClock
       .evalTap { case (player, list) =>
-        // TODO ここでのレポジトリアクセスはプレーヤーが退出した後のストリーム処理により例外を吐く可能性がある。
-        //      attemptで潰せるが、そうならないように設計できないか？
-        val program = for {
-          state <- suppressionState(player).read
+        for {
+          state <- suppressionState
+            .lift(player)
+            .map(_.read)
+            .getOrElse(Monad[F].pure(FastDiggingEffectSuppressionState.Disabled))
+
           totalAmplifier <- list.totalPotionAmplifier[F](state)
 
           _ <- totalAmplifier.traverse {
@@ -30,8 +32,6 @@ object SynchronizationProcess {
             GrantFastDiggingEffect[F, Player].forTwoSeconds(player)
           }
         } yield ()
-
-        program.attempt
       }
       .as(())
 
