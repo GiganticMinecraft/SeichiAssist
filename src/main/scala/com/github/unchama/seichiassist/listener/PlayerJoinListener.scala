@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.data.SeichiLvUpMessages
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -110,11 +111,8 @@ class PlayerJoinListener extends Listener {
       player.getInventory.addItem(new ItemStack(Material.DIAMOND, 32))
 
       player.sendMessage("初期装備を配布しました。Eキーで確認してネ")
-
-      //初見さんにメッセージを送信
-      player.sendMessage {
-        "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
-      }
+      //初見さんにLv1メッセージを送信
+      SeichiLvUpMessages.get(1).foreach(player.sendMessage)
     }
 
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
