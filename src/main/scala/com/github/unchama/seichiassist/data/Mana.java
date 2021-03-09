@@ -30,7 +30,6 @@ public class Mana {
 
     private int level;
 
-    //引数なしのコンストラクタ
     @Deprecated
     public Mana() {
         value = 0;
