@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel
 
-import cats.Order
-import cats.kernel.{LowerBounded, PartialOrder}
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
+import com.github.unchama.seichiassist.util.typeclass.HasMinimum
 
 case class BuildExpAmount private(amount: BigDecimal) extends AnyVal {
 
@@ -15,15 +14,10 @@ case class BuildExpAmount private(amount: BigDecimal) extends AnyVal {
 }
 
 private[explevel] abstract class BuildExpAmountInstances {
+  implicit lazy val ordering: Ordering[BuildExpAmount] = Ordering.by(_.amount)
 
-  import cats.implicits._
-
-  lazy val zero: BuildExpAmount = BuildExpAmount.ofNonNegative(0)
-
-  implicit lazy val order: Order[BuildExpAmount] = Order.by(_.amount)
-  implicit lazy val lowerBounded: LowerBounded[BuildExpAmount] = new LowerBounded[BuildExpAmount] {
-    override val partialOrder: PartialOrder[BuildExpAmount] = order
-    override val minBound: BuildExpAmount = zero
+  implicit lazy val hasMinimum: HasMinimum[BuildExpAmount] = {
+    HasMinimum.as(BuildExpAmount.ofNonNegative(0))
   }
 
   implicit lazy val orderedMonus: OrderedMonus[BuildExpAmount] = {
@@ -31,7 +25,8 @@ private[explevel] abstract class BuildExpAmountInstances {
       override def compare(x: BuildExpAmount, y: BuildExpAmount): Int =
         x.amount.compare(y.amount)
 
-      override val empty: BuildExpAmount = zero
+      override val empty: BuildExpAmount =
+        BuildExpAmount.ofNonNegative(0)
 
       override def combine(x: BuildExpAmount, y: BuildExpAmount): BuildExpAmount =
         BuildExpAmount.ofNonNegative(x.amount + y.amount)

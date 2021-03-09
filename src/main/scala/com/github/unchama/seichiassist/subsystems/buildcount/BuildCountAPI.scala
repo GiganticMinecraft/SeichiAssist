@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount
 
+import com.github.unchama.concurrent.ReadOnlyRef
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 

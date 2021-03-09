@@ -4,7 +4,7 @@ import cats.Monad
 import cats.data.Kleisli
 import cats.effect.{Concurrent, Sync}
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.concurrent.Mutex
+import com.github.unchama.generic.effect.Mutex
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 
 private[managedfly] class Mock[

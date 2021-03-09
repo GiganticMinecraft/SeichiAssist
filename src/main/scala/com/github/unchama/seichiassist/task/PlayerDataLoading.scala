@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
 import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, AssaultSkill, SeichiSkill, SeichiSkillUsageMode}
+import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.MillisecondTimer
 import org.bukkit.ChatColor._
@@ -189,6 +190,7 @@ object PlayerDataLoading {
         playerData.settings.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
 
         playerData.settings.pvpflag = rs.getBoolean("pvpflag")
+        playerData.settings.isExpBarVisible = rs.getBoolean("expvisible")
         playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
         playerData.settings.nickname = PlayerNickname(
           NicknameStyle.marshal(rs.getBoolean("displayTypeLv")),
@@ -197,7 +199,9 @@ object PlayerDataLoading {
           rs.getInt("displayTitle3No")
         )
 
+        playerData.settings.fastDiggingEffectSuppression.setStateFromSerializedValue(rs.getInt("effectflag")).unsafeRunSync()
         playerData.settings.autoMineStack = rs.getBoolean("minestackflag")
+        playerData.settings.receiveFastDiggingEffectStats = rs.getBoolean("messageflag")
 
         playerData.skillEffectState = {
           val selectedEffect =
@@ -223,8 +227,11 @@ object PlayerDataLoading {
         ).unsafeRunSync()
 
         playerData.gachapoint = rs.getInt("gachapoint")
+        playerData.level = rs.getInt("level")
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
+        playerData.pocketInventory = BukkitSerialization.fromBase64forPocket(rs.getString("inventory"))
+        playerData.totalbreaknum = rs.getLong("totalbreaknum")
         playerData.playTick = rs.getInt("playtick")
         playerData.p_givenvote = rs.getInt("p_givenvote")
         playerData.effectPoint = rs.getInt("effectpoint")
@@ -248,6 +255,13 @@ object PlayerDataLoading {
           rs.getInt("achvPointMAX"),
           rs.getInt("achvPointUSE"),
           rs.getInt("achvChangenum")
+        )
+
+        //スターレベルの情報
+        playerData.starLevels = StarLevel(
+          rs.getInt("starlevel_Break"),
+          rs.getInt("starlevel_Time"),
+          rs.getInt("starlevel_Event")
         )
 
         //期間限定ログインイベント専用の累計ログイン日数

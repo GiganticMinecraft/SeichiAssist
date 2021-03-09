@@ -3,8 +3,8 @@ package com.github.unchama.buildassist
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.listener._
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
+import com.github.unchama.concurrent.ReadOnlyRef
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData

@@ -1,9 +1,8 @@
 package com.github.unchama.menuinventory
 
-import cats.Parallel.Aux
+import cats.Eq
 import cats.effect.concurrent.Ref
-import cats.effect.{IO, Sync}
-import cats.{Eq, effect}
+import cats.effect.{ContextShift, IO, Sync}
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -58,7 +57,7 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
         itemStack = slotOption.map(_.itemStack).getOrElse(new ItemStack(Material.AIR))
       } yield IO { sessionInventory.setItem(slotIndex, itemStack) }
 
-      implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(IO.contextShift(ctx))
+      implicit val context: ContextShift[IO] = IO.contextShift(ctx)
       effects.parSequence_
     }
 

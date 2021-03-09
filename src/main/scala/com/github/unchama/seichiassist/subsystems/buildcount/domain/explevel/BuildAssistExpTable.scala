@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel
 
-import com.github.unchama.seichiassist.domain.explevel.FiniteExpLevelTable
+import com.github.unchama.seichiassist.domain.explevel.ExpLevelTable
 
 private object Constant {
   // 経験値テーブルの生の値
@@ -28,4 +28,4 @@ private object Constant {
   ).map(BuildExpAmount.ofNonNegative)
 }
 
-object BuildAssistExpTable extends FiniteExpLevelTable[BuildLevel, BuildExpAmount](Constant.internalTable)
+object BuildAssistExpTable extends ExpLevelTable[BuildLevel, BuildExpAmount](Constant.internalTable)

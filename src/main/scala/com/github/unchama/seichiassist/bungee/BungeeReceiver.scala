@@ -25,15 +25,12 @@ class BungeeReceiver(private val plugin: SeichiAssist) extends PluginMessageList
 
   private def getLocation(servername: String, uuid: String, wanter: String): Unit = {
     val player = Bukkit.getServer.getPlayer(UUID.fromString(uuid))
-
-    val seichiAmountData = plugin.breakCountSystem.api.seichiAmountDataRepository(player).read.unsafeRunSync()
-    val level = seichiAmountData.levelCorrespondingToExp.level
-    val totalBreakAmount = seichiAmountData.expAmount.amount
+    val playerData = SeichiAssist.playermap(UUID.fromString(uuid))
 
     val message = writtenMessage(
       "GetLocation",
       wanter,
-      s"${player.getName}: 整地Lv$level (総整地量: ${String.format("%,d", totalBreakAmount)})",
+      s"${player.getName}: 整地Lv${playerData.level} (総整地量: ${String.format("%,d", playerData.totalbreaknum)})",
       s"Server: $servername, World: ${player.getWorld.getName} ",
       s"(${player.getLocation.getBlockX}, ${player.getLocation.getBlockY}, ${player.getLocation.getBlockZ})"
     )

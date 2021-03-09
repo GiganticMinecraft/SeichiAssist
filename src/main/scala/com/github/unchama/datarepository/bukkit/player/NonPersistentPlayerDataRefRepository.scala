@@ -7,7 +7,6 @@ import org.bukkit.entity.Player
 
 import java.util.UUID
 
-@deprecated("Move to BukkitRepositoryControls for compositionality")
 class NonPersistentPlayerDataRefRepository[
   DataAccessContext[_] : Sync,
   SyncContext[_] : SyncEffect,

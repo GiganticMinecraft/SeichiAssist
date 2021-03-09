@@ -4,6 +4,7 @@ import cats.Monad
 import cats.effect.Sync
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, UnlockableActiveSkillEffect}
+import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
@@ -135,7 +136,9 @@ object PlayerDataSaveTask {
         ("update seichiassist.playerdata set"
           + " name = '" + playerdata.lowercaseName + "'"
 
+          + ",effectflag = " + playerdata.settings.fastDiggingEffectSuppression.serialized().unsafeRunSync()
           + ",minestackflag = " + playerdata.settings.autoMineStack
+          + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
 
           + ",serialized_usage_mode = " + skillState.usageMode.value
           + ",selected_effect = " + {
@@ -149,7 +152,10 @@ object PlayerDataSaveTask {
 
           + ",gachapoint = " + playerdata.gachapoint
           + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
+          + ",level = " + playerdata.level
           + ",rgnum = " + playerdata.regionCount
+          + ",totalbreaknum = " + playerdata.totalbreaknum
+          + ",inventory = '" + BukkitSerialization.toBase64(playerdata.pocketInventory) + "'"
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"
           + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages
@@ -160,6 +166,7 @@ object PlayerDataSaveTask {
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.effectPoint
           + ",mana = " + playerdata.manaState.getMana
+          + ",expvisible = " + playerdata.settings.isExpBarVisible
           + ",totalexp = " + playerdata.totalexp
           + ",expmarge = " + playerdata.expmarge
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
@@ -173,6 +180,10 @@ object PlayerDataSaveTask {
           + ",achvPointMAX = " + playerdata.achievePoint.fromUnlockedAchievements
           + ",achvPointUSE = " + playerdata.achievePoint.used
           + ",achvChangenum = " + playerdata.achievePoint.conversionCount
+          + ",starlevel = " + playerdata.totalStarLevel
+          + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
+          + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime
+          + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
 
           + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
           + ",ChainJoin = " + playerdata.loginStatus.consecutiveLoginDays
