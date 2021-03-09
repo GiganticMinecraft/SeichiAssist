@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.menus.skill
 
 import cats.data.Kleisli
-import cats.effect.IO
 import cats.effect.concurrent.Ref
-import com.github.unchama.generic.effect.TryableFiber
+import cats.effect.{IO, SyncIO}
+import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -40,7 +41,9 @@ object ActiveSkillMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
 
-  class Environment(implicit val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
+  class Environment(implicit
+                    val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+                    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
 
@@ -51,13 +54,18 @@ object ActiveSkillMenu extends Menu {
       SeichiAssist.playermap(player.getUniqueId).skillState
     }
 
-  private def totalActiveSkillPoint(player: Player): IO[Int] =
-    IO {
-      val level = SeichiAssist.playermap(player.getUniqueId).level
-      (1 to level).map(i => (i.toDouble / 10.0).ceil.toInt).sum
-    }
+  private def totalActiveSkillPoint(player: Player)(implicit environment: Environment): IO[Int] =
+    environment
+      .breakCountApi.seichiAmountDataRepository(player)
+      .read
+      .map { data =>
+        val level = data.levelCorrespondingToExp.level
+        (1 to level).map(i => (i.toDouble / 10.0).ceil.toInt).sum
+      }
+      .toIO
 
-  private case class ButtonComputations(player: Player) {
+  private class ButtonComputations(player: Player)(implicit environment: Environment) {
+
     import player._
 
     val availableActiveSkillPoint: IO[Int] =
@@ -447,7 +455,7 @@ object ActiveSkillMenu extends Menu {
     import environment._
     import eu.timepit.refined.auto._
 
-    val buttonComputations = ButtonComputations(player)
+    val buttonComputations = new ButtonComputations(player)
     import ConstantButtons._
     import buttonComputations._
 

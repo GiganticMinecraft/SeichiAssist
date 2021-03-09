@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.data;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel;
 import com.github.unchama.seichiassist.util.TypeConverter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.boss.BarColor;
@@ -102,9 +103,9 @@ public class Mana {
 
 
     //レベルアップするときに実行したい関数
-    public void onLevelUp(Player player, int level) {
-        calcAndSetMax(player, level);
-        setFull(player, level);
+    public void onLevelUp(Player player, SeichiLevel level) {
+        calcAndSetMax(player, level.level());
+        setFull(player, level.level());
     }
 
     //マナ最大値を計算する処理
@@ -199,10 +200,6 @@ public class Mana {
 
     public void setMana(double m) {
         value = m;
-    }
-
-    public boolean isLoaded() {
-        return loadflag;
     }
 
     public double getMax() {

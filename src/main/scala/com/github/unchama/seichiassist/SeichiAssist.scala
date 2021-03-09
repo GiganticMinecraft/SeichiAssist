@@ -13,13 +13,15 @@ import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.minecraft.actions.GetConnectedPlayers
+import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -31,7 +33,12 @@ import com.github.unchama.seichiassist.menus.TopLevelRouter
 import com.github.unchama.seichiassist.meta.subsystem.{StatefulSubsystem, Subsystem}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
+import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.managedfly.InternalState
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -56,7 +63,7 @@ class SeichiAssist extends JavaPlugin() {
 
   private var hasBeenLoadedAlready = false
 
-  //region logging infrastructure
+  //region application infrastructure
 
   /*
    * JDK14LoggerFactoryは `java.util.logging.Logger.getLogger` によりロガーを解決している。
@@ -79,7 +86,6 @@ class SeichiAssist extends JavaPlugin() {
 
   //endregion
 
-  val expBarSynchronization = new ExpBarSynchronization()
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
   //region resource scopes
@@ -96,6 +102,7 @@ class SeichiAssist extends JavaPlugin() {
   //endregion
 
   //region subsystems
+  // TODO コンテキスト境界明確化のため、これらはすべてprivateであるべきである
 
   lazy val expBottleStackSystem: StatefulSubsystem[IO, subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
     import PluginExecutionContexts.asyncShift
@@ -142,21 +149,6 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
-  lazy val dragonNightTimeSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
-    import PluginExecutionContexts.timer
-
-    subsystems.dragonnighttime.System.wired[IO, IO]
-  }
-  
-  lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
-    import PluginExecutionContexts.asyncShift
-
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-
-    subsystems.seasonalevents.System.wired[IO, IO](this)
-  }
-
   lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.timer
 
@@ -164,6 +156,55 @@ class SeichiAssist extends JavaPlugin() {
       seichiAssistConfig.buildCountConfiguration
 
     subsystems.buildcount.System.wired[IO, SyncIO, SyncIO](loggerF).unsafeRunSync()
+  }
+
+  lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
+    import PluginExecutionContexts.{asyncShift, syncShift}
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
+  lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+
+    subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
+  }
+
+  lazy val breakCountBarSystem: subsystems.breakcountbar.System[IO, SyncIO, Player] = {
+    subsystems.breakcountbar.System.wired[SyncIO, IO](breakCountSystem.api).unsafeRunSync()
+  }
+
+  implicit lazy val rankingSystemApi: subsystems.ranking.RankingApi[IO] = {
+    import PluginExecutionContexts.{asyncShift, timer}
+
+    subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
+  }
+
+  private lazy val fourDimensionalPocketSystem: subsystems.fourdimensionalpocket.System[IO, Player] = {
+    import PluginExecutionContexts.{asyncShift, syncShift}
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.fourdimensionalpocket.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
+  }
+
+  private lazy val fastDiggingEffectSystem: subsystems.fastdiggingeffect.System[IO, IO, Player] = {
+    import PluginExecutionContexts.{asyncShift, syncShift, timer}
+
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val playerCount: GetConnectedPlayers[IO, Player] = new GetConnectedBukkitPlayers[IO]
+
+    subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
   }
 
   lazy val buildAssist: BuildAssist = {
@@ -174,7 +215,6 @@ class SeichiAssist extends JavaPlugin() {
 
   lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
     import cats.implicits._
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
       seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
@@ -188,9 +228,15 @@ class SeichiAssist extends JavaPlugin() {
         )
     }
 
+    import PluginExecutionContexts.timer
+
     new BungeeSemaphoreResponderSystem(
       PlayerDataFinalizer.concurrently[IO, Player](
         managedFlySystem.managedFinalizers.toList ++
+          breakCountSystem.managedFinalizers ++
+          breakCountBarSystem.managedFinalizers ++
+          fastDiggingEffectSystem.managedFinalizers ++
+          fourDimensionalPocketSystem.managedFinalizers ++
           buildCountSystem.managedFinalizers.appended(savePlayerData)
       ),
       PluginExecutionContexts.asyncShift
@@ -320,6 +366,11 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     import PluginExecutionContexts._
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val breakCountBarApi: BreakCountBarAPI[SyncIO, Player] = breakCountBarSystem.api
+    implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] = fastDiggingEffectSystem.effectApi
+    implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] = fastDiggingEffectSystem.settingsApi
+    implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
@@ -346,16 +397,19 @@ class SeichiAssist extends JavaPlugin() {
       rescueplayer.System.wired,
       bookedAchievementSystem,
       seasonalEventsSystem,
-      buildCountSystem
+      breakCountSystem,
+      breakCountBarSystem,
+      buildCountSystem,
+      fastDiggingEffectSystem,
+      fourDimensionalPocketSystem
     )
 
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
       "map" -> MapCommand.executor,
-      "ef" -> EffectCommand.executor,
+      "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
-      "openpocket" -> OpenPocketCommand.executor,
       "lastquit" -> LastQuitCommand.executor,
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
@@ -381,7 +435,6 @@ class SeichiAssist extends JavaPlugin() {
     //リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),
-      new ExpBarDesynchronizationListener(),
       new PlayerClickListener(),
       new PlayerBlockBreakListener(),
       new PlayerInventoryListener(),
@@ -393,7 +446,6 @@ class SeichiAssist extends JavaPlugin() {
       new WorldRegenListener(),
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
-      PlayerSeichiLevelUpListener,
       SpawnRegionProjectileInterceptor,
     )
       .concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
@@ -430,21 +482,51 @@ class SeichiAssist extends JavaPlugin() {
 
   private def startRepeatedJobs(): Unit = {
     val startTask = {
-      import PluginExecutionContexts._
       import cats.implicits._
 
+      val dataRecalculationRoutine = {
+        import PluginExecutionContexts._
+        PlayerDataRecalculationRoutine()
+      }
+
+      val dataBackupRoutine = {
+        import PluginExecutionContexts._
+        PlayerDataBackupRoutine()
+      }
+
+      import PluginExecutionContexts._
+      implicit val api: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
+      implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+      val manaUpdate: IO[Nothing] =
+        subsystems.mana.System.backgroundProcess[IO, SyncIO]
+
+      val gachaPointUpdate: IO[Nothing] =
+        subsystems.gachapoint.System.backgroundProcess[IO, SyncIO]
+
+      val dragonNightTimeProcess: IO[Nothing] =
+        subsystems.dragonnighttime.System.backgroundProcess[IO](fastDiggingEffectSystem.effectApi)
+
+      val halfHourRankingRoutineOption: Option[IO[Nothing]] =
       // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない
+        Option.unless(Set(7, 8).contains(SeichiAssist.seichiAssistConfig.getServerNum)) {
+          subsystems.halfhourranking.System.backgroundProcess[IO, SyncIO]
+        }
+
+      val levelUpGiftProcess: IO[Nothing] =
+        subsystems.seichilevelupgift.System.backGroundProcess[SyncIO]
+
       val programs: List[IO[Nothing]] =
         List(
-          PlayerDataRecalculationRoutine(),
-          PlayerDataBackupRoutine()
+          dataRecalculationRoutine,
+          dataBackupRoutine,
+          manaUpdate,
+          gachaPointUpdate,
+          levelUpGiftProcess,
+          dragonNightTimeProcess
         ) ++
-          Option.unless(
-            SeichiAssist.seichiAssistConfig.getServerNum == 7
-              || SeichiAssist.seichiAssistConfig.getServerNum == 8
-          )(
-            HalfHourRankingRoutine()
-          ).toList ++ autoSaveSystem.state ++ dragonNightTimeSystem.state
+          halfHourRankingRoutineOption.toList ++
+          autoSaveSystem.state
 
       implicit val ioParallel: Aux[IO, effect.IO.Par] = IO.ioParallel(asyncShift)
       programs.parSequence.start(asyncShift)
@@ -502,8 +584,6 @@ object SeichiAssist {
   val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
   //Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
-  //総採掘量ランキング表示用データリスト
-  val ranklist: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   //プレイ時間ランキング表示用データリスト
   val ranklist_playtick: mutable.ArrayBuffer[RankData] = mutable.ArrayBuffer()
   //投票ポイント表示用データリスト

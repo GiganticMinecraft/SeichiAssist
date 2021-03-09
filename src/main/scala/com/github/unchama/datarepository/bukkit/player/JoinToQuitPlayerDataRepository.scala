@@ -15,6 +15,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
  *
  * @tparam R プレーヤーに関連付けられるデータの型
  */
+@deprecated("Move to BukkitRepositoryControls for compositionality")
 abstract class JoinToQuitPlayerDataRepository[R] extends PlayerDataRepository[R] with Listener {
 
   import scala.collection.mutable
@@ -37,6 +38,8 @@ abstract class JoinToQuitPlayerDataRepository[R] extends PlayerDataRepository[R]
   protected def unloadData(player: Player, r: R): IO[Unit]
 
   override def apply(player: Player): R = state(player)
+
+  override def isDefinedAt(x: Player): Boolean = state.isDefinedAt(x)
 
   @EventHandler(priority = EventPriority.LOWEST)
   final def onPlayerJoin(event: PlayerJoinEvent): Unit = {

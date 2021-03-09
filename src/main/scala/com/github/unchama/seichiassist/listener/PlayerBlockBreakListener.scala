@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -71,7 +72,13 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val skillState = playerData.skillState.get.unsafeRunSync()
-    val playerLevel = playerData.level
+    val playerLevel = SeichiAssist.instance
+      .breakCountSystem.api
+      .seichiAmountDataRepository(player).read
+      .unsafeRunSync()
+      .levelCorrespondingToExp.level
+
+    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
 
     //クールダウンタイム中は処理を終了
     if (!activeSkillAvailability(player).get.unsafeRunSync()) {
@@ -223,6 +230,24 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
         )
       }
     }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  def onPlayerBreakBlockFinally(event: BlockBreakEvent): Unit = {
+    val player = event.getPlayer
+    val block = event.getBlock
+    val amount =
+      SeichiExpAmount.ofNonNegative {
+        BreakUtil.blockCountWeight(event.getPlayer.getWorld) * BreakUtil.totalBreakCount(Seq(block.getType))
+      }
+
+    effectEnvironment.runEffectAsync(
+      "通常破壊されたブロックを整地量に計上する",
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .incrementSeichiExp.of(player, amount)
+        .toIO
+    )
   }
 
   /**

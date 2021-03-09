@@ -3,9 +3,10 @@ package com.github.unchama.seichiassist.subsystems.buildcount
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect, Timer}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
-import com.github.unchama.concurrent.{NonServerThreadContextShift, ReadOnlyRef}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{ClassifyPlayerWorld, IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration}
@@ -37,7 +38,7 @@ object System {
     H[_] : Sync
   ](rootLogger: Logger[F])
    (implicit configuration: Configuration): H[System[F, G]] = {
-    import com.github.unchama.minecraft.bukkit.SendBukkitMessage._
+    import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage._
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] = new JdbcBuildAmountDataPersistence[G]()

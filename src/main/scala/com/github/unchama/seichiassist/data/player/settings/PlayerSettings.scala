@@ -10,10 +10,7 @@ import org.bukkit.entity.Player
 class PlayerSettings {
 
   import com.github.unchama.targetedeffect._
-val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
   var autoMineStack = true
-  //内訳メッセージを出すフラグ
-  var receiveFastDiggingEffectStats = false
   //ガチャ受け取り方法設定
   var receiveGachaTicketEveryMinute = true
   //キルログ表示トグル
@@ -28,7 +25,6 @@ val fastDiggingEffectSuppression = new FastDiggingEffectSuppression()
   //PvPトグル
   var pvpflag = false
   var nickname: PlayerNickname = PlayerNickname(NicknameStyle.Level, 0, 0)
-  var isExpBarVisible = false
   //ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
 
