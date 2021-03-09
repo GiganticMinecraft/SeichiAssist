@@ -104,21 +104,21 @@ class SeichiAssist extends JavaPlugin() {
   //region subsystems
   // TODO コンテキスト境界明確化のため、これらはすべてprivateであるべきである
 
-  lazy val expBottleStackSystem: StatefulSubsystem[IO, subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
+  private lazy val expBottleStackSystem: StatefulSubsystem[IO, subsystems.expbottlestack.InternalState[IO, SyncIO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    subsystems.expbottlestack.System.wired[IO, SyncIO, IO]
-  }.unsafeRunSync()
+    subsystems.expbottlestack.System.wired[IO, SyncIO, IO].unsafeRunSync()
+  }
 
-  lazy val itemMigrationSystem: StatefulSubsystem[IO, subsystems.itemmigration.InternalState[IO]] = {
+  private lazy val itemMigrationSystem: StatefulSubsystem[IO, subsystems.itemmigration.InternalState[IO]] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    subsystems.itemmigration.System.wired[IO, SyncIO, IO]
-  }.unsafeRunSync()
+    subsystems.itemmigration.System.wired[IO, SyncIO, IO].unsafeRunSync()
+  }
 
-  lazy val managedFlySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]] = {
+  private lazy val managedFlySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
 
     implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
@@ -132,7 +132,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.managedfly.System.wired[IO, SyncIO](configuration).unsafeRunSync().coerceFinalizationContextTo[IO]
   }
 
-  lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
+  private lazy val autoSaveSystem: StatefulSubsystem[IO, List[IO[Nothing]]] = {
     import PluginExecutionContexts.{syncShift, timer}
 
     val configuration = seichiAssistConfig.getAutoSaveSystemConfiguration
@@ -140,7 +140,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.autosave.System.wired[IO, IO](configuration)
   }
 
-  lazy val bookedAchievementSystem: Subsystem[IO] = {
+  private lazy val bookedAchievementSystem: Subsystem[IO] = {
     import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
@@ -149,7 +149,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.bookedachivement.System.wired[IO, IO]
   }
 
-  lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
+  private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.timer
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
@@ -167,7 +167,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
-  lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
+  private lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
@@ -177,7 +177,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
 
-  lazy val breakCountBarSystem: subsystems.breakcountbar.System[IO, SyncIO, Player] = {
+  private lazy val breakCountBarSystem: subsystems.breakcountbar.System[IO, SyncIO, Player] = {
     subsystems.breakcountbar.System.wired[SyncIO, IO](breakCountSystem.api).unsafeRunSync()
   }
 
@@ -207,13 +207,13 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
   }
 
-  lazy val buildAssist: BuildAssist = {
+  private lazy val buildAssist: BuildAssist = {
     implicit val flySystem: StatefulSubsystem[IO, InternalState[SyncIO]] = managedFlySystem
     implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
     new BuildAssist(this)
   }
 
-  lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
+  private lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
     import cats.implicits._
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
