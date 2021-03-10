@@ -151,7 +151,8 @@ object MineStackObjectList {
     new MineStackFarmObj("mushroom_stew", "キノコシチュー", 1, Material.MUSHROOM_SOUP, 0),
     new MineStackFarmObj("rabbit_stew", "ウサギシチュー", 1, Material.RABBIT_STEW, 0),
     new MineStackFarmObj("beetroot_soup", "ビートルートスープ", 1, Material.BEETROOT_SOUP, 0),
-    new MineStackFarmObj("bowl", "ボウル", 1, Material.BOWL, 0)
+    new MineStackFarmObj("bowl", "ボウル", 1, Material.BOWL, 0),
+    new MineStackFarmObj("milk_bucket", "牛乳", 1, Material.MILK_BUCKET, 0)
   )
 
   // 建築系ブロック
@@ -274,7 +275,6 @@ object MineStackObjectList {
     new MineStackBuildObj("bucket", "バケツ", 1, Material.BUCKET, 0),
     new MineStackBuildObj("water_bucket", "水入りバケツ", 1, Material.WATER_BUCKET, 0),
     new MineStackBuildObj("lava_bucket", "溶岩入りバケツ", 1, Material.LAVA_BUCKET, 0),
-    new MineStackBuildObj("milk_bucket", "牛乳", 1, Material.MILK_BUCKET, 0),
     new MineStackBuildObj("web", "クモの巣", 1, Material.WEB, 0),
     new MineStackBuildObj("rails", "レール", 1, Material.RAILS, 0),
     new MineStackBuildObj("furnace", "かまど", 1, Material.FURNACE, 0),
