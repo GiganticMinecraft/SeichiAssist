@@ -1,6 +1,6 @@
 package com.github.unchama.buildassist.menu
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import com.github.unchama.buildassist.{BuildAssist, TemporaryMutableBuildAssistPlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
@@ -8,7 +8,6 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.subsystems
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, TargetedEffect, UnfocusedEffect}
@@ -23,8 +22,7 @@ object BlockPlacementSkillMenu extends Menu {
   import menuinventory.syntax._
 
   class Environment(implicit
-                    val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type],
-                    val flyState: subsystems.managedfly.InternalState[SyncIO])
+                    val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")

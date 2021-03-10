@@ -4,16 +4,23 @@ import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.expbottlestack.bukkit.listeners.ExpBottleStackUsageController
 import org.bukkit.entity.ThrownExpBottle
+import org.bukkit.event.Listener
+
+trait System[F[_], G[_], H[_]] extends Subsystem[H] {
+
+  val managedBottleScope: ResourceScope[F, G, ThrownExpBottle]
+
+}
 
 object System {
   def wired[
     F[_] : ConcurrentEffect,
     G[_] : SyncEffect : ContextCoercion[*[_], F],
     H[_]
-  ](implicit effectEnvironment: EffectEnvironment): F[StatefulSubsystem[H, InternalState[F, G]]] = {
+  ](implicit effectEnvironment: EffectEnvironment): F[System[F, G, H]] = {
     import cats.implicits._
 
     for {
@@ -21,14 +28,14 @@ object System {
     } yield {
       implicit val scope: ResourceScope[F, G, ThrownExpBottle] = managedExpBottleScope
 
-      StatefulSubsystem(
-        listenersToBeRegistered = Seq(
+      new System[F, G, H] {
+        override val listeners: Seq[Listener] = Seq(
           new ExpBottleStackUsageController[F, G]()
-        ),
-        finalizersToBeManaged = Nil,
-        commandsToBeRegistered = Map(),
-        stateToExpose = InternalState[F, G](scope)
-      )
+        )
+        override val managedFinalizers: Seq[Nothing] = Nil
+        override val commands = Map()
+        override val managedBottleScope: ResourceScope[F, G, ThrownExpBottle] = scope
+      }
     }
   }
 }

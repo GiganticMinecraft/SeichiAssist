@@ -4,7 +4,8 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
-import com.github.unchama.seichiassist.subsystems
+import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
+import org.bukkit.entity.Player
 
 trait BuildAssistMenuRouter[F[_]] {
   implicit val canOpenBuildMainMenu: F CanOpen BuildMainMenu.type
@@ -12,7 +13,7 @@ trait BuildAssistMenuRouter[F[_]] {
 
 object BuildAssistMenuRouter {
   def apply(implicit
-            flyState: subsystems.managedfly.InternalState[SyncIO],
+            flyApi: ManagedFlyApi[SyncIO, Player],
             layoutPreparationContext: LayoutPreparationContext,
             syncShift: MinecraftServerThreadShift[IO]): BuildAssistMenuRouter[IO] = new BuildAssistMenuRouter[IO] {
     implicit lazy val blockPlacementSkillMenuEnvironment: BlockPlacementSkillMenu.Environment = new BlockPlacementSkillMenu.Environment

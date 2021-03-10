@@ -9,8 +9,9 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
-import com.github.unchama.seichiassist.{SkullOwners, subsystems}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, openInventoryEffect}
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
@@ -43,9 +44,9 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     )
   }
 
-  def computeButtonToShowStateOfFlying(implicit flySystem: subsystems.managedfly.InternalState[SyncIO]): IO[Button] = {
+  def computeButtonToShowStateOfFlying(implicit flyApi: ManagedFlyApi[SyncIO, Player]): IO[Button] = {
     for {
-      flyStatus <- flySystem.playerFlyDurations(player).read.toIO
+      flyStatus <- flyApi.playerFlyDurations(player).read.toIO
     } yield {
       val flyStatusLoreLines = flyStatus match {
         case Flying(remainingDuration) =>
@@ -340,7 +341,7 @@ object BuildMainMenu extends Menu {
   import menuinventory.syntax._
 
   class Environment(implicit
-                    val flyState: subsystems.managedfly.InternalState[SyncIO],
+                    val flyApi: ManagedFlyApi[SyncIO, Player],
                     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
                     val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu])
 
