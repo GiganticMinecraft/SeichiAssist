@@ -8,7 +8,7 @@ import simulacrum.typeclass
  *
  * すべての正のnについて、
  *
- * - `wrapPositive(n).asInt = n`
+ *   - `wrapPositive(n).asInt = n`
  *
  * を満たす。
  */
