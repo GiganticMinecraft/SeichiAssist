@@ -33,6 +33,8 @@ object System {
     G[_] : SyncEffect,
     F[_] : ConcurrentEffect : ContextCoercion[G, *[_]],
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
+    import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
+
     val persistence: BreakCountBarVisibilityPersistence[G] =
       new JdbcBreakCountBarVisibilityPersistence[G]
 

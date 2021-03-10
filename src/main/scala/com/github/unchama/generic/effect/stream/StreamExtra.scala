@@ -4,6 +4,7 @@ import cats.Eq
 import cats.effect.Concurrent
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.Diff
+import com.github.unchama.minecraft.algebra.HasUuid
 import fs2.{Pull, Stream}
 
 object StreamExtra {
@@ -65,10 +66,12 @@ object StreamExtra {
     stream.mapFilter { case (k, out) => Option.when(filter(k))(out) }
 
   /**
-   * 与えられたキーと出力の組のストリームから、与えられたキーを左成分に持つ要素のみを取り出してストリームを作成する。
+   * キーと出力の組の[[fs2.Stream]]から、キーが`key`と同じUUIDを持つ出力のみを取り出してストリームを作成する。
    */
-  def valuesWithKey[F[_], K, O](stream: Stream[F, (K, O)], key: K): Stream[F, O] =
-    valuesWithKeyFilter(stream)(_ == key)
+  def valuesWithKeyOfSameUuidAs[F[_], K: HasUuid, O](key: K)(stream: Stream[F, (K, O)]): Stream[F, O] = {
+    val uuid = HasUuid[K].of(key)
+    valuesWithKeyFilter(stream) { k => HasUuid[K].of(k) == uuid }
+  }
 
   def keyedValueDiffs[F[_], K, O: Eq](stream: Stream[F, (K, O)]): Stream[F, (K, Diff[O])] = {
     stream
