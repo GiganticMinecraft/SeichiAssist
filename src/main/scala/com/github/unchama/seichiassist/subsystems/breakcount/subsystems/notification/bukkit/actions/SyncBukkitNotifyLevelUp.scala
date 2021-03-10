@@ -24,7 +24,7 @@ object SyncBukkitNotifyLevelUp {
 
       if (oldLevel < newLevel) {
         MinecraftServerThreadShift[F].shift >> F.delay {
-          player.sendTitle(titleMessage, subtitleMessage, 1, 20, 1)
+          player.sendTitle(titleMessage, subtitleMessage, 1, 20 * 5, 1)
           Util.launchFireWorks(player.getLocation)
         }
       } else F.unit
