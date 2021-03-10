@@ -1,19 +1,30 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration
 
+import cats.effect.concurrent.TryableDeferred
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Sync, SyncEffect, SyncIO}
+import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
+import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.itemmigration.bukkit.controllers.player.{PlayerItemMigrationController, PlayerItemMigrationStateRepository}
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.itemmigration.controllers.{DatabaseMigrationController, WorldMigrationController}
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.loggers.PlayerItemsMigrationSlf4jLogger
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories.PlayerItemsMigrationVersionRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.migrations.SeichiAssistItemMigrations
+import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 import org.slf4j.Logger
+
+trait System[F[_], H[_]] extends Subsystem[H] {
+  val entryPoints: EntryPoints
+  val migrationStateRepository: PlayerDataRepository[TryableDeferred[F, Unit]]
+}
 
 object System {
 
@@ -21,7 +32,7 @@ object System {
     F[_] : ConcurrentEffect : ContextShift,
     G[_] : SyncEffect : ContextCoercion[*[_], F],
     H[_]
-  ](implicit effectEnvironment: EffectEnvironment, logger: Logger): G[StatefulSubsystem[H, InternalState[F]]] = Sync[G].delay {
+  ](implicit effectEnvironment: EffectEnvironment, logger: Logger): G[System[F, H]] = Sync[G].delay {
 
     val migrations = {
       implicit val syncIOUuidRepository: UuidRepository[SyncIO] = JdbcBackedUuidRepository
@@ -40,7 +51,7 @@ object System {
     val repository = new PlayerItemMigrationStateRepository[G, F]
     val playerItemMigrationController = new PlayerItemMigrationController[F, G](repository, migrations, service)
 
-    val entryPoints = new EntryPoints {
+    val systemEntryPoints = new EntryPoints {
       override def runDatabaseMigration[I[_] : SyncEffect]: I[Unit] = {
         DatabaseMigrationController[I](migrations).runDatabaseMigration
       }
@@ -50,15 +61,13 @@ object System {
       }
     }
 
-    StatefulSubsystem(
-      listenersToBeRegistered = Seq(
-        repository,
-        playerItemMigrationController
-      ),
-      finalizersToBeManaged = Nil,
-      commandsToBeRegistered = Map(),
-      stateToExpose = InternalState(entryPoints, repository)
-    )
+    new System[F, H] {
+      override val entryPoints: EntryPoints = systemEntryPoints
+      override val migrationStateRepository: PlayerDataRepository[TryableDeferred[F, Unit]] = repository
+      override val listeners: Seq[Listener] = Seq(repository, playerItemMigrationController)
+      override val managedFinalizers: Seq[PlayerDataFinalizer[H, Player]] = Nil
+      override val commands: Map[String, TabExecutor] = Map()
+    }
   }
 
 }

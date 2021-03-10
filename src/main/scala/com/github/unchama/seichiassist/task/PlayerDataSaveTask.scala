@@ -133,7 +133,7 @@ object PlayerDataSaveTask {
 
       val command = {
         ("update seichiassist.playerdata set"
-          + " name = '" + playerdata.lowercaseName + "'"
+          + " name = '" + playerdata.name + "'"
 
           + ",minestackflag = " + playerdata.settings.autoMineStack
 
@@ -233,7 +233,7 @@ object PlayerDataSaveTask {
     Monad[F].tailRecM(3) { remaining =>
       if (remaining == 0) {
         Sync[F].delay {
-          println(s"$RED${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+          println(s"$RED${playerdata.name}のプレイヤーデータ保存失敗")
         }.as(Right(ActionStatus.Fail))
       } else commitUpdate.flatMap { result =>
         if (result == ActionStatus.Ok) {
