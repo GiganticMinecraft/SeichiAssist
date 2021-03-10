@@ -44,15 +44,12 @@ object EffectStatsSettingsRepository {
   ](topic: Topic[F, Option[(Player, (EffectListDiff, FastDiggingEffectStatsSettings))]],
     effectClock: fs2.Stream[F, (Player, FastDiggingEffectList)]): (Player, RepositoryValue[F, G]) => G[Unit] =
     (player, pair) => {
-      val playerUuid = HasUuid[Player].of(player)
-
       val (ref, fiberPromise) = pair
 
-      val processStream: fs2.Stream[F, Unit] =
-        StreamExtra
-          .takeEvery(60) {
-            StreamExtra.valuesWithKeyFilter(effectClock)(p => HasUuid[Player].of(p) == playerUuid)
-          }
+      val processStream: fs2.Stream[F, Unit] = {
+        effectClock
+          .through(StreamExtra.valuesWithKeyOfSameUuidAs(player))
+          .through(StreamExtra.takeEvery(60))
           .evalMap { list => list.filteredList }
           .map(_.map(_.effect))
           .sliding(2)
@@ -66,6 +63,7 @@ object EffectStatsSettingsRepository {
           .evalMap { diff => ContextCoercion(ref.get.map(diff -> _)) }
           .evalTap { pair => topic.publish1(Some(player, pair)) }
           .as(())
+      }
 
       EffectExtra.runAsyncAndForget[F, G, Unit] {
         Concurrent[F]

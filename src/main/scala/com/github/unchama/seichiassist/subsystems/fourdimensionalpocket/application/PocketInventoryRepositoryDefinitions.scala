@@ -52,13 +52,11 @@ object PocketInventoryRepositoryDefinitions {
     Inventory: InteractInventory[F, Player, *]
   ](levelStream: fs2.Stream[F, (Player, Diff[SeichiLevel])]): (Player, RepositoryValue[F, G, Inventory]) => G[Unit] =
     (player, pair) => {
-      val uuid = HasUuid[Player].of(player)
-
       val (ref, fiberPromise) = pair
 
-      val processStream: fs2.Stream[F, Unit] =
-        StreamExtra
-          .valuesWithKeyFilter(levelStream)(HasUuid[Player].of(_) == uuid)
+      val processStream: fs2.Stream[F, Unit] = {
+        levelStream
+          .through(StreamExtra.valuesWithKeyOfSameUuidAs(player))
           .evalMap { case Diff(_, right) =>
             val newSize = PocketSizeTable(right)
             val update: Inventory => F[Inventory] =
@@ -66,6 +64,7 @@ object PocketInventoryRepositoryDefinitions {
 
             ref.lockAndUpdate(update).as(())
           }
+      }
 
       EffectExtra.runAsyncAndForget[F, G, Unit] {
         Concurrent[F]

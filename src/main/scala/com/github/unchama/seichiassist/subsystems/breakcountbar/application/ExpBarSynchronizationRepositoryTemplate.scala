@@ -6,6 +6,7 @@ import com.github.unchama.datarepository.template.{RepositoryFinalization, TwoPh
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.StreamExtra
+import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.minecraft.objects.MinecraftBossBar
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
@@ -34,7 +35,7 @@ object ExpBarSynchronizationRepositoryTemplate {
   def initialization[
     G[_] : Sync,
     F[_] : ConcurrentEffect : ContextCoercion[G, *[_]],
-    Player,
+    Player: HasUuid,
   ](breakCountValues: fs2.Stream[F, (Player, SeichiAmountData)],
     visibilityValues: fs2.Stream[F, (Player, BreakCountBarVisibility)])
    (createFreshBossBar: G[BossBarWithPlayer[F, Player]])
@@ -43,12 +44,12 @@ object ExpBarSynchronizationRepositoryTemplate {
       for {
         bossBar <- createFreshBossBar
 
-        synchronization = StreamExtra
-          .valuesWithKey(breakCountValues, player)
+        synchronization = breakCountValues
+          .through(StreamExtra.valuesWithKeyOfSameUuidAs(player))
           .evalTap(BreakCountBarManipulation.write(_, bossBar))
 
-        switching = StreamExtra
-          .valuesWithKey(visibilityValues, player)
+        switching = visibilityValues
+          .through(StreamExtra.valuesWithKeyOfSameUuidAs(player))
           .evalTap(v => bossBar.visibility.write(BreakCountBarVisibility.Shown == v))
 
         fiberPromise <- Deferred.in[G, F, Fiber[F, Unit]]
