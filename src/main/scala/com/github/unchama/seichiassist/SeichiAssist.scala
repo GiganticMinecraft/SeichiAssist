@@ -145,7 +145,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
 
-    subsystems.buildcount.System.wired[IO, SyncIO, SyncIO](loggerF).unsafeRunSync()
+    subsystems.buildcount.System.wired[IO, SyncIO](loggerF).unsafeRunSync()
   }
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
