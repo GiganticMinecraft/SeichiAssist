@@ -4,7 +4,7 @@ import sbt.Keys.baseDirectory
 import java.io._
 
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "1.6.14"
+ThisBuild / version := "1.6.15"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 

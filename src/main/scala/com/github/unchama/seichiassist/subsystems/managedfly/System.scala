@@ -66,7 +66,9 @@ object System {
             exposedRepository
         }
 
-        override val listeners: Seq[Listener] = Seq()
+        override val listeners: Seq[Listener] = Seq(
+          _stateRepository
+        )
         override val managedFinalizers: Seq[PlayerDataFinalizer[AsyncContext, Player]] = Seq(
           player => ContextCoercion(_stateRepository.removeValueAndFinalize(player))
         )
