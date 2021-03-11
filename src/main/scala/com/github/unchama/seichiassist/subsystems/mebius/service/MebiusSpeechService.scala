@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.mebius.service
 
-import cats.effect.Sync
+import cats.Monad
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusProperty
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechBlockageState, MebiusSpeechGateway}
 
-class MebiusSpeechService[F[_] : Sync](gateway: MebiusSpeechGateway[F],
-                                       blockageState: MebiusSpeechBlockageState[F]) {
+class MebiusSpeechService[F[_] : Monad](gateway: MebiusSpeechGateway[F],
+                                        blockageState: MebiusSpeechBlockageState[F]) {
 
   def unblockSpeech(): F[Unit] = blockageState.unblock
 
@@ -25,7 +25,7 @@ class MebiusSpeechService[F[_] : Sync](gateway: MebiusSpeechGateway[F],
       block <- blockageState.shouldBlock
       _ <-
         if (!block) makeSpeechIgnoringBlockage(property, speech) >> blockageState.block
-        else Sync[F].unit
+        else Monad[F].unit
     } yield ()
   }
 

@@ -206,7 +206,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
     implicit val syncSeasonalEventsSystemAPI: SeasonalEventsAPI[SyncIO] = seasonalEventsSystem.api[SyncIO]
 
-    subsystems.mebius.System.wired
+    subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(

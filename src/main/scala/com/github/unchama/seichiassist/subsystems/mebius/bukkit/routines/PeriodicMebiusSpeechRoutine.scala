@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.routines
 import cats.data.NonEmptyList
 import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.JoinToQuitPlayerDataRepository
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -23,7 +24,8 @@ object PeriodicMebiusSpeechRoutine {
   }
 
   def unblockAndSpeakTipsOrMessageRandomly(player: Player)
-                                          (implicit serviceRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[SyncIO]]): SyncIO[Unit] = {
+                                          (implicit
+                                           serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]]): SyncIO[Unit] = {
     val service = serviceRepository(player)
 
     for {
@@ -49,7 +51,8 @@ object PeriodicMebiusSpeechRoutine {
     } yield ()
   }
 
-  def start(player: Player)(implicit serviceRepository: JoinToQuitPlayerDataRepository[MebiusSpeechService[SyncIO]],
+  def start(player: Player)(implicit
+                            serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
                             context: RepeatingTaskContext,
                             bukkitSyncIOShift: MinecraftServerThreadShift[IO]): IO[Nothing] = {
     import cats.implicits._
