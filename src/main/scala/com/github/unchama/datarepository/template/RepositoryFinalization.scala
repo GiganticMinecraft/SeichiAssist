@@ -49,6 +49,9 @@ object RepositoryFinalization {
       override val finalizeBeforeUnload: (Player, R) => F[Unit] = finalization
     }
 
+  def trivial[F[_] : Applicative, Player, R]: RepositoryFinalization[F, Player, R] =
+    withoutAnyPersistence((_, _) => Applicative[F].unit)
+
   def liftToRefFinalization[
     F[_] : FlatMap, Player, R
   ](finalization: RepositoryFinalization[F, Player, R]): RepositoryFinalization[F, Player, Ref[F, R]] =

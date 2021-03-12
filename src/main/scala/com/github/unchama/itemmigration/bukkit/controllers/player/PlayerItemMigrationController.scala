@@ -1,10 +1,10 @@
 package com.github.unchama.itemmigration.bukkit.controllers.player
 
-import cats.effect.concurrent.TryableDeferred
-import cats.effect.{ConcurrentEffect, SyncEffect}
-import com.github.unchama.datarepository.bukkit.player.PreLoginToQuitPlayerDataRepository
+import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO}
+import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.itemmigration.bukkit.targets.PlayerInventoriesData
-import com.github.unchama.itemmigration.domain.ItemMigrations
+import com.github.unchama.itemmigration.domain.{ItemMigrations, PlayerMigrationState}
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
@@ -19,14 +19,14 @@ import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
 class PlayerItemMigrationController[
   F[_] : ConcurrentEffect,
   G[_] : SyncEffect
-](migrationState: PreLoginToQuitPlayerDataRepository[G, TryableDeferred[F, Unit]],
+](migrationState: KeyedDataRepository[Player, PlayerMigrationState[G]],
   migrations: ItemMigrations, service: ItemMigrationService[F, PlayerInventoriesData[F]])
   extends Listener {
 
   import cats.effect.implicits._
 
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
-    if (migrationState(player).tryGet.toIO.unsafeRunSync().isEmpty) {
+    if (migrationState(player).hasMigrated.runSync[SyncIO].unsafeRunSync()) {
       event.setCancelled(true)
     }
   }
@@ -59,7 +59,7 @@ class PlayerItemMigrationController[
 
     for {
       _ <- service.runMigration(migrations)(PlayerInventoriesData(player))
-      _ <- migrationState(player).complete(())
+      _ <- ContextCoercion[G, F, Unit](migrationState(player).setMigrated)
     } yield ()
   }.toIO.unsafeRunAsyncAndForget()
 }
