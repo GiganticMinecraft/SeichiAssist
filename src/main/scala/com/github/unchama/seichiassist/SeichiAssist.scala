@@ -474,6 +474,7 @@ class SeichiAssist extends JavaPlugin() {
       .concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat(repositories)
       .concat(wiredSubsystems.flatMap(_.listeners))
+      .concat(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.initializer)))
 
     listeners.foreach {
       getServer.getPluginManager.registerEvents(_, this)
