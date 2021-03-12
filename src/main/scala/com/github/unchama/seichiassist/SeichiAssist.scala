@@ -9,11 +9,12 @@ import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
-import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository, TryableFiberRepository}
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
+import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinitions
 import com.github.unchama.datarepository.template.{RepositoryFinalization, SinglePhasedRepositoryInitialization}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
+import com.github.unchama.generic.effect.concurrent.SessionMutex
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
@@ -94,7 +95,48 @@ class SeichiAssist extends JavaPlugin() {
 
   private var repeatedTaskFiber: Option[Fiber[IO, List[Nothing]]] = None
 
+  //region repositories
+
+  private val activeSkillAvailabilityRepositoryControls: BukkitRepositoryControls[SyncIO, Ref[SyncIO, Boolean]] =
+    BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles[SyncIO, Ref[SyncIO, Boolean]](
+      SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
+      RepositoryFinalization.trivial
+    ).unsafeRunSync()
+
+  val activeSkillAvailability: PlayerDataRepository[Ref[SyncIO, Boolean]] =
+    activeSkillAvailabilityRepositoryControls.repository
+
+  private val assaultSkillRoutinesRepositoryControls: BukkitRepositoryControls[SyncIO, SessionMutex[IO, SyncIO]] = {
+    import PluginExecutionContexts.asyncShift
+
+    BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles(
+      SessionMutexRepositoryDefinitions.initialization[IO, SyncIO],
+      SessionMutexRepositoryDefinitions.finalization[IO, SyncIO, UUID]
+    ).unsafeRunSync()
+  }
+
+  val assaultSkillRoutines: PlayerDataRepository[SessionMutex[IO, SyncIO]] =
+    assaultSkillRoutinesRepositoryControls.repository
+
+  private val kickAllPlayersDueToInitialization: SyncIO[Unit] = SyncIO {
+    getServer.getOnlinePlayers.asScala.foreach { player =>
+      player.kickPlayer("プラグインを初期化しています。時間を置いて再接続してください。")
+    }
+  }
+
+  //endregion
+
   //region resource scopes
+
+  /**
+   * スキル使用などで破壊されることが確定したブロック塊のスコープ
+   *
+   * TODO: `ResourceScope[IO, SyncIO, Set[BlockBreakableBySkill]]` にしたい
+   */
+  val lockedBlockChunkScope: ResourceScope[IO, IO, Set[BlockBreakableBySkill]] = {
+    import PluginExecutionContexts.asyncShift
+    ResourceScope.unsafeCreate
+  }
 
   val arrowSkillProjectileScope: ResourceScope[IO, SyncIO, Projectile] = {
     import PluginExecutionContexts.asyncShift
@@ -108,6 +150,7 @@ class SeichiAssist extends JavaPlugin() {
   //endregion
 
   //region subsystems
+
   private lazy val expBottleStackSystem: subsystems.expbottlestack.System[IO, SyncIO, IO] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
@@ -254,7 +297,10 @@ class SeichiAssist extends JavaPlugin() {
 
     new BungeeSemaphoreResponderSystem(
       PlayerDataFinalizer.concurrently[IO, Player](
-        wiredSubsystems.flatMap(_.managedFinalizers).appended(savePlayerData)
+        wiredSubsystems.flatMap(_.managedFinalizers)
+          .appended(savePlayerData)
+          .appended(assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO])
+          .appended(activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO])
       ),
       PluginExecutionContexts.asyncShift
     )
@@ -263,38 +309,6 @@ class SeichiAssist extends JavaPlugin() {
   //endregion
 
   private implicit val _akkaSystem: ActorSystem = ConfiguredActorSystemProvider("reference.conf").provide()
-
-  /**
-   * スキル使用などで破壊されることが確定したブロック塊のスコープ
-   *
-   * TODO: `ResourceScope[IO, SyncIO, Set[BlockBreakableBySkill]]` にしたい
-   */
-  val lockedBlockChunkScope: ResourceScope[IO, IO, Set[BlockBreakableBySkill]] = {
-    import PluginExecutionContexts.asyncShift
-    ResourceScope.unsafeCreate
-  }
-
-  private val activeSkillAvailabilityRepositoryControls: BukkitRepositoryControls[SyncIO, Ref[SyncIO, Boolean]] =
-    BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles[SyncIO, Ref[SyncIO, Boolean]](
-      SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
-      RepositoryFinalization.trivial
-    ).unsafeRunSync()
-
-  val activeSkillAvailability: PlayerDataRepository[Ref[SyncIO, Boolean]] =
-    activeSkillAvailabilityRepositoryControls.repository
-
-  val assaultSkillRoutines: TryableFiberRepository[IO, SyncIO] = {
-    import PluginExecutionContexts.asyncShift
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-
-    new TryableFiberRepository[IO, SyncIO]()
-  }
-
-  private val kickAllPlayersDueToInitialization: SyncIO[Unit] = SyncIO {
-    getServer.getOnlinePlayers.asScala.foreach { player =>
-      player.kickPlayer("プラグインを初期化しています。時間を置いて再接続してください。")
-    }
-  }
 
   /**
    * プラグインを初期化する。ここで例外が投げられるとBukkitがシャットダウンされる。
@@ -433,7 +447,7 @@ class SeichiAssist extends JavaPlugin() {
 
     val repositories = Seq(
       activeSkillAvailabilityRepositoryControls.initializer,
-      assaultSkillRoutines
+      assaultSkillRoutinesRepositoryControls.initializer
     )
 
     //リスナーの登録
