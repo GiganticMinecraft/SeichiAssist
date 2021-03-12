@@ -17,7 +17,6 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.B
 import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.JdbcBuildAmountDataPersistence
 import com.github.unchama.util.logging.log4cats.PrefixedLogger
 import io.chrisdavenport.log4cats.Logger
-import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
@@ -85,7 +84,6 @@ object System {
           rateLimiterRepositoryControls.finalizer,
           buildAmountDataRepositoryControls.finalizer
         ).map(_.coerceContextTo[F])
-        override val commands: Map[String, TabExecutor] = Map()
       }
     }
   }

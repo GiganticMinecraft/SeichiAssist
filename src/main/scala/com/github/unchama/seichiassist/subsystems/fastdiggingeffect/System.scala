@@ -21,7 +21,6 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.setti
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{JdbcFastDiggingEffectStatsSettingsPersistence, JdbcFastDiggingEffectSuppressionStatePersistence}
 import fs2.concurrent.Topic
-import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
@@ -161,7 +160,6 @@ object System {
         suppressionSettingsRepositoryHandles.finalizer.coerceContextTo[F],
         statsSettingsRepositoryHandles.finalizer.coerceContextTo[F]
       )
-      override val commands: Map[String, TabExecutor] = Map.empty
     }
 
     yieldSystem.flatTap { system =>

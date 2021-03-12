@@ -13,7 +13,6 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.bukkit.CreateFre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure.JdbcBreakCountBarVisibilityPersistence
 import fs2.concurrent.Topic
-import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
@@ -87,7 +86,6 @@ object System {
           visibilityRepositoryHandles.finalizer,
           expBarSynchronizationRepositoryHandles.finalizer
         ).map(_.coerceContextTo[F])
-        override val commands: Map[String, TabExecutor] = Map()
       }
     }
   }

@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration
 
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Sync, SyncEffect, SyncIO}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -16,8 +15,6 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.l
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories.PlayerItemsMigrationVersionRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.migrations.SeichiAssistItemMigrations
-import org.bukkit.command.TabExecutor
-import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.slf4j.Logger
 
@@ -74,8 +71,6 @@ object System {
         repositoryControls.initializer,
         playerItemMigrationController
       )
-      override val managedFinalizers: Seq[PlayerDataFinalizer[H, Player]] = Seq()
-      override val commands: Map[String, TabExecutor] = Map()
     }
   }
 
