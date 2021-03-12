@@ -383,8 +383,8 @@ object ActiveSkillMenu extends Menu {
                         val tryStartRoutine = TryableFiber.start(AssaultRoutine.tryStart(player, skill))
                         val fiberRepository = SeichiAssist.instance.assaultSkillRoutines
                         val tryStart =
-                          fiberRepository.stopAnyFiber(player) >>
-                            fiberRepository.flipState(player)(tryStartRoutine).as(())
+                          fiberRepository(player).stopAnyFiber >>
+                            fiberRepository(player).flipState(tryStartRoutine).as(())
 
                         Kleisli.liftF(tryStart)
                       case _ => emptyEffect

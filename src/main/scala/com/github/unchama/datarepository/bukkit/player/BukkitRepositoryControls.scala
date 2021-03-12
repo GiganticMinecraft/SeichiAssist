@@ -1,9 +1,10 @@
 package com.github.unchama.datarepository.bukkit.player
 
-import cats.Monad
 import cats.effect.{Sync, SyncEffect, SyncIO}
+import cats.{Monad, ~>}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryFinalization, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.generic.ContextCoercion
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -14,7 +15,19 @@ import scala.collection.concurrent.TrieMap
 case class BukkitRepositoryControls[F[_], R](repository: PlayerDataRepository[R],
                                              initializer: Listener,
                                              backupProcess: F[Unit],
-                                             finalizer: PlayerDataFinalizer[F, Player])
+                                             finalizer: PlayerDataFinalizer[F, Player]) {
+
+  def transformFinalizationContext[G[_]](trans: F ~> G): BukkitRepositoryControls[G, R] =
+    BukkitRepositoryControls(
+      repository,
+      initializer,
+      trans(backupProcess),
+      finalizer.transformContext(trans)
+    )
+
+  def coerceFinalizationContextTo[G[_] : ContextCoercion[F, *[_]]]: BukkitRepositoryControls[G, R] =
+    transformFinalizationContext(ContextCoercion.asFunctionK)
+}
 
 object BukkitRepositoryControls {
 

@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.breakcountbar
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
@@ -13,9 +12,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.bukkit.CreateFre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure.JdbcBreakCountBarVisibilityPersistence
 import fs2.concurrent.Topic
-import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
-import org.bukkit.event.Listener
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {
 
@@ -79,15 +76,9 @@ object System {
           override val breakCountBarVisibility: KeyedDataRepository[Player, Ref[G, BreakCountBarVisibility]] =
             visibilityRepositoryHandles.repository
         }
-        override val listeners: Seq[Listener] = Vector(
-          visibilityRepositoryHandles.initializer,
-          expBarSynchronizationRepositoryHandles.initializer
-        )
-        override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = Vector(
-          visibilityRepositoryHandles.finalizer,
-          expBarSynchronizationRepositoryHandles.finalizer
-        ).map(_.coerceContextTo[F])
-        override val commands: Map[String, TabExecutor] = Map()
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+          visibilityRepositoryHandles, expBarSynchronizationRepositoryHandles
+        ).map(_.coerceFinalizationContextTo[F])
       }
     }
   }

@@ -32,8 +32,6 @@ object System {
         override val listeners: Seq[Listener] = Seq(
           new ExpBottleStackUsageController[F, G]()
         )
-        override val managedFinalizers: Seq[Nothing] = Nil
-        override val commands = Map()
         override val managedBottleScope: ResourceScope[F, G, ThrownExpBottle] = scope
       }
     }

@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
@@ -106,17 +105,13 @@ object System {
 
       new System[F, Player] {
         override val api: FourDimensionalPocketApi[F, Player] = systemApi
-        override val listeners: Seq[Listener] = Vector(
-          pocketInventoryRepositoryHandles.initializer,
-          openPocketListener
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+          pocketInventoryRepositoryHandles.coerceFinalizationContextTo[F]
         )
-        override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = Vector(
-          pocketInventoryRepositoryHandles.finalizer.coerceContextTo[F]
+        override val listeners: Seq[Listener] = Vector(openPocketListener)
+        override val commands: Map[String, TabExecutor] = Map(
+          "openpocket" -> openPocketCommand.executor
         )
-        override val commands: Map[String, TabExecutor] =
-          Map(
-            "openpocket" -> openPocketCommand.executor
-          )
       }
     }
   }

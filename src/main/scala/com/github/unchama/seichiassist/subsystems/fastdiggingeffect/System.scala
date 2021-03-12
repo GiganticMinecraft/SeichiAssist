@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
@@ -21,9 +20,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.setti
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{JdbcFastDiggingEffectStatsSettingsPersistence, JdbcFastDiggingEffectSuppressionStatePersistence}
 import fs2.concurrent.Topic
-import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
-import org.bukkit.event.Listener
 
 import java.util.UUID
 import scala.concurrent.duration.FiniteDuration
@@ -151,17 +148,11 @@ object System {
             .map(pair => ReadOnlyRef.fromRef(pair._1.mapK(ContextCoercion.asFunctionK)))
       }
 
-      override val listeners: Seq[Listener] = Seq(
-        effectListRepositoryHandles.initializer,
-        suppressionSettingsRepositoryHandles.initializer,
-        statsSettingsRepositoryHandles.initializer
-      )
-      override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = Seq(
-        effectListRepositoryHandles.finalizer.coerceContextTo[F],
-        suppressionSettingsRepositoryHandles.finalizer.coerceContextTo[F],
-        statsSettingsRepositoryHandles.finalizer.coerceContextTo[F]
-      )
-      override val commands: Map[String, TabExecutor] = Map.empty
+      override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+        effectListRepositoryHandles,
+        suppressionSettingsRepositoryHandles,
+        statsSettingsRepositoryHandles
+      ).map(_.coerceFinalizationContextTo[F])
     }
 
     yieldSystem.flatTap { system =>

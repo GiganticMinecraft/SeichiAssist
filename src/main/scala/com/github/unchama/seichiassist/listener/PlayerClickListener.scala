@@ -350,8 +350,8 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
             SeichiAssist.instance
-              .assaultSkillRoutines
-              .flipState(player)(TryableFiber.start(AssaultRoutine.tryStart(player, skill)))
+              .assaultSkillRoutines(player)
+              .flipState(TryableFiber.start(AssaultRoutine.tryStart(player, skill)))
               .as(())
               .unsafeRunSync()
 

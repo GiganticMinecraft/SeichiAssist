@@ -2,7 +2,7 @@ package com.github.unchama.datarepository.template
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import cats.{Applicative, Monad}
+import cats.{Applicative, Functor, Monad}
 
 import java.util.UUID
 
@@ -37,8 +37,11 @@ object SinglePhasedRepositoryInitialization {
 
   import cats.implicits._
 
+  def withSupplier[F[_] : Functor, R](fr: F[R]): SinglePhasedRepositoryInitialization[F, R] =
+    (_, _) => Functor[F].map(fr)(PrefetchResult.Success.apply)
+
   def constant[F[_] : Applicative, R](v: R): SinglePhasedRepositoryInitialization[F, R] =
-    (_, _) => Applicative[F].pure(PrefetchResult.Success(v))
+    withSupplier(Applicative[F].pure(v))
 
   def forRefCell[
     F[_] : Sync, R

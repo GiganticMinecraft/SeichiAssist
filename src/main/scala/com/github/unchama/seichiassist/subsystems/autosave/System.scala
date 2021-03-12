@@ -3,13 +3,8 @@ package com.github.unchama.seichiassist.subsystems.autosave
 import cats.effect.{Sync, Timer}
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.autosave.application.{CanNotifySaves, CanSaveWorlds, SystemConfiguration, WorldSaveRoutine}
 import com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances.{SyncCanNotifyBukkitSaves, SyncCanSaveBukkitWorlds}
-
-trait System[F[_]] extends Subsystem[F] {
-  val routine: F[Nothing]
-}
 
 object System {
   def backgroundProcess[

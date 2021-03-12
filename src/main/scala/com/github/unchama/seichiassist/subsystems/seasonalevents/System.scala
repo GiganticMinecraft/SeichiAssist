@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents
 
 import cats.Functor
 import cats.effect.{Clock, ConcurrentEffect, SyncEffect}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -26,7 +25,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.util.UUID
 
 class System[F[_]](override val listeners: Seq[Listener],
-                   override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]],
                    override val commands: Map[String, TabExecutor]) extends Subsystem[F] {
 
   def api[G[_] : Clock : Functor]: SeasonalEventsAPI[G] = SeasonalEventsAPI.withF[G]
@@ -55,7 +53,6 @@ object System {
         new ValentineListener(),
         new NewYearListener(),
       ),
-      managedFinalizers = Nil,
       commands = Map(
         "event" -> EventCommand.executor
       )
