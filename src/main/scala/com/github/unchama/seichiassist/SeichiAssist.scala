@@ -3,12 +3,15 @@ package com.github.unchama.seichiassist
 import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
+import cats.effect.concurrent.Ref
 import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
-import com.github.unchama.datarepository.bukkit.player.{NonPersistentPlayerDataRefRepository, TryableFiberRepository}
+import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository, TryableFiberRepository}
+import com.github.unchama.datarepository.template.{RepositoryFinalization, SinglePhasedRepositoryInitialization}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -59,6 +62,9 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 class SeichiAssist extends JavaPlugin() {
+
+  import cats.implicits._
+
   SeichiAssist.instance = this
 
   private var hasBeenLoadedAlready = false
@@ -231,7 +237,6 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val bungeeSemaphoreResponderSystem: BungeeSemaphoreResponderSystem[IO] = {
-    import cats.implicits._
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val systemConfiguration: com.github.unchama.bungeesemaphoreresponder.Configuration =
       seichiAssistConfig.getBungeeSemaphoreSystemConfiguration
@@ -269,11 +274,14 @@ class SeichiAssist extends JavaPlugin() {
     ResourceScope.unsafeCreate
   }
 
-  val activeSkillAvailability: NonPersistentPlayerDataRefRepository[SyncIO, SyncIO, Boolean] = {
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+  private val activeSkillAvailabilityRepositoryControls: BukkitRepositoryControls[SyncIO, Ref[SyncIO, Boolean]] =
+    BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles[SyncIO, Ref[SyncIO, Boolean]](
+      SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
+      RepositoryFinalization.trivial
+    ).unsafeRunSync()
 
-    new NonPersistentPlayerDataRefRepository[SyncIO, SyncIO, Boolean](true)
-  }
+  val activeSkillAvailability: PlayerDataRepository[Ref[SyncIO, Boolean]] =
+    activeSkillAvailabilityRepositoryControls.repository
 
   val assaultSkillRoutines: TryableFiberRepository[IO, SyncIO] = {
     import PluginExecutionContexts.asyncShift
@@ -424,7 +432,7 @@ class SeichiAssist extends JavaPlugin() {
       }
 
     val repositories = Seq(
-      activeSkillAvailability,
+      activeSkillAvailabilityRepositoryControls.initializer,
       assaultSkillRoutines
     )
 
@@ -478,8 +486,6 @@ class SeichiAssist extends JavaPlugin() {
 
   private def startRepeatedJobs(): Unit = {
     val startTask = {
-      import cats.implicits._
-
       val dataRecalculationRoutine = {
         import PluginExecutionContexts._
         PlayerDataRecalculationRoutine()
@@ -556,8 +562,6 @@ class SeichiAssist extends JavaPlugin() {
     magicEffectEntityScope.getReleaseAllAction.unsafeRunSync().value.unsafeRunSync()
 
     expBottleStackSystem.managedBottleScope.getReleaseAllAction.unsafeRunSync().unsafeRunSync()
-
-    import cats.implicits._
 
     // BungeeSemaphoreResponderの全ファイナライザを走らせる
     getServer
