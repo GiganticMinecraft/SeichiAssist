@@ -9,6 +9,7 @@ import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
+import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinitions
 import com.github.unchama.datarepository.template.{RepositoryFinalization, SinglePhasedRepositoryInitialization}
@@ -484,6 +485,24 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     startRepeatedJobs()
+
+    // サブシステムのリポジトリのバックアップ処理を走らせる
+    {
+      import PluginExecutionContexts.{asyncShift, timer}
+
+      import scala.concurrent.duration._
+
+      implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+      val interval = IO.pure(1.minute)
+
+      RepeatingRoutine
+        .foreverMRecovering {
+          wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.backupProcess)).sequence
+        }(interval)
+        .start(asyncShift)
+        .unsafeRunSync()
+    }
 
     hasBeenLoadedAlready = true
     kickAllPlayersDueToInitialization.unsafeRunSync()
