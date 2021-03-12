@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.mebius
 
 import cats.effect.{IO, Sync, SyncEffect, SyncIO, Timer}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -57,14 +56,14 @@ object System {
             new MebiusInteractionResponder,
             new MebiusLevelUpTrialListener,
             new MebiusPlayerJoinGreeter[IO],
-            new MebiusRenamePreventionListener,
-            speechServiceRepositoryControls.initializer,
-            speechRoutineFiberRepositoryControls.initializer
+            new MebiusRenamePreventionListener
           )
-          override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = Seq(
-            speechServiceRepositoryControls.finalizer.coerceContextTo[F],
-            speechRoutineFiberRepositoryControls.finalizer.coerceContextTo[F]
-          )
+
+          override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+            speechServiceRepositoryControls,
+            speechRoutineFiberRepositoryControls
+          ).map(_.coerceFinalizationContextTo[F])
+
           override val commands: Map[String, TabExecutor] = Map(
             "mebius" -> new MebiusCommandExecutorProvider().executor
           )

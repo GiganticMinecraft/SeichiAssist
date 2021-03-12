@@ -158,11 +158,11 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.expbottlestack.System.wired[IO, SyncIO, IO].unsafeRunSync()
   }
 
-  private lazy val itemMigrationSystem: subsystems.itemmigration.System[IO, IO] = {
+  private lazy val itemMigrationSystem: subsystems.itemmigration.System[IO] = {
     import PluginExecutionContexts.asyncShift
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    subsystems.itemmigration.System.wired[IO, SyncIO, IO].unsafeRunSync()
+    subsystems.itemmigration.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   private lazy val managedFlySystem: subsystems.managedfly.System[SyncIO, IO] = {
@@ -297,10 +297,14 @@ class SeichiAssist extends JavaPlugin() {
 
     new BungeeSemaphoreResponderSystem(
       PlayerDataFinalizer.concurrently[IO, Player](
-        wiredSubsystems.flatMap(_.managedFinalizers)
-          .appended(savePlayerData)
-          .appended(assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO])
-          .appended(activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO])
+        Seq(
+          savePlayerData,
+          assaultSkillRoutinesRepositoryControls.finalizer.coerceContextTo[IO],
+          activeSkillAvailabilityRepositoryControls.finalizer.coerceContextTo[IO]
+        )
+          .appendedAll(wiredSubsystems.flatMap(_.managedFinalizers))
+          .appendedAll(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.finalizer)))
+          .toList
       ),
       PluginExecutionContexts.asyncShift
     )

@@ -4,6 +4,7 @@ import cats.effect.{Sync, SyncEffect, SyncIO}
 import cats.{Monad, ~>}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryFinalization, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.generic.ContextCoercion
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -24,6 +25,8 @@ case class BukkitRepositoryControls[F[_], R](repository: PlayerDataRepository[R]
       finalizer.transformContext(trans)
     )
 
+  def coerceFinalizationContextTo[G[_] : ContextCoercion[F, *[_]]]: BukkitRepositoryControls[G, R] =
+    transformFinalizationContext(ContextCoercion.asFunctionK)
 }
 
 object BukkitRepositoryControls {

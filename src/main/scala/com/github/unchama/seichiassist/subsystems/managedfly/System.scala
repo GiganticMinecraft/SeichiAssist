@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.managedfly
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
@@ -11,15 +10,14 @@ import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.managedfly.application.repository.ActiveSessionReferenceRepositoryDefinitions
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
+import com.github.unchama.seichiassist.subsystems.managedfly.application.repository.ActiveSessionReferenceRepositoryDefinitions
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitPlayerFlyStatusManipulation
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers.BukkitFlyCommand
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
 import com.github.unchama.seichiassist.subsystems.managedfly.infrastructure.JdbcFlyDurationPersistenceRepository
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
-import org.bukkit.event.Listener
 
 import java.util.UUID
 
@@ -69,12 +67,10 @@ object System {
             }
         }
 
-        override val listeners: Seq[Listener] = Seq(
-          controls.initializer
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[AsyncContext, _]] = Seq(
+          controls.coerceFinalizationContextTo[AsyncContext]
         )
-        override val managedFinalizers: Seq[PlayerDataFinalizer[AsyncContext, Player]] = Seq(
-          controls.finalizer.coerceContextTo[AsyncContext]
-        )
+
         override val commands: Map[String, TabExecutor] = Map(
           "fly" -> BukkitFlyCommand.executor[AsyncContext, SyncContext]
         )

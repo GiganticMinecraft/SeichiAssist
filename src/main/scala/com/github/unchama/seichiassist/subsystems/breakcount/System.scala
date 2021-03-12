@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.breakcount
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
@@ -17,7 +16,6 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmoun
 import com.github.unchama.seichiassist.subsystems.breakcount.infrastructure.JdbcSeichiAmountDataPersistence
 import fs2.concurrent.Topic
 import org.bukkit.entity.Player
-import org.bukkit.event.Listener
 
 import java.util.UUID
 
@@ -85,11 +83,8 @@ object System {
           override val seichiAmountUpdates: fs2.Stream[F, (Player, SeichiAmountData)] =
             breakCountTopic.subscribe(1).mapFilter(identity)
         }
-        override val listeners: Seq[Listener] = Seq(
-          breakCountRepositoryControls.initializer
-        )
-        override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = Seq(
-          breakCountRepositoryControls.finalizer.coerceContextTo[F]
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+          breakCountRepositoryControls.coerceFinalizationContextTo[F]
         )
       }
     }

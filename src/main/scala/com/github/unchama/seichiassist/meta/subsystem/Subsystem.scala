@@ -1,9 +1,7 @@
 package com.github.unchama.seichiassist.meta.subsystem
 
-import cats.~>
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.generic.ContextCoercion
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -17,8 +15,6 @@ import org.bukkit.event.Listener
  * @tparam F ファイナライザの作用のコンテキスト
  */
 trait Subsystem[F[_]] {
-  self =>
-
   /**
    * サブシステムが持つリスナ
    */
@@ -38,19 +34,4 @@ trait Subsystem[F[_]] {
    * サブシステムが管理するコマンド
    */
   val commands: Map[String, TabExecutor] = Map.empty
-
-  def transformFinalizationContext[G[_]](trans: F ~> G): Subsystem[G] = new Subsystem[G] {
-    override val listeners: Seq[Listener] =
-      self.listeners
-    override val commands: Map[String, TabExecutor] =
-      self.commands
-    override val managedRepositoryControls: Seq[BukkitRepositoryControls[G, _]] =
-      self.managedRepositoryControls.map(_.transformFinalizationContext(trans))
-    override val managedFinalizers: Seq[PlayerDataFinalizer[G, Player]] =
-      self.managedFinalizers.map(_.transformContext(trans))
-  }
-
-  def coerceFinalizationContextTo[G[_] : ContextCoercion[F, *[_]]]: Subsystem[G] =
-    transformFinalizationContext(implicitly)
-
 }

@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount
 
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
@@ -75,15 +74,15 @@ object System {
           override val playerBuildAmountRepository: KeyedDataRepository[Player, ReadOnlyRef[G, BuildAmountData]] =
             buildAmountDataRepositoryControls.repository.map(ref => ReadOnlyRef.fromRef(ref))
         }
+
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = List(
+          rateLimiterRepositoryControls,
+          buildAmountDataRepositoryControls
+        ).map(_.coerceFinalizationContextTo[F])
+
         override val listeners: Seq[Listener] = List(
-          rateLimiterRepositoryControls.initializer,
-          buildAmountDataRepositoryControls.initializer,
           new BuildExpIncrementer[G],
         )
-        override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = List(
-          rateLimiterRepositoryControls.finalizer,
-          buildAmountDataRepositoryControls.finalizer
-        ).map(_.coerceContextTo[F])
       }
     }
   }

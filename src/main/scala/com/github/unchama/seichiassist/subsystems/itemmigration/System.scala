@@ -20,7 +20,7 @@ import org.slf4j.Logger
 
 import java.util.UUID
 
-trait System[F[_], H[_]] extends Subsystem[H] {
+trait System[F[_]] extends Subsystem[F] {
   val entryPoints: EntryPoints
 }
 
@@ -30,9 +30,8 @@ object System {
 
   def wired[
     F[_] : ConcurrentEffect : ContextShift,
-    G[_] : SyncEffect : ContextCoercion[*[_], F],
-    H[_]
-  ](implicit effectEnvironment: EffectEnvironment, logger: Logger): G[System[F, H]] = for {
+    G[_] : SyncEffect : ContextCoercion[*[_], F]
+  ](implicit effectEnvironment: EffectEnvironment, logger: Logger): G[System[F]] = for {
     migrations <- Sync[G].delay {
       implicit val syncIOUuidRepository: UuidRepository[SyncIO] = JdbcBackedUuidRepository
         .initializeStaticInstance[SyncIO]
@@ -57,7 +56,7 @@ object System {
       repositoryControls.repository, migrations, service
     )
 
-    new System[F, H] {
+    new System[F] {
       override val entryPoints: EntryPoints = new EntryPoints {
         override def runDatabaseMigration[I[_] : SyncEffect]: I[Unit] = {
           DatabaseMigrationController[I](migrations).runDatabaseMigration
@@ -67,10 +66,12 @@ object System {
           WorldMigrationController(migrations).runWorldMigration
         }
       }
-      override val listeners: Seq[Listener] = Seq(
-        repositoryControls.initializer,
-        playerItemMigrationController
+
+      override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+        repositoryControls.coerceFinalizationContextTo[F]
       )
+
+      override val listeners: Seq[Listener] = Seq(playerItemMigrationController)
     }
   }
 
