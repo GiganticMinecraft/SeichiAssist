@@ -26,7 +26,7 @@ class PlayerItemMigrationController[
   import cats.effect.implicits._
 
   private def cancelIfLockActive(player: Player, event: Cancellable): Unit = {
-    if (migrationState(player).hasMigrated.runSync[SyncIO].unsafeRunSync()) {
+    if (!migrationState(player).hasMigrated.runSync[SyncIO].unsafeRunSync()) {
       event.setCancelled(true)
     }
   }

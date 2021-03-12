@@ -450,11 +450,6 @@ class SeichiAssist extends JavaPlugin() {
         case (commandName, executor) => getCommand(commandName).setExecutor(executor)
       }
 
-    val repositories = Seq(
-      activeSkillAvailabilityRepositoryControls.initializer,
-      assaultSkillRoutinesRepositoryControls.initializer
-    )
-
     //リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),
@@ -472,7 +467,12 @@ class SeichiAssist extends JavaPlugin() {
       SpawnRegionProjectileInterceptor,
     )
       .concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
-      .concat(repositories)
+      .concat {
+        Seq(
+          activeSkillAvailabilityRepositoryControls.initializer,
+          assaultSkillRoutinesRepositoryControls.initializer
+        )
+      }
       .concat(wiredSubsystems.flatMap(_.listeners))
       .concat(wiredSubsystems.flatMap(_.managedRepositoryControls.map(_.initializer)))
 
