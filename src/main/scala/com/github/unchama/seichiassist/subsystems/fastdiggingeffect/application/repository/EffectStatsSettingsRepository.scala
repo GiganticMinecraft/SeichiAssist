@@ -4,13 +4,13 @@ import cats.Applicative
 import cats.effect.concurrent.{Deferred, Ref}
 import cats.effect.{Async, Concurrent, ConcurrentEffect, Effect, Fiber, Sync}
 import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization, RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.FastDiggingEffectList
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
-import fs2.concurrent.Topic
 import io.chrisdavenport.cats.effect.time.JavaTime
 
 import java.util.UUID

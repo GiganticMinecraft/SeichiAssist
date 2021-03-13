@@ -22,7 +22,11 @@ services:
       - spigot_a:/spigot/
     ports:
       - "25566:25565"
+      - "7091:7091"
     environment:
+      - JMX_PORT=7091
+      - JMX_BINDING=0.0.0.0
+      - JMX_HOST=localhost
       - SERVER_NUM=1
       - SERVER_ID=spigot-a
       - DB_HOST=db
@@ -44,7 +48,11 @@ services:
       - spigot_b:/spigot/
     ports:
       - "25567:25565"
+      - "7092:7091"
     environment:
+      - JMX_PORT=7091
+      - JMX_BINDING=0.0.0.0
+      - JMX_HOST=localhost
       - SERVER_NUM=2
       - SERVER_ID=spigot-b
       - DB_HOST=db

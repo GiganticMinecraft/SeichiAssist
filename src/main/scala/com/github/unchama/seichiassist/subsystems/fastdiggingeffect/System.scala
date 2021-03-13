@@ -4,6 +4,7 @@ import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, MinecraftServerThreadShift, SendMinecraftMessage}
@@ -19,7 +20,6 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effec
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectSuppressionState, FastDiggingEffectSuppressionStatePersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{JdbcFastDiggingEffectStatsSettingsPersistence, JdbcFastDiggingEffectSuppressionStatePersistence}
-import fs2.concurrent.Topic
 import org.bukkit.entity.Player
 
 import java.util.UUID

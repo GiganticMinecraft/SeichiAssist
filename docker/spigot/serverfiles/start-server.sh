@@ -14,16 +14,29 @@ jar xf ../SeichiAssist-*.jar config.yml
 
 cd /spigot/plugins/SeichiAssist
 
-yq w config.yml "servernum" "$SERVER_NUM" | \
-  yq w - "server-id" "$SERVER_ID" | \
-  yq w - "host" "$DB_HOST" | \
-  yq w - "pw" "$DB_PASSWORD" | \
-  yq w - "BungeeSemaphoreResponder.Redis.Host" "$REDIS_HOST" | \
-  yq w - "BungeeSemaphoreResponder.Redis.Port" "$REDIS_PORT" > tmpfile
+config_update_expr="\
+  .servernum = \"$SERVER_NUM\" |\
+  .server-id = \"$SERVER_ID\" |\
+  .host = \"$DB_HOST\" |\
+  .pw = \"$DB_PASSWORD\" |\
+  .BungeeSemaphoreResponder.Redis.Host = \"$REDIS_HOST\" |\
+  .BungeeSemaphoreResponder.Redis.Port = \"$REDIS_PORT\""
 
-mv tmpfile config.yml
-
+yq e "$config_update_expr" config.yml > tmpfile ; mv tmpfile config.yml
 
 cd /spigot/
 
-java -jar /spigot/spigot*.jar nogui
+JMX_PORT=${JMX_PORT:-7091}
+JMX_BINDING=${JMX_BINDING:-0.0.0.0}
+JMX_HOST=${JMX_HOST:-localhost}
+
+java \
+  -Dcom.sun.management.jmxremote.local.only=false \
+  -Dcom.sun.management.jmxremote.port=${JMX_PORT} \
+  -Dcom.sun.management.jmxremote.rmi.port=${JMX_PORT} \
+  -Dcom.sun.management.jmxremote.authenticate=false \
+  -Dcom.sun.management.jmxremote.ssl=false \
+  -Dcom.sun.management.jmxremote.host=${JMX_BINDING} \
+  -Djava.rmi.server.hostname=${JMX_HOST} \
+  -Xmx4g -Xms256m \
+  -jar /spigot/spigot*.jar nogui
