@@ -4,6 +4,7 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -11,7 +12,6 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.application.{Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.bukkit.CreateFreshBossBar
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure.JdbcBreakCountBarVisibilityPersistence
-import fs2.concurrent.Topic
 import org.bukkit.entity.Player
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {
