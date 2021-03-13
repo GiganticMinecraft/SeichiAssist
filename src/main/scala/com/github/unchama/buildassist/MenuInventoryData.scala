@@ -180,7 +180,7 @@ object MenuInventoryData {
     //プレイヤーデータ
     val playerdata = BuildAssist.instance.temporaryData(uuid)
 
-    val inventory = Bukkit.getServer.createInventory(null, 4 * 9, s"$DARK_PURPLE$BOLD「ブロックを並べるスキル（仮）」設定")
+    val inventory = Bukkit.getServer.createInventory(null, 4 * 9, s"$DARK_PURPLE$BOLD「直列設置」設定")
     var itemstack = new ItemStack(Material.SKULL_ITEM, 1)
     var itemmeta: ItemMeta = Bukkit.getItemFactory.getItemMeta(Material.WOOD)
     val skullmeta: SkullMeta = ItemMetaFactory.SKULL.getValue
@@ -194,9 +194,9 @@ object MenuInventoryData {
     itemstack.setItemMeta(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 27, itemstack)
 
-    //ブロックを並べるスキル設定
+    //直列設置設定
     itemstack = new ItemStack(Material.WOOD, 1)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ブロックを並べるスキル（仮） ：${BuildAssist.line_up_str(playerdata.line_up_flg)}")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}直列設置 ：${BuildAssist.line_up_str(playerdata.line_up_flg)}")
     lore = List(
       s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
       s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -207,7 +207,7 @@ object MenuInventoryData {
     itemstack.setItemMeta(itemmeta)
     inventory.setItem(0, itemstack)
 
-    //ブロックを並べるスキルハーフブロック設定
+    //直列設置ハーフブロック設定
     itemstack = new ItemStack(Material.STEP, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.STEP)
     itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ハーフブロック設定 ：${BuildAssist.line_up_step_str(playerdata.line_up_step_flg)}")
@@ -219,7 +219,7 @@ object MenuInventoryData {
     itemstack.setItemMeta(itemmeta)
     inventory.setItem(1, itemstack)
 
-    //ブロックを並べるスキル一部ブロックを破壊して並べる設定
+    //直列設置一部ブロックを破壊して並べる設定
     itemstack = new ItemStack(Material.TNT, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.TNT)
     itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.line_up_off_on_str(playerdata.line_up_des_flg)}")
