@@ -140,6 +140,9 @@ class PlayerJoinListener extends Listener {
             |""".stripMargin.linesIterator.mkString("\n"),
         )
         contents.foreach(meta.addPage(_))
+        meta.setTitle("サーバーに初参加された方にお読みいただきたい本(v1)")
+        meta.setAuthor("ギガンティック☆整地鯖")
+
         is.setItemMeta(meta)
       })
 
