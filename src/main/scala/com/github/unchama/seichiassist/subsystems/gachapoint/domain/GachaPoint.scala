@@ -20,9 +20,11 @@ case class GachaPoint(exp: SeichiExpAmount) {
     }
   }
 
-  def times(n: Int): GachaPoint = GachaPoint(exp.mapAmount(_ * n))
+  def times(n: BigInt): GachaPoint = GachaPoint(exp.mapAmount(_ * BigDecimal(n)))
 
   def add(point: GachaPoint): GachaPoint = GachaPoint(exp.add(point.exp))
+
+  def div(point: GachaPoint): BigInt = (exp.amount /% point.exp.amount)._1.toBigInt
 
 }
 
