@@ -10,7 +10,7 @@ permissions:
   - bungeecord.command.ip
   - bungeecord.command.reload
 timeout: 30000
-online_mode: false
+online_mode: true
 servers:
   lobby:
     motd: '&1Just another BungeeCord - Forced Host'
