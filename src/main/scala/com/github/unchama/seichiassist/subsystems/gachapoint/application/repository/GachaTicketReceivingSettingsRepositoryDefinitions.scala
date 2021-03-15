@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.application.repository
 
-import cats.Applicative
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import cats.{Applicative, Monad}
 import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization, RepositoryFinalization, SinglePhasedRepositoryInitialization}
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.settings.{GachaTicketReceivingSettings, GachaTicketReceivingSettingsPersistence}
 
@@ -18,15 +18,17 @@ object GachaTicketReceivingSettingsRepositoryDefinitions {
     Applicative[F].pure(GachaTicketReceivingSettings.EveryMinute)
 
   def initialization[F[_] : Sync](persistence: GachaTicketReceivingSettingsPersistence[F])
-  : SinglePhasedRepositoryInitialization[F, Ref[F, GachaTicketReceivingSettings]] =
+  : SinglePhasedRepositoryInitialization[F, RepositoryValue[F]] =
     RefDictBackedRepositoryInitialization
       .usingUuidRefDict(persistence)(initialSettings)
-      .pipe(SinglePhasedRepositoryInitialization.forRefCell)
+      .pipe(SinglePhasedRepositoryInitialization.forRefCell[F, GachaTicketReceivingSettings])
 
   def finalization[
-    F[_] : Applicative
+    F[_] : Monad
   ](persistence: GachaTicketReceivingSettingsPersistence[F])
   : RepositoryFinalization[F, UUID, RepositoryValue[F]] =
-    RefDictBackedRepositoryFinalization.usingUuidRefDict(persistence)
+    RefDictBackedRepositoryFinalization
+      .usingUuidRefDict(persistence)
+      .pipe(RepositoryFinalization.liftToRefFinalization[F, UUID, GachaTicketReceivingSettings])
 
 }

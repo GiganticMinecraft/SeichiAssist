@@ -9,6 +9,8 @@ import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{GachaPoint, GachaPointPersistence}
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.{BatchUsageSemaphore, GrantGachaTicketToAPlayer}
 
+import java.util.UUID
+
 object GachaPointRepositoryDefinitions {
 
   type TemporaryValue[F[_]] = Ref[F, GachaPoint]
@@ -46,7 +48,7 @@ object GachaPointRepositoryDefinitions {
   ](persistence: GachaPointPersistence[G]): RepositoryFinalization[G, Player, RepositoryValue[F, G]] =
     RefDictBackedRepositoryFinalization
       .usingUuidRefDict(persistence)
-      .pipe(RepositoryFinalization.liftToRefFinalization)
+      .pipe(RepositoryFinalization.liftToRefFinalization[G, UUID, GachaPoint])
       .contraMapKey(HasUuid[Player].asFunction)
       .contraMap[RepositoryValue[F, G]](_.pointRef)
 
