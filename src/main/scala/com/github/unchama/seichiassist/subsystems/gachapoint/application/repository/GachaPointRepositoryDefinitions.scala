@@ -15,7 +15,7 @@ object GachaPointRepositoryDefinitions {
   case class RepositoryValue[F[_]](pointRef: Ref[F, GachaPoint],
                                    semaphore: BatchUsageSemaphore[F])
 
-  def defaultGachaPoint[F[_]: Applicative]: F[GachaPoint] =
+  private def defaultGachaPoint[F[_] : Applicative]: F[GachaPoint] =
     Applicative[F].pure(GachaPoint.initial)
 
   import cats.implicits._
@@ -43,6 +43,7 @@ object GachaPointRepositoryDefinitions {
     RefDictBackedRepositoryFinalization
       .usingUuidRefDict(persistence)
       .pipe(RepositoryFinalization.liftToRefFinalization)
+      .contraMapKey(HasUuid[Player].asFunction)
       .contraMap[RepositoryValue[F]](_.pointRef)
 
 }

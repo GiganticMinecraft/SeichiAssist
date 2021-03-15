@@ -2,7 +2,6 @@ package com.github.unchama.datarepository.template
 
 import cats.Applicative
 import com.github.unchama.generic.RefDict
-import com.github.unchama.minecraft.algebra.HasUuid
 
 import java.util.UUID
 
@@ -15,8 +14,6 @@ object RefDictBackedRepositoryFinalization {
       override val finalizeBeforeUnload: (Player, R) => F[Unit] = (_, _) => Applicative[F].unit
     }
 
-  def usingUuidRefDict[
-    F[_]: Applicative, Player: HasUuid, R
-  ](refDict: RefDict[F, UUID, R]): RepositoryFinalization[F, Player, R] =
-    using[F, Player, UUID, R](refDict)(HasUuid[Player].asFunction)
+  def usingUuidRefDict[F[_] : Applicative, R](refDict: RefDict[F, UUID, R]): RepositoryFinalization[F, UUID, R] =
+    using[F, UUID, UUID, R](refDict)(identity)
 }

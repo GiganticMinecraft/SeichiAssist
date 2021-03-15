@@ -39,6 +39,12 @@ trait RepositoryFinalization[F[_], Player, R] { self =>
       override val finalizeBeforeUnload: (Player, S) => F[Unit] = (p, s) => self.finalizeBeforeUnload(p, sr(s))
     }
 
+  def contraMapKey[K](kp: K => Player): RepositoryFinalization[F, K, R] =
+    new RepositoryFinalization[F, K, R] {
+      override val persistPair: (K, R) => F[Unit] = (k, r) => self.persistPair(kp(k), r)
+      override val finalizeBeforeUnload: (K, R) => F[Unit] = (k, r) => self.finalizeBeforeUnload(kp(k), r)
+    }
+
   def withIntermediateEffect[S](sFr: S => F[R])
                                (implicit F: FlatMap[F]): RepositoryFinalization[F, Player, S] =
     withIntermediateEffects(sFr)(sFr)
