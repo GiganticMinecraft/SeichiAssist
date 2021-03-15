@@ -46,6 +46,8 @@ object GachaPoint {
   case class Usage(remainingGachaPoint: GachaPoint,
                    gachaTicketCount: Int) {
     require(gachaTicketCount <= GachaPoint.batchSize, "usage must not exceed batch size")
+
+    def asTuple: (GachaPoint, Int) = (remainingGachaPoint, gachaTicketCount)
   }
 
   /**
