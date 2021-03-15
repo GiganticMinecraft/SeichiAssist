@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gachapoint
 import cats.data.Kleisli
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GachaPoint
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.settings.GachaTicketReceivingSettings
 
 trait GachaPointSettingsApi[F[_], Player] {
