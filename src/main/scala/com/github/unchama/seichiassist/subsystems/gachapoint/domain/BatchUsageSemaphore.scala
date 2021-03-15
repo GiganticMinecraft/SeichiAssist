@@ -11,8 +11,9 @@ import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.G
  * 特定のプレーヤーについてガチャポイント変換の制御を提供するオブジェクトのクラス。
  */
 class BatchUsageSemaphore[
-  F[_]: FlatMap
-](gachaPointRef: Ref[F, GachaPoint], grantAction: GrantGachaTicketToAPlayer[F])
+  F[_] : FlatMap,
+  G[_] : ContextCoercion[*[_], F]
+](gachaPointRef: Ref[G, GachaPoint], grantAction: GrantGachaTicketToAPlayer[F])
  (recoveringSemaphore: RecoveringSemaphore[F]) {
 
   import cats.implicits._
@@ -47,8 +48,10 @@ object BatchUsageSemaphore {
    * プレーヤーが持つガチャポイントとプレーヤーへガチャ券を与える作用から
    * [[BatchUsageSemaphore]]を作成する。
    */
-  def newIn[G[_]: Sync, F[_]: Concurrent: Timer](gachaPointRef: Ref[F, GachaPoint],
-                                                 grantAction: GrantGachaTicketToAPlayer[F]): G[BatchUsageSemaphore[F]] =
+  def newIn[
+    G[_] : Sync : ContextCoercion[*[_], F],
+    F[_] : Concurrent : Timer
+  ](gachaPointRef: Ref[G, GachaPoint], grantAction: GrantGachaTicketToAPlayer[F]): G[BatchUsageSemaphore[F, G]] =
     RecoveringSemaphore
       .newIn[G, F]
       .map(rs => new BatchUsageSemaphore(gachaPointRef, grantAction)(rs))

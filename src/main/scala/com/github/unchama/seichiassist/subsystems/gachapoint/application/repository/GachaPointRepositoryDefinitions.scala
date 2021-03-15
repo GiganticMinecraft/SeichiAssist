@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.application.repository
 
 import cats.effect.concurrent.Ref
-import cats.effect.{Concurrent, Timer}
+import cats.effect.{Concurrent, Sync, Timer}
 import cats.{Applicative, Monad}
 import com.github.unchama.datarepository.template._
+import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{GachaPoint, GachaPointPersistence}
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.{BatchUsageSemaphore, GrantGachaTicketToAPlayer}
@@ -12,8 +13,8 @@ object GachaPointRepositoryDefinitions {
 
   type TemporaryValue[F[_]] = Ref[F, GachaPoint]
 
-  case class RepositoryValue[F[_]](pointRef: Ref[F, GachaPoint],
-                                   semaphore: BatchUsageSemaphore[F])
+  case class RepositoryValue[F[_], G[_]](pointRef: Ref[G, GachaPoint],
+                                         semaphore: BatchUsageSemaphore[F, G])
 
   private def defaultGachaPoint[F[_] : Applicative]: F[GachaPoint] =
     Applicative[F].pure(GachaPoint.initial)
@@ -23,27 +24,30 @@ object GachaPointRepositoryDefinitions {
   import scala.util.chaining._
 
   def initialization[
-    F[_]: Concurrent: Timer,
+    G[_] : Sync : ContextCoercion[*[_], F],
+    F[_] : Concurrent : Timer,
     Player
-  ](persistence: GachaPointPersistence[F])
-   (grantEffectFactory: Player => GrantGachaTicketToAPlayer[F]): TwoPhasedRepositoryInitialization[F, Player, RepositoryValue[F]] =
+  ](persistence: GachaPointPersistence[G])
+   (grantEffectFactory: Player => GrantGachaTicketToAPlayer[F])
+  : TwoPhasedRepositoryInitialization[G, Player, RepositoryValue[F, G]] =
     RefDictBackedRepositoryInitialization
-      .usingUuidRefDict(persistence)(defaultGachaPoint[F])
-      .pipe(SinglePhasedRepositoryInitialization.forRefCell[F, GachaPoint])
+      .usingUuidRefDict(persistence)(defaultGachaPoint[G])
+      .pipe(SinglePhasedRepositoryInitialization.forRefCell[G, GachaPoint])
       .pipe(TwoPhasedRepositoryInitialization.augment(_)((player, ref) => {
         BatchUsageSemaphore
-          .newIn[F, F](ref, grantEffectFactory(player))
+          .newIn[G, F](ref, grantEffectFactory(player))
           .map(RepositoryValue(ref, _))
       }))
 
   def finalization[
-    F[_]: Monad,
+    G[_] : Monad,
+    F[_],
     Player: HasUuid
-  ](persistence: GachaPointPersistence[F]): RepositoryFinalization[F, Player, RepositoryValue[F]] =
+  ](persistence: GachaPointPersistence[G]): RepositoryFinalization[G, Player, RepositoryValue[F, G]] =
     RefDictBackedRepositoryFinalization
       .usingUuidRefDict(persistence)
       .pipe(RepositoryFinalization.liftToRefFinalization)
       .contraMapKey(HasUuid[Player].asFunction)
-      .contraMap[RepositoryValue[F]](_.pointRef)
+      .contraMap[RepositoryValue[F, G]](_.pointRef)
 
 }
