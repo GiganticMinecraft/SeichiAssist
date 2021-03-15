@@ -56,6 +56,11 @@ object GachaPoint {
   final val batchSize = 9 * 64
 
   /**
+   * ガチャポイントの初期値
+   */
+  final val initial: GachaPoint = GachaPoint.ofNonNegative(0)
+
+  /**
    * ガチャ券へのポイントの交換にて、ガチャ券一つ当たりに消費するガチャポイント量。
    */
   final val perGachaTicket: GachaPoint = GachaPoint.ofNonNegative(1000)
