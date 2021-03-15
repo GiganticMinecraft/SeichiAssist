@@ -6,26 +6,26 @@ import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.settings.GachaTicketReceivingSettings
 
-trait GachaPointSettingsApi[F[_], Player] {
+trait GachaPointSettingsApi[G[_], Player] {
 
   /**
    * プレーヤーの現在のガチャ券受け取り設定を保持するデータリポジトリ。
    */
-  val ticketReceivingSettings: KeyedDataRepository[Player, ReadOnlyRef[F, GachaTicketReceivingSettings]]
+  val ticketReceivingSettings: KeyedDataRepository[Player, ReadOnlyRef[G, GachaTicketReceivingSettings]]
 
   /**
    * プレーヤーのガチャ券受け取り設定をトグルする作用。
    */
-  val toggleTicketReceivingSettings: Kleisli[F, Player, Unit]
+  val toggleTicketReceivingSettings: Kleisli[G, Player, Unit]
 
 }
 
-trait GachaPointApi[F[_], Player] {
+trait GachaPointApi[F[_], G[_], Player] {
 
   /**
    * プレーヤーのガチャポイントを保持するデータリポジトリ。
    */
-  val gachaPoint: KeyedDataRepository[Player, ReadOnlyRef[F, GachaPoint]]
+  val gachaPoint: KeyedDataRepository[Player, ReadOnlyRef[G, GachaPoint]]
 
   /**
    * プレーヤーのガチャポイントをガチャ券に変換して一括で受け取る作用。
@@ -35,6 +35,6 @@ trait GachaPointApi[F[_], Player] {
   /**
    * プレーヤーのガチャポイントを増やす作用。
    */
-  def addGachaPoint(point: GachaPoint): Kleisli[F, Player, Unit]
+  def addGachaPoint(point: GachaPoint): Kleisli[G, Player, Unit]
 
 }
