@@ -32,6 +32,7 @@ case class GachaPoint(exp: SeichiExpAmount) {
     SeichiExpAmount.ofNonNegative(required)
   }
 
+  def add(point: GachaPoint) = GachaPoint(exp.add(point.exp))
 }
 
 object GachaPoint {
