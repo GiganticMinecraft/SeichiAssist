@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gachapoint.domain
+package com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint
 
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 
