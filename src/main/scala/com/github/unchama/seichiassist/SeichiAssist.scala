@@ -44,6 +44,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -244,9 +245,18 @@ class SeichiAssist extends JavaPlugin() {
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    implicit val playerCount: GetConnectedPlayers[IO, Player] = new GetConnectedBukkitPlayers[IO]
+    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] = new GetConnectedBukkitPlayers[IO]
 
     subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
+  }
+
+  private lazy val gachaPointSystem: subsystems.gachapoint.System[IO, SyncIO, Player] = {
+    import PluginExecutionContexts.{asyncShift, syncShift, timer}
+
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] = new GetConnectedBukkitPlayers[IO]
+
+    subsystems.gachapoint.System.wired[IO, SyncIO](breakCountSystem.api).unsafeRunSync()
   }
 
   private lazy val mebiusSystem: Subsystem[IO] = {
@@ -271,7 +281,8 @@ class SeichiAssist extends JavaPlugin() {
     breakCountBarSystem,
     buildCountSystem,
     fastDiggingEffectSystem,
-    fourDimensionalPocketSystem
+    fourDimensionalPocketSystem,
+    gachaPointSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -409,6 +420,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] = fastDiggingEffectSystem.effectApi
     implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] = fastDiggingEffectSystem.settingsApi
     implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
+    implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
@@ -543,9 +555,6 @@ class SeichiAssist extends JavaPlugin() {
       val manaUpdate: IO[Nothing] =
         subsystems.mana.System.backgroundProcess[IO, SyncIO]
 
-      val gachaPointUpdate: IO[Nothing] =
-        subsystems.gachapoint.System.backgroundProcess[IO, SyncIO]
-
       val dragonNightTimeProcess: IO[Nothing] =
         subsystems.dragonnighttime.System.backgroundProcess[IO](fastDiggingEffectSystem.effectApi)
 
@@ -572,7 +581,6 @@ class SeichiAssist extends JavaPlugin() {
           dataRecalculationRoutine,
           dataBackupRoutine,
           manaUpdate,
-          gachaPointUpdate,
           levelUpGiftProcess,
           dragonNightTimeProcess,
           levelUpMessagesProcess,

@@ -12,7 +12,7 @@ import cats.{Applicative, FlatMap}
  *
  * ようなデータレポジトリの処理である。
  */
-trait RepositoryFinalization[F[_], Player, R] {
+trait RepositoryFinalization[F[_], Player, R] { self =>
 
   val persistPair: (Player, R) => F[Unit]
 
@@ -28,9 +28,21 @@ trait RepositoryFinalization[F[_], Player, R] {
                                 (implicit F: FlatMap[F]): RepositoryFinalization[F, Player, S] =
     new RepositoryFinalization[F, Player, S] {
       override val persistPair: (Player, S) => F[Unit] =
-        (p, s) => beforePersisting(s).flatMap(r => RepositoryFinalization.this.persistPair(p, r))
+        (p, s) => beforePersisting(s).flatMap(r => self.persistPair(p, r))
       override val finalizeBeforeUnload: (Player, S) => F[Unit] =
-        (p, s) => beforeFinalization(s).flatMap(r => RepositoryFinalization.this.finalizeBeforeUnload(p, r))
+        (p, s) => beforeFinalization(s).flatMap(r => self.finalizeBeforeUnload(p, r))
+    }
+
+  def contraMap[S](sr: S => R): RepositoryFinalization[F, Player, S] =
+    new RepositoryFinalization[F, Player, S] {
+      override val persistPair: (Player, S) => F[Unit] = (p, s) => self.persistPair(p, sr(s))
+      override val finalizeBeforeUnload: (Player, S) => F[Unit] = (p, s) => self.finalizeBeforeUnload(p, sr(s))
+    }
+
+  def contraMapKey[K](kp: K => Player): RepositoryFinalization[F, K, R] =
+    new RepositoryFinalization[F, K, R] {
+      override val persistPair: (K, R) => F[Unit] = (k, r) => self.persistPair(kp(k), r)
+      override val finalizeBeforeUnload: (K, R) => F[Unit] = (k, r) => self.finalizeBeforeUnload(kp(k), r)
     }
 
   def withIntermediateEffect[S](sFr: S => F[R])

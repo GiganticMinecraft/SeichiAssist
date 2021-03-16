@@ -222,7 +222,6 @@ object PlayerDataLoading {
           )
         ).unsafeRunSync()
 
-        playerData.gachapoint = rs.getInt("gachapoint")
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
         playerData.playTick = rs.getInt("playtick")
