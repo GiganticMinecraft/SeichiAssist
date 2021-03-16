@@ -1,14 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint
 
 import cats.data.Kleisli
-import cats.effect.{Async, ConcurrentEffect, Sync, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.minecraft.actions.GetConnectedPlayers
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.application.process.{AddSeichiExpAsGachaPoint, ConvertPointToTickets}
@@ -32,21 +31,6 @@ object System {
 
   import cats.effect.implicits._
   import cats.implicits._
-
-  def backgroundProcess[
-    F[_] : Async, G[_]
-  ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
-    breakCountReadAPI
-      .seichiAmountIncreases
-      .evalTap { case (player, amount) =>
-        Sync[F].delay {
-          // TODO: gachapointのリポジトリをこのsubsystemで持ってplayermapを参照しないようにする
-          SeichiAssist.playermap.get(player.getUniqueId).foreach(_.gachapoint += amount.amount.toInt)
-        }
-      }
-      .compile.drain
-      .flatMap[Nothing](_ => Async[F].never)
-  }
 
   def wired[
     F[_] : ConcurrentEffect : Timer : GetConnectedPlayers[*[_], Player],

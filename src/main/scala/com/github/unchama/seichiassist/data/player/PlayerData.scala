@@ -79,8 +79,6 @@ class PlayerData(
 
   //共有インベントリにアイテムが入っているかどうか
   var contentsPresentInSharedInventory = false
-  //ガチャの基準となるポイント
-  var gachapoint = 0
   //詫び券をあげる数
   var unclaimedApologyItems = 0
   //ワールドガード保護自動設定用
