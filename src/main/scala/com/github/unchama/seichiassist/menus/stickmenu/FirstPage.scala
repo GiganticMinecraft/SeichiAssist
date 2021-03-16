@@ -28,7 +28,6 @@ import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
@@ -113,7 +112,6 @@ object FirstPage extends Menu {
         ChestSlotRef(2, 4) -> computeEnderChestButton,
         ChestSlotRef(2, 6) -> computeMineStackButton,
         ChestSlotRef(3, 0) -> computeGachaTicketButton,
-        ChestSlotRef(3, 1) -> computeGachaTicketDeliveryButton,
         ChestSlotRef(3, 2) -> computeApologyItemsButton,
       ).map(_.sequence)
 
@@ -544,52 +542,6 @@ object FirstPage extends Menu {
 
       RecomputedButton(computeButton)
     }
-
-    val computeGachaTicketDeliveryButton: IO[Button] = RecomputedButton(IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-
-      val iconItemStack = {
-        val lore = {
-          val settingsStatus =
-            if (playerData.settings.receiveGachaTicketEveryMinute)
-              s"$RESET${GREEN}毎分受け取ります"
-            else
-              s"$RESET${RED}後でまとめて受け取ります"
-
-          val navigationMessage = s"$RESET$DARK_RED${UNDERLINE}クリックで変更"
-
-          List(settingsStatus, navigationMessage)
-        }
-
-        new IconItemStackBuilder(Material.STONE_BUTTON)
-          .title(s"$YELLOW$UNDERLINE${BOLD}整地報酬ガチャ券受け取り方法")
-          .lore(lore)
-          .build()
-      }
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          targetedeffect.UnfocusedEffect {
-            playerData.settings.receiveGachaTicketEveryMinute = !playerData.settings.receiveGachaTicketEveryMinute
-          },
-          DeferredEffect(IO {
-            if (playerData.settings.receiveGachaTicketEveryMinute) {
-              SequentialEffect(
-                MessageEffect(s"${GREEN}毎分のガチャ券受け取り:ON"),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-              )
-            } else {
-              SequentialEffect(
-                MessageEffect(s"${RED}毎分のガチャ券受け取り:OFF"),
-                MessageEffect(s"${GREEN}ガチャ券受け取りボタンを押すともらえます"),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1.0f, 1.0f)
-              )
-            }
-          })
-        )
-      )
-    })
   }
 
   private object ConstantButtons {

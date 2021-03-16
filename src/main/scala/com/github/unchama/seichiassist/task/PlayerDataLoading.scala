@@ -182,7 +182,6 @@ object PlayerDataLoading {
         + " where uuid = '" + stringUuid + "'")
 
       stmt.executeQuery(command).recordIteration { rs: ResultSet =>
-        playerData.settings.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
         playerData.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
         playerData.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
