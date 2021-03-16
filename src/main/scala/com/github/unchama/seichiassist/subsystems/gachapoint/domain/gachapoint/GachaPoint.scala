@@ -10,11 +10,15 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 case class GachaPoint(exp: SeichiExpAmount) {
 
   /**
+   * このガチャポイント量をすべて消費して得られるチケット数。
+   */
+  lazy val availableTickets: BigInt = (exp.amount /% GachaPoint.perGachaTicket.exp.amount)._1.toBigInt
+
+  /**
    * ガチャポイントをバッチでガチャ券に変換した際のポイントの変化を計算する。
    */
-  def useInBatch: GachaPoint.Usage = {
-    val availableTicket = (exp.amount /% GachaPoint.perGachaTicket.exp.amount)._1
-    val ticketCount = availableTicket.min(GachaPoint.batchSize).toInt
+  lazy val useInBatch: GachaPoint.Usage = {
+    val ticketCount = availableTickets.min(GachaPoint.batchSize).toInt
 
     val expToUse = GachaPoint.perGachaTicket.exp.amount * ticketCount
     val remaining = GachaPoint.ofNonNegative(exp.amount - expToUse)
@@ -25,14 +29,14 @@ case class GachaPoint(exp: SeichiExpAmount) {
   /**
    * 次にガチャ券を利用できるようになるまでに必要な整地経験値量
    */
-  def amountUntilNextGachaTicket: SeichiExpAmount = {
+  lazy val amountUntilNextGachaTicket: SeichiExpAmount = {
     val remainder = (exp.amount /% GachaPoint.perGachaTicket.exp.amount)._2
     val required = GachaPoint.perGachaTicket.exp.amount - remainder
 
     SeichiExpAmount.ofNonNegative(required)
   }
 
-  def add(point: GachaPoint) = GachaPoint(exp.add(point.exp))
+  def add(point: GachaPoint): GachaPoint = GachaPoint(exp.add(point.exp))
 }
 
 object GachaPoint {
