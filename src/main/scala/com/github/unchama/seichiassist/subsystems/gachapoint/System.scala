@@ -67,11 +67,13 @@ object System {
           gachaTicketReceivingSettingsRepositoryControls
             .repository.map(_.mapK[F](ContextCoercion.asFunctionK))
 
+        val streams: List[fs2.Stream[F, Unit]] = List(
+          AddSeichiExpAsGachaPoint.stream(gachaPointRepository)(breakCountReadAPI.seichiAmountIncreases),
+          ConvertPointToTickets.stream(settingsRepository, semaphoreRepository)
+        )
+
         EffectExtra.runAsyncAndForget[F, G, Unit] {
-          List(
-            AddSeichiExpAsGachaPoint.stream(gachaPointRepository)(breakCountReadAPI.seichiAmountIncreases),
-            ConvertPointToTickets.stream(settingsRepository, semaphoreRepository)
-          ).traverse(_.compile.drain.start).as(())
+          streams.traverse(_.compile.drain.start).as(())
         }
       }
     } yield {

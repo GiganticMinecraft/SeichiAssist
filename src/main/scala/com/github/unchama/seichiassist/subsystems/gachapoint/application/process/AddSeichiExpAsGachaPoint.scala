@@ -16,15 +16,12 @@ object AddSeichiExpAsGachaPoint {
   ](refRepository: KeyedDataRepository[Player, Ref[F, GachaPoint]])
    (seichiExpStream: fs2.Stream[F, (Player, SeichiExpAmount)]): fs2.Stream[F, Unit] =
     seichiExpStream
-      .evalTap { case (player, amount) =>
+      .evalMap { case (player, amount) =>
         val point = GachaPoint(amount)
 
-        refRepository
-          .lift(player)
-          .traverse(ref =>
-            ref.update(_.add(point))
-          )
+        refRepository.lift(player).traverse(ref =>
+          ref.update(_.add(point))
+        ).as(())
       }
-      .as(())
 
 }
