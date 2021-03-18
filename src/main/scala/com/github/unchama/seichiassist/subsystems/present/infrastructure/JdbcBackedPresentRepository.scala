@@ -8,8 +8,8 @@ import scalikejdbc._
 
 import java.util.UUID
 
-class JdbcBackedPresentRepository[F[_] : Sync] {
-  def getUUIDs: F[Set[UUID]] = Sync[F].delay {
+class JdbcBackedPresentRepository[F[_] : Sync] extends PresentRepository[F] {
+  override def getUUIDs: F[Set[UUID]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"SELECT uuid from seichiassist.playerdata;"
         // mapがないとキレる
@@ -22,13 +22,8 @@ class JdbcBackedPresentRepository[F[_] : Sync] {
     }
   }
 
-  /**
-   *
-   * @param itemstack 追加するアイテム
-   * @param players 配るプレイヤー
-   * @return 成功した場合新たに取得した`F[Some[Int]]`、失敗した場合`F[None]`
-   */
-  def performAddPresent(itemstack: ItemStack, players: Seq[UUID]): F[Option[Int]] = {
+
+  override def performAddPresent(itemstack: ItemStack, players: Seq[UUID]): F[Option[Int]] = {
     Sync[F].delay {
       val next = DB.readOnly { implicit session =>
         sql"""SELECT MAX(present_id) as max FROM presents"""
@@ -55,7 +50,7 @@ class JdbcBackedPresentRepository[F[_] : Sync] {
     }
   }
 
-  def claimPresent(player: Player, presentId: Int): F[Unit] = {
+  override def claimPresent(player: Player, presentId: Int): F[Unit] = {
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"""UPDATE present_state SET claimed = TRUE WHERE uuid = '${player.getUniqueId}' AND present_id = $presentId;"""
@@ -65,7 +60,7 @@ class JdbcBackedPresentRepository[F[_] : Sync] {
     }
   }
 
-  def getAllPresent: F[Map[Int, ItemStack]] = {
+  override def getAllPresent: F[Map[Int, ItemStack]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT present_id, itemstack FROM presents;"""
@@ -80,7 +75,7 @@ class JdbcBackedPresentRepository[F[_] : Sync] {
     }
   }
 
-  def fetchPresentsState(player: Player): F[Map[Int, PresentClaimingState]] = {
+  override def fetchPresentsState(player: Player): F[Map[Int, PresentClaimingState]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT present_id, claimed FROM present_state WHERE uuid = '${player.getUniqueId}'"""
@@ -99,7 +94,7 @@ class JdbcBackedPresentRepository[F[_] : Sync] {
     }
   }
 
-  def getAllPresentId: F[Set[Int]] = {
+  override def getAllPresentId: F[Set[Int]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT present_id FROM presents;"""

@@ -37,8 +37,7 @@ object PresentCommand {
     .argumentsParsers(List(Parsers.fromOptionParser({ arg0: String =>
       arg0 match {
         // enum match
-        case "player" => Some(arg0)
-        case "all" => Some(arg0)
+        case "player" | "all" => Some(arg0)
         case _ => None
       }
     }, MessageEffect("presentコマンドのモード指定は、playerまたはallを指定してください。"))))
@@ -46,7 +45,7 @@ object PresentCommand {
       if (!context.sender.hasPermission("seichiassist.present.add")) {
         IO.pure(MessageEffect("You don't have the permission."))
       } else {
-        // 多分Parserを通した段階でargs[0]は "player" | "all" になっているのでこれでOK
+        // Parserを通した段階でargs[0]は "player" | "all" になっているのでこれでOK
         val isGlobal = context.args.parsed.head.asInstanceOf[String] == "all"
         val item = context.sender.getInventory.getItemInMainHand
         val eff = for {
@@ -136,12 +135,14 @@ object PresentCommand {
       } yield {
         val mes = state
           .toList
-          .map(x => s"ID=${x._1}: ${
-            x._2 match {
-              case PresentClaimingState.Claimed => s"${ChatColor.GOLD}受け取り済み"
-              case PresentClaimingState.NotClaimed => s"${ChatColor.GREEN}受け取り可能"
-            }
-          }")
+          .map { case (id, state) =>
+            s"ID=$id: ${
+              state match {
+                case PresentClaimingState.Claimed => s"${ChatColor.GOLD}受け取り済み"
+                case PresentClaimingState.NotClaimed => s"${ChatColor.GREEN}受け取り可能"
+              }
+            }"
+          }
           .filter(_.nonEmpty)
         MessageEffect(mes)
       }
@@ -166,9 +167,9 @@ object PresentCommand {
         ids = state.keys.toBuffer.sorted.slice((page - 1) * perPage, page * perPage - 1)
         id2state = ids.map { id => (id, state(id)) }
       } yield {
-        MessageEffect(id2state.map { i2s =>
-          s"ID=${i2s._1}: ${
-            i2s._2 match {
+        MessageEffect(id2state.map { case (id, state) =>
+          s"ID=$id: ${
+            state match {
               case PresentClaimingState.Claimed => s"${ChatColor.GOLD}受け取り済み"
               case PresentClaimingState.NotClaimed => s"${ChatColor.GREEN}受け取り可能"
               case PresentClaimingState.Unavailable => s"${ChatColor.GRAY}対象外"
