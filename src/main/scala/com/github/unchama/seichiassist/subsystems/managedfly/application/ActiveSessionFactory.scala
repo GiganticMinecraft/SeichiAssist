@@ -4,9 +4,8 @@ import cats.Monad
 import cats.data.Kleisli
 import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ExitCase, Sync, Timer}
-import com.github.unchama.concurrent.ReadOnlyRef
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.concurrent.AsymmetricTryableFiber
+import com.github.unchama.generic.effect.concurrent.{AsymmetricTryableFiber, ReadOnlyRef}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 
 /**

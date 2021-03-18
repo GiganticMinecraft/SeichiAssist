@@ -2,11 +2,15 @@ package com.github.unchama.buildassist
 
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.listener._
+import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
+import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
+import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
+import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitTask
 import org.bukkit.{Bukkit, Material}
 
 import java.util
@@ -14,59 +18,61 @@ import java.util.UUID
 import scala.collection.mutable
 
 class BuildAssist(plugin: Plugin)
-                 (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) {
+                 (implicit
+                  flyApi: ManagedFlyApi[SyncIO, Player],
+                  buildCountAPI: subsystems.buildcount.BuildCountAPI[SyncIO, Player]) {
 
-  import scala.jdk.CollectionConverters._
+  // TODO この辺のフィールドを整理する
 
-  //起動するタスクリスト
-  private val tasklist = new util.ArrayList[BukkitTask]()
+  /**
+   * 永続化されない、プレーヤーのセッション内でのみ有効な一時データを管理するMap。
+   * [[TemporaryDataInitializer]] によって初期化、削除される。
+   */
+  val temporaryData: mutable.HashMap[UUID, TemporaryMutableBuildAssistPlayerData] = mutable.HashMap()
+
+  val buildAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[SyncIO, BuildAmountData]] =
+    buildCountAPI.playerBuildAmountRepository
 
   {
     BuildAssist.plugin = plugin
+    BuildAssist.instance = this
   }
 
   def onEnable(): Unit = {
+    implicit val menuRouter: BuildAssistMenuRouter[IO] = {
+      import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+
+      BuildAssistMenuRouter.apply
+    }
+
     //コンフィグ系の設定は全てConfig.javaに移動
     BuildAssist.config = new BuildAssistConfig(plugin)
     BuildAssist.config.loadConfig()
 
+    import buildCountAPI._
+    import menuRouter._
+
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerJoinListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new EntityListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerLeftClickListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerInventoryListener(), plugin)
-    Bukkit.getServer.getPluginManager.registerEvents(new PlayerQuitListener(), plugin) //退出時
-    Bukkit.getServer.getPluginManager.registerEvents(new BlockPlaceEventListener(), plugin) //ブロックを置いた時
-    Bukkit.getServer.getPluginManager.registerEvents(BlockLineUpTriggerListener, plugin) //ブロックを並べるスキル
-    Bukkit.getServer.getPluginManager.registerEvents(TilingSkillTriggerListener, plugin) //一括設置スキル
+    val listeners = List(
+      new BuildMainMenuOpener(),
+      new PlayerInventoryListener(),
+      new TemporaryDataInitializer(this.temporaryData),
+      new BlockLineUpTriggerListener[SyncIO],
+      new TilingSkillTriggerListener[SyncIO],
+    )
 
-
-    for (p <- Bukkit.getServer.getOnlinePlayers.asScala) {
-      val uuid = p.getUniqueId
-
-      val playerdata = new PlayerData(p)
-
-      playerdata.updateLevel(p)
-
-      BuildAssist.playermap += uuid -> playerdata
+    listeners.foreach { listener =>
+      Bukkit.getServer.getPluginManager.registerEvents(listener, plugin)
     }
+
     plugin.getLogger.info("BuildAssist is Enabled!")
-
-    tasklist.add(new MinuteTaskRunnable().runTaskTimer(plugin, 0, 1200))
-  }
-
-  def onDisable(): Unit = {
-    for (task <- this.tasklist.asScala) {
-      task.cancel()
-    }
   }
 
 }
 
 object BuildAssist {
-  //Playerdataに依存するデータリスト
-  val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap[UUID, PlayerData]()
+  var instance: BuildAssist = _
 
   //範囲設置ブロックの対象リスト
   val materiallist: java.util.Set[Material] = util.EnumSet.of(
@@ -252,7 +258,6 @@ object BuildAssist {
   )
 
   var plugin: Plugin = _
-  val DEBUG: Boolean = false
   var config: BuildAssistConfig = _
   val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
   val line_up_step_str: Seq[String] = Seq("上側", "下側", "両方")

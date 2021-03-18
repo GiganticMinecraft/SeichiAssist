@@ -1,8 +1,10 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.effect.IO
+import cats.data.Kleisli
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
@@ -10,19 +12,28 @@ import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
+import com.github.unchama.seichiassist.menus.ranking.SeichiRankingMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.cookieOf
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
+import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
+import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
+import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
 import com.github.unchama.util.InventoryUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
+import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor.{DARK_RED, RESET, _}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -40,15 +51,35 @@ object FirstPage extends Menu {
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import eu.timepit.refined.auto._
 
+  class Environment(implicit
+                    val breakCountAPI: BreakCountReadAPI[IO, SyncIO, Player],
+                    val breakCountBarApi: BreakCountBarAPI[SyncIO, Player],
+                    val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
+                    val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
+                    val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
+                    val rankingApi: RankingApi[IO],
+                    val gachaPointApi: GachaPointApi[IO, SyncIO, Player],
+                    val ioJavaTime: JavaTime[IO],
+                    val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
+                    val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type,
+                    val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type,
+                    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
+                    val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type,
+                    val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
+                    val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type,
+                    val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
+                    val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu)
+
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
 
   import com.github.unchama.targetedeffect._
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
+    import environment._
 
     val constantPart =
       Map(
@@ -71,78 +102,128 @@ object FirstPage extends Menu {
 
     import cats.implicits._
 
-    val dynamicPartComputation =
-      List(
+    val dynamicPartComputation: IO[List[(Int, Button)]] = {
+      val computeConstantlyShownPart: List[IO[(Int, Button)]] = List(
         ChestSlotRef(0, 0) -> computeStatsButton,
         ChestSlotRef(0, 1) -> computeEffectSuppressionButton,
         ChestSlotRef(0, 3) -> computeRegionMenuButton,
-        ChestSlotRef(0, 5) -> computeValentineChocolateButton,
-        ChestSlotRef(1, 1) -> computeStarLevelStatsButton,
         ChestSlotRef(1, 4) -> computeActiveSkillButton,
         ChestSlotRef(2, 3) -> computePocketOpenButton,
         ChestSlotRef(2, 4) -> computeEnderChestButton,
         ChestSlotRef(2, 6) -> computeMineStackButton,
         ChestSlotRef(3, 0) -> computeGachaTicketButton,
-        ChestSlotRef(3, 1) -> computeGachaTicketDeliveryButton,
         ChestSlotRef(3, 2) -> computeApologyItemsButton,
-      )
-        .map(_.sequence)
-        .sequence
+      ).map(_.sequence)
+
+      val computeOptionallyShownPart: List[IO[(Int, Option[Button])]] = List(
+        ChestSlotRef(1, 1) -> computeStarLevelStatsButton
+      ).map(_.sequence)
+
+      for {
+        constantlyShownPart <- computeConstantlyShownPart.sequence
+        optionallyShownPart <- computeOptionallyShownPart.sequence
+      } yield {
+        constantlyShownPart ++ optionallyShownPart.mapFilter(_.sequence)
+      }
+    }
 
     for {
       dynamicPart <- dynamicPartComputation
+
     } yield MenuSlotLayout(constantPart ++ dynamicPart.toMap)
   }
 
-  private case class ButtonComputations(player: Player) {
+  private case class ButtonComputations(player: Player)(implicit environment: Environment) {
 
     import player._
 
     val computeStatsButton: IO[Button] = RecomputedButton {
       val openerData = SeichiAssist.playermap(getUniqueId)
 
+      val visibilityRef =
+        environment.breakCountBarApi.breakCountBarVisibility(player)
+
       for {
-        lore <- new PlayerStatsLoreGenerator(openerData).computeLore()
+        seichiAmountData <-
+          environment.breakCountAPI
+            .seichiAmountDataRepository(player)
+            .read.toIO
+        ranking <-
+          environment.rankingApi
+            .getSeichiRanking
+        visibility <- visibilityRef.get.toIO
+        lore <- new PlayerStatsLoreGenerator(
+          openerData, ranking, seichiAmountData, visibility
+        ).computeLore()
       } yield Button(
         new SkullItemStackBuilder(getUniqueId)
           .title(s"$YELLOW$BOLD$UNDERLINE${getName}の統計データ")
           .lore(lore)
           .build(),
         FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          SequentialEffect(
-            openerData.toggleExpBarVisibility,
-            DeferredEffect(IO {
-              val toggleSoundPitch = if (openerData.settings.isExpBarVisible) 1.0f else 0.5f
-              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
-            })
-          )
+          DeferredEffect {
+            visibilityRef
+              .updateAndGet(_.nextValue).toIO
+              .map { updatedVisibility =>
+                val toggleSoundPitch = if (updatedVisibility == BreakCountBarVisibility.Shown) 1.0f else 0.5f
+                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
+              }
+          }
         }
       )
     }
 
     val computeEffectSuppressionButton: IO[Button] = RecomputedButton {
-      val openerData = SeichiAssist.playermap(getUniqueId)
+      import cats.implicits._
+      import environment._
 
       val computeButtonLore: IO[List[String]] = for {
-        toggleNavigation <- for {
-          currentStatus <- openerData.settings.fastDiggingEffectSuppression.currentStatus()
-          nextStatus <- openerData.settings.fastDiggingEffectSuppression.nextToggledStatus()
-        } yield
-          List(
-            currentStatus,
-            s"$RESET$DARK_RED${UNDERLINE}クリックで" + nextStatus
-          )
+        currentStatus <- environment.fastDiggingSettingsApi.currentSuppressionSettings(player).read
+        effectList <- environment.fastDiggingEffectApi.currentEffect(player).read
+        currentEffects <- effectList.filteredList[IO]
+        currentAmplifier = currentEffects.map(_.effect.amplifier).combineAll
       } yield {
+        val toggleNavigation = {
+          val currentStatusDescription =
+            currentStatus match {
+              case FastDiggingEffectSuppressionState.EnabledWithoutLimit =>
+                s"${GREEN}現在有効です(無制限)"
+              case limit: FastDiggingEffectSuppressionState.EnabledWithLimit =>
+                s"${GREEN}現在有効です$YELLOW(${limit.limit}制限)"
+              case FastDiggingEffectSuppressionState.Disabled =>
+                s"${RED}現在OFFです"
+            }
+
+          val nextStatusDescription = {
+            val nextStatus = currentStatus.nextState
+
+            s"$RESET$DARK_RED${UNDERLINE}クリックで" + {
+              nextStatus match {
+                case FastDiggingEffectSuppressionState.EnabledWithoutLimit =>
+                  "無制限"
+                case limit: FastDiggingEffectSuppressionState.EnabledWithLimit =>
+                  s"${limit.limit}制限"
+                case FastDiggingEffectSuppressionState.Disabled =>
+                  "OFF"
+              }
+            }
+          }
+
+          List(currentStatusDescription, nextStatusDescription)
+        }
+
         val explanation = List(
           s"$RESET${GRAY}採掘速度上昇効果とは",
           s"$RESET${GRAY}接続人数と1分間の採掘量に応じて",
           s"$RESET${GRAY}採掘速度が変化するシステムです",
-          s"$RESET${GOLD}現在の採掘速度上昇Lv：${openerData.minespeedlv + 1}"
+          s"$RESET${GOLD}現在の採掘速度上昇Lv：${currentAmplifier.formatted}"
         )
 
         val effectStats =
           List(s"$RESET$YELLOW${UNDERLINE}上昇量の内訳") ++
-            openerData.effectdatalist.map(effect => s"$RESET$RED${effect.effectDescription}")
+            currentEffects.map { effectTimings =>
+              s"$RESET$RED +${effectTimings.effect.amplifier.formatted} ${effectTimings.effect.cause.description}"
+            }
 
         toggleNavigation ++ explanation ++ effectStats
       }
@@ -159,8 +240,7 @@ object FirstPage extends Menu {
           action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
             SequentialEffect(
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-              openerData.settings.fastDiggingEffectSuppression.suppressionDegreeToggleEffect,
-              DeferredEffect[IO, Player, Unit](openerData.computeFastDiggingEffect)
+              environment.fastDiggingSettingsApi.toggleEffectSuppression.as(()),
             )
           }
         )
@@ -190,130 +270,133 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.5f),
-          RegionMenu.open
+          environment.ioCanOpenRegionMenu.open(RegionMenu)
         )
       )
     }
 
-    val computeMineStackButton: IO[Button] = IO {
-      val openerData = SeichiAssist.playermap(getUniqueId)
+    val computeMineStackButton: IO[Button] =
+      environment.breakCountAPI
+        .seichiAmountDataRepository(player).read
+        .toIO
+        .flatMap(seichiAmountData => IO {
+          val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
+          val hasEnoughLevel = seichiAmountData.levelCorrespondingToExp.level >= minimumLevelRequired
 
-      val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
-
-      val buttonLore: List[String] = {
-        val explanation = List(
-          s"$RESET${GREEN}説明しよう!MineStackとは…",
-          s"${RESET}主要アイテムを無限にスタック出来る!",
-          s"${RESET}スタックしたアイテムは",
-          s"${RESET}ここから取り出せるゾ!"
-        )
-
-        val actionGuidance = if (openerData.level >= minimumLevelRequired) {
-          s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
-        } else {
-          s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumLevelRequired}以上必要です"
-        }
-
-        val annotation = List(
-          s"$RESET$DARK_GRAY※スタックしたアイテムは",
-          s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
-          s"$RESET${DARK_GRAY}共有されます"
-        )
-
-        explanation ++ List(actionGuidance) ++ annotation
-      }
-
-      Button(
-        new IconItemStackBuilder(Material.CHEST)
-          .title(s"$YELLOW$UNDERLINE${BOLD}MineStack機能")
-          .lore(buttonLore)
-          .build(),
-        LeftClickButtonEffect {
-          if (openerData.level >= minimumLevelRequired) {
-            SequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-              MineStackMainMenu.open
+          (minimumLevelRequired, hasEnoughLevel)
+        })
+        .map { case (minimumLevelRequired, hasEnoughLevel) =>
+          val buttonLore: List[String] = {
+            val explanation = List(
+              s"$RESET${GREEN}説明しよう!MineStackとは…",
+              s"${RESET}主要アイテムを無限にスタック出来る!",
+              s"${RESET}スタックしたアイテムは",
+              s"${RESET}ここから取り出せるゾ!"
             )
-          } else FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
+
+            val actionGuidance = if (hasEnoughLevel) {
+              s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+            } else {
+              s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumLevelRequired}以上必要です"
+            }
+
+            val annotation = List(
+              s"$RESET$DARK_GRAY※スタックしたアイテムは",
+              s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
+              s"$RESET${DARK_GRAY}共有されます"
+            )
+
+            explanation ++ List(actionGuidance) ++ annotation
+          }
+
+          Button(
+            new IconItemStackBuilder(Material.CHEST)
+              .title(s"$YELLOW$UNDERLINE${BOLD}MineStack機能")
+              .lore(buttonLore)
+              .build(),
+            LeftClickButtonEffect {
+              if (hasEnoughLevel)
+                SequentialEffect(
+                  FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
+                  environment.ioCanOpenMineStackMenu.open(MineStackMainMenu)
+                )
+              else
+                FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
+            }
+          )
         }
-      )
-    }
 
-    val computePocketOpenButton: IO[Button] = IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
+    val computePocketOpenButton: IO[Button] = {
+      val api = environment.fourDimensionalPocketApi
 
-      val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel
+      val readCurrentSize: IO[PocketSize] = api.currentPocketSize(player).read
 
-      val iconItemStack = {
-        val loreAnnotation = List(
-          s"$RESET$DARK_GRAY※4次元ポケットの中身は",
-          s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
-          s"$RESET${DARK_GRAY}共有されます"
-        )
-        val loreHeading = if (playerData.level >= minimumRequiredLevel) {
-          List(
-            s"$RESET${GRAY}ポケットサイズ:${playerData.pocketInventory.getSize}スタック",
+      val openPocket: Kleisli[IO, Player, Unit] = api.openPocketInventory
+
+      for {
+        currentSize <- readCurrentSize
+      } yield {
+        val iconItemStack = {
+          val loreAnnotation = List(
+            s"$RESET$DARK_GRAY※4次元ポケットの中身は",
+            s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
+            s"$RESET${DARK_GRAY}共有されます"
+          )
+
+          val loreHeading = List(
+            s"$RESET${GRAY}ポケットサイズ:${currentSize.totalStackCount}スタック",
             s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
           )
-        } else {
-          List(s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です")
+
+          new IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
+            .title(s"$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
+            .lore(loreHeading ++ loreAnnotation)
+            .build()
         }
 
-        new IconItemStackBuilder(Material.ENDER_PORTAL_FRAME)
-          .title(s"$YELLOW$UNDERLINE${BOLD}4次元ポケットを開く")
-          .lore(loreHeading ++ loreAnnotation)
-          .build()
+        Button(iconItemStack, LeftClickButtonEffect(openPocket))
       }
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          DeferredEffect(IO {
-            if (playerData.level >= minimumRequiredLevel)
-              SequentialEffect(
-                FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 0.1f),
-                openInventoryEffect(playerData.pocketInventory),
-              ) else FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
-          })
-        )
-      )
     }
 
-    val computeEnderChestButton: IO[Button] = IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-      val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.getDokodemoEnderlevel
+    val computeEnderChestButton: IO[Button] =
+      environment
+        .breakCountAPI
+        .seichiAmountDataRepository(player)
+        .read.toIO
+        .flatMap(breakAmountData => IO {
+          val level = breakAmountData.levelCorrespondingToExp.level
+          val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.getDokodemoEnderlevel
+          val hasEnoughLevel = level >= minimumRequiredLevel
+          val enderChest = player.getEnderChest
 
-      val iconItemStack = {
-        val loreHeading = {
-          if (playerData.level >= minimumRequiredLevel) {
-            s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
-          } else {
-            s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です"
-          }
-        }
-
-        new IconItemStackBuilder(Material.ENDER_CHEST)
-          .title(s"$DARK_PURPLE$UNDERLINE${BOLD}どこでもエンダーチェスト")
-          .lore(List(loreHeading))
-          .build()
-      }
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          DeferredEffect(IO {
-            if (playerData.level >= minimumRequiredLevel) {
-              SequentialEffect(
-                FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
-                openInventoryEffect(player.getEnderChest)
-              )
-            } else {
-              FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+          val iconItemStack = {
+            val loreHeading = {
+              if (hasEnoughLevel) {
+                s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+              } else {
+                s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です"
+              }
             }
-          })
-        )
-      )
-    }
+
+            new IconItemStackBuilder(Material.ENDER_CHEST)
+              .title(s"$DARK_PURPLE$UNDERLINE${BOLD}どこでもエンダーチェスト")
+              .lore(List(loreHeading))
+              .build()
+          }
+
+          Button(
+            iconItemStack,
+            LeftClickButtonEffect(
+              if (hasEnoughLevel)
+                SequentialEffect(
+                  FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
+                  openInventoryEffect(enderChest)
+                )
+              else
+                FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+            )
+          )
+        })
 
     val computeApologyItemsButton: IO[Button] = RecomputedButton(IO {
       val playerData = SeichiAssist.playermap(getUniqueId)
@@ -373,27 +456,31 @@ object FirstPage extends Menu {
       )
     })
 
-    val computeStarLevelStatsButton: IO[Button] = IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
+    val computeStarLevelStatsButton: IO[Option[Button]] =
+      environment
+        .breakCountAPI
+        .seichiAmountDataRepository(player)
+        .read
+        .map(seichiAmountData => {
+          val starLevel = seichiAmountData.starLevelCorrespondingToExp
 
-      val iconItemStack = {
-        val breakNumRequiredToNextStarLevel =
-          (playerData.starLevels.fromBreakAmount.toLong + 1) * 87115000 - playerData.totalbreaknum
+          Option.when(starLevel != SeichiStarLevel.zero) {
+            val iconItemStack = {
+              val lore = List(
+                s"$RESET$GREEN$UNDERLINE${BOLD}現在のスターレベル：☆${starLevel.level}",
+                s"$RESET${AQUA}次の☆まで：あと${seichiAmountData.levelProgress.expAmountToNextLevel.amount}",
+              )
 
-        val lore = List(
-          s"$RESET$AQUA${BOLD}整地量：☆${playerData.starLevels.fromBreakAmount}",
-          s"$RESET${AQUA}次の☆まで：あと$breakNumRequiredToNextStarLevel",
-          s"$RESET$GREEN$UNDERLINE${BOLD}合計：☆${playerData.starLevels.total()}"
-        )
+              new IconItemStackBuilder(Material.GOLD_INGOT)
+                .title(s"$YELLOW$UNDERLINE${BOLD}スターレベル情報")
+                .lore(lore)
+                .build()
+            }
 
-        new IconItemStackBuilder(Material.GOLD_INGOT)
-          .title(s"$YELLOW$UNDERLINE${BOLD}スターレベル情報")
-          .lore(lore)
-          .build()
-      }
-
-      Button(iconItemStack)
-    }
+            Button(iconItemStack)
+          }
+        })
+        .toIO
 
     val computeActiveSkillButton: IO[Button] = IO {
       val iconItemStack = {
@@ -420,150 +507,45 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
-          ActiveSkillMenu.open,
+          environment.ioCanOpenActiveSkillMenu.open(ActiveSkillMenu),
         )
       )
     }
 
-    val computeGachaTicketButton: IO[Button] = RecomputedButton(IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
+    val computeGachaTicketButton: IO[Button] = {
+      val effect: FilteredButtonEffect = LeftClickButtonEffect(environment.gachaPointApi.receiveBatch)
 
-      val iconItemStack = {
-        val lore = {
-          val obtainableGachaTicket = playerData.gachapoint / 1000
-          val gachaPointToNextTicket = 1000 - playerData.gachapoint % 1000
-
-          val gachaTicketStatus = if (obtainableGachaTicket != 0)
-            s"$RESET${AQUA}未獲得ガチャ券：${obtainableGachaTicket}枚"
-          else
-            s"$RESET${RED}獲得できるガチャ券はありません"
-
-          val gachaPointStatus = s"$RESET${AQUA}次のガチャ券まで:${gachaPointToNextTicket}ブロック"
-
-          List(gachaTicketStatus, gachaPointStatus)
-        }
-
-        new SkullItemStackBuilder(SkullOwners.unchama)
-          .title(s"$DARK_AQUA$UNDERLINE${BOLD}整地報酬ガチャ券を受け取る")
-          .lore(lore)
-          .build()
-      }
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect {
-          if (playerData.gachacooldownflag) {
-            new CoolDownTask(player, false, true).runTaskLater(SeichiAssist.instance, 20)
-
-            val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
-            val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
-
-            if (gachaTicketsToGive > 0) {
-              val itemToGive = GachaSkullData.gachaSkull
-              val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
-
-              SequentialEffect(
-                Util.grantItemStacksEffect(itemStacksToGive: _*),
-                targetedeffect.UnfocusedEffect {
-                  playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
-                },
-                MessageEffect(s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー"),
-                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
-              )
-            } else emptyEffect
-          } else emptyEffect
-        }
-      )
-    })
-
-    val computeGachaTicketDeliveryButton: IO[Button] = RecomputedButton(IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-
-      val iconItemStack = {
-        val lore = {
-          val settingsStatus =
-            if (playerData.settings.receiveGachaTicketEveryMinute)
-              s"$RESET${GREEN}毎分受け取ります"
+      val computeItemStack: IO[ItemStack] = environment
+        .gachaPointApi
+        .gachaPoint(player)
+        .read.toIO
+        .map { point =>
+          val lore = {
+            val gachaTicketStatus = if (point.availableTickets != BigInt(0))
+              s"$RESET${AQUA}未獲得ガチャ券：${point.availableTickets}枚"
             else
-              s"$RESET${RED}後でまとめて受け取ります"
+              s"$RESET${RED}獲得できるガチャ券はありません"
 
-          val navigationMessage = s"$RESET$DARK_RED${UNDERLINE}クリックで変更"
+            val requiredToNextTicket =
+              s"$RESET${AQUA}次のガチャ券まで:${point.amountUntilNextGachaTicket.amount}ブロック"
 
-          List(settingsStatus, navigationMessage)
+            List(gachaTicketStatus, requiredToNextTicket)
+          }
+
+          new SkullItemStackBuilder(SkullOwners.unchama)
+            .title(s"$DARK_AQUA$UNDERLINE${BOLD}整地報酬ガチャ券を受け取る")
+            .lore(lore)
+            .build()
         }
 
-        new IconItemStackBuilder(Material.STONE_BUTTON)
-          .title(s"$YELLOW$UNDERLINE${BOLD}整地報酬ガチャ券受け取り方法")
-          .lore(lore)
-          .build()
-      }
+      val computeButton: IO[Button] = computeItemStack.map { itemStack => Button(itemStack, effect) }
 
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          targetedeffect.UnfocusedEffect {
-            playerData.settings.receiveGachaTicketEveryMinute = !playerData.settings.receiveGachaTicketEveryMinute
-          },
-          DeferredEffect(IO {
-            if (playerData.settings.receiveGachaTicketEveryMinute) {
-              SequentialEffect(
-                MessageEffect(s"${GREEN}毎分のガチャ券受け取り:ON"),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-              )
-            } else {
-              SequentialEffect(
-                MessageEffect(s"${RED}毎分のガチャ券受け取り:OFF"),
-                MessageEffect(s"${GREEN}ガチャ券受け取りボタンを押すともらえます"),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1.0f, 1.0f)
-              )
-            }
-          })
-        )
-      )
-    })
-
-    val computeValentineChocolateButton: IO[Button] = RecomputedButton(IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-
-      if (playerData.hasChocoGave && Valentine.isInEvent) {
-        val iconItemStack =
-          new IconItemStackBuilder(Material.TRAPPED_CHEST)
-            .enchanted()
-            .title("プレゼントボックス")
-            .lore(List(
-              s"$RESET$RED[バレンタインイベント記念]",
-              s"$RESET${AQUA}記念品として",
-              s"$RESET${GREEN}チョコチップクッキー×64個",
-              s"$RESET${AQUA}を配布します。",
-              s"$RESET$DARK_RED$UNDERLINE${BOLD}クリックで受け取る"
-            ))
-            .build()
-
-        Button(
-          iconItemStack,
-          LeftClickButtonEffect(
-            DeferredEffect(IO {
-              if (Valentine.isInEvent) {
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 0.5f),
-                  Util.grantItemStacksEffect(cookieOf(player)),
-                  targetedeffect.UnfocusedEffect {playerData.hasChocoGave = true},
-                  MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。")
-                )
-              } else {
-                emptyEffect
-              }
-            })
-          )
-        )
-      } else {
-        Button(new ItemStack(Material.AIR))
-      }
-    })
+      RecomputedButton(computeButton)
+    }
   }
 
   private object ConstantButtons {
-    val teleportServerButton: Button = {
+    def teleportServerButton(implicit ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type): Button = {
       val buttonLore = List(
         s"$GRAY・各サバイバルサーバー",
         s"$GRAY・建築サーバー",
@@ -579,7 +561,7 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_PORTAL_AMBIENT, 0.6f, 1.5f),
-          ServerSwitchMenu.open
+          ioCanOpenServerSwitchMenu.open(ServerSwitchMenu)
         )
       )
     }
@@ -605,7 +587,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val achievementSystemButton: Button = {
+    def achievementSystemButton(implicit ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type): Button = {
       val buttonLore = List(
         s"${GRAY}様々な実績に挑んで、",
         s"${GRAY}いろんな二つ名を手に入れよう！",
@@ -619,12 +601,12 @@ object FirstPage extends Menu {
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-          AchievementMenu.open
+          ioCanOpenAchievementMenu.open(AchievementMenu)
         )
       )
     }
 
-    val seichiGodRankingButton: Button = {
+    def seichiGodRankingButton(implicit ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.COOKIE)
           .title(s"$YELLOW$UNDERLINE${BOLD}整地神ランキングを見る")
@@ -638,8 +620,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingBySeichiAmount(0)),
+          ioCanOpenSeichiRankingMenu.open(SeichiRankingMenu(0)),
         )
       )
     }
@@ -683,7 +664,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val secondPageButton: Button =
+    def secondPageButton(implicit ioCanOpenSecondPage: IO CanOpen SecondPage.type): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowRight),
         "2ページ目へ",
@@ -720,7 +701,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val homePointMenuButton: Button = {
+    def homePointMenuButton(implicit ioCanOpenHomeMenu: IO CanOpen HomeMenu.type): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.BED)
           .title(s"$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
@@ -734,7 +715,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-          HomeMenu.open
+          ioCanOpenHomeMenu.open(HomeMenu)
         )
       )
     }
@@ -783,7 +764,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val passiveSkillBookButton: Button = {
+    def passiveSkillBookButton(implicit ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.ENCHANTED_BOOK)
           .enchanted()
@@ -798,7 +779,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 0.8f),
-          PassiveSkillMenu.open
+          ioCanOpenPassiveSkillMenu.open(PassiveSkillMenu)
         )
       )
     }

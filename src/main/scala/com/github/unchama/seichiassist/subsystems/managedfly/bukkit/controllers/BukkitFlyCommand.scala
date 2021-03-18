@@ -4,7 +4,7 @@ import cats.effect.{ConcurrentEffect, IO, SyncEffect, SyncIO, Timer}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.datarepository.bukkit.player.TwoPhasedPlayerDataRepository
+import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
@@ -44,7 +44,7 @@ object BukkitFlyCommand {
   def startEndlessCommand[
     F[_] : ConcurrentEffect : Timer,
     G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]],
+  ](implicit sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]): ContextualExecutor =
     BuilderTemplates.playerCommandBuilder
       .execution { context =>
@@ -60,7 +60,7 @@ object BukkitFlyCommand {
   def addCommand[
     F[_] : ConcurrentEffect : Timer,
     G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]],
+  ](implicit sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]): ContextualExecutor =
     BuilderTemplates.playerCommandBuilder
       .argumentsParsers(List(durationParser))
@@ -83,7 +83,7 @@ object BukkitFlyCommand {
 
   def finishCommand[
     F[_] : ConcurrentEffect, G[_]
-  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]]): ContextualExecutor =
+  ](implicit sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]]): ContextualExecutor =
     BuilderTemplates.playerCommandBuilder
       .execution { context =>
         for {
@@ -104,7 +104,7 @@ object BukkitFlyCommand {
   def executor[
     F[_] : ConcurrentEffect : Timer,
     G[_] : SyncEffect
-  ](implicit sessionReferenceRepository: TwoPhasedPlayerDataRepository[F, G, ActiveSessionReference[F, G]],
+  ](implicit sessionReferenceRepository: KeyedDataRepository[Player, ActiveSessionReference[F, G]],
     factory: ActiveSessionFactory[F, Player]): TabExecutor =
     BranchedExecutor(
       Map(

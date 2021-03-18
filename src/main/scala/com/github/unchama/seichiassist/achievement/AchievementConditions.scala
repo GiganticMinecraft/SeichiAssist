@@ -1,46 +1,68 @@
 package com.github.unchama.seichiassist.achievement
 
-import java.time.temporal.TemporalAdjusters
-import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
-
 import cats.effect.IO
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
+import java.time.temporal.TemporalAdjusters
+import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 import scala.concurrent.duration.FiniteDuration
 
 object AchievementConditions {
   def playerDataPredicate(predicate: PlayerData => IO[Boolean]): PlayerPredicate = { player =>
-    IO { SeichiAssist.playermap(player.getUniqueId) }.flatMap(predicate)
+    IO {
+      SeichiAssist.playermap(player.getUniqueId)
+    }.flatMap(predicate)
   }
 
-  def hasUnlocked(id: Int): PlayerPredicate = playerDataPredicate(d => IO { d.TitleFlags.contains(id) })
+  def hasUnlocked(id: Int): PlayerPredicate = playerDataPredicate(d => IO {
+    d.TitleFlags.contains(id)
+  })
 
   def dependsOn[A: WithPlaceholder](id: Int, condition: AchievementCondition[A]): HiddenAchievementCondition[A] = {
     HiddenAchievementCondition(hasUnlocked(id), condition)
   }
 
   def brokenBlockRankingPosition_<=(n: Int): AchievementCondition[Int] = {
-    val predicate = playerDataPredicate(d => IO { d.calcPlayerRank() <= n })
+    val predicate: PlayerPredicate = { player: Player =>
+      SeichiAssist.instance
+        .rankingSystemApi
+        .getSeichiRanking
+        .map(_.positionOf(player.getName))
+        .map(_.exists(_ <= n))
+    }
 
     AchievementCondition(predicate, "「整地神ランキング」" + _ + "位達成", n)
   }
 
   def placedBlockAmount_>=(amount: BigDecimal, localizedAmount: String): AchievementCondition[String] = {
-    val predicate = playerDataPredicate(d => IO {
-      val playerBuildCount: BigDecimal = d.buildCount.count
-
-      playerBuildCount >= amount
-    })
+    val predicate: PlayerPredicate = { player: Player =>
+      BuildAssist.instance
+        .buildAmountDataRepository(player).read
+        .map(_.expAmount.amount >= amount)
+        .toIO
+    }
 
     AchievementCondition(predicate, "建築量が " + _ + "を超える", localizedAmount)
   }
 
+  def brokenBlockAmountPredicate(f: SeichiExpAmount => Boolean): PlayerPredicate = { player =>
+    SeichiAssist.instance
+      .breakCountSystem.api
+      .seichiAmountDataRepository(player)
+      .read.map(amount => f(amount.expAmount))
+      .toIO
+  }
+
   def brokenBlockAmount_>=(amount: Long, localizedAmount: String): AchievementCondition[String] = {
-    val predicate = playerDataPredicate(d => IO { d.totalbreaknum >= amount })
+    import cats.implicits._
+    val predicate = brokenBlockAmountPredicate(_ >= SeichiExpAmount.ofNonNegative(amount))
 
     AchievementCondition(predicate, "整地量が " + _ + "を超える", localizedAmount)
   }
@@ -133,14 +155,14 @@ object AchievementConditions {
 
     val conditionFor8002: HiddenAchievementCondition[Unit] = {
       val shouldDisplay: PlayerPredicate =
-        playerDataPredicate(p => IO {
-          p.totalbreaknum % 1000000L == 0L && p.totalbreaknum != 0L
-        })
+        brokenBlockAmountPredicate { case SeichiExpAmount(amount) =>
+          amount % 1000000L == 0L && amount != 0L
+        }
 
       val unlockCondition: PlayerPredicate =
-        playerDataPredicate(p => IO {
-          p.totalbreaknum % 1000000L == 777777L
-        })
+        brokenBlockAmountPredicate { case SeichiExpAmount(amount) =>
+          amount % 1000000L == 777777L
+        }
 
       HiddenAchievementCondition(shouldDisplay, AchievementCondition(unlockCondition, _ => "[[[[[[LuckyNumber]]]]]]", ()))
     }

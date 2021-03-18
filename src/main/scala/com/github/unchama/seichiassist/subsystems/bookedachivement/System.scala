@@ -9,6 +9,8 @@ import com.github.unchama.seichiassist.subsystems.bookedachivement.bukkit.listen
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.BookedAchievementPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.bookedachivement.infrastructure.JdbcBookedAchievementPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
+import org.bukkit.command.TabExecutor
+import org.bukkit.event.Listener
 
 import java.util.UUID
 
@@ -24,12 +26,13 @@ object System {
     implicit val service: AchievementBookingService[F] =
       new AchievementBookingService[F]
 
-    val listener = Seq(
-      new GrantBookedAchievementListener()
-    )
-
-    Subsystem(listener, Nil, Map(
-      "achievement" -> AchievementCommand.executor
-    ))
+    new Subsystem[G] {
+      override val listeners: Seq[Listener] = Seq(
+        new GrantBookedAchievementListener()
+      )
+      override val commands: Map[String, TabExecutor] = Map(
+        "achievement" -> AchievementCommand.executor
+      )
+    }
   }
 }

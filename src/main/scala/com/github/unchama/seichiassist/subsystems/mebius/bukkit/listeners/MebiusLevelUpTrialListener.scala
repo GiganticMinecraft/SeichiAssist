@@ -21,7 +21,7 @@ class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepositor
   def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
 
-    if (player.getWorld.isSeichi) return
+    if (!player.getWorld.isSeichi) return
 
     val oldMebiusProperty =
       BukkitMebiusItemStackCodec
