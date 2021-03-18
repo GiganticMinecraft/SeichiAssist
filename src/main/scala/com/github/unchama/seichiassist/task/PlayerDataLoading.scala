@@ -182,7 +182,6 @@ object PlayerDataLoading {
         + " where uuid = '" + stringUuid + "'")
 
       stmt.executeQuery(command).recordIteration { rs: ResultSet =>
-        playerData.settings.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
         playerData.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
         playerData.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
@@ -222,7 +221,6 @@ object PlayerDataLoading {
           )
         ).unsafeRunSync()
 
-        playerData.gachapoint = rs.getInt("gachapoint")
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
         playerData.playTick = rs.getInt("playtick")
@@ -286,7 +284,7 @@ object PlayerDataLoading {
           if (dateDiff >= 1L) {
             val newTotalLoginDay = playerData.loginStatus.totalLoginDay + 1
             val newConsecutiveLoginDays =
-              if (dateDiff <= 5L)
+              if (dateDiff <= 2L)
                 playerData.loginStatus.consecutiveLoginDays + 1
               else
                 1

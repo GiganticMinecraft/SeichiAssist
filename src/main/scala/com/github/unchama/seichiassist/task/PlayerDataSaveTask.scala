@@ -147,8 +147,6 @@ object PlayerDataSaveTask {
           + ",selected_active_skill = " + skillState.activeSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
           + ",selected_assault_skill = " + skillState.assaultSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
 
-          + ",gachapoint = " + playerdata.gachapoint
-          + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
           + ",rgnum = " + playerdata.regionCount
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"

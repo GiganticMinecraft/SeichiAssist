@@ -166,7 +166,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val LastLong = LastDate.getTime
 
       val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-      val shouldIncrementChainVote = dateDiff <= 5L
+      val shouldIncrementChainVote = dateDiff <= 2L
 
       val newCount = if (shouldIncrementChainVote) {
         sql"""select chainvote from playerdata where name = $name"""
@@ -434,17 +434,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   //全員に詫びガチャの配布
   def addAllPlayerBug(amount: Int): ActionStatus = {
     val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
-    gateway.executeUpdate(command)
-  }
-
-  /**
-   * プレイヤーのガチャ券枚数を変更します
-   * @param playerName プレイヤーの名前
-   * @param amount 変更後のプレーヤーのガチャ券の枚数
-   * @return [ActionStatus]
-   */
-  def changeGachaAmountOf(playerName: String, amount: Int): ActionStatus = {
-    val command = s"update $tableReference set gachapoint = ${1000 * amount} where name = '$playerName'"
     gateway.executeUpdate(command)
   }
 

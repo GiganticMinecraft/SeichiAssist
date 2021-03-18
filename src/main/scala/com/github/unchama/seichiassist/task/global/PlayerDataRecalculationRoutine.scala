@@ -5,11 +5,8 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
-import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.Util
-import org.bukkit.ChatColor._
-import org.bukkit.{Bukkit, Sound}
+import org.bukkit.Bukkit
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -53,29 +50,6 @@ object PlayerDataRecalculationRoutine {
 
         //総プレイ時間更新
         playerData.updatePlayTick()
-
-        /*
-         * ガチャ券付与の処理
-         */
-        if (playerData.gachapoint >= config.getGachaPresentInterval && playerData.settings.receiveGachaTicketEveryMinute) {
-          val skull = GachaSkullData.gachaSkull
-          playerData.gachapoint = playerData.gachapoint - config.getGachaPresentInterval
-          if (player.getInventory.contains(skull) || !Util.isPlayerInventoryFull(player)) {
-            Util.addItem(player, skull)
-            player.sendMessage(s"${GOLD}ガチャ券${WHITE}プレゼントフォーユー。右クリックで使えるゾ")
-          } else {
-            Util.dropItem(player, skull)
-            player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-            player.sendMessage(s"${GOLD}ガチャ券${WHITE}がドロップしました。右クリックで使えるゾ")
-          }
-        } else if (playerData.settings.receiveGachaTicketEveryMinute) {
-          // TODO: 1分間整地量が0だったら通知しない
-          if (playerData.idleMinute == 0) {
-            val blocksToGo = config.getGachaPresentInterval - playerData.gachapoint % config.getGachaPresentInterval
-            player.sendMessage(s"あと$AQUA$blocksToGo${WHITE}ブロック整地すると${GOLD}ガチャ券${WHITE}獲得ダヨ")
-          }
-        }
-
 
         import SeichiAchievement._
         import cats.implicits._

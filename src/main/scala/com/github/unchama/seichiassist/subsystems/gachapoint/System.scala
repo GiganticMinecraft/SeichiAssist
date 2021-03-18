@@ -1,27 +1,97 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint
 
-import cats.effect.{Async, Sync}
-import com.github.unchama.seichiassist.SeichiAssist
+import cats.data.Kleisli
+import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
+import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.EffectExtra
+import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
+import com.github.unchama.minecraft.actions.GetConnectedPlayers
+import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.gachapoint.application.process.AddSeichiExpAsGachaPoint
+import com.github.unchama.seichiassist.subsystems.gachapoint.application.repository.GachaPointRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.gachapoint.bukkit.GrantBukkitGachaTicketToAPlayer
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
+import com.github.unchama.seichiassist.subsystems.gachapoint.infrastructure.JdbcGachaPointPersistence
 import org.bukkit.entity.Player
+
+trait System[F[_], G[_], Player] extends Subsystem[F] {
+
+  val api: GachaPointApi[F, G, Player]
+
+}
 
 object System {
 
+  import cats.effect.implicits._
   import cats.implicits._
 
-  def backgroundProcess[
-    F[_] : Async, G[_]
-  ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
-    breakCountReadAPI
-      .seichiAmountIncreases
-      .evalTap { case (player, amount) =>
-        Sync[F].delay {
-          // TODO: gachapointのリポジトリをこのsubsystemで持ってplayermapを参照しないようにする
-          SeichiAssist.playermap.get(player.getUniqueId).foreach(_.gachapoint += amount.amount.toInt)
+  def wired[
+    F[_] : ConcurrentEffect : Timer : GetConnectedPlayers[*[_], Player],
+    G[_] : SyncEffect
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): G[System[F, G, Player]] = {
+    import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
+
+    val gachaPointPersistence = new JdbcGachaPointPersistence[G]
+
+    val grantEffectFactory: Player => GrantGachaTicketToAPlayer[F] =
+      player => GrantBukkitGachaTicketToAPlayer[F](player)
+
+    for {
+      gachaPointRepositoryControls <-
+        BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(
+          GachaPointRepositoryDefinitions.initialization[G, F, Player](gachaPointPersistence)(grantEffectFactory),
+          GachaPointRepositoryDefinitions.finalization[G, F, Player](gachaPointPersistence)
+        )
+
+      _ <- {
+        val gachaPointRepository =
+          gachaPointRepositoryControls.repository.map(_.pointRef.mapK[F](ContextCoercion.asFunctionK))
+
+        val streams: List[fs2.Stream[F, Unit]] = List(
+          AddSeichiExpAsGachaPoint.stream(gachaPointRepository)(breakCountReadAPI.seichiAmountIncreases),
+        )
+
+        EffectExtra.runAsyncAndForget[F, G, Unit] {
+          streams.traverse(_.compile.drain.start).as(())
         }
       }
-      .compile.drain
-      .flatMap[Nothing](_ => Async[F].never)
-  }
+    } yield {
+      new System[F, G, Player] {
+        override val api: GachaPointApi[F, G, Player] = new GachaPointApi[F, G, Player] {
+          override val gachaPoint: KeyedDataRepository[Player, ReadOnlyRef[G, GachaPoint]] =
+            gachaPointRepositoryControls
+              .repository
+              .map(value => ReadOnlyRef.fromRef(value.pointRef))
 
+          override val receiveBatch: Kleisli[F, Player, Unit] = Kleisli { player =>
+            gachaPointRepositoryControls
+              .repository
+              .lift(player)
+              .traverse { value =>
+                value.semaphore.tryBatchTransaction
+              }
+              .as(())
+          }
+
+          override def addGachaPoint(point: GachaPoint): Kleisli[G, Player, Unit] = Kleisli { player =>
+            gachaPointRepositoryControls
+              .repository
+              .lift(player)
+              .traverse { value =>
+                value.pointRef.update(_.add(point))
+              }
+              .as(())
+          }
+        }
+
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+          gachaPointRepositoryControls.coerceFinalizationContextTo[F]
+        )
+      }
+    }
+  }
 }

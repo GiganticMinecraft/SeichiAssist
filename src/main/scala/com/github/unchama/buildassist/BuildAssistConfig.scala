@@ -23,13 +23,13 @@ class BuildAssistConfig(val plugin: Plugin) {
 
   def getFlyExp: Int = config.getString("flyexp").toInt
 
-  //ブロックを並べるスキル開放LV
+  //直列設置開放LV
   def getblocklineuplevel: Int = config.getString("blocklineup.level").toInt
 
-  //ブロックを並べるスキルのマナ消費倍率
+  //直列設置のマナ消費倍率
   def getblocklineupmana_mag: Double = config.getString("blocklineup.mana_mag").toDouble
 
-  //ブロックを並べるスキルマインスタック優先開放LV
+  //直列設置マインスタック優先開放LV
   def getblocklineupMinestacklevel: Int = config.getString("blocklineup.minestack_level").toInt
 
   def getZoneSetSkillLevel: Int = config.getString("ZoneSetSkill.level").toInt

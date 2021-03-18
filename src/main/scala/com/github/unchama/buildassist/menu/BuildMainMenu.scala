@@ -160,7 +160,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
         val iconItemStack = new IconItemStackBuilder(Material.WOOD)
-          .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+          .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
             s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -183,7 +183,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
                     },
                     DeferredEffect {
                       IO {
-                        MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+                        MessageEffect(s"${GREEN}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
                       }
                     }
                   )
@@ -200,7 +200,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
     val iconItemStack = new IconItemStackBuilder(Material.PAPER)
-      .title(s"$YELLOW$EMPHASIZE「ブロックを並べるスキル（仮） 」設定画面へ")
+      .title(s"$YELLOW$EMPHASIZE「直列設置 」設定画面へ")
       .lore(
         s"$RESET${GRAY}現在の設定",
         s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str(openerData.line_up_flg)}",
