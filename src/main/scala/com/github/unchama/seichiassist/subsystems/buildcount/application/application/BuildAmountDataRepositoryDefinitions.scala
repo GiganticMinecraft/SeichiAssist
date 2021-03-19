@@ -23,7 +23,7 @@ object BuildAmountDataRepositoryDefinitions {
     F[_] : Sync
   ](persistence: BuildAmountDataPersistence[F]): RepositoryFinalization[F, UUID, Ref[F, BuildAmountData]] =
     RefDictBackedRepositoryFinalization
-      .using(persistence)(identity[UUID])
+      .usingUuidRefDict(persistence)
       .pipe(RepositoryFinalization.liftToRefFinalization[F, UUID, BuildAmountData])
 
 }

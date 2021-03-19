@@ -78,7 +78,7 @@ object PocketInventoryRepositoryDefinitions {
   ](persistence: PocketInventoryPersistence[G, Inventory])
   : RepositoryFinalization[G, UUID, RepositoryValue[F, G, Inventory]] = {
     RefDictBackedRepositoryFinalization
-      .using(persistence)(identity[UUID])
+      .usingUuidRefDict(persistence)
       .withIntermediateEffects[RepositoryValue[F, G, Inventory]] {
         case (ref, _) => ref.readLatest
       } {

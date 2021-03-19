@@ -76,7 +76,7 @@ object EffectStatsSettingsRepository {
     F[_] : Effect, G[_] : Sync, Player: HasUuid
   ](persistence: FastDiggingEffectStatsSettingsPersistence[G]): RepositoryFinalization[G, UUID, RepositoryValue[F, G]] = {
     RepositoryFinalization.liftToRefFinalization[G, UUID, FastDiggingEffectStatsSettings] {
-      RefDictBackedRepositoryFinalization.using(persistence)(identity)
+      RefDictBackedRepositoryFinalization.usingUuidRefDict(persistence)
     }.withIntermediateEffects[RepositoryValue[F, G]] {
       case (ref, _) =>
         Applicative[G].pure(ref)

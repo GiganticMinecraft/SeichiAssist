@@ -37,7 +37,7 @@ object BreakCountRepositoryDefinitions {
   def finalization[F[_] : Sync](persistence: SeichiAmountDataPersistence[F]): RepositoryFinalization[F, UUID, Ref[F, SeichiAmountData]] =
     RepositoryFinalization.liftToRefFinalization[F, UUID, SeichiAmountData](
       RefDictBackedRepositoryFinalization
-        .using(persistence)(identity)
+        .usingUuidRefDict(persistence)
     )
 
 }
