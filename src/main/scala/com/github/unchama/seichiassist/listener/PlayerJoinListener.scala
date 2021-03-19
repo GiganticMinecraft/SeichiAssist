@@ -112,7 +112,7 @@ class PlayerJoinListener extends Listener {
       inv.addItem(new ItemStack(Material.WRITTEN_BOOK).tap { is =>
         val meta = is.getItemMeta.asInstanceOf[BookMeta]
         // per https://github.com/GiganticMinecraft/SeichiAssist/issues/914#issuecomment-792534164
-        // 改行コードを明確にするためにLRで再結合する
+        // 改行コードを明確にするためにLFで再結合する
         val contents = List(
           """基本的にはこの４つを守ってください。ルール違反をした場合、BANなどの処罰が与えられます。
             |・正規のアカウントを使用する
