@@ -213,7 +213,7 @@ object BukkitRepositoryControls {
     import cats.implicits._
 
     definition match {
-      case SinglePhasedRepositoryDefinition(initialization, tappingAction, finalization) => Sync[F].delay {
+      case RepositoryDefinition.SinglePhased(initialization, tappingAction, finalization) => Sync[F].delay {
         TrieMap.empty[UUID, R]
       }.map { dataMap =>
         // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
@@ -227,7 +227,7 @@ object BukkitRepositoryControls {
         )
       }
 
-      case TwoPhasedRepositoryDefinition(initialization, finalization) => Sync[F].delay {
+      case RepositoryDefinition.TwoPhased(initialization, finalization) => Sync[F].delay {
         (TrieMap.empty[Player, R], TrieMap.empty[UUID, initialization.IntermediateData])
       }.map { case (dataMap, temporaryDataMap) =>
         // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
