@@ -3,7 +3,7 @@ package com.github.unchama.datarepository.bukkit.player
 import cats.effect.{Sync, SyncEffect, SyncIO}
 import cats.{Monad, ~>}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
-import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryFinalization, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template._
 import com.github.unchama.generic.ContextCoercion
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
@@ -146,8 +146,8 @@ object BukkitRepositoryControls {
     }
   }
 
-  def backupProcess[F[_] : Sync, Key, R](finalization: RepositoryFinalization[F, Key, R])
-                                        (dataMap: TrieMap[Key, R]): F[Unit] = {
+  private def backupProcess[F[_] : Sync, Key, R](finalization: RepositoryFinalization[F, Key, R])
+                                                (dataMap: TrieMap[Key, R]): F[Unit] = {
     Sync[F].suspend {
       dataMap.toList.traverse(finalization.persistPair.tupled).as(())
     }
@@ -207,5 +207,39 @@ object BukkitRepositoryControls {
       backupProcess(finalization)(dataMap),
       Finalizers.twoPhased(finalization)(temporaryDataMap, dataMap)
     )
+  }
+
+  def createHandles[F[_] : SyncEffect, R](definition: RepositoryDefinition[F, Player, R]): F[BukkitRepositoryControls[F, R]] = {
+    import cats.implicits._
+
+    definition match {
+      case SinglePhasedRepositoryDefinition(initialization, tappingAction, finalization) => Sync[F].delay {
+        TrieMap.empty[UUID, R]
+      }.map { dataMap =>
+        // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
+        val i: initialization.type = initialization
+
+        BukkitRepositoryControls(
+          PlayerDataRepository.unlift(player => dataMap.get(player.getUniqueId)),
+          Initializers.singlePhased(i)(tappingAction)(dataMap),
+          backupProcess(finalization)(dataMap),
+          player => Finalizers.singlePhased(finalization)(dataMap).onQuitOf(player.getUniqueId)
+        )
+      }
+
+      case TwoPhasedRepositoryDefinition(initialization, finalization) => Sync[F].delay {
+        (TrieMap.empty[Player, R], TrieMap.empty[UUID, initialization.IntermediateData])
+      }.map { case (dataMap, temporaryDataMap) =>
+        // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
+        val i: initialization.type = initialization
+
+        BukkitRepositoryControls(
+          PlayerDataRepository.unlift(player => dataMap.get(player)),
+          Initializers.twoPhased(i)(temporaryDataMap, dataMap),
+          backupProcess(finalization)(dataMap),
+          Finalizers.twoPhased(finalization)(temporaryDataMap, dataMap)
+        )
+      }
+    }
   }
 }

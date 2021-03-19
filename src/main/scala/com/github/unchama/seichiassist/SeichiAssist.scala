@@ -11,7 +11,7 @@ import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreRes
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
-import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinitions
+import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinition
 import com.github.unchama.datarepository.template.{RepositoryFinalization, SinglePhasedRepositoryInitialization}
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
@@ -109,12 +109,12 @@ class SeichiAssist extends JavaPlugin() {
     activeSkillAvailabilityRepositoryControls.repository
 
   private val assaultSkillRoutinesRepositoryControls: BukkitRepositoryControls[SyncIO, SessionMutex[IO, SyncIO]] = {
-    import PluginExecutionContexts.asyncShift
+    val definition = {
+      import PluginExecutionContexts.asyncShift
+      SessionMutexRepositoryDefinition.withRepositoryContext[IO, SyncIO, Player]
+    }
 
-    BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles(
-      SessionMutexRepositoryDefinitions.initialization[IO, SyncIO],
-      SessionMutexRepositoryDefinitions.finalization[IO, SyncIO, UUID]
-    ).unsafeRunSync()
+    BukkitRepositoryControls.createHandles(definition).unsafeRunSync()
   }
 
   val assaultSkillRoutines: PlayerDataRepository[SessionMutex[IO, SyncIO]] =
