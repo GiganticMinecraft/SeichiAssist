@@ -5,7 +5,7 @@ import cats.effect.concurrent.Ref
 import cats.{Applicative, Monad}
 import com.github.unchama.datarepository.template._
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
-import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
+import com.github.unchama.datarepository.template.initialization.{SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectSuppressionState, FastDiggingEffectSuppressionStatePersistence}
 
 import java.util.UUID

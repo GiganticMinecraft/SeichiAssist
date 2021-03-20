@@ -13,6 +13,7 @@ import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.concurrent.SessionMutex

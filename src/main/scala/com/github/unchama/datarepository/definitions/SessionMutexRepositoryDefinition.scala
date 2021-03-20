@@ -2,6 +2,8 @@ package com.github.unchama.datarepository.definitions
 
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.datarepository.template.RepositoryDefinition
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.SessionMutex
@@ -9,6 +11,8 @@ import com.github.unchama.generic.effect.concurrent.SessionMutex
 import java.util.UUID
 
 object SessionMutexRepositoryDefinition {
+
+  import cats.implicits._
 
   def withRepositoryContext[
     F[_] : ConcurrentEffect,
