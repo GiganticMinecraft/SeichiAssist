@@ -2,7 +2,9 @@ package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.applica
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{Async, Concurrent, ConcurrentEffect, Effect, Fiber, Sync}
-import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization, RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
+import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization}
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.Mutex
 import com.github.unchama.generic.effect.stream.StreamExtra

@@ -4,6 +4,8 @@ import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, Sync, Timer}
 import cats.{Applicative, Monad}
 import com.github.unchama.datarepository.template._
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{GachaPoint, GachaPointPersistence}

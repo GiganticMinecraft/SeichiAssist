@@ -2,6 +2,7 @@ package com.github.unchama.datarepository.template
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
+import com.github.unchama.datarepository.template.initialization.{SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra

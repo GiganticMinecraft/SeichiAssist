@@ -3,6 +3,8 @@ package com.github.unchama.datarepository.template
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.{Applicative, Monad}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
 
 import java.util.UUID
 

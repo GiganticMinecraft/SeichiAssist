@@ -1,4 +1,4 @@
-package com.github.unchama.datarepository.template
+package com.github.unchama.datarepository.template.initialization
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref

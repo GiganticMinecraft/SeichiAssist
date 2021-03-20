@@ -1,6 +1,7 @@
 package com.github.unchama.datarepository.template
 
 import cats.Applicative
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.generic.RefDict
 
 import java.util.UUID

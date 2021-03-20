@@ -4,6 +4,8 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
 import cats.{Applicative, Monad}
 import com.github.unchama.datarepository.template._
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}

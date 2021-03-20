@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application.repository
 
 import cats.effect.{ConcurrentEffect, Effect, Sync, SyncEffect}
-import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryFinalization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.{PrefetchResult, TwoPhasedRepositoryInitialization}
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference, FlyDurationPersistenceRepository}

@@ -1,4 +1,4 @@
-package com.github.unchama.datarepository.template
+package com.github.unchama.datarepository.template.initialization
 
 import cats.{Applicative, Functor, Monad}
 

@@ -1,7 +1,9 @@
 package com.github.unchama.datarepository.definitions
 
 import cats.Monad
-import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryDefinition, RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.RepositoryDefinition
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.generic.RefDict
 
 import java.util.UUID

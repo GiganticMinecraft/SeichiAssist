@@ -3,7 +3,9 @@ package com.github.unchama.seichiassist.subsystems.breakcount.application
 import cats.Applicative
 import cats.effect.concurrent.Ref
 import cats.effect.{Effect, Sync}
-import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization, RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
+import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization}
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmountData, SeichiAmountDataPersistence}

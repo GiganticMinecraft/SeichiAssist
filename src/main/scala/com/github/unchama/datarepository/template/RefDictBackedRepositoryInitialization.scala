@@ -1,6 +1,7 @@
 package com.github.unchama.datarepository.template
 
 import cats.Monad
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.generic.RefDict
 
 import java.util.UUID

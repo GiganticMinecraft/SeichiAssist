@@ -3,7 +3,9 @@ package com.github.unchama.seichiassist.subsystems.buildcount.application.applic
 import cats.Applicative
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization, RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
+import com.github.unchama.datarepository.template.{RefDictBackedRepositoryFinalization, RefDictBackedRepositoryInitialization}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
 
 import java.util.UUID

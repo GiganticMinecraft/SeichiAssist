@@ -2,7 +2,8 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{Async, Concurrent, ConcurrentEffect, Effect, Fiber, Sync, SyncEffect, Timer}
-import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
