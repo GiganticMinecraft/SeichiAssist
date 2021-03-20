@@ -4,6 +4,7 @@ import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -51,14 +52,15 @@ object System {
     for {
       pocketInventoryRepositoryHandles <-
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTappingSinglePhasedRepositoryAndHandles(
+          BukkitRepositoryControls.createHandles(
+            RepositoryDefinition.SinglePhased(
               PocketInventoryRepositoryDefinitions.initialization(persistence),
               PocketInventoryRepositoryDefinitions.tappingAction[F, G, Player, Inventory](
                 breakCountReadAPI.seichiLevelUpdates
               ),
               PocketInventoryRepositoryDefinitions.finalization(persistence)
             )
+          )
         }
     } yield {
       val systemApi = new FourDimensionalPocketApi[F, Player] {

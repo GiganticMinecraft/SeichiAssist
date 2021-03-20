@@ -4,6 +4,7 @@ import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
@@ -42,9 +43,11 @@ object System {
 
     for {
       gachaPointRepositoryControls <-
-        BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(
-          GachaPointRepositoryDefinitions.initialization[G, F, Player](gachaPointPersistence)(grantEffectFactory),
-          GachaPointRepositoryDefinitions.finalization[G, F, Player](gachaPointPersistence)
+        BukkitRepositoryControls.createHandles(
+          RepositoryDefinition.TwoPhased(
+            GachaPointRepositoryDefinitions.initialization[G, F, Player](gachaPointPersistence)(grantEffectFactory),
+            GachaPointRepositoryDefinitions.finalization[G, F, Player](gachaPointPersistence)
+          )
         )
 
       _ <- {

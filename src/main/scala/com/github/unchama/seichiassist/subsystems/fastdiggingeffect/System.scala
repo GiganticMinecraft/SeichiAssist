@@ -4,6 +4,7 @@ import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
@@ -68,29 +69,31 @@ object System {
 
       effectListRepositoryHandles <- {
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTappingSinglePhasedRepositoryAndHandles(
+          BukkitRepositoryControls.createHandles(
+            RepositoryDefinition.SinglePhased(
               EffectListRepositoryDefinitions.initialization[F, G],
               EffectListRepositoryDefinitions.tappingAction[F, G, Player](effectListTopic),
               EffectListRepositoryDefinitions.finalization[F, G, UUID]
             )
+          )
         }
       }
 
       suppressionSettingsRepositoryHandles <- {
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTwoPhasedRepositoryAndHandles(
+          BukkitRepositoryControls.createHandles(
+            RepositoryDefinition.TwoPhased(
               SuppressionSettingsRepositoryDefinitions.initialization(suppressionStatePersistence),
               SuppressionSettingsRepositoryDefinitions.finalization(suppressionStatePersistence)(_.getUniqueId)
             )
+          )
         }
       }
 
       statsSettingsRepositoryHandles <- {
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTappingSinglePhasedRepositoryAndHandles(
+          BukkitRepositoryControls.createHandles(
+            RepositoryDefinition.SinglePhased(
               EffectStatsSettingsRepository.initialization[F, G](settingsPersistence),
               EffectStatsSettingsRepository.tappingAction[F, G, Player](
                 effectListDiffTopic,
@@ -98,6 +101,7 @@ object System {
               ),
               EffectStatsSettingsRepository.finalization[F, G, Player](settingsPersistence)
             )
+          )
         }
       }
 

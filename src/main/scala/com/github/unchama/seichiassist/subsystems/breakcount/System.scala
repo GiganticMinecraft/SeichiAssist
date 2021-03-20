@@ -4,6 +4,7 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
@@ -59,10 +60,12 @@ object System {
        */
       breakCountRepositoryControls <-
         ContextCoercion(
-          BukkitRepositoryControls.createTappingSinglePhasedRepositoryAndHandles[G, Ref[G, SeichiAmountData]](
-            BreakCountRepositoryDefinitions.initialization(persistence),
-            BreakCountRepositoryDefinitions.tappingAction(breakCountTopic),
-            BreakCountRepositoryDefinitions.finalization(persistence)
+          BukkitRepositoryControls.createHandles(
+            RepositoryDefinition.SinglePhased[G, Player, Ref[G, SeichiAmountData]](
+              BreakCountRepositoryDefinitions.initialization(persistence),
+              BreakCountRepositoryDefinitions.tappingAction(breakCountTopic),
+              BreakCountRepositoryDefinitions.finalization(persistence)
+            )
           )
         )
     } yield {

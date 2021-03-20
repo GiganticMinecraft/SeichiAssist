@@ -12,6 +12,7 @@ import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinition
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.generic.effect.ResourceScope
@@ -101,9 +102,11 @@ class SeichiAssist extends JavaPlugin() {
   //region repositories
 
   private val activeSkillAvailabilityRepositoryControls: BukkitRepositoryControls[SyncIO, Ref[SyncIO, Boolean]] =
-    BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles[SyncIO, Ref[SyncIO, Boolean]](
-      SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
-      RepositoryFinalization.trivial
+    BukkitRepositoryControls.createHandles[SyncIO, Ref[SyncIO, Boolean]](
+      RepositoryDefinition.SinglePhased.withoutTappingAction(
+        SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
+        RepositoryFinalization.trivial
+      )
     ).unsafeRunSync()
 
   val activeSkillAvailability: PlayerDataRepository[Ref[SyncIO, Boolean]] =

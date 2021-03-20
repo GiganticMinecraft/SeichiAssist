@@ -5,6 +5,7 @@ import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -52,9 +53,11 @@ object System {
 
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
-    BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(
-      ActiveSessionReferenceRepositoryDefinitions.initialization(_factory, _jdbcRepository),
-      ActiveSessionReferenceRepositoryDefinitions.finalization(_jdbcRepository)
+    BukkitRepositoryControls.createHandles(
+      RepositoryDefinition.TwoPhased(
+        ActiveSessionReferenceRepositoryDefinitions.initialization(_factory, _jdbcRepository),
+        ActiveSessionReferenceRepositoryDefinitions.finalization(_jdbcRepository)
+      )
     ).map { controls =>
       implicit val _repository: PlayerDataRepository[ActiveSessionReference[AsyncContext, SyncContext]] =
         controls.repository

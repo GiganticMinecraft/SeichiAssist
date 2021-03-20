@@ -38,11 +38,11 @@ object BukkitRepositoryControls {
   import org.bukkit.entity.Player
   import org.bukkit.event.Listener
 
-  trait PreLoginListener extends Listener {
+  private trait PreLoginListener extends Listener {
     def onPlayerPreLogin(event: AsyncPlayerPreLoginEvent): Unit
   }
 
-  object Initializers {
+  private object Initializers {
     def singlePhased[
       F[_] : SyncEffect, R
     ](initialization: SinglePhasedRepositoryInitialization[F, R])
@@ -122,7 +122,7 @@ object BukkitRepositoryControls {
     }
   }
 
-  object Finalizers {
+  private object Finalizers {
     def singlePhased[F[_] : Sync, Key, R, T](finalization: RepositoryFinalization[F, Key, R])
                                             (dataMap: TrieMap[Key, R]): PlayerDataFinalizer[F, Key] = {
       player =>
@@ -153,62 +153,6 @@ object BukkitRepositoryControls {
     Sync[F].suspend {
       dataMap.toList.traverse(finalization.persistPair.tupled).as(())
     }
-  }
-
-  def createTappingSinglePhasedRepositoryAndHandles[
-    F[_] : SyncEffect, R
-  ](initialization: SinglePhasedRepositoryInitialization[F, R],
-    onPlayerJoin: (Player, R) => F[Unit],
-    finalization: RepositoryFinalization[F, UUID, R]): F[BukkitRepositoryControls[F, R]] = Sync[F].delay {
-
-    val dataMap: TrieMap[UUID, R] = TrieMap.empty
-
-    // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
-    val i: initialization.type = initialization
-
-    BukkitRepositoryControls(
-      PlayerDataRepository.unlift(player => dataMap.get(player.getUniqueId)),
-      Initializers.singlePhased(i)(onPlayerJoin)(dataMap),
-      backupProcess(finalization)(dataMap),
-      player => Finalizers.singlePhased(finalization)(dataMap).onQuitOf(player.getUniqueId)
-    )
-  }
-
-  def createSinglePhasedRepositoryAndHandles[
-    F[_] : SyncEffect, R
-  ](initialization: SinglePhasedRepositoryInitialization[F, R],
-    finalization: RepositoryFinalization[F, UUID, R]): F[BukkitRepositoryControls[F, R]] = Sync[F].delay {
-
-    val dataMap: TrieMap[UUID, R] = TrieMap.empty
-
-    // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
-    val i: initialization.type = initialization
-
-    BukkitRepositoryControls(
-      PlayerDataRepository.unlift(player => dataMap.get(player.getUniqueId)),
-      Initializers.singlePhased(i)((_, _) => Monad[F].unit)(dataMap),
-      backupProcess(finalization)(dataMap),
-      player => Finalizers.singlePhased(finalization)(dataMap).onQuitOf(player.getUniqueId)
-    )
-  }
-
-  def createTwoPhasedRepositoryAndHandles[
-    F[_] : SyncEffect, R
-  ](initialization: TwoPhasedRepositoryInitialization[F, Player, R],
-    finalization: RepositoryFinalization[F, Player, R]): F[BukkitRepositoryControls[F, R]] = Sync[F].delay {
-
-    val dataMap: TrieMap[Player, R] = TrieMap.empty
-    val temporaryDataMap: TrieMap[UUID, initialization.IntermediateData] = TrieMap.empty
-
-    // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
-    val i: initialization.type = initialization
-
-    BukkitRepositoryControls(
-      PlayerDataRepository.unlift(player => dataMap.get(player)),
-      Initializers.twoPhased(i)(temporaryDataMap, dataMap),
-      backupProcess(finalization)(dataMap),
-      Finalizers.twoPhased(finalization)(temporaryDataMap, dataMap)
-    )
   }
 
   def createHandles[F[_] : SyncEffect, R](definition: RepositoryDefinition[F, Player, R]): F[BukkitRepositoryControls[F, R]] = {
