@@ -13,7 +13,7 @@ object RefDictBackedRepositoryDefinition {
   import cats.implicits._
 
   def usingUuidRefDict[F[_] : Monad, Player, R](refDict: RefDict[F, UUID, R])
-                                               (defaultValue: R): RepositoryDefinition[F, Player, R] = {
+                                               (defaultValue: R): RepositoryDefinition.SinglePhased[F, Player, R] = {
     val initialization: SinglePhasedRepositoryInitialization[F, R] =
       (uuid, _) => refDict
         .read(uuid)

@@ -1,17 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.breakcount
 
-import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.breakcount.application.BreakCountRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.breakcount.application.BreakCountRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.{ClassifyPlayerWorld, IncrementSeichiExp}
 import com.github.unchama.seichiassist.subsystems.breakcount.bukkit.actions.SyncClassifyBukkitPlayerWorld
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmountData, SeichiAmountDataPersistence}
@@ -61,11 +59,7 @@ object System {
       breakCountRepositoryControls <-
         ContextCoercion(
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.SinglePhased[G, Player, Ref[G, SeichiAmountData]](
-              BreakCountRepositoryDefinitions.initialization(persistence),
-              BreakCountRepositoryDefinitions.tappingAction(breakCountTopic),
-              BreakCountRepositoryDefinitions.finalization(persistence)
-            )
+            BreakCountRepositoryDefinition.withContext[F, G, Player](breakCountTopic, persistence)
           )
         )
     } yield {
