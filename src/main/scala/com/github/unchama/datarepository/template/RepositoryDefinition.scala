@@ -14,7 +14,7 @@ sealed trait RepositoryDefinition[F[_], Player, R] {
 
   def flatXmap[S](f: R => F[S])(g: S => F[R])(implicit F: Monad[F]): Self[S]
 
-  def imap[S](f: R => S)(g: S => R)(implicit F: Monad[F]): Self[S] =
+  def xmap[S](f: R => S)(g: S => R)(implicit F: Monad[F]): Self[S] =
     flatXmap(r => F.pure(f(r)))(s => F.pure(g(s)))
 
   def toRefRepository(implicit F: Sync[F]): Self[Ref[F, R]] =
