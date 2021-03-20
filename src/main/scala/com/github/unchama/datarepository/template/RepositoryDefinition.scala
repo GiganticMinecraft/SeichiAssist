@@ -2,7 +2,7 @@ package com.github.unchama.datarepository.template
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import cats.{Applicative, Monad}
+import cats.{Applicative, Apply, Monad}
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
 
@@ -49,7 +49,14 @@ object RepositoryDefinition {
   case class SinglePhased[F[_], Player, R](initialization: SinglePhasedRepositoryInitialization[F, R],
                                            tappingAction: (Player, R) => F[Unit],
                                            finalization: RepositoryFinalization[F, UUID, R])
-    extends RepositoryDefinition[F, Player, R]
+    extends RepositoryDefinition[F, Player, R] {
+
+    def withAnotherTappingAction(another: (Player, R) => F[Unit])
+                                (implicit F: Apply[F]): SinglePhased[F, Player, R] = this.copy(
+      tappingAction = (player, r) => F.productR(tappingAction(player, r))(another(player, r))
+    )
+
+  }
 
   object SinglePhased {
     def withoutTappingAction[
