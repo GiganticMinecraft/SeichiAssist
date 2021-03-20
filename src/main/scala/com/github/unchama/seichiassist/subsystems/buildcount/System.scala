@@ -9,7 +9,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{ClassifyPlayerWorld, IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
-import com.github.unchama.seichiassist.subsystems.buildcount.application.application.{BuildAmountDataRepositoryDefinitions, RateLimiterRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.buildcount.application.application.{BuildAmountDataRepositoryDefinition, RateLimiterRepositoryDefinitions}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration}
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.actions.ClassifyBukkitPlayerWorld
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners.BuildExpIncrementer
@@ -54,10 +54,7 @@ object System {
 
       buildAmountDataRepositoryControls <-
         BukkitRepositoryControls.createHandles(
-          RepositoryDefinition.SinglePhased.withoutTappingAction(
-            BuildAmountDataRepositoryDefinitions.initialization(persistence),
-            BuildAmountDataRepositoryDefinitions.finalization(persistence)
-          )
+          BuildAmountDataRepositoryDefinition.withPersistence(persistence)
         )
     } yield {
       implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[G, Player] =
