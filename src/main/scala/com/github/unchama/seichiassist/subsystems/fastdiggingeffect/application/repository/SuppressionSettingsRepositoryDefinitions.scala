@@ -33,7 +33,7 @@ object SuppressionSettingsRepositoryDefinitions {
    (keyExtractor: Player => UUID)
   : RepositoryFinalization[F, Player, RepositoryValue[F]] = {
     RepositoryFinalization.liftToRefFinalization {
-      RefDictBackedRepositoryFinalization.using(persistence)(keyExtractor)
+      RefDictBackedRepositoryFinalization.usingUuidRefDict(persistence).contraMapKey(keyExtractor)
     }
   }
 }

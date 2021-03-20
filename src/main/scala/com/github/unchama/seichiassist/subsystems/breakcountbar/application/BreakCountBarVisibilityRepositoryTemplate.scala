@@ -31,6 +31,6 @@ object BreakCountBarVisibilityRepositoryTemplate {
   ](persistence: BreakCountBarVisibilityPersistence[F])
    (keyExtractor: Player => UUID): RepositoryFinalization[F, Player, Ref[F, BreakCountBarVisibility]] =
     RepositoryFinalization.liftToRefFinalization {
-      RefDictBackedRepositoryFinalization.using(persistence)(keyExtractor)
+      RefDictBackedRepositoryFinalization.usingUuidRefDict(persistence).contraMapKey(keyExtractor)
     }
 }
