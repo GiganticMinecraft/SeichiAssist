@@ -37,6 +37,15 @@ object SinglePhasedRepositoryInitialization {
 
   import cats.implicits._
 
+  implicit def functorInstance[F[_] : Functor]: Functor[SinglePhasedRepositoryInitialization[F, *]] =
+    new Functor[SinglePhasedRepositoryInitialization[F, *]] {
+      override def map[A, B](fa: SinglePhasedRepositoryInitialization[F, A])
+                            (f: A => B): SinglePhasedRepositoryInitialization[F, B] =
+        (uuid, name) => fa.prepareData(uuid, name).map(_.map(f))
+    }
+
+  import cats.implicits._
+
   def withSupplier[F[_] : Functor, R](fr: F[R]): SinglePhasedRepositoryInitialization[F, R] =
     (_, _) => Functor[F].map(fr)(PrefetchResult.Success.apply)
 
