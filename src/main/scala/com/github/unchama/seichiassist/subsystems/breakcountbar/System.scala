@@ -9,7 +9,7 @@ import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.breakcountbar.application.{BreakCountBarVisibilityRepositoryTemplate, ExpBarSynchronizationRepositoryTemplate}
+import com.github.unchama.seichiassist.subsystems.breakcountbar.application.{BreakCountBarVisibilityRepositoryDefinition, ExpBarSynchronizationRepositoryTemplate}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.bukkit.CreateFreshBossBar
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure.JdbcBreakCountBarVisibilityPersistence
@@ -42,9 +42,9 @@ object System {
       visibilityRepositoryHandles <- {
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.TwoPhased(
-              BreakCountBarVisibilityRepositoryTemplate.initialization[G, F, Player](persistence, topic),
-              BreakCountBarVisibilityRepositoryTemplate.finalization[G, Player](persistence)(_.getUniqueId)
+            BreakCountBarVisibilityRepositoryDefinition.withContext[G, F, Player](
+              persistence,
+              stream => stream.map(Some.apply).through(topic.publish)
             )
           )
         }

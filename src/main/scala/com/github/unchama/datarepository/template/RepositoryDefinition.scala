@@ -13,6 +13,12 @@ sealed trait RepositoryDefinition[F[_], Player, R] {
 
   type Self[S] <: RepositoryDefinition[F, Player, S]
 
+  def toTwoPhased(implicit F: Monad[F], playerHasUuid: HasUuid[Player]): RepositoryDefinition.TwoPhased[F, Player, R] =
+    this match {
+      case s@RepositoryDefinition.SinglePhased(_, _, _) => s.augmentToTwoPhased((_, r) => F.pure(r))(F.pure[R])
+      case t@RepositoryDefinition.TwoPhased(_, _) => t
+    }
+
   def flatXmap[S](f: R => F[S])(g: S => F[R])(implicit F: Monad[F]): Self[S]
 
   def xmap[S](f: R => S)(g: S => R)(implicit F: Monad[F]): Self[S] =
