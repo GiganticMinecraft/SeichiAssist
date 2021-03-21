@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process.{BreakCountEffectSynchronization, EffectStatsNotification, PlayerCountEffectSynchronization, SynchronizationProcess}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{EffectListRepositoryDefinitions, EffectStatsSettingsRepository, SuppressionSettingsRepositoryDefinition}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{EffectListRepositoryDefinitions, EffectStatsSettingsRepositoryDefinition, SuppressionSettingsRepositoryDefinition}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.bukkit.actions.GrantBukkitFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actions.GrantFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingEffect, FastDiggingEffectList}
@@ -90,13 +90,10 @@ object System {
       statsSettingsRepositoryHandles <- {
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.SinglePhased(
-              EffectStatsSettingsRepository.initialization[F, G](settingsPersistence),
-              EffectStatsSettingsRepository.tappingAction[F, G, Player](
-                effectListDiffTopic,
-                effectListTopic.subscribe(1).mapFilter(identity)
-              ),
-              EffectStatsSettingsRepository.finalization[F, G, Player](settingsPersistence)
+            EffectStatsSettingsRepositoryDefinition.withContext[F, G, Player](
+              settingsPersistence,
+              stream => stream.map(Some.apply).through(effectListDiffTopic.publish),
+              effectListTopic.subscribe(1).mapFilter(identity)
             )
           )
         }
