@@ -19,24 +19,20 @@ object SignallingRepositoryDefinition {
     Player: HasUuid, T
   ](publishSink: Pipe[F, (Player, T), Unit])
    (definition: RepositoryDefinition[G, Player, T]): RepositoryDefinition[G, Player, Ref[G, T]] = {
-    val twoPhased = definition.toTwoPhased
-
-    twoPhased.copy(
-      initialization = twoPhased.initialization.extendPreparation { player =>
-        initialValue =>
-          AsymmetricSignallingRef[G, F, T](initialValue)
-            .flatTap { ref =>
-              EffectExtra.runAsyncAndForget[F, G, Unit] {
-                ref
-                  .values
-                  .discrete
-                  .map(player -> _)
-                  .through(publishSink)
-                  .compile.drain
-              }
+    definition.toTwoPhased.xmapWithPlayer { player =>
+      initialValue =>
+        AsymmetricSignallingRef[G, F, T](initialValue)
+          .flatTap { ref =>
+            EffectExtra.runAsyncAndForget[F, G, Unit] {
+              ref
+                .values
+                .discrete
+                .map(player -> _)
+                .through(publishSink)
+                .compile.drain
             }
-            .widen[Ref[G, T]]
-      }
-    )
+          }
+          .widen[Ref[G, T]]
+    } { ref => ref.get }
   }
 }

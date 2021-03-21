@@ -86,19 +86,20 @@ object RepositoryDefinition {
     extends RepositoryDefinition[F, Player, R] {
     override type Self[S] = TwoPhased[F, Player, S]
 
-    override def flatXmap[S](f: R => F[S])
-                            (g: S => F[R])
-                            (implicit F: Monad[F]): TwoPhased[F, Player, S] =
+    def xmapWithPlayer[S](f: Player => R => F[S])(g: S => F[R])(implicit F: Monad[F]): TwoPhased[F, Player, S] =
       RepositoryDefinition.TwoPhased(
         new TwoPhasedRepositoryInitialization[F, Player, S] {
           override type IntermediateData = initialization.IntermediateData
           override val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[IntermediateData]] =
             initialization.prefetchIntermediateValue
           override val prepareData: (Player, IntermediateData) => F[S] =
-            (player, i) => initialization.prepareData(player, i).flatMap(f)
+            (player, i) => initialization.prepareData(player, i).flatMap(f(player))
         },
         finalization.withIntermediateEffect(g)
       )
+
+    override def flatXmap[S](f: R => F[S])(g: S => F[R])(implicit F: Monad[F]): TwoPhased[F, Player, S] =
+      xmapWithPlayer(_ => f)(g)
   }
 
 }
