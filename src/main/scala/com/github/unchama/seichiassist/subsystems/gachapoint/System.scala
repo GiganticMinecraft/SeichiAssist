@@ -4,7 +4,6 @@ import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
@@ -12,7 +11,7 @@ import com.github.unchama.minecraft.actions.GetConnectedPlayers
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.application.process.AddSeichiExpAsGachaPoint
-import com.github.unchama.seichiassist.subsystems.gachapoint.application.repository.GachaPointRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.gachapoint.application.repository.GachaPointRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.gachapoint.bukkit.GrantBukkitGachaTicketToAPlayer
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
@@ -44,10 +43,7 @@ object System {
     for {
       gachaPointRepositoryControls <-
         BukkitRepositoryControls.createHandles(
-          RepositoryDefinition.TwoPhased(
-            GachaPointRepositoryDefinitions.initialization[G, F, Player](gachaPointPersistence)(grantEffectFactory),
-            GachaPointRepositoryDefinitions.finalization[G, F, Player](gachaPointPersistence)
-          )
+          GachaPointRepositoryDefinition.withContext[G, F, Player](gachaPointPersistence)(grantEffectFactory)
         )
 
       _ <- {

@@ -5,6 +5,7 @@ import cats.effect.concurrent.Ref
 import cats.{Applicative, Apply, Monad}
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.minecraft.algebra.HasUuid
 
 import java.util.UUID
 
@@ -49,6 +50,20 @@ object RepositoryDefinition {
       tappingAction = (player, r) => F.productR(tappingAction(player, r))(another(player, r))
     )
 
+    def augmentToTwoPhased[T](prepareFinalData: (Player, R) => F[T])(revertOnFinalization: T => F[R])
+                             (implicit F: Monad[F], playerHasUuid: HasUuid[Player]): TwoPhased[F, Player, T] =
+      TwoPhased(
+        new TwoPhasedRepositoryInitialization[F, Player, T] {
+          override type IntermediateData = R
+          override val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[R]] =
+            initialization.prepareData
+          override val prepareData: (Player, R) => F[T] = (player, r) =>
+            tappingAction(player, r) >> prepareFinalData(player, r)
+        },
+        finalization
+          .withIntermediateEffect(revertOnFinalization)
+          .contraMapKey(playerHasUuid.asFunction)
+      )
   }
 
   object SinglePhased {
