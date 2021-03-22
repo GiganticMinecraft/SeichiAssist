@@ -103,7 +103,7 @@ commands:
     description: send a gift
     usage: /<command> [player name]
     permission-message: *denied
-    permission: multiseichiplugin.present
+    permission: seichiassist.present
 permissions:
   seichiassist.*:
     default: false
@@ -135,14 +135,22 @@ permissions:
     default: true
   seichiassist.mebius:
     default: true
-  seichiassist.present:
+  seichiassist.present.grant:
     default: false
-    description: "'/present' の使用許可を与える。"
-  seichiassist.present.add:
+    description: "'/present grant' の使用許可を与える。"
+  seichiassist.present.revoke:
     default: false
-    description: "'/present add' の使用許可を与える。"
+    description: "'/present revoke' の使用許可を与える。"
+  seichiassist.present.define:
+    default: false
+    description: "'/present define' の使用許可を与える。"
+  seichiassist.present.delete:
+    default: false
+    description: "'/present delete' の使用許可を与える。"
   seichiassist.present.*:
     default: false
     children:
-      - seichiassit.present
-      - seichiassist.present.add
+      - seichiassist.present.grant
+      - seichiassist.present.revoke
+      - seichiassist.present.define
+      - seichiassist.present.delete
