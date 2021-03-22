@@ -19,7 +19,12 @@ sealed trait RepositoryDefinition[F[_], Player, R] {
       case t@RepositoryDefinition.TwoPhased(_, _) => t
     }
 
-  def flatXmap[S](f: R => F[S])(g: S => F[R])(implicit F: Monad[F]): Self[S]
+  def flatXmapWithIntermediateEffects[S](f: R => F[S])
+                                        (beforePersisting: S => F[R])(beforeFinalization: S => F[R])
+                                        (implicit F: Monad[F]): Self[S]
+
+  def flatXmap[S](f: R => F[S])(g: S => F[R])(implicit F: Monad[F]): Self[S] =
+    flatXmapWithIntermediateEffects(f)(g)(g)
 
   def xmap[S](f: R => S)(g: S => R)(implicit F: Monad[F]): Self[S] =
     flatXmap(r => F.pure(f(r)))(s => F.pure(g(s)))
@@ -42,13 +47,13 @@ object RepositoryDefinition {
 
     override type Self[S] = SinglePhased[F, Player, S]
 
-    override def flatXmap[S](f: R => F[S])
-                            (g: S => F[R])
-                            (implicit F: Monad[F]): SinglePhased[F, Player, S] =
+    override def flatXmapWithIntermediateEffects[S](f: R => F[S])
+                                                   (beforePersisting: S => F[R])(beforeFinalization: S => F[R])
+                                                   (implicit F: Monad[F]): SinglePhased[F, Player, S] =
       RepositoryDefinition.SinglePhased(
         (uuid, name) => initialization.prepareData(uuid, name).flatMap(_.traverse(f)),
-        (player, s) => g(s).flatMap(tappingAction(player, _)),
-        finalization.withIntermediateEffect(g)
+        (player, s) => beforePersisting(s).flatMap(tappingAction(player, _)),
+        finalization.withIntermediateEffects(beforePersisting)(beforeFinalization)
       )
 
     def withAnotherTappingAction(another: (Player, R) => F[Unit])
