@@ -1,16 +1,16 @@
 use seichiassist;
 -- プレゼントIDと実体の対応付け
 CREATE TABLE IF NOT EXISTS presents(
-  present_id int PRIMARY KEY,
-  itemstack  blob
+  present_id int PRIMARY KEY auto_increment,
+  itemstack  blob NOT NULL
 );
 
 -- プレイヤーがプレゼントを受け取ったかどうかをモデリングする
 CREATE TABLE IF NOT EXISTS present_state(
-  uuid       char(36) NOT NULL,
   present_id int      NOT NULL,
-  claimed   boolean  NOT NULL DEFAULT FALSE,
+  uuid       char(36) NOT NULL,
+  claimed    boolean  NOT NULL,
 
-  PRIMARY KEY(uuid, present_id),
-  FOREIGN KEY present_id_constraints(present_id) REFERENCES presents(present_id)
+  PRIMARY KEY(present_id, uuid),
+  FOREIGN KEY present_id_in_state_must_exist_presents_table(present_id) REFERENCES presents(present_id),
 );
