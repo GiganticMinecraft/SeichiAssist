@@ -8,11 +8,14 @@ import scalikejdbc._
 
 import java.util.UUID
 
+/**
+ * [[PresentPersistence]]のJDBC実装。この実装は[[PresentPersistence]]の制約を引き継ぐ。
+ */
 class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
   private final val definitionTable = "presents"
   private final val stateTable = "present_state"
   private final val claimingStateColumn = "claimed"
-  override def defineNewPresent(itemstack: ItemStack): F[Option[PresentID]] = Sync[F].delay {
+  override def define(itemstack: ItemStack): F[Option[PresentID]] = Sync[F].delay {
     val stackAsBlob = ItemStackBlobProxy.itemStackToBlob(itemstack)
     DB.localTx { implicit session =>
       // プレゼントのIDはauto_incrementなので0で良い
@@ -35,7 +38,20 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
-  override def addScope(presentID: PresentID, players: Set[UUID]): F[Unit] = Sync[F].delay {
+  override def delete(presentId: PresentID): F[Unit] = Sync[F].delay {
+    DB.localTx { implicit session =>
+      // 制約をかけているので$stateTableの方から先に消さないと整合性エラーを吐く
+      sql"""DELETE $stateTable WHERE present_id = $presentId"""
+        .execute()
+        .apply()
+
+      sql"""DELETE $definitionTable WHERE present_id = $presentId"""
+        .execute()
+        .apply()
+    }
+  }
+
+  override def grant(presentID: PresentID, players: Set[UUID]): F[Unit] = Sync[F].delay {
     val initialValues = players.map { uuid => (presentID, s"'${uuid.toString}'", false) }
       .map { case (_1, _2, _3) => s"($_1, $_2, $_3)" }
       .mkString(",")
@@ -47,7 +63,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
-  override def removeScope(presentID: PresentID, players: Set[UUID]): F[Unit] = Sync[F].delay {
+  override def revoke(presentID: PresentID, players: Set[UUID]): F[Unit] = Sync[F].delay {
     val scopeAsSQL = players.map(_.toString).map(x => s"'$x'").mkString(",")
 
     DB.localTx { implicit session =>
@@ -57,7 +73,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
-  override def claimPresent(player: Player, presentId: PresentID): F[Unit] = Sync[F].delay {
+  override def markAsClaimed(player: Player, presentId: PresentID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"""UPDATE $stateTable SET $claimingStateColumn = TRUE WHERE uuid = '${player.getUniqueId}' AND present_id = $presentId;"""
         .update()
@@ -65,7 +81,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
-  override def getPresentMapping: F[Map[PresentID, ItemStack]] = Sync[F].delay {
+  override def mapping: F[Map[PresentID, ItemStack]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"""SELECT present_id, itemstack FROM $definitionTable;"""
         .map { rs => (
@@ -78,7 +94,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
-  override def fetchPresentsState(player: Player): F[Map[PresentID, PresentClaimingState]] = Sync[F].delay {
+  override def fetchState(player: Player): F[Map[PresentID, PresentClaimingState]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"""SELECT present_id, $claimingStateColumn FROM $stateTable WHERE uuid = '${player.getUniqueId}'"""
         .map { rs =>
@@ -95,7 +111,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
-  override def lookupPresent(presentID: PresentID): F[Option[ItemStack]] = Sync[F].delay {
+  override def lookup(presentID: PresentID): F[Option[ItemStack]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"""SELECT itemstack FROM $definitionTable WHERE present_id = $presentID"""
         .map { rs => ItemStackBlobProxy.blobToItemStack(rs.string("itemstack")) }

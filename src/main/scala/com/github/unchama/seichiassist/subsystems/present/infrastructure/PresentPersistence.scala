@@ -17,10 +17,17 @@ trait PresentPersistence[F[_]] {
 
   /**
    * 指定した[[ItemStack]]に対応するプレゼントを新しく定義する。
+   *
    * @param itemstack プレゼントの中身
    * @return 定義に成功した場合新しく割り振られたF[Some[ [[PresentID]] ]、失敗した場合F[None]
    */
-  def defineNewPresent(itemstack: ItemStack): F[Option[PresentID]]
+  def define(itemstack: ItemStack): F[Option[PresentID]]
+
+  /**
+   * 指定したPresentIDに対応するプレゼントを物理消去する。
+   * @param presentId プレゼントID
+   */
+  def delete(presentId: PresentID): F[Unit]
 
   /**
    * 指定したUUIDを持つプレイヤーに対して`presentID`で指定されたプレゼントを受け取ることができるようにする。
@@ -28,40 +35,45 @@ trait PresentPersistence[F[_]] {
    * @param presentID 対象のプレゼントID
    * @param players   受け取ることができるようにするプレイヤーのUUID
    */
-  def addScope(presentID: PresentID, players: Set[UUID]): F[Unit]
+  def grant(presentID: PresentID, players: Set[UUID]): F[Unit]
 
   /**
    * 指定したUUIDを持つプレイヤーが`presentID`で指定されたプレゼントを受け取ることができないようにする。
+   *
    * @param presentID 対象のプレゼントID
-   * @param players 受け取ることができないようにするプレイヤーのUUID
+   * @param players   受け取ることができないようにするプレイヤーのUUID
    */
-  def removeScope(presentID: PresentID, players: Set[UUID]): F[Unit]
+  def revoke(presentID: PresentID, players: Set[UUID]): F[Unit]
 
   /**
    * 永続化層でプレゼントを受け取ったことにする。
+   *
    * @param player
    * @param presentId
    * @return 永続化層への書き込みを確定する作用
    */
-  def claimPresent(player: Player, presentId: PresentID): F[Unit]
+  def markAsClaimed(player: Player, presentId: PresentID): F[Unit]
 
   /**
    * 有効な[[PresentID]]とそれに紐付いた[[ItemStack]]を列挙する。
+   *
    * @return 全てのプレゼント。
    */
-  def getPresentMapping: F[Map[PresentID, ItemStack]]
+  def mapping: F[Map[PresentID, ItemStack]]
 
   /**
    * プレイヤーが有効なプレゼントを受け取ることができるかどうか列挙する。
+   *
    * @param player チェックするプレイヤー
    * @return [[PresentID]]とそれに紐付けられたプレゼントを受け取ることができるかどうかの[[Map]]
    */
-  def fetchPresentsState(player: Player): F[Map[PresentID, PresentClaimingState]]
+  def fetchState(player: Player): F[Map[PresentID, PresentClaimingState]]
 
   /**
    * 指定したプレゼントIDからプレゼントを引き出す。
+   *
    * @param presentID そのプレゼントID
    * @return 存在した場合は`F[Some[ItemStack]]`、存在しない場合は`F[None]`
    */
-  def lookupPresent(presentID: PresentID): F[Option[ItemStack]]
+  def lookup(presentID: PresentID): F[Option[ItemStack]]
 }
