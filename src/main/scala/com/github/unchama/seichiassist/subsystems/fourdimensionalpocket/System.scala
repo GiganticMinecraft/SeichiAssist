@@ -4,13 +4,14 @@ import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.OpenPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
@@ -51,14 +52,9 @@ object System {
     for {
       pocketInventoryRepositoryHandles <-
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTappingSinglePhasedRepositoryAndHandles(
-              PocketInventoryRepositoryDefinitions.initialization(persistence),
-              PocketInventoryRepositoryDefinitions.tappingAction[F, G, Player, Inventory](
-                breakCountReadAPI.seichiLevelUpdates
-              ),
-              PocketInventoryRepositoryDefinitions.finalization(persistence)
-            )
+          BukkitRepositoryControls.createHandles(
+            PocketInventoryRepositoryDefinition.withContext(persistence, breakCountReadAPI.seichiLevelUpdates)
+          )
         }
     } yield {
       val systemApi = new FourDimensionalPocketApi[F, Player] {

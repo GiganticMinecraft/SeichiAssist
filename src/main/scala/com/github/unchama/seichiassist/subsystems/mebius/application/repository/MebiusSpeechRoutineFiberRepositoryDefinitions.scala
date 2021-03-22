@@ -4,7 +4,8 @@ import cats.effect.concurrent.Deferred
 import cats.effect.{ConcurrentEffect, Fiber, IO, Sync, SyncIO}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.datarepository.template.{RepositoryFinalization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.routines.PeriodicMebiusSpeechRoutine

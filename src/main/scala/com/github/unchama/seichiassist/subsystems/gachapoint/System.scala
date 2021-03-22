@@ -11,7 +11,7 @@ import com.github.unchama.minecraft.actions.GetConnectedPlayers
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.application.process.AddSeichiExpAsGachaPoint
-import com.github.unchama.seichiassist.subsystems.gachapoint.application.repository.GachaPointRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.gachapoint.application.repository.GachaPointRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.gachapoint.bukkit.GrantBukkitGachaTicketToAPlayer
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
@@ -42,9 +42,8 @@ object System {
 
     for {
       gachaPointRepositoryControls <-
-        BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(
-          GachaPointRepositoryDefinitions.initialization[G, F, Player](gachaPointPersistence)(grantEffectFactory),
-          GachaPointRepositoryDefinitions.finalization[G, F, Player](gachaPointPersistence)
+        BukkitRepositoryControls.createHandles(
+          GachaPointRepositoryDefinition.withContext[G, F, Player](gachaPointPersistence)(grantEffectFactory)
         )
 
       _ <- {

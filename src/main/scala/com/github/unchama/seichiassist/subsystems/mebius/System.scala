@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.mebius
 import cats.effect.{IO, Sync, SyncEffect, SyncIO, Timer}
 import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -39,16 +40,20 @@ object System {
 
     implicit val randomEffect: RandomEffect[G] = RandomEffect.createFromRandom(Random)
 
-    BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(
-      SpeechServiceRepositoryDefinitions.initialization[SyncIO, Player],
-      SpeechServiceRepositoryDefinitions.finalization[SyncIO, Player]
+    BukkitRepositoryControls.createHandles(
+      RepositoryDefinition.TwoPhased(
+        SpeechServiceRepositoryDefinitions.initialization[SyncIO, Player],
+        SpeechServiceRepositoryDefinitions.finalization[SyncIO, Player]
+      )
     ).flatMap { speechServiceRepositoryControls =>
       implicit val speechServiceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]] =
         speechServiceRepositoryControls.repository
 
-      BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(
-        MebiusSpeechRoutineFiberRepositoryDefinitions.initialization[SyncIO],
-        MebiusSpeechRoutineFiberRepositoryDefinitions.finalization[SyncIO, Player]
+      BukkitRepositoryControls.createHandles(
+        RepositoryDefinition.TwoPhased(
+          MebiusSpeechRoutineFiberRepositoryDefinitions.initialization[SyncIO],
+          MebiusSpeechRoutineFiberRepositoryDefinitions.finalization[SyncIO, Player]
+        )
       ).map { speechRoutineFiberRepositoryControls =>
         new Subsystem[F] {
           override val listeners: Seq[Listener] = Seq(

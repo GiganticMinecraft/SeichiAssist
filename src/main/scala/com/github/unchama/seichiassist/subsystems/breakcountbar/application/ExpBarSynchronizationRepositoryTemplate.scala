@@ -2,7 +2,8 @@ package com.github.unchama.seichiassist.subsystems.breakcountbar.application
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{ConcurrentEffect, Fiber, Sync}
-import com.github.unchama.datarepository.template.{RepositoryFinalization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.StreamExtra

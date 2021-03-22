@@ -1,4 +1,4 @@
-package com.github.unchama.datarepository.template
+package com.github.unchama.datarepository.template.finalization
 
 import cats.effect.concurrent.Ref
 import cats.{Applicative, FlatMap}

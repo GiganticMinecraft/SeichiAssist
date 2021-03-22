@@ -1,4 +1,4 @@
-package com.github.unchama.datarepository.template
+package com.github.unchama.datarepository.template.initialization
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
@@ -34,6 +34,15 @@ trait SinglePhasedRepositoryInitialization[F[_], R] {
 }
 
 object SinglePhasedRepositoryInitialization {
+
+  import cats.implicits._
+
+  implicit def functorInstance[F[_] : Functor]: Functor[SinglePhasedRepositoryInitialization[F, *]] =
+    new Functor[SinglePhasedRepositoryInitialization[F, *]] {
+      override def map[A, B](fa: SinglePhasedRepositoryInitialization[F, A])
+                            (f: A => B): SinglePhasedRepositoryInitialization[F, B] =
+        (uuid, name) => fa.prepareData(uuid, name).map(_.map(f))
+    }
 
   import cats.implicits._
 
