@@ -17,6 +17,7 @@ import java.util.UUID
  * ようなデータリポジトリの処理である。
  */
 trait TwoPhasedRepositoryInitialization[F[_], Player, R] {
+  self =>
 
   type IntermediateData
 
@@ -33,13 +34,11 @@ trait TwoPhasedRepositoryInitialization[F[_], Player, R] {
 
   def extendPreparation[S](f: Player => R => F[S])(implicit F: Monad[F]): TwoPhasedRepositoryInitialization[F, Player, S] =
     new TwoPhasedRepositoryInitialization[F, Player, S] {
-      type I = TwoPhasedRepositoryInitialization.this.IntermediateData
-
-      override type IntermediateData = I
-      override val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[I]] =
-        TwoPhasedRepositoryInitialization.this.prefetchIntermediateValue
-      override val prepareData: (Player, I) => F[S] =
-        (player, i) => TwoPhasedRepositoryInitialization.this.prepareData(player, i).flatMap(f(player))
+      override type IntermediateData = self.IntermediateData
+      override val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[IntermediateData]] =
+        self.prefetchIntermediateValue
+      override val prepareData: (Player, IntermediateData) => F[S] =
+        (player, i) => self.prepareData(player, i).flatMap(f(player))
     }
 }
 

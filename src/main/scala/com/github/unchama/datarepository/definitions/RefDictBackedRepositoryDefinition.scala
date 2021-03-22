@@ -24,10 +24,8 @@ object RefDictBackedRepositoryDefinition {
         }
         .map(PrefetchResult.Success.apply)
 
-    val finalization: RepositoryFinalization[F, UUID, R] = new RepositoryFinalization[F, UUID, R] {
-      override val persistPair: (UUID, R) => F[Unit] = (uuid, r) => refDict.write(uuid, r)
-      override val finalizeBeforeUnload: (UUID, R) => F[Unit] = (_, _) => Monad[F].unit
-    }
+    val finalization: RepositoryFinalization[F, UUID, R] =
+      RepositoryFinalization.withoutAnyFinalization((uuid, r) => refDict.write(uuid, r))
 
     RepositoryDefinition.SinglePhased.withoutTappingAction(initialization, finalization)
   }

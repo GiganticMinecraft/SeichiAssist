@@ -64,13 +64,9 @@ object RepositoryDefinition {
     def augmentToTwoPhased[T](prepareFinalData: (Player, R) => F[T])(revertOnFinalization: T => F[R])
                              (implicit F: Monad[F], playerHasUuid: HasUuid[Player]): TwoPhased[F, Player, T] =
       TwoPhased(
-        new TwoPhasedRepositoryInitialization[F, Player, T] {
-          override type IntermediateData = R
-          override val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[R]] =
-            initialization.prepareData
-          override val prepareData: (Player, R) => F[T] = (player, r) =>
-            tappingAction(player, r) >> prepareFinalData(player, r)
-        },
+        TwoPhasedRepositoryInitialization.augment(initialization)((player, r) =>
+          tappingAction(player, r) >> prepareFinalData(player, r)
+        ),
         finalization
           .withIntermediateEffect(revertOnFinalization)
           .contraMapKey(playerHasUuid.asFunction)
@@ -95,13 +91,7 @@ object RepositoryDefinition {
                                                    (beforePersisting: S => F[R])(beforeFinalization: S => F[R])
                                                    (implicit F: Monad[F]): TwoPhased[F, Player, S] =
       RepositoryDefinition.TwoPhased(
-        new TwoPhasedRepositoryInitialization[F, Player, S] {
-          override type IntermediateData = initialization.IntermediateData
-          override val prefetchIntermediateValue: (UUID, String) => F[PrefetchResult[IntermediateData]] =
-            initialization.prefetchIntermediateValue
-          override val prepareData: (Player, IntermediateData) => F[S] =
-            (player, i) => initialization.prepareData(player, i).flatMap(f(player))
-        },
+        initialization.extendPreparation(f),
         finalization.withIntermediateEffects(beforePersisting)(beforeFinalization)
       )
 
