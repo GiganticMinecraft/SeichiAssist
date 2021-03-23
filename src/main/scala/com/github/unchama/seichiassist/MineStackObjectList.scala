@@ -443,7 +443,6 @@ object MineStackObjectList {
     new MineStackBuildObj("dye_15", "骨粉", 1, Material.INK_SACK, 15),
     new MineStackBuildObj("ink_sack0", "イカスミ", 1, Material.INK_SACK, 0),
     new MineStackBuildObj("workbench", "作業台", 1, Material.WORKBENCH, 0),
-    new MineStackBuildObj("bed_0", "白色のベッド", 1, Material.BED, 0),
     new MineStackBuildObj("bed_1", "橙色のベッド", 1, Material.BED, 1),
     new MineStackBuildObj("bed_2", "赤紫色のベッド", 1, Material.BED, 2),
     new MineStackBuildObj("bed_3", "空色のベッド", 1, Material.BED, 3),
