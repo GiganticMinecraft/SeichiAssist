@@ -1,6 +1,5 @@
 package com.github.unchama.datarepository.template.finalization
 
-import cats.effect.concurrent.Ref
 import cats.{Applicative, FlatMap}
 
 /**
@@ -71,10 +70,5 @@ object RepositoryFinalization {
 
   def trivial[F[_] : Applicative, Player, R]: RepositoryFinalization[F, Player, R] =
     withoutAnyPersistence((_, _) => Applicative[F].unit)
-
-  def liftToRefFinalization[
-    F[_] : FlatMap, Player, R
-  ](finalization: RepositoryFinalization[F, Player, R]): RepositoryFinalization[F, Player, Ref[F, R]] =
-    finalization.withIntermediateEffect[Ref[F, R]](_.get)
 
 }
