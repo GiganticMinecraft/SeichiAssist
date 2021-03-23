@@ -12,7 +12,7 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
-import com.github.unchama.seichiassist.subsystems.managedfly.application.repository.ActiveSessionReferenceRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.managedfly.application.repository.ActiveSessionReferenceRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.BukkitPlayerFlyStatusManipulation
 import com.github.unchama.seichiassist.subsystems.managedfly.bukkit.controllers.BukkitFlyCommand
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlyStatus
@@ -42,7 +42,7 @@ object System {
   : SyncContext[System[SyncContext, AsyncContext]] = {
     implicit val _configuration: SystemConfiguration = configuration
 
-    implicit val _jdbcRepository: FlyDurationPersistenceRepository[SyncContext, UUID] =
+    implicit val _jdbcRepository: FlyDurationPersistenceRepository[SyncContext] =
       new JdbcFlyDurationPersistenceRepository[SyncContext]
 
     implicit val _playerKleisliManipulation: PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] =
@@ -54,10 +54,7 @@ object System {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
     BukkitRepositoryControls.createHandles(
-      RepositoryDefinition.TwoPhased(
-        ActiveSessionReferenceRepositoryDefinitions.initialization(_factory, _jdbcRepository),
-        ActiveSessionReferenceRepositoryDefinitions.finalization(_jdbcRepository)
-      )
+      ActiveSessionReferenceRepositoryDefinition.withContext(_factory, _jdbcRepository),
     ).map { controls =>
       implicit val _repository: PlayerDataRepository[ActiveSessionReference[AsyncContext, SyncContext]] =
         controls.repository
