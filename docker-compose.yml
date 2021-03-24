@@ -21,8 +21,8 @@ services:
     volumes:
       - spigot_a:/spigot/
     ports:
-      - "25566:25565"
-      - "7091:7091"
+      - 25566:25565
+      - 7091:7091
     environment:
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
@@ -47,8 +47,8 @@ services:
     volumes:
       - spigot_b:/spigot/
     ports:
-      - "25567:25565"
-      - "7092:7091"
+      - 25567:25565
+      - 7092:7091
     environment:
       - JMX_PORT=7091
       - JMX_BINDING=0.0.0.0
@@ -63,7 +63,7 @@ services:
       - db
       - redis
     stdin_open: true
-  bungeecord:
+  bungeecord_1:
     build:
       context: .
       dockerfile: ./docker/bungeecord/Dockerfile
@@ -74,11 +74,27 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - SERVER_ID=bungeecord_1
     depends_on:
       - spigota
       - spigotb
     stdin_open: true
-
+  bungeecord_2:
+    build:
+      context: .
+      dockerfile: ./docker/bungeecord/Dockerfile
+    ports:
+      - 25564:25577
+    networks:
+      - seichi
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SERVER_ID=bungeecord_2
+    depends_on:
+      - spigota
+      - spigotb
+    stdin_open: true
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:4.8.5
@@ -92,7 +108,7 @@ services:
     networks:
       - seichi
     ports:
-      - "8080:80"
+      - 8080:80
     depends_on:
       - db
   redis:
@@ -115,4 +131,4 @@ services:
     volumes:
       - db-data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - 3306:3306
