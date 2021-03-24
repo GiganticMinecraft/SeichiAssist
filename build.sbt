@@ -19,7 +19,8 @@ resolvers ++= Seq(
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
   "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // stouma915#0915の環境ではなぜかspigot-apiがダウンロードできないため一応追加
-  "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのための
+  "repo.phoenix616.dev" at "https://repo.phoenix616.dev", // authlibのための
+  "repo.md-5.net" at "http://repo.md-5.net/content/repositories/snapshots/",
 )
 
 val providedDependencies = Seq(
@@ -30,6 +31,8 @@ val providedDependencies = Seq(
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
   "net.coreprotect" % "coreprotect" % "2.14.2",
   "com.mojang" % "authlib" % "1.5.25",
+
+  "com.imaginarycode.minecraft" % "RedisBungee" % "0.3.6-SNAPSHOT",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.0"
