@@ -11,6 +11,7 @@ import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.minecraft.objects.MinecraftBossBar
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
+import io.chrisdavenport.log4cats.ErrorLogger
 
 object ExpBarSynchronizationRepositoryTemplate {
 
@@ -35,7 +36,7 @@ object ExpBarSynchronizationRepositoryTemplate {
 
   def initialization[
     G[_] : Sync,
-    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]],
+    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]] : ErrorLogger,
     Player: HasUuid,
   ](breakCountValues: fs2.Stream[F, (Player, SeichiAmountData)],
     visibilityValues: fs2.Stream[F, (Player, BreakCountBarVisibility)])
@@ -57,11 +58,9 @@ object ExpBarSynchronizationRepositoryTemplate {
 
         _ <- EffectExtra.runAsyncAndForget[F, G, Unit](bossBar.players.add(player))
         _ <- EffectExtra.runAsyncAndForget[F, G, Unit] {
-          switching.concurrently(synchronization)
-            .compile
-            .drain
-            .start
-            .flatMap(fiberPromise.complete)
+          StreamExtra.compileToRestartingStream[F, Unit] {
+            switching.concurrently(synchronization)
+          }.start >>= fiberPromise.complete
         }
       } yield (bossBar, fiberPromise)
     }
