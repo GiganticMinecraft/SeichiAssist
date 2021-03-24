@@ -2,10 +2,12 @@ package com.github.unchama.seichiassist.subsystems.seichilevelupgift
 
 import cats.data.Kleisli
 import cats.effect.IO
+import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.GiftItemInterpreter
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{Gift, GiftInterpreter}
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 object System {
@@ -22,11 +24,11 @@ object System {
 
   def backGroundProcess[
     G[_]
-  ](implicit breakCountReadApi: BreakCountReadAPI[IO, G, Player]): IO[Nothing] = {
-    breakCountReadApi
-      .seichiLevelUpdates
-      .evalTap { case (player, diff) => interpreter.onLevelDiff(diff).run(player) }
-      .compile.drain
-      .flatMap(_ => IO.never)
+  ](implicit breakCountReadApi: BreakCountReadAPI[IO, G, Player], ioLogger: ErrorLogger[IO]): IO[Nothing] = {
+    StreamExtra.compileToRestartingStream {
+      breakCountReadApi
+        .seichiLevelUpdates
+        .evalTap { case (player, diff) => interpreter.onLevelDiff(diff).run(player) }
+    }
   }
 }

@@ -8,6 +8,7 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
+import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, MinecraftServerThreadShift, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -21,6 +22,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effec
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectSuppressionState, FastDiggingEffectSuppressionStatePersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{JdbcFastDiggingEffectStatsSettingsPersistence, JdbcFastDiggingEffectSuppressionStatePersistence}
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 import java.util.UUID
@@ -47,6 +49,7 @@ object System {
     : MinecraftServerThreadShift
     : Timer
     : ConcurrentEffect
+    : ErrorLogger
     : ContextCoercion[G, *[_]]
     : GetConnectedPlayers[*[_], Player],
     H[_]
@@ -99,9 +102,10 @@ object System {
         }
       }
 
-      _ <- EffectStatsNotification.using[F, Player](
-        effectListDiffTopic.subscribe(1).mapFilter(identity)
-      ).compile.drain.start
+      _ <-
+        StreamExtra.compileToRestartingStream[F, Unit] {
+          EffectStatsNotification.using[F, Player](effectListDiffTopic.subscribe(1).mapFilter(identity))
+        }.start
 
     } yield new System[F, F, Player] {
       override val effectApi: FastDiggingEffectApi[F, Player] = new FastDiggingEffectApi[F, Player] {
@@ -163,7 +167,9 @@ object System {
           system.settingsApi.currentSuppressionSettings,
           system.effectApi.effectClock
         )
-      ).traverse(_.compile.drain.start)
+      ).traverse(
+        StreamExtra.compileToRestartingStream(_).start
+      )
     }
   }
 }

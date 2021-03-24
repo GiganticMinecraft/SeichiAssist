@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository
 
 import cats.effect.concurrent.{Deferred, Ref}
-import cats.effect.{Async, Concurrent, ConcurrentEffect, Fiber, Sync}
+import cats.effect.{ConcurrentEffect, Fiber, Sync}
 import com.github.unchama.datarepository.definitions.{FiberAdjoinedRepositoryDefinition, RefDictBackedRepositoryDefinition}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effec
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
 import fs2.Pipe
 import io.chrisdavenport.cats.effect.time.JavaTime
+import io.chrisdavenport.log4cats.ErrorLogger
 
 object EffectStatsSettingsRepositoryDefinition {
 
@@ -20,10 +21,11 @@ object EffectStatsSettingsRepositoryDefinition {
    */
   type RepositoryValue[F[_], G[_]] = (Ref[G, FastDiggingEffectStatsSettings], Deferred[F, Fiber[F, Nothing]])
 
+  import cats.effect.implicits._
   import cats.implicits._
 
   def withContext[
-    F[_] : ConcurrentEffect : JavaTime,
+    F[_] : ConcurrentEffect : JavaTime : ErrorLogger,
     G[_] : Sync : ContextCoercion[*[_], F],
     Player: HasUuid
   ](persistence: FastDiggingEffectStatsSettingsPersistence[G],
@@ -56,9 +58,7 @@ object EffectStatsSettingsRepositoryDefinition {
       }
 
       EffectExtra.runAsyncAndForget[F, G, Unit] {
-        Concurrent[F]
-          .start[Nothing](processStream.compile.drain.flatMap[Nothing](_ => Async[F].never))
-          .flatMap(fiberPromise.complete)
+        StreamExtra.compileToRestartingStream(processStream).start >>= fiberPromise.complete
       }
     }
   }

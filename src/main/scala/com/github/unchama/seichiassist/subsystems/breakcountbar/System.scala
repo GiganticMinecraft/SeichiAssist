@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.application.{Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.bukkit.CreateFreshBossBar
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure.JdbcBreakCountBarVisibilityPersistence
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {
@@ -29,7 +30,7 @@ object System {
 
   def wired[
     G[_] : SyncEffect,
-    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]],
+    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]] : ErrorLogger,
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 

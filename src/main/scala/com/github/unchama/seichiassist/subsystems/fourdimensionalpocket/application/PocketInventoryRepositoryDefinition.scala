@@ -1,10 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application
 
 import cats.effect.concurrent.Deferred
-import cats.effect.{Async, Concurrent, ConcurrentEffect, Effect, Fiber, Sync}
+import cats.effect.{ConcurrentEffect, Fiber, Sync}
 import com.github.unchama.datarepository.definitions.{FiberAdjoinedRepositoryDefinition, MutexRepositoryDefinition, RefDictBackedRepositoryDefinition}
-import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
-import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.Mutex
@@ -14,11 +12,11 @@ import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSizeTable}
-
-import java.util.UUID
+import io.chrisdavenport.log4cats.ErrorLogger
 
 object PocketInventoryRepositoryDefinition {
 
+  import cats.effect.implicits._
   import cats.implicits._
 
   /**
@@ -27,7 +25,7 @@ object PocketInventoryRepositoryDefinition {
   type RepositoryValue[F[_], G[_], Inventory] = (Mutex[F, G, Inventory], Deferred[F, Fiber[F, Nothing]])
 
   def withContext[
-    F[_] : ConcurrentEffect,
+    F[_] : ConcurrentEffect : ErrorLogger,
     G[_] : Sync : ContextCoercion[*[_], F],
     Player: HasUuid,
     Inventory: CreateInventory[G, *] : InteractInventory[F, Player, *]
@@ -56,9 +54,7 @@ object PocketInventoryRepositoryDefinition {
         }
 
         EffectExtra.runAsyncAndForget[F, G, Unit] {
-          Concurrent[F]
-            .start[Nothing](processStream.compile.drain.flatMap[Nothing](_ => Async[F].never))
-            .flatMap(fiberPromise.complete)
+          StreamExtra.compileToRestartingStream(processStream).start >>= fiberPromise.complete
         }
       }
     }

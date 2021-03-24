@@ -4,7 +4,6 @@ import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -18,6 +17,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.Sound
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -36,7 +36,7 @@ object System {
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
   def wired[
-    F[_] : ConcurrentEffect : MinecraftServerThreadShift,
+    F[_] : ConcurrentEffect : MinecraftServerThreadShift : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
    (implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
