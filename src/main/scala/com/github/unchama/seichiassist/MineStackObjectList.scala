@@ -279,7 +279,6 @@ object MineStackObjectList {
     new MineStackBuildObj("rails", "レール", 1, Material.RAILS, 0),
     new MineStackBuildObj("furnace", "かまど", 1, Material.FURNACE, 0),
     new MineStackBuildObj("chest", "チェスト", 1, Material.CHEST, 0),
-    new MineStackBuildObj("bed", "ベッド", 1, Material.BED, 0),
     new MineStackBuildObj("book", "本", 1, Material.BOOK, 0),
     new MineStackBuildObj("bookshelf", "本棚", 1, Material.BOOKSHELF, 0),
     new MineStackBuildObj("iron_bars", "鉄格子", 1, Material.IRON_FENCE, 0),
