@@ -59,7 +59,6 @@ return result""")
     Effect[F].liftIO {
       IO.fromFuture(IO(redisClient.evalshaOrEval(script))).flatMap {
         case MultiBulk(Some(vector)) => IO.pure {
-          println(vector)
           vector.count {
             case Bulk(Some(byteString)) => seichiServers.contains(byteString.utf8String)
             case _ => false
