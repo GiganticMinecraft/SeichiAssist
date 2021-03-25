@@ -11,6 +11,7 @@ import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, MinecraftServerThreadShift, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage
+import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
@@ -51,7 +52,8 @@ object System {
     : ConcurrentEffect
     : ErrorLogger
     : ContextCoercion[G, *[_]]
-    : GetConnectedPlayers[*[_], Player],
+    : GetConnectedPlayers[*[_], Player]
+    : GetNetworkConnectionCount,
     H[_]
   ](implicit breakCountReadAPI: BreakCountReadAPI[F, H, Player], config: Configuration): F[System[F, F, Player]] = {
 
