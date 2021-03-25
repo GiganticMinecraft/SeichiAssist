@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist
 
 import com.github.unchama.bungeesemaphoreresponder.{RedisConnectionSettings, Configuration => BungeeSemaphoreResponderConfiguration}
+import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
 import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemConfiguration => AutoSaveConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
@@ -136,6 +137,20 @@ final class Config private(val config: FileConfiguration) {
     new FastDiggingEffectConfiguration {
       override val amplifierPerBlockMined: Double = getDoubleFailFast("minutespeedamount")
       override val amplifierPerPlayerConnection: Double = getDoubleFailFast("onlineplayersamount")
+    }
+  }
+
+  def getRedisBungeeRedisConfiguration: RedisBungeeRedisConfiguration = {
+    val settingsSection = config.getConfigurationSection("RedisBungee")
+
+    new RedisBungeeRedisConfiguration {
+      override val redisHost: String = settingsSection.getString("redis-host")
+      override val redisPort: Int = settingsSection.getInt("redis-port")
+      override val redisPassword: Option[String] =
+        if (settingsSection.contains("redis-password"))
+          Some(settingsSection.getString("redis-password"))
+        else
+          None
     }
   }
 
