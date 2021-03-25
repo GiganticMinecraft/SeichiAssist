@@ -32,8 +32,6 @@ val providedDependencies = Seq(
   "net.coreprotect" % "coreprotect" % "2.14.2",
   "com.mojang" % "authlib" % "1.5.25",
 
-  "com.imaginarycode.minecraft" % "RedisBungee" % "0.3.6-SNAPSHOT",
-
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.0"
 ).map(_ % "provided")
