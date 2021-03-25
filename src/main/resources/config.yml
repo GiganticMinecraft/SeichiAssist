@@ -181,6 +181,13 @@ BuildNum1minLimit: '256'
 AutoSave:
   Enable: true
 
+# RedisBungeeが利用しているRedisインスタンスの接続情報
+RedisBungee:
+  redis-host: localhost
+  redis-port: 6379
+  # Redisサーバーがパスワードを持っている場合、次の行をアンコメントしてパスワードを入れること。
+  # redis-password: ""
+
 # BungeeCordと協調してデータ保存周りのロックを管理するシステムの設定項目
 BungeeSemaphoreResponder:
   # SeichiAssistが保存処理を待つ最大の時間(ミリ秒指定)
