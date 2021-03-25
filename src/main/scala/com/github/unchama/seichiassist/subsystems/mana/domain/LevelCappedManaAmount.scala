@@ -6,8 +6,10 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
 
   import cats.implicits._
 
+  private val cap = ManaAmountCap.at(level)
+
   assert(
-    manaAmount <= ManaAmountCap.at(level),
+    manaAmount <= cap,
     "LevelCappedManaAmountはマナのキャップ制約を満たす必要があります"
   )
 
@@ -23,6 +25,11 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
     require(newLevel >= level, "レベルは現在のレベル以上である必要があります")
     LevelCappedManaAmount(manaAmount, newLevel)
   }
+
+  /**
+   * マナ最大値に対する `manaAmount` の割合を示す0以上1未満の数値
+   */
+  lazy val ratioToCap: Double = cap.value / manaAmount.value
 }
 
 object LevelCappedManaAmount {
