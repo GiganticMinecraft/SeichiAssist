@@ -183,16 +183,7 @@ class PlayerData(
       player.sendMessage(s"${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
     }
 
-    manaState.initialize(
-      player,
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-        .unsafeRunSync()
-        .levelCorrespondingToExp.level
-    )
-
-    synchronizeDisplayNameAndManaStateToLevelState()
+    synchronizeDisplayNameToLevelState()
 
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
@@ -200,17 +191,8 @@ class PlayerData(
   }
 
   //レベルを更新
-  def synchronizeDisplayNameAndManaStateToLevelState(): Unit = {
+  def synchronizeDisplayNameToLevelState(): Unit = {
     setDisplayName()
-
-    manaState.display(
-      player,
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-        .unsafeRunSync()
-        .levelCorrespondingToExp.level
-    )
   }
 
   //表示される名前に整地Lvor二つ名を追加
@@ -325,8 +307,6 @@ class PlayerData(
   def updateOnQuit(): Unit = {
     //総プレイ時間更新
     updatePlayTick()
-
-    manaState.hide()
 
     //クライアント経験値をサーバー保管
     saveTotalExp()

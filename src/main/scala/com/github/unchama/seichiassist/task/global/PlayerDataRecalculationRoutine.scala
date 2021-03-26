@@ -46,7 +46,7 @@ object PlayerDataRecalculationRoutine {
         }
 
         // 表示名とマナをレベルと同期する
-        playerData.synchronizeDisplayNameAndManaStateToLevelState()
+        playerData.synchronizeDisplayNameToLevelState()
 
         //総プレイ時間更新
         playerData.updatePlayTick()

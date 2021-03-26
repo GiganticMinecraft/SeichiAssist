@@ -226,8 +226,6 @@ object PlayerDataLoading {
         playerData.playTick = rs.getInt("playtick")
         playerData.p_givenvote = rs.getInt("p_givenvote")
         playerData.effectPoint = rs.getInt("effectpoint")
-        //マナの情報
-        playerData.manaState.setMana(rs.getDouble("mana"))
 
         playerData.totalexp = rs.getInt("totalexp")
 

@@ -50,7 +50,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
-import com.github.unchama.seichiassist.subsystems.mana.ManaReadApi
+import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -217,12 +217,24 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
+  private lazy val manaSystem: subsystems.mana.System[IO, SyncIO, Player] = {
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+
+    subsystems.mana.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
+  private lazy val manaBarSystem: Subsystem[IO] = {
+    implicit val manaApi: ManaReadApi[IO, SyncIO, Player] = manaSystem.manaApi
+
+    subsystems.manabar.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
   private lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -279,18 +291,6 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
-  private lazy val manaSystem: subsystems.mana.System[IO, SyncIO, Player] = {
-    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-
-    subsystems.mana.System.wired[IO, SyncIO].unsafeRunSync()
-  }
-
-  private lazy val manaBarSystem: Subsystem[IO] = {
-    implicit val manaApi: ManaReadApi[IO, SyncIO, Player] = manaSystem.manaApi
-
-    subsystems.manabar.System.wired[IO, SyncIO].unsafeRunSync()
-  }
-
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -301,12 +301,12 @@ class SeichiAssist extends JavaPlugin() {
     seasonalEventsSystem,
     breakCountSystem,
     breakCountBarSystem,
+    manaSystem,
+    manaBarSystem,
     buildCountSystem,
     fastDiggingEffectSystem,
     fourDimensionalPocketSystem,
     gachaPointSystem,
-    manaSystem,
-    manaBarSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
