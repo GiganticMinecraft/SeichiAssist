@@ -21,10 +21,13 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
     manaAmount.tryUse(amount).map(LevelCappedManaAmount(_, level))
   }
 
-  def withHigherLevel(newLevel: SeichiLevel): Unit = {
-    require(newLevel >= level, "レベルは現在のレベル以上である必要があります")
-    LevelCappedManaAmount(manaAmount, newLevel)
-  }
+  def withHigherLevelOption(newLevel: SeichiLevel): Option[LevelCappedManaAmount] =
+    Option.when(newLevel >= level)(LevelCappedManaAmount(manaAmount, newLevel))
+
+  def withHigherLevel(newLevel: SeichiLevel): LevelCappedManaAmount =
+    withHigherLevelOption(newLevel).getOrElse(
+      throw new IllegalArgumentException("レベルは現在のレベル以上である必要があります")
+    )
 
   /**
    * マナを最大値にまで引き上げた [[LevelCappedManaAmount]]
