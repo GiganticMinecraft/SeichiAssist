@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.present.bukkit.command
 
+import cats.Monad
 import cats.effect.implicits._
 import cats.effect.{ConcurrentEffect, IO}
 import cats.implicits._
@@ -221,10 +222,9 @@ object PresentCommand {
           _ <- NonServerThreadContextShift[F].shift
           states <- persistence.fetchState(player)
           claimState = states.getOrElse(presentId, PresentClaimingState.Unavailable)
-        } yield {
-          claimState match {
+          effect <- claimState match {
             case PresentClaimingState.Claimed =>
-              MessageEffect(s"ID: ${presentId}のプレゼントはすでに受け取っています。")
+              Monad[F].pure(MessageEffect(s"ID: ${presentId}のプレゼントはすでに受け取っています。"))
             case PresentClaimingState.NotClaimed =>
               for {
                 _ <- persistence.markAsClaimed(player, presentId)
@@ -242,9 +242,9 @@ object PresentCommand {
                 }
               }
             case PresentClaimingState.Unavailable =>
-              MessageEffect(s"ID: ${presentId}のプレゼントは存在しないか、あるいは配布対象ではありません。")
+              Monad[F].pure(MessageEffect(s"ID: ${presentId}のプレゼントは存在しないか、あるいは配布対象ではありません。"))
           }
-        }
+        } yield effect
 
         eff.toIO
       }
