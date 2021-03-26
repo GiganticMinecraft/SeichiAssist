@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.application
 
 import cats.effect.{ConcurrentEffect, Sync, Timer}
-import com.github.unchama.datarepository.template.{RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.ratelimiting.{FixedWindowRateLimiter, RateLimiter}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration

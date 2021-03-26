@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.mebius.application.repository
 
 import cats.{Applicative, Monad}
-import com.github.unchama.datarepository.template.{RepositoryFinalization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeechBlockageState, MebiusSpeechGateway}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 

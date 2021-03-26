@@ -11,8 +11,10 @@ import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreRes
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
 import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
-import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinitions
-import com.github.unchama.datarepository.template.{RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.definitions.SessionMutexRepositoryDefinition
+import com.github.unchama.datarepository.template.RepositoryDefinition
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.generic.effect.ResourceScope
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.concurrent.SessionMutex
@@ -30,8 +32,11 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncS
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
+import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
+import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
 import com.github.unchama.seichiassist.infrastructure.akka.ConfiguredActorSystemProvider
 import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
+import com.github.unchama.seichiassist.infrastructure.redisbungee.RedisBungeeNetworkConnectionCount
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.menus.TopLevelRouter
@@ -100,21 +105,23 @@ class SeichiAssist extends JavaPlugin() {
   //region repositories
 
   private val activeSkillAvailabilityRepositoryControls: BukkitRepositoryControls[SyncIO, Ref[SyncIO, Boolean]] =
-    BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles[SyncIO, Ref[SyncIO, Boolean]](
-      SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
-      RepositoryFinalization.trivial
+    BukkitRepositoryControls.createHandles[SyncIO, Ref[SyncIO, Boolean]](
+      RepositoryDefinition.SinglePhased.withoutTappingAction(
+        SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
+        RepositoryFinalization.trivial
+      )
     ).unsafeRunSync()
 
   val activeSkillAvailability: PlayerDataRepository[Ref[SyncIO, Boolean]] =
     activeSkillAvailabilityRepositoryControls.repository
 
   private val assaultSkillRoutinesRepositoryControls: BukkitRepositoryControls[SyncIO, SessionMutex[IO, SyncIO]] = {
-    import PluginExecutionContexts.asyncShift
+    val definition = {
+      import PluginExecutionContexts.asyncShift
+      SessionMutexRepositoryDefinition.withRepositoryContext[IO, SyncIO, Player]
+    }
 
-    BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles(
-      SessionMutexRepositoryDefinitions.initialization[IO, SyncIO],
-      SessionMutexRepositoryDefinitions.finalization[IO, SyncIO, UUID]
-    ).unsafeRunSync()
+    BukkitRepositoryControls.createHandles(definition).unsafeRunSync()
   }
 
   val assaultSkillRoutines: PlayerDataRepository[SessionMutex[IO, SyncIO]] =
@@ -246,6 +253,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
     implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] = new GetConnectedBukkitPlayers[IO]
+    implicit val redisBungeeConfig: RedisBungeeRedisConfiguration = seichiAssistConfig.getRedisBungeeRedisConfiguration
+    implicit val networkConnectionCount: GetNetworkConnectionCount[IO] = new RedisBungeeNetworkConnectionCount[IO](asyncShift)
 
     subsystems.fastdiggingeffect.System.wired[SyncIO, IO, SyncIO].unsafeRunSync()
   }

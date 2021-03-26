@@ -1,6 +1,5 @@
-package com.github.unchama.datarepository.template
+package com.github.unchama.datarepository.template.finalization
 
-import cats.effect.concurrent.Ref
 import cats.{Applicative, FlatMap}
 
 /**
@@ -61,12 +60,15 @@ object RepositoryFinalization {
       override val finalizeBeforeUnload: (Player, R) => F[Unit] = finalization
     }
 
+  def withoutAnyFinalization[
+    F[_] : Applicative, Player, R
+  ](persist: (Player, R) => F[Unit]): RepositoryFinalization[F, Player, R] =
+    new RepositoryFinalization[F, Player, R] {
+      override val persistPair: (Player, R) => F[Unit] = persist
+      override val finalizeBeforeUnload: (Player, R) => F[Unit] = (_, _) => Applicative[F].unit
+    }
+
   def trivial[F[_] : Applicative, Player, R]: RepositoryFinalization[F, Player, R] =
     withoutAnyPersistence((_, _) => Applicative[F].unit)
-
-  def liftToRefFinalization[
-    F[_] : FlatMap, Player, R
-  ](finalization: RepositoryFinalization[F, Player, R]): RepositoryFinalization[F, Player, Ref[F, R]] =
-    finalization.withIntermediateEffect[Ref[F, R]](_.get)
 
 }

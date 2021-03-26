@@ -1,16 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository
 
 import cats.effect.concurrent.Deferred
-import cats.effect.{Async, Concurrent, ConcurrentEffect, Effect, Fiber, Sync, SyncEffect, Timer}
-import com.github.unchama.datarepository.template.{PrefetchResult, RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import cats.effect.{Concurrent, ConcurrentEffect, Effect, Fiber, Sync, SyncEffect, Timer}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization}
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.Mutex
+import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.FastDiggingEffectList
+import io.chrisdavenport.log4cats.ErrorLogger
 
 object EffectListRepositoryDefinitions {
 
+  import cats.effect.implicits._
   import cats.implicits._
 
   import scala.concurrent.duration._
@@ -32,25 +36,20 @@ object EffectListRepositoryDefinitions {
     }
 
   def tappingAction[
-    F[_] : ConcurrentEffect : Timer,
+    F[_] : ConcurrentEffect : Timer : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F],
     Player
   ](effectTopic: Topic[F, Option[(Player, FastDiggingEffectList)]]): (Player, RepositoryValue[F, G]) => G[Unit] =
     (player, value) => {
       val (mutexRef, fiberPromise) = value
 
-      val programToRun: F[Unit] = for {
-        publishingEffectFiber <-
-          Concurrent[F].start[Nothing] {
-            fs2.Stream
-              .awakeEvery[F](1.second)
-              .evalMap[F, FastDiggingEffectList](_ => ContextCoercion(mutexRef.readLatest))
-              .evalTap[F, Unit](effectList => effectTopic.publish1(Some(player, effectList)))
-              .compile.drain
-              .flatMap[Nothing](_ => Async[F].never[Nothing])
-          }
-        _ <- fiberPromise.complete(publishingEffectFiber)
-      } yield ()
+      val programToRun: F[Unit] =
+        StreamExtra.compileToRestartingStream {
+          fs2.Stream
+            .awakeEvery[F](1.second)
+            .evalMap[F, FastDiggingEffectList](_ => ContextCoercion(mutexRef.readLatest))
+            .evalTap[F, Unit](effectList => effectTopic.publish1(Some(player, effectList)))
+        }.start >>= fiberPromise.complete
 
       EffectExtra.runAsyncAndForget[F, G, Unit](programToRun)
     }

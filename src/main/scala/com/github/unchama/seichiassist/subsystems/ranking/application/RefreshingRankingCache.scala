@@ -2,7 +2,9 @@ package com.github.unchama.seichiassist.subsystems.ranking.application
 
 import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, Timer}
+import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.subsystems.ranking.domain.{RankingRecordPersistence, SeichiRanking}
+import io.chrisdavenport.log4cats.ErrorLogger
 
 object RefreshingRankingCache {
 
@@ -11,17 +13,17 @@ object RefreshingRankingCache {
 
   import scala.concurrent.duration._
 
-  def withPersistence[F[_] : Concurrent : Timer](persistence: RankingRecordPersistence[F]): F[F[SeichiRanking]] =
+  def withPersistence[F[_] : Concurrent : Timer : ErrorLogger](persistence: RankingRecordPersistence[F]): F[F[SeichiRanking]] =
     for {
       initialRankingRecords <- persistence.getAllRankingRecords
       rankingRef <- Ref.of(new SeichiRanking(initialRankingRecords))
       _ <-
-        fs2.Stream
-          .awakeEvery[F](30.seconds)
-          .evalMap(_ => persistence.getAllRankingRecords)
-          .evalTap(refreshedRecords => rankingRef.set(new SeichiRanking(refreshedRecords)))
-          .compile.drain
-          .start
+        StreamExtra.compileToRestartingStream[F, Unit] {
+          fs2.Stream
+            .awakeEvery[F](30.seconds)
+            .evalMap(_ => persistence.getAllRankingRecords)
+            .evalTap(refreshedRecords => rankingRef.set(new SeichiRanking(refreshedRecords)))
+        }.start
     } yield {
       rankingRef.get
     }
