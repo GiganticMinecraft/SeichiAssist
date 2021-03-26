@@ -21,7 +21,7 @@ object SignallingRepositoryDefinition {
     Player: HasUuid, T
   ](publishSink: Pipe[F, (Player, T), Unit])
    (definition: RepositoryDefinition[G, Player, T]): RepositoryDefinition[G, Player, Ref[G, T]] = {
-    definition.toTwoPhased.xmapWithPlayer { player =>
+    definition.toTwoPhased.flatXmapWithPlayer { player =>
       initialValue =>
         AsymmetricSignallingRef[G, F, T](initialValue)
           .flatTap { ref =>

@@ -100,7 +100,7 @@ object RepositoryDefinition {
                                                    (implicit F: Monad[F]): TwoPhased[F, Player, S] =
       flatXmapWithPlayerAndIntermediateEffects(_ => f)(beforePersisting)(beforeFinalization)
 
-    def xmapWithPlayer[S](f: Player => R => F[S])(g: S => F[R])(implicit F: Monad[F]): TwoPhased[F, Player, S] =
+    def flatXmapWithPlayer[S](f: Player => R => F[S])(g: S => F[R])(implicit F: Monad[F]): TwoPhased[F, Player, S] =
       flatXmapWithPlayerAndIntermediateEffects(f)(g)(g)
   }
 

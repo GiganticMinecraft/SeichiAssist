@@ -44,4 +44,6 @@ object LevelCappedManaAmount {
   def capping(manaAmount: ManaAmount, level: SeichiLevel): LevelCappedManaAmount = {
     LevelCappedManaAmount(manaAmount min ManaAmountCap.at(level), level)
   }
+
+  val initialValue: LevelCappedManaAmount = LevelCappedManaAmount(ManaAmount(0), SeichiLevel.ofPositive(1))
 }
