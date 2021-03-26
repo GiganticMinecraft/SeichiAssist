@@ -4,14 +4,16 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.breakcountbar.application.{BreakCountBarVisibilityRepositoryTemplate, ExpBarSynchronizationRepositoryTemplate}
+import com.github.unchama.seichiassist.subsystems.breakcountbar.application.{BreakCountBarVisibilityRepositoryDefinition, ExpBarSynchronizationRepositoryTemplate}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.bukkit.CreateFreshBossBar
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure.JdbcBreakCountBarVisibilityPersistence
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {
@@ -28,7 +30,7 @@ object System {
 
   def wired[
     G[_] : SyncEffect,
-    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]],
+    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]] : ErrorLogger,
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
@@ -39,35 +41,29 @@ object System {
       topic <- Topic[F, Option[(Player, BreakCountBarVisibility)]](None)
 
       visibilityRepositoryHandles <- {
-        val initialization =
-          BreakCountBarVisibilityRepositoryTemplate
-            .initialization[G, F, Player](persistence, topic)
-
-        val finalization =
-          BreakCountBarVisibilityRepositoryTemplate
-            .finalization[G, Player](persistence)(_.getUniqueId)
-
         ContextCoercion {
-          BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(initialization, finalization)
+          BukkitRepositoryControls.createHandles(
+            BreakCountBarVisibilityRepositoryDefinition.withContext[G, F, Player](
+              persistence,
+              stream => stream.map(Some.apply).through(topic.publish)
+            )
+          )
         }
       }
 
       visibilityValues = topic.subscribe(topicSubscriptionSize).mapFilter(identity)
 
       expBarSynchronizationRepositoryHandles <- {
-        val initialization =
-          ExpBarSynchronizationRepositoryTemplate
-            .initialization[G, F, Player](
-              breakCountReadAPI.seichiAmountUpdates,
-              visibilityValues
-            )(CreateFreshBossBar.in[G, F])
-
-        val finalization =
-          ExpBarSynchronizationRepositoryTemplate
-            .finalization[G, F, Player]
-
         ContextCoercion {
-          BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(initialization, finalization)
+          BukkitRepositoryControls.createHandles(
+            RepositoryDefinition.TwoPhased(
+              ExpBarSynchronizationRepositoryTemplate.initialization[G, F, Player](
+                breakCountReadAPI.seichiAmountUpdates,
+                visibilityValues
+              )(CreateFreshBossBar.in[G, F]),
+              ExpBarSynchronizationRepositoryTemplate.finalization[G, F, Player]
+            )
+          )
         }
       }
     } yield {

@@ -10,13 +10,14 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.OpenPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.Sound
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -35,7 +36,7 @@ object System {
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
   def wired[
-    F[_] : ConcurrentEffect : MinecraftServerThreadShift,
+    F[_] : ConcurrentEffect : MinecraftServerThreadShift : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
    (implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
@@ -51,14 +52,9 @@ object System {
     for {
       pocketInventoryRepositoryHandles <-
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTappingSinglePhasedRepositoryAndHandles(
-              PocketInventoryRepositoryDefinitions.initialization(persistence),
-              PocketInventoryRepositoryDefinitions.tappingAction[F, G, Player, Inventory](
-                breakCountReadAPI.seichiLevelUpdates
-              ),
-              PocketInventoryRepositoryDefinitions.finalization(persistence)
-            )
+          BukkitRepositoryControls.createHandles(
+            PocketInventoryRepositoryDefinition.withContext(persistence, breakCountReadAPI.seichiLevelUpdates)
+          )
         }
     } yield {
       val systemApi = new FourDimensionalPocketApi[F, Player] {

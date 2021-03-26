@@ -4,11 +4,12 @@ import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{ClassifyPlayerWorld, IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
-import com.github.unchama.seichiassist.subsystems.buildcount.application.application.{BuildAmountDataRepositoryDefinitions, RateLimiterRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.buildcount.application.application.{BuildAmountDataRepositoryDefinition, RateLimiterRepositoryDefinitions}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration}
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.actions.ClassifyBukkitPlayerWorld
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners.BuildExpIncrementer
@@ -44,15 +45,16 @@ object System {
 
     for {
       rateLimiterRepositoryControls <-
-        BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles(
-          RateLimiterRepositoryDefinitions.initialization[F, G],
-          RateLimiterRepositoryDefinitions.finalization[G, UUID]
+        BukkitRepositoryControls.createHandles(
+          RepositoryDefinition.SinglePhased.withoutTappingAction(
+            RateLimiterRepositoryDefinitions.initialization[F, G],
+            RateLimiterRepositoryDefinitions.finalization[G, UUID]
+          )
         )
 
       buildAmountDataRepositoryControls <-
-        BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles(
-          BuildAmountDataRepositoryDefinitions.initialization(persistence),
-          BuildAmountDataRepositoryDefinitions.finalization(persistence)
+        BukkitRepositoryControls.createHandles(
+          BuildAmountDataRepositoryDefinition.withPersistence(persistence)
         )
     } yield {
       implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[G, Player] =

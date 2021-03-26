@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.itemmigration
 
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Sync, SyncEffect, SyncIO}
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.itemmigration.application.ItemMigrationStateRepositoryDefinitions
@@ -47,9 +48,11 @@ object System {
     )
 
     repositoryControls <-
-      BukkitRepositoryControls.createSinglePhasedRepositoryAndHandles(
-        ItemMigrationStateRepositoryDefinitions.initialization[G],
-        ItemMigrationStateRepositoryDefinitions.finalization[G, UUID]
+      BukkitRepositoryControls.createHandles(
+        RepositoryDefinition.SinglePhased.withoutTappingAction(
+          ItemMigrationStateRepositoryDefinitions.initialization[G],
+          ItemMigrationStateRepositoryDefinitions.finalization[G, UUID]
+        )
       )
   } yield {
     val playerItemMigrationController = new PlayerItemMigrationController[F, G](
