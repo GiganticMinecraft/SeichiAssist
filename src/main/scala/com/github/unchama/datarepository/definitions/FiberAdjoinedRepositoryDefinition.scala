@@ -10,11 +10,13 @@ object FiberAdjoinedRepositoryDefinition {
 
   import cats.implicits._
 
+  type FiberAdjoined[R, F[_]] = (R, Deferred[F, Fiber[F, Nothing]])
+
   def extending[
     G[_] : Sync,
     F[_] : ConcurrentEffect,
     Player, R
-  ](definition: RepositoryDefinition[G, Player, R]): definition.Self[(R, Deferred[F, Fiber[F, Nothing]])] =
+  ](definition: RepositoryDefinition[G, Player, R]): definition.Self[R FiberAdjoined F] =
     definition
       .flatXmapWithIntermediateEffects(r =>
         Deferred

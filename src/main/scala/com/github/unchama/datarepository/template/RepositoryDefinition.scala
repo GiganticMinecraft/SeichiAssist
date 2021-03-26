@@ -56,9 +56,9 @@ object RepositoryDefinition {
         finalization.withIntermediateEffects(beforePersisting)(beforeFinalization)
       )
 
-    def withAnotherTappingAction(another: (Player, R) => F[Unit])
-                                (implicit F: Apply[F]): SinglePhased[F, Player, R] = this.copy(
-      tappingAction = (player, r) => F.productR(tappingAction(player, r))(another(player, r))
+    def withAnotherTappingAction[U](another: (Player, R) => F[U])
+                                   (implicit F: Apply[F]): SinglePhased[F, Player, R] = this.copy(
+      tappingAction = (player, r) => F.productR(tappingAction(player, r))(another(player, r).as(()))
     )
 
     def augmentToTwoPhased[T](prepareFinalData: (Player, R) => F[T])(revertOnFinalization: T => F[R])
@@ -80,6 +80,14 @@ object RepositoryDefinition {
       finalization: RepositoryFinalization[F, UUID, R]): SinglePhased[F, Player, R] = {
       SinglePhased(initialization, (_, _) => Applicative[F].unit, finalization)
     }
+
+    def trivial[F[_] : Applicative, Player]: SinglePhased[F, Player, Unit] = withoutTappingAction(
+      SinglePhasedRepositoryInitialization.constant(()),
+      RepositoryFinalization.trivial
+    )
+
+    def withSupplierAndTrivialFinalization[F[_] : Monad, Player, R](supplier: F[R]): SinglePhased[F, Player, R] =
+      trivial[F, Player].flatXmap(_ => supplier)(_ => Applicative[F].unit)
   }
 
   case class TwoPhased[F[_], Player, R](initialization: TwoPhasedRepositoryInitialization[F, Player, R],
