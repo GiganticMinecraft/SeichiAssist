@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.manabar.application
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{Concurrent, ConcurrentEffect, Sync}
 import com.github.unchama.datarepository.definitions.FiberAdjoinedRepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
@@ -15,7 +15,6 @@ object ManaBarSynchronizationRepository {
 
   type BossBarWithPlayer[F[_], P] = MinecraftBossBar[F] {type Player = P}
 
-  import cats.effect.implicits._
   import cats.implicits._
 
   def withContext[
@@ -37,8 +36,9 @@ object ManaBarSynchronizationRepository {
 
       val programToRunAsync =
         bossBar.players.add(player) >>
-          StreamExtra
-            .compileToRestartingStream[F, Nothing](synchronization).start >>= promise.complete
+          Concurrent[F].start[Nothing] {
+            StreamExtra.compileToRestartingStream[F, Nothing](synchronization)
+          } >>= promise.complete
 
       EffectExtra.runAsyncAndForget[F, G, Unit](programToRunAsync)
     }

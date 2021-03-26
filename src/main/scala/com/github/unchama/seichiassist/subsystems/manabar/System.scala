@@ -1,0 +1,32 @@
+package com.github.unchama.seichiassist.subsystems.manabar
+
+import cats.effect.{ConcurrentEffect, SyncEffect}
+import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.mana.ManaReadApi
+import com.github.unchama.seichiassist.subsystems.manabar.application.ManaBarSynchronizationRepository
+import com.github.unchama.seichiassist.subsystems.manabar.bukkit.CreateFreshBossBar
+import io.chrisdavenport.log4cats.ErrorLogger
+import org.bukkit.entity.Player
+
+object System {
+
+  import cats.implicits._
+
+  def wired[
+    F[_] : ConcurrentEffect : ErrorLogger,
+    G[_] : SyncEffect
+  ](implicit manaApi: ManaReadApi[F, G, Player]): G[Subsystem[G]] = {
+    import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
+
+    val definition =
+      ManaBarSynchronizationRepository.withContext(manaApi.manaAmountUpdates)(CreateFreshBossBar.in[G, F])
+
+    BukkitRepositoryControls.createHandles(definition).map { control =>
+      new Subsystem[G] {
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[G, _]] = List(control)
+      }
+    }
+  }
+
+}

@@ -19,4 +19,4 @@ trait ManaWriteApi[G[_], Player] {
 
 trait ManaApi[F[_], G[_], Player]
   extends ManaReadApi[F, G, Player]
-    with ManaWriteApi[F, Player]
+    with ManaWriteApi[G, Player]
