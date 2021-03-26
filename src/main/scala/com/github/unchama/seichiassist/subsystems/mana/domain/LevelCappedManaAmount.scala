@@ -27,6 +27,11 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
   }
 
   /**
+   * マナを最大値にまで引き上げた [[LevelCappedManaAmount]]
+   */
+  lazy val fillToCap: LevelCappedManaAmount = LevelCappedManaAmount(cap, level)
+
+  /**
    * マナ最大値に対する `manaAmount` の割合を示す0以上1未満の数値
    */
   lazy val ratioToCap: Double = cap.value / manaAmount.value
