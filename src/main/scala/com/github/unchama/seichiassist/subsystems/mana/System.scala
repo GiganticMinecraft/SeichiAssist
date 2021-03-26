@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.application.ManaRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.mana.domain.{LevelCappedManaAmount, ManaAmountPersistence, ManaManipulation}
+import com.github.unchama.seichiassist.subsystems.mana.infrastructure.JdbcManaAmountPersistence
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
@@ -30,7 +31,7 @@ object System {
   ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
-    val manaPersistence: ManaAmountPersistence[G] = ???
+    val manaPersistence: ManaAmountPersistence[G] = new JdbcManaAmountPersistence[G]
 
     for {
       topic <- Topic[F, Option[(Player, LevelCappedManaAmount)]](None)
