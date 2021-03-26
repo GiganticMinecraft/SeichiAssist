@@ -16,15 +16,17 @@ object System {
   def wired[
     F[_] : ConcurrentEffect : ErrorLogger,
     G[_] : SyncEffect
-  ](implicit manaApi: ManaReadApi[F, G, Player]): G[Subsystem[G]] = {
+  ](implicit manaApi: ManaReadApi[F, G, Player]): G[Subsystem[F]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val definition =
       ManaBarSynchronizationRepository.withContext(manaApi.manaAmountUpdates)(CreateFreshBossBar.in[G, F])
 
     BukkitRepositoryControls.createHandles(definition).map { control =>
-      new Subsystem[G] {
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[G, _]] = List(control)
+      new Subsystem[F] {
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = List(
+          control.coerceFinalizationContextTo[F]
+        )
       }
     }
   }

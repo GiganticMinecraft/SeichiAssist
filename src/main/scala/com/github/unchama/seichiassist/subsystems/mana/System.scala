@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.subsystems.mana.infrastructure.JdbcManaAm
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
-trait System[F[_], G[_], Player] extends Subsystem[G] {
+trait System[F[_], G[_], Player] extends Subsystem[F] {
 
   val manaApi: ManaApi[F, G, Player]
 
@@ -55,7 +55,9 @@ object System {
           handles.repository.map(ManaManipulation.fromLevelCappedAmountRef[G])
       }
 
-      override val managedRepositoryControls: Seq[BukkitRepositoryControls[G, _]] = List(handles)
+      override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = List(
+        handles.coerceFinalizationContextTo[F]
+      )
     }
   }
 
