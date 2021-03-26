@@ -24,7 +24,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
         .apply()
 
       val value = DB.readOnly { implicit session =>
-        // ここで、itemstackは同じItemStackであるプレゼントをスコープにする場合を考慮して、UNIQUEではない。
+        // ここで、itemstackは同じItemStackであるプレゼントが複数存在させたいケースを考慮して、UNIQUEではない。
         // 他方、present_idは主キーであり、AUTO_INCREMENTであることから単調増加なので、単純にMAXを取れば良い。
         sql"""SELECT MAX(present_id) FROM $definitionTable WHERE itemstack = $stackAsBlob"""
           .map { rs => rs.int("present_id") }
@@ -52,21 +52,24 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
   }
 
   override def grant(presentID: PresentID, players: Set[UUID]): F[Unit] = Sync[F].delay {
-    val initialValues = players.map { uuid => (presentID, s"'${uuid.toString}'", false) }
-      .map { case (_1, _2, _3) => s"($_1, $_2, $_3)" }
-      .mkString(",")
+    import scala.collection.Seq.iterableFactory
+
+    val initialValues = players
+      .map { uuid => Seq(presentID, uuid.toString, false) }
+      .toSeq
 
     DB.localTx { implicit session =>
-      sql"""INSERT INTO $stateTable VALUES ($initialValues)"""
-        .execute()
+      sql"""INSERT INTO $stateTable VALUES (?, ?, ?)"""
+        .batch(initialValues: _*)
         .apply()
     }
   }
 
   override def revoke(presentID: PresentID, players: Set[UUID]): F[Unit] = Sync[F].delay {
-    val scopeAsSQL = players.map(_.toString).map(x => s"'$x'").mkString(",")
+    val scopeAsSQL = players.map(_.toString)
 
     DB.localTx { implicit session =>
+      // https://discord.com/channels/237758724121427969/565935041574731807/824107651985834004
       sql"""DELETE FROM $stateTable WHERE present_id = $presentID AND uuid IN $scopeAsSQL"""
         .execute()
         .apply()
@@ -75,7 +78,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
 
   override def markAsClaimed(player: Player, presentId: PresentID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""UPDATE $stateTable SET $claimingStateColumn = TRUE WHERE uuid = '${player.getUniqueId}' AND present_id = $presentId;"""
+      sql"""UPDATE $stateTable SET $claimingStateColumn = TRUE WHERE uuid = ${player.getUniqueId} AND present_id = $presentId"""
         .update()
         .apply()
     }
@@ -96,7 +99,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
 
   override def fetchState(player: Player): F[Map[PresentID, PresentClaimingState]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"""SELECT present_id, $claimingStateColumn FROM $stateTable WHERE uuid = '${player.getUniqueId}'"""
+      sql"""SELECT present_id, $claimingStateColumn FROM $stateTable WHERE uuid = ${player.getUniqueId.toString}"""
         .map { rs =>
           val claimState = if (rs.boolean(claimingStateColumn))
             PresentClaimingState.Claimed

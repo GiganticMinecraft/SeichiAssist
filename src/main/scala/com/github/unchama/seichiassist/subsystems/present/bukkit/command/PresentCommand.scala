@@ -68,6 +68,7 @@ object PresentCommand {
             IO.pure(MessageEffect("メインハンドに何も持っていません。プレゼントを定義するためには、メインハンドに対象アイテムを持ってください。"))
           } else {
             val eff = for {
+              _ <- NonServerThreadContextShift[F].shift
               presentId <- persistence.define(mainHandItem)
             } yield
               presentId.fold(MessageEffect("問題が発生しました。再度お試しください。")) { id =>
@@ -86,6 +87,7 @@ object PresentCommand {
       .execution { context =>
         val presentId = context.args.parsed.head.asInstanceOf[Int]
         for {
+          _ <- NonServerThreadContextShift[F].shift
           _ <- persistence.delete(presentId)
         } yield ()
         IO.pure(MessageEffect(s"IDが${presentId}のプレゼントの消去は正常に行われました。"))
@@ -153,7 +155,8 @@ object PresentCommand {
    * 構文:
    *   - /present revoke &lt;presentId: PresentID&gt; player &lt;...players^✝^: PlayerName&gt;
    *   - /present revoke &lt;presentId: PresentID&gt; all
-   * 出力: 剥奪が成功した場合は、その旨表示する。失敗した場合は、適切なエラーメッセージを表示する。
+   *
+   * 出力: 操作の結果とそれに伴うメッセージ。
    *
    * 備考:
    *   - ✝: スペース区切り。
@@ -205,6 +208,8 @@ object PresentCommand {
    *
    * 構文:
    *   - /present claim &lt;presentId: PresentID&gt;
+   *
+   * 出力: 受け取った場合は、その旨表示する。失敗した場合は、適切なエラーメッセージを表示する。
    */
   private def claimExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) =
     playerCommandBuilder
@@ -294,9 +299,12 @@ object PresentCommand {
           _ <- NonServerThreadContextShift[F].shift
           state <- persistence.fetchState(player)
           ids = state.keys.toBuffer.sorted.slice((page - 1) * perPage, page * perPage - 1)
-          messageLine = ids.map { id => (id, state(id)) }.map { case (id, state) =>
-            s"ID=$id: ${decoratePresentState(state)}${ChatColor.RESET}"
-          }.toList
+          messageLine = ids
+            .map { id => (id, state(id)) }
+            .map { case (id, state) =>
+              s"ID=$id: ${decoratePresentState(state)}${ChatColor.RESET}"
+            }
+            .toList
         } yield {
           MessageEffect(messageLine)
         }
