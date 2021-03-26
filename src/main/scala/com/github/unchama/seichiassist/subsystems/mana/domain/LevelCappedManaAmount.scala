@@ -6,7 +6,7 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
 
   import cats.implicits._
 
-  private val cap = ManaAmountCap.at(level)
+  val cap: ManaAmount = ManaAmountCap.at(level)
 
   assert(
     manaAmount <= cap,

@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.mana
 
-import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.seichiassist.subsystems.mana.domain.LevelCappedManaAmount
+import com.github.unchama.seichiassist.subsystems.mana.domain.{LevelCappedManaAmount, ManaManipulation}
 
 trait ManaReadApi[F[_], G[_], Player] {
 
@@ -14,7 +13,7 @@ trait ManaReadApi[F[_], G[_], Player] {
 
 trait ManaWriteApi[G[_], Player] {
 
-  val manaAmount: KeyedDataRepository[Player, Ref[G, LevelCappedManaAmount]]
+  val manaAmount: KeyedDataRepository[Player, ManaManipulation[G]]
 
 }
 
