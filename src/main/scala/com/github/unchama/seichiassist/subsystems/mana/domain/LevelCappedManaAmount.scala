@@ -24,11 +24,6 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
   def withHigherLevelOption(newLevel: SeichiLevel): Option[LevelCappedManaAmount] =
     Option.when(newLevel > level)(LevelCappedManaAmount(manaAmount, newLevel).fillToCap)
 
-  def withHigherLevel(newLevel: SeichiLevel): LevelCappedManaAmount =
-    withHigherLevelOption(newLevel).getOrElse(
-      throw new IllegalArgumentException("レベルは現在のレベルより高い必要があります")
-    )
-
   /**
    * マナを最大値にまで引き上げた [[LevelCappedManaAmount]]
    */
