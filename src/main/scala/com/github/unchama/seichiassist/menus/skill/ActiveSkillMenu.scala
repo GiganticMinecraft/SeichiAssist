@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -43,6 +44,7 @@ object ActiveSkillMenu extends Menu {
 
   class Environment(implicit
                     val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+                    val manaApi: ManaApi[IO, SyncIO, Player],
                     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
@@ -379,6 +381,7 @@ object ActiveSkillMenu extends Menu {
                       case skill: AssaultSkill =>
                         import cats.implicits._
                         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+                        import environment.manaApi
 
                         val tryStartRoutine = TryableFiber.start(AssaultRoutine.tryStart(player, skill))
                         val fiberRepository = SeichiAssist.instance.assaultSkillRoutines

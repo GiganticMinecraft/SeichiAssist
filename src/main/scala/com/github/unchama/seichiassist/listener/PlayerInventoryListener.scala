@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist._
@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInven
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -25,6 +26,7 @@ import org.bukkit.{Bukkit, Material, Sound}
 import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
+                              manaApi: ManaApi[IO, SyncIO, Player],
                               ioCanOpenStickMenu: IO CanOpen FirstPage.type) extends Listener {
 
   import com.github.unchama.targetedeffect._

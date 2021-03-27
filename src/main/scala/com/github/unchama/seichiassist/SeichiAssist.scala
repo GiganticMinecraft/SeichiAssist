@@ -312,6 +312,8 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val buildAssist: BuildAssist = {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+
     new BuildAssist(this)
   }
 
@@ -445,6 +447,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] = fastDiggingEffectSystem.settingsApi
     implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
