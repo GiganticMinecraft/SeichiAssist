@@ -137,9 +137,6 @@ road_blockdamage: 0
 #再生成時のワールドサイズ
 world_size: 2000
 
-#貢献度1当たりのマナ増加量
-contribute_added_mana: 10
-
 #GiganticBerserk
 #1分間上限
 GBLimit: 50

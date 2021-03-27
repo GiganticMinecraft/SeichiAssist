@@ -1,10 +1,11 @@
 package com.github.unchama.buildassist.listener
 
-import cats.effect.{SyncEffect, SyncIO}
+import cats.effect.{IO, SyncEffect, SyncIO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.entity.Player
@@ -20,7 +21,7 @@ class BlockLineUpTriggerListener[
   F[_]
   : IncrementBuildExpWhenBuiltWithSkill[*[_], Player]
   : SyncEffect
-] extends Listener {
+](implicit manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
 
   import scala.jdk.CollectionConverters._
 
@@ -114,7 +115,7 @@ class BlockLineUpTriggerListener[
       val available = availableOnHand + availableInMineStack
 
       val manaCap: Option[Long] = {
-        val availableMana = seichiAssistData.manaState.getMana
+        val availableMana = manaApi.readManaAmount(player).unsafeRunSync().manaAmount.value
 
         if (availableMana < available.toDouble * manaConsumptionPerPlacement)
           Some((availableMana / manaConsumptionPerPlacement).toLong)

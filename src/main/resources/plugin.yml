@@ -68,10 +68,6 @@ commands:
     description: Event command.
     permission: seichiassist.event
     permission-message: *denied
-  contribute:
-    description: Contribution operation command.
-    permission: seichiassist.contribute
-    permission-message: *denied
   subhome:
     description: Subhome operation command.
     permission: seichiassist.subhome
@@ -116,7 +112,6 @@ permissions:
       - seichiassist.achievenemt
       - seichiassist.halfguard
       - seichiassist.event
-      - seichiassist.contribute
       - seichiassist.subhome
       - seichiassist.gtfever
       - seichiassist.minehead

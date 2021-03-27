@@ -5,7 +5,7 @@ import cats.effect.{Clock, ConcurrentEffect, SyncEffect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryListener
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemListener
@@ -37,7 +37,7 @@ object System {
     G[_] : SyncEffect,
     H[_]
   ](instance: JavaPlugin)
-   (implicit breakCountApi: BreakCountReadAPI[F, G, Player],
+   (implicit manaWriteApi: ManaWriteApi[G, Player],
     effectEnvironment: EffectEnvironment): System[H] = {
 
     implicit val repository: LastQuitPersistenceRepository[F, UUID] =

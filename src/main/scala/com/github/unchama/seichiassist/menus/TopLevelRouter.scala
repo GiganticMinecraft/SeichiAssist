@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
@@ -34,6 +35,7 @@ object TopLevelRouter {
             syncShift: MinecraftServerThreadShift[IO],
             breakCountApi: BreakCountAPI[IO, SyncIO, Player],
             breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
+            manaApi: ManaApi[IO, SyncIO, Player],
             seichiRankingApi: RankingApi[IO],
             gachaPointApi: GachaPointApi[IO, SyncIO, Player],
             fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],

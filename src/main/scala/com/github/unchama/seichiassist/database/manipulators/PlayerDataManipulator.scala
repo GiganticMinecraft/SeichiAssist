@@ -179,35 +179,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       true
   }
 
-  def addContributionPoint(targetPlayerName: String, point: Int): IO[ResponseEffectOrResult[CommandSender, Unit]] = {
-    val executeUpdate: IO[ResponseEffectOrResult[CommandSender, Unit]] = IO {
-      val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name = '$targetPlayerName'"
-
-      if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
-        Bukkit.getLogger.warning(s"sql failed on updating $targetPlayerName's contribute_point")
-        Left(MessageEffect(s"${RED}貢献度ptの変更に失敗しました。"))
-      } else {
-        Right(())
-      }
-    }
-
-    val updatePlayerDataMemoryCache: IO[Unit] = IO {
-      val targetPlayer = Bukkit.getServer.getPlayer(targetPlayerName)
-      if (targetPlayer != null) {
-        val targetPlayerData = SeichiAssist.playermap(targetPlayer.getUniqueId)
-
-        targetPlayerData.contribute_point += point
-        targetPlayerData.setContributionPoint(point)
-      }
-    }
-
-    for {
-      _ <- EitherT(assertPlayerDataExistenceFor(targetPlayerName))
-      _ <- EitherT(executeUpdate)
-      _ <- EitherT.right[TargetedEffect[CommandSender]](updatePlayerDataMemoryCache)
-    } yield ()
-    }.value
-
   private def assertPlayerDataExistenceFor(playerName: String): IO[ResponseEffectOrResult[CommandSender, Unit]] =
     IO {
       try {

@@ -50,6 +50,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -216,12 +217,24 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
+  private lazy val manaSystem: subsystems.mana.System[IO, SyncIO, Player] = {
+    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+
+    subsystems.mana.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
+  private lazy val manaBarSystem: Subsystem[IO] = {
+    implicit val manaApi: ManaReadApi[IO, SyncIO, Player] = manaSystem.manaApi
+
+    subsystems.manabar.System.wired[IO, SyncIO].unsafeRunSync()
+  }
+
   private lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
 
     subsystems.seasonalevents.System.wired[IO, SyncIO, IO](this)
   }
@@ -288,15 +301,19 @@ class SeichiAssist extends JavaPlugin() {
     seasonalEventsSystem,
     breakCountSystem,
     breakCountBarSystem,
+    manaSystem,
+    manaBarSystem,
     buildCountSystem,
     fastDiggingEffectSystem,
     fourDimensionalPocketSystem,
-    gachaPointSystem
+    gachaPointSystem,
   )
 
   private lazy val buildAssist: BuildAssist = {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
     implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+
     new BuildAssist(this)
   }
 
@@ -430,6 +447,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player] = fastDiggingEffectSystem.settingsApi
     implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
+    implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
@@ -459,7 +477,6 @@ class SeichiAssist extends JavaPlugin() {
       "rmp" -> RmpCommand.executor,
       "shareinv" -> ShareInvCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
-      "contribute" -> ContributeCommand.executor,
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,
@@ -547,6 +564,7 @@ class SeichiAssist extends JavaPlugin() {
     val startTask = {
       val dataRecalculationRoutine = {
         import PluginExecutionContexts._
+        implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
         PlayerDataRecalculationRoutine()
       }
 
@@ -560,9 +578,6 @@ class SeichiAssist extends JavaPlugin() {
       implicit val api: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
-
-      val manaUpdate: IO[Nothing] =
-        subsystems.mana.System.backgroundProcess[IO, SyncIO]
 
       val dragonNightTimeProcess: IO[Nothing] =
         subsystems.dragonnighttime.System.backgroundProcess[IO](fastDiggingEffectSystem.effectApi)
@@ -589,7 +604,6 @@ class SeichiAssist extends JavaPlugin() {
         List(
           dataRecalculationRoutine,
           dataBackupRoutine,
-          manaUpdate,
           levelUpGiftProcess,
           dragonNightTimeProcess,
           levelUpMessagesProcess,

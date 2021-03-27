@@ -5,9 +5,9 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.generic.ClosedRange
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
+import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{GridTemplate, Mana}
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -110,7 +110,6 @@ class PlayerData(
   //region スキル関連のデータ
   val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
   var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
-  val manaState: Mana = new Mana()
   var effectPoint: Int = 0
   //endregion
 
@@ -136,9 +135,6 @@ class PlayerData(
   var toggleVotingFairy = 1
   var p_apple: Long = 0
   var toggleVFSound = true
-  //貢献度pt
-  var added_mana = 0
-  var contribute_point = 0
   var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false
@@ -183,16 +179,7 @@ class PlayerData(
       player.sendMessage(s"${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
     }
 
-    manaState.initialize(
-      player,
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-        .unsafeRunSync()
-        .levelCorrespondingToExp.level
-    )
-
-    synchronizeDisplayNameAndManaStateToLevelState()
+    synchronizeDisplayNameToLevelState()
 
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
@@ -200,17 +187,8 @@ class PlayerData(
   }
 
   //レベルを更新
-  def synchronizeDisplayNameAndManaStateToLevelState(): Unit = {
+  def synchronizeDisplayNameToLevelState(): Unit = {
     setDisplayName()
-
-    manaState.display(
-      player,
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-        .unsafeRunSync()
-        .levelCorrespondingToExp.level
-    )
   }
 
   //表示される名前に整地Lvor二つ名を追加
@@ -325,8 +303,6 @@ class PlayerData(
   def updateOnQuit(): Unit = {
     //総プレイ時間更新
     updatePlayTick()
-
-    manaState.hide()
 
     //クライアント経験値をサーバー保管
     saveTotalExp()
@@ -557,29 +533,6 @@ class PlayerData(
       this.votingFairyStartTime = starts
       this.votingFairyEndTime = ends
     }
-  }
-
-  def setContributionPoint(addAmount: Int): Unit = {
-    val mana = new Mana()
-
-    //負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時
-    if (addAmount < 0) {
-      player.sendMessage(s"$GREEN${BOLD}入力者のミスによって得た不正なマナを${-10 * addAmount}分減少させました.")
-      player.sendMessage(s"$GREEN${BOLD}申し訳ございません.")
-    } else {
-      player.sendMessage(s"$GREEN${BOLD}運営からあなたの整地鯖への貢献報酬として")
-      player.sendMessage(s"$GREEN${BOLD}マナの上限値が${10 * addAmount}上昇しました．(永久)")
-    }
-    this.added_mana += addAmount
-
-    mana.calcAndSetMax(
-      player,
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-        .unsafeRunSync()
-        .levelCorrespondingToExp.level
-    )
   }
 
   /**

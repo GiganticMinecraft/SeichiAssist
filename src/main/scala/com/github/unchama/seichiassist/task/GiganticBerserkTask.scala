@@ -1,8 +1,11 @@
 package com.github.unchama.seichiassist.task
 
-import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -10,11 +13,10 @@ import org.bukkit.entity.Player
 import java.util.Random
 
 class GiganticBerserkTask {
-  def PlayerKillEnemy(p: Player): Unit = {
+  def PlayerKillEnemy(p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p
     val uuid = p.getUniqueId
     val playerdata = SeichiAssist.playermap.apply(uuid)
-    val mana = playerdata.manaState
 
     playerdata.GBcd = playerdata.giganticBerserk.cd + 1
 
@@ -29,14 +31,7 @@ class GiganticBerserkTask {
     val d = Math.random
     if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
       val i = getRecoveryValue(playerdata)
-      val level =
-        SeichiAssist.instance
-          .breakCountSystem.api
-          .seichiAmountDataRepository(player)
-          .read.unsafeRunSync()
-          .levelCorrespondingToExp.level
-
-      mana.increase(i, p, level)
+      manaApi.manaAmount(p).restoreAbsolute(ManaAmount(i))
       player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.WHITE + "の効果でマナが" + i + "回復しました")
       player.playSound(player.getLocation, Sound.ENTITY_WITHER_SHOOT, 1, 0.5f)
     }
