@@ -18,10 +18,16 @@ object ManaBarManipulation {
   }
 
   def write[F[_] : Applicative](amount: LevelCappedManaAmount, bossBar: MinecraftBossBar[F]): F[Unit] = {
-    List(
-      bossBar.progress.write(amount.ratioToCap),
-      bossBar.title.write(s"$AQUA${BOLD}マナ(${formatAmount(amount.manaAmount)}/${formatAmount(amount.cap)})")
-    ).sequence.as(())
+    amount.ratioToCap match {
+      case Some(fraction) =>
+        List(
+          bossBar.visibility.write(true),
+          bossBar.progress.write(fraction),
+          bossBar.title.write(s"$AQUA${BOLD}マナ(${formatAmount(amount.manaAmount)}/${formatAmount(amount.cap)})")
+        ).sequence.as(())
+      case None =>
+        bossBar.visibility.write(false)
+    }
   }
 
 }

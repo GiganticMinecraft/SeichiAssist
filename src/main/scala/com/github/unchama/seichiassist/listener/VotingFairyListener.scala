@@ -117,7 +117,7 @@ object VotingFairyListener {
 
       //トグルで数値変更
       if (playerdata.toggleGiveApple == 2)
-        if (oldManaAmount.ratioToCap >= 0.75) {
+        if (oldManaAmount.ratioToCap.exists(_ >= 0.75)) {
           n /= 2
           m /= 2
         } else if (playerdata.toggleGiveApple == 3) {
@@ -142,7 +142,7 @@ object VotingFairyListener {
         if (l == 0) {
           n /= 2
           if (playerdata.toggleGiveApple == 1) n /= 2
-          if (playerdata.toggleGiveApple == 2 && (oldManaAmount.ratioToCap < 0.75)) n /= 2
+          if (playerdata.toggleGiveApple == 2 && oldManaAmount.ratioToCap.exists(_ < 0.75)) n /= 2
           player.sendMessage(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         } else {
           val M = m

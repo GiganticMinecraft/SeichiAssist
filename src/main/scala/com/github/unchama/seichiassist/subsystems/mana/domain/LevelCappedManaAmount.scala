@@ -32,9 +32,11 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
   lazy val fillToCap: LevelCappedManaAmount = LevelCappedManaAmount(cap, level)
 
   /**
-   * マナ最大値に対する `manaAmount` の割合を示す0以上1未満の数値
+   * マナ最大値に対する `manaAmount` の割合を示す0以上1未満の数値。
+   * マナ最大値が0だった場合には `None` となる。
    */
-  lazy val ratioToCap: Double = manaAmount.value / cap.value
+  lazy val ratioToCap: Option[Double] =
+    Option.when(cap.value != 0.0)(manaAmount.value / cap.value)
 }
 
 object LevelCappedManaAmount {
