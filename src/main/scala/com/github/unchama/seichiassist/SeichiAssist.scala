@@ -576,9 +576,6 @@ class SeichiAssist extends JavaPlugin() {
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 
-      val manaUpdate: IO[Nothing] =
-        subsystems.mana.System.backgroundProcess[IO, SyncIO]
-
       val dragonNightTimeProcess: IO[Nothing] =
         subsystems.dragonnighttime.System.backgroundProcess[IO](fastDiggingEffectSystem.effectApi)
 
@@ -604,7 +601,6 @@ class SeichiAssist extends JavaPlugin() {
         List(
           dataRecalculationRoutine,
           dataBackupRoutine,
-          manaUpdate,
           levelUpGiftProcess,
           dragonNightTimeProcess,
           levelUpMessagesProcess,

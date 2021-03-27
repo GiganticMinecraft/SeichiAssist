@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.listener
 
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
+import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
+import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.ChatColor._
@@ -12,11 +15,10 @@ import java.util.{Calendar, GregorianCalendar}
 import scala.util.Random
 
 object VotingFairyListener {
-  def summon(p: Player) = {
+  def summon(p: Player)(implicit manaApi: ManaReadApi[IO, SyncIO, Player]): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = p.getUniqueId
     val playerdata = playermap.apply(uuid)
-    val mana = playerdata.manaState
 
     //召喚した時間を取り出す
     playerdata.votingFairyStartTime =
@@ -51,7 +53,7 @@ object VotingFairyListener {
     playerdata.usingVotingFairy = true
 
     //マナ回復量最大値の決定
-    val n = mana.getMax
+    val n = manaApi.readManaAmount(p).unsafeRunSync().cap.value
     playerdata.VotingFairyRecoveryValue =
       ((n / 10 - n / 30 + new Random().nextInt((n / 20).toInt)) / 2.9).toInt + 200
 
@@ -81,12 +83,15 @@ object VotingFairyListener {
     } else VotingFairyTask.speak(p, getMessage(night, p.getName), playerdata.toggleVFSound)
   }
 
-  def regeneMana(player: Player) = {
+  def regeneMana(player: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = player.getUniqueId
     val playerdata = playermap.apply(uuid)
-    val mana = playerdata.manaState
-    if (mana.getMana == mana.getMax) { //マナが最大だった場合はメッセージを送信して終わり
+
+    val oldManaAmount = manaApi.readManaAmount(player).unsafeRunSync()
+
+    if (oldManaAmount.isFull) {
+      //マナが最大だった場合はメッセージを送信して終わり
       val msg = List(
         "整地しないのー？", "たくさん働いて、たくさんりんごを食べようね！",
         "僕はいつか大きながちゃりんごを食べ尽して見せるっ！", "ちょっと食べ疲れちゃった",
@@ -94,8 +99,7 @@ object VotingFairyListener {
         "動いてお腹を空かしていっぱい食べるぞー！"
       )
       VotingFairyTask.speak(player, getMessage(msg, player.getName), playerdata.toggleVFSound)
-    }
-    else {
+    } else {
       val playerLevel =
         SeichiAssist.instance
           .breakCountSystem.api
@@ -105,27 +109,32 @@ object VotingFairyListener {
 
       var n = playerdata.VotingFairyRecoveryValue //実際のマナ回復量
       var m = getGiveAppleValue(playerLevel) //りんご消費量
+
       //連続投票によってりんご消費量を抑える
       if (playerdata.ChainVote >= 30) m /= 2
       else if (playerdata.ChainVote >= 10) m = (m / 1.5).toInt
       else if (playerdata.ChainVote >= 3) m = (m / 1.25).toInt
+
       //トグルで数値変更
-      if (playerdata.toggleGiveApple == 2) if (mana.getMana / mana.getMax >= 0.75) {
-        n /= 2
-        m /= 2
-      }
-      else if (playerdata.toggleGiveApple == 3) {
-        n /= 2
-        m /= 2
-      }
+      if (playerdata.toggleGiveApple == 2)
+        if (oldManaAmount.ratioToCap >= 0.75) {
+          n /= 2
+          m /= 2
+        } else if (playerdata.toggleGiveApple == 3) {
+          n /= 2
+          m /= 2
+        }
+
       if (m == 0) m = 1
+
       if (playerdata.toggleGiveApple == 4) {
         n /= 4
         m = 0
-      }
-      else { //ちょっとつまみ食いする
+      } else {
+        //ちょっとつまみ食いする
         if (m >= 10) m += new Random().nextInt(m / 10)
       }
+
       //りんご所持数で値変更
       val gachaimoObject = Util.findMineStackObjectByName("gachaimo").get
       val l = playerdata.minestack.getStackedAmountOf(gachaimoObject)
@@ -133,21 +142,22 @@ object VotingFairyListener {
         if (l == 0) {
           n /= 2
           if (playerdata.toggleGiveApple == 1) n /= 2
-          if (playerdata.toggleGiveApple == 2 && (mana.getMana / mana.getMax < 0.75)) n /= 2
-          player.sendMessage(RESET + "" + YELLOW + "" + BOLD + "MineStackにがちゃりんごがないようです。。。")
-        }
-        else {
+          if (playerdata.toggleGiveApple == 2 && (oldManaAmount.ratioToCap < 0.75)) n /= 2
+          player.sendMessage(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
+        } else {
           val M = m
           val L = l
           n = if ((L / M) <= 0.5) (n * 0.5).toInt else (n * L / M).toInt
         }
+
         m = l.toInt
       }
+
       //回復量に若干乱数をつける
       n = (n - n / 100) + Random.nextInt(n / 50)
 
       //マナ回復
-      mana.increase(n, player, playerLevel.level)
+      manaApi.manaAmount(player).restoreAbsolute(ManaAmount(n)).unsafeRunSync()
 
       //りんごを減らす
       playerdata.minestack.subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo").get, m)

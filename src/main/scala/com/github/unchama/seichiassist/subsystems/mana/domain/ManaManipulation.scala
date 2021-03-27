@@ -18,6 +18,11 @@ trait ManaManipulation[F[_]] {
   def restoreFraction(fraction: Double): F[Unit]
 
   /**
+   * マナを完全回復させる作用
+   */
+  def restoreCompletely: F[Unit] = restoreFraction(1)
+
+  /**
    * マナが足りない場合はマナを消費をせずに `None` を返し、
    * 足りていた場合は消費して `Some(amount)` を返すような作用。
    */

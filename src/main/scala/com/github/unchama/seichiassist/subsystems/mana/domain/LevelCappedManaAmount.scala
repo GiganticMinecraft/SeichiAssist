@@ -13,6 +13,8 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
     "LevelCappedManaAmountはマナのキャップ制約を満たす必要があります"
   )
 
+  val isFull: Boolean = manaAmount == cap
+
   def add(amount: ManaAmount): LevelCappedManaAmount = {
     LevelCappedManaAmount.capping(manaAmount.add(amount), level)
   }
