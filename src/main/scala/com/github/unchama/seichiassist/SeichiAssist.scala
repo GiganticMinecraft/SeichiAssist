@@ -564,6 +564,7 @@ class SeichiAssist extends JavaPlugin() {
     val startTask = {
       val dataRecalculationRoutine = {
         import PluginExecutionContexts._
+        implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
         PlayerDataRecalculationRoutine()
       }
 
