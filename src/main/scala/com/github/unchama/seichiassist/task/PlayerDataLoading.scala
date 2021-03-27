@@ -322,9 +322,6 @@ object PlayerDataLoading {
         playerData.p_apple = rs.getLong("p_apple")
 
 
-        playerData.contribute_point = rs.getInt("contribute_point")
-        playerData.added_mana = rs.getInt("added_mana")
-
         playerData.giganticBerserk = GiganticBerserk(
           rs.getInt("GBlevel"),
           rs.getInt("GBexp"),
@@ -344,12 +341,6 @@ object PlayerDataLoading {
       loadGridTemplate(newStmt)
       loadMineStack(newStmt)
       loadSubHomeData(newStmt)
-    }
-
-    //貢献度pt増加によるマナ増加があるかどうか
-    if (playerData.added_mana < playerData.contribute_point) {
-      val addMana: Int = playerData.contribute_point - playerData.added_mana
-      playerData.setContributionPoint(addMana)
     }
 
     timer.sendLapTimeMessage(s"$GREEN${playerName}のプレイヤーデータ読込完了")

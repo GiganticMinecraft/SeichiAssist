@@ -112,8 +112,6 @@ final class Config private(val config: FileConfiguration) {
 
   def getRoadBlockDamage: Int = getIntFailFast("road_blockdamage")
 
-  def getContributeAddedMana: Int = getIntFailFast("contribute_added_mana")
-
   def getWorldSize: Int = getIntFailFast("world_size")
 
   def getGiganticFeverMinutes: Int = getIntFailFast("gigantic_fever_minutes")

@@ -474,7 +474,6 @@ class SeichiAssist extends JavaPlugin() {
       "rmp" -> RmpCommand.executor,
       "shareinv" -> ShareInvCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
-      "contribute" -> ContributeCommand.executor,
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> MineHeadCommand.executor,

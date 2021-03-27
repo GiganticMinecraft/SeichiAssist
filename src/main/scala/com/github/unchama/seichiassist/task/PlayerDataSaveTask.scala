@@ -185,9 +185,6 @@ object PlayerDataSaveTask {
           + ",toggleVotingFairy = " + playerdata.toggleVotingFairy
           + ",p_apple = " + playerdata.p_apple
 
-          //貢献度pt
-          + ",added_mana = " + playerdata.added_mana
-
           + ",GBstage = " + playerdata.giganticBerserk.stage
           + ",GBexp = " + playerdata.giganticBerserk.exp
           + ",GBlevel = " + playerdata.giganticBerserk.level
