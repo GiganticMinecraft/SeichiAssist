@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.mana
 
+import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
@@ -10,7 +11,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.application.ManaRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.mana.application.process.UpdateManaCaps
-import com.github.unchama.seichiassist.subsystems.mana.domain.{LevelCappedManaAmount, ManaAmountPersistence, ManaManipulation}
+import com.github.unchama.seichiassist.subsystems.mana.domain.{LevelCappedManaAmount, ManaAmountPersistence, ManaManipulation, ManaMultiplier}
 import com.github.unchama.seichiassist.subsystems.mana.infrastructure.JdbcManaAmountPersistence
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
@@ -36,6 +37,7 @@ object System {
 
     for {
       topic <- Topic[F, Option[(Player, LevelCappedManaAmount)]](None)
+      globalMultiplierRef <- Ref.in[F, G, ManaMultiplier](ManaMultiplier(1))
       handles <- ContextCoercion {
         BukkitRepositoryControls.createHandles(
           ManaRepositoryDefinition.withContext[F, G, Player](
@@ -56,7 +58,11 @@ object System {
           topic.subscribe(1).mapFilter(identity)
 
         override val manaAmount: KeyedDataRepository[Player, ManaManipulation[G]] =
-          handles.repository.map(ManaManipulation.fromLevelCappedAmountRef[G])
+          handles.repository.map(ManaManipulation.fromLevelCappedAmountRef[G](globalMultiplierRef))
+
+        override def setGlobalManaMultiplier(manaMultiplier: ManaMultiplier): G[Unit] =
+          globalMultiplierRef.set(manaMultiplier)
+
       }
 
       override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = List(

@@ -7,8 +7,8 @@ case class ManaAmount(value: Double) {
 
   def add(amount: ManaAmount): ManaAmount = ManaAmount(amount.value + value)
 
-  def tryUse(amount: ManaAmount): Option[ManaAmount] = {
-    val resultingAmount = value - amount.value
+  def tryUse(amount: ManaAmount)(manaMultiplier: ManaMultiplier): Option[ManaAmount] = {
+    val resultingAmount = value - amount.multiply(manaMultiplier.value).value
     Option.when(resultingAmount >= 0.0)(ManaAmount(resultingAmount))
   }
 

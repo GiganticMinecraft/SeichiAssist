@@ -575,12 +575,13 @@ class SeichiAssist extends JavaPlugin() {
 
       import PluginExecutionContexts._
 
-      implicit val api: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
+      implicit val breakCountApi: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
+      implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
       implicit val sendMessages: SendMinecraftMessage[IO, Player] = new SendBukkitMessage[IO]
 
       val dragonNightTimeProcess: IO[Nothing] =
-        subsystems.dragonnighttime.System.backgroundProcess[IO](fastDiggingEffectSystem.effectApi)
+        subsystems.dragonnighttime.System.backgroundProcess[IO, SyncIO](fastDiggingEffectSystem.effectApi)
 
       val halfHourRankingRoutineOption: Option[IO[Nothing]] =
       // 公共鯖(7)と建築鯖(8)なら整地量のランキングを表示する必要はない

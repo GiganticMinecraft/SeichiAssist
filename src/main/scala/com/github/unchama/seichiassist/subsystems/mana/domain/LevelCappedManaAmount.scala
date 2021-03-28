@@ -19,8 +19,8 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
     LevelCappedManaAmount.capping(manaAmount.add(amount), level)
   }
 
-  def tryUse(amount: ManaAmount): Option[LevelCappedManaAmount] = {
-    manaAmount.tryUse(amount).map(LevelCappedManaAmount(_, level))
+  def tryUse(amount: ManaAmount)(manaMultiplier: ManaMultiplier): Option[LevelCappedManaAmount] = {
+    manaAmount.tryUse(amount)(manaMultiplier).map(LevelCappedManaAmount(_, level))
   }
 
   def withHigherLevelOption(newLevel: SeichiLevel): Option[LevelCappedManaAmount] =
