@@ -1,6 +1,6 @@
 use seichiassist;
 -- プレゼントIDと実体の対応付け
-CREATE TABLE IF NOT EXISTS presents(
+CREATE TABLE IF NOT EXISTS present(
   present_id int PRIMARY KEY auto_increment,
   itemstack  blob NOT NULL
 );
