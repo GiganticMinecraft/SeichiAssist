@@ -9,8 +9,9 @@ import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
-import com.github.unchama.seichiassist.subsystems.present.infrastructure.{GlobalPlayerAccessor, JdbcBackedPresentPersistence}
+import com.github.unchama.seichiassist.subsystems.present.infrastructure.JdbcBackedPresentPersistence
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -106,7 +107,7 @@ object PresentCommand {
    * 備考:
    *   - †: スペース区切り。
    */
-  private def grantRightExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) =
+  private def grantRightExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F], globalPlayerAccessor: UuidToLastSeenName[F]) =
     playerCommandBuilder
       .argumentsParsers(
         List(
@@ -125,7 +126,7 @@ object PresentCommand {
           val eff = for {
             _ <- NonServerThreadContextShift[F].shift
             // TODO: 以下の処理は多分共通化できるがうまい方法が思いつかない
-            globalUUID2Name <- GlobalPlayerAccessor.getUUIDsAndName
+            globalUUID2Name <- globalPlayerAccessor.entries
             // 可変長引数には対応していないので`yetToBeParsed`を使う
             restArg = context.args
               // プレイヤー名は /[A-Za-z0-9_]{,16}/であるため空白が誤って解釈されることはない
@@ -159,7 +160,7 @@ object PresentCommand {
    * 備考:
    *   - ✝: スペース区切り。
    */
-  private def revokeRightExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) =
+  private def revokeRightExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F], globalPlayerAccessor: UuidToLastSeenName[F]) =
     playerCommandBuilder
       .argumentsParsers(
         List(
@@ -176,7 +177,7 @@ object PresentCommand {
           val isGlobal = args.parsed(1).asInstanceOf[String] == "all"
           val eff = for {
             _ <- NonServerThreadContextShift[F].shift
-            globalUUID2Name <- GlobalPlayerAccessor.getUUIDsAndName
+            globalUUID2Name <- globalPlayerAccessor.entries
             // 可変長引数には対応していないので`yetToBeParsed`を使う
             restArg = args
               // プレイヤー名は /[A-Za-z0-9_]{,16}/であるため空白が誤って解釈されることはない
@@ -337,7 +338,8 @@ object PresentCommand {
       )
     )
   )
-  def executor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]): TabExecutor = BranchedExecutor(
+
+  def executor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F], globalPlayerAccessor: UuidToLastSeenName[F]): TabExecutor = BranchedExecutor(
     Map(
       "define" -> defineExecutor,
       "delete" -> deleteExecutor,
