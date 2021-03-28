@@ -12,7 +12,7 @@ import java.util.UUID
  * [[PresentPersistence]]のJDBC実装。この実装は[[PresentPersistence]]の制約を引き継ぐ。
  */
 class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
-  private final val definitionTable = "presents"
+  private final val definitionTable = "present"
   private final val stateTable = "present_state"
   private final val claimingStateColumn = "claimed"
   override def define(itemstack: ItemStack): F[Option[PresentID]] = Sync[F].delay {
