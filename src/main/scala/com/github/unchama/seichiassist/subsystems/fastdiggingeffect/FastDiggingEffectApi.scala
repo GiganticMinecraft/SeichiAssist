@@ -16,6 +16,11 @@ trait FastDiggingEffectWriteApi[F[_], Player] {
    */
   def addEffect(effect: FastDiggingEffect, duration: FiniteDuration): Kleisli[F, Player, Unit]
 
+  /**
+   * サーバー内に居る全プレーヤーに採掘速度上昇効果を一括で付与する作用。
+   */
+  def addEffectToAllPlayers(effect: FastDiggingEffect, duration: FiniteDuration): F[Unit]
+
 }
 
 trait FastDiggingEffectReadApi[F[_], Player] {

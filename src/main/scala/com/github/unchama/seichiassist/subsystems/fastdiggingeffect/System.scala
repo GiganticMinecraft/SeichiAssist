@@ -24,6 +24,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.setti
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{JdbcFastDiggingEffectStatsSettingsPersistence, JdbcFastDiggingEffectSuppressionStatePersistence}
 import io.chrisdavenport.log4cats.ErrorLogger
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 import java.util.UUID
@@ -129,6 +130,18 @@ object System {
               }
               .as(())
           }
+
+        override def addEffectToAllPlayers(effect: FastDiggingEffect, duration: FiniteDuration): F[Unit] = {
+          import scala.concurrent.duration._
+          import scala.jdk.CollectionConverters._
+
+          MinecraftServerThreadShift[F].shift >>
+            Bukkit.getOnlinePlayers
+              .asScala
+              .toList
+              .traverse { player => addEffect(effect, 1.hour).run(player) }
+              .as(())
+        }
 
       }
       override val settingsApi: FastDiggingSettingsApi[F, Player] = new FastDiggingSettingsApi[F, Player] {
