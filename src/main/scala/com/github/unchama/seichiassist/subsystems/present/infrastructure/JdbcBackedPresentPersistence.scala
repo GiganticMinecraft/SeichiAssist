@@ -70,7 +70,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
 
     DB.localTx { implicit session =>
       // https://discord.com/channels/237758724121427969/565935041574731807/824107651985834004
-      sql"""DELETE FROM $stateTable WHERE present_id = $presentID AND uuid IN $scopeAsSQL"""
+      sql"""DELETE FROM $stateTable WHERE present_id = $presentID AND uuid IN ($scopeAsSQL)"""
         .execute()
         .apply()
     }
@@ -123,4 +123,3 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 }
-
