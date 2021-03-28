@@ -179,26 +179,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       true
   }
 
-  private def assertPlayerDataExistenceFor(playerName: String): IO[ResponseEffectOrResult[CommandSender, Unit]] =
-    IO {
-      try {
-        // TODO: 本当にStarSelectじゃなきゃだめ?
-        val resultSet = gateway.executeQuery(s"select * from $tableReference where name = $playerName")
-
-        if (!resultSet.next()) {
-          Left(MessageEffect(s"$RED$playerName はデータベースに登録されていません。"))
-        } else {
-          Right(())
-        }
-      } catch {
-        case e: SQLException =>
-          Bukkit.getLogger.warning(s"sql failed on checking data existence of $playerName")
-          e.printStackTrace()
-
-          Left(MessageEffect(s"${RED}プレーヤーデータへのアクセスに失敗しました。"))
-      }
-    }
-
   // anniversary変更
   def setAnniversary(anniversary: Boolean, uuid: Option[UUID]): Boolean = {
     val command = s"UPDATE $tableReference SET anniversary = $anniversary" +
@@ -211,8 +191,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     true
   }
 
-  // TODO remove `playerData` from argument
-  def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): IO[ResponseEffectOrResult[Player, Unit]] = {
+  def saveSharedInventory(player: Player, serializedInventory: String): IO[ResponseEffectOrResult[Player, Unit]] = {
     val assertSharedInventoryBeEmpty: EitherT[IO, TargetedEffect[CommandSender], Unit] =
       for {
         sharedInventorySerialized <- EitherT(loadShareInv(player))

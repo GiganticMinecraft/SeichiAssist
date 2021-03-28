@@ -22,7 +22,7 @@ class PlayerSettings {
   var multipleidbreakflag = false
   //PvPトグル
   var pvpflag = false
-  var nickname: PlayerNickname = PlayerNickname(NicknameStyle.Level, 0, 0)
+  var nickname: PlayerNickname = PlayerNickname(NicknameStyle.Level)
   //ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
 

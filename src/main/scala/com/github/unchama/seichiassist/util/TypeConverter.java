@@ -1,17 +1,9 @@
 package com.github.unchama.seichiassist.util;
 
-import java.math.BigDecimal;
-
 public final class TypeConverter {
     // 不必要なインスタンス化を防ぐため封印
     private TypeConverter() {
 
-    }
-
-    //double -> .1double
-    public static double Decimal(double d) {
-        BigDecimal bi = new BigDecimal(String.valueOf(d));
-        return bi.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public static int toSecond(int _tick) {
@@ -19,7 +11,7 @@ public final class TypeConverter {
     }
 
     public static String toTimeString(int seconds) {
-        final int totalMinutes = Math.round(seconds / 60);
+        final int totalMinutes = seconds / 60;
         final int hours = totalMinutes / 60;
         final int minutes = totalMinutes % 60;
 

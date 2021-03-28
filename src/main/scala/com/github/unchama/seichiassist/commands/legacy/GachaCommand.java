@@ -494,11 +494,8 @@ public class GachaCommand implements CommandExecutor {
         sender.sendMessage(ChatColor.RED + "アイテム番号|レベル|変数名|アイテム名|アイテム数|出現確率");
         for (MineStackGachaData gachadata : CollectionConverters.BufferHasAsJava(SeichiAssist.msgachadatalist()).asJava()) {
             sender.sendMessage(i + "|" + gachadata.level() + "|" + gachadata.objName() + "|" + gachadata.itemStack().getType().toString() + "/" + gachadata.itemStack().getItemMeta().getDisplayName() + ChatColor.RESET + "|" + gachadata.amount() + "|" + gachadata.probability() + "(" + (gachadata.probability() * 100) + "%)");
-            //totalprobability += gachadata.probability;
             i++;
         }
-        //sender.sendMessage(ChatColor.RED + "合計確率:" + totalprobability + "(" + (totalprobability*100) + "%)");
-        //sender.sendMessage(ChatColor.RED + "合計確率は100%以内に収まるようにしてください");
     }
 
     private void Gacharemove(CommandSender sender, int num) {

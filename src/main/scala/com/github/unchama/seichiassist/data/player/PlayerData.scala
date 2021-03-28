@@ -102,7 +102,7 @@ class PlayerData(
   //連続・通算ログイン用
   // ロード時に初期化される
   var lastcheckdate: String = _
-  var loginStatus: LoginStatus = LoginStatus(null, 0)
+  var loginStatus: LoginStatus = LoginStatus(null)
   //期間限定ログイン用
   var LimitedLoginCount = 0
   var ChainVote = 0
@@ -135,7 +135,7 @@ class PlayerData(
   var toggleVotingFairy = 1
   var p_apple: Long = 0
   var toggleVFSound = true
-  var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
+  var giganticBerserk: GiganticBerserk = GiganticBerserk()
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false
   //プレイ時間差分計算用int

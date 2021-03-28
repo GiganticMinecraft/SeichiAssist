@@ -20,7 +20,7 @@ import java.util.Arrays;
  */
 public class ExperienceManager implements IExperienceManager {
     // this is to stop the lookup table growing without control
-    private static int hardMaxLevel = 100000;
+    private static final int hardMaxLevel = 100000;
 
     private static long[] xpTotalToReachLevel;
 
