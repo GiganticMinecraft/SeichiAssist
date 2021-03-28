@@ -19,7 +19,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     val stackAsBlob = ItemStackBlobProxy.itemStackToBlob(itemstack)
     DB.localTx { implicit session =>
       // プレゼントのIDはauto_incrementなので0で良い
-      sql"""INSERT INTO $definitionTable VALUES (0, $stackAsBlob)"""
+      sql"""INSERT INTO $definitionTable (itemstack) VALUES ($stackAsBlob)"""
         .execute()
         .apply()
 
