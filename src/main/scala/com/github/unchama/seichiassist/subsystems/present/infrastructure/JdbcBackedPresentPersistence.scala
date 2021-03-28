@@ -38,6 +38,10 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
+  /**
+   * 指定したPresentIDに対応するプレゼントを物理消去する。
+   * @param presentId プレゼントID
+   */
   override def delete(presentId: PresentID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       // 制約をかけているので$stateTableの方から先に消さないと整合性エラーを吐く
