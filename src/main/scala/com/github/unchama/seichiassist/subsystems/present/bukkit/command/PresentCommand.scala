@@ -68,11 +68,10 @@ object PresentCommand {
           } else {
             val eff = for {
               _ <- NonServerThreadContextShift[F].shift
-              presentId <- persistence.define(mainHandItem)
-            } yield
-              presentId.fold(MessageEffect("問題が発生しました。再度お試しください。")) { id =>
-                MessageEffect(s"メインハンドに持ったアイテムをプレゼントとして定義しました。IDは${id}です。")
-              }
+              presentID <- persistence.define(mainHandItem)
+            } yield {
+              MessageEffect(s"メインハンドに持ったアイテムをプレゼントとして定義しました。IDは${presentID}です。")
+            }
             eff.toIO
           }
         }
@@ -214,10 +213,10 @@ object PresentCommand {
     playerCommandBuilder
       .argumentsParsers(List(presentIdParser))
       .execution { context =>
-        val player = context.sender
+        val player = context.sender.getUniqueId
         val presentId = context.args.parsed.head.asInstanceOf[Int]
 
-        // 注釈: この明示的な型変数の指定は必要
+        // この明示的な型変数の指定は必要
         val eff: F[TargetedEffect[Player]] = for {
           _ <- NonServerThreadContextShift[F].shift
           states <- persistence.fetchState(player)
@@ -227,7 +226,7 @@ object PresentCommand {
               Monad[F].pure(MessageEffect(s"ID: ${presentId}のプレゼントはすでに受け取っています。"))
             case PresentClaimingState.NotClaimed =>
               for {
-                _ <- persistence.markAsClaimed(player, presentId)
+                _ <- persistence.markAsClaimed(presentId, player)
                 item <- persistence.lookup(presentId)
               } yield {
                 // 注釈: この明示的な型変数の指定は必要
@@ -262,7 +261,7 @@ object PresentCommand {
       val eff = for {
         // off-main-thread
         _ <- NonServerThreadContextShift[F].shift
-        state <- persistence.fetchState(context.sender)
+        state <- persistence.fetchState(context.sender.getUniqueId)
       } yield {
         val mes = state
           .toList
@@ -292,7 +291,7 @@ object PresentCommand {
       .execution { context =>
         val perPage = 10
         val page = context.args.parsed.head.asInstanceOf[Int]
-        val player = context.sender
+        val player = context.sender.getUniqueId
         val eff = for {
           _ <- NonServerThreadContextShift[F].shift
           state <- persistence.fetchState(player)

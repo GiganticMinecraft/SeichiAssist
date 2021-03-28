@@ -12,10 +12,11 @@ import java.util.UUID
  * [[PresentPersistence]]のJDBC実装。この実装は[[PresentPersistence]]の制約を引き継ぐ。
  */
 class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
+  override type PresentID = Int
   private final val definitionTable = "present"
   private final val stateTable = "present_state"
   private final val claimingStateColumn = "claimed"
-  override def define(itemstack: ItemStack): F[Option[PresentID]] = Sync[F].delay {
+  override def define(itemstack: ItemStack): F[PresentID] = Sync[F].delay {
     val stackAsBlob = ItemStackBlobProxy.itemStackToBlob(itemstack)
     DB.localTx { implicit session =>
       // プレゼントのIDはauto_incrementなので0で良い
@@ -23,7 +24,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
         .execute()
         .apply()
 
-      val value = DB.readOnly { implicit session =>
+      val newPresentID = DB.readOnly { implicit session =>
         // ここで、itemstackは同じItemStackであるプレゼントが複数存在させたいケースを考慮して、UNIQUEではない。
         // 他方、present_idは主キーであり、AUTO_INCREMENTであることから単調増加なので、単純にMAXを取れば良い。
         sql"""SELECT MAX(present_id) FROM $definitionTable WHERE itemstack = $stackAsBlob"""
@@ -34,7 +35,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
           .get
       }
 
-      Some(value)
+      newPresentID
     }
   }
 
@@ -80,9 +81,9 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
-  override def markAsClaimed(player: Player, presentId: PresentID): F[Unit] = Sync[F].delay {
+  override def markAsClaimed(presentId: PresentID, player: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""UPDATE $stateTable SET $claimingStateColumn = TRUE WHERE uuid = ${player.getUniqueId} AND present_id = $presentId"""
+      sql"""UPDATE $stateTable SET $claimingStateColumn = TRUE WHERE uuid = ${player.toString} AND present_id = $presentId"""
         .update()
         .apply()
     }
@@ -91,19 +92,21 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
   override def mapping: F[Map[PresentID, ItemStack]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"""SELECT present_id, itemstack FROM $definitionTable;"""
-        .map { rs => (
-          rs.int("present_id"),
-          ItemStackBlobProxy.blobToItemStack(rs.string("itemstack"))
-        )}
+        .map { rs =>
+          (
+            rs.int("present_id"),
+            ItemStackBlobProxy.blobToItemStack(rs.string("itemstack"))
+          )
+        }
         .list()
         .apply()
         .toMap
     }
   }
 
-  override def fetchState(player: Player): F[Map[PresentID, PresentClaimingState]] = Sync[F].delay {
+  override def fetchState(player: UUID): F[Map[PresentID, PresentClaimingState]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"""SELECT present_id, $claimingStateColumn FROM $stateTable WHERE uuid = ${player.getUniqueId.toString}"""
+      sql"""SELECT present_id, $claimingStateColumn FROM $stateTable WHERE uuid = ${player.toString}"""
         .map { rs =>
           val claimState = if (rs.boolean(claimingStateColumn))
             PresentClaimingState.Claimed

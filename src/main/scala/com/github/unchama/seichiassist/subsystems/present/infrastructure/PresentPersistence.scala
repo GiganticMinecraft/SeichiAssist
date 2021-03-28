@@ -13,7 +13,7 @@ import java.util.UUID
  *   - 返り値としての`PresentID`は対応するプレゼントが存在する
  */
 trait PresentPersistence[F[_]] {
-  type PresentID = Int
+  type PresentID
 
   /**
    * 指定した[[ItemStack]]に対応するプレゼントを新しく定義する。
@@ -21,7 +21,7 @@ trait PresentPersistence[F[_]] {
    * @param itemstack プレゼントの中身
    * @return 定義を行った後、新しく割り振られたPresentIDを返し、かつ定義に失敗した場合例外を投げる作用
    */
-  def define(itemstack: ItemStack): F[Option[PresentID]]
+  def define(itemstack: ItemStack): F[PresentID]
 
   /**
    * 指定したPresentIDに対応するプレゼントを消去する。
