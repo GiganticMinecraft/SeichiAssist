@@ -64,7 +64,11 @@ trait PresentPersistence[F[_]] {
   def mapping: F[Map[PresentID, ItemStack]]
 
   /**
-   * プレイヤーが有効なプレゼントを受け取ることができるかどうか列挙する。
+   * プレイヤーがプレゼントを受け取ることができるかどうか列挙する。このとき、計算されるMapは次の性質を持つ:
+   *
+   *  - 受け取ることができるが、まだ受け取っていないプレゼントに対応するPresentIDに対して[[PresentClaimingState.NotClaimed]]がマッピングされる
+   *  - すでに受け取ったプレゼントに対応するPresentIDに対して[[PresentClaimingState.Claimed]]がマッピングされる
+   *  - 有効かつ、プレイヤーが受け取ることができないPresentIDに対して[[PresentClaimingState.Unavailable]]がマッピングされる
    *
    * @param player チェックするプレイヤー
    * @return [[PresentID]]とそれに紐付けられたプレゼントを受け取ることができるかを
