@@ -282,7 +282,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val mebiusSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.{sleepAndRoutineContext, syncShift, timer}
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]

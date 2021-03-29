@@ -7,7 +7,7 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.effect.EffectExtra
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.routines.PeriodicMebiusSpeechRoutine
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import org.bukkit.entity.Player
@@ -24,7 +24,7 @@ object MebiusSpeechRoutineFiberRepositoryDefinitions {
   ](implicit
     serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
     repeatingTaskContext: RepeatingTaskContext,
-    bukkitSyncIOShift: MinecraftServerThreadShift[IO],
+    onMainThread: OnMinecraftServerThread[IO],
     ioConcurrent: ConcurrentEffect[IO]): TwoPhasedRepositoryInitialization[G, Player, RepositoryValue[IO]] =
     TwoPhasedRepositoryInitialization.withoutPrefetching[G, Player, RepositoryValue[IO]] { player =>
       for {
