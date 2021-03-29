@@ -240,7 +240,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
 
 private object ConstantButtons {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 
   // TODO プレーヤーが飛行中かどうかでON/追加の表示を変えるとUX良さそう
   val buttonToFlyFor1Minute: Button = {
