@@ -47,7 +47,7 @@ import org.bukkit.{Material, Sound}
 object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread, syncShift}
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import eu.timepit.refined.auto._
 

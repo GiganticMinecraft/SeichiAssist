@@ -24,7 +24,7 @@ import org.bukkit.{Material, Sound}
 private case class ButtonComputations(player: Player) extends AnyVal {
 
   import BuildMainMenu._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread, syncShift}
   import player._
 
   def computeNotationOfStats(): IO[Button] = RecomputedButton {
