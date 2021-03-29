@@ -591,7 +591,7 @@ class SeichiAssist extends JavaPlugin() {
         }
 
       val levelUpGiftProcess: IO[Nothing] =
-        subsystems.seichilevelupgift.System.backGroundProcess[SyncIO]
+        subsystems.seichilevelupgift.System.backGroundProcess[IO, SyncIO]
 
       val levelUpMessagesProcess: IO[Nothing] =
         subsystems.seichilevelupmessage.System.backgroundProcess[IO, SyncIO, Player]

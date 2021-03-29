@@ -2,7 +2,7 @@ package com.github.unchama.targetedeffect
 
 import cats.FlatMap
 import cats.data.Kleisli
-import cats.effect.{IO, Timer}
+import cats.effect.{IO, Sync, Timer}
 import cats.kernel.Monoid
 
 import scala.concurrent.duration.FiniteDuration
@@ -16,7 +16,7 @@ object TargetedEffect {
   /**
    * 同期的な副作用`f`を`TargetedEffect`内に持ち回すようにする.
    */
-  def delay[T](f: T => Unit): TargetedEffect[T] = Kleisli(t => IO.delay(f(t)))
+  def delay[F[_] : Sync, T](f: T => Unit): Kleisli[F, T, Unit] = Kleisli(t => Sync[F].delay(f(t)))
 }
 
 object DeferredEffect {
