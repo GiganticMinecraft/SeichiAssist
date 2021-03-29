@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 import cats.effect.{ConcurrentEffect, IO, LiftIO, SyncEffect, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
@@ -29,7 +30,8 @@ class NewYearListener[
   G[_] : SyncEffect
 ](implicit effectEnvironment: EffectEnvironment,
   repository: LastQuitPersistenceRepository[F, UUID],
-  manaApi: ManaWriteApi[G, Player]) extends Listener {
+  manaApi: ManaWriteApi[G, Player],
+  ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   import cats.implicits._
 

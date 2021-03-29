@@ -230,7 +230,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
-    import PluginExecutionContexts.asyncShift
+    import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
@@ -260,7 +260,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val fastDiggingEffectSystem: subsystems.fastdiggingeffect.System[IO, IO, Player] = {
-    import PluginExecutionContexts.{asyncShift, syncShift, timer}
+    import PluginExecutionContexts.{asyncShift, onMainThread, syncShift, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
@@ -273,7 +273,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val gachaPointSystem: subsystems.gachapoint.System[IO, SyncIO, Player] = {
-    import PluginExecutionContexts.{asyncShift, syncShift, timer}
+    import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] = new GetConnectedBukkitPlayers[IO]
@@ -479,7 +479,7 @@ class SeichiAssist extends JavaPlugin() {
       "halfguard" -> HalfBlockProtectCommand.executor,
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
-      "minehead" -> MineHeadCommand.executor,
+      "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
       "stickmenu" -> StickMenuCommand.executor
     )

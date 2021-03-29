@@ -1,23 +1,26 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
-import java.time.LocalDate
-
+import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
-import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class AnniversaryListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+import java.time.LocalDate
+
+class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
+                          ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {

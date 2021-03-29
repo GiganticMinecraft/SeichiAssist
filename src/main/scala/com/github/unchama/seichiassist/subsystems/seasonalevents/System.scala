@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents
 
 import cats.Functor
-import cats.effect.{Clock, ConcurrentEffect, SyncEffect}
+import cats.effect.{Clock, ConcurrentEffect, IO, SyncEffect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryListener
@@ -38,7 +39,8 @@ object System {
     H[_]
   ](instance: JavaPlugin)
    (implicit manaWriteApi: ManaWriteApi[G, Player],
-    effectEnvironment: EffectEnvironment): System[H] = {
+    effectEnvironment: EffectEnvironment,
+    ioOnMainThread: OnMinecraftServerThread[IO]): System[H] = {
 
     implicit val repository: LastQuitPersistenceRepository[F, UUID] =
       new JdbcLastQuitPersistenceRepository[F]
@@ -48,13 +50,13 @@ object System {
         new AnniversaryListener(),
         new ChristmasItemListener(instance),
         HalloweenItemListener,
-        LimitedLoginBonusGifter,
+        new LimitedLoginBonusGifter,
         new SeizonsikiListener,
         new ValentineListener(),
         new NewYearListener(),
       ),
       commands = Map(
-        "event" -> EventCommand.executor
+        "event" -> new EventCommand().executor
       )
     )
   }
