@@ -101,7 +101,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
         .map { rs =>
           (
             rs.int(presentIdColumn),
-            ItemStackBlobProxy.blobToItemStack(rs.string(itemStackColumn))
+            unwrapItemStack(rs)
           )
         }
         .list()
@@ -140,29 +140,20 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     } yield {
       val associatedEntries = DB.readOnly { implicit session =>
         sql"""SELECT $presentIdColumn, $claimingStateColumn FROM $stateTable WHERE uuid = ${player.toString}"""
-          .map { rs =>
-            val claimState = if (rs.boolean(claimingStateColumn))
-              PresentClaimingState.Claimed
-            else
-              PresentClaimingState.NotClaimed
-
-            (rs.int(presentIdColumn), claimState)
-          }
+          .map(wrapResultForState)
           .list()
           .apply()
           .toMap
       }
 
-      // PresentIDの全域をUnavailableにして、その後紐付けられているエントリで上書きする
-      val knownEntries = validPresentIDs.map(id => (id, PresentClaimingState.Unavailable)).toMap
-      knownEntries ++ associatedEntries
+      filledEntries(associatedEntries, validPresentIDs)
     }
   }
 
   override def lookup(presentID: PresentID): F[Option[ItemStack]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"""SELECT $itemStackColumn FROM $definitionTable WHERE $presentIdColumn = $presentID"""
-        .map { rs => ItemStackBlobProxy.blobToItemStack(rs.string("itemstack")) }
+        .map(unwrapItemStack)
         .first()
         .apply()
     }

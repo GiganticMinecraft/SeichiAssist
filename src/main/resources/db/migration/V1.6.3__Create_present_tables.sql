@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXISTS present_state(
   claimed    boolean  NOT NULL,
 
   PRIMARY KEY(present_id, uuid),
-  FOREIGN KEY present_id_in_state_must_exist_presents_table(present_id) REFERENCES presents(present_id),
+  FOREIGN KEY present_id_in_present_state_must_exist_in_presents_table(present_id) REFERENCES present(present_id),
 );
