@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
 import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
-import org.bukkit.entity.Player
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.numeric.Positive
 import org.bukkit.inventory.ItemStack
 
 import java.util.UUID
@@ -64,10 +65,36 @@ trait PresentPersistence[F[_]] {
   def mapping: F[Map[PresentID, ItemStack]]
 
   /**
+   * ページネーション付きでプレイヤーがプレゼントを受け取ることができるかどうか列挙する。
+   * このときの出現順序は、[[PresentID]]が最も若いエントリから先に出現する。
+   *
+   * 例として以下のような状況を仮定する:
+   *   - 既知のPresentIDとItemStackのエントリ: `List((1, aaa), (3, ccc), (6, fff), (4, ddd), (5, eee), (2, bbb))`
+   *   - PresentPersistenceのインスタンス `pp`
+   *   - 調査対象のプレイヤー `A`
+   *   - `A` が対象となっているプレゼントのPresentID: `Set(1, 2, 4, 6)`
+   *   - `A` が受け取ったPresentID: `Set(1, 2, 3)`
+   *
+   * この時 `pp.mappingWithPagination(A, 1, 5)` を呼び出すと、作用の中で計算される結果は次のとおりになる:
+   *
+   *    `Map(1 -> Claimed, 2 -> Claimed, 3 -> Claimed, 4 -> NotClaimed, 5 -> Unavailable)`
+   *
+   * 備考:
+   *   - 実装によっては、[[fetchState]]などを呼び出して既知のエントリを全列挙する可能性がある。
+   *   - このメソッドは一貫性のために[[fetchState]]のドキュメントにある制約を継承する。
+   *
+   * @param player 調べる対象のプレイヤー
+   * @param perPage ページごとのエントリの数
+   * @param page ページ、1オリジン
+   * @return ページネーションを計算して返す作用
+   */
+  def fetchStateWithPagination(player: UUID, perPage: Int Refined Positive, page: Int Refined Positive): F[Map[PresentID, PresentClaimingState]]
+
+  /**
    * プレイヤーがプレゼントを受け取ることができるかどうか列挙する。このとき、計算されるMapは次の性質を持つ:
    *
-   *  - 受け取ることができるが、まだ受け取っていないプレゼントに対応するPresentIDに対して[[PresentClaimingState.NotClaimed]]がマッピングされる
    *  - すでに受け取ったプレゼントに対応するPresentIDに対して[[PresentClaimingState.Claimed]]がマッピングされる
+   *  - 受け取ることができるが、まだ受け取っていないプレゼントに対応するPresentIDに対して[[PresentClaimingState.NotClaimed]]がマッピングされる
    *  - 有効かつ、プレイヤーが受け取ることができないPresentIDに対して[[PresentClaimingState.Unavailable]]がマッピングされる
    *
    * @param player チェックするプレイヤー

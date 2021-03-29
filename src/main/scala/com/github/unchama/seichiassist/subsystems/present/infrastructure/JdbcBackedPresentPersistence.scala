@@ -2,7 +2,9 @@ package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
-import org.bukkit.entity.Player
+import eu.timepit.refined.numeric.{NonNegative, Positive}
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
 import org.bukkit.inventory.ItemStack
 import scalikejdbc._
 
@@ -44,6 +46,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
 
   /**
    * 指定したPresentIDに対応するプレゼントを物理消去する。
+   *
    * @param presentId プレゼントID
    */
   override def delete(presentId: PresentID): F[Unit] = Sync[F].delay {
@@ -107,6 +110,28 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
+  override def fetchStateWithPagination(player: UUID, perPage: Int Refined Positive, page: Int Refined Positive): F[Map[Int, PresentClaimingState]] = {
+    import cats.implicits._
+    for {
+      idSliceWithPagination <- idSliceWithPagination(perPage, page)
+    } yield {
+      // ページネーションはIDを列挙するときにすでに完了している
+      val associatedEntries = DB.readOnly { implicit session =>
+        sql"""
+              SELECT $presentIdColumn, $claimingStateColumn
+        FROM $stateTable
+        WHERE uuid = ${player.toString} AND $presentIdColumn IN ($idSliceWithPagination)
+"""
+          .map(wrapResultForState)
+          .toList()
+          .apply()
+          .toMap
+      }
+
+      filledEntries(associatedEntries, idSliceWithPagination)
+    }
+  }
+
   override def fetchState(player: UUID): F[Map[PresentID, PresentClaimingState]] = {
     import cats.implicits._
     for {
@@ -141,5 +166,37 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
         .first()
         .apply()
     }
+  }
+
+  private def idSliceWithPagination(perPage: Int Refined Positive, page: Int Refined Positive): F[Set[PresentID]] =
+    Sync[F].delay {
+      val offset = (page - 1) * perPage
+      DB.readOnly { implicit session =>
+        sql"""SELECT $presentIdColumn ORDER BY $presentIdColumn LIMIT $perPage OFFSET $offset"""
+          .map { rs =>
+            rs.int(presentIdColumn)
+          }
+          .toList()
+          .apply()
+          .toSet
+      }
+    }
+
+  private def wrapResultForState(rs: WrappedResultSet): (Int, PresentClaimingState) = {
+    val claimState = if (rs.boolean(claimingStateColumn))
+      PresentClaimingState.Claimed
+    else
+      PresentClaimingState.NotClaimed
+
+    (rs.int(presentIdColumn), claimState)
+  }
+
+  private def unwrapItemStack(rs: WrappedResultSet): ItemStack = {
+    ItemStackBlobProxy.blobToItemStack(rs.string(itemStackColumn))
+  }
+
+  private def filledEntries(knownState: Map[PresentID, PresentClaimingState], validGlobalId: Iterable[PresentID]) = {
+    val globalEntries = validGlobalId.map(id => (id, PresentClaimingState.Unavailable)).toMap
+    globalEntries ++ knownState
   }
 }

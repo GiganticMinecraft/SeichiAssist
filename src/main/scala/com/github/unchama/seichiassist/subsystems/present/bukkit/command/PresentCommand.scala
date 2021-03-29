@@ -15,6 +15,10 @@ import com.github.unchama.seichiassist.subsystems.present.infrastructure.JdbcBac
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
+import eu.timepit.refined._
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.Positive
 import org.bukkit.{ChatColor, Material}
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -290,17 +294,19 @@ object PresentCommand {
     playerCommandBuilder
       .argumentsParsers(List(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数には1以上の数を指定してください。"))))
       .execution { context =>
-        val perPage = 10
-        val page = context.args.parsed.head.asInstanceOf[Int]
+        val perPage: Int Refined Positive = 10
+        val page = refineV[Positive](context.args.parsed.head.asInstanceOf[Int]) match {
+          // argumentsParsersで1以上を指定しているのでここでコケることはないはず
+          case Left(l) => throw new AssertionError(s"positive int: failed. message: $l")
+          case Right(v) => v
+        }
         val player = context.sender.getUniqueId
         val eff = for {
           _ <- NonServerThreadContextShift[F].shift
-          state <- persistence.fetchState(player)
-          ids = state.keys.toBuffer.sorted.slice((page - 1) * perPage, page * perPage - 1)
-          messageLine = ids
-            .map { id => (id, state(id)) }
+          states <- persistence.fetchStateWithPagination(player, perPage, page)
+          messageLine = states
             .map { case (id, state) =>
-              s"ID=$id: ${decoratePresentState(state)}${ChatColor.RESET}"
+              s"ID=$id: ${decoratePresentState(state)}"
             }
             .toList
         } yield {
