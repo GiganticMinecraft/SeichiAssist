@@ -292,6 +292,15 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
+  implicit lazy val webhookSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.webhook.System.wired[IO]
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -308,6 +317,7 @@ class SeichiAssist extends JavaPlugin() {
     fastDiggingEffectSystem,
     fourDimensionalPocketSystem,
     gachaPointSystem,
+    webhookSystem,
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -476,7 +486,6 @@ class SeichiAssist extends JavaPlugin() {
 
     buildAssist.onEnable()
 
-    // TODO: enable webhook subsystem
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),

@@ -1,10 +1,9 @@
 package com.github.unchama.seichiassist.menus.skill
 
-import java.net.HttpURLConnection
-
 import cats.data.Kleisli
 import cats.effect.concurrent.Ref
-import cats.effect.{IO, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
@@ -22,7 +21,7 @@ import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.subsystems.webhook.service.WebhookService
+import com.github.unchama.seichiassist.subsystems.webhook.service.{CanSendToWebhook, WebhookSender}
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -262,8 +261,10 @@ object ActiveSkillMenu extends Menu {
       }
     }
 
-    def seichiSkillButton(state: SkillSelectionState, skill: SeichiSkill)
-                         (implicit environment: Environment): Button = {
+    def seichiSkillButton[
+      F : ConcurrentEffect : NonServerThreadContextShift
+    ](state: SkillSelectionState, skill: SeichiSkill)
+     (implicit environment: Environment, webhookGatewayForAssault: CanSendToWebhook[F]): Button = {
       val itemStack = {
         val base = state match {
           case Locked =>
@@ -336,18 +337,14 @@ object ActiveSkillMenu extends Menu {
                       val (newState, assaultSkillUnlockEffects) =
                         if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
                           unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
-                          val webhookURL = SeichiAssist.seichiAssistConfig.getWebhookURL
-                            if (!webhookURL.equalsIgnoreCase("")) {
-                              new WebhookService().sendMessage(webhookURL, s"${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！").onComplete {
-                                case Success(statusCode) =>
-                                  if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_NO_CONTENT)
-                                    Bukkit.getLogger.warning(s"Discordへの通知に失敗しました。(ステータスコード: $statusCode)")
-                                case Failure(exception) =>
-                                  exception.printStackTrace()
-                                  Bukkit.getLogger.warning("Discordへの通知に失敗しました。")
-                              }
-                            } else
-                              Bukkit.getLogger.info("WebhookのURLが空のため、Discordへの通知を行いません。")
+                          import cats.implicits._
+                          import cats.effect.implicits._
+
+                          for {
+                            _ <- NonServerThreadContextShift[F].shift
+                            discordResult <- webhookGatewayForAssault.send(s"${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
+                          }
+
                             (
                               unlockedState.obtained(SeichiSkill.AssaultArmor),
                               SequentialEffect(

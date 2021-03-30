@@ -1,12 +1,10 @@
 package com.github.unchama.seichiassist.task
 
 import java.net.HttpURLConnection
-
-import cats.effect.{IO, SyncIO}
-
-import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
+import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.subsystems.webhook.service.WebhookService
+import com.github.unchama.seichiassist.subsystems.webhook.service.{CanSendToWebhook, WebhookSender}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.util.Util
@@ -17,7 +15,9 @@ import org.bukkit.entity.Player
 import scala.util.{Failure, Random, Success}
 
 class GiganticBerserkTask {
-  def PlayerKillEnemy(p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
+  def PlayerKillEnemy[
+    F : ConcurrentEffect : NonServerThreadContextShift
+  ](p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player], sender: CanSendToWebhook[F]): Unit = {
     val player = p
     val uuid = p.getUniqueId
     val playerdata = SeichiAssist.playermap(uuid)
@@ -60,19 +60,12 @@ class GiganticBerserkTask {
       player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
       //最大レベルになった時の処理
       if (playerdata.giganticBerserk.reachedLimit()) {
-        val webhookURL = SeichiAssist.seichiAssistConfig.getWebhookURL
-        if (!webhookURL.equalsIgnoreCase("")) {
-          implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
-          new WebhookService().sendMessage(webhookURL, s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！").onComplete {
-            case Success(statusCode) =>
-              if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_NO_CONTENT)
-                Bukkit.getLogger.warning(s"Discordへの通知に失敗しました。(ステータスコード: $statusCode)")
-            case Failure(exception) =>
-              exception.printStackTrace()
-              Bukkit.getLogger.warning("Discordへの通知に失敗しました。")
-          }
-        }
-        else Bukkit.getLogger.info("WebhookのURLが空のため、Discordへの通知を行いません。")
+        import cats.implicits._
+
+        for {
+          _ <- NonServerThreadContextShift[F].shift
+          _ <- sender.send(s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！")
+        } yield ()
 
         Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
         Util.sendEveryMessage(s"${ChatColor.GOLD}${ChatColor.BOLD}${playerdata.lowercaseName}がパッシブスキル:${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.GOLD}${ChatColor.BOLD}を完成させました！")
