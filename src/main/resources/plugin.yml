@@ -95,6 +95,11 @@ commands:
     usage: /<command>
     permission: seichiassist.stickmenu
     permission-message: *denied
+  present:
+    description: send a gift
+    usage: /<command> [player name]
+    permission-message: *denied
+    permission: seichiassist.present
 permissions:
   seichiassist.*:
     default: false
@@ -118,9 +123,29 @@ permissions:
       - seichiassist.x-transfer
       - seichiassist.fly
       - seichiassist.stickmenu
+      - seichiassist.present.*
   seichiassist.event:
     default: op
   seichiassist.shareinv:
     default: true
   seichiassist.mebius:
     default: true
+  seichiassist.present.grant:
+    default: false
+    description: "'/present grant' の使用許可を与える。"
+  seichiassist.present.revoke:
+    default: false
+    description: "'/present revoke' の使用許可を与える。"
+  seichiassist.present.define:
+    default: false
+    description: "'/present define' の使用許可を与える。"
+  seichiassist.present.delete:
+    default: false
+    description: "'/present delete' の使用許可を与える。"
+  seichiassist.present.*:
+    default: false
+    children:
+      - seichiassist.present.grant
+      - seichiassist.present.revoke
+      - seichiassist.present.define
+      - seichiassist.present.delete
