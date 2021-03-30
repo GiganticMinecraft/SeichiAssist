@@ -184,8 +184,10 @@ final class Config private(val config: FileConfiguration) {
       override val saveTimeoutDuration: Duration = _saveTimeoutDuration
     }
   }
-  
-  def getWebhookURL: String = config.getString("WebhookURL")
+
+  def getWebhookUrlForGiganticBerserk: String = config.getString("Url.webhook.GiganticBerserk")
+
+  def getWebhookUrlForAssault: String = config.getString("Url.webhook.assault")
 
   def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
     override val autoSaveEnabled: Boolean = config.getBoolean("AutoSave.Enable")
