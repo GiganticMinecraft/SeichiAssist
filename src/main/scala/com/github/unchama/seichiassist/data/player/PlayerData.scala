@@ -1,35 +1,28 @@
 package com.github.unchama.seichiassist.data.player
 
-import java.text.SimpleDateFormat
-import java.util.{GregorianCalendar, UUID}
-
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.ClosedRange
-import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
+import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
-import com.github.unchama.seichiassist.data.potioneffect.FastDiggingEffect
 import com.github.unchama.seichiassist.data.subhome.SubHome
-import com.github.unchama.seichiassist.data.{GridTemplate, Mana, SeichiLvUpMessages}
-import com.github.unchama.seichiassist.event.SeichiLevelUpEvent
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.ForcedPotionEffect
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
-import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import java.text.SimpleDateFormat
+import java.util.{GregorianCalendar, NoSuchElementException, UUID}
 import scala.collection.mutable
-import scala.jdk.CollectionConverters._
 
 /**
  * @deprecated PlayerDataはuuidに依存するべきではない
@@ -40,8 +33,6 @@ class PlayerData(
                 ) {
 
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.ForcedPotionEffect._
-  import com.github.unchama.util.InventoryUtil._
 
   //region session-specific data
   // TODO many properties here might not be right to belong here
@@ -58,63 +49,8 @@ class PlayerData(
   //経験値マネージャ
   lazy private val expmanager: IExperienceManager = new ExperienceManager(player)
   val settings = new PlayerSettings()
-  //３０分間のデータを保存する．
-  val halfhourblock: MineBlock = new MineBlock()
-  //持ってるポーションエフェクト全てを格納する．
-  val effectdatalist: mutable.ListBuffer[FastDiggingEffect] = mutable.ListBuffer.empty
   //プレイヤー名
   val lowercaseName: String = name.toLowerCase()
-
-  /**
-   * プレーヤーに付与されるべき採掘速度上昇効果を計算する.
-   */
-  val computeFastDiggingEffect: IO[ForcedPotionEffect] = for {
-    activeEffects <- IO {
-      effectdatalist.toList
-    }
-    computedAmplifier <- IO {
-      val amplifierSum = activeEffects.map(_.amplifier).sum
-      Math.floor(amplifierSum - 1).toInt
-    }
-    maxSpeed <- settings.fastDiggingEffectSuppression.maximumAllowedEffectAmplifier()
-    maxDuration <- IO {
-      activeEffects.map(_.duration).maxOption.getOrElse(0)
-    }
-  } yield {
-    // 実際に適用されるeffect量
-    val amplifier = Math.min(computedAmplifier, maxSpeed)
-
-    val effect =
-      if (amplifier >= 0)
-        new PotionEffect(PotionEffectType.FAST_DIGGING, maxDuration, amplifier, false, false)
-      else
-        new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0, false, false)
-
-    effect.asTargetedEffect()
-  }
-
-  /**
-   * @deprecated Should be moved to external scope
-   */
-  @Deprecated()
-  val toggleExpBarVisibility: TargetedEffect[Player] = {
-    import com.github.unchama.generic.syntax._
-
-    UnfocusedEffect {
-      this.settings.isExpBarVisible = !this.settings.isExpBarVisible
-    }.followedBy {
-      val isVisible = IO { this.settings.isExpBarVisible }
-      DeferredEffect {
-        isVisible
-          .map(visible => if (visible) s"${GREEN}整地量バー表示" else s"${RED}整地量バー非表示")
-          .map(MessageEffect.apply)
-      }
-    }.followedBy {
-      UnfocusedEffect {
-        SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-      }
-    }
-  }
 
   private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
   private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
@@ -130,10 +66,6 @@ class PlayerData(
 
   var canCreateRegion = true
   var unitPerClick = 1
-  //今回の採掘速度上昇レベルを格納
-  var minespeedlv = 0
-  //前回の採掘速度上昇レベルを格納
-  var lastminespeedlv = 0
   //投票受け取りボタン連打防止用
   var votecooldownflag = true
   //ガチャボタン連打防止用
@@ -147,10 +79,6 @@ class PlayerData(
 
   //共有インベントリにアイテムが入っているかどうか
   var contentsPresentInSharedInventory = false
-  //ガチャの基準となるポイント
-  var gachapoint = 0
-  //現在のプレイヤーレベル
-  var level = 1
   //詫び券をあげる数
   var unclaimedApologyItems = 0
   //ワールドガード保護自動設定用
@@ -162,12 +90,9 @@ class PlayerData(
     this.regionCount += 1
   }
 
-  var starLevels: StarLevel = StarLevel(0, 0)
   var minestack = new MineStack()
   //プレイ時間
   var playTick = 0
-  //トータル破壊ブロック
-  var totalbreaknum: Long = 0.toLong
   //合計経験値
   var totalexp = 0L
   //合計経験値統合済みフラグ
@@ -177,7 +102,7 @@ class PlayerData(
   //連続・通算ログイン用
   // ロード時に初期化される
   var lastcheckdate: String = _
-  var loginStatus: LoginStatus = LoginStatus(null, 0)
+  var loginStatus: LoginStatus = LoginStatus(null)
   //期間限定ログイン用
   var LimitedLoginCount = 0
   var ChainVote = 0
@@ -185,7 +110,6 @@ class PlayerData(
   //region スキル関連のデータ
   val skillState: Ref[IO, PlayerSkillState] = Ref.unsafe(PlayerSkillState.initial)
   var skillEffectState: PlayerSkillEffectState = PlayerSkillEffectState.initial
-  val manaState: Mana = new Mana()
   var effectPoint: Int = 0
   //endregion
 
@@ -199,7 +123,6 @@ class PlayerData(
   //実績ポイント用
   var achievePoint: AchievementPoint = AchievementPoint()
 
-  var buildCount: BuildCount = BuildCount(1, java.math.BigDecimal.ZERO)
   // n周年記念
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
@@ -212,10 +135,7 @@ class PlayerData(
   var toggleVotingFairy = 1
   var p_apple: Long = 0
   var toggleVFSound = true
-  //貢献度pt
-  var added_mana = 0
-  var contribute_point = 0
-  var giganticBerserk: GiganticBerserk = GiganticBerserk(0, 0, 0, canEvolve = false)
+  var giganticBerserk: GiganticBerserk = GiganticBerserk()
   //ハーフブロック破壊抑制用
   private val allowBreakingHalfBlocks = false
   //プレイ時間差分計算用int
@@ -223,35 +143,8 @@ class PlayerData(
 
   //region calculated
   // TODO many properties here may be inlined and deleted
-  //拡張インベントリ
-  private var _pocketInventory: Inventory = createInventory(None, 1.chestRows, Some(s"$DARK_PURPLE${BOLD}4次元ポケット"))
   //グリッド式保護関連
   private var claimUnit = ClaimUnit(0, 0, 0, 0)
-
-  def pocketInventory: Inventory = {
-    // 許容サイズが大きくなっていたら新規インベントリにアイテムをコピーしてそのインベントリを持ち回す
-    if (_pocketInventory.getSize < pocketSize) {
-      val newInventory =
-        Bukkit.getServer
-          .createInventory(null, pocketSize, s"$DARK_PURPLE${BOLD}4次元ポケット")
-      _pocketInventory.asScala.zipWithIndex.map(_.swap).foreach { case (i, is) => newInventory.setItem(i, is) }
-      _pocketInventory = newInventory
-    }
-
-    _pocketInventory
-  }
-
-  def pocketInventory_=(inventory: Inventory): Unit = {
-    _pocketInventory = inventory
-  }
-
-  //四次元ポケットのサイズを取得
-  private def pocketSize: Int = level match {
-    case _ if level < 46 => 9 * 3
-    case _ if level < 56 => 9 * 4
-    case _ if level < 66 => 9 * 5
-    case _ => 9 * 6
-  }
 
   def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
 
@@ -281,24 +174,12 @@ class PlayerData(
 
   //join時とonenable時、プレイヤーデータを最新の状態に更新
   def updateOnJoin(): Unit = {
-    // 前回統計を取った時との差分から整地量を計算するため、最初は統計量を0にしておく
-    // FIX(#542): 即時反映にする
-    {
-      (MaterialSets.materials -- PlayerData.exclude).foreach { m =>
-        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
-      }
-    }
-
-    //破壊量データ(before)を設定
-    halfhourblock.before = totalbreaknum
-    updateLevel()
-
     if (unclaimedApologyItems > 0) {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       player.sendMessage(s"${GREEN}運営チームから${unclaimedApologyItems}枚の${GOLD}ガチャ券${WHITE}が届いています！\n木の棒メニューから受け取ってください")
     }
 
-    manaState.initialize(player, level)
+    synchronizeDisplayNameToLevelState()
 
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
@@ -306,12 +187,8 @@ class PlayerData(
   }
 
   //レベルを更新
-  def updateLevel(): Unit = {
-    updatePlayerLevel()
-    updateStarLevel()
+  def synchronizeDisplayNameToLevelState(): Unit = {
     setDisplayName()
-    SeichiAssist.instance.expBarSynchronization.synchronizeFor(player)
-    manaState.display(player, level)
   }
 
   //表示される名前に整地Lvor二つ名を追加
@@ -324,6 +201,15 @@ class PlayerData(
       else if (idleMinute >= 3) s"$GRAY"
       else ""
 
+    val amountData =
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+        .unsafeRunSync()
+
+    val level = amountData.levelCorrespondingToExp.level
+    val starLevel = amountData.starLevelCorrespondingToExp
+
     val newDisplayName = idleColor + {
       val nicknameSettings = settings.nickname
       val currentNickname =
@@ -333,10 +219,10 @@ class PlayerData(
 
       currentNickname.fold {
         val levelPart =
-          if (totalStarLevel <= 0)
-            s"[ Lv$level ]"
+          if (starLevel != SeichiStarLevel.zero)
+            s"[Lv$level☆${starLevel.level}]"
           else
-            s"[Lv$level☆$totalStarLevel]"
+            s"[ Lv$level ]"
 
         s"$levelPart$playerName$WHITE"
       } { nickname =>
@@ -349,74 +235,28 @@ class PlayerData(
   }
 
   /**
-   * スターレベルの合計を返すショートカットフィールド。
+   * キャッシュされた [[Player]] のインスタンス。
+   * プレーヤーの参加前や退出後は `Bukkit.getPlayer(uuid)` にてインスタンスが取得できないので、
+   * 暫定的にこう実装している。
+   *
+   * @deprecated PlayerDataはPlayerに依存するべきではない。
    */
-  def totalStarLevel: Int = starLevels.total()
-
-  //プレイヤーレベルを計算し、更新する。
-  private def updatePlayerLevel(): Unit = {
-    //既にレベル上限に達していたら終了
-    if (level >= LevelThresholds.levelExpThresholds.size) return
-
-    val previousLevel = level
-    level = LevelThresholds.levelExpThresholds
-      .lastIndexWhere(threshold => threshold <= totalbreaknum) + 1
-
-    for (l <- previousLevel until level) {
-      //レベルアップ時のメッセージ
-      player.sendMessage(s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww【Lv($l)→Lv(${l+1})】")
-
-      //レベルアップイベント着火
-      Bukkit.getPluginManager.callEvent(new SeichiLevelUpEvent(player, this, l+1))
-
-      //レベルアップ時の花火の打ち上げ
-      Util.launchFireWorks(player.getLocation) // TODO: fix Util
-
-      SeichiLvUpMessages.get(l + 1).foreach { lvUpMessage => player.sendMessage(s"$AQUA$lvUpMessage") }
-
-      //マナ最大値の更新
-      if (manaState.isLoaded) manaState.onLevelUp(player, l+1)
-    }
-  }
+  @Deprecated()
+  private var cachedPlayer: Option[Player] = None
 
   /**
    * @deprecated PlayerDataはPlayerに依存するべきではない。
    */
   @Deprecated()
-  def player: Player = Bukkit.getPlayer(uuid)
-
-  /**
-   * スターレベルの計算、更新を行う。
-   * このメソッドはスター数が増えたときにメッセージを送信する副作用を持つ。
-   */
-  def updateStarLevel(): Unit = {
-    //処理前の各レベルを取得
-    val oldStars = starLevels.total()
-    val oldBreakStars = starLevels.fromBreakAmount
-    val oldTimeStars = starLevels.fromConnectionTime
-    //処理後のレベルを保存する入れ物
-    val newBreakStars = totalbreaknum / 87115000
-
-    //整地量の確認
-    if (oldBreakStars < newBreakStars) {
-      player.sendMessage(s"${GOLD}ｽﾀｰﾚﾍﾞﾙ(整地量)がﾚﾍﾞﾙｱｯﾌﾟ!!【☆($oldBreakStars)→☆($newBreakStars)】")
-      starLevels = starLevels.copy(fromBreakAmount = newBreakStars.toInt)
+  def player: Player = {
+    cachedPlayer = cachedPlayer.orElse {
+      Bukkit.getPlayer(uuid) match {
+        case null => throw new NoSuchElementException("プレーヤーがオンラインではありません")
+        case p => Some(p)
+      }
     }
 
-    //参加時間の確認(19/4/3撤廃)
-    if (oldTimeStars > 0) {
-      starLevels = starLevels.copy(fromConnectionTime = 0)
-    }
-
-    //TODO: イベント入手分スターの確認
-
-    //TODO: 今後実装予定。
-
-    val newStars: Int = starLevels.total()
-    //合計値の確認
-    if (oldStars < newStars) {
-      player.sendMessage(s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆($oldStars))→Lv200(☆($newStars))】")
-    }
+    cachedPlayer.get
   }
 
   private def loadTotalExp(): Unit = {
@@ -461,12 +301,8 @@ class PlayerData(
 
   //quit時とondisable時、プレイヤーデータを最新の状態に更新
   def updateOnQuit(): Unit = {
-    //総整地量を更新
-    updateAndCalcMinedBlockAmount()
     //総プレイ時間更新
     updatePlayTick()
-
-    manaState.hide()
 
     //クライアント経験値をサーバー保管
     saveTotalExp()
@@ -480,45 +316,6 @@ class PlayerData(
 
     totalPlayTick = Some(nowTotalPlayTick)
     playTick += diff
-  }
-
-  //総破壊ブロック数を更新する
-  def updateAndCalcMinedBlockAmount(): Int = {
-    val blockIncreases =
-      (MaterialSets.materials -- PlayerData.exclude).map { m =>
-        val increase = player.getStatistic(Statistic.MINE_BLOCK, m)
-        player.setStatistic(Statistic.MINE_BLOCK, m, 0)
-
-        calcBlockExp(m, increase)
-      }
-
-    val sum = blockIncreases.sum.round.toInt
-
-    totalbreaknum += sum
-    gachapoint += sum
-
-    sum
-  }
-
-  //スターレベルの計算、更新
-
-  //ブロック別整地数反映量の調節
-  private def calcBlockExp(m: Material, i: Int): Double = {
-    val amount = i.toDouble
-
-    //ブロック別重み分け
-    val materialFactor = m match {
-      //氷塊とマグマブロックの整地量を2倍
-      case Material.PACKED_ICE | Material.MAGMA => 2.0
-
-      case _ => 1.0
-    }
-
-    val managedWorld = ManagedWorld.fromBukkitWorld(player.getWorld)
-    val swMult = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01PenaltyMult = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0	
-
-    amount * materialFactor * swMult * sw01PenaltyMult
   }
 
   private def saveTotalExp(): Unit = {
@@ -547,27 +344,6 @@ class PlayerData(
     effectPoint -= 10
   }
 
-  //エフェクトデータのdurationを60秒引く
-  def calcEffectData(): Unit = {
-    val tmplist = mutable.Buffer[FastDiggingEffect]()
-
-    //effectdatalistのdurationをすべて60秒（1200tick）引いてtmplistに格納
-    effectdatalist.foreach { effectData =>
-      effectData.duration -= 1200
-      tmplist += effectData
-    }
-
-    //tmplistのdurationが3秒以下（60tick）のものはeffectdatalistから削除
-    effectdatalist.foreach { effectData =>
-      if (effectData.duration <= 60) {
-        effectdatalist -= effectData
-      }
-    }
-  }
-
-  //現在の採掘量順位
-  def calcPlayerRank(): Int = 1 + SeichiAssist.ranklist.count(rank => rank.totalbreaknum > totalbreaknum)
-
   def calcPlayerApple(): Int = {
     //ランク用関数
     var i = 0
@@ -588,6 +364,13 @@ class PlayerData(
 
   //パッシブスキルの獲得量表示
   def getPassiveExp: Double = {
+    val level =
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+        .unsafeRunSync()
+        .levelCorrespondingToExp.level
+
     if (level < 8) 0.0
     else if (level < 18) SeichiAssist.seichiAssistConfig.getDropExplevel(1)
     else if (level < 28) SeichiAssist.seichiAssistConfig.getDropExplevel(2)
@@ -752,34 +535,6 @@ class PlayerData(
     }
   }
 
-  def setContributionPoint(addAmount: Int): Unit = {
-    val mana = new Mana()
-
-    //負数(入力ミスによるやり直し中プレイヤーがオンラインだった場合)の時
-    if (addAmount < 0) {
-      player.sendMessage(s"$GREEN${BOLD}入力者のミスによって得た不正なマナを${-10 * addAmount}分減少させました.")
-      player.sendMessage(s"$GREEN${BOLD}申し訳ございません.")
-    } else {
-      player.sendMessage(s"$GREEN${BOLD}運営からあなたの整地鯖への貢献報酬として")
-      player.sendMessage(s"$GREEN${BOLD}マナの上限値が${10 * addAmount}上昇しました．(永久)")
-    }
-    this.added_mana += addAmount
-
-    mana.calcAndSetMax(player, this.level)
-  }
-
-  def toggleMessageFlag(): TargetedEffect[Player] = DeferredEffect(IO {
-    settings.receiveFastDiggingEffectStats = !settings.receiveFastDiggingEffectStats
-
-    val responseMessage = if (settings.receiveFastDiggingEffectStats) {
-      s"${GREEN}内訳表示:ON(OFFに戻したい時は再度コマンドを実行します。)"
-    } else {
-      s"${GREEN}内訳表示:OFF"
-    }
-
-    MessageEffect(responseMessage)
-  })
-
   /**
    * 運営権限により強制的に実績を解除することを試みる。
    * 解除に成功し、このインスタンスが指す[Player]がオンラインであるならばその[Player]に解除の旨がチャットにて通知される。
@@ -819,11 +574,4 @@ class PlayerData(
 object PlayerData {
   //TODO:もちろんここにあるべきではない
   val passiveSkillProbability = 10
-
-  val exclude: Set[Material] = Set(
-    Material.GRASS_PATH,
-    Material.SOIL, Material.MOB_SPAWNER,
-    Material.CAULDRON, Material.ENDER_CHEST,
-    Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL
-  )
 }

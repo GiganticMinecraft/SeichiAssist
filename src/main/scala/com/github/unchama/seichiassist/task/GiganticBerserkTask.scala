@@ -2,38 +2,40 @@ package com.github.unchama.seichiassist.task
 
 import java.net.HttpURLConnection
 
+import cats.effect.{IO, SyncIO}
+
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.webhook.service.WebhookService
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import org.bukkit.{Bukkit, ChatColor, Sound}
 import org.bukkit.entity.Player
 
 import scala.util.{Failure, Random, Success}
 
 class GiganticBerserkTask {
-  private val playermap = SeichiAssist.playermap
-  private var player: Player = _
-  private var playerdata: PlayerData = _
-
-  def PlayerKillEnemy(p: Player): Unit = {
-    player = p
+  def PlayerKillEnemy(p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
+    val player = p
     val uuid = p.getUniqueId
-    playerdata = playermap(uuid)
-    val mana = playerdata.manaState
+    val playerdata = SeichiAssist.playermap(uuid)
 
     playerdata.GBcd = playerdata.giganticBerserk.cd + 1
+
     if (playerdata.giganticBerserk.cd >= SeichiAssist.seichiAssistConfig.getGiganticBerserkLimit) {
       if (SeichiAssist.DEBUG) player.sendMessage("上限到達")
       return
     }
+
     if (playerdata.idleMinute >= 3) return
 
     //確率でマナを回復させる
-    val d = math.random()
+    val d = Math.random
     if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
       val i = getRecoveryValue(playerdata)
-      mana.increase(i, p, playerdata.level)
+      manaApi.manaAmount(p).restoreAbsolute(ManaAmount(i))
       player.sendMessage(s"${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.WHITE}の効果でマナが${i}回復しました")
       player.playSound(player.getLocation, Sound.ENTITY_WITHER_SHOOT, 1, 0.5f)
     }
@@ -49,34 +51,34 @@ class GiganticBerserkTask {
     val n = (playerdata.giganticBerserk.stage * 10) + level
 
     playerdata.GBexp = playerdata.giganticBerserk.exp + 1
+
     //レベルアップするかどうか判定
-    if (LevelThresholds.giganticBerserkLevelList(n) <= playerdata.giganticBerserk.exp)
-      if (level <= 8) {
-        playerdata.giganticBerserkLevelUp()
-        //プレイヤーにメッセージ
-        player.sendMessage(s"${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.WHITE}のレベルがアップし、確率が上昇しました")
-        player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
-        //最大レベルになった時の処理
-        if (playerdata.giganticBerserk.reachedLimit()) {
-          val webhookURL = SeichiAssist.seichiAssistConfig.getWebhookURL
-          if (!webhookURL.equalsIgnoreCase("")) {
-            implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
-            new WebhookService().sendMessage(webhookURL, s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！").onComplete {
-              case Success(statusCode) =>
-                if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_NO_CONTENT)
-                  Bukkit.getLogger.warning(s"Discordへの通知に失敗しました。(ステータスコード: $statusCode)")
-              case Failure(exception) =>
-                exception.printStackTrace()
-                Bukkit.getLogger.warning("Discordへの通知に失敗しました。")
-            }
+    if (LevelThresholds.giganticBerserkLevelList(n).asInstanceOf[Integer] <= playerdata.giganticBerserk.exp) if (level <= 8) {
+      playerdata.giganticBerserkLevelUp()
+      //プレイヤーにメッセージ
+      player.sendMessage(s"${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.WHITE}のレベルがアップし、確率が上昇しました")
+      player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
+      //最大レベルになった時の処理
+      if (playerdata.giganticBerserk.reachedLimit()) {
+        val webhookURL = SeichiAssist.seichiAssistConfig.getWebhookURL
+        if (!webhookURL.equalsIgnoreCase("")) {
+          implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+          new WebhookService().sendMessage(webhookURL, s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！").onComplete {
+            case Success(statusCode) =>
+              if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_NO_CONTENT)
+                Bukkit.getLogger.warning(s"Discordへの通知に失敗しました。(ステータスコード: $statusCode)")
+            case Failure(exception) =>
+              exception.printStackTrace()
+              Bukkit.getLogger.warning("Discordへの通知に失敗しました。")
           }
-          else Bukkit.getLogger.info("WebhookのURLが空のため、Discordへの通知を行いません。")
-          Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
-          Util.sendEveryMessage(s"${ChatColor.GOLD}${ChatColor.BOLD}${playerdata.lowercaseName}がパッシブスキル:${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.GOLD}${ChatColor.BOLD}を完成させました！")
         }
+        else Bukkit.getLogger.info("WebhookのURLが空のため、Discordへの通知を行いません。")
+
+        Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
+        Util.sendEveryMessage(s"${ChatColor.GOLD}${ChatColor.BOLD}${playerdata.lowercaseName}がパッシブスキル:${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.GOLD}${ChatColor.BOLD}を完成させました！")
       }
-      //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ
-    else {
+    }
+    else { //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ
       if (playerdata.giganticBerserk.stage <= 4) {
         player.sendMessage(s"${ChatColor.GREEN}パッシブスキルメニューより${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.GREEN}スキルが進化可能です。")
         player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
@@ -85,7 +87,7 @@ class GiganticBerserkTask {
     }
   }
 
-  private def getRecoveryValue(playerdata: PlayerData): Double = {
+  private def getRecoveryValue(playerdata: PlayerData) = {
     var i = .0
     var l = .0
     val rnd = new Random
@@ -248,6 +250,8 @@ class GiganticBerserkTask {
             l = 0
         }
       case _ =>
+        i = 0
+        l = 0
     }
     i -= i / 10
     i += rnd.nextInt(l.toInt + 1)

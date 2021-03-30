@@ -4,7 +4,6 @@ import cats.Monad
 import cats.effect.Sync
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, UnlockableActiveSkillEffect}
-import com.github.unchama.seichiassist.util.BukkitSerialization
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
@@ -134,11 +133,9 @@ object PlayerDataSaveTask {
 
       val command = {
         ("update seichiassist.playerdata set"
-          + " name = '" + playerdata.lowercaseName + "'"
+          + " name = '" + playerdata.name + "'"
 
-          + ",effectflag = " + playerdata.settings.fastDiggingEffectSuppression.serialized().unsafeRunSync()
           + ",minestackflag = " + playerdata.settings.autoMineStack
-          + ",messageflag = " + playerdata.settings.receiveFastDiggingEffectStats
 
           + ",serialized_usage_mode = " + skillState.usageMode.value
           + ",selected_effect = " + {
@@ -150,12 +147,7 @@ object PlayerDataSaveTask {
           + ",selected_active_skill = " + skillState.activeSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
           + ",selected_assault_skill = " + skillState.assaultSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
 
-          + ",gachapoint = " + playerdata.gachapoint
-          + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
-          + ",level = " + playerdata.level
           + ",rgnum = " + playerdata.regionCount
-          + ",totalbreaknum = " + playerdata.totalbreaknum
-          + ",inventory = '" + BukkitSerialization.toBase64(playerdata.pocketInventory) + "'"
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"
           + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages
@@ -165,8 +157,6 @@ object PlayerDataSaveTask {
 
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.effectPoint
-          + ",mana = " + playerdata.manaState.getMana
-          + ",expvisible = " + playerdata.settings.isExpBarVisible
           + ",totalexp = " + playerdata.totalexp
           + ",expmarge = " + playerdata.expmarge
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
@@ -180,10 +170,6 @@ object PlayerDataSaveTask {
           + ",achvPointMAX = " + playerdata.achievePoint.fromUnlockedAchievements
           + ",achvPointUSE = " + playerdata.achievePoint.used
           + ",achvChangenum = " + playerdata.achievePoint.conversionCount
-          + ",starlevel = " + playerdata.totalStarLevel
-          + ",starlevel_Break = " + playerdata.starLevels.fromBreakAmount
-          + ",starlevel_Time = " + playerdata.starLevels.fromConnectionTime
-          + ",starlevel_Event = " + playerdata.starLevels.fromEventAchievement
 
           + ",lastcheckdate = '" + playerdata.lastcheckdate + "'"
           + ",ChainJoin = " + playerdata.loginStatus.consecutiveLoginDays
@@ -198,9 +184,6 @@ object PlayerDataSaveTask {
           + ",toggleGiveApple = " + playerdata.toggleGiveApple
           + ",toggleVotingFairy = " + playerdata.toggleVotingFairy
           + ",p_apple = " + playerdata.p_apple
-
-          //貢献度pt
-          + ",added_mana = " + playerdata.added_mana
 
           + ",GBstage = " + playerdata.giganticBerserk.stage
           + ",GBexp = " + playerdata.giganticBerserk.exp
@@ -244,7 +227,7 @@ object PlayerDataSaveTask {
     Monad[F].tailRecM(3) { remaining =>
       if (remaining == 0) {
         Sync[F].delay {
-          println(s"$RED${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+          println(s"$RED${playerdata.name}のプレイヤーデータ保存失敗")
         }.as(Right(ActionStatus.Fail))
       } else commitUpdate.flatMap { result =>
         if (result == ActionStatus.Ok) {

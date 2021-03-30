@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki
 
-import com.github.unchama.seichiassist.SeichiAssist
+import cats.effect.{SyncEffect, SyncIO}
+import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
@@ -8,7 +9,7 @@ import com.github.unchama.seichiassist.util.Util.sendEveryMessage
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Sound
-import org.bukkit.entity.EntityType
+import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
@@ -16,7 +17,13 @@ import org.bukkit.event.{EventHandler, Listener}
 import java.time.LocalDate
 import java.util.Random
 
-object SeizonsikiListener extends Listener {
+class SeizonsikiListener[
+  F[_],
+  G[_] : SyncEffect
+](implicit manaApi: ManaWriteApi[G, Player]) extends Listener {
+
+  import cats.effect.implicits._
+
   @EventHandler
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity
@@ -49,11 +56,8 @@ object SeizonsikiListener extends Listener {
     val today = LocalDate.now()
     val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(exp)) {
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
-      val manaState = playerData.manaState
-      val maxMana = manaState.calcMaxManaOnly(player, playerData.level)
       // マナを10%回復する
-      manaState.increase(maxMana * 0.1, player, playerData.level)
+      manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     } else {
       // END_DATEと同じ日かその翌日以降なら

@@ -1,9 +1,12 @@
 package com.github.unchama.seichiassist.listener
 
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import org.bukkit._
@@ -12,7 +15,8 @@ import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
 
-class EntityListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class EntityListener(implicit effectEnvironment: EffectEnvironment,
+                     manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
   private val playermap = SeichiAssist.playermap
 
   @EventHandler def onPlayerActiveSkillEvent(event: ProjectileHitEvent): Unit = { //矢を取得する
@@ -65,8 +69,6 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment) extends List
   private def runArrowSkillOfHitBlock(player: Player, hitBlock: BlockBreakableBySkill, tool: BreakTool): Unit = {
     val playerData = playermap(player.getUniqueId)
 
-    val mana = playerData.manaState
-
     val skillState = playerData.skillState.get.unsafeRunSync()
     val selectedSkill = skillState.activeSkill.getOrElse(return)
     val activeSkillArea = BreakArea(selectedSkill, skillState.usageMode)
@@ -79,10 +81,17 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment) extends List
       breakLength.x * breakLength.y * breakLength.z
     }
 
+    val level =
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+        .unsafeRunSync()
+        .levelCorrespondingToExp.level
+
     val isMultiTypeBreakingSkillEnabled = {
       import ManagedWorld._
 
-      playerData.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
+      level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
         (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
     }
 
@@ -118,20 +127,14 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment) extends List
       return
     }
 
-    //実際に経験値を減らせるか判定
-    if (!mana.has(manaConsumption)) {
-      if (SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なマナが足りません")
-      return
-    }
-
-    //実際に耐久値を減らせるか判定
+    // 実際に耐久値を減らせるか判定
     if (tool.getType.getMaxDurability <= nextDurability && !tool.getItemMeta.isUnbreakable) {
-      if (SeichiAssist.DEBUG) player.sendMessage(ChatColor.RED + "アクティブスキル発動に必要なツールの耐久値が足りません")
       return
     }
 
-    //経験値を減らす
-    mana.decrease(manaConsumption, player, playerData.level)
+    // マナを減らす
+    if (manaApi.manaAmount(player).tryAcquire(ManaAmount(manaConsumption)).unsafeRunSync().isEmpty)
+      return
 
     //耐久値を減らす
     if (!tool.getItemMeta.isUnbreakable) tool.setDurability(nextDurability)

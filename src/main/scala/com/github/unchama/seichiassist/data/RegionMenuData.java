@@ -5,9 +5,6 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.util.Util;
 import com.github.unchama.seichiassist.util.Util.DirectionType;
-import com.github.unchama.util.external.ExternalPlugins;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -30,10 +27,8 @@ import java.util.Map;
  * @author karayuu
  */
 public class RegionMenuData {
-    static WorldGuardPlugin Wg = ExternalPlugins.getWorldGuard();
-    static WorldEditPlugin We = ExternalPlugins.getWorldEdit();
-    private static Config config = SeichiAssist.seichiAssistConfig();
-    private static NumberFormat nfNum = NumberFormat.getNumberInstance();
+    private static final Config config = SeichiAssist.seichiAssistConfig();
+    private static final NumberFormat nfNum = NumberFormat.getNumberInstance();
 
     /**
      * グリッド式保護メニュを開きます。

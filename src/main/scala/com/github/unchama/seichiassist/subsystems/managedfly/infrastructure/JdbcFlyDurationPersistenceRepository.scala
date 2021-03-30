@@ -8,9 +8,9 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFly
 import scalikejdbc._
 
 class JdbcFlyDurationPersistenceRepository[SyncContext[_]](implicit SyncContext: Sync[SyncContext])
-  extends FlyDurationPersistenceRepository[SyncContext, UUID] {
+  extends FlyDurationPersistenceRepository[SyncContext] {
 
-  override def writePair(key: UUID, duration: Option[RemainingFlyDuration]): SyncContext[Unit] = SyncContext.delay {
+  override def write(key: UUID, duration: Option[RemainingFlyDuration]): SyncContext[Unit] = SyncContext.delay {
     DB.localTx { implicit session =>
       val serializedDuration = duration match {
         case Some(RemainingFlyDuration.PositiveMinutes(n)) => n
@@ -26,7 +26,7 @@ class JdbcFlyDurationPersistenceRepository[SyncContext[_]](implicit SyncContext:
     }
   }
 
-  override def read(key: UUID): SyncContext[Option[RemainingFlyDuration]] = SyncContext.delay {
+  override def read(key: UUID): SyncContext[Option[Option[RemainingFlyDuration]]] = SyncContext.delay {
     DB.localTx { implicit session =>
       sql"""
         select remaining_fly_minutes from fly_status_cache
@@ -34,7 +34,7 @@ class JdbcFlyDurationPersistenceRepository[SyncContext[_]](implicit SyncContext:
       """
         .map { rs => rs.int("remaining_fly_minutes") }
         .headOption().apply()
-        .flatMap {
+        .map {
           case 0 => None
           case -1 => Some(RemainingFlyDuration.Infinity)
           case n if n > 0 => Some(RemainingFlyDuration.PositiveMinutes.fromPositive(n))

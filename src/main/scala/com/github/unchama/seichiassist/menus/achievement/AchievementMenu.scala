@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.menus.achievement
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist
@@ -12,6 +13,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.player.NicknameStyle
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.menus.{ColorScheme, CommonButtons}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -22,8 +24,11 @@ import org.bukkit.{Material, Sound}
 object AchievementMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
   import eu.timepit.refined.auto._
+
+  class Environment(implicit
+                    val ioCanOpenStickMenu: IO CanOpen FirstPage.type,
+                    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu)
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}実績・二つ名システム")
 
@@ -38,37 +43,40 @@ object AchievementMenu extends Menu {
       ChestSlotRef(2, 4) -> (Specials, Material.EYE_OF_ENDER)
     )
 
-  val menuLayout: Map[Int, Button] = {
-    def buttonFor(categoryRepr: AchievementCategoryRepr): Button =
-      categoryRepr match {
-        case (category, material) =>
-          val includedGroups =
-            AchievementCategoryMenu.groupsLayoutFor(category).values.map(_._1)
+  def buttonFor(categoryRepr: AchievementCategoryRepr)
+               (implicit ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu): Button =
+    categoryRepr match {
+      case (category, material) =>
+        val includedGroups =
+          AchievementCategoryMenu.groupsLayoutFor(category).values.map(_._1)
 
-          val partialBuilder =
-            new IconItemStackBuilder(material).title(ColorScheme.navigation(s"カテゴリ「${category.name}」"))
+        val partialBuilder =
+          new IconItemStackBuilder(material).title(ColorScheme.navigation(s"カテゴリ「${category.name}」"))
 
-          if (includedGroups.nonEmpty) {
-            Button(
-              partialBuilder
-                .lore(List(s"${RED}以下の実績が含まれます。") ++ includedGroups.map(s"$AQUA「" + _.name + "」"))
-                .build(),
-              action.LeftClickButtonEffect(
-                SequentialEffect(
-                  CommonSoundEffects.menuTransitionFenceSound,
-                  AchievementCategoryMenu(category).open
-                )
+        if (includedGroups.nonEmpty) {
+          Button(
+            partialBuilder
+              .lore(List(s"${RED}以下の実績が含まれます。") ++ includedGroups.map(s"$AQUA「" + _.name + "」"))
+              .build(),
+            action.LeftClickButtonEffect(
+              SequentialEffect(
+                CommonSoundEffects.menuTransitionFenceSound,
+                ioCanOpenCategoryMenu.open(AchievementCategoryMenu(category))
               )
             )
-          } else {
-            Button(
-              partialBuilder.lore(s"${YELLOW}今後実装予定のカテゴリです。").build(),
-              action.LeftClickButtonEffect(TargetedEffect.emptyEffect)
-            )
-          }
-      }
+          )
+        } else {
+          Button(
+            partialBuilder.lore(s"${YELLOW}今後実装予定のカテゴリです。").build(),
+            action.LeftClickButtonEffect(TargetedEffect.emptyEffect)
+          )
+        }
+    }
 
-    val categoryButtonsSection = categoryLayout.view.mapValues(buttonFor).toMap
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+    import environment._
+
+    val categoryButtonsSection = categoryLayout.view.mapValues(category => buttonFor(category)).toMap
 
     import com.github.unchama.targetedeffect._
     val toggleTitleToPlayerLevelButton = Button(
@@ -101,13 +109,15 @@ object AchievementMenu extends Menu {
       )
     )
 
-    categoryButtonsSection ++
-      Map(
-        ChestSlotRef(0, 0) -> toggleTitleToPlayerLevelButton,
-        ChestSlotRef(0, 8) -> toTitleConfigurationMenu,
-        ChestSlotRef(3, 0) -> CommonButtons.openStickMenu
-      )
+    IO.pure {
+      MenuSlotLayout {
+        categoryButtonsSection ++
+          Map(
+            ChestSlotRef(0, 0) -> toggleTitleToPlayerLevelButton,
+            ChestSlotRef(0, 8) -> toTitleConfigurationMenu,
+            ChestSlotRef(3, 0) -> CommonButtons.openStickMenu
+          )
+      }
+    }
   }
-
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = IO.pure(MenuSlotLayout(menuLayout))
 }

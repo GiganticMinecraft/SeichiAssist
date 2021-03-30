@@ -1,12 +1,15 @@
 package com.github.unchama.seichiassist.listener
 
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
-import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -22,9 +25,10 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
 
-class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
+                              manaApi: ManaApi[IO, SyncIO, Player],
+                              ioCanOpenStickMenu: IO CanOpen FirstPage.type) extends Listener {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.InventoryUtil._
   import com.github.unchama.util.syntax._
@@ -32,88 +36,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
-
-  //ランキングメニュー
-  @EventHandler
-  def onPlayerClickSeichiRankingMenuEvent(event: InventoryClickEvent): Unit = {
-    //外枠のクリック処理なら終了
-    if (event.getClickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.getCurrentItem
-    val view = event.getView
-    val he = view.getPlayer
-    //インベントリを開けたのがプレイヤーではない時終了
-    if (he.getType != EntityType.PLAYER) {
-      return
-    }
-
-    val topinventory = view.getTopInventory.ifNull {
-      return
-    }
-    //インベントリが存在しない時終了
-    //インベントリサイズが54でない時終了
-    if (topinventory.row != 6) {
-      return
-    }
-    val player = he.asInstanceOf[Player]
-
-    val isSkull = itemstackcurrent.getType == Material.SKULL_ITEM
-    //インベントリ名が以下の時処理
-    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "整地神ランキング") {
-      event.setCancelled(true)
-
-      //プレイヤーインベントリのクリックの場合終了
-      if (event.getClickedInventory.getType == InventoryType.PLAYER) {
-        return
-      }
-
-      /*
-			 * クリックしたボタンに応じた各処理内容の記述ここから
-			 */
-      //ページ変更処理
-      if (isSkull) {
-        // safe cast
-        val skullMeta = itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]
-        val name = skullMeta.getDisplayName
-        skullMeta.getOwner match {
-          case "MHF_ArrowLeft" =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-
-            effectEnvironment.runAsyncTargetedEffect(player)(
-              SequentialEffect(
-                CommonSoundEffects.menuTransitionFenceSound,
-                StickMenu.firstPage.open
-              ),
-              "棒メニューの1ページ目を開く"
-            )
-
-          case "MHF_ArrowDown" =>
-            itemstackcurrent.getItemMeta
-            if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
-
-              //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-              player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
-            }
-
-          case "MHF_ArrowUp" =>
-            itemstackcurrent.getItemMeta
-            if (name.contains("整地神ランキング") && name.contains("ページ目")) { //移動するページの種類を判定
-              val page_display = Integer.parseInt(name.replaceAll("[^0-9]", "")) //数字以外を全て消す
-
-              //開く音を再生
-              player.playSound(player.getLocation, Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f)
-              player.openInventory(MenuInventoryData.getRankingBySeichiAmount(page_display - 1))
-            }
-
-          case _ =>
-        }
-      }
-    }
-  }
 
   //ランキングメニュー
   @EventHandler
@@ -156,12 +78,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
 			 */
       //ページ変更処理
       if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-
         effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
-            StickMenu.firstPage.open
+            ioCanOpenStickMenu.open(StickMenu.firstPage)
           ),
           "棒メニューの1ページ目を開く"
         )
@@ -231,12 +151,12 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         val skullMeta = itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta]
         skullMeta.getOwner match {
           case "MHF_ArrowLeft" =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+
 
             effectEnvironment.runAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
-                StickMenu.firstPage.open
+                ioCanOpenStickMenu.open(StickMenu.firstPage)
               ),
               "棒メニューの1ページ目を開く"
             )
@@ -591,7 +511,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
   @EventHandler
   def onTitanRepairEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
-    val uuid = player.getUniqueId
     //エラー分岐
     val inventory = event.getInventory
 
@@ -658,6 +577,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
     val uuid = player.getUniqueId
     val playerdata = playerMap(uuid)
 
+    val playerLevel = SeichiAssist.instance
+      .breakCountSystem.api.seichiAmountDataRepository(player)
+      .read.unsafeRunSync().levelCorrespondingToExp.level
+
     //インベントリ名が以下の時処理
     if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "投票ptメニュー") {
       event.setCancelled(true)
@@ -698,7 +621,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
           }
 
           //ピッケルプレゼント処理(レベル50になるまで)
-          if (playerdata.level < 50) {
+          if (playerLevel < 50) {
             val pickaxe = ItemData.getSuperPickaxe(1)
             if (Util.isPlayerInventoryFull(player)) {
               Util.dropItem(player, pickaxe)
@@ -708,7 +631,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
           }
 
           //投票ギフト処理(レベル50から)
-          if (playerdata.level >= 50) {
+          if (playerLevel >= 50) {
             val gift = ItemData.getVotingGift(1)
             if (Util.isPlayerInventoryFull(player)) {
               Util.dropItem(player, gift)
@@ -735,12 +658,11 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.closeInventory()
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
 
         effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
-            StickMenu.firstPage.open
+            ioCanOpenStickMenu.open(StickMenu.firstPage)
           ),
           "棒メニューの1ページ目を開く"
         )
@@ -762,7 +684,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment) ext
         player.closeInventory()
 
         //プレイヤーレベルが10に達していないとき
-        if (playerdata.level < 10) {
+        if (playerLevel < 10) {
           player.sendMessage(GOLD.toString + "プレイヤーレベルが足りません")
           player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
           return

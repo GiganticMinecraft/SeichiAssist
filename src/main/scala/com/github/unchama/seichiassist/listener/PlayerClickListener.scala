@@ -1,15 +1,17 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.IO
-import com.github.unchama.generic.effect.TryableFiber
+import cats.effect.{IO, SyncIO}
+import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.menus.stickmenu.StickMenu
+import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.seichiskill.ActiveSkill
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{SeichiAssist, _}
@@ -19,6 +21,7 @@ import com.github.unchama.util.external.ExternalPlugins
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionOwner
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
+import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
@@ -28,7 +31,9 @@ import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
+                          manaApi: ManaApi[IO, SyncIO, Player],
+                          ioCanOpenStickMenu: IO CanOpen FirstPage.type) extends Listener {
 
   import com.github.unchama.generic.ContextCoercion._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
@@ -176,6 +181,10 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     var gachaWin = 0
     var gachaGTWin = 0
 
+    val playerLevel = SeichiAssist.instance
+      .breakCountSystem.api.seichiAmountDataRepository(player)
+      .read.unsafeRunSync().levelCorrespondingToExp.level
+
     (1 to count).foreach { _ =>
       //プレゼント用ガチャデータ作成
       val present = GachaPrize.runGacha()
@@ -195,7 +204,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
           ""
         } else {
           //アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
-          if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack) && SeichiAssist.playermap(player.getUniqueId).level >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)) {
+          if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack) && playerLevel >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)) {
             // ...格納した！
             s"${AQUA}景品をマインスタックに収納しました。"
           } else {
@@ -301,8 +310,11 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     if (currentItem == Material.STICK || currentItem == Material.SKULL_ITEM) return
 
     val playerData = playerMap(player.getUniqueId)
+    val playerLevel = SeichiAssist.instance
+      .breakCountSystem.api.seichiAmountDataRepository(player)
+      .read.unsafeRunSync().levelCorrespondingToExp.level
 
-    if (playerData.level < SeichiAssist.seichiAssistConfig.getDualBreaklevel) return
+    if (playerLevel < SeichiAssist.seichiAssistConfig.getDualBreaklevel) return
     if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
     if (!activeSkillAvailability(player).get.unsafeRunSync()) return
 
@@ -341,8 +353,8 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
             SeichiAssist.instance
-              .assaultSkillRoutines
-              .flipState(player)(TryableFiber.start(AssaultRoutine.tryStart(player, skill)))
+              .assaultSkillRoutines(player)
+              .flipState(TryableFiber.start(AssaultRoutine.tryStart(player, skill)))
               .as(())
               .unsafeRunSync()
 
@@ -380,57 +392,13 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment) extends
     if (event.getHand == EquipmentSlot.OFF_HAND) return
     event.setCancelled(true)
 
-    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
-
     effectEnvironment.runAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        StickMenu.firstPage.open
+        ioCanOpenStickMenu.open(StickMenu.firstPage)
       ),
       "棒メニューの1ページ目を開く"
     )
-  }
-
-  //プレイヤーの拡張インベントリを開くイベント
-  @EventHandler
-  def onPlayerOpenInventorySkillEvent(event: PlayerInteractEvent): Unit = {
-    //プレイヤーを取得
-    val player = event.getPlayer
-    //プレイヤーが起こしたアクションを取得
-    val action = event.getAction
-    //使った手を取得
-    val equipmentslot = event.getHand
-
-    if (event.getMaterial == Material.ENDER_PORTAL_FRAME) {
-      //設置をキャンセル
-      event.setCancelled(true)
-      //UUIDを取得
-      val uuid = player.getUniqueId
-      //playerdataを取得
-      val playerdata = playerMap(uuid)
-      //念のためエラー分岐
-      if (playerdata == null) {
-        Util.sendPlayerDataNullMessage(player)
-        plugin.getLogger.warning(player.getName + " => PlayerData not found.")
-        plugin.getLogger.warning("PlayerClickListener.onPlayerOpenInventorySkillEvent")
-        return
-      }
-      //パッシブスキル[4次元ポケット]（PortalInventory）を発動できるレベルに達していない場合処理終了
-      if (playerdata.level < SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel) {
-        player.sendMessage(GREEN.toString + "4次元ポケットを入手するには整地Lvが" + SeichiAssist.seichiAssistConfig.getPassivePortalInventorylevel + "以上必要です。")
-        return
-      }
-      if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-        //オフハンドから実行された時処理を終了
-        if (equipmentslot == EquipmentSlot.OFF_HAND) {
-          return
-        }
-        //開く音を再生
-        player.playSound(player.getLocation, Sound.BLOCK_ENDERCHEST_OPEN, 1f, 0.1f)
-        //インベントリを開く
-        player.openInventory(playerdata.pocketInventory)
-      }
-    }
   }
 
   //頭の即時回収

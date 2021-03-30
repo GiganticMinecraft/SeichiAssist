@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.effect.Sync
-import com.github.unchama.concurrent.ReadOnlyRef
-import com.github.unchama.generic.effect.concurrent.AsymmetricTryableFiber
+import com.github.unchama.generic.effect.concurrent.{AsymmetricTryableFiber, ReadOnlyRef}
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, PlayerFlyStatus, RemainingFlyDuration}
 
 class ActiveSession[

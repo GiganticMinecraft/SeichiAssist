@@ -6,7 +6,7 @@ RUN java -jar BuildTools.jar -o /artifact --rev 1.12.2
 
 FROM docker.pkg.github.com/giganticminecraft/chunk-search-rs/chunk-search-rs:8673f70e880b as chunk-search-provider
 
-FROM docker.pkg.github.com/giganticminecraft/dockers/seichiassist-runner:3248d2056b2a
+FROM docker.pkg.github.com/giganticminecraft/dockers/seichiassist-runner:e2c3c8f7c3cc
 
 # /spigot-filesをコンテナが提供するファイル群とする
 

@@ -21,16 +21,16 @@ import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 trait RateLimiter[F[_], A] {
 
   /**
-   * Aは全順序モノイドであることが要求される
+   * Aは減算演算があるモノイドであることが要求される
    */
   protected val A: OrderedMonus[A]
 
   /**
    * [[A]] の値によって指定されるリクエスト量を送る申請をする作用。
-   * 作用の結果として、送って良いリクエスト量を表す [[A]] の(全順序モノイドでの意味で)非負の値が返される。
+   * 作用の結果として、送って良いリクエスト量を表す [[A]] の値が返される。
    *
    * @param a 申請するリクエスト送信量
-   * @return 非負の[[A]]の値を返す作用
+   * @return [[A]]の値を返す作用
    */
   def requestPermission(a: A): F[A]
 

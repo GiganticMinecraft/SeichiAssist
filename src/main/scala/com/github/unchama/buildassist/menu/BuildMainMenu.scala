@@ -5,12 +5,13 @@ import com.github.unchama.buildassist.menu.BuildMainMenu.EMPHASIZE
 import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
+import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
-import com.github.unchama.seichiassist.{SkullOwners, subsystems}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, openInventoryEffect}
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
@@ -27,7 +28,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   import player._
 
   def computeNotationOfStats(): IO[Button] = RecomputedButton {
-    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap(data =>
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap(data =>
       IO {
         val iconItemStack = new SkullItemStackBuilder(getUniqueId)
           .enchanted()
@@ -43,10 +44,9 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     )
   }
 
-  def computeButtonToShowStateOfFlying()
-                                      (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = {
+  def computeButtonToShowStateOfFlying(implicit flyApi: ManagedFlyApi[SyncIO, Player]): IO[Button] = {
     for {
-      flyStatus <- flySystem.state.playerFlyDurations(player).read.toIO
+      flyStatus <- flyApi.playerFlyDurations(player).read.toIO
     } yield {
       val flyStatusLoreLines = flyStatus match {
         case Flying(remainingDuration) =>
@@ -75,7 +75,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
   }
 
   def computeButtonToToggleRangedPlaceSkill(): IO[Button] = RecomputedButton(
-    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap(amountData =>
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap(amountData =>
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
         val openerLevel = amountData.levelCorrespondingToExp.level
@@ -121,9 +121,8 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     )
   )
 
-  def computeButtonToOpenRangedPlaceSkillMenu()
-                                             (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] =
-    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+  def computeButtonToOpenRangedPlaceSkillMenu(implicit canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type]): IO[Button] =
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap { amountData =>
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
@@ -145,7 +144,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
                   if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
-                    new BlockPlacementSkillMenu().open
+                    canOpenBlockPlacementSkillMenu.open(BlockPlacementSkillMenu)
                   }
                 }
               }
@@ -156,12 +155,12 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     }
 
   def computeButtonToLineUpBlocks(): IO[Button] = RecomputedButton(
-    BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap { amountData =>
       IO {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
         val iconItemStack = new IconItemStackBuilder(Material.WOOD)
-          .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+          .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
             s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -184,7 +183,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
                     },
                     DeferredEffect {
                       IO {
-                        MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+                        MessageEffect(s"${GREEN}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
                       }
                     }
                   )
@@ -201,7 +200,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
     val iconItemStack = new IconItemStackBuilder(Material.PAPER)
-      .title(s"$YELLOW$EMPHASIZE「ブロックを並べるスキル（仮） 」設定画面へ")
+      .title(s"$YELLOW$EMPHASIZE「直列設置 」設定画面へ")
       .lore(
         s"$RESET${GRAY}現在の設定",
         s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str(openerData.line_up_flg)}",
@@ -221,8 +220,8 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     )
   }
 
-  def computeButtonToOpenMenuToCraftItemsWhereMineStack()
-                                                       (implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]): IO[Button] = IO {
+  def computeButtonToOpenMenuToCraftItemsWhereMineStack(implicit
+                                                        canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu]): IO[Button] = IO {
     val iconItemStackBuilder = new IconItemStackBuilder(Material.WORKBENCH)
       .title(s"$YELLOW${EMPHASIZE}MineStackブロック一括クラフト画面へ")
       .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
@@ -232,7 +231,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
       action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          MineStackMassCraftMenu().open
+          canOpenMassCraftMenu.open(MineStackMassCraftMenu())
         )
       }
     )
@@ -336,14 +335,21 @@ private object ConstantButtons {
   }
 }
 
-class BuildMainMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Menu {
+object BuildMainMenu extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import menuinventory.syntax._
 
+  class Environment(implicit
+                    val flyApi: ManagedFlyApi[SyncIO, Player],
+                    val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
+                    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu])
+
+  val EMPHASIZE = s"$UNDERLINE$BOLD"
+
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニューB")
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -355,16 +361,17 @@ class BuildMainMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managed
     )
 
     import cats.implicits._
+    import environment._
 
     val dynamicPartComputation: IO[List[(Int, Button)]] =
       List(
         0 -> computeNotationOfStats(),
-        2 -> computeButtonToShowStateOfFlying(),
+        2 -> computeButtonToShowStateOfFlying,
         18 -> computeButtonToToggleRangedPlaceSkill(),
-        19 -> computeButtonToOpenRangedPlaceSkillMenu(),
+        19 -> computeButtonToOpenRangedPlaceSkillMenu,
         27 -> computeButtonToLineUpBlocks(),
         28 -> computeButtonToOpenLineUpBlocksMenu(),
-        35 -> computeButtonToOpenMenuToCraftItemsWhereMineStack()
+        35 -> computeButtonToOpenMenuToCraftItemsWhereMineStack
       )
         .map(_.sequence)
         .sequence
@@ -373,8 +380,4 @@ class BuildMainMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managed
       dynamicPart <- dynamicPartComputation
     } yield menuinventory.MenuSlotLayout(constantPart ++ dynamicPart)
   }
-}
-
-object BuildMainMenu {
-  val EMPHASIZE = s"$UNDERLINE$BOLD"
 }

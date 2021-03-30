@@ -1,14 +1,13 @@
 package com.github.unchama.buildassist.menu
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import com.github.unchama.buildassist.{BuildAssist, TemporaryMutableBuildAssistPlayerData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.meta.subsystem.StatefulSubsystem
-import com.github.unchama.seichiassist.subsystems
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, TargetedEffect, UnfocusedEffect}
@@ -17,15 +16,18 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
 
-class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsystems.managedfly.InternalState[SyncIO]]) extends Menu {
+object BlockPlacementSkillMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import menuinventory.syntax._
+
+  class Environment(implicit
+                    val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
 
-  def buttonToOpenPreviousPage(): Button = {
+  def buttonToOpenPreviousPage(implicit environment: Environment): Button = {
     val iconItemStack = new IconItemStackBuilder(Material.BARRIER)
       .title(s"$YELLOW$UNDERLINE${BOLD}元のページへ")
       .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
@@ -35,16 +37,19 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
       iconItemStack,
       LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        new BuildMainMenu().open
+        environment.canOpenMainMenu.open(BuildMainMenu)
       )
     )
   }
 
-  private case class ButtonComputations(player: Player) {
+  private case class ButtonComputations(player: Player)(implicit environment: Environment) {
 
-    import BlockPlacementSkillMenu._
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
+
+    implicit class PlayerDataOps(val playerData: TemporaryMutableBuildAssistPlayerData) {
+      def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
+    }
 
     def computeButtonToToggleDirtPlacement(): IO[Button] = RecomputedButton {
       IO {
@@ -261,7 +266,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
 
     def computeButtonToToggleConsumingMineStack(): IO[Button] = RecomputedButton {
-      BuildAssist.instance.buildAmountDataRepository(player).get.toIO.flatMap { amountData =>
+      BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap { amountData =>
         IO {
           val playerData = BuildAssist.instance.temporaryData(getUniqueId)
 
@@ -302,7 +307,7 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
     }
   }
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     val computations = ButtonComputations(player)
     import computations._
 
@@ -330,12 +335,4 @@ class BlockPlacementSkillMenu(implicit flySystem: StatefulSubsystem[IO, subsyste
       dynamicPart <- dynamicPartComputation
     } yield menuinventory.MenuSlotLayout(constantPart ++ dynamicPart)
   }
-}
-
-object BlockPlacementSkillMenu {
-
-  implicit class PlayerDataOps(val playerData: TemporaryMutableBuildAssistPlayerData) extends AnyVal {
-    def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
-  }
-
 }

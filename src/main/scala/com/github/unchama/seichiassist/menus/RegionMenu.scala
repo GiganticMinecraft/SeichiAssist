@@ -21,10 +21,12 @@ object RegionMenu extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, _}
-override val frame: MenuFrame =
-    MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
-  override def computeMenuLayout(player: Player): IO[MenuSlotLayout] = {
+  override type Environment = Unit
+
+  override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
+
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -179,7 +181,7 @@ override val frame: MenuFrame =
           s"${GRAY}該当保護を削除する",
           s"$RED$UNDERLINE/rg addmem 保護名 プレイヤー名",
           s"${GRAY}該当保護に指定メンバーを追加",
-          s"$RED$UNDERLINE/rg removemenber 保護名 プレイヤー名",
+          s"$RED$UNDERLINE/rg removemember 保護名 プレイヤー名",
           s"${GRAY}該当保護の指定メンバーを削除",
           s"${DARK_GRAY}その他のコマンドはwikiを参照",
           s"${DARK_GRAY}command=>[/rg list]")

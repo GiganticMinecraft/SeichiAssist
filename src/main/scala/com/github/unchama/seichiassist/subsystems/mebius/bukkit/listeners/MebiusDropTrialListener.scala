@@ -36,7 +36,7 @@ class MebiusDropTrialListener[
 
     val player = event.getPlayer
 
-    if (player.getWorld.isSeichi) return
+    if (!player.getWorld.isSeichi) return
 
     val droppedMebiusProperty = MebiusDrop
       .tryOnce[G](player.getName, player.getUniqueId.toString)
