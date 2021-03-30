@@ -209,7 +209,7 @@ class SeichiAssist extends JavaPlugin() {
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
   lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.{asyncShift, syncShift}
+    import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
