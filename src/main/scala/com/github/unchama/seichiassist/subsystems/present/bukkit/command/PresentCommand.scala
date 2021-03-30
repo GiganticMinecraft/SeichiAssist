@@ -99,10 +99,12 @@ object PresentCommand {
           IO.pure(noPermissionMessage)
         } else {
           val presentId = context.args.parsed.head.asInstanceOf[Int]
-          for {
+          val eff = for {
             _ <- NonServerThreadContextShift[F].shift
             _ <- persistence.delete(presentId)
           } yield MessageEffect(s"IDが${presentId}のプレゼントの消去は正常に行われました。")
+
+          eff.toIO
         }
       }
       .build()
