@@ -338,23 +338,22 @@ object ActiveSkillMenu extends Menu {
                         if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
                           unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
                           import cats.implicits._
-                          import cats.effect.implicits._
 
+                          val messageForNotification = s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
                           for {
                             _ <- NonServerThreadContextShift[F].shift
-                            discordResult <- webhookGatewayForAssault.send(s"${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
-                          }
+                            _ <- webhookGatewayForAssault.send(messageForNotification)
+                          } yield ()
 
-                            (
-                              unlockedState.obtained(SeichiSkill.AssaultArmor),
-                              SequentialEffect(
-                                MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
-                                BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-                                BroadcastMessageEffect(s"$GOLD$BOLD${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
-                              )
+                          (
+                            unlockedState.obtained(SeichiSkill.AssaultArmor),
+                            SequentialEffect(
+                              MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
+                              BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
+                              BroadcastMessageEffect(s"$GOLD$BOLD$messageForNotification")
                             )
-                          } else
-                            (unlockedState, emptyEffect)
+                          )
+                        } else (unlockedState, emptyEffect)
 
                       (
                         newState,

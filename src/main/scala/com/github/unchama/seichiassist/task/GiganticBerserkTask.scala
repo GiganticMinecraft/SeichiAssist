@@ -1,18 +1,17 @@
 package com.github.unchama.seichiassist.task
 
-import java.net.HttpURLConnection
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.subsystems.webhook.service.{CanSendToWebhook, WebhookSender}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
+import com.github.unchama.seichiassist.subsystems.webhook.service.CanSendToWebhook
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
-import org.bukkit.{Bukkit, ChatColor, Sound}
 import org.bukkit.entity.Player
+import org.bukkit.{ChatColor, Sound}
 
-import scala.util.{Failure, Random, Success}
+import scala.util.Random
 
 class GiganticBerserkTask {
   def PlayerKillEnemy[
