@@ -19,18 +19,6 @@ import org.bukkit.entity.Player
 object GiftItemInterpreter extends (Gift.Item => Kleisli[IO, Player, Unit]) {
 
   override def apply(item: Gift.Item): Kleisli[IO, Player, Unit] = {
-    val preEffect = item match {
-      case Item.GachaTicket => Some(
-        SequentialEffect(
-          MessageEffect("レベルアップ記念のガチャ券を配布しました。"),
-          TargetedEffect.delay[Player](p =>
-            SeichiAssist.playermap(p.getUniqueId).gachapoint += SeichiAssist.seichiAssistConfig.getGachaPresentInterval
-          )
-        )
-      )
-      case _ => None
-    }
-
     val itemStack = item match {
       case Item.GachaTicket => GachaSkullData.gachaSkull
       case Item.SuperPickaxe => ItemData.getSuperPickaxe(1)
@@ -38,7 +26,12 @@ object GiftItemInterpreter extends (Gift.Item => Kleisli[IO, Player, Unit]) {
       case Item.Elsa => ItemData.getElsa(1)
     }
 
-    SequentialEffect(preEffect ++: grantItemStacksEffect(itemStack) +: Nil)
+    val message = item match {
+      case Item.GachaTicket => Some(MessageEffect("レベルアップ記念のガチャ券を配布しました。"))
+      case _ => None
+    }
+
+    SequentialEffect(message.toList :+ grantItemStacksEffect(itemStack))
   }
 
 }
