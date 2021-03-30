@@ -6,7 +6,7 @@ import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerRef
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup
 import com.github.unchama.seichiassist.achievement.hierarchy.AchievementGroup._
@@ -87,7 +87,7 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
   override def open(implicit
                     environment: AchievementGroupMenu.Environment,
                     ctx: LayoutPreparationContext,
-                    syncCtx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = {
+                    onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
     // redirect
     if (entriesToDisplay.isEmpty) {
       if (groupAchievementsCount == 0) {

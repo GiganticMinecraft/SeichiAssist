@@ -7,6 +7,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, ActiveSkillNormalEffect, ActiveSkillPremiumEffect, UnlockableActiveSkillEffect}
@@ -22,13 +23,14 @@ object ActiveSkillEffectMenu extends Menu {
 
   import cats.implicits._
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
 
   class Environment(implicit
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
                     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
-                    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu)
+                    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
+                    val ioOnMainThread: OnMinecraftServerThread[IO])
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
 
@@ -111,6 +113,7 @@ object ActiveSkillEffectMenu extends Menu {
 
   private case class ButtonComputations(player: Player)(implicit environment: Environment) {
 
+    import environment._
     import player._
 
     def effectButton(effect: UnlockableActiveSkillEffect): IO[Button] = {
@@ -183,7 +186,8 @@ object ActiveSkillEffectMenu extends Menu {
   }
 
   private object ConstantButtons {
-    def resetEffectButton(implicit environment: Environment): Button =
+    def resetEffectButton(implicit environment: Environment): Button = {
+      import environment._
       ReloadingButton(ActiveSkillEffectMenu) {
         Button(
           new IconItemStackBuilder(Material.GLASS)
@@ -196,6 +200,7 @@ object ActiveSkillEffectMenu extends Menu {
           )
         )
       }
+    }
 
     def effectPurchaseHistoryMenuButton(implicit ioCanOpenPremiumPointMenu: IO CanOpen PremiumPointTransactionHistoryMenu): Button =
       Button(

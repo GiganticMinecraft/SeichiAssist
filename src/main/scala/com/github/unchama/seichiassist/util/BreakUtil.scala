@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.util
 
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
@@ -313,11 +313,9 @@ object BreakUtil {
                      toMaterial: Material = Material.AIR): IO[Unit] = {
 
     for {
-      _ <- PluginExecutionContexts.syncShift.shift
-
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
-      targetBlocksInformation <- IO {
-        targetBlocks.toSeq
+      targetBlocksInformation <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
+        val seq: Seq[(Location, Material, Byte)] = targetBlocks.toSeq
           .filter { block =>
             block.getType match {
               case Material.AIR =>
@@ -328,14 +326,12 @@ object BreakUtil {
             }
           }
           .map(block => (block.getLocation.clone(), block.getType, block.getData))
-      }
 
-      // ブロックをすべて[[toMaterial]]に変える
-      _ <- IO {
+        // ブロックをすべて[[toMaterial]]に変える
         targetBlocks.foreach(_.setType(toMaterial))
-      }
 
-      _ <- PluginExecutionContexts.asyncShift.shift
+        seq
+      })
 
       breakResults = {
         import cats.implicits._
@@ -382,15 +378,13 @@ object BreakUtil {
 
       _ <- SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, expIncrease).toIO
 
-      _ <- PluginExecutionContexts.syncShift.shift
-
-      _ <- IO {
+      _ <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
         // アイテムドロップは非同期スレッドで行ってはならない
         itemsToBeDropped.foreach(dropLocation.getWorld.dropItemNaturally(dropLocation, _))
         breakResults._2.foreach { location =>
           location.getWorld.spawnEntity(location, EntityType.SILVERFISH)
         }
-      }
+      })
     } yield ()
   }
 

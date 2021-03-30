@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
+import cats.effect.IO
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LimitedLoginEvent.{START_DATE, isInEvent}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LoginBonusItemData.loginBonusAt
@@ -12,7 +14,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-object LimitedLoginBonusGifter extends Listener {
+class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     if (!isInEvent) return
@@ -50,13 +52,11 @@ object LimitedLoginBonusGifter extends Listener {
         player.sendMessage(s"【限定ログボ：$messageofDay】${loginBonus.amount}個のガチャ券をプレゼント！")
 
         val skull = GachaSkullData.gachaSkull
+        val skills = List.fill(loginBonus.amount)(skull)
 
-        import cats.implicits._
         DefaultEffectEnvironment.runEffectAsync(
           "ガチャ券を付与する",
-          List.fill(loginBonus.amount)(
-            grantItemStacksEffect(skull).run(player)
-          ).sequence
+          grantItemStacksEffect(skills: _*).apply(player)
         )
     }
   }

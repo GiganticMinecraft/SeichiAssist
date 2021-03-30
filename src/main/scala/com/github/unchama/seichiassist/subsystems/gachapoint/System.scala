@@ -1,14 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
-import com.github.unchama.minecraft.actions.GetConnectedPlayers
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.application.process.AddSeichiExpAsGachaPoint
@@ -34,7 +34,8 @@ object System {
   def wired[
     F[_] : ConcurrentEffect : Timer : GetConnectedPlayers[*[_], Player] : ErrorLogger,
     G[_] : SyncEffect
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): G[System[F, G, Player]] = {
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
+   (implicit ioOnMainThread: OnMinecraftServerThread[IO]): G[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val gachaPointPersistence = new JdbcGachaPointPersistence[G]

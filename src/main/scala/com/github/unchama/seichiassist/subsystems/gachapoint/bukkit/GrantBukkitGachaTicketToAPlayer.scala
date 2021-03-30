@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.bukkit
 
-import cats.effect.LiftIO
+import cats.effect.{IO, LiftIO}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
 import com.github.unchama.seichiassist.util.Util
@@ -14,7 +15,8 @@ import org.bukkit.entity.Player
 
 case class GrantBukkitGachaTicketToAPlayer[
   F[_] : LiftIO
-](player: Player) extends GrantGachaTicketToAPlayer[F] {
+](player: Player)
+ (implicit ioOnMainThread: OnMinecraftServerThread[IO]) extends GrantGachaTicketToAPlayer[F] {
 
   override def give(count: Int): F[Unit] = {
     val effect =

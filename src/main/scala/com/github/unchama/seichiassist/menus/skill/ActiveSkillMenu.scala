@@ -9,6 +9,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.data.player.PlayerSkillState
@@ -40,14 +41,15 @@ object ActiveSkillMenu extends Menu {
   private case object Selected extends SkillSelectionState
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, layoutPreparationContext}
 
   class Environment(implicit
                     val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
                     val manaApi: ManaApi[IO, SyncIO, Player],
                     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+                    val ioOnMainThread: OnMinecraftServerThread[IO])
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
@@ -68,6 +70,7 @@ object ActiveSkillMenu extends Menu {
 
   private class ButtonComputations(player: Player)(implicit environment: Environment) {
 
+    import environment._
     import player._
 
     val availableActiveSkillPoint: IO[Int] =
@@ -259,6 +262,8 @@ object ActiveSkillMenu extends Menu {
 
     def seichiSkillButton(state: SkillSelectionState, skill: SeichiSkill)
                          (implicit environment: Environment): Button = {
+      import environment._
+
       val itemStack = {
         val base = state match {
           case Locked =>
@@ -415,7 +420,9 @@ object ActiveSkillMenu extends Menu {
   }
 
   private object ConstantButtons {
-    def skillEffectMenuButton(implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type): Button = {
+    def skillEffectMenuButton(implicit
+                              ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
+                              ioOnMainThread: OnMinecraftServerThread[IO]): Button = {
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
           .title(s"$UNDERLINE$BOLD${LIGHT_PURPLE}演出効果設定")
@@ -432,6 +439,8 @@ object ActiveSkillMenu extends Menu {
     }
 
     def resetSkillsButton(implicit environment: Environment): Button = {
+      import environment._
+
       ReloadingButton(ActiveSkillMenu) {
         Button(
           new IconItemStackBuilder(Material.GLASS)

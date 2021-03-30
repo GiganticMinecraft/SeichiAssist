@@ -51,7 +51,7 @@ object ServerSwitchMenu extends Menu {
   }
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 
   class Environment(implicit val ioCanOpenStickMenu: IO CanOpen FirstPage.type)
 

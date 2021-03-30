@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.util
 
 import cats.data
-import cats.effect.IO
+import cats.data.Kleisli
+import cats.effect.{IO, SyncIO}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MineStackObjectList, SeichiAssist}
-import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import enumeratum._
 import net.md_5.bungee.api.chat.BaseComponent
@@ -74,6 +75,8 @@ object Util {
    */
   @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
     // Javaから呼ばれているのでimplicitが使いづらい　grantItemStacksEffectに置き換えたい
+    import PluginExecutionContexts.onMainThread
+
     DefaultEffectEnvironment.runEffectAsync(
       "アイテムスタックを付与する",
       grantItemStacksEffect(itemStack).run(player)
@@ -86,20 +89,18 @@ object Util {
    *
    * @param itemStacks 付与するアイテム
    */
-  def grantItemStacksEffect(itemStacks: ItemStack*): TargetedEffect[Player] = data.Kleisli { player =>
-    val amalgamated = ItemStackUtil.amalgamate(itemStacks).filter(_.getType != Material.AIR)
+  def grantItemStacksEffect[F[_] : OnMinecraftServerThread](itemStacks: ItemStack*): Kleisli[F, Player, Unit] =
+    data.Kleisli { player =>
+      val amalgamated = ItemStackUtil.amalgamate(itemStacks).filter(_.getType != Material.AIR)
 
-    for {
-      _ <- PluginExecutionContexts.syncShift.shift
-      _ <- IO {
+      OnMinecraftServerThread[F].runAction(SyncIO {
         player.getInventory
           .addItem(amalgamated: _*)
           .values().asScala
           .filter(_.getType != Material.AIR)
           .foreach(dropItem(player, _))
-      }
-    } yield ()
-  }
+      })
+    }
 
   //プレイヤーのインベントリがフルかどうか確認
   def isPlayerInventoryFull(player: Player): Boolean = player.getInventory.firstEmpty() == -1

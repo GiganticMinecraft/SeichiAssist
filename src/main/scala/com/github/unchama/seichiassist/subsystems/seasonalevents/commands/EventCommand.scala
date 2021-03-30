@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.commands
 
 import cats.effect.IO
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData._
@@ -10,7 +11,7 @@ import com.github.unchama.targetedeffect.TargetedEffect._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
-object EventCommand {
+class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
 
   import com.github.unchama.targetedeffect._
 

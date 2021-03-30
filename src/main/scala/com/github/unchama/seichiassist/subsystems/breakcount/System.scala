@@ -7,7 +7,7 @@ import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.application.BreakCountRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.{ClassifyPlayerWorld, IncrementSeichiExp}
@@ -39,7 +39,7 @@ object System {
   import cats.implicits._
 
   def wired[
-    F[_] : ConcurrentEffect : MinecraftServerThreadShift : ErrorLogger,
+    F[_] : ConcurrentEffect : OnMinecraftServerThread : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
   ](implicit effectEnvironment: EffectEnvironment): F[System[F, G]] = {
     implicit val persistence: SeichiAmountDataPersistence[G] = new JdbcSeichiAmountDataPersistence[G]

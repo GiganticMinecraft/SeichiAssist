@@ -5,7 +5,7 @@ import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerRef
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
@@ -18,7 +18,7 @@ object CategorizedMineStackMenu {
   class Environment(implicit
                     val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
                     val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
-                    val syncShift: MinecraftServerThreadShift[IO])
+                    val onMainThread: OnMinecraftServerThread[IO])
 
 }
 
@@ -78,7 +78,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
   override def open(implicit environment: CategorizedMineStackMenu.Environment,
                     ctx: LayoutPreparationContext,
-                    syncCtx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = DeferredEffect {
+                    onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = DeferredEffect {
     import MineStackObjectCategory._
 
     for {

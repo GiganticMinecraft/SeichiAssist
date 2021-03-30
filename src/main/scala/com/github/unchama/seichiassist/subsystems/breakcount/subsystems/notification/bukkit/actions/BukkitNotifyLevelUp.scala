@@ -1,21 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.bukkit.actions
 
-import cats.effect.Sync
+import cats.Applicative
+import cats.effect.{Sync, SyncIO}
 import com.github.unchama.generic.Diff
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiLevel, SeichiStarLevel}
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.ChatColor.GOLD
 import org.bukkit.entity.Player
 
-object SyncBukkitNotifyLevelUp {
+object BukkitNotifyLevelUp {
 
   import cats.implicits._
 
-  def apply[
-    F[_] : MinecraftServerThreadShift
-  ](implicit F: Sync[F]): NotifyLevelUp[F, Player] = new NotifyLevelUp[F, Player] {
+  def apply[F[_] : OnMinecraftServerThread : Sync]: NotifyLevelUp[F, Player] = new NotifyLevelUp[F, Player] {
     override def ofSeichiLevelTo(player: Player)(diff: Diff[SeichiLevel]): F[Unit] = {
       val Diff(oldLevel, newLevel) = diff
 
@@ -23,11 +22,11 @@ object SyncBukkitNotifyLevelUp {
       val subtitleMessage = s"${GOLD}ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww"
 
       if (oldLevel < newLevel) {
-        MinecraftServerThreadShift[F].shift >> F.delay {
+        OnMinecraftServerThread[F].runAction(SyncIO {
           player.sendTitle(titleMessage, subtitleMessage, 1, 20 * 5, 1)
           Util.launchFireWorks(player.getLocation)
-        }
-      } else F.unit
+        })
+      } else Applicative[F].unit
     }
 
     override def ofSeichiStarLevelTo(player: Player)(diff: Diff[SeichiStarLevel]): F[Unit] = {
@@ -40,8 +39,8 @@ object SyncBukkitNotifyLevelUp {
         }
       }
 
-      if (oldStars < newStars) F.delay(player.sendMessage(message))
-      else F.unit
+      if (oldStars < newStars) Sync[F].delay(player.sendMessage(message))
+      else Applicative[F].unit
     }
   }
 

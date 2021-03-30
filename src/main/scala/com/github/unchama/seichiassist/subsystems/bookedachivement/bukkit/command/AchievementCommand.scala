@@ -5,7 +5,6 @@ import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.EchoExecutor
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.AchievementOperation
 import com.github.unchama.seichiassist.subsystems.bookedachivement.service.AchievementBookingService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -114,7 +113,7 @@ object AchievementCommand {
               case None =>
                 SequentialEffect(
                   Kleisli.liftF(
-                    service.writeAchivementId(playerName, achievementNumber, operation).toIO.start.as(())
+                    service.writeAchivementId(playerName, achievementNumber, operation).start.toIO.as(())
                   ),
                   MessageEffect(
                     List(
