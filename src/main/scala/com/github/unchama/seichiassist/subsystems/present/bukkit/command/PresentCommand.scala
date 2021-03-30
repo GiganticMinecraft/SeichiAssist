@@ -84,18 +84,30 @@ object PresentCommand {
       }
       .build()
 
+  /**
+   * 概要: 指定したプレゼントを消去する。対応が失われるため、このコマンドの実行が完了した後、プレイヤーはそのプレゼントを受け取ることができなくなる。
+   *
+   * 権限ノード: `seichiassist.present.delete`
+   *
+   * 出力: 操作の結果とそれに伴うメッセージ。
+   */
   private def deleteExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) =
     playerCommandBuilder
       .argumentsParsers(List(presentIdParser))
       .execution { context =>
-        val presentId = context.args.parsed.head.asInstanceOf[Int]
-        for {
-          _ <- NonServerThreadContextShift[F].shift
-          _ <- persistence.delete(presentId)
-        } yield ()
-        IO.pure(MessageEffect(s"IDが${presentId}のプレゼントの消去は正常に行われました。"))
+        if (!context.sender.hasPermission("seichiassist.present.delete")) {
+          IO.pure(noPermissionMessage)
+        } else {
+          val presentId = context.args.parsed.head.asInstanceOf[Int]
+          for {
+            _ <- NonServerThreadContextShift[F].shift
+            _ <- persistence.delete(presentId)
+          } yield ()
+          IO.pure(MessageEffect(s"IDが${presentId}のプレゼントの消去は正常に行われました。"))
+        }
       }
       .build()
+
   /**
    * 概要: プレイヤーが指定されたプレゼントを受け取れるようにする。
    *
@@ -355,7 +367,9 @@ object PresentCommand {
       "list" -> listExecutor,
       "state" -> showStateExecutor,
       "help" -> helpExecutor,
-    )
+    ),
+    Some(helpExecutor),
+    Some(helpExecutor)
   ).asNonBlockingTabExecutor()
 
   private def decoratePresentState(state: PresentClaimingState): String = state match {
