@@ -176,10 +176,9 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val managedFlySystem: subsystems.managedfly.System[SyncIO, IO] = {
-    import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
+    import PluginExecutionContexts.{asyncShift, cachedThreadPool, onMainThread}
 
     implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val configuration = subsystems.managedfly.application.SystemConfiguration(
@@ -251,7 +250,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val fourDimensionalPocketSystem: subsystems.fourdimensionalpocket.System[IO, Player] = {
-    import PluginExecutionContexts.{asyncShift, syncShift}
+    import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
@@ -260,7 +259,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val fastDiggingEffectSystem: subsystems.fastdiggingeffect.System[IO, IO, Player] = {
-    import PluginExecutionContexts.{asyncShift, onMainThread, syncShift, timer}
+    import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration

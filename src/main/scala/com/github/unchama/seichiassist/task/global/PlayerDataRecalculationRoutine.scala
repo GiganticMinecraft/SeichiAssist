@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.task.global
 
 import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -14,10 +14,8 @@ import scala.concurrent.duration.FiniteDuration
 
 object PlayerDataRecalculationRoutine {
 
-  import cats.implicits._
-
   def apply()
-           (implicit syncContext: MinecraftServerThreadShift[IO],
+           (implicit onMainThread: OnMinecraftServerThread[IO],
             context: RepeatingTaskContext,
             manaApi: ManaApi[IO, SyncIO, Player]): IO[Nothing] = {
     val getRepeatInterval: IO[FiniteDuration] = IO {
@@ -26,7 +24,7 @@ object PlayerDataRecalculationRoutine {
       if (SeichiAssist.DEBUG) 10.seconds else 1.minute
     }
 
-    val routineOnMainThread = IO {
+    val routineOnMainThread = SyncIO {
       import scala.jdk.CollectionConverters._
 
       //オンラインプレイヤーの人数を取得
@@ -91,7 +89,7 @@ object PlayerDataRecalculationRoutine {
 
     RepeatingRoutine.permanentRoutine(
       getRepeatInterval,
-      syncContext.shift >> routineOnMainThread
+      onMainThread.runAction(routineOnMainThread)
     )
   }
 }

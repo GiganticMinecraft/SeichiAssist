@@ -7,7 +7,7 @@ import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
@@ -36,7 +36,7 @@ object System {
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
   def wired[
-    F[_] : ConcurrentEffect : MinecraftServerThreadShift : ErrorLogger,
+    F[_] : ConcurrentEffect : OnMinecraftServerThread : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
    (implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
