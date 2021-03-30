@@ -1,14 +1,13 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.subsystems.webhook.System.GiganticBerserkWebhookGateway
+import com.github.unchama.seichiassist.subsystems.webhook.WebhookWriteAPI
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import org.bukkit._
@@ -17,12 +16,9 @@ import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
 
-class EntityListener[
-  F[_] : ConcurrentEffect
-       : NonServerThreadContextShift
-       : GiganticBerserkWebhookGateway
-](implicit effectEnvironment: EffectEnvironment,
-  manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
+class EntityListener(implicit effectEnvironment: EffectEnvironment,
+                     manaApi: ManaApi[IO, SyncIO, Player],
+                     webhookWriteAPI: WebhookWriteAPI[IO]) extends Listener {
   private val playermap = SeichiAssist.playermap
 
   @EventHandler def onPlayerActiveSkillEvent(event: ProjectileHitEvent): Unit = { //矢を取得する
@@ -187,6 +183,8 @@ class EntityListener[
   }
 
   @EventHandler def onDeath(event: EntityDeathEvent): Unit = {
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+    implicit val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
     /*GiganticBerserk用*/
     //死んだMOBがGiganticBerserkの対象MOBでなければ終了
     if (!Util.isEnemy(event.getEntity.getType)) return

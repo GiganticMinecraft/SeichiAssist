@@ -5,7 +5,7 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.subsystems.webhook.System.GiganticBerserkWebhookGateway
+import com.github.unchama.seichiassist.subsystems.webhook.WebhookWriteAPI
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import org.bukkit.entity.Player
@@ -15,9 +15,10 @@ import scala.util.Random
 
 class GiganticBerserkTask {
   def PlayerKillEnemy[
-    F[_] : ConcurrentEffect
-         : NonServerThreadContextShift
-         : GiganticBerserkWebhookGateway
+    F[_]
+    : ConcurrentEffect
+    : NonServerThreadContextShift
+    : WebhookWriteAPI
   ](p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p
     val uuid = p.getUniqueId
@@ -65,7 +66,7 @@ class GiganticBerserkTask {
 
         for {
           _ <- NonServerThreadContextShift[F].shift
-          _ <- sender.send(s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！")
+          _ <- WebhookWriteAPI[F].sendGiganticBerserkNotification(s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！")
         } yield ()
 
         Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
