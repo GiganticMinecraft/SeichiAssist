@@ -2,13 +2,12 @@ package com.github.unchama.seichiassist.subsystems.managedfly
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.minecraft.actions.{MinecraftServerThreadShift, OnMinecraftServerThread}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.application.repository.ActiveSessionReferenceRepositoryDefinition
