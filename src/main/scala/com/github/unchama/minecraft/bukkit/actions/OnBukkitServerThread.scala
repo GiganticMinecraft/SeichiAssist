@@ -31,6 +31,7 @@ class OnBukkitServerThread[
         case Some(value) => Monad[F].pure(value)
 
         // 実行結果が得られていない場合、メインスレッドに飛んで実行結果を戻す
+        // メインスレッドに飛ぶアクション自体をcancellableにする
         case None => F.cancelable[A] { cb =>
           val run: Runnable = () => {
             cb(Right(SyncEffect[G].runSync[SyncIO, A](ga).unsafeRunSync()))

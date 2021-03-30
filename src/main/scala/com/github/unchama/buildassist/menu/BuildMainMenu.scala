@@ -9,6 +9,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
@@ -21,10 +22,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}
 
-private case class ButtonComputations(player: Player) extends AnyVal {
+private case class ButtonComputations(player: Player)
+                                     (implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
 
   import BuildMainMenu._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import player._
 
   def computeNotationOfStats(): IO[Button] = RecomputedButton {
@@ -337,11 +339,11 @@ private object ConstantButtons {
 
 object BuildMainMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import menuinventory.syntax._
 
   class Environment(implicit
                     val flyApi: ManagedFlyApi[SyncIO, Player],
+                    val ioOnMainThread: OnMinecraftServerThread[IO],
                     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
                     val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu])
 
@@ -351,6 +353,8 @@ object BuildMainMenu extends Menu {
 
   override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
+    import environment._
+
     val computations = ButtonComputations(player)
     import computations._
     val constantPart = Map(

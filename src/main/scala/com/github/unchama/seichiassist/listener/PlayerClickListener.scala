@@ -38,7 +38,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
                           ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   import com.github.unchama.generic.ContextCoercion._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{syncShift, timer}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
 
@@ -101,7 +101,6 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
           val controlSkillAvailability =
             activeSkillAvailability(player).set(false).coerceTo[IO] >>
               IO.sleep(coolDownTicks.ticks) >>
-              syncShift.shift >>
               activeSkillAvailability(player).set(true).coerceTo[IO] >>
               soundEffectAfterCoolDown
 

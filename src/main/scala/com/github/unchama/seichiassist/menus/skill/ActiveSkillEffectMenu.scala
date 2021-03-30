@@ -23,7 +23,7 @@ object ActiveSkillEffectMenu extends Menu {
 
   import cats.implicits._
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
 
   class Environment(implicit

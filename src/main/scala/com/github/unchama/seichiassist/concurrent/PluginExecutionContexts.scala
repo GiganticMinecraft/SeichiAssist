@@ -6,8 +6,8 @@ import com.github.unchama.generic
 import com.github.unchama.generic.tag.tag
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.Tags.LayoutPreparationContextTag
-import com.github.unchama.minecraft.actions.{MinecraftServerThreadShift, OnMinecraftServerThread}
-import com.github.unchama.minecraft.bukkit.actions.{BukkitServerThreadIOShift, OnBukkitServerThread}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.minecraft.bukkit.actions.OnBukkitServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -17,8 +17,6 @@ import scala.concurrent.ExecutionContext
 object PluginExecutionContexts {
 
   implicit val pluginInstance: JavaPlugin = SeichiAssist.instance
-
-  implicit val syncShift: MinecraftServerThreadShift[IO] = new BukkitServerThreadIOShift()
 
   val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 

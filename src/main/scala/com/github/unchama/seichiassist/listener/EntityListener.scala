@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
@@ -16,6 +17,7 @@ import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
 
 class EntityListener(implicit effectEnvironment: EffectEnvironment,
+                     ioOnMainThread: OnMinecraftServerThread[IO],
                      manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
   private val playermap = SeichiAssist.playermap
 
