@@ -102,8 +102,7 @@ object PresentCommand {
           for {
             _ <- NonServerThreadContextShift[F].shift
             _ <- persistence.delete(presentId)
-          } yield ()
-          IO.pure(MessageEffect(s"IDが${presentId}のプレゼントの消去は正常に行われました。"))
+          } yield MessageEffect(s"IDが${presentId}のプレゼントの消去は正常に行われました。")
         }
       }
       .build()
