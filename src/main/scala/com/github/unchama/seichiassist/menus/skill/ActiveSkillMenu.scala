@@ -262,7 +262,7 @@ object ActiveSkillMenu extends Menu {
     }
 
     def seichiSkillButton[
-      F : ConcurrentEffect : NonServerThreadContextShift
+      F[_] : ConcurrentEffect : NonServerThreadContextShift
     ](state: SkillSelectionState, skill: SeichiSkill)
      (implicit environment: Environment, webhookGatewayForAssault: CanSendToWebhook[F]): Button = {
       val itemStack = {

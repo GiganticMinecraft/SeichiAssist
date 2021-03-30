@@ -15,7 +15,7 @@ class WebhookSender[F[_]: Sync](webhookURL: String) extends CanSendToWebhook[F] 
   private val parsedURL = new URL(webhookURL)
   override def send(message: String): F[Either[Exception, Unit]] = Sync[F].delay {
     val json = s"""{"content":"$message"}"""
-    parsedURL.openConnection().asInstanceOf[HttpURLConnection].tap { con =>
+    parsedURL.openConnection().asInstanceOf[HttpURLConnection].pipe { con =>
       con.addRequestProperty("Content-Type", "application/json; charset=utf-8")
       // User-AgentがDiscordBotでない場合403が返却されるため
       con.addRequestProperty("User-Agent", "DiscordBot")

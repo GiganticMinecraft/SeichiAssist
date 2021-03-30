@@ -16,7 +16,7 @@ import scala.util.{Failure, Random, Success}
 
 class GiganticBerserkTask {
   def PlayerKillEnemy[
-    F : ConcurrentEffect : NonServerThreadContextShift
+    F[_] : ConcurrentEffect : NonServerThreadContextShift
   ](p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player], sender: CanSendToWebhook[F]): Unit = {
     val player = p
     val uuid = p.getUniqueId
