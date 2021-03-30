@@ -5,7 +5,7 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.subsystems.webhook.service.CanSendToWebhook
+import com.github.unchama.seichiassist.subsystems.webhook.System.GiganticBerserkWebhookGateway
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import org.bukkit.entity.Player
@@ -15,8 +15,10 @@ import scala.util.Random
 
 class GiganticBerserkTask {
   def PlayerKillEnemy[
-    F[_] : ConcurrentEffect : NonServerThreadContextShift
-  ](p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player], sender: CanSendToWebhook[F]): Unit = {
+    F[_] : ConcurrentEffect
+         : NonServerThreadContextShift
+         : GiganticBerserkWebhookGateway
+  ](p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p
     val uuid = p.getUniqueId
     val playerdata = SeichiAssist.playermap(uuid)

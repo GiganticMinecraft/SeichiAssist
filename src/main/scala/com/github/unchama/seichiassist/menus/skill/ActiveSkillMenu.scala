@@ -21,7 +21,7 @@ import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.subsystems.webhook.service.{CanSendToWebhook, WebhookSender}
+import com.github.unchama.seichiassist.subsystems.webhook.System.AssaultWebhookGateway
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -29,9 +29,7 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionType
-import org.bukkit.{Bukkit, Material, Sound}
-
-import scala.util.{Failure, Success}
+import org.bukkit.{Material, Sound}
 
 object ActiveSkillMenu extends Menu {
 
@@ -51,7 +49,9 @@ object ActiveSkillMenu extends Menu {
                     val manaApi: ManaApi[IO, SyncIO, Player],
                     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+                    val assaultWebhookGateway: AssaultWebhookGateway[IO],
+                   )
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
@@ -124,6 +124,9 @@ object ActiveSkillMenu extends Menu {
         state <- ref.get
       } yield {
         val selectionState = ButtonComputations.selectionStateOf(skill)(state)
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+        implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+        implicit val webhook: AssaultWebhookGateway[IO] = environment.assaultWebhookGateway
         ButtonComputations.seichiSkillButton(selectionState, skill)
       }
     }
@@ -262,9 +265,9 @@ object ActiveSkillMenu extends Menu {
     }
 
     def seichiSkillButton[
-      F[_] : ConcurrentEffect : NonServerThreadContextShift
+      F[_] : ConcurrentEffect : NonServerThreadContextShift : AssaultWebhookGateway
     ](state: SkillSelectionState, skill: SeichiSkill)
-     (implicit environment: Environment, webhookGatewayForAssault: CanSendToWebhook[F]): Button = {
+     (implicit environment: Environment): Button = {
       val itemStack = {
         val base = state match {
           case Locked =>
@@ -337,12 +340,13 @@ object ActiveSkillMenu extends Menu {
                       val (newState, assaultSkillUnlockEffects) =
                         if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
                           unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
-                          import cats.implicits._
 
                           val messageForNotification = s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
+
+                          import cats.implicits._
                           for {
                             _ <- NonServerThreadContextShift[F].shift
-                            _ <- webhookGatewayForAssault.send(messageForNotification)
+                            _ <- implicitly[AssaultWebhookGateway[F]].send(messageForNotification)
                           } yield ()
 
                           (
