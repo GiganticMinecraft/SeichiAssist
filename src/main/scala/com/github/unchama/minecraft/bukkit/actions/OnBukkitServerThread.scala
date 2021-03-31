@@ -31,17 +31,18 @@ class OnBukkitServerThread[
         case Some(value) => Monad[F].pure(value)
 
         // 実行結果が得られていない場合、メインスレッドに飛んで実行結果を戻す
-        // メインスレッドに飛ぶアクション自体をcancellableにする
+        // メインスレッドに飛ぶアクション自体をcancelableにする
         case None => F.cancelable[A] { cb =>
           val run: Runnable = () => {
-            cb(Right(SyncEffect[G].runSync[SyncIO, A](ga).unsafeRunSync()))
+            // メインスレッド内でgaを実行、結果を取り出し、継続に渡す
+            val a = SyncEffect[G].runSync[SyncIO, A](ga).unsafeRunSync()
+            cb(Right(a))
           }
 
-          F.delay {
-            Bukkit.getScheduler.runTask(hostPlugin, run)
-          } >>= { task =>
-            F.delay(task.cancel())
-          }
+          val task = Bukkit.getScheduler.runTask(hostPlugin, run)
+
+          // runAction自体がキャンセル可能になるために、cancelableに対してtask.cancelを戻す
+          F.delay(task.cancel())
         }
       }
 
