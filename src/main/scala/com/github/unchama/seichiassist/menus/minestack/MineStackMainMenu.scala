@@ -5,7 +5,7 @@ import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.{Button, action}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -24,7 +24,7 @@ object MineStackMainMenu extends Menu {
   class Environment(implicit
                     val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-                    val syncShift: MinecraftServerThreadShift[IO])
+                    val ioOnMainThread: OnMinecraftServerThread[IO])
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
 
@@ -83,7 +83,7 @@ object MineStackMainMenu extends Menu {
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
-    def computeHistoricalMineStackLayout(implicit syncShift: MinecraftServerThreadShift[IO]): IO[MenuSlotLayout] = {
+    def computeHistoricalMineStackLayout(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[MenuSlotLayout] = {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
       for {

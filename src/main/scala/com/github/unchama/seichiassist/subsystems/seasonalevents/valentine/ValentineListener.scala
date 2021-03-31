@@ -1,10 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import java.util.{Random, UUID}
-
 import cats.effect.{ConcurrentEffect, IO, LiftIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine._
@@ -26,10 +25,15 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import java.util.{Random, UUID}
 import scala.util.chaining._
 
-class ValentineListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
-  (implicit effectEnvironment: EffectEnvironment, repository: LastQuitPersistenceRepository[F, UUID]) extends Listener {
+class ValentineListener[
+  F[_] : ConcurrentEffect : NonServerThreadContextShift
+](implicit
+  effectEnvironment: EffectEnvironment,
+  repository: LastQuitPersistenceRepository[F, UUID],
+  ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {

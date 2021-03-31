@@ -178,10 +178,9 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val managedFlySystem: subsystems.managedfly.System[SyncIO, IO] = {
-    import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
+    import PluginExecutionContexts.{asyncShift, cachedThreadPool, onMainThread}
 
     implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val configuration = subsystems.managedfly.application.SystemConfiguration(
@@ -211,7 +210,7 @@ class SeichiAssist extends JavaPlugin() {
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
   lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.{asyncShift, syncShift}
+    import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
@@ -232,7 +231,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val seasonalEventsSystem: subsystems.seasonalevents.System[IO] = {
-    import PluginExecutionContexts.asyncShift
+    import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
@@ -253,7 +252,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val fourDimensionalPocketSystem: subsystems.fourdimensionalpocket.System[IO, Player] = {
-    import PluginExecutionContexts.{asyncShift, syncShift}
+    import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
@@ -262,7 +261,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val fastDiggingEffectSystem: subsystems.fastdiggingeffect.System[IO, IO, Player] = {
-    import PluginExecutionContexts.{asyncShift, syncShift, timer}
+    import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val configuration: Configuration = seichiAssistConfig.getFastDiggingEffectSystemConfiguration
@@ -275,7 +274,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val gachaPointSystem: subsystems.gachapoint.System[IO, SyncIO, Player] = {
-    import PluginExecutionContexts.{asyncShift, syncShift, timer}
+    import PluginExecutionContexts.{asyncShift, onMainThread, timer}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val getConnectedPlayers: GetConnectedPlayers[IO, Player] = new GetConnectedBukkitPlayers[IO]
@@ -284,7 +283,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val mebiusSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.{sleepAndRoutineContext, syncShift, timer}
+    import PluginExecutionContexts.{onMainThread, sleepAndRoutineContext, timer}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
@@ -361,7 +360,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   lazy val presentSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.asyncShift
+    import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
@@ -500,7 +499,7 @@ class SeichiAssist extends JavaPlugin() {
       "halfguard" -> HalfBlockProtectCommand.executor,
       "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
-      "minehead" -> MineHeadCommand.executor,
+      "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
       "stickmenu" -> StickMenuCommand.executor
     )
@@ -612,7 +611,7 @@ class SeichiAssist extends JavaPlugin() {
         }
 
       val levelUpGiftProcess: IO[Nothing] =
-        subsystems.seichilevelupgift.System.backGroundProcess[SyncIO]
+        subsystems.seichilevelupgift.System.backGroundProcess[IO, SyncIO]
 
       val levelUpMessagesProcess: IO[Nothing] =
         subsystems.seichilevelupmessage.System.backgroundProcess[IO, SyncIO, Player]

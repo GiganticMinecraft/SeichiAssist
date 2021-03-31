@@ -42,7 +42,7 @@ class BuildAssist(plugin: Plugin)
 
   def onEnable(): Unit = {
     implicit val menuRouter: BuildAssistMenuRouter[IO] = {
-      import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+      import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
 
       BuildAssistMenuRouter.apply
     }

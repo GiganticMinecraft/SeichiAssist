@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.{MebiusMessages, MebiusTalks}
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
@@ -53,15 +53,16 @@ object PeriodicMebiusSpeechRoutine {
   def start(player: Player)(implicit
                             serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
                             context: RepeatingTaskContext,
-                            bukkitSyncIOShift: MinecraftServerThreadShift[IO]): IO[Nothing] = {
-    import cats.implicits._
+                            onMainThread: OnMinecraftServerThread[IO]): IO[Nothing] = {
 
     implicit val timer: Timer[IO] = IO.timer(context)
 
     RepeatingRoutine.permanentRoutine(
       getRepeatInterval,
       // このタスクは同期的に実行しないとunblock -> speak -> blockの処理が入れ子になり二回走る可能性がある
-      bukkitSyncIOShift.shift >> unblockAndSpeakTipsOrMessageRandomly(player).toIO
+      onMainThread.runAction {
+        unblockAndSpeakTipsOrMessageRandomly(player)
+      }
     )
   }
 

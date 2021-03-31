@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
@@ -9,7 +9,7 @@ import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
-import com.github.unchama.minecraft.actions.{GetConnectedPlayers, MinecraftServerThreadShift, SendMinecraftMessage}
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -48,7 +48,7 @@ object System {
     G[_]
     : SyncEffect,
     F[_]
-    : MinecraftServerThreadShift
+    : OnMinecraftServerThread
     : Timer
     : ConcurrentEffect
     : ErrorLogger
@@ -132,16 +132,16 @@ object System {
           }
 
         override def addEffectToAllPlayers(effect: FastDiggingEffect, duration: FiniteDuration): F[Unit] = {
+          import cats.implicits._
+
           import scala.concurrent.duration._
           import scala.jdk.CollectionConverters._
 
-          MinecraftServerThreadShift[F].shift >>
-            Bukkit.getOnlinePlayers
-              .asScala
-              .toList
-              .traverse { player => addEffect(effect, 1.hour).run(player) }
-              .as(())
-        }
+          for {
+            players <- OnMinecraftServerThread[F].runAction(SyncIO(Bukkit.getOnlinePlayers.asScala.toList))
+            _ <- players.traverse(addEffect(effect, 1.hour).run)
+          } yield ()
+        }.as(())
 
       }
       override val settingsApi: FastDiggingSettingsApi[F, Player] = new FastDiggingSettingsApi[F, Player] {

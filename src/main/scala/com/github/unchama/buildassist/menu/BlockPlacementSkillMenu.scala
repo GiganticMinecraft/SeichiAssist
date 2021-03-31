@@ -18,7 +18,7 @@ import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, onMainThread}
   import menuinventory.syntax._
 
   class Environment(implicit

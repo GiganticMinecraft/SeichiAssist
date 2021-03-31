@@ -8,6 +8,7 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
@@ -19,9 +20,9 @@ import eu.timepit.refined._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
-import org.bukkit.{ChatColor, Material}
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
+import org.bukkit.{ChatColor, Material}
 
 /**
  * `/present` コマンドを定義する。
@@ -32,7 +33,7 @@ import org.bukkit.entity.Player
  *   - 存在しないプレゼントIDの指定は必ずエラーになる。
  *   - 操作が成功しなかったときは適切なメッセージを表示する。
  */
-object PresentCommand {
+class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
   private val presentIdParser = Parsers.integer(
     MessageEffect("presentコマンドに与えるプレゼントIDは整数である必要があります。")
   )
@@ -253,7 +254,7 @@ object PresentCommand {
                   MessageEffect(s"ID: ${presentId}のプレゼントは存在しません。IDをお確かめください。")
                 ) { item =>
                   SequentialEffect(
-                    Util.grantItemStacksEffect(item),
+                    Util.grantItemStacksEffect[IO](item),
                     MessageEffect(s"ID: ${presentId}のプレゼントを付与しました。")
                   )
                 }

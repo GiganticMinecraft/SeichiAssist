@@ -2,14 +2,12 @@ package com.github.unchama.seichiassist.subsystems.managedfly
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
-import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.application.repository.ActiveSessionReferenceRepositoryDefinition
@@ -19,8 +17,6 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain.PlayerFlySta
 import com.github.unchama.seichiassist.subsystems.managedfly.infrastructure.JdbcFlyDurationPersistenceRepository
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
-
-import java.util.UUID
 
 /**
  * NOTE: このサブシステム(managedfly)は本来BuildAssist側に属するが、
@@ -36,7 +32,7 @@ object System {
   import cats.implicits._
 
   def wired[
-    AsyncContext[_] : ConcurrentEffect : MinecraftServerThreadShift : NonServerThreadContextShift : Timer,
+    AsyncContext[_] : ConcurrentEffect : OnMinecraftServerThread : Timer,
     SyncContext[_] : SyncEffect : ContextCoercion[*[_], AsyncContext]
   ](configuration: SystemConfiguration)(implicit effectEnvironment: EffectEnvironment)
   : SyncContext[System[SyncContext, AsyncContext]] = {

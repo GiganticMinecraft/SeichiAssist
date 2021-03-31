@@ -3,7 +3,7 @@ package com.github.unchama.menuinventory.slot.button.action
 import cats.effect.IO
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.{LayoutPreparationContext, MenuSession, MenuSlotLayout}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import org.bukkit.event.inventory.InventoryClickEvent
 
 /**
@@ -12,12 +12,12 @@ import org.bukkit.event.inventory.InventoryClickEvent
 case class ButtonEffectScope(event: InventoryClickEvent) {
   def overwriteCurrentViewBy(newLayout: MenuSlotLayout)
                             (implicit ctx: LayoutPreparationContext,
-                             syncShift: MinecraftServerThreadShift[IO]): IO[Unit] =
+                             onMainThread: OnMinecraftServerThread[IO]): IO[Unit] =
     event.getInventory.getHolder.asInstanceOf[MenuSession].overwriteViewWith(newLayout)
 
   def overwriteCurrentSlotBy(newSlot: Slot)
                             (implicit ctx: LayoutPreparationContext,
-                             syncShift: MinecraftServerThreadShift[IO]): IO[Unit] = {
+                             onMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
     val session = event.getInventory.getHolder.asInstanceOf[MenuSession]
 
     for {

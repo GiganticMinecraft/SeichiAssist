@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.seichiskill.assault
 
 import cats.effect.{ExitCase, IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
@@ -24,7 +24,7 @@ object AssaultRoutine {
   }
 
   def tryStart(player: Player, skill: AssaultSkill)
-              (implicit syncShift: MinecraftServerThreadShift[IO], ctx: RepeatingTaskContext,
+              (implicit ioOnMainThread: OnMinecraftServerThread[IO], ctx: RepeatingTaskContext,
                manaApi: ManaWriteApi[SyncIO, Player]): IO[Unit] = {
     for {
       offHandTool <- IO {
@@ -42,7 +42,7 @@ object AssaultRoutine {
 
 
   def apply(player: Player, toolToBeUsed: BreakTool, skill: AssaultSkill)
-           (implicit syncShift: MinecraftServerThreadShift[IO], ctx: RepeatingTaskContext,
+           (implicit ioOnMainThread: OnMinecraftServerThread[IO], ctx: RepeatingTaskContext,
             manaApi: ManaWriteApi[SyncIO, Player]): IO[Unit] = {
     val idleCountLimit = 20
 
@@ -161,9 +161,8 @@ object AssaultRoutine {
 
     implicit val timer: Timer[IO] = IO.timer(ctx)
 
-    import cats.implicits._
-
     import scala.concurrent.duration._
+
     for {
       _ <- IO {
         player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} ON")
@@ -172,7 +171,7 @@ object AssaultRoutine {
         player.getLocation
       }
       _ <- RepeatingRoutine.recMTask(IterationState(currentLoc, 0))(s =>
-        syncShift.shift >> IO(routineAction(s))
+        ioOnMainThread.runAction(SyncIO(routineAction(s)))
       )(IO.pure(500.millis)).guaranteeCase {
         case ExitCase.Error(_) | ExitCase.Completed =>
           IO {

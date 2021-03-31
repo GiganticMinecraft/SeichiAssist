@@ -37,7 +37,7 @@ class GiganticBerserkTask {
     val d = Math.random
     if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
       val i = getRecoveryValue(playerdata)
-      manaApi.manaAmount(p).restoreAbsolute(ManaAmount(i))
+      manaApi.manaAmount(p).restoreAbsolute(ManaAmount(i)).unsafeRunSync()
       player.sendMessage(s"${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.WHITE}の効果でマナが${i}回復しました")
       player.playSound(player.getLocation, Sound.ENTITY_WITHER_SHOOT, 1, 0.5f)
     }
