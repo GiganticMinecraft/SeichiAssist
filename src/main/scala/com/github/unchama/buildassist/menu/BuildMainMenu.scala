@@ -1,8 +1,8 @@
 package com.github.unchama.buildassist.menu
 
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.menu.BuildMainMenu.EMPHASIZE
-import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.router.CanOpen
@@ -14,9 +14,9 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, openInventoryEffect}
+import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
-import com.github.unchama.targetedeffect.{ComputedEffect, DeferredEffect, SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
@@ -197,7 +197,7 @@ private case class ButtonComputations(player: Player)
     }
   )
 
-  def computeButtonToOpenLineUpBlocksMenu(): IO[Button] = IO {
+  def computeButtonToOpenLineUpBlocksMenu()(implicit canOpenBlockLinePlacementSkillMenu: IO CanOpen BlockLinePlacementSkillMenu): IO[Button] = IO {
     val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
     val iconItemStack = new IconItemStackBuilder(Material.PAPER)
@@ -215,7 +215,7 @@ private case class ButtonComputations(player: Player)
       FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          ComputedEffect(p => openInventoryEffect(MenuInventoryData.getBlockLineUpData(p)))
+          canOpenBlockLinePlacementSkillMenu.open(BlockLinePlacementSkillMenu())
         )
       }
     )
@@ -344,7 +344,8 @@ object BuildMainMenu extends Menu {
                     val flyApi: ManagedFlyApi[SyncIO, Player],
                     val ioOnMainThread: OnMinecraftServerThread[IO],
                     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
-                    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu])
+                    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu],
+                    val canOpenBlockLinePlacementSkillMenu: CanOpen[IO, BlockLinePlacementSkillMenu])
 
   val EMPHASIZE = s"$UNDERLINE$BOLD"
 
