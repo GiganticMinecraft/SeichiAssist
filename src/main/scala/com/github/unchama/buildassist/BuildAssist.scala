@@ -58,7 +58,6 @@ class BuildAssist(plugin: Plugin)
 
     val listeners = List(
       new BuildMainMenuOpener(),
-      new PlayerInventoryListener(),
       new TemporaryDataInitializer(this.temporaryData),
       new BlockLineUpTriggerListener[SyncIO],
       new TilingSkillTriggerListener[SyncIO],
