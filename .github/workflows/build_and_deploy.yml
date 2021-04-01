@@ -43,6 +43,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Prepare build cache
+        if: github.ref != 'refs/heads/master'
         uses: actions/cache@v2
         env:
           cache-name: cache-build
