@@ -95,7 +95,7 @@ class BlockLineUpTriggerListener[
       }
     }
 
-    val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag
+    val manaConsumptionPerPlacement = BuildAssist.config.getLineFillManaCostMultiplier
 
     val mineStackObjectToBeUsed =
       if (buildAssistData.line_up_minestack_flg == 1)

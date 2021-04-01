@@ -43,7 +43,7 @@ class TilingSkillTriggerListener[
 
     if (!(player.isSneaking &&
       BuildAssist.materiallist.contains(offHandItem.getType) &&
-      buildAssistPlayerData.ZoneSetSkillFlag)) return
+      buildAssistPlayerData.rectFillEnabled)) return
 
     val clickedBlock = event.getClickedBlock
 
@@ -53,7 +53,7 @@ class TilingSkillTriggerListener[
     }
 
     //スキルの範囲設定
-    val areaInt = buildAssistPlayerData.AREAint
+    val areaInt = buildAssistPlayerData.rectFillRangeStep
 
     //設置範囲の基準となる座標
     val centerX = clickedBlock.getX
@@ -69,7 +69,7 @@ class TilingSkillTriggerListener[
         .find { obj =>
           offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
         }
-        .filter(_ => buildAssistPlayerData.zs_minestack_flag)
+        .filter(_ => buildAssistPlayerData.rectFillPreferMineStack)
 
     val replaceableMaterials = Set(
       Material.AIR,
@@ -119,7 +119,7 @@ class TilingSkillTriggerListener[
             }
 
             def commitPlacement(): Unit = {
-              if (buildAssistPlayerData.zsSkillDirtFlag) {
+              if (buildAssistPlayerData.rectFillIncludeUnderCaves) {
                 fillBelowSurfaceWithDirt()
               }
 

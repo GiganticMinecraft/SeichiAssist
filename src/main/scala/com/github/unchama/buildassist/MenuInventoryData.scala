@@ -26,29 +26,25 @@ object MenuInventoryData {
     var skullmeta = ItemMetaFactory.SKULL.getValue
     var lore = List(s"$RESET$DARK_RED${UNDERLINE}クリックで移動")
 
-    // FIXME: BAD NAME
-    val ZSSkill = if (playerdata.ZoneSetSkillFlag) {
+    val rectFillEnabledStr = if (playerdata.rectFillEnabled) {
       "ON"
     } else {
       "OFF"
     }
 
-    // FIXME: BAD NAME
-    val ZSDirt = if (playerdata.zsSkillDirtFlag) {
+    val rectFillIncludeUnderCavesStr = if (playerdata.rectFillIncludeUnderCaves) {
       "ON"
     } else {
       "OFF"
     }
 
-    // FIXME: BAD NAME
-    val ZSSkill_Minestack = if (playerdata.zs_minestack_flag) {
+    val rectFillPreferMineStackStr = if (playerdata.rectFillPreferMineStack) {
       "ON"
     } else {
       "OFF"
     }
 
-    // FIXME: BAD NAME
-    val ZSSkillA = playerdata.AREAint * 2 + 1
+    val rectangleFillRangeStep = playerdata.rectFillRangeStep * 2 + 1
 
     //初期画面へ移動
     itemstack.setDurability(3.toShort)
@@ -62,7 +58,7 @@ object MenuInventoryData {
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.STONE)
     itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}設置時に下の空洞を埋める機能")
     lore = List(
-      s"$RESET$AQUA${UNDERLINE}機能の使用設定：$ZSDirt",
+      s"$RESET$AQUA${UNDERLINE}機能の使用設定：$rectFillIncludeUnderCavesStr",
       s"$RESET$AQUA${UNDERLINE}機能の範囲：地下5マスまで"
     )
     itemmeta.setLore(lore.asJava)
@@ -74,9 +70,9 @@ object MenuInventoryData {
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.STONE)
     itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}現在の設定は以下の通りです")
     lore = List(
-      s"$RESET$AQUA${UNDERLINE}スキルの使用設定：$ZSSkill",
-      s"$RESET$AQUA${UNDERLINE}スキルの範囲設定：$ZSSkillA×$ZSSkillA",
-      s"$RESET$AQUA${UNDERLINE}MineStack優先設定:$ZSSkill_Minestack")
+      s"$RESET$AQUA${UNDERLINE}スキルの使用設定：$rectFillEnabledStr",
+      s"$RESET$AQUA${UNDERLINE}スキルの範囲設定：$rectangleFillRangeStep×$rectangleFillRangeStep",
+      s"$RESET$AQUA${UNDERLINE}MineStack優先設定:$rectFillPreferMineStackStr")
     itemmeta.setLore(lore.asJava)
     itemstack.setItemMeta(itemmeta)
     inventory.setItem(13, itemstack)
@@ -86,7 +82,7 @@ object MenuInventoryData {
     itemstack.setDurability(3.toShort)
     skullmeta.setDisplayName(s"$RED$UNDERLINE${BOLD}範囲設定を最大値に変更")
     lore = List(
-      s"$RESET${AQUA}現在の範囲設定：$ZSSkillA×$ZSSkillA",
+      s"$RESET${AQUA}現在の範囲設定：$rectangleFillRangeStep×$rectangleFillRangeStep",
       s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：11×11"
     )
     skullmeta.setLore(lore.asJava)
@@ -100,8 +96,8 @@ object MenuInventoryData {
     itemstack.setDurability(3.toShort)
     skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
     lore = List(
-      s"$RESET${AQUA}現在の範囲設定：$ZSSkillA×$ZSSkillA",
-      s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：${ZSSkillA + 2}×${ZSSkillA + 2}",
+      s"$RESET${AQUA}現在の範囲設定：$rectangleFillRangeStep×$rectangleFillRangeStep",
+      s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：${rectangleFillRangeStep + 2}×${rectangleFillRangeStep + 2}",
       s"$RESET$RED※範囲設定の最大値は11×11※"
     )
     skullmeta.setLore(lore.asJava)
@@ -115,7 +111,7 @@ object MenuInventoryData {
     itemstack.setDurability(3.toShort)
     skullmeta.setDisplayName(s"$RED$UNDERLINE${BOLD}範囲設定を初期値に変更")
     lore = List(
-      s"$RESET${AQUA}現在の範囲設定：$ZSSkillA×$ZSSkillA",
+      s"$RESET${AQUA}現在の範囲設定：$rectangleFillRangeStep×$rectangleFillRangeStep",
       s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：5×5"
     )
     skullmeta.setLore(lore.asJava)
@@ -129,8 +125,8 @@ object MenuInventoryData {
     itemstack.setDurability(3.toShort)
     skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
     lore = List(
-      s"$RESET${AQUA}現在の範囲設定：$ZSSkillA×$ZSSkillA",
-      s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：${ZSSkillA - 2}×${ZSSkillA - 2}",
+      s"$RESET${AQUA}現在の範囲設定：$rectangleFillRangeStep×$rectangleFillRangeStep",
+      s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：${rectangleFillRangeStep - 2}×${rectangleFillRangeStep - 2}",
       s"$RESET$RED※範囲設定の最小値は3×3※"
     )
     skullmeta.setLore(lore.asJava)
@@ -145,7 +141,7 @@ object MenuInventoryData {
     itemstack.setDurability(3.toShort)
     skullmeta.setDisplayName(s"$RED$UNDERLINE${BOLD}範囲設定を最小値に変更")
     lore = List(
-      s"$RESET${AQUA}現在の範囲設定：$ZSSkillA×$ZSSkillA",
+      s"$RESET${AQUA}現在の範囲設定：$rectangleFillRangeStep×$rectangleFillRangeStep",
       s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：3×3"
     )
     skullmeta.setLore(lore.asJava)
@@ -157,11 +153,11 @@ object MenuInventoryData {
     //MineStackの方を優先して消費する設定
     itemstack = new ItemStack(Material.CHEST, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.CHEST)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定：$ZSSkill_Minestack")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定：$rectFillPreferMineStackStr")
     lore = List(
       s"$RESET${GRAY}スキルでブロックを並べるとき",
       s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-      s"$RESET${GRAY}建築Lv${BuildAssist.config.getZoneskillMinestacklevel}以上で利用可能",
+      s"$RESET${GRAY}建築Lv${BuildAssist.config.getRectangleFillFromMineStackUnlockLevel}以上で利用可能",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)
@@ -200,7 +196,7 @@ object MenuInventoryData {
     lore = List(
       s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
       s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
-      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineuplevel}以上で利用可能",
+      s"$RESET${GRAY}建築Lv${BuildAssist.config.getLineFillUnlockLevel}以上で利用可能",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)
@@ -239,7 +235,7 @@ object MenuInventoryData {
     lore = List(
       s"$RESET${GRAY}スキルでブロックを並べるとき",
       s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-      s"$RESET${GRAY}建築Lv${BuildAssist.config.getblocklineupMinestacklevel}以上で利用可能",
+      s"$RESET${GRAY}建築Lv${BuildAssist.config.getLineFillFromMineStackUnlockLevel}以上で利用可能",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)

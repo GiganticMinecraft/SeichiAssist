@@ -72,7 +72,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         )
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //直列設置設定
-        if (playerLevel < BuildAssist.config.getblocklineuplevel) {
+        if (playerLevel < BuildAssist.config.getLineFillUnlockLevel) {
           player.sendMessage(RED.toString + "建築Lvが足りません")
         } else {
           playerdata.line_up_flg = (playerdata.line_up_flg + 1) % 3
@@ -101,7 +101,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
       } else if (itemstackcurrent.getType == Material.CHEST) {
         //マインスタックの方を優先して消費する設定
-        if (playerLevel < BuildAssist.config.getblocklineupMinestacklevel) {
+        if (playerLevel < BuildAssist.config.getLineFillFromMineStackUnlockLevel) {
           player.sendMessage(s"${RED.toString}建築Lvが足りません")
         } else {
           playerdata.line_up_minestack_flg = if (playerdata.line_up_minestack_flg == 0) 1 else 0

@@ -83,7 +83,7 @@ private case class ButtonComputations(player: Player)
         val openerLevel = amountData.levelCorrespondingToExp.level
 
         val iconItemStack = new IconItemStackBuilder(Material.STONE)
-          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
+          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.rectFillEnabled) "ON" else "OFF"}")
           .lore(
             s"$RESET$YELLOW「スニーク+左クリック」をすると、",
             s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
@@ -99,17 +99,17 @@ private case class ButtonComputations(player: Player)
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               DeferredEffect {
                 IO {
-                  if (openerLevel < BuildAssist.config.getZoneSetSkillLevel) {
+                  if (openerLevel < BuildAssist.config.getRectangleFillUnlockLevel) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
-                    if (openerData.ZoneSetSkillFlag) SequentialEffect(
+                    if (openerData.rectFillEnabled) SequentialEffect(
                       UnfocusedEffect {
-                        openerData.ZoneSetSkillFlag = false
+                        openerData.rectFillEnabled = false
                       },
                       MessageEffect(s"${RED}範囲設置スキルOFF")
                     ) else SequentialEffect(
                       UnfocusedEffect {
-                        openerData.ZoneSetSkillFlag = true
+                        openerData.rectFillEnabled = true
                       },
                       MessageEffect(s"${RED}範囲設置スキルON")
                     )
@@ -133,7 +133,7 @@ private case class ButtonComputations(player: Player)
           .lore(
             s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
             s"$RESET${GRAY}現在の設定",
-            s"$RESET${GRAY}MineStack優先設定:${if (openerData.zs_minestack_flag) "ON" else "OFF"}"
+            s"$RESET${GRAY}MineStack優先設定:${if (openerData.rectFillPreferMineStack) "ON" else "OFF"}"
           )
           .build()
 
@@ -143,7 +143,7 @@ private case class ButtonComputations(player: Player)
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
               DeferredEffect {
                 IO {
-                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
+                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getLineFillUnlockLevel) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
                     canOpenBlockPlacementSkillMenu.open(BlockPlacementSkillMenu)
@@ -174,7 +174,7 @@ private case class ButtonComputations(player: Player)
           action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
             DeferredEffect {
               IO {
-                if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
+                if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getLineFillUnlockLevel) {
                   MessageEffect(s"${RED}建築Lvが足りません")
                 } else {
                   SequentialEffect(

@@ -1,11 +1,11 @@
 package com.github.unchama.buildassist
 
 class TemporaryMutableBuildAssistPlayerData {
-  var ZoneSetSkillFlag = false
-  var zsSkillDirtFlag = false
+  var rectFillEnabled = false
+  var rectFillIncludeUnderCaves = false
 
   // TODO: こいつは殺す
-  var AREAint = 2
+  var rectFillRangeStep = 2
 
   /**
    * 直列設置設定フラグ
@@ -18,5 +18,5 @@ class TemporaryMutableBuildAssistPlayerData {
   /**
    * ブロック範囲設置スキル設定フラグ
    */
-  var zs_minestack_flag = false
+  var rectFillPreferMineStack = false
 }
