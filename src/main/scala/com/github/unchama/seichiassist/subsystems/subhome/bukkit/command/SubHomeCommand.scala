@@ -1,13 +1,19 @@
-package com.github.unchama.seichiassist.commands
+package com.github.unchama.seichiassist.subsystems.subhome.bukkit.command
 
 import cats.data.Kleisli
-import cats.effect.IO
+import cats.effect.{ConcurrentEffect, IO}
+import cats.implicits._
+import cats.effect.implicits._
+
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.subsystems.subhome.domain.SubHome
+import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.{SubHomeReadAPI, SubHomeWriteAPI}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
@@ -36,34 +42,58 @@ object SubHomeCommand {
       ),
       onMissingArguments = printDescriptionExecutor
     )
-  private val warpExecutor = argsAndSenderConfiguredBuilder
+  private def warpExecutor[
+    F[_]
+    : ConcurrentEffect
+    : NonServerThreadContextShift
+    : SubHomeReadAPI
+  ] = argsAndSenderConfiguredBuilder
     .execution { context =>
       val subHomeId = context.args.parsed.head.asInstanceOf[Int]
       val player = context.sender
 
-      val subHomeLocation = SeichiAssist.playermap(player.getUniqueId).getSubHomeLocation(subHomeId - 1)
-      subHomeLocation match {
-        case None => IO(MessageEffect(s"サブホームポイント${subHomeId}が設定されてません"))
-        case Some(location) => IO {
-          player.teleport(location)
-          MessageEffect(s"サブホームポイント${subHomeId}にワープしました")
+      val eff = for {
+        _ <- NonServerThreadContextShift[F].shift
+        subHomeLocation <- SubHomeReadAPI[F].get(player.getUniqueId, subHomeId - 1)
+      } yield {
+        subHomeLocation match {
+          case None => MessageEffect(s"サブホームポイント${subHomeId}が設定されてません")
+          case Some(SubHome(location, _)) =>
+            player.teleport(location)
+            MessageEffect(s"サブホームポイント${subHomeId}にワープしました")
         }
       }
+
+      eff.toIO
     }
     .build()
-  private val setExecutor = argsAndSenderConfiguredBuilder
+  private def setExecutor[
+    F[_]
+    : ConcurrentEffect
+    : NonServerThreadContextShift
+    : SubHomeWriteAPI
+  ] = argsAndSenderConfiguredBuilder
     .execution { context =>
       val subHomeId = context.args.parsed.head.asInstanceOf[Int]
       val player = context.sender
-      val playerData = SeichiAssist.playermap(player.getUniqueId)
 
-      playerData.setSubHomeLocation(player.getLocation, subHomeId - 1)
+      val eff = for {
+        _ <- NonServerThreadContextShift[F].shift
+        _ <- SubHomeWriteAPI[F].updateLocation(player.getUniqueId, subHomeId - 1, player.getLocation)
+      } yield {
+        MessageEffect(s"現在位置をサブホームポイント${subHomeId}に設定しました")
+      }
 
-      IO(MessageEffect(s"現在位置をサブホームポイント${subHomeId}に設定しました"))
+      eff.toIO
     }
     .build()
 
-  private def nameExecutor(implicit scope: ChatInterceptionScope) = argsAndSenderConfiguredBuilder
+  private def nameExecutor[
+    F[_]
+    : ConcurrentEffect
+    : NonServerThreadContextShift
+    : SubHomeWriteAPI
+  ](implicit scope: ChatInterceptionScope) = argsAndSenderConfiguredBuilder
     .execution { context =>
       val subHomeId = context.args.parsed.head.asInstanceOf[Int]
 
@@ -87,15 +117,17 @@ object SubHomeCommand {
             )
           )
 
-        import cats.implicits._
         import com.github.unchama.generic.syntax._
 
         sendInterceptionMessage.followedBy(Kleisli { player =>
-          val playerData = SeichiAssist.playermap(player.getUniqueId)
+          val uuid = player.getUniqueId
 
-          scope.interceptFrom(player.getUniqueId).flatMap {
+          scope.interceptFrom(uuid).flatMap {
             case Left(newName) =>
-              IO { playerData.setSubHomeName(newName, subHomeId - 1) } *>
+              val eff = for {
+                _ <- SubHomeWriteAPI[F].updateName(uuid, subHomeId - 1, newName)
+              } yield {}
+              eff.toIO *>
                 sendCompletionMessage(newName)(player)
             case Right(Overridden) => sendCancellationMessage(player)
             case Right(_) => IO.pure(())
@@ -105,7 +137,13 @@ object SubHomeCommand {
     }
     .build()
 
-  def executor(implicit scope: ChatInterceptionScope): TabExecutor = BranchedExecutor(
+  def executor[
+    F[_]
+    : SubHomeReadAPI
+    : SubHomeWriteAPI
+    : ConcurrentEffect
+    : NonServerThreadContextShift
+  ](implicit scope: ChatInterceptionScope): TabExecutor = BranchedExecutor(
     Map(
       "warp" -> warpExecutor,
       "set" -> setExecutor,

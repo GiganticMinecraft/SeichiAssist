@@ -54,6 +54,8 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
+import com.github.unchama.seichiassist.subsystems.subhome.bukkit.command.SubHomeCommand
+import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.SubHomeReadAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -357,6 +359,14 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.present.System.wired
   }
 
+  lazy val subhomeSystem: subhome.System[IO] = {
+    import PluginExecutionContexts.{asyncShift, onMainThread}
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    subhome.System.wired
+  }
+
   //endregion
 
   private implicit val _akkaSystem: ActorSystem = ConfiguredActorSystemProvider("reference.conf").provide()
@@ -457,6 +467,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
@@ -486,7 +497,6 @@ class SeichiAssist extends JavaPlugin() {
       "rmp" -> RmpCommand.executor,
       "shareinv" -> ShareInvCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
-      "subhome" -> SubHomeCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,

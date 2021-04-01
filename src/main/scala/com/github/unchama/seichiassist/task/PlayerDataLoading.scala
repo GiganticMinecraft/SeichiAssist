@@ -51,34 +51,6 @@ object PlayerDataLoading {
       stmt.executeUpdate(loginInfoUpdateCommand)
     }
 
-    def loadSubHomeData(stmt: Statement): Unit = {
-      val subHomeDataQuery = ("select * from "
-        + db + "." + DatabaseConstants.SUB_HOME_TABLENAME + " where "
-        + s"player_uuid = '$stringUuid' and "
-        + "server_id = " + config.getServerNum)
-
-      stmt.executeQuery(subHomeDataQuery).recordIteration { lrs: ResultSet =>
-        import lrs._
-        val subHomeId = getInt("id")
-        val subHomeName = getString("name")
-        val locationX = getInt("location_x")
-        val locationY = getInt("location_y")
-        val locationZ = getInt("location_z")
-        val worldName = getString("world_name")
-
-        val world = Bukkit.getWorld(worldName)
-
-        if (world != null) {
-          val location = new Location(world, locationX.toDouble, locationY.toDouble, locationZ.toDouble)
-
-          playerData.setSubHomeLocation(location, subHomeId)
-          playerData.setSubHomeName(subHomeName, subHomeId)
-        } else {
-          println(s"Resetting $playerName's subhome $subHomeName($subHomeId) in $worldName - world name not found.")
-        }
-      }
-    }
-
     def loadMineStack(stmt: Statement): Unit = {
       val mineStackDataQuery = ("select * from "
         + db + "." + DatabaseConstants.MINESTACK_TABLENAME + " where "
@@ -340,7 +312,6 @@ object PlayerDataLoading {
       updateLoginInfo(newStmt)
       loadGridTemplate(newStmt)
       loadMineStack(newStmt)
-      loadSubHomeData(newStmt)
     }
 
     timer.sendLapTimeMessage(s"$GREEN${playerName}のプレイヤーデータ読込完了")

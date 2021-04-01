@@ -1,11 +1,13 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.effect.IO
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.SubHome
+import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.SubHomeReadAPI
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
@@ -25,7 +27,8 @@ object HomeMenu extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
   import eu.timepit.refined.auto._
 
-  class Environment(implicit val ioCanOpenConfirmationMenu: IO CanOpen ConfirmationMenu)
+  class Environment(implicit val ioCanOpenConfirmationMenu: IO CanOpen ConfirmationMenu,
+                    val ioCanReadSubHome: SubHomeReadAPI[IO])
 
   /**
    * メニューのサイズとタイトルに関する情報
@@ -62,13 +65,14 @@ object HomeMenu extends Menu {
     }
 
     import cats.implicits._
-
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
     val dynamicPartComputation = (for {
       subHomeNumber <- 1 to SeichiAssist.seichiAssistConfig.getSubHomeMax
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber + 1)
+      implicit val ioCanReadSubHome: SubHomeReadAPI[IO] = environment.ioCanReadSubHome
       column match {
-        case Right(value) => ChestSlotRef(1, value) -> setSubHomeNameButton(subHomeNumber)
+        case Right(value) => ChestSlotRef(1, value) -> setSubHomeNameButton[IO](subHomeNumber)
         case Left(_) => throw new RuntimeException("This branch should not be reached.")
       }
     }.sequence)
@@ -154,40 +158,44 @@ object HomeMenu extends Menu {
   }
 
   private case class ButtonComputations(player: Player) {
+    def setSubHomeNameButton[F[_] : SubHomeReadAPI : ConcurrentEffect](subHomeNumber: Int): IO[Button] = {
+      import cats.implicits._
+      val program = for {
+        subhomeOpt <- SubHomeReadAPI[F].get(player.getUniqueId, subHomeNumber - 1)
+      } yield {
+        val lore = subhomeOpt match {
+          case None => List(s"${GRAY}サブホームポイント$subHomeNumber", s"${GRAY}ポイント未設定")
+          case Some(SubHome(location, name)) =>
+            val worldName = ManagedWorld.fromBukkitWorld(location.getWorld).map(_.japaneseName)
+              .getOrElse(location.getWorld.getName)
+            List(
+              s"${GRAY}サブホームポイント${subHomeNumber}は",
+              s"$GRAY$name",
+              s"${GRAY}と名付けられています",
+              s"$DARK_RED${UNDERLINE}クリックで名称変更",
+              s"${DARK_GRAY}command->[/subhome name $subHomeNumber]",
+              s"$GRAY$worldName x:${location.getBlockX} y:${location.getBlockY} z:${location.getBlockZ}"
+            )
+        }
 
-    import player._
-
-    def setSubHomeNameButton(subHomeNumber: Int): IO[Button] = IO {
-      val openerData = SeichiAssist.playermap(getUniqueId)
-      val maybeLocation = openerData.getSubHomeLocation(subHomeNumber - 1)
-      val lore = maybeLocation match {
-        case None => List(s"${GRAY}サブホームポイント$subHomeNumber", s"${GRAY}ポイント未設定")
-        case Some(location) =>
-          val worldName = ManagedWorld.fromBukkitWorld(location.getWorld).map(_.japaneseName)
-            .getOrElse(location.getWorld.getName)
-          List(
-            s"${GRAY}サブホームポイント${subHomeNumber}は",
-            s"$GRAY${openerData.getSubHomeName(subHomeNumber - 1)}",
-            s"${GRAY}と名付けられています",
-            s"$DARK_RED${UNDERLINE}クリックで名称変更",
-            s"${DARK_GRAY}command->[/subhome name $subHomeNumber]",
-            s"$GRAY$worldName x:${location.getBlockX} y:${location.getBlockY} z:${location.getBlockZ}"
-          )
+        Button(
+          new IconItemStackBuilder(Material.PAPER)
+            .title(s"$YELLOW$UNDERLINE${BOLD}サブホームポイント${subHomeNumber}の情報")
+            .lore(lore)
+            .build(),
+          LeftClickButtonEffect {
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              CommandEffect(s"subhome name $subHomeNumber"),
+              closeInventoryEffect
+            )
+          }
+        )
       }
 
-      Button(
-        new IconItemStackBuilder(Material.PAPER)
-          .title(s"$YELLOW$UNDERLINE${BOLD}サブホームポイント${subHomeNumber}の情報")
-          .lore(lore)
-          .build(),
-        LeftClickButtonEffect {
-          SequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            CommandEffect(s"subhome name $subHomeNumber"),
-            closeInventoryEffect
-          )
-        }
-      )
+      import cats.effect.implicits._
+
+      program.toIO
     }
   }
 
