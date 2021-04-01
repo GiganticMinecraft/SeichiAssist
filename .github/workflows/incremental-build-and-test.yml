@@ -11,7 +11,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-20.04
-    container: ghcr.io/giganticminecraft/seichiassist-builder:2684219
+    container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Test and build artifact
-        run: ./sbt assembly
+        run: sbt assembly
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
