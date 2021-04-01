@@ -93,8 +93,8 @@ object BuildAssist {
   )
   @deprecated("unsafe enums backed by int. use `lineFillPrioritizeMineStackDescriptions`.")
   val line_up_off_on_str: Seq[String] = Seq("OFF", "ON")
-  val lineFillPrioritizeMineStackDescriptions = Map(
-    LineFillMineStackPrioritizeStatus.Disabled -> "OFF",
-    LineFillMineStackPrioritizeStatus.Enabled -> "ON"
-  )
+  val lineFillPrioritizeMineStackDescriptions = asDescription _
+
+  private[buildassist] def asDescription(isTurnedOn: Boolean): String =
+    if (isTurnedOn) "ON" else "OFF"
 }
