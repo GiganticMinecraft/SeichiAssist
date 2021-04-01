@@ -20,7 +20,7 @@ import org.bukkit.{Material, Sound}
 /**
  * 直列設置メニュー
  */
-case class BlockLinePlacementSkillMenu extends Menu {
+case class BlockLinePlacementSkillMenu() extends Menu {
   /**
    * メニューを開く操作に必要な環境情報の型。
    * 例えば、メニューが利用するAPIなどをここを通して渡すことができる。
@@ -165,6 +165,6 @@ case class BlockLinePlacementSkillMenu extends Menu {
 }
 
 object BlockLinePlacementSkillMenu {
-  final case class Environment(implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
-                               val canOpenBlockLinePlacementSkillMenu: CanOpen[IO, BlockLinePlacementSkillMenu])
+  final case class Environment()(implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type],
+                                 val canOpenBlockLinePlacementSkillMenu: CanOpen[IO, BlockLinePlacementSkillMenu])
 }
