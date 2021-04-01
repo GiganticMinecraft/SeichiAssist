@@ -18,7 +18,7 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Cache build dependencies
+      - name: Prepare build dependencies cache
         uses: actions/cache@v2
         env:
           cache-name: cache-build-dependencies
@@ -34,6 +34,17 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
+      - name: Prepare build cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-build
+          cache-version: v-minus-1
+        with:
+          path: |
+            target
+            project/target
+            project/project/target
+
       - name: Test and build artifact
         run: sbt assembly
 
@@ -42,6 +53,9 @@ jobs:
         with:
           name: SeichiAssist-build
           path: target/build/**.jar
+
+      - name: Clean build artifact for caching target folder
+        run: rm -r target/build
 
   deploy-artifact:
     runs-on: ubuntu-20.04
