@@ -75,6 +75,9 @@ jobs:
           name: SeichiAssist-build
           path: target/build/**.jar
 
+      - name: Inspect /root/
+        run: du -h --max-depth=3 ~/
+
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
 
