@@ -26,7 +26,6 @@ jobs:
         with:
           path: |
             ~/.ivy2/cache
-            ~/.m2
             ~/.cache/coursier/v1
             ~/.sbt
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ hashFiles('**/build.sbt') }}
