@@ -22,7 +22,7 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-build-dependencies
-          cache-version: v-minus-1
+          cache-version: v-minus-2
         with:
           path: |
             ~/.ivy2/cache
