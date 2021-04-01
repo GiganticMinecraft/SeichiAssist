@@ -44,6 +44,11 @@ jobs:
             target
             project/target
             project/project/target
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       ## CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
       ## そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
