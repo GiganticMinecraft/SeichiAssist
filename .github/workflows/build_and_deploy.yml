@@ -1,4 +1,4 @@
-name: Incremental build and test
+name: Build and deploy
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - develop
 
 jobs:
-  build-and-test:
+  build_test_and_upload:
     runs-on: ubuntu-20.04
     container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
     steps:
@@ -91,9 +91,10 @@ jobs:
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
 
-  deploy-artifact:
+  deploy_artifact_to_staging:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
+    needs: build_and_test
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -111,3 +112,26 @@ jobs:
           source: ${{ steps.download.outputs.download-path }}/**.jar
           username: ${{ secrets.STAGING_USERNAME }}
           remote_dir: ${{ secrets.STAGING_REMOTE_DIR }}
+
+  deploy_artifact_to_production:
+    runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/master'
+    needs: build_and_test
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: SeichiAssist-build
+        id: download
+      - name: Inspect artifact
+        run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
+      - name: Deploy to staging environment
+        uses: appleboy/scp-action@master
+        with:
+          key: ${{ secrets.PRODUCTION_KEY }}
+          host: ${{ secrets.PRODUCTION_HOST }}
+          port: ${{ secrets.PRODUCTION_PORT }}
+          source: ${{ steps.download.outputs.download-path }}/**.jar
+          username: ${{ secrets.PRODUCTION_USERNAME }}
+          remote_dir: ${{ secrets.PRODUCTION_REMOTE_DIR }}
+
