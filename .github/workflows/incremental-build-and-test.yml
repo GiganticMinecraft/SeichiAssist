@@ -22,12 +22,16 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-build-dependencies
-          cache-version: v-minus-3
+          cache-version: v-minus-4
         with:
+          # ~/.ivy/cache, ~/.sbt - sbt関連のキャッシュ
+          # ~/.m2 - ビルドログを観察した感じprotoc等はここを利用する
+          # ~/.cache - cousierがscalasbt等をキャッシュするのに使っている
           path: |
             ~/.ivy2/cache
-            ~/.cache
             ~/.sbt
+            ~/.m2
+            ~/.cache
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ hashFiles('**/build.sbt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
