@@ -70,7 +70,7 @@ class TilingSkillTriggerListener[
         .find { obj =>
           offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
         }
-        .filter(_ => buildAssistPlayerData.rectFillPreferMineStack)
+        .filter(_ => buildAssistPlayerData.rectFillPrioritizeMineStack)
 
     val replaceableMaterials = Set(
       Material.AIR,

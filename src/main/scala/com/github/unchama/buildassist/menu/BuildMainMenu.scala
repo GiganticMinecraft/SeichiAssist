@@ -133,7 +133,7 @@ private case class ButtonComputations(player: Player)
           .lore(
             s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
             s"$RESET${GRAY}現在の設定",
-            s"$RESET${GRAY}MineStack優先設定:${if (openerData.rectFillPreferMineStack) "ON" else "OFF"}"
+            s"$RESET${GRAY}MineStack優先設定:${if (openerData.rectFillPrioritizeMineStack) "ON" else "OFF"}"
           )
           .build()
 

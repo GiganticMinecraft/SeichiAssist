@@ -38,7 +38,7 @@ object MenuInventoryData {
       "OFF"
     }
 
-    val rectFillPreferMineStackStr = if (playerdata.rectFillPreferMineStack) {
+    val rectFillPriotizeMineStackStr = if (playerdata.rectFillPrioritizeMineStack) {
       "ON"
     } else {
       "OFF"
@@ -72,7 +72,7 @@ object MenuInventoryData {
     lore = List(
       s"$RESET$AQUA${UNDERLINE}スキルの使用設定：$rectFillEnabledStr",
       s"$RESET$AQUA${UNDERLINE}スキルの範囲設定：$rectangleFillRangeStep×$rectangleFillRangeStep",
-      s"$RESET$AQUA${UNDERLINE}MineStack優先設定:$rectFillPreferMineStackStr")
+      s"$RESET$AQUA${UNDERLINE}MineStack優先設定:$rectFillPriotizeMineStackStr")
     itemmeta.setLore(lore.asJava)
     itemstack.setItemMeta(itemmeta)
     inventory.setItem(13, itemstack)
@@ -153,7 +153,7 @@ object MenuInventoryData {
     //MineStackの方を優先して消費する設定
     itemstack = new ItemStack(Material.CHEST, 1)
     itemmeta = Bukkit.getItemFactory.getItemMeta(Material.CHEST)
-    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定：$rectFillPreferMineStackStr")
+    itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定：$rectFillPriotizeMineStackStr")
     lore = List(
       s"$RESET${GRAY}スキルでブロックを並べるとき",
       s"$RESET${GRAY}MineStackの在庫を優先して消費します。",

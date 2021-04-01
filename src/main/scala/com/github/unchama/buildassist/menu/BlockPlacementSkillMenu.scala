@@ -82,7 +82,7 @@ object BlockPlacementSkillMenu extends Menu {
         val playerData = BuildAssist.instance.temporaryData(getUniqueId)
         val isSkillEnabled = playerData.rectFillEnabled
         val skillRange = playerData.computeCurrentSkillRange()
-        val isConsumingMineStack = playerData.rectFillPreferMineStack
+        val isConsumingMineStack = playerData.rectFillPrioritizeMineStack
 
         val iconItemStack = new IconItemStackBuilder(Material.STONE)
           .title(s"$YELLOW$UNDERLINE${BOLD}現在の設定は以下の通りです")
@@ -270,7 +270,7 @@ object BlockPlacementSkillMenu extends Menu {
         IO {
           val playerData = BuildAssist.instance.temporaryData(getUniqueId)
 
-          val currentStatus = playerData.rectFillPreferMineStack
+          val currentStatus = playerData.rectFillPrioritizeMineStack
 
           val iconItemStackBuilder = new IconItemStackBuilder(Material.CHEST)
             .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
@@ -293,7 +293,7 @@ object BlockPlacementSkillMenu extends Menu {
                   else
                     SequentialEffect(
                       targetedeffect.UnfocusedEffect {
-                        playerData.rectFillPreferMineStack = !currentStatus
+                        playerData.rectFillPrioritizeMineStack = !currentStatus
                       },
                       MessageEffect(s"MineStack優先設定${if (currentStatus) "OFF" else "ON"}"),
                       open

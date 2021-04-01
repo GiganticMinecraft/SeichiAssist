@@ -28,5 +28,5 @@ class TemporaryMutableBuildAssistPlayerData {
   /**
    * ブロック範囲設置スキル設定フラグ
    */
-  var rectFillPreferMineStack = false
+  var rectFillPrioritizeMineStack = false
 }
