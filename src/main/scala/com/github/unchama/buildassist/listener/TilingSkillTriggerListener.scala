@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist.listener
 
 import cats.effect.{SyncEffect, SyncIO}
-import com.github.unchama.buildassist.{BuildAssist, Util}
+import com.github.unchama.buildassist.{BuildAssist, MaterialSets, Util}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
@@ -42,7 +42,7 @@ class TilingSkillTriggerListener[
     }
 
     if (!(player.isSneaking &&
-      BuildAssist.materiallist.contains(offHandItem.getType) &&
+      MaterialSets.targetForRectangleFill.contains(offHandItem.getType) &&
       buildAssistPlayerData.rectFillEnabled)) return
 
     val clickedBlock = event.getClickedBlock

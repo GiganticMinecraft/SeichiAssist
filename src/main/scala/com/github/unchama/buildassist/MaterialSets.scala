@@ -6,7 +6,7 @@ import java.util
 
 object MaterialSets {
   //範囲設置ブロックの対象リスト
-  val materiallist: java.util.Set[Material] = util.EnumSet.of(
+  val targetForRectangleFill: java.util.Set[Material] = util.EnumSet.of(
 
 
     Material.STONE //石
@@ -95,7 +95,7 @@ object MaterialSets {
   )
 
   //直列設置ブロックの対象リスト
-  val materiallist2: java.util.Set[Material] = util.EnumSet.of(
+  val targetForLineFill: java.util.Set[Material] = util.EnumSet.of(
     Material.STONE //石
     , Material.GRASS //草
     , Material.DIRT //土
@@ -167,14 +167,14 @@ object MaterialSets {
   )
 
   //ハーフブロックとして扱うMaterial
-  val material_slab2: java.util.Set[Material] = util.EnumSet.of(
+  val halfBlocks: java.util.Set[Material] = util.EnumSet.of(
     Material.STONE_SLAB2 //赤砂岩
     , Material.PURPUR_SLAB //プルパー
     , Material.WOOD_STEP //木
     , Material.STEP //石
   )
 
-  val material_destruction: java.util.Set[Material] = util.EnumSet.of(
+  val autoDestructibleWhenLineFill: java.util.Set[Material] = util.EnumSet.of(
     Material.LONG_GRASS //草
     , Material.DEAD_BUSH //枯れ木
     , Material.YELLOW_FLOWER //タンポポ

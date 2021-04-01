@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist.listener
 
 import cats.effect.{IO, SyncEffect, SyncIO}
-import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.{BuildAssist, MaterialSets}
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
@@ -52,7 +52,7 @@ class BlockLineUpTriggerListener[
     val offhandItem = inventory.getItemInOffHand
 
     //メインハンドに設置対象ブロックがある場合
-    if (!(BuildAssist.materiallist2.contains(mainHandItem.getType) || BuildAssist.material_slab2.contains(mainHandItem.getType))) return
+    if (!(MaterialSets.targetForLineFill.contains(mainHandItem.getType) || MaterialSets.halfBlocks.contains(mainHandItem.getType))) return
 
     //オフハンドに木の棒を持ってるときのみ発動させる
     if (offhandItem.getType != Material.STICK) return
@@ -134,7 +134,7 @@ class BlockLineUpTriggerListener[
       case _ => mainHandItemType
     }
 
-    val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
+    val playerHoldsSlabBlock = MaterialSets.halfBlocks.contains(mainHandItemType)
     val slabLineUpStepMode = buildAssistData.line_up_step_flg
     val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
 
@@ -165,7 +165,7 @@ class BlockLineUpTriggerListener[
 
         if (block.getType != Material.AIR) {
           //空気以外にぶつかり、ブロック破壊をしないならば終わる
-          if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.line_up_des_flg == 0) {
+          if (!MaterialSets.autoDestructibleWhenLineFill.contains(block.getType) || buildAssistData.line_up_des_flg == 0) {
             b.break
           }
 
