@@ -22,11 +22,11 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-build-dependencies
-          cache-version: v-minus-2
+          cache-version: v-minus-3
         with:
           path: |
             ~/.ivy2/cache
-            ~/.cache/coursier/v1
+            ~/.cache
             ~/.sbt
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ hashFiles('**/build.sbt') }}
           restore-keys: |
