@@ -1,9 +1,9 @@
 package com.github.unchama.buildassist
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.buildassist
 import com.github.unchama.buildassist.listener._
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
+import com.github.unchama.buildassist.enums._
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -11,11 +11,10 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.B
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
-import org.bukkit.{Bukkit, Material}
 
-import java.util
 import java.util.UUID
 import scala.collection.mutable
 
