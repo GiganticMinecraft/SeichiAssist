@@ -13,12 +13,11 @@ jobs:
     runs-on: ubuntu-20.04
     container: ghcr.io/giganticminecraft/seichiassist-builder:2684219
     steps:
-      - name: Check git version
-        run: git --version
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+
       - name: Cache build dependencies
         uses: actions/cache@v2
         env:
@@ -35,10 +34,33 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
             ${{ runner.os }}-build-${{ env.cache-name }}-
+
       - name: Test and build artifact
         run: ./sbt assembly
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: SeichiAssist-build
           path: target/build/**.jar
+
+  deploy-artifact:
+    runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: SeichiAssist-build
+        id: download
+      - name: Inspect artifact
+        run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
+      - name: Deploy to staging environment
+        uses: appleboy/scp-action@master
+        with:
+          key: ${{ secrets.STAGING_KEY }}
+          host: ${{ secrets.STAGING_HOST }}
+          port: ${{ secrets.STAGING_PORT }}
+          source: ${{ steps.download.outputs.download-path }}/**.jar
+          username: ${{ secrets.STAGING_USERNAME }}
+          remote_dir: ${{ secrets.STAGING_REMOTE_DIR }}
