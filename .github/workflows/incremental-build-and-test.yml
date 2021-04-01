@@ -22,16 +22,20 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-build-dependencies
-          cache-version: v-minus-4
+          cache-version: v-minus-5
         with:
-          # ~/.ivy/cache, ~/.sbt - sbt関連のキャッシュ
-          # ~/.m2 - ビルドログを観察した感じprotoc等はここを利用する
-          # ~/.cache - cousierがscalasbt等をキャッシュするのに使っている
+          # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
+          # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
+          # 実際のキャッシュは /root/ 以下に配備される。
+          #
+          # /root/.ivy/cache, /root/.sbt - sbt関連のキャッシュ
+          # /root/.m2 - ビルドログを観察した感じprotoc等はここを利用する
+          # /root/.cache - cousierがscalasbt等をキャッシュするのに使っている
           path: |
-            ~/.ivy2/cache
-            ~/.sbt
-            ~/.m2
-            ~/.cache
+            /root/.ivy2/cache
+            /root/.sbt
+            /root/.m2
+            /root/.cache
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ hashFiles('**/build.sbt') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
@@ -74,9 +78,6 @@ jobs:
         with:
           name: SeichiAssist-build
           path: target/build/**.jar
-
-      - name: Inspect /root/
-        run: du -h --max-depth=3 ~/
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
