@@ -79,7 +79,7 @@ object BuildAssist {
   var config: BuildAssistConfig = _
   @deprecated("unsafe enums backed by int. use `lineFillSideStrings`.")
   val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
-  val lineFillSideDescriptions = Map(
+  val lineFillStateDescriptions = Map(
     LineFillStatusFlag.Disabled -> "OFF",
     LineFillStatusFlag.UpperSide -> "上側",
     LineFillStatusFlag.LowerSide -> "下側"
