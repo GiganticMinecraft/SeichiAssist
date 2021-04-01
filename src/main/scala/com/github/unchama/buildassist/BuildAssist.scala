@@ -1,6 +1,7 @@
 package com.github.unchama.buildassist
 
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.buildassist
 import com.github.unchama.buildassist.listener._
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.datarepository.KeyedDataRepository
@@ -77,7 +78,24 @@ object BuildAssist {
   var instance: BuildAssist = _
   var plugin: Plugin = _
   var config: BuildAssistConfig = _
+  @deprecated("unsafe enums backed by int. use `lineFillSideStrings`.")
   val line_up_str: Seq[String] = Seq("OFF", "上側", "下側")
+  val lineFillSideDescriptions = Map(
+    LineFillStatusFlag.Disabled -> "OFF",
+    LineFillStatusFlag.UpperSide -> "上側",
+    LineFillStatusFlag.LowerSide -> "下側"
+  )
+  @deprecated("unsafe enums backed by int. use `lineFillSlabPositionDescriptions`.")
   val line_up_step_str: Seq[String] = Seq("上側", "下側", "両方")
+  val lineFillSlabPositionDescriptions = Map(
+    LineFillSlabPosition.Upper -> "上側",
+    LineFillSlabPosition.Lower -> "下側",
+    LineFillSlabPosition.Both -> "両方",
+  )
+  @deprecated("unsafe enums backed by int. use `lineFillPrioritizeMineStackDescriptions`.")
   val line_up_off_on_str: Seq[String] = Seq("OFF", "ON")
+  val lineFillPrioritizeMineStackDescriptions = Map(
+    LineFillMineStackPrioritizeStatus.Disabled -> "OFF",
+    LineFillMineStackPrioritizeStatus.Enabled -> "ON"
+  )
 }
