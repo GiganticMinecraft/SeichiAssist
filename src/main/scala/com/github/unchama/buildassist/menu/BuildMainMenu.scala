@@ -162,7 +162,7 @@ private case class ButtonComputations(player: Player)
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
         val iconItemStack = new IconItemStackBuilder(Material.WOOD)
-          .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+          .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.lineFillStateDescriptions(openerData.lineFillStatus)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
             s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -180,12 +180,11 @@ private case class ButtonComputations(player: Player)
                   SequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                     UnfocusedEffect {
-                      openerData.line_up_flg += 1
-                      openerData.line_up_flg %= 3
+                      openerData.lineFillStatus = openerData.lineFillStatus.next
                     },
                     DeferredEffect {
                       IO {
-                        MessageEffect(s"${GREEN}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+                        MessageEffect(s"${GREEN}直列設置: ${BuildAssist.lineFillStateDescriptions(openerData.lineFillStatus)}")
                       }
                     }
                   )
@@ -202,13 +201,13 @@ private case class ButtonComputations(player: Player)
     val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
     val iconItemStack = new IconItemStackBuilder(Material.PAPER)
-      .title(s"$YELLOW$EMPHASIZE「直列設置 」設定画面へ")
+      .title(s"$YELLOW$EMPHASIZE「直列設置」設定画面へ")
       .lore(
         s"$RESET${GRAY}現在の設定",
-        s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str(openerData.line_up_flg)}",
-        s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.line_up_step_str(openerData.line_up_step_flg)}",
-        s"$RESET${GRAY}破壊設定: ${BuildAssist.line_up_off_on_str(openerData.line_up_des_flg)}",
-        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.line_up_off_on_str(openerData.line_up_minestack_flg)}"
+        s"$RESET${GRAY}スキル設定: ${BuildAssist.lineFillStateDescriptions(openerData.lineFillStatus)}",
+        s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.lineFillSlabPositionDescriptions(openerData.lineFillSlabPosition)}",
+        s"$RESET${GRAY}破壊設定: ${BuildAssist.asDescription(openerData.lineFillDestructWeakBlocks)}",
+        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.asDescription(openerData.lineFillPrioritizeMineStack)}"
       )
       .build()
 
