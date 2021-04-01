@@ -45,6 +45,18 @@ jobs:
             project/target
             project/project/target
 
+      ## CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
+      ## そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
+      ## 不要なインクリメンタルコンパイルが走る
+      ## タイムスタンプをコミット時刻に設定することでこれが回避できる
+      - name: Restore localDependencies' timestamps
+        ## 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
+        run: |
+          for jar in localDependencies/*.jar; do
+            timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
+            touch -t "$timestamp" $jar
+          done
+
       - name: Test and build artifact
         run: sbt assembly
 
