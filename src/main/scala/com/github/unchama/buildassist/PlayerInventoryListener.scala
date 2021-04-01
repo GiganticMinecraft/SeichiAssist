@@ -50,7 +50,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     //プレイヤーデータが無い場合は処理終了
 
     //インベントリ名が以下の時処理
-    if (topinventory.getTitle == s"${DARK_PURPLE.toString}$BOLD「直列設置」設定") {
+    if (topinventory.getTitle == s"${DARK_PURPLE}$BOLD「直列設置」設定") {
       event.setCancelled(true)
 
       //プレイヤーインベントリのクリックの場合終了
@@ -73,35 +73,35 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       } else if (itemstackcurrent.getType == Material.WOOD) {
         //直列設置設定
         if (playerLevel < BuildAssist.config.getLineFillUnlockLevel) {
-          player.sendMessage(RED.toString + "建築Lvが足りません")
+          player.sendMessage(s"${RED}建築Lvが足りません")
         } else {
           playerdata.lineFillStatus = playerdata.lineFillStatus.next
 
-          player.sendMessage(s"${GREEN.toString}直列設置 ：${BuildAssist.lineFillStateDescriptions(playerdata.lineFillStatus)}")
+          player.sendMessage(s"${GREEN}直列設置 ：${BuildAssist.lineFillStateDescriptions(playerdata.lineFillStatus)}")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
       } else if (itemstackcurrent.getType == Material.STEP) {
         //直列設置ハーフブロック設定
         playerdata.lineFillSlabPosition = playerdata.lineFillSlabPosition.next
-        player.sendMessage(s"${GREEN.toString}ハーフブロック設定 ：${BuildAssist.lineFillSlabPositionDescriptions(playerdata.lineFillSlabPosition)}")
+        player.sendMessage(s"${GREEN}ハーフブロック設定 ：${BuildAssist.lineFillSlabPositionDescriptions(playerdata.lineFillSlabPosition)}")
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getBlockLineUpData(player))
 
       } else if (itemstackcurrent.getType == Material.TNT) {
         //直列設置一部ブロックを破壊して並べる設定
         playerdata.lineFillDestructWeakBlocks = !playerdata.lineFillDestructWeakBlocks
-        player.sendMessage(s"${GREEN.toString}破壊設定 ：${BuildAssist.asDescription(playerdata.lineFillDestructWeakBlocks)}")
+        player.sendMessage(s"${GREEN}破壊設定 ：${BuildAssist.asDescription(playerdata.lineFillDestructWeakBlocks)}")
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.openInventory(MenuInventoryData.getBlockLineUpData(player))
 
       } else if (itemstackcurrent.getType == Material.CHEST) {
         //マインスタックの方を優先して消費する設定
         if (playerLevel < BuildAssist.config.getLineFillFromMineStackUnlockLevel) {
-          player.sendMessage(s"${RED.toString}建築Lvが足りません")
+          player.sendMessage(s"${RED}建築Lvが足りません")
         } else {
           playerdata.lineFillPrioritizeMineStack = !playerdata.lineFillPrioritizeMineStack
-          player.sendMessage(GREEN.toString + "マインスタック優先設定 ：" + BuildAssist.asDescription(playerdata.lineFillPrioritizeMineStack))
+          player.sendMessage(s"${GREEN}マインスタック優先設定 ：${BuildAssist.asDescription(playerdata.lineFillPrioritizeMineStack)}")
           player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           player.openInventory(MenuInventoryData.getBlockLineUpData(player))
         }
