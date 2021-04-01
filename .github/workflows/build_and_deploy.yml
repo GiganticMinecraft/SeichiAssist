@@ -94,7 +94,7 @@ jobs:
   deploy_artifact_to_staging:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
-    needs: build_and_test
+    needs: build_test_and_upload
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -116,7 +116,7 @@ jobs:
   deploy_artifact_to_production:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/master'
-    needs: build_and_test
+    needs: build_test_and_upload
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
