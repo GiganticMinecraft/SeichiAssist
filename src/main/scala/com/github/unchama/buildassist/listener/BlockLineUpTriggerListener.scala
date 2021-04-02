@@ -32,10 +32,8 @@ class BlockLineUpTriggerListener[
     val action = event.getAction
     val playerWorld = player.getWorld
 
-    val seichiAssistData = SeichiAssist.playermap(player.getUniqueId)
     val buildAssistData = BuildAssist.instance.temporaryData(player.getUniqueId)
 
-    val playerMineStack = seichiAssistData.minestack
 
     //スキルOFFなら終了
     if (buildAssistData.lineFillStatus == LineFillStatusFlag.Disabled) return
@@ -65,45 +63,16 @@ class BlockLineUpTriggerListener[
     //仰角は下向きがプラスで上向きがマイナス
     val pitch = pl.getPitch
     val yaw = (pl.getYaw + 360) % 360
-    var step_x = 0
-    var step_y = 0
-    var step_z = 0
-
-    //プレイヤーの足の座標を取得
-    var px = pl.getBlockX
-    var py = (pl.getY + 1.6).toInt
-    var pz = pl.getBlockZ
-
-    //プレイヤーの向いてる方向を判定
-    if (pitch > 45) {
-      step_y = -1
-      py = pl.getBlockY
-    } else if (pitch < -45) {
-      step_y = 1
-    } else {
-      if (buildAssistData.lineFillStatus == LineFillStatusFlag.LowerSide) {
-        //下設置設定の場合は一段下げる
-        py -= 1
-      }
-      if (yaw > 315 || yaw < 45) { //南
-        step_z = 1
-      } else if (yaw < 135) { //西
-        step_x = -1
-      } else if (yaw < 225) { //北
-        step_z = -1
-      } else { //東
-        step_x = 1
-      }
-    }
 
     val manaConsumptionPerPlacement = BuildAssist.config.getLineFillManaCostMultiplier
 
-    val mineStackObjectToBeUsed =
-      if (buildAssistData.lineFillPrioritizeMineStack)
-        MineStackObjectList.minestacklist.find { obj =>
-          mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
-        }
-      else None
+    val mineStackObjectToBeUsed = Option.when(buildAssistData.lineFillPrioritizeMineStack) {
+      MineStackObjectList.minestacklist.find { obj =>
+        mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
+      }
+    }.flatten
+
+    val playerMineStack = SeichiAssist.playermap(player.getUniqueId).minestack
 
     val maxBlockUsage = {
       val availableOnHand = mainHandItem.getAmount.toLong
@@ -150,15 +119,42 @@ class BlockLineUpTriggerListener[
       else
         (mainHandItemType, 1, maxBlockUsage)
 
+    //プレイヤーの足の座標を取得
+    var px = pl.getBlockX
+    var py = (pl.getY + 1.6).toInt
+    var pz = pl.getBlockZ
+
+    // プレイヤーの向いてる方向を判定し、進むベクトルを確定する
+    val (dx, dy, dz) = if (pitch > 45) {
+      py = pl.getBlockY
+      (0, -1, 0)
+    } else if (pitch < -45) {
+      (0, 1, 0)
+    } else {
+      if (buildAssistData.lineFillStatus == LineFillStatusFlag.LowerSide) {
+        //下設置設定の場合は一段下げる
+        py -= 1
+      }
+      if (yaw > 315 || yaw < 45) { //南
+        (0, 0, 1)
+      } else if (yaw < 135) { //西
+        (-1, 0, 0)
+      } else if (yaw < 225) { //北
+        (0, 0, -1)
+      } else { //東
+        (1, 0, 0)
+      }
+    }
+
     //設置した数
     var placedBlockCount = 0
 
     val b = new Breaks
     b.breakable {
       while (placedBlockCount < placementIteration) { //設置ループ
-        px += step_x
-        py += step_y
-        pz += step_z
+        px += dx
+        py += dy
+        pz += dz
         val block = playerWorld.getBlockAt(px, py, pz)
 
         //他人の保護がかかっている場合は設置終わり
