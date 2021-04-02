@@ -65,41 +65,22 @@ class TilingSkillTriggerListener[
 
     var placementCount = 0
 
-    val minestackObjectToUse =
+    val minestackObjectToUse = Option.when(buildAssistPlayerData.rectFillPrioritizeMineStack) {
       MineStackObjectList.minestacklist
         .find { obj =>
           offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
         }
-        .filter(_ => buildAssistPlayerData.rectFillPrioritizeMineStack)
+    }.flatten
 
-    val replaceableMaterials = Set(
-      Material.AIR,
-      Material.SNOW,
-      Material.LONG_GRASS,
-      Material.DEAD_BUSH,
-      Material.YELLOW_FLOWER,
-      Material.RED_ROSE,
-      Material.RED_MUSHROOM,
-      Material.BROWN_MUSHROOM
-    )
-
-    val fillTargetMaterials = Set(
-      Material.AIR,
-      Material.LAVA,
-      Material.STATIONARY_LAVA,
-      Material.WATER,
-      Material.STATIONARY_WATER
-    )
-
-    val b1 = new Breaks
-    b1.breakable {
+    val blockFill = new Breaks
+    blockFill.breakable {
       val targetXValues = centerX - areaInt to centerX + areaInt
       val targetZValues = centerZ - areaInt to centerZ + areaInt
 
       targetZValues.foreach { targetZ =>
         targetXValues.foreach { targetX =>
-          val b2 = new Breaks
-          b2.breakable {
+          val eachBlockFill = new Breaks
+          eachBlockFill.breakable {
             val targetSurfaceLocation = new Location(playerWorld, targetX, surfaceY, targetZ)
             val targetSurfaceBlock = targetSurfaceLocation.getBlock
 
@@ -108,7 +89,7 @@ class TilingSkillTriggerListener[
                 val fillLocation = new Location(playerWorld, targetX, surfaceY - setBlockYOffsetBelow, targetZ)
                 val blockToBeReplaced = fillLocation.getBlock
 
-                if (fillTargetMaterials.contains(blockToBeReplaced.getType)) {
+                if (TilingSkillTriggerListener.fillTargetMaterials.contains(blockToBeReplaced.getType)) {
                   if (ExternalPlugins.getWorldGuard.canBuild(player, fillLocation)) {
                     blockToBeReplaced.setType(Material.DIRT)
                   } else {
@@ -164,22 +145,20 @@ class TilingSkillTriggerListener[
               }
             }
 
-            if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
+            if (TilingSkillTriggerListener.replaceableMaterials.contains(targetSurfaceBlock.getType)) {
               //他人の保護がかかっている場合は処理を終了
               if (!ExternalPlugins.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
                 player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
-                b1.break()
+                blockFill.break()
               }
 
-              minestackObjectToUse match {
-                case Some(mineStackObject) =>
-                  if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObject) > 0) {
-                    seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObject, 1)
+              minestackObjectToUse.foreach { mineStackObject =>
+                if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObject) > 0) {
+                  seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObject, 1)
 
-                    commitPlacement()
-                    b2.break()
-                  }
-                case None =>
+                  commitPlacement()
+                  eachBlockFill.break()
+                }
               }
 
               consumeOnePlacementItemFromInventory() match {
@@ -187,7 +166,7 @@ class TilingSkillTriggerListener[
                   commitPlacement()
                 case None =>
                   player.sendMessage(s"${RED}アイテムが不足しています!")
-                  b1.break()
+                  blockFill.break()
               }
             }
           }
@@ -202,4 +181,25 @@ class TilingSkillTriggerListener[
       .unsafeRunSync()
   }
 
+}
+
+object TilingSkillTriggerListener {
+  val replaceableMaterials = Set(
+    Material.AIR,
+    Material.SNOW,
+    Material.LONG_GRASS,
+    Material.DEAD_BUSH,
+    Material.YELLOW_FLOWER,
+    Material.RED_ROSE,
+    Material.RED_MUSHROOM,
+    Material.BROWN_MUSHROOM
+  )
+
+  val fillTargetMaterials = Set(
+    Material.AIR,
+    Material.LAVA,
+    Material.STATIONARY_LAVA,
+    Material.WATER,
+    Material.STATIONARY_WATER
+  )
 }
