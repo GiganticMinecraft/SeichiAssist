@@ -92,6 +92,16 @@ jobs:
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
 
+      - name: Notify discord webhook
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "ビルド＋テスト＋アップロード"
+          description: "テスト及びビルドをし、アーティファクトをアップロードする"
+          username: GitHub Actions
+          avatar_url: ${{ secrets.AVATAR_URL }}
+
   deploy_artifact_to_staging:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
@@ -114,6 +124,16 @@ jobs:
           username: ${{ secrets.STAGING_USERNAME }}
           remote_dir: ${{ secrets.STAGING_REMOTE_DIR }}
 
+      - name: Notify discord webhook
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "デバッグサーバーへデプロイ"
+          description: "deb112等のステージング環境にプラグインを配置する"
+          username: GitHub Actions
+          avatar_url: ${{ secrets.AVATAR_URL }}
+
   deploy_artifact_to_production:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/master'
@@ -135,4 +155,14 @@ jobs:
           source: ${{ steps.download.outputs.download-path }}/**.jar
           username: ${{ secrets.PRODUCTION_USERNAME }}
           remote_dir: ${{ secrets.PRODUCTION_REMOTE_DIR }}
+
+      - name: Notify discord webhook
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "本番サーバーへデプロイ"
+          description: "s1、s2等の本番環境にプラグインを配置する"
+          username: GitHub Actions
+          avatar_url: ${{ secrets.AVATAR_URL }}
 
