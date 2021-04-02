@@ -42,13 +42,15 @@ class TilingSkillTriggerListener[
       case _ => return
     }
 
-    if (!(player.isSneaking &&
-      MaterialSets.targetForRectangleFill.contains(offHandItem.getType) &&
-      buildAssistPlayerData.rectFillEnabled)) return
+    if (!player.isSneaking) return
+    if (!buildAssistPlayerData.rectFillEnabled) return
+    val offHandType = offHandItem.getType
+    if (!MaterialSets.targetForRectangleFill.contains(offHandType)) return
 
+    val offHandRawType = offHandItem.getData.getData
     val clickedBlock = event.getClickedBlock
 
-    if (!(offHandItem.getType == clickedBlock.getType && offHandItem.getData.getData == clickedBlock.getData)) {
+    if (!(offHandType == clickedBlock.getType && offHandRawType == clickedBlock.getData)) {
       player.sendMessage(s"$RED「オフハンドと同じブロック」をクリックしてください。(基準になります)")
       return
     }
@@ -68,7 +70,7 @@ class TilingSkillTriggerListener[
     val minestackObjectToUse = Option.when(buildAssistPlayerData.rectFillPrioritizeMineStack) {
       MineStackObjectList.minestacklist
         .find { obj =>
-          offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
+          offHandType == obj.material && offHandRawType.toInt == obj.durability
         }
     }.flatten
 
@@ -105,8 +107,8 @@ class TilingSkillTriggerListener[
                 fillBelowSurfaceWithDirt()
               }
 
-              targetSurfaceBlock.setType(offHandItem.getType)
-              targetSurfaceBlock.setData(offHandItem.getData.getData)
+              targetSurfaceBlock.setType(offHandType)
+              targetSurfaceBlock.setData(offHandRawType)
 
               placementCount += 1
             }
