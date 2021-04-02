@@ -100,7 +100,7 @@ jobs:
           title: "ビルド＋テスト＋アップロード"
           description: "テスト及びビルドをし、アーティファクトをアップロードする"
           username: GitHub Actions
-          avatar_url: ${{ secrets.AVATAR_URL }}
+          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
   deploy_artifact_to_staging:
     runs-on: ubuntu-20.04
@@ -132,7 +132,7 @@ jobs:
           title: "デバッグサーバーへデプロイ"
           description: "deb112等のステージング環境にプラグインを配置する"
           username: GitHub Actions
-          avatar_url: ${{ secrets.AVATAR_URL }}
+          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
   deploy_artifact_to_production:
     runs-on: ubuntu-20.04
@@ -164,5 +164,5 @@ jobs:
           title: "本番サーバーへデプロイ"
           description: "s1、s2等の本番環境にプラグインを配置する"
           username: GitHub Actions
-          avatar_url: ${{ secrets.AVATAR_URL }}
+          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
