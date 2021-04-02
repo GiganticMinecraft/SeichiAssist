@@ -92,9 +92,6 @@ jobs:
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
 
-      - name: Debug git log
-        run: git log -n 5 | cat
-
       - name: Notify discord webhook
         uses: sarisia/actions-status-discord@v1
         if: always()
