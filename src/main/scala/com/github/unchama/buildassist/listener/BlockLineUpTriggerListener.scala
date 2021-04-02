@@ -14,17 +14,13 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
-import org.bukkit.{Material, Sound}
-
-import scala.util.control.Breaks
+import org.bukkit.{Location, Material, Sound}
 
 class BlockLineUpTriggerListener[
   F[_]
   : IncrementBuildExpWhenBuiltWithSkill[*[_], Player]
   : SyncEffect
 ](implicit manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
-
-  import scala.jdk.CollectionConverters._
 
   @EventHandler
   def onBlockLineUpSkillTrigger(event: PlayerInteractEvent): Unit = {
@@ -104,17 +100,17 @@ class BlockLineUpTriggerListener[
       case _ => mainHandItemType
     }
 
-    val playerHoldsSlabBlock = MaterialSets.halfBlocks.contains(mainHandItemType)
-    val slabLineUpStepMode = buildAssistData.lineFillSlabPosition
-    val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == LineFillSlabPosition.Both
+    val holdPlayerSlab = MaterialSets.halfBlocks.contains(mainHandItemType)
+    val slabPosition = buildAssistData.lineFillSlabPosition
+    val placeDoubleSlabs = holdPlayerSlab && slabPosition == LineFillSlabPosition.Both
 
     val placingBlockData: Byte =
-      if (playerHoldsSlabBlock && slabLineUpStepMode == LineFillSlabPosition.Upper)
+      if (holdPlayerSlab && slabPosition == LineFillSlabPosition.Upper)
         (mainHandItemData + 8).toByte
       else mainHandItemData
 
     val (placingBlockType, itemConsumptionPerPlacement, placementIteration) =
-      if (shouldPlaceDoubleSlabs)
+      if (placeDoubleSlabs)
         (slabToDoubleSlab(mainHandItemType), 2, maxBlockUsage / 2)
       else
         (mainHandItemType, 1, maxBlockUsage)
@@ -149,34 +145,30 @@ class BlockLineUpTriggerListener[
     //設置した数
     var placedBlockCount = 0
 
-    val b = new Breaks
-    b.breakable {
-      while (placedBlockCount < placementIteration) { //設置ループ
-        px += dx
-        py += dy
-        pz += dz
-        val block = playerWorld.getBlockAt(px, py, pz)
+    val destroyWeakBlock = buildAssistData.lineFillDestructWeakBlocks
+    val weakBlocks = MaterialSets.autoDestructibleWhenLineFill
 
-        //他人の保護がかかっている場合は設置終わり
-        if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) b.break
+    // 置く回数が限度よりも少なく、かつポイントする場所にブロックを設置することができ、かつポイントするブロックが空気であるか、
+    // あるいはポイントするブロックのカインドがWeak-Blockとして登録されていて、
+    // かつプレイヤーがWeak-Blockを自動破壊する設定を有効にしている間
+    while (
+      placedBlockCount < placementIteration &&
+        ExternalPlugins.getWorldGuard.canBuild(player, new Location(playerWorld, px, py, pz)) &&
+        (playerWorld.getBlockAt(px, py, pz).getType match {
+          case Material.AIR => true
+          case x @ _ => destroyWeakBlock && weakBlocks.contains(x)
+        })
+    ) {
+      px += dx
+      py += dy
+      pz += dz
+      val block = playerWorld.getBlockAt(px, py, pz)
 
-        if (block.getType != Material.AIR) {
-          //空気以外にぶつかり、ブロック破壊をしないならば終わる
-          if (!MaterialSets.autoDestructibleWhenLineFill.contains(block.getType) || !buildAssistData.lineFillDestructWeakBlocks) {
-            b.break
-          }
-
-          block.getDrops.asScala.foreach {
-            playerWorld.dropItemNaturally(player.getLocation, _)
-          }
-        }
-
-        block.setType(placingBlockType)
-        block.setData(placingBlockData)
-
-        placedBlockCount += itemConsumptionPerPlacement
-      }
+      block.setType(placingBlockType)
+      block.setData(placingBlockData)
+      placedBlockCount += itemConsumptionPerPlacement
     }
+
 
     // 建築量を足す
     import cats.effect.implicits._
