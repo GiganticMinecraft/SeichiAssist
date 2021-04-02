@@ -27,7 +27,7 @@ import scala.collection.mutable.Map;
 import java.util.*;
 import java.util.function.Consumer;
 
-public final class MenuInventoryData {
+public final class MenuInventoryData implements IMenuInventoryData {
     private MenuInventoryData() {
     }
 
@@ -100,11 +100,6 @@ public final class MenuInventoryData {
         );
     }
 
-    /**
-     * ログイン時間
-     * @param page ページ
-     * @return メニュー
-     */
     public static Inventory getRankingByPlayingTime(final int page) {
         final int pageLimit = 14;
         final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ログイン神ランキング");
@@ -519,7 +514,7 @@ public final class MenuInventoryData {
                 break;
             }
         }
-        
+
         //パーツ未選択状態にするボタン
         {
             final ItemStack itemstack = build(
@@ -1026,7 +1021,7 @@ public final class MenuInventoryData {
         }
         return inventory;
     }
-    
+
     private static Inventory getEmptyInventory(final int rows, final String title) {
         return Bukkit.getServer().createInventory(null, rows * 9, title);
     }
@@ -1092,7 +1087,7 @@ public final class MenuInventoryData {
         ret.setItemMeta(sm);
         return ret;
     }
-    
+
     private static <T> Consumer<T> nullConsumer() {
         return nothing -> {};
     }
