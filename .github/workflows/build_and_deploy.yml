@@ -121,8 +121,8 @@ jobs:
           host: ${{ secrets.STAGING_HOST }}
           port: ${{ secrets.STAGING_PORT }}
           source: ${{ steps.download.outputs.download-path }}/**.jar
+          target: ${{ secrets.STAGING_REMOTE_DIR }}
           username: ${{ secrets.STAGING_USERNAME }}
-          remote_dir: ${{ secrets.STAGING_REMOTE_DIR }}
 
       - name: Notify discord webhook
         uses: sarisia/actions-status-discord@v1
@@ -153,8 +153,8 @@ jobs:
           host: ${{ secrets.PRODUCTION_HOST }}
           port: ${{ secrets.PRODUCTION_PORT }}
           source: ${{ steps.download.outputs.download-path }}/**.jar
+          target: ${{ secrets.PRODUCTION_REMOTE_DIR }}
           username: ${{ secrets.PRODUCTION_USERNAME }}
-          remote_dir: ${{ secrets.PRODUCTION_REMOTE_DIR }}
 
       - name: Notify discord webhook
         uses: sarisia/actions-status-discord@v1
