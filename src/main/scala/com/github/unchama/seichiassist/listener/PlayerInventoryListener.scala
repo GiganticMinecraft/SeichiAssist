@@ -39,7 +39,11 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
   private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
 
-  //ランキングメニュー
+  /**
+   * ログイン神ランキング
+   *
+   * @param event given implicitly by Bukkit
+   */
   @EventHandler
   def onPlayerClickSeichiRankingMenuEvent1(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
@@ -109,7 +113,11 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
   }
 
-  //ランキングメニュー
+  /**
+   * 投票神ランキング
+   *
+   * @param event given implicitly by Bukkit
+   */
   @EventHandler
   def onPlayerClickSeichiRankingMenuEvent2(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
@@ -187,7 +195,9 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
   }
 
-  //ガチャ交換システム
+  /**
+   * ガチャ景品交換画面
+   */
   @EventHandler
   def onGachaTradeEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
@@ -300,13 +310,18 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
   }
 
-  //実績メニューの処理
+  /**
+   * 実績メニュー
+   * @param event
+   */
   @EventHandler
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent): Unit = {
     OnClickTitleMenu.onPlayerClickTitleMenuEvent(event)
   }
 
-  //鉱石・交換券変換システム
+  /**
+   * 鉱石・交換券変換画面
+   */
   @EventHandler
   def onOreTradeEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
@@ -408,7 +423,9 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     )
   }
 
-  //ギガンティック→椎名林檎交換システム
+  /**
+   * ギガンティック→椎名林檎交換システム
+   */
   @EventHandler
   def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
@@ -510,6 +527,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
   }
 
+  /**
+   * タイタン修繕画面
+   * @param event
+   */
   @EventHandler
   def onTitanRepairEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer.asInstanceOf[Player]
@@ -551,7 +572,9 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
   }
 
-  //投票ptメニュー
+  /**
+   * 投票ptメニュー
+   */
   @EventHandler
   def onVotingMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
@@ -720,6 +743,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
   }
 
+  /**
+   * GiganticBerserk進化前、進化後共通
+   * @param event
+   */
   @EventHandler
   def onGiganticBerserkMenuEvent(event: InventoryClickEvent): Unit = {
     //外枠のクリック処理なら終了
