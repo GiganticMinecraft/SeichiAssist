@@ -105,7 +105,6 @@ jobs:
 
   deploy_artifact_to_staging:
     runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/develop'
     needs: build_test_and_upload
     steps:
       - name: Download artifact
