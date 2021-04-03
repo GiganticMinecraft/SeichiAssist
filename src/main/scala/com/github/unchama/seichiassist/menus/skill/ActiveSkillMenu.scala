@@ -349,7 +349,9 @@ object ActiveSkillMenu extends Menu {
                           val notificationMessage = s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
 
                           import cats.implicits._
-                          for {
+                          import cats.effect.implicits._
+
+                          val notify = for {
                             _ <- NonServerThreadContextShift[F].shift
                             _ <- WebhookWriteAPI[F].sendAssaultNotification(notificationMessage)
                           } yield ()
@@ -357,6 +359,7 @@ object ActiveSkillMenu extends Menu {
                           (
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
+                              Kleisli((_: Any) => notify.toIO),
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                               BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
                               BroadcastMessageEffect(s"$GOLD$BOLD$notificationMessage")
