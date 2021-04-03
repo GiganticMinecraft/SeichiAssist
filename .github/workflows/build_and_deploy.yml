@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: SeichiAssist-build
-          path: target/build/**.jar
+          path: target/build/SeichiAssist.jar
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
@@ -120,7 +120,7 @@ jobs:
           key: ${{ secrets.STAGING_KEY }}
           host: ${{ secrets.STAGING_HOST }}
           port: ${{ secrets.STAGING_PORT }}
-          source: ${{ steps.download.outputs.download-path }}/**.jar
+          source: ${{ steps.download.outputs.download-path }}/SeichiAssist.jar
           target: ${{ secrets.STAGING_REMOTE_DIR }}
           username: ${{ secrets.STAGING_USERNAME }}
 
@@ -152,7 +152,7 @@ jobs:
           key: ${{ secrets.PRODUCTION_KEY }}
           host: ${{ secrets.PRODUCTION_HOST }}
           port: ${{ secrets.PRODUCTION_PORT }}
-          source: ${{ steps.download.outputs.download-path }}/**.jar
+          source: ${{ steps.download.outputs.download-path }}/SeichiAssist.jar
           target: ${{ secrets.PRODUCTION_REMOTE_DIR }}
           username: ${{ secrets.PRODUCTION_USERNAME }}
 
