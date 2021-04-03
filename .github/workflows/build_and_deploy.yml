@@ -119,6 +119,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.STAGING_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Deploy to staging environment
         run: |
@@ -154,6 +155,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.PRODUCTION_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Deploy to staging environment
         run: |
