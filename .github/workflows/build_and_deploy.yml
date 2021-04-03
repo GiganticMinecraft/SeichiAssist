@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-build-dependencies
-          cache-version: v-minus-5
+          cache-version: v-1
         with:
           # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
           # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
@@ -48,7 +48,7 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-build
-          cache-version: v-minus-1
+          cache-version: v-1
         with:
           path: |
             target
