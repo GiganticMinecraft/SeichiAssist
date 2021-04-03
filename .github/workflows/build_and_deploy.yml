@@ -1,0 +1,177 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build_test_and_upload:
+    runs-on: ubuntu-20.04
+    container: ghcr.io/giganticminecraft/seichiassist-builder:1a64049
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Prepare build dependencies cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-build-dependencies
+          cache-version: v-minus-5
+        with:
+          # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
+          # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
+          # 実際のキャッシュは /root/ 以下に配備される。
+          #
+          # /root/.ivy/cache, /root/.sbt - sbt関連のキャッシュ
+          # /root/.m2 - ビルドログを観察した感じprotoc等はここを利用する
+          # /root/.cache - cousierがscalasbt等をキャッシュするのに使っている
+          path: |
+            /root/.ivy2/cache
+            /root/.sbt
+            /root/.m2
+            /root/.cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Prepare build cache
+        if: github.ref != 'refs/heads/master'
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-build
+          cache-version: v-minus-1
+        with:
+          path: |
+            target
+            project/target
+            project/project/target
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      # CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
+      # そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
+      # 不要なインクリメンタルコンパイルが走る
+      # タイムスタンプをコミット時刻に設定することでこれが回避できる
+      - name: Restore localDependencies' timestamps
+        # 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
+        run: |
+          for jar in localDependencies/*.jar; do
+            timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $jar`
+            touch -t "$timestamp" $jar
+          done
+
+      # scalapbは.protoの再コンパイルの必要性を判定する際にタイムスタンプを見ているから、コミット時刻に合わせる
+      - name: Restore protocol timestamps
+        ## 参考: https://qiita.com/tomlla/items/219cea9dd071c8a9e147
+        run: |
+          for proto in protocol/*.proto; do
+            timestamp=`git log -1 --pretty=format:'%cd' --date=format:'%Y%m%d%H%M.%S' $proto`
+            touch -t "$timestamp" $proto
+          done
+
+      - name: Test and build artifact
+        run: sbt assembly
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SeichiAssist-build
+          path: target/build/**.jar
+
+      - name: Clean build artifact for caching target folder
+        run: rm -r target/build
+
+      - name: Notify discord webhook
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "ビルド＋テスト＋アップロード"
+          description: "テスト及びビルドをし、アーティファクトをアップロードする"
+          username: GitHub Actions
+          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
+
+  deploy_artifact_to_staging:
+    runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/develop'
+    needs: build_test_and_upload
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: SeichiAssist-build
+        id: download
+      - name: Inspect artifact
+        run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
+
+      - name: Write SSH key to a file
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy to staging environment
+        run: |
+          scp -v -oStrictHostKeyChecking=no \
+              -P ${{ secrets.STAGING_PORT }} \
+              ${{ steps.download.outputs.download-path }}/**.jar \
+             "${{ secrets.STAGING_USERNAME }}@${{ secrets.STAGING_HOST }}:${{ secrets.STAGING_REMOTE_DIR }}"
+
+      - name: Notify discord webhook
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "デバッグサーバーへデプロイ"
+          description: "deb112等のステージング環境にプラグインを配置する"
+          username: GitHub Actions
+          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
+
+  deploy_artifact_to_production:
+    runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/master'
+    needs: build_test_and_upload
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: SeichiAssist-build
+        id: download
+      - name: Inspect artifact
+        run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
+
+      - name: Write SSH key to a file
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRODUCTION_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy to staging environment
+        run: |
+          scp -v -oStrictHostKeyChecking=no \
+              -P ${{ secrets.PRODUCTION_PORT }} \
+              ${{ steps.download.outputs.download-path }}/**.jar \
+             "${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION_HOST }}:${{ secrets.PRODUCTION_REMOTE_DIR }}"
+
+      - name: Notify discord webhook
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "本番サーバーへデプロイ"
+          description: "s1、s2等の本番環境にプラグインを配置する"
+          username: GitHub Actions
+          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
+
