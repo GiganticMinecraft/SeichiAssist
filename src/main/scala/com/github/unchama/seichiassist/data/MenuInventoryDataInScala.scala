@@ -1,16 +1,26 @@
 package com.github.unchama.seichiassist.data
+import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
+import com.github.unchama.menuinventory.slot.button.Button
+import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
+import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
+import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.achievement.Nicknames
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import com.github.unchama.seichiassist.data.MenuInventoryDataInScala.{GiganticBerserkAfterEvolutionMenu, GiganticBerserkBeforeEvolutionMenu}
+import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.TypeConverter
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Interval.Closed
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
-import org.bukkit.{Bukkit, Material}
+import org.bukkit.{Bukkit, Material, Sound}
 
 object MenuInventoryDataInScala extends IMenuInventoryData {
   private def getEmptyInventory(rows: Int Refined Closed[1, 6], title: String) = {
@@ -648,88 +658,155 @@ object MenuInventoryDataInScala extends IMenuInventoryData {
   }
 
   override def getGiganticBerserkBeforeEvolutionMenu(player: Player): Inventory = {
-    val playerdata = SeichiAssist.playermap(player.getUniqueId)
-    val inventory = getEmptyInventory(6, s"$DARK_PURPLE${BOLD}スキルを進化させますか?")
-    val color: Short = playerdata.giganticBerserk.stage match {
-      case 0 => 12
-      case 1 => 15
-      case 2 => 4
-      case 3 => 0
-      case 4 => 3
-      case _ => throw new AssertionError("This statement shouldn't be reached!")
-    }
-
-    val is = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, color)
-      .title(" ")
-      .build()
-
-    // L954
-    Set(6, 7, 14, 15, 16, 21, 22, 23, 24, 32, 41).foreach(inventory.setItem(_, is))
-
-    val stick = new IconItemStackBuilder(Material.STICK)
-      .amount(1)
-      .title(" ")
-      .lore()
-      .build()
-
-    Set(30, 39, 40, 47).foreach(inventory.setItem(_, stick))
-
-    val evolve = new IconItemStackBuilder(Material.NETHER_STAR)
-      .amount(1)
-      .title(s"${WHITE}スキルを進化させる")
-      .lore(
-        s"$RESET${GREEN}進化することにより、スキルの秘めたる力を解放できますが",
-        s"$RESET${GREEN}スキルは更に大量の魂を求めるようになり",
-        s"$RESET${GREEN}レベル(回復確率)がリセットされます",
-        s"$RESET${RED}本当に進化させますか?",
-        s"$RESET$DARK_RED${UNDERLINE}クリックで進化させる"
-      )
-      .build()
-
-    inventory.setItem(31, evolve)
-
-    inventory
+    menuToInventory(GiganticBerserkBeforeEvolutionMenu)
   }
 
+  // 注釈: これは型合わせとしてのみ用いる。
+  private def menuToInventory(menu: Menu) = ???
+
   override def getGiganticBerserkAfterEvolutionMenu(player: Player): Inventory = {
-    val playerdata = SeichiAssist.playermap(player.getUniqueId)
-    val inventory = getEmptyInventory(6, s"$LIGHT_PURPLE${BOLD}スキルを進化させました")
-    val stage = playerdata.giganticBerserk.stage
-    val color: Short = stage match {
-      case 0 => 12
-      case 1 => 15
-      case 2 => 4
-      case 3 => 0
-      case 4 => 3
-      case 5 => 12
-      case _ => throw new AssertionError("This statement shouldn't be reached!")
-    }
-    val builder = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, color)
-      .title(" ")
+    menuToInventory(GiganticBerserkAfterEvolutionMenu)
+  }
 
-    if (stage >= 4) {
-      // TODO: Original: DAMAGE_ALL<1, Hidden>
-      builder.enchanted()
-    }
+  object GiganticBerserkBeforeEvolutionMenu extends Menu {
+    /**
+     * メニューを開く操作に必要な環境情報の型。
+     * 例えば、メニューが利用するAPIなどをここを通して渡すことができる。
+     */
+    override type Environment = Unit
+    /**
+     * メニューのサイズとタイトルに関する情報
+     */
+    override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}スキルを進化させますか?")
 
-    val stick = new IconItemStackBuilder(Material.STICK)
-      .amount(1)
-      .title(" ")
-      .lore()
-      .build()
+    /**
+     * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+     */
+    override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = IO {
+      val pd = SeichiAssist.playermap(player.getUniqueId)
+      val color: Short = pd.giganticBerserk.stage match {
+        case 0 => 12
+        case 1 => 15
+        case 2 => 4
+        case 3 => 0
+        case 4 => 3
+        case _ => throw new AssertionError("This statement shouldn't be reached!")
+      }
 
-    Set(30, 39, 40, 47).foreach(inventory.setItem(_, stick))
+      val is = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, color)
+        .title(" ")
+        .build()
 
-    val evolved = new IconItemStackBuilder(Material.NETHER_STAR)
-      .title(s"${WHITE}スキルを進化させました！")
-      .lore(
-        s"$RESET${GREEN}スキルの秘めたる力を解放することで、マナ回復量が増加し",
-        s"$RESET${DARK_RED}スキルはより魂を求めるようになりました"
+      val stick = new IconItemStackBuilder(Material.STICK)
+        .title(" ")
+        .lore()
+        .build()
+
+      val glasses = Seq(6, 7, 14, 15, 16, 21, 22, 23, 24, 32, 41).map(x => (x, new Button(is, List()))).toMap
+      val sticks = Set(30, 39, 40, 47).map(x => (x, new Button(stick, List()))).toMap
+      val executeButton = (
+        31,
+        new Button(
+          new IconItemStackBuilder(Material.NETHER_STAR)
+            .amount(1)
+            .title(s"${WHITE}スキルを進化させる")
+            .lore(
+              s"$RESET${GREEN}進化することにより、スキルの秘めたる力を解放できますが",
+              s"$RESET${GREEN}スキルは更に大量の魂を求めるようになり",
+              s"$RESET${GREEN}レベル(回復確率)がリセットされます",
+              s"$RESET${RED}本当に進化させますか?",
+              s"$RESET$DARK_RED${UNDERLINE}クリックで進化させる"
+            )
+            .build(),
+          List(
+            new FilteredButtonEffect(
+              ClickEventFilter.LEFT_CLICK,
+              SequentialEffect(
+                // GBのレベルを上げる
+                UnfocusedEffect {
+                  pd.giganticBerserk = GiganticBerserk(0, 0, pd.giganticBerserk.stage + 1)
+                },
+                FocusedSoundEffect(Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5f),
+                FocusedSoundEffect(Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8f),
+                GiganticBerserkAfterEvolutionMenu.open
+              )
+            )
+          )
+        )
       )
-      .build()
 
-    inventory.setItem(31, evolved)
+      new MenuSlotLayout(
+        glasses ++ sticks + executeButton
+      )
+    }
+  }
 
-    inventory
+  object GiganticBerserkAfterEvolutionMenu extends Menu {
+    /**
+     * メニューを開く操作に必要な環境情報の型。
+     * 例えば、メニューが利用するAPIなどをここを通して渡すことができる。
+     */
+    override type Environment = Unit
+    /**
+     * メニューのサイズとタイトルに関する情報
+     */
+    override val frame: MenuFrame = MenuFrame(6.chestRows, s"$LIGHT_PURPLE${BOLD}スキルを進化させました")
+
+    /**
+     * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+     */
+    override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = IO {
+      val pd = SeichiAssist.playermap(player.getUniqueId)
+      val stage = pd.giganticBerserk.stage
+      val color: Short = stage match {
+        case 0 => 12
+        case 1 => 15
+        case 2 => 4
+        case 3 => 0
+        case 4 => 3
+        case 5 => 12
+        case _ => throw new AssertionError("This statement shouldn't be reached!")
+      }
+
+      val builder = new IconItemStackBuilder(Material.STAINED_GLASS_PANE, color)
+        .title(" ")
+
+      if (stage >= 4) {
+        // TODO: Original: DAMAGE_ALL<1, Hidden>
+        builder.enchanted()
+      }
+
+      val glass = builder.build()
+      val glasses = Seq(6, 7, 14, 15, 16, 21, 22, 23, 24, 32, 41).map((_, new Button(glass, List()))).toMap
+      val stick = new IconItemStackBuilder(Material.STICK)
+        .amount(1)
+        .title(" ")
+        .lore()
+        .build()
+
+      val sticks = Seq(30, 39, 40, 47).map((_, new Button(stick, List())))
+      val executedButton = (
+        31,
+        new Button(
+          new IconItemStackBuilder(Material.NETHER_STAR)
+            .title(s"${WHITE}スキルを進化させました！")
+            .lore(
+              s"$RESET${GREEN}スキルの秘めたる力を解放することで、マナ回復量が増加し",
+              s"$RESET${DARK_RED}スキルはより魂を求めるようになりました"
+            )
+            .build(),
+          List(
+            new FilteredButtonEffect(
+              ClickEventFilter.LEFT_CLICK,
+              SequentialEffect(
+
+              )
+            )
+          )
+        )
+      )
+
+      new MenuSlotLayout(glasses ++ sticks + executedButton)
+    }
   }
 }
