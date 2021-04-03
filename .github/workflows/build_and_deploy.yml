@@ -116,7 +116,9 @@ jobs:
         run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
 
       - name: Write SSH key to a file
-        run: echo "${{ secrets.STAGING_KEY }}" > ~/.ssh/id_rsa
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_KEY }}" > ~/.ssh/id_rsa
 
       - name: Deploy to staging environment
         run: |
@@ -149,7 +151,9 @@ jobs:
         run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
 
       - name: Write SSH key to a file
-        run: echo "${{ secrets.STAGING_KEY }}" > ~/.ssh/id_rsa
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRODUCTION_KEY }}" > ~/.ssh/id_rsa
 
       - name: Deploy to staging environment
         run: |
