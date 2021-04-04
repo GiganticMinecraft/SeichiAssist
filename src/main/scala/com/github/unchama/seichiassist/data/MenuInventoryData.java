@@ -519,7 +519,7 @@ public final class MenuInventoryData {
                 break;
             }
         }
-        
+
         //パーツ未選択状態にするボタン
         {
             final ItemStack itemstack = build(
@@ -825,7 +825,7 @@ public final class MenuInventoryData {
         }
 
 
-        if (playerdata.usingVotingFairy()) {
+        if (playerdata.isInVotingFairyDuration()) {
             //妖精 時間確認
             {
                 // const button
@@ -1026,7 +1026,7 @@ public final class MenuInventoryData {
         }
         return inventory;
     }
-    
+
     private static Inventory getEmptyInventory(final int rows, final String title) {
         return Bukkit.getServer().createInventory(null, rows * 9, title);
     }
@@ -1092,7 +1092,7 @@ public final class MenuInventoryData {
         ret.setItemMeta(sm);
         return ret;
     }
-    
+
     private static <T> Consumer<T> nullConsumer() {
         return nothing -> {};
     }

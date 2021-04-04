@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.generic.ClosedRange
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
@@ -15,7 +16,7 @@ import org.bukkit.{Bukkit, Location}
 
 import java.sql.{ResultSet, Statement}
 import java.text.{ParseException, SimpleDateFormat}
-import java.util.{Calendar, UUID}
+import java.util.{Calendar, GregorianCalendar, UUID}
 import scala.collection.mutable
 import scala.util.Using
 
@@ -313,12 +314,37 @@ object PlayerDataLoading {
         }
 
         //マナ妖精
-        playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
         playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
         playerData.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
         playerData.toggleGiveApple = rs.getInt("toggleGiveApple")
         playerData.toggleVotingFairy = rs.getInt("toggleVotingFairy")
-        playerData.setVotingFairyTime(rs.getString("newVotingFairyTime"))
+
+        val aa = rs.getString("newVotingFairyTime")
+        locally {
+          // setVotingFairyTime
+          val s = aa.split(",")
+          if (s.size < 5) return
+          if (!s.slice(0, 5).contains("")) {
+            val year = s(0).toInt
+            val month = s(1).toInt - 1
+            val dayOfMonth = s(2).toInt
+            val starts = new GregorianCalendar(year, month, dayOfMonth, Integer.parseInt(s(3)), Integer.parseInt(s(4)))
+
+            var min = Integer.parseInt(s(4)) + 1
+            var hour = Integer.parseInt(s(3))
+
+            min = if (playerData.toggleVotingFairy % 2 != 0) min + 30 else min
+            hour = playerData.toggleVotingFairy match {
+              case 2 | 3 => hour + 1
+              case 4 => hour + 2
+              case _ => hour
+            }
+
+            val ends = new GregorianCalendar(year, month, dayOfMonth, hour, min)
+
+            playerData.votingFairyDuration = Some(new ClosedRange[GregorianCalendar](starts, ends))
+          }
+        }
         playerData.p_apple = rs.getLong("p_apple")
 
 

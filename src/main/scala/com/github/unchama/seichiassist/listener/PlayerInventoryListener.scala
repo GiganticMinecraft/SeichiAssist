@@ -693,7 +693,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         }
 
         //既に妖精召喚している場合終了
-        if (playerdata.usingVotingFairy) {
+        if (playerdata.isVotingFairyDurationSet) {
           player.sendMessage(GOLD.toString + "既に妖精を召喚しています")
           player.playSound(player.getLocation, Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
           return
@@ -709,7 +709,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         VotingFairyListener.summon(player)
         player.closeInventory()
       } else if (itemstackcurrent.getType == Material.COMPASS) {
-        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound)
+        VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyDurationEnd.get) + "には帰るよー。", playerdata.toggleVFSound)
         player.closeInventory()
       } //妖精召喚
       //妖精音トグル

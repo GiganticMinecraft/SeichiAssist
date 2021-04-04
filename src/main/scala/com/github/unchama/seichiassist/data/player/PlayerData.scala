@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -20,7 +19,7 @@ import org.bukkit._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.{GregorianCalendar, NoSuchElementException, UUID}
 import scala.collection.mutable
 
@@ -127,8 +126,6 @@ class PlayerData(
   var anniversary = false
   var templateMap: mutable.Map[Int, GridTemplate] = mutable.HashMap()
   //投票妖精関連
-  var usingVotingFairy = false
-  var voteFairyPeriod = new ClosedRange(dummyDate, dummyDate)
   var hasVotingFairyMana = 0
   var VotingFairyRecoveryValue = 0
   var toggleGiveApple = 1
@@ -183,7 +180,7 @@ class PlayerData(
 
     //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
-    isVotingFairy()
+    validateVotingFairyTimeAndRunUnsafeAfterEffect()
   }
 
   //レベルを更新
@@ -276,20 +273,17 @@ class PlayerData(
     expmanager.setExp(totalexp)
   }
 
-  private def isVotingFairy(): Unit = {
+  private def validateVotingFairyTimeAndRunUnsafeAfterEffect(): Unit = {
     //効果は継続しているか
-    if (this.usingVotingFairy && !Util.isVotingFairyPeriod(this.votingFairyStartTime, this.votingFairyEndTime)) {
-      this.usingVotingFairy = false
-      player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
-    } else if (this.usingVotingFairy) {
-      VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
+
+    if (this.isVotingFairyDurationSet) {
+      if (!this.isInVotingFairyDuration) {
+        this.unsetVotingFairyDuration()
+        player.sendMessage(s"$LIGHT_PURPLE${BOLD}妖精は何処かへ行ってしまったようだ...")
+      } else {
+        VotingFairyTask.speak(player, "おかえり！" + player.getName, true)
+      }
     }
-  }
-
-  def votingFairyEndTime: GregorianCalendar = voteFairyPeriod.endInclusive
-
-  def votingFairyEndTime_=(value: GregorianCalendar): Unit = {
-    voteFairyPeriod = new ClosedRange(voteFairyPeriod.start, value)
   }
 
   def updateNickname(id1: Int = settings.nickname.id1,
@@ -469,8 +463,6 @@ class PlayerData(
     }
   }
 
-  import com.github.unchama.seichiassist.AntiTypesafe
-
   def addUnitAmount(directionType: DirectionType, amount: Int): Unit = {
     directionType match {
       case DirectionType.AHEAD => this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
@@ -488,79 +480,34 @@ class PlayerData(
     }
   }
 
-  private var _votingFairyPeriod2: Option[ClosedRange[GregorianCalendar]] = None
+  var votingFairyDuration: Option[ClosedRange[GregorianCalendar]] = None
 
-  def isVotingFairyPeriodSet: Boolean = {
-    votingFairyPeriod2.nonEmpty
+  /**
+   * @return 期間が設定されているならtrue
+   */
+  def isVotingFairyDurationSet: Boolean = {
+    votingFairyDuration.nonEmpty
   }
 
-  def votingFairyPeriod2: Option[ClosedRange[GregorianCalendar]] = {
-    _votingFairyPeriod2
+  /**
+   * @return 期間が設定されていて、かつこのメソッドが呼び出された時点がその期間に含まれているならtrue
+   */
+  def isInVotingFairyDuration: Boolean = {
+    val range = votingFairyDuration.getOrElse(return false)
+    val now = LocalDate.now()
+    range.contains(new GregorianCalendar(now.getYear, now.getMonthValue, now.getDayOfMonth))
   }
 
-  def votingFairyPeriod2_=(value: Option[ClosedRange[GregorianCalendar]]) = {
-    _votingFairyPeriod2 = value
+  def unsetVotingFairyDuration(): Unit = {
+    votingFairyDuration = None
   }
 
-  def clearVotingFairyPeriod2(): Unit = {
-    _votingFairyPeriod2 = None
+  def votingFairyDurationStart: Option[GregorianCalendar] = {
+    votingFairyDuration.map(_.start)
   }
 
-  def votingFairyPeriod2_Start: Option[GregorianCalendar] = {
-    votingFairyPeriod2.map(_.start)
-  }
-
-  def votingFairyPeriod2_End: Option[GregorianCalendar] = {
-    votingFairyPeriod2.map(_.endInclusive)
-  }
-
-  @AntiTypesafe
-  @deprecated("Not type-safe. Consider use isVotingFairyPeriodSet or votingFairyPeriod.")
-  def getVotingFairyStartTimeAsString: String = {
-    val cal = this.votingFairyStartTime
-
-    if (votingFairyStartTime == dummyDate) {
-      //設定されてない場合
-      ",,,,,"
-    } else {
-      //設定されてる場合
-      val date = cal.getTime
-      val format = new SimpleDateFormat("yyyy,MM,dd,HH,mm,")
-      format.format(date)
-    }
-  }
-
-  def votingFairyStartTime: GregorianCalendar = voteFairyPeriod.start
-
-  @deprecated("Not safe. this method should be used with votingFairyEndTime_=, or the duration will be unbounded.")
-  def votingFairyStartTime_=(value: GregorianCalendar): Unit = {
-    voteFairyPeriod = new ClosedRange(value, voteFairyPeriod.endInclusive)
-  }
-
-  def setVotingFairyTime(@AntiTypesafe str: String): Unit = {
-    val s = str.split(",")
-    if (s.size < 5) return
-    if (!s.slice(0, 5).contains("")) {
-      val year = s(0).toInt
-      val month = s(1).toInt - 1
-      val dayOfMonth = s(2).toInt
-      val starts = new GregorianCalendar(year, month, dayOfMonth, Integer.parseInt(s(3)), Integer.parseInt(s(4)))
-
-      var min = Integer.parseInt(s(4)) + 1
-      var hour = Integer.parseInt(s(3))
-
-      min = if (this.toggleVotingFairy % 2 != 0) min + 30 else min
-      hour = this.toggleVotingFairy match {
-        case 2 | 3 => hour + 1
-        case 4 => hour + 2
-        case _ => hour
-      }
-
-      val ends = new GregorianCalendar(year, month, dayOfMonth, hour, min)
-
-      this.votingFairyStartTime = starts
-      this.votingFairyEndTime = ends
-    }
+  def votingFairyDurationEnd: Option[GregorianCalendar] = {
+    votingFairyDuration.map(_.endInclusive)
   }
 
   /**
