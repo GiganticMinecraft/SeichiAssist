@@ -9,6 +9,6 @@ trait GachaItemManipulation[ItemStack, F[_]] {
 
   val amount: ReadWrite[F, Int]
 
-  val clone: F[ItemStack]
+  val cloneStack: F[ItemStack]
 
 }
