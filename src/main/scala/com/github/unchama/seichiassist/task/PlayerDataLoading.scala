@@ -319,7 +319,7 @@ object PlayerDataLoading {
         playerData.toggleGiveApple = rs.getInt("toggleGiveApple")
         playerData.toggleVotingFairy = rs.getInt("toggleVotingFairy")
 
-        val aa = rs.getString("newVotingFairyTime")
+        val timeFromDatabase = rs.getString("newVotingFairyTime")
         locally {
           // setVotingFairyTime
           // yyyy-MM-ddThh:mm; iso8601WithoutSecond
@@ -334,7 +334,7 @@ object PlayerDataLoading {
             new GregorianCalendar(year, month, day, hour, minute)
           }
 
-          val starts = iso8601WithoutSecond_Decode(aa)
+          val starts = iso8601WithoutSecond_Decode(timeFromDatabase)
 
           val startHour = starts.get(Calendar.HOUR_OF_DAY)
           val startMinute = starts.get(Calendar.MINUTE)
