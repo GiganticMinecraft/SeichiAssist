@@ -488,7 +488,34 @@ class PlayerData(
     }
   }
 
+  private var _votingFairyPeriod2: Option[ClosedRange[GregorianCalendar]] = None
+
+  def isVotingFairyPeriodSet: Boolean = {
+    votingFairyPeriod2.nonEmpty
+  }
+
+  def votingFairyPeriod2: Option[ClosedRange[GregorianCalendar]] = {
+    _votingFairyPeriod2
+  }
+
+  def votingFairyPeriod2_=(value: Option[ClosedRange[GregorianCalendar]]) = {
+    _votingFairyPeriod2 = value
+  }
+
+  def clearVotingFairyPeriod2(): Unit = {
+    _votingFairyPeriod2 = None
+  }
+
+  def votingFairyPeriod2_Start: Option[GregorianCalendar] = {
+    votingFairyPeriod2.map(_.start)
+  }
+
+  def votingFairyPeriod2_End: Option[GregorianCalendar] = {
+    votingFairyPeriod2.map(_.endInclusive)
+  }
+
   @AntiTypesafe
+  @deprecated("Not type-safe. Consider use isVotingFairyPeriodSet or votingFairyPeriod.")
   def getVotingFairyStartTimeAsString: String = {
     val cal = this.votingFairyStartTime
 
@@ -505,6 +532,7 @@ class PlayerData(
 
   def votingFairyStartTime: GregorianCalendar = voteFairyPeriod.start
 
+  @deprecated("Not safe. this method should be used with votingFairyEndTime_=, or the duration will be unbounded.")
   def votingFairyStartTime_=(value: GregorianCalendar): Unit = {
     voteFairyPeriod = new ClosedRange(value, voteFairyPeriod.endInclusive)
   }
