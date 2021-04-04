@@ -4,8 +4,6 @@ import cats.Functor
 
 /**
  * 永続化されたガチャテーブルに対する操作の抽象。
- *
- *
  */
 trait PersistedGachaPrizeTable[F[_], IS] {
 
