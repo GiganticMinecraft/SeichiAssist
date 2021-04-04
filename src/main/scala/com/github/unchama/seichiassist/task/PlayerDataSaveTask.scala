@@ -181,9 +181,10 @@ object PlayerDataSaveTask {
           + ",canVotingFairyUse = " + playerdata.isInVotingFairyDuration
           + ",newVotingFairyTime = '" + {
           // getVotingFairyTime
-          playerdata.votingFairyDurationStart.fold(",,,,,") { cal =>
+          playerdata.votingFairyDurationStart.fold("") { cal =>
             val date = cal.getTime
-            val format = new SimpleDateFormat("yyyy,MM,dd,HH,mm,")
+            // iso8601WithoutSecond_Encode
+            val format = new SimpleDateFormat("yyyy-MM-ddTHH:mm")
             format.format(date)
           }
         } + "'"

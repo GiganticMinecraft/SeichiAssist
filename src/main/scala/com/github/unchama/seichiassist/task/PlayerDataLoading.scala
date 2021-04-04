@@ -322,28 +322,38 @@ object PlayerDataLoading {
         val aa = rs.getString("newVotingFairyTime")
         locally {
           // setVotingFairyTime
-          val s = aa.split(",")
-          if (s.size < 5) return
-          if (!s.slice(0, 5).contains("")) {
-            val year = s(0).toInt
-            val month = s(1).toInt - 1
-            val dayOfMonth = s(2).toInt
-            val starts = new GregorianCalendar(year, month, dayOfMonth, Integer.parseInt(s(3)), Integer.parseInt(s(4)))
-
-            var min = Integer.parseInt(s(4)) + 1
-            var hour = Integer.parseInt(s(3))
-
-            min = if (playerData.toggleVotingFairy % 2 != 0) min + 30 else min
-            hour = playerData.toggleVotingFairy match {
-              case 2 | 3 => hour + 1
-              case 4 => hour + 2
-              case _ => hour
-            }
-
-            val ends = new GregorianCalendar(year, month, dayOfMonth, hour, min)
-
-            playerData.votingFairyDuration = Some(new ClosedRange[GregorianCalendar](starts, ends))
+          // yyyy-MM-ddThh:mm; iso8601WithoutSecond
+          // 0____5____0____5
+          def iso8601WithoutSecond_Decode(input: String): GregorianCalendar = {
+            val year = input.slice(0, 4).toInt
+            // 頭のゼロは暗黙のうちにドロップされるので、特別な処理は不要
+            val month = input.slice(5, 7).toInt
+            val day = input.slice(8, 10).toInt
+            val hour = input.slice(11, 13).toInt
+            val minute = input.slice(14, 16).toInt
+            new GregorianCalendar(year, month, day, hour, minute)
           }
+
+          val starts = iso8601WithoutSecond_Decode(aa)
+
+          val startHour = starts.get(Calendar.HOUR_OF_DAY)
+          val startMinute = starts.get(Calendar.MINUTE)
+          val min = if (playerData.toggleVotingFairy % 2 != 0) startMinute + 30 else startMinute
+          val hour = playerData.toggleVotingFairy match {
+            case 2 | 3 => startHour + 1
+            case 4 => startHour + 2
+            case _ => startHour
+          }
+
+          val ends = new GregorianCalendar(
+            starts.get(Calendar.YEAR),
+            starts.get(Calendar.MONTH) + 1,
+            starts.get(Calendar.DAY_OF_MONTH),
+            hour,
+            min
+          )
+
+          playerData.votingFairyDuration = Some(new ClosedRange(starts, ends))
         }
         playerData.p_apple = rs.getLong("p_apple")
 
