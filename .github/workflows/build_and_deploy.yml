@@ -130,6 +130,7 @@ jobs:
         with:
           source_file: ${{ steps.download.outputs.download-path }}/SeichiAssist.jar
           destination_repo: ${{ secrets.SERVER_DEFINITION_REPOSITORY }}
+          destination_branch: master
           destination_folder: ${{ secrets.SERVER_DEFINITION_REPOSITORY_DEBUG_PLUGIN_DIRECTORY }}
           user_name: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
           user_email: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}
@@ -142,6 +143,7 @@ jobs:
         with:
           source_file: ${{ steps.download.outputs.download-path }}/SeichiAssist/config.yml
           destination_repo: ${{ secrets.SERVER_DEFINITION_REPOSITORY }}
+          destination_branch: master
           destination_folder: ${{ secrets.SERVER_DEFINITION_REPOSITORY_DEBUG_PLUGIN_DIRECTORY }}/SeichiAssist
           user_name: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
           user_email: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}
