@@ -130,6 +130,7 @@ jobs:
           API_TOKEN_GITHUB=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
           user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
           destination_folder=debug-servers/spigot/files/base/plugins
+          short_sha=$(git rev-parse --short "$GITHUB_SHA")
 
           git clone --depth 1 \
             https://$user_name:$API_TOKEN_GITHUB@github.com/GiganticMinecraft/seichi_servers \
@@ -142,12 +143,12 @@ jobs:
           cp -f \
             ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
             $destination_folder
-          (git add . && git commit -m "[SeichiAssist] jarを自動更新する") || true
+          (git add . && git commit -m "[SeichiAssist] jarを自動更新する (commit $short_sha)") || true
 
           cp -f \
             ${{ steps.download.outputs.download-path }}/SeichiAssist/config.yml \
             $destination_folder/SeichiAssist
-          (git add . && git commit -m "[SeichiAssist] config.ymlを自動更新する") || true
+          (git add . && git commit -m "[SeichiAssist] config.ymlを自動更新する (commit $short_sha)") || true
 
           git push origin master
 
