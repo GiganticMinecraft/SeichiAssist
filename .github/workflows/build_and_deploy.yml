@@ -143,12 +143,12 @@ jobs:
           cp -f \
             ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
             $destination_folder
-          git add . && git commit -m "[SeichiAssist] jarを自動更新する"
+          (git add . && git commit -m "[SeichiAssist] jarを自動更新する") || true
 
           cp -f \
             ${{ steps.download.outputs.download-path }}/SeichiAssist/config.yml \
             $destination_folder/SeichiAssist
-          git add . && git commit -m "[SeichiAssist] config.ymlを自動更新する"
+          (git add . && git commit -m "[SeichiAssist] config.ymlを自動更新する") || true
 
           git push origin master
 
