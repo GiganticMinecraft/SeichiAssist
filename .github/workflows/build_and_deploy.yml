@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: SeichiAssist-build
-          path: target/build/**.jar
+          path: target/build/SeichiAssist.jar
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
@@ -126,7 +126,7 @@ jobs:
         run: |
           scp -v -oStrictHostKeyChecking=no \
               -P ${{ secrets.STAGING_PORT }} \
-              ${{ steps.download.outputs.download-path }}/**.jar \
+              ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
              "${{ secrets.STAGING_USERNAME }}@${{ secrets.STAGING_HOST }}:${{ secrets.STAGING_REMOTE_DIR }}"
 
       - name: Notify discord webhook
@@ -162,7 +162,7 @@ jobs:
         run: |
           scp -v -oStrictHostKeyChecking=no \
               -P ${{ secrets.PRODUCTION_PORT }} \
-              ${{ steps.download.outputs.download-path }}/**.jar \
+              ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
              "${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION_HOST }}:${{ secrets.PRODUCTION_REMOTE_DIR }}"
 
       - name: Notify discord webhook
