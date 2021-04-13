@@ -128,23 +128,26 @@ jobs:
         run: |
           API_TOKEN_GITHUB=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
           destination_repo=${{ secrets.SERVER_DEFINITION_REPOSITORY }}
-          destination_branch=master
           destination_folder=${{ secrets.SERVER_DEFINITION_REPOSITORY_DEBUG_PLUGIN_DIRECTORY }}
-
           user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
-          user_email=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}
 
           git config user.name "$user_name"
-          git config user.email "$user_email"
+          git config user.email "${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}"
 
-          git clone https://$user_name:$API_TOKEN_GITHUB@github.com/$destination_repo server_definition          
+          git clone --depth 1 \
+            https://$user_name:$API_TOKEN_GITHUB@github.com/$destination_repo \
+            server_definition
           cd server_definition
 
-          cp -f ${{ steps.download.outputs.download-path }}/SeichiAssist.jar $destination_folder
+          cp -f \
+            ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
+            $destination_folder
           git add $destination_folder/Seichiassist.jar
           git commit -m "[SeichiAssist] jarを自動更新する"
 
-          cp -f ${{ steps.download.outputs.download-path }}/SeichiAssist/config.yml $destination_folder/SeichiAssist
+          cp -f \
+            ${{ steps.download.outputs.download-path }}/SeichiAssist/config.yml \
+            $destination_folder/SeichiAssist
           git add $destination_folder/Seichiassist/config.yml
           git commit -m "[SeichiAssist] config.ymlを自動更新する"
 
