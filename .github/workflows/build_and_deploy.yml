@@ -128,12 +128,11 @@ jobs:
       - name: Push jar and config.yml
         run: |
           API_TOKEN_GITHUB=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
-          destination_repo=${{ secrets.SERVER_DEFINITION_REPOSITORY }}
-          destination_folder=${{ secrets.SERVER_DEFINITION_REPOSITORY_DEBUG_PLUGIN_DIRECTORY }}
           user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
+          destination_folder=debug-servers/spigot/files/base/plugins
 
           git clone --depth 1 \
-            https://$user_name:$API_TOKEN_GITHUB@github.com/$destination_repo \
+            https://$user_name:$API_TOKEN_GITHUB@github.com/GiganticMinecraft/seichi_servers \
             server_definition
           cd server_definition
 
