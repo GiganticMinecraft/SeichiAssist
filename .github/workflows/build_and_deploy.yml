@@ -103,7 +103,7 @@ jobs:
           username: GitHub Actions
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
-  deploy_artifact_to_staging:
+  push_artifact_to_debug_server_definition:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
     needs: build_test_and_upload
@@ -116,18 +116,36 @@ jobs:
       - name: Inspect artifact
         run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
 
-      - name: Write SSH key to a file
+      - name: Extract default config 
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.STAGING_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          cd ${{ steps.download.outputs.download-path }}
+          mkdir SeichiAssist
+          cd SeichiAssist
+          jar xf ../SeichiAssist.jar config.yml
 
-      - name: Deploy to staging environment
-        run: |
-          scp -v -oStrictHostKeyChecking=no \
-              -P ${{ secrets.STAGING_PORT }} \
-              ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
-             "${{ secrets.STAGING_USERNAME }}@${{ secrets.STAGING_HOST }}:${{ secrets.STAGING_REMOTE_DIR }}"
+      - name: Push jar
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
+        with:
+          source_file: ${{ steps.download.outputs.download-path }}/SeichiAssist.jar
+          destination_repo: ${{ secrets.SERVER_DEFINITION_REPOSITORY }}
+          destination_folder: ${{ secrets.SERVER_DEFINITION_REPOSITORY_DEBUG_PLUGIN_DIRECTORY }}
+          user_name: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
+          user_email: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}
+          commit_message: '[SeichiAssist] jarを自動更新する'
+
+      - name: Push config.yml
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
+        with:
+          source_file: ${{ steps.download.outputs.download-path }}/SeichiAssist/config.yml
+          destination_repo: ${{ secrets.SERVER_DEFINITION_REPOSITORY }}
+          destination_folder: ${{ secrets.SERVER_DEFINITION_REPOSITORY_DEBUG_PLUGIN_DIRECTORY }}/SeichiAssist
+          user_name: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
+          user_email: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}
+          commit_message: '[SeichiAssist] config.ymlを自動更新する'
 
       - name: Notify discord webhook
         uses: sarisia/actions-status-discord@v1
