@@ -113,6 +113,7 @@ jobs:
         with:
           name: SeichiAssist-build
         id: download
+
       - name: Inspect artifact
         run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
 
@@ -131,13 +132,13 @@ jobs:
           destination_folder=${{ secrets.SERVER_DEFINITION_REPOSITORY_DEBUG_PLUGIN_DIRECTORY }}
           user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
 
-          git config user.name "$user_name"
-          git config user.email "${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}"
-
           git clone --depth 1 \
             https://$user_name:$API_TOKEN_GITHUB@github.com/$destination_repo \
             server_definition
           cd server_definition
+
+          git config user.name "$user_name"
+          git config user.email "${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}"
 
           cp -f \
             ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
