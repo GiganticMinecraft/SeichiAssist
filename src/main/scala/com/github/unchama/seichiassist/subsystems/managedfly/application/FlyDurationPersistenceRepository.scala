@@ -1,11 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
+import com.github.unchama.generic.RefDict
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.RemainingFlyDuration
 
-trait FlyDurationPersistenceRepository[SyncContext[_], Key] {
+import java.util.UUID
 
-  def writePair(key: Key, duration: Option[RemainingFlyDuration]): SyncContext[Unit]
-
-  def read(key: Key): SyncContext[Option[RemainingFlyDuration]]
-
-}
+trait FlyDurationPersistenceRepository[F[_]] extends RefDict[F, UUID, Option[RemainingFlyDuration]]

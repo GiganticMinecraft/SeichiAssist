@@ -3,13 +3,14 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 import cats.effect.{ConcurrentEffect, IO, LiftIO, SyncEffect, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.MaterialSets
+import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{START_DATE, isInEvent, itemDropRate}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
-import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -29,7 +30,8 @@ class NewYearListener[
   G[_] : SyncEffect
 ](implicit effectEnvironment: EffectEnvironment,
   repository: LastQuitPersistenceRepository[F, UUID],
-  breakCountReadAPI: BreakCountReadAPI[F, G, Player]) extends Listener {
+  manaApi: ManaWriteApi[G, Player],
+  ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   import cats.implicits._
 
@@ -73,14 +75,8 @@ class NewYearListener[
     val today = LocalDate.now()
     val expiryDate = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(expiryDate) || today.isEqual(expiryDate)) {
-      val playerLevel = breakCountReadAPI
-        .seichiAmountDataRepository(player).read
-        .runSync[SyncIO].unsafeRunSync()
-        .levelCorrespondingToExp.level
-      val manaState = SeichiAssist.playermap(player.getUniqueId).manaState
-      val maxMana = manaState.calcMaxManaOnly(player, playerLevel)
       // マナを10%回復する
-      manaState.increase(maxMana * 0.1, player, playerLevel)
+      manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     }
   }

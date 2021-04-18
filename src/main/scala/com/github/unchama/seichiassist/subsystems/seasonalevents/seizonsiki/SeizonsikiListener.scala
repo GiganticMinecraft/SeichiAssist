@@ -1,8 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki
 
 import cats.effect.{SyncEffect, SyncIO}
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
@@ -21,7 +20,7 @@ import java.util.Random
 class SeizonsikiListener[
   F[_],
   G[_] : SyncEffect
-](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]) extends Listener {
+](implicit manaApi: ManaWriteApi[G, Player]) extends Listener {
 
   import cats.effect.implicits._
 
@@ -57,13 +56,8 @@ class SeizonsikiListener[
     val today = LocalDate.now()
     val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(exp)) {
-      val playerLevel = breakCountReadAPI.seichiAmountDataRepository(player)
-        .read.runSync[SyncIO]
-        .unsafeRunSync().levelCorrespondingToExp.level
-      val manaState = SeichiAssist.playermap(player.getUniqueId).manaState
-      val maxMana = manaState.calcMaxManaOnly(player, playerLevel)
       // マナを10%回復する
-      manaState.increase(maxMana * 0.1, player, playerLevel)
+      manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
       player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
     } else {
       // END_DATEと同じ日かその翌日以降なら

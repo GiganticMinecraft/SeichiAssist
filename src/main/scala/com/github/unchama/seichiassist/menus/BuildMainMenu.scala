@@ -10,8 +10,10 @@ import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, Fi
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.BuildMainMenu.EMPHASIZE
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
-import com.github.unchama.seichiassist.{SkullOwners, subsystems}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, openInventoryEffect}
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
@@ -21,10 +23,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.{Material, Sound}
 
-private case class ButtonComputations(player: Player) extends AnyVal {
+private case class ButtonComputations(player: Player)
+                                     (implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
 
   import BuildMainMenu._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import player._
 
   def computeNotationOfStats(): IO[Button] = RecomputedButton {
@@ -44,9 +47,9 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     )
   }
 
-  def computeButtonToShowStateOfFlying(implicit flySystem: subsystems.managedfly.InternalState[SyncIO]): IO[Button] = {
+  def computeButtonToShowStateOfFlying(implicit flyApi: ManagedFlyApi[SyncIO, Player]): IO[Button] = {
     for {
-      flyStatus <- flySystem.playerFlyDurations(player).read.toIO
+      flyStatus <- flyApi.playerFlyDurations(player).read.toIO
     } yield {
       val flyStatusLoreLines = flyStatus match {
         case Flying(remainingDuration) =>
@@ -160,7 +163,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
         val iconItemStack = new IconItemStackBuilder(Material.WOOD)
-          .title(s"$YELLOW${EMPHASIZE}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+          .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
             s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -183,7 +186,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
                     },
                     DeferredEffect {
                       IO {
-                        MessageEffect(s"${GREEN}ブロックを並べるスキル(仮): ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+                        MessageEffect(s"${GREEN}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
                       }
                     }
                   )
@@ -200,7 +203,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
     val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
     val iconItemStack = new IconItemStackBuilder(Material.PAPER)
-      .title(s"$YELLOW$EMPHASIZE「ブロックを並べるスキル（仮） 」設定画面へ")
+      .title(s"$YELLOW$EMPHASIZE「直列設置 」設定画面へ")
       .lore(
         s"$RESET${GRAY}現在の設定",
         s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str(openerData.line_up_flg)}",
@@ -240,7 +243,7 @@ private case class ButtonComputations(player: Player) extends AnyVal {
 
 private object ConstantButtons {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 
   // TODO プレーヤーが飛行中かどうかでON/追加の表示を変えるとUX良さそう
   val buttonToFlyFor1Minute: Button = {
@@ -337,11 +340,11 @@ private object ConstantButtons {
 
 object BuildMainMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
   import menuinventory.syntax._
 
   class Environment(implicit
-                    val flyState: subsystems.managedfly.InternalState[SyncIO],
+                    val flyApi: ManagedFlyApi[SyncIO, Player],
+                    val ioOnMainThread: OnMinecraftServerThread[IO],
                     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
                     val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu])
 
@@ -351,6 +354,8 @@ object BuildMainMenu extends Menu {
 
   override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
+    import environment._
+
     val computations = ButtonComputations(player)
     import computations._
     val constantPart = Map(

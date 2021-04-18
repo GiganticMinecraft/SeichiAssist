@@ -11,11 +11,7 @@ import com.github.unchama.util.failable.Try;
 import com.github.unchama.util.unit.Unit;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static com.github.unchama.util.ActionStatus.Fail;
 import static com.github.unchama.util.ActionStatus.Ok;
@@ -42,7 +38,7 @@ public class DatabaseGateway {
     public Connection con = null;
     private Statement stmt = null;
 
-    private SeichiAssist plugin = SeichiAssist.instance();
+    private final SeichiAssist plugin = SeichiAssist.instance();
 
     private DatabaseGateway(@NotNull String databaseUrl, @NotNull String databaseName, @NotNull String loginId, @NotNull String password) {
         this.databaseUrl = databaseUrl;

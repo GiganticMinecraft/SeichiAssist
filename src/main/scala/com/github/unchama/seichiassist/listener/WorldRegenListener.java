@@ -29,15 +29,15 @@ import org.bukkit.event.Listener;
  */
 public class WorldRegenListener implements Listener {
 
-    private int roadY;
-    private int roadLength;
-    private int spaceHeight;
-    private int worldSize;
-    private BaseBlock roadBlock;
-    private BaseBlock spaceBlock;
+    private final int roadY;
+    private final int roadLength;
+    private final int spaceHeight;
+    private final int worldSize;
+    private final BaseBlock roadBlock;
+    private final BaseBlock spaceBlock;
 
-    private WorldEdit worldEdit;
-    private WorldGuardPlugin worldGuard;
+    private final WorldEdit worldEdit;
+    private final WorldGuardPlugin worldGuard;
 
 
     public WorldRegenListener() {

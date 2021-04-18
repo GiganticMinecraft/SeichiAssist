@@ -4,7 +4,7 @@ import sbt.Keys.baseDirectory
 import java.io._
 
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "1.6.10"
+ThisBuild / version := "1.6.18"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -126,7 +126,7 @@ testOptions in Test += Tests.Argument("-oS")
 lazy val root = (project in file("."))
   .settings(
     name := "SeichiAssist",
-    assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist-${version.value}.jar",
+    assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
     libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
     excludeDependencies := Seq(
       ExclusionRule(organization = "org.bukkit", name = "bukkit")

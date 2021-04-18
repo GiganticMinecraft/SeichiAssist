@@ -8,7 +8,7 @@ class TemporaryMutableBuildAssistPlayerData {
   var AREAint = 2
 
   /**
-   * ブロックを並べるスキル設定フラグ
+   * 直列設置設定フラグ
    */
   var line_up_flg = 0
   var line_up_step_flg = 0

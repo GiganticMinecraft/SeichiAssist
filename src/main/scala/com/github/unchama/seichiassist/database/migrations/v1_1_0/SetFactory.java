@@ -9,10 +9,6 @@ public final class SetFactory {
 
     }
 
-    public static <E> Set<E> of() {
-        return new HashSet<>();
-    }
-
     @SafeVarargs
     public static <E> Set<E> of(E... elements) {
         final Set<E> ret = new HashSet<>(elements.length);

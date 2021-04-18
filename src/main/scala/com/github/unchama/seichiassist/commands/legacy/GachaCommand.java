@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.commands.legacy;
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
-import com.github.unchama.seichiassist.data.player.PlayerData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.Util;
@@ -65,12 +64,6 @@ public class GachaCommand implements CommandExecutor {
             sender.sendMessage("メンテモードのON,OFF切り替え。ONだとガチャが引けなくなる");
             sender.sendMessage(ChatColor.RED + "/gacha give <all/プレイヤー名> <個数>");
             sender.sendMessage("ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)");
-            sender.sendMessage(ChatColor.RED + "/gacha set <プレイヤー名> <個数>");
-            sender.sendMessage("ガチャ券の枚数設定コマンドです。指定したプレイヤーのガチャ券を指定した枚数に設定します。");
-            sender.sendMessage(ChatColor.RED + "/gacha vote <プレイヤー名>");
-            sender.sendMessage("投票特典配布用コマンドです(マルチ鯖対応済)");
-            sender.sendMessage(ChatColor.RED + "/gacha donate <プレイヤー名> <ポイント数>");
-            sender.sendMessage("寄付者用プレミアムエフェクトポイント配布コマンドです(マルチ鯖対応済)");
             sender.sendMessage(ChatColor.RED + "/gacha get <ID> (<名前>)");
             sender.sendMessage("指定したガチャリストのIDを入手 (所有者付きにもできます) IDを0に指定するとガチャリンゴを入手できます");
             sender.sendMessage(ChatColor.RED + "/gacha add <確率>");
@@ -156,80 +149,6 @@ public class GachaCommand implements CommandExecutor {
                     return true;
                 }
             }
-
-
-        } else if (args[0].equalsIgnoreCase("set")) {
-            if (args.length != 3) {
-                sender.sendMessage(ChatColor.RED + "/gacha set <プレイヤー名> <個数>");
-                sender.sendMessage("ガチャ券の枚数設定コマンドです。指定したプレイヤーのガチャ券を指定した枚数に設定します。");
-            }
-
-            String name = args[1].toLowerCase();
-            int amount = Integer.parseInt(args[2]);
-
-            sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券の枚数設定処理開始...");
-            if (databaseGateway.playerDataManipulator.changeGachaAmountOf(name, amount) == Fail) {
-                sender.sendMessage(ChatColor.RED + "失敗");
-                return false;
-            } else {
-                Player player = Bukkit.getPlayer(name);
-                // ログインしているプレーヤーの場合、変更を反映し通知する。
-                if (player != null) {
-                    PlayerData playerData = SeichiAssist.playermap().apply(player.getUniqueId());
-                    playerData.gachapoint_$eq(amount * 1000);
-                    player.sendMessage(ChatColor.GREEN + "運営チームによりガチャ券が" + amount + "枚に設定されました。");
-                }
-
-                sender.sendMessage(ChatColor.GREEN + "成功");
-                return true;
-            }
-        } else if (args[0].equalsIgnoreCase("vote")) {
-            if (args.length != 2) {
-                //引数が2つでない時の処理
-                sender.sendMessage(ChatColor.RED + "/gacha vote <プレイヤー名>");
-                sender.sendMessage("投票特典配布用コマンドです");
-                return true;
-            } else {
-                //引数が2つの時の処理
-
-                String lowerCasePlayerName = Util.getName(args[1]);
-
-                //プレイヤーオンライン、オフラインにかかわらずsqlに送信(マルチ鯖におけるコンフリクト防止の為)
-                sender.sendMessage(ChatColor.YELLOW + lowerCasePlayerName + "の投票特典配布処理開始…");
-
-                //mysqlにも書き込んどく
-                databaseGateway.playerDataManipulator.incrementVotePoint(lowerCasePlayerName);
-
-                if (databaseGateway.playerDataManipulator.addChainVote(lowerCasePlayerName)) {
-                    sender.sendMessage(ChatColor.GREEN + "連続投票数の記録に成功");
-                } else {
-                    sender.sendMessage(ChatColor.RED + "連続投票数の記録に失敗");
-                }
-                return true;
-            }
-
-        } else if (args[0].equalsIgnoreCase("donate")) {
-            if (args.length != 3) {
-                //引数が3でない時の処理
-                sender.sendMessage(ChatColor.RED + "/gacha donate <プレイヤー名> <ポイント数>");
-                sender.sendMessage("寄付者用プレミアムエフェクトポイント配布コマンドです");
-                return true;
-            } else {
-                //引数が3の時の処理
-
-                //プレイヤー名を取得(小文字にする)
-                String name = Util.getName(args[1]);
-                //配布ポイント数取得
-                int num = Integer.parseInt(args[2]);
-
-                if (databaseGateway.donateDataManipulator.addDonate(name, num) == Fail) {
-                    sender.sendMessage(ChatColor.RED + "失敗");
-                } else {
-                    sender.sendMessage(ChatColor.GREEN + "成功");
-                }
-                return true;
-            }
-
         } else if (args[0].equalsIgnoreCase("mente")) {
             //menteフラグ反転処理
             SeichiAssist.gachamente_$eq(!SeichiAssist.gachamente());
@@ -524,11 +443,8 @@ public class GachaCommand implements CommandExecutor {
         sender.sendMessage(ChatColor.RED + "アイテム番号|レベル|変数名|アイテム名|アイテム数|出現確率");
         for (MineStackGachaData gachadata : CollectionConverters.BufferHasAsJava(SeichiAssist.msgachadatalist()).asJava()) {
             sender.sendMessage(i + "|" + gachadata.level() + "|" + gachadata.objName() + "|" + gachadata.itemStack().getType().toString() + "/" + gachadata.itemStack().getItemMeta().getDisplayName() + ChatColor.RESET + "|" + gachadata.amount() + "|" + gachadata.probability() + "(" + (gachadata.probability() * 100) + "%)");
-            //totalprobability += gachadata.probability;
             i++;
         }
-        //sender.sendMessage(ChatColor.RED + "合計確率:" + totalprobability + "(" + (totalprobability*100) + "%)");
-        //sender.sendMessage(ChatColor.RED + "合計確率は100%以内に収まるようにしてください");
     }
 
     private void Gacharemove(CommandSender sender, int num) {

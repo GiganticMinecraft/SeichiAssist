@@ -27,8 +27,8 @@ class JdbcFastDiggingEffectStatsSettingsPersistence[F[_] : Sync]
 
   override def read(key: UUID): F[Option[FastDiggingEffectStatsSettings]] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"select effectflag from playerdata where uuid = ${key.toString}"
-        .map { rs => booleanToSettings(rs.boolean("effectflag")) }
+      sql"select messageflag from playerdata where uuid = ${key.toString}"
+        .map { rs => booleanToSettings(rs.boolean("messageflag")) }
         .headOption()
         .apply()
     }

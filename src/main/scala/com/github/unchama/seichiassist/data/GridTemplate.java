@@ -1,10 +1,5 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.util.Util;
-import com.github.unchama.seichiassist.util.Util.DirectionType;
-
-import java.util.Map;
-
 /**
  * グリッド式保護設定(テンプレート)を保存するためのクラス
  *
@@ -41,23 +36,6 @@ public class GridTemplate {
 
     public int getLeftAmount() {
         return leftAmount;
-    }
-
-    //セッター
-    public void setChunkAmount(Map<DirectionType, Integer> setMap) {
-        this.aheadAmount = setMap.get(Util.DirectionType$.MODULE$.ahead());
-        this.behindAmount = setMap.get(Util.DirectionType$.MODULE$.behind());
-        this.rightAmount = setMap.get(Util.DirectionType$.MODULE$.right());
-        this.leftAmount = setMap.get(Util.DirectionType$.MODULE$.left());
-    }
-
-    /**
-     * 空かどうか
-     *
-     * @return true: 空 / false: 空でない
-     */
-    public boolean isEmpty() {
-        return this.aheadAmount == 0 && this.behindAmount == 0 && this.rightAmount == 0 && this.leftAmount == 0;
     }
 
     @Override

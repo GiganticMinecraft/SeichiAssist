@@ -133,7 +133,7 @@ object PlayerDataSaveTask {
 
       val command = {
         ("update seichiassist.playerdata set"
-          + " name = '" + playerdata.lowercaseName + "'"
+          + " name = '" + playerdata.name + "'"
 
           + ",minestackflag = " + playerdata.settings.autoMineStack
 
@@ -147,8 +147,6 @@ object PlayerDataSaveTask {
           + ",selected_active_skill = " + skillState.activeSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
           + ",selected_assault_skill = " + skillState.assaultSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
 
-          + ",gachapoint = " + playerdata.gachapoint
-          + ",gachaflag = " + playerdata.settings.receiveGachaTicketEveryMinute
           + ",rgnum = " + playerdata.regionCount
           + ",playtick = " + playerdata.playTick
           + ",lastquit = cast( now() as datetime )"
@@ -159,7 +157,6 @@ object PlayerDataSaveTask {
 
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.effectPoint
-          + ",mana = " + playerdata.manaState.getMana
           + ",totalexp = " + playerdata.totalexp
           + ",expmarge = " + playerdata.expmarge
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
@@ -187,9 +184,6 @@ object PlayerDataSaveTask {
           + ",toggleGiveApple = " + playerdata.toggleGiveApple
           + ",toggleVotingFairy = " + playerdata.toggleVotingFairy
           + ",p_apple = " + playerdata.p_apple
-
-          //貢献度pt
-          + ",added_mana = " + playerdata.added_mana
 
           + ",GBstage = " + playerdata.giganticBerserk.stage
           + ",GBexp = " + playerdata.giganticBerserk.exp
@@ -233,7 +227,7 @@ object PlayerDataSaveTask {
     Monad[F].tailRecM(3) { remaining =>
       if (remaining == 0) {
         Sync[F].delay {
-          println(s"$RED${playerdata.lowercaseName}のプレイヤーデータ保存失敗")
+          println(s"$RED${playerdata.name}のプレイヤーデータ保存失敗")
         }.as(Right(ActionStatus.Fail))
       } else commitUpdate.flatMap { result =>
         if (result == ActionStatus.Ok) {

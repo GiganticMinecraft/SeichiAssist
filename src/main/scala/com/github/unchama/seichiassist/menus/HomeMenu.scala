@@ -22,7 +22,7 @@ import org.bukkit.{Material, Sound}
 object HomeMenu extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
   import eu.timepit.refined.auto._
 
   class Environment(implicit val ioCanOpenConfirmationMenu: IO CanOpen ConfirmationMenu)

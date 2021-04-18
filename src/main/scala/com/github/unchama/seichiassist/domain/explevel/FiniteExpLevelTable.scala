@@ -61,6 +61,11 @@ class FiniteExpLevelTable[
   }
 
   /**
+   * このテーブルが定義するレベルの範囲。
+   */
+  def levelRange: Seq[L] = (1 to internalTable.size).map(PositiveInt[L].wrapPositive)
+
+  /**
    * このテーブルを与えられたレベルまで延長するためのビルダーを返す。
    */
   def extendToLevel(level: L): ExtensionBuilder = ExtensionBuilder(level)

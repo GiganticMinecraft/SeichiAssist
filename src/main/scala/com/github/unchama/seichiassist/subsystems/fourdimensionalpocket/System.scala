@@ -2,22 +2,22 @@ package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket
 
 import cats.data.Kleisli
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
-import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.OpenPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.Sound
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -36,7 +36,7 @@ object System {
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
   def wired[
-    F[_] : ConcurrentEffect : MinecraftServerThreadShift,
+    F[_] : ConcurrentEffect : OnMinecraftServerThread : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
    (implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
@@ -52,14 +52,9 @@ object System {
     for {
       pocketInventoryRepositoryHandles <-
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTappingSinglePhasedRepositoryAndHandles(
-              PocketInventoryRepositoryDefinitions.initialization(persistence),
-              PocketInventoryRepositoryDefinitions.tappingAction[F, G, Player, Inventory](
-                breakCountReadAPI.seichiLevelUpdates
-              ),
-              PocketInventoryRepositoryDefinitions.finalization(persistence)
-            )
+          BukkitRepositoryControls.createHandles(
+            PocketInventoryRepositoryDefinition.withContext(persistence, breakCountReadAPI.seichiLevelUpdates)
+          )
         }
     } yield {
       val systemApi = new FourDimensionalPocketApi[F, Player] {
@@ -106,17 +101,13 @@ object System {
 
       new System[F, Player] {
         override val api: FourDimensionalPocketApi[F, Player] = systemApi
-        override val listeners: Seq[Listener] = Vector(
-          pocketInventoryRepositoryHandles.initializer,
-          openPocketListener
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
+          pocketInventoryRepositoryHandles.coerceFinalizationContextTo[F]
         )
-        override val managedFinalizers: Seq[PlayerDataFinalizer[F, Player]] = Vector(
-          pocketInventoryRepositoryHandles.finalizer.coerceContextTo[F]
+        override val listeners: Seq[Listener] = Vector(openPocketListener)
+        override val commands: Map[String, TabExecutor] = Map(
+          "openpocket" -> openPocketCommand.executor
         )
-        override val commands: Map[String, TabExecutor] =
-          Map(
-            "openpocket" -> openPocketCommand.executor
-          )
       }
     }
   }

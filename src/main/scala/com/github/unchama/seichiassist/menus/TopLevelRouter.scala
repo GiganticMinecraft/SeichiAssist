@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.menus
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenu
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
@@ -15,6 +15,8 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
@@ -30,10 +32,12 @@ object TopLevelRouter {
   def apply(implicit
             javaTime: JavaTime[IO],
             layoutPreparationContext: LayoutPreparationContext,
-            syncShift: MinecraftServerThreadShift[IO],
+            onMainThread: OnMinecraftServerThread[IO],
             breakCountApi: BreakCountAPI[IO, SyncIO, Player],
             breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
+            manaApi: ManaApi[IO, SyncIO, Player],
             seichiRankingApi: RankingApi[IO],
+            gachaPointApi: GachaPointApi[IO, SyncIO, Player],
             fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
             fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
             fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player]): TopLevelRouter[IO] = new TopLevelRouter[IO] {

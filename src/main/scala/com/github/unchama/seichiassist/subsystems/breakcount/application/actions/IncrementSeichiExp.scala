@@ -4,11 +4,11 @@ import cats.Monad
 import cats.effect.concurrent.Ref
 import cats.effect.{Effect, Sync}
 import com.github.unchama.datarepository.KeyedDataRepository
+import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
-import fs2.concurrent.Topic
 
 trait IncrementSeichiExp[F[_], Player] {
 

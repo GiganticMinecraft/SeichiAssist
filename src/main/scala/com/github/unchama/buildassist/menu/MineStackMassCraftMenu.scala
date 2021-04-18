@@ -1,7 +1,7 @@
 package com.github.unchama.buildassist.menu
 
 import cats.data.{Kleisli, NonEmptyList}
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.router.CanOpen
@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, Common
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
@@ -24,7 +24,7 @@ import java.util.Locale
 
 object MineStackMassCraftMenu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
 
   type MineStackItemId = String
 
@@ -139,16 +139,16 @@ object MineStackMassCraftMenu {
               if (buildLevel.levelCorrespondingToExp.level < requiredBuildLevel) {
                 MessageEffect(s"${RED}建築Lvが足りません")(player)
               } else {
-                syncShift.shift >> {
+                onMainThread.runAction[SyncIO, Unit] {
                   val allIngredientsAvailable =
                     ingredientObjects.forall { case (obj, amount) =>
                       mineStack.getStackedAmountOf(obj) >= amount
                     }
 
                   if (!allIngredientsAvailable)
-                    MessageEffect(s"${RED}クラフト材料が足りません")(player)
+                    MessageEffectF[SyncIO](s"${RED}クラフト材料が足りません").apply(player)
                   else
-                    IO {
+                    SyncIO {
                       ingredientObjects.toList.foreach { case (obj, amount) =>
                         mineStack.subtractStackedAmountOf(obj, amount)
                       }
@@ -160,7 +160,7 @@ object MineStackMassCraftMenu {
                         s"$GREEN${enumerateChunkDetails(ingredientObjects)}→" +
                           s"${enumerateChunkDetails(productObjects)}変換"
 
-                      MessageEffect(message)(player)
+                      MessageEffectF[SyncIO](message).apply(player)
                     }
                 }
               }
