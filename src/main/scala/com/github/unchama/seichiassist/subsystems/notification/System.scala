@@ -2,9 +2,10 @@ package com.github.unchama.seichiassist.subsystems.notification
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.notification.service.{GlobalNotification, GlobalNotificationSender}
 
-trait System[F[_]] {
+trait System[F[_]] extends Subsystem[F] {
   val globalNotification: GlobalNotification[F]
 }
 
