@@ -15,6 +15,14 @@ commands:
     description: Gacha operation command.
     permission: seichiassist.seichi
     permission-message: *denied
+  vote:
+    description: Vote operation command.
+    permission: seichiassist.seichi
+    permission-message: *denied
+  donation:
+    description: Donation operation command.
+    permission: seichiassist.seichi
+    permission-message: *denied
   seichiassist:
     description: SeichiAssist command.
     permission: seichiassist.seichiassist

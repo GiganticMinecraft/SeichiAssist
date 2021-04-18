@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: SeichiAssist-build
-          path: target/build/**.jar
+          path: target/build/SeichiAssist.jar
 
       - name: Clean build artifact for caching target folder
         run: rm -r target/build
@@ -103,7 +103,7 @@ jobs:
           username: GitHub Actions
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 
-  deploy_artifact_to_staging:
+  push_artifact_to_debug_server_definition:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop'
     needs: build_test_and_upload
@@ -113,21 +113,49 @@ jobs:
         with:
           name: SeichiAssist-build
         id: download
+
       - name: Inspect artifact
         run: du -h --max-depth=2 ${{ steps.download.outputs.download-path }}
 
-      - name: Write SSH key to a file
+      - name: Extract default config 
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.STAGING_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          cd ${{ steps.download.outputs.download-path }}
+          mkdir SeichiAssist
+          cd SeichiAssist
+          jar xf ../SeichiAssist.jar config.yml
 
-      - name: Deploy to staging environment
+      # 二回pushするのを防ぐため、gitコマンドを直操作している
+      - name: Push jar and config.yml
         run: |
-          scp -v -oStrictHostKeyChecking=no \
-              -P ${{ secrets.STAGING_PORT }} \
-              ${{ steps.download.outputs.download-path }}/**.jar \
-             "${{ secrets.STAGING_USERNAME }}@${{ secrets.STAGING_HOST }}:${{ secrets.STAGING_REMOTE_DIR }}"
+          API_TOKEN_GITHUB=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
+          user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
+          destination_folder=debug-servers/spigot/files/base/plugins
+          short_sha=$(echo "$GITHUB_SHA" | cut -c1-6)
+          commit_url=https://github.com/GiganticMinecraft/SeichiAssist/commit/$GITHUB_SHA
+
+          git clone --depth 1 \
+            https://$user_name:$API_TOKEN_GITHUB@github.com/GiganticMinecraft/seichi_servers \
+            server_definition
+          cd server_definition
+
+          git config user.name "$user_name"
+          git config user.email "${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_EMAIL }}"
+
+          cp -f \
+            ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
+            $destination_folder
+          (git add . && git commit \
+            -m "[SeichiAssist] jarを自動更新する ($short_sha)" \
+            -m "$commit_url") || true
+
+          cp -f \
+            ${{ steps.download.outputs.download-path }}/SeichiAssist/config.yml \
+            $destination_folder/SeichiAssist
+          (git add . && git commit \
+            -m "[SeichiAssist] config.ymlを自動更新する ($short_sha)" \
+            -m "$commit_url") || true
+
+          git push origin master
 
       - name: Notify discord webhook
         uses: sarisia/actions-status-discord@v1
@@ -162,7 +190,7 @@ jobs:
         run: |
           scp -v -oStrictHostKeyChecking=no \
               -P ${{ secrets.PRODUCTION_PORT }} \
-              ${{ steps.download.outputs.download-path }}/**.jar \
+              ${{ steps.download.outputs.download-path }}/SeichiAssist.jar \
              "${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION_HOST }}:${{ secrets.PRODUCTION_REMOTE_DIR }}"
 
       - name: Notify discord webhook
