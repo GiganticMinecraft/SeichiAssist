@@ -21,6 +21,7 @@ import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.concurrent.SessionMutex
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.{GetConnectedBukkitPlayers, SendBukkitMessage}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -40,7 +41,7 @@ import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.redisbungee.RedisBungeeNetworkConnectionCount
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
-import com.github.unchama.seichiassist.menus.TopLevelRouter
+import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
@@ -480,7 +481,7 @@ class SeichiAssist extends JavaPlugin() {
     // 本来は曖昧さ回避のためにRouterのインスタンスを生成するべきではないが、生成を回避しようとすると
     // 巨大な変更が必要となる。そのため、Routerのインスタンスを新しく生成することで、それまでの間
     // 機能を果たそうとするものである。
-    val anotherBuildAssistMenuRouter = BuildAssistMenuRouter.apply
+    implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] = BuildAssistMenuRouter.apply.canOpenBuildMainMenu
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
