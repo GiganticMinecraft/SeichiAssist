@@ -149,10 +149,8 @@ Url:
   jms: "https://minecraft.jp/servers/54d3529e4ddda180780041a7"
   # アサルト開放やバーサーク完成時にDiscordに通知するWebhookのURL
   webhook:
-    # アサルト開放時
-    assault: ""
-    # バーサーク完成時
-    GiganticBerserk: ""
+    # 全体通知用
+    notification: ""
 
 #Fly時の1分辺りの経験値消費量
 flyexp: '50'
