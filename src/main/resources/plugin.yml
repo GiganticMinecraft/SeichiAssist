@@ -108,6 +108,11 @@ commands:
     usage: /<command> [player name]
     permission-message: *denied
     permission: seichiassist.present
+  hat:
+    description: set item in hand to head
+    usage: /<command>
+    permission-message: *denied
+    permission: seichiassist.hat
 permissions:
   seichiassist.*:
     default: false
@@ -132,6 +137,7 @@ permissions:
       - seichiassist.fly
       - seichiassist.stickmenu
       - seichiassist.present.*
+      - seichiassist.hat
   seichiassist.event:
     default: op
   seichiassist.shareinv:
