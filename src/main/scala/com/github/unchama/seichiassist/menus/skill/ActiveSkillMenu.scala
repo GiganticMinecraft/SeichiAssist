@@ -22,8 +22,7 @@ import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.subsystems.webhook.System.AssaultWebhookGateway
-import com.github.unchama.seichiassist.subsystems.webhook.WebhookWriteAPI
+import com.github.unchama.seichiassist.subsystems.notification.service.GlobalNotification
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -53,7 +52,7 @@ object ActiveSkillMenu extends Menu {
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
                     val ioOnMainThread: OnMinecraftServerThread[IO],
-                    val webhookWriteApi: WebhookWriteAPI[IO])
+                    val globalNotification: GlobalNotification[IO])
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
@@ -129,7 +128,6 @@ object ActiveSkillMenu extends Menu {
         val selectionState = ButtonComputations.selectionStateOf(skill)(state)
         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
         implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-        implicit val webhook: WebhookWriteAPI[IO] = environment.webhookWriteApi
         ButtonComputations.seichiSkillButton(selectionState, skill)
       }
     }
@@ -268,10 +266,9 @@ object ActiveSkillMenu extends Menu {
     }
 
     def seichiSkillButton[
-      F[_] : ConcurrentEffect : NonServerThreadContextShift : WebhookWriteAPI
+      F[_] : ConcurrentEffect : NonServerThreadContextShift : GlobalNotification
     ](state: SkillSelectionState, skill: SeichiSkill)
      (implicit environment: Environment): Button = {
-      import environment._
 
       val itemStack = {
         val base = state match {
@@ -348,12 +345,9 @@ object ActiveSkillMenu extends Menu {
 
                           val notificationMessage = s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
 
-                          import cats.implicits._
-                          import cats.effect.implicits._
-
                           val notify = for {
                             _ <- NonServerThreadContextShift[F].shift
-                            _ <- WebhookWriteAPI[F].sendAssaultNotification(notificationMessage)
+                            _ <- GlobalNotification[F].send(notificationMessage)
                           } yield ()
 
                           (
@@ -404,9 +398,7 @@ object ActiveSkillMenu extends Menu {
                   SequentialEffect(
                     skill match {
                       case skill: AssaultSkill =>
-                        import cats.implicits._
-                        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
-                        import environment.manaApi
+
 
                         val tryStartRoutine = TryableFiber.start(AssaultRoutine.tryStart(player, skill))
                         val fiberRepository = SeichiAssist.instance.assaultSkillRoutines
@@ -459,7 +451,6 @@ object ActiveSkillMenu extends Menu {
     }
 
     def resetSkillsButton(implicit environment: Environment): Button = {
-      import environment._
 
       ReloadingButton(ActiveSkillMenu) {
         Button(
@@ -483,21 +474,14 @@ object ActiveSkillMenu extends Menu {
   }
 
   override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
-    import cats.implicits._
-    import environment._
-    import eu.timepit.refined.auto._
 
     val buttonComputations = new ButtonComputations(player)
-    import ConstantButtons._
-    import buttonComputations._
 
     val constantPart = Map(
       ChestSlotRef(0, 1) -> resetSkillsButton,
       ChestSlotRef(0, 2) -> skillEffectMenuButton,
       ChestSlotRef(4, 0) -> CommonButtons.openStickMenu
     )
-
-    import SeichiSkill._
 
     val dynamicPartComputation = List(
       ChestSlotRef(0, 0) -> computeStatusButton,

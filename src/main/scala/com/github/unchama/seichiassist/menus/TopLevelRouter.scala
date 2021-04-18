@@ -18,7 +18,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDime
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
-import com.github.unchama.seichiassist.subsystems.webhook.WebhookWriteAPI
+import com.github.unchama.seichiassist.subsystems.notification.service.GlobalNotification
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
@@ -42,7 +42,7 @@ object TopLevelRouter {
             fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
             fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
             fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
-            webhookWriteAPI: WebhookWriteAPI[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
+            globalNotification: GlobalNotification[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     implicit lazy val seichiRankingMenuEnv: SeichiRankingMenu.Environment = new SeichiRankingMenu.Environment
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment
     implicit lazy val mineStackMainMenuEnv: MineStackMainMenu.Environment = new MineStackMainMenu.Environment

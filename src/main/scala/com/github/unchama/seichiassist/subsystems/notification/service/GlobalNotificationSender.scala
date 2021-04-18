@@ -1,19 +1,24 @@
-package com.github.unchama.seichiassist.subsystems.webhook.service
+package com.github.unchama.seichiassist.subsystems.notification.service
 
 import cats.effect.Sync
+import org.bukkit.Bukkit
 
+import java.io.IOException
 import java.net.{HttpURLConnection, URL}
 import java.nio.charset.StandardCharsets
 import scala.util.Using
 import scala.util.chaining.scalaUtilChainingOps
 
-class WebhookSender[F[_]: Sync](webhookURL: String) extends CanSendToWebhook[F] {
-  assert(webhookURL.nonEmpty, {
-    "WebhookSenderのURLに空文字列が指定されました。コンフィグを確認してください。"
-  })
+class GlobalNotificationSender[F[_]: Sync](webhookURL: String) extends GlobalNotification[F] {
+  assert(
+    webhookURL.nonEmpty,
+    "GlobalNotificationSenderのURLに空文字列が指定されました。コンフィグを確認してください。"
+  )
 
   private val parsedURL = new URL(webhookURL)
   override def send(message: String): F[Either[Exception, Unit]] = Sync[F].delay {
+    Bukkit.getOnlinePlayers.forEach(_.sendMessage(message))
+
     val json = s"""{"content":"$message"}"""
     parsedURL.openConnection().asInstanceOf[HttpURLConnection].pipe { con =>
       con.addRequestProperty("Content-Type", "application/json; charset=utf-8")
@@ -31,7 +36,7 @@ class WebhookSender[F[_]: Sync](webhookURL: String) extends CanSendToWebhook[F] 
 
       con.getResponseCode match {
         case HttpURLConnection.HTTP_OK | HttpURLConnection.HTTP_NO_CONTENT => Right(())
-        case code @ _ => Left(new Exception(s"Discord Webhook: Bad Response Code: $code with $webhookURL"))
+        case code @ _ => Left(new IOException(s"GlobalNotificationSender: Bad Response Code: $code with $webhookURL"))
       }
     }
   }

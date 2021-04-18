@@ -185,9 +185,7 @@ final class Config private(val config: FileConfiguration) {
     }
   }
 
-  def getWebhookUrlForGiganticBerserk: String = config.getString("Url.webhook.GiganticBerserk")
-
-  def getWebhookUrlForAssault: String = config.getString("Url.webhook.assault")
+  def getWebhookUrl: String = config.getString("Url.webhook.notification")
 
   def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
     override val autoSaveEnabled: Boolean = config.getBoolean("AutoSave.Enable")

@@ -54,7 +54,7 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
-import com.github.unchama.seichiassist.subsystems.webhook.WebhookWriteAPI
+import com.github.unchama.seichiassist.subsystems.notification.service.GlobalNotification
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -292,13 +292,13 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
-  implicit lazy val webhookSystem: subsystems.webhook.System[IO] = {
+  implicit lazy val webhookSystem: subsystems.notification.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
-    subsystems.webhook.System.wired[IO]
+    subsystems.notification.System.wired[IO]
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
@@ -468,7 +468,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val webhookApi: WebhookWriteAPI[IO] = webhookSystem.api
+    implicit val globalNotification: GlobalNotification[IO] = webhookSystem
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
 
