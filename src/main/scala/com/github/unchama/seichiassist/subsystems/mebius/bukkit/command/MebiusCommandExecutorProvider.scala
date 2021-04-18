@@ -15,6 +15,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechSer
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
+import org.bukkit.Material
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 
@@ -27,7 +28,8 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
     BranchedExecutor(
       Map(
         "nickname" -> ChildExecutors.NicknameCommand.executor,
-        "naming" -> namingExecutor
+        "naming" -> namingExecutor,
+        "convert" -> convertExecutor
       ), whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
   }
@@ -87,6 +89,42 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
             )
           }
         ).effectOn(player)
+      }
+      .build()
+    val convertExecutor: ContextualExecutor = playerCommandBuilder
+      .argumentsParsers(List())
+      .execution { context =>
+        val mainHand = context.sender.getInventory.getItemInMainHand
+        val isMebius = BukkitMebiusItemStackCodec.isMebius(mainHand)
+
+        if (isMebius) {
+          val property = BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand).get
+
+          if (property.level.isMaximum) {
+            IO {
+              val afterMaterial = mainHand.getType match {
+                case Material.LEATHER_HELMET => Material.DIAMOND_HELMET
+                case Material.DIAMOND_HELMET  => Material.LEATHER_HELMET
+              }
+
+              val afterMaterialJapanese = mainHand.getType match {
+                case Material.LEATHER_HELMET => "ダイヤモンド"
+                case Material.DIAMOND_HELMET => "革"
+              }
+
+              SequentialEffect(
+                UnfocusedEffect {
+                  mainHand.setType(afterMaterial)
+                },
+                MessageEffect(s"メインハンドのメビウスの材質を${afterMaterialJapanese}に変換しました！")
+              )
+            }
+          } else {
+            IO.pure(MessageEffect("メビウスの見た目を変えるためには、メビウスが最大レベルに到達している必要があります！"))
+          }
+        } else {
+          IO.pure(MessageEffect("メインハンドに持っているアイテムはメビウスではありません！"))
+        }
       }
       .build()
 
@@ -184,7 +222,9 @@ object MebiusCommandExecutorProvider {
           "",
           s"$RED/mebius nickname reset",
           s"$RED  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
-          ""
+          "",
+          s"$RED/mebius convert",
+          s"$RED  MEBIUSの材質を変換します",
         )
       }
   }
