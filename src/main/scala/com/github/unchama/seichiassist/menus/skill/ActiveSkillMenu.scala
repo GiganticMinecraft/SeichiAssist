@@ -357,10 +357,9 @@ object ActiveSkillMenu extends Menu {
                           (
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
-                              Kleisli((_: Any) => notify.toIO),
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                               BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-                              BroadcastMessageEffect(s"$GOLD$BOLD$notificationMessage")
+                              Kleisli((_: Any) => notify.toIO),
                             )
                           )
                         } else (unlockedState, emptyEffect)
