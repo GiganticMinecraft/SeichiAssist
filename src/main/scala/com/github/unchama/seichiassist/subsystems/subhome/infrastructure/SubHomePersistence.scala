@@ -3,18 +3,19 @@ package com.github.unchama.seichiassist.subsystems.subhome.infrastructure
 import cats.effect.Sync
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.subhome.domain.SubHome
-import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.SubHomeAPI.{PlayerIdentifier, SubHomeNumber}
 import org.bukkit.{Bukkit, Location}
 import scalikejdbc._
 
-class SubHomePersistence[F[_]: Sync] extends SubHomeAPI[F] {
+import java.util.UUID
+
+class SubHomePersistence[F[_]: Sync] extends SubHomeReadAPI[F] with SubHomeWriteAPI[F] {
   final val table = "seichiassist.sub_home"
-  val serverId = SeichiAssist.seichiAssistConfig.getServerNum
-  override def get(player: PlayerIdentifier, number: SubHomeNumber): F[Option[SubHome]] = {
+  private val serverId = SeichiAssist.seichiAssistConfig.getServerNum
+  override def get(player: UUID, id: SubHome.ID): F[Option[SubHome]] = {
     Sync[F].delay {
       DB.readOnly { implicit session =>
         sql"""SELECT id, name, location_x, location_y, location_z, world_name FROM $table
-             WHERE player = ${player.toString} AND server_id = $serverId AND id = $number"""
+             WHERE player = ${player.toString} AND server_id = $serverId AND id = $id"""
           .map(extractSubHome)
           // もしかすると見つからないかもしれない
           .first()
@@ -23,7 +24,7 @@ class SubHomePersistence[F[_]: Sync] extends SubHomeAPI[F] {
     }
   }
 
-  override def list(player: PlayerIdentifier): F[Map[SubHomeNumber, SubHome]] = Sync[F].delay {
+  override def list(player: UUID): F[Map[SubHome.ID, SubHome]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"""SELECT id, name, location_x, location_y, location_z, world_name FROM $table"""
         .map(rs => {
@@ -37,7 +38,7 @@ class SubHomePersistence[F[_]: Sync] extends SubHomeAPI[F] {
     }.toMap
   }
 
-  override def updateLocation(player: PlayerIdentifier, number: SubHomeNumber, location: Location): F[Unit] =
+  override def updateLocation(player: UUID, id: SubHome.ID, location: Location): F[Unit] =
     Sync[F].delay {
       val x = location.getX.toInt
       val y = location.getY.toInt
@@ -47,7 +48,7 @@ class SubHomePersistence[F[_]: Sync] extends SubHomeAPI[F] {
         // 重複したとき、もとのエントリを残す必要はないので黙って上書きする
         sql"""insert into $table
              |(player_uuid,server_id,id,location_x,location_y,location_z,world_name) values
-             |(${player.toString},$serverId,$number,$x,$y,$z,$worldName)
+             |(${player.toString},$serverId,$id,$x,$y,$z,$worldName)
              |on duplicate key update
              |location_x = values(location_x),
              |location_y = values(location_y),
@@ -59,7 +60,7 @@ class SubHomePersistence[F[_]: Sync] extends SubHomeAPI[F] {
       }
     }
 
-  override def updateName(player: PlayerIdentifier, number: SubHomeNumber, name: String): F[Unit] =
+  override def updateName(player: UUID, number: SubHome.ID, name: String): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"""insert into $table

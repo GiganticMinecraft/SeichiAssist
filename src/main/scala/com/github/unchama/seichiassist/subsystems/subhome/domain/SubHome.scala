@@ -10,3 +10,7 @@ case class SubHome(location: Location, name: String) {
     location.clone
   }
 }
+
+object SubHome {
+  type ID = Int
+}
