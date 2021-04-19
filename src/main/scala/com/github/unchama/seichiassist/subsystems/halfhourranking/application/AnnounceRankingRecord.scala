@@ -25,7 +25,7 @@ object AnnounceRankingRecord {
     Player: HasUuid
   ](breakCountReadApi: BreakCountReadAPI[F, G, Player])
    (resolveName: Player => F[String]): RankingRecord[Player] => F[Unit] = { rankingRecord =>
-    val rankingPositionColor = List(DARK_PURPLE, BLUE, DARK_AQUA)
+    val rankingPositionColor = List(LIGHT_PURPLE, YELLOW, AQUA)
     val sortedNonzeroRecords = rankingRecord.getSortedNonzeroRecords
 
     val totalBreakCount = sortedNonzeroRecords.map(_._2).foldLeft(SeichiExpAmount.zero)(_.add(_))
