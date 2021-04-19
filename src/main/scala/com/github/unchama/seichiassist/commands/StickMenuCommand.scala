@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
-import com.github.unchama.contextualexecutor.{ContextualExecutor, RawCommandContext}
+import com.github.unchama.contextualexecutor.ContextualExecutor
+import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
-import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.TabExecutor
 
 /**
