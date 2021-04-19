@@ -126,7 +126,7 @@ testOptions in Test += Tests.Argument("-oS")
 lazy val root = (project in file("."))
   .settings(
     name := "SeichiAssist",
-    assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist-${version.value}.jar",
+    assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
     libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
     excludeDependencies := Seq(
       ExclusionRule(organization = "org.bukkit", name = "bukkit")

@@ -26,7 +26,7 @@ import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.GachaCommand
+import com.github.unchama.seichiassist.commands.legacy.{DonationCommand, GachaCommand, VoteCommand}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
 import com.github.unchama.seichiassist.data.player.PlayerData
@@ -489,6 +489,8 @@ class SeichiAssist extends JavaPlugin() {
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
+      "vote" -> new VoteCommand,
+      "donation" -> new DonationCommand,
       "map" -> MapCommand.executor,
       "ef" -> new EffectCommand(fastDiggingEffectSystem.settingsApi).executor,
       "seichiassist" -> SeichiAssistCommand.executor,
