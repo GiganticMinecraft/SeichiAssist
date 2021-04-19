@@ -129,7 +129,7 @@ jobs:
         run: |
           API_TOKEN_GITHUB=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
           user_name=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_USER }}
-          destination_folder=debug-servers/spigot/files/base/plugins
+          destination_folder=debug-servers/services/spigot/files/base/plugins
           short_sha=$(echo "$GITHUB_SHA" | cut -c1-6)
           commit_url=https://github.com/GiganticMinecraft/SeichiAssist/commit/$GITHUB_SHA
 
