@@ -734,57 +734,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       } else if (itemstackcurrent.getType == Material.COMPASS) {
         VotingFairyTask.speak(player, "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。", playerdata.toggleVFSound)
         player.closeInventory()
-      } //妖精召喚
-      //妖精音トグル
-      //妖精リンゴトグル
-      //妖精時間トグル
-      //棒メニューに戻る
-
-    }
-  }
-
-  /**
-   * GiganticBerserk進化前、進化後共通
-   * @param event
-   */
-  @EventHandler
-  def onGiganticBerserkMenuEvent(event: InventoryClickEvent): Unit = {
-    //外枠のクリック処理なら終了
-    if (event.getClickedInventory == null) {
-      return
-    }
-
-    val itemstackcurrent = event.getCurrentItem
-    val view = event.getView
-    val he = view.getPlayer
-    //インベントリを開けたのがプレイヤーではない時終了
-    if (he.getType != EntityType.PLAYER) {
-      return
-    }
-
-    //インベントリが存在しない時終了
-    val topinventory = view.getTopInventory.ifNull {
-      return
-    }
-
-    //インベントリが6列でない時終了
-    if (topinventory.row != 6) {
-      return
-    }
-    val player = he.asInstanceOf[Player]
-    val uuid = player.getUniqueId
-    val playerdata = playerMap(uuid)
-
-    if (topinventory.getTitle == DARK_PURPLE.toString + "" + BOLD + "スキルを進化させますか?") {
-      event.setCancelled(true)
-      if (itemstackcurrent.getType == Material.NETHER_STAR) {
-        playerdata.giganticBerserk = GiganticBerserk(0, 0, playerdata.giganticBerserk.stage + 1)
-        player.playSound(player.getLocation, Sound.BLOCK_END_GATEWAY_SPAWN, 1f, 0.5f)
-        player.playSound(player.getLocation, Sound.ENTITY_ENDERDRAGON_AMBIENT, 1f, 0.8f)
-        player.openInventory(MenuInventoryData.getGiganticBerserkAfterEvolutionMenu(player))
       }
-    } else if (topinventory.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {
-      event.setCancelled(true)
     }
   }
 }

@@ -7,6 +7,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenu
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
+import com.github.unchama.seichiassist.menus.giganticberserk.{GiganticBerserkAfterEvolutionMenu, GiganticBerserkBeforeEvolutionMenu}
 import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu}
 import com.github.unchama.seichiassist.menus.ranking.SeichiRankingMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
@@ -73,6 +74,9 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open
     implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
+    implicit lazy val ioCanOpenGiganticBerserkBeforeEvolutionMenu: IO CanOpen GiganticBerserkBeforeEvolutionMenu.type = _.open
+    implicit lazy val ioCanOpenGiganticBerserkAfterEvolutionMenu: IO CanOpen GiganticBerserkAfterEvolutionMenu.type = _.open
+
     override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
   }
 
