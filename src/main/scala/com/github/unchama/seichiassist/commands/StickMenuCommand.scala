@@ -26,17 +26,9 @@ object StickMenuCommand {
 
   def executor(implicit ioCanOpenStickMenuFirstPage: IO CanOpen FirstPage.type,
                ioCanOpenBuildMainMenu: IO CanOpen BuildMainMenu.type): TabExecutor =
-    playerCommandBuilder
-      .execution { context =>
-        val restArgs = context.args.yetToBeParsed.mkString(" ")
-        val executor = restArgs match {
-          case "b" => executorB
-          case _ => executorA
-        }
-
-        executor.executeWith(RawCommandContext(context.sender, context.command, List()))
-          .as(TargetedEffect.emptyEffect)
-      }
-      .build()
+    BranchedExecutor(
+      Map("b" -> executorB),
+      whenArgInsufficient = Some(executorA), whenBranchNotFound = Some(executorA)
+    )
       .asNonBlockingTabExecutor()
 }
