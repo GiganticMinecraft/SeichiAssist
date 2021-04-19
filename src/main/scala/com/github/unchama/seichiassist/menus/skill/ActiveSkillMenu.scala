@@ -514,8 +514,8 @@ object ActiveSkillMenu extends Menu {
       ChestSlotRef(4, 4) -> computeSkillButtonFor(MoerakiBoulders),
       ChestSlotRef(4, 5) -> computeSkillButtonFor(Eldfell),
 
-      ChestSlotRef(1, 1) -> computeSkillButtonFor(AssaultArmor),
-      ChestSlotRef(3, 1) -> computeSkillButtonFor(VenderBlizzard),
+      ChestSlotRef(4, 7) -> computeSkillButtonFor(VenderBlizzard),
+      ChestSlotRef(4, 8) -> computeSkillButtonFor(AssaultArmor),
     )
       .map(_.sequence)
       .sequence
