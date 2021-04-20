@@ -105,6 +105,7 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
               val afterMaterial = mainHand.getType match {
                 case Material.LEATHER_HELMET => Material.DIAMOND_HELMET
                 case Material.DIAMOND_HELMET  => Material.LEATHER_HELMET
+                case _ => throw new AssertionError("This branch must not be reached!")
               }
 
               val afterMaterialJapanese = mainHand.getType match {
