@@ -3,13 +3,13 @@ package com.github.unchama.seichiassist.minestack
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-class MineStackObj(val mineStackObjName: String,
-                   val uiName: Option[String],
-                   val level: Int,
-                   private val _itemStack: ItemStack,
-                   val hasNameLore: Boolean,
-                   val gachaType: Int,
-                   val stackType: MineStackObjectCategory) {
+class MineStackObj[A](val mineStackObjName: String,
+                      val uiName: Option[String],
+                      val level: Int,
+                      private val _itemStack: ItemStack,
+                      val hasNameLore: Boolean,
+                      val gachaType: Int,
+                      val stackType: MineStackObjectCategory[A]) {
 
   val itemStack: ItemStack = {
     val cloned = _itemStack.clone()
@@ -17,9 +17,25 @@ class MineStackObj(val mineStackObjName: String,
     cloned
   }
 
+  def this(category: MineStackObjectCategory[A],
+           objname: String,
+           japanesename: String,
+           level: Int,
+           material: Material,
+           durability: Short) =
+    this(
+      objname,
+      Some(japanesename),
+      level,
+      new ItemStack(material, 1, durability),
+      false,
+      category.serializedValue,
+      category
+    )
+
   def this(objName: String, uiName: Option[String],
            level: Int, material: Material, durability: Int,
-           nameLoreFlag: Boolean, gachaType: Int, stackType: MineStackObjectCategory) =
+           nameLoreFlag: Boolean, gachaType: Int, stackType: MineStackObjectCategory[A]) =
     this(
       objName, uiName, level, new ItemStack(material, 1, durability.toShort), nameLoreFlag, gachaType, stackType
     )
@@ -29,13 +45,13 @@ class MineStackObj(val mineStackObjName: String,
   def durability: Int = itemStack.getDurability.toInt
 
   override def equals(other: Any): Boolean = other match {
-    case that: MineStackObj =>
+    case that: MineStackObj[_] =>
       (that canEqual this) &&
         mineStackObjName == that.mineStackObjName
     case _ => false
   }
 
-  def canEqual(other: Any): Boolean = other.isInstanceOf[MineStackObj]
+  def canEqual(other: Any): Boolean = other.isInstanceOf[MineStackObj[_]]
 
   override def hashCode(): Int = {
     val state = Seq(mineStackObjName)
