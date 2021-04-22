@@ -90,10 +90,10 @@ object PlayerDataLoading {
        * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、
        * ロードされるたびに再計算されるべきではない
        */
-      val nameObjectMappings: Map[String, MineStackObj] =
+      val nameObjectMappings: Map[String, MineStackObj[_]] =
         MineStackObjectList.minestacklist.map(obj => obj.mineStackObjName -> obj).toMap
 
-      val objectAmounts = mutable.HashMap[MineStackObj, Long]()
+      val objectAmounts = mutable.HashMap[MineStackObj[_], Long]()
 
       stmt.executeQuery(mineStackDataQuery).recordIteration { lrs: ResultSet =>
         import lrs._

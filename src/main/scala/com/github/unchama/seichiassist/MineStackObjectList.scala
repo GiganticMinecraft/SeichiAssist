@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
-import com.github.unchama.seichiassist.minestack.objects.MineStackTag
+import com.github.unchama.seichiassist.minestack.MineStackTag
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
 

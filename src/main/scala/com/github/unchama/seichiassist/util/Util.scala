@@ -447,7 +447,7 @@ object Util {
    */
   // TODO これはここにあるべきではない
   @Deprecated()
-  def findMineStackObjectByName(name: String): Option[MineStackObj] = {
+  def findMineStackObjectByName(name: String): Option[MineStackObj[_]] = {
     MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
   }
 

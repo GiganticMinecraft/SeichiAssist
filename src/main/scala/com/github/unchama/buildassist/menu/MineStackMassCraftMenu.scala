@@ -59,14 +59,14 @@ object MineStackMassCraftMenu {
                      (implicit environment: Environment): IO[Button] = {
       import cats.implicits._
 
-      def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
+      def queryAmountOf(mineStackObj: MineStackObj[_]): IO[Long] = IO {
         SeichiAssist.playermap(player.getUniqueId).minestack.getStackedAmountOf(mineStackObj)
       }
 
-      def toMineStackObjectChunk(chunk: (MineStackItemId, Int)): (MineStackObj, Int) =
+      def toMineStackObjectChunk(chunk: (MineStackItemId, Int)): (MineStackObj[_], Int) =
         chunk.leftMap(id => Util.findMineStackObjectByName(id).get)
 
-      def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObj, Int)]): String =
+      def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObj[_], Int)]): String =
         chunks.map { case (obj, amount) => s"${obj.uiName.get}${amount}個" }.mkString_("+")
 
       val requiredBuildLevel = BuildAssist.config.getMinestackBlockCraftlevel(requiredMassCraftLevel)
@@ -76,7 +76,7 @@ object MineStackMassCraftMenu {
 
       val iconComputation = {
         val title = {
-          def enumerateChunkNames(chunks: NonEmptyList[(MineStackObj, Int)]): String =
+          def enumerateChunkNames(chunks: NonEmptyList[(MineStackObj[_], Int)]): String =
             chunks.map(_._1.uiName.get).mkString_("と")
 
           s"$YELLOW$UNDERLINE$BOLD" +

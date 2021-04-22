@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.minestack
 
-import com.github.unchama.seichiassist.minestack.objects.MineStackTag._
+import com.github.unchama.seichiassist.minestack.MineStackTag._
 import enumeratum._
 
 /**
@@ -29,8 +29,8 @@ case object MineStackObjectCategory extends Enum[MineStackObjectCategory[_]] {
 
   case object GACHA_PRIZES extends MineStackObjectCategory[GachaPrize](5, "ガチャ品")
 
-  implicit class MineStackObjOps(val mineStackObj: MineStackObj) extends AnyVal {
-    def category(): MineStackObjectCategory[_] = mineStackObj.stackType
+  implicit class MineStackObjOps[A](val mineStackObj: MineStackObj[A]) extends AnyVal {
+    def category(): MineStackObjectCategory[A] = mineStackObj.stackType
   }
 
 }
