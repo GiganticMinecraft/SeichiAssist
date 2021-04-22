@@ -70,7 +70,7 @@ object MineStackObjectList {
   )
 
   // 採掘で入手可能な農業系ブロック
-  val minestacklistfarm: List[MineStackObj[MineStackTag.Arricultural]] = List(
+  val minestacklistfarm: List[MineStackObj[MineStackTag.Agricultural]] = List(
     new MineStackObj(AGRICULTURAL, "seeds", "種", 1, Material.SEEDS, 0),
     new MineStackObj(AGRICULTURAL, "apple", "リンゴ", 1, Material.APPLE, 0),
     new MineStackObj(AGRICULTURAL, "long_grass1", "草", 1, Material.LONG_GRASS, 1),

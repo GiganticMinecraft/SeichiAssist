@@ -25,7 +25,7 @@ object CategorizedMineStackMenu {
 /**
  * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
  */
-case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex: Int = 0) extends Menu {
+case class CategorizedMineStackMenu(category: MineStackObjectCategory[_], pageIndex: Int = 0) extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
   import eu.timepit.refined.auto._
@@ -50,7 +50,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
   // ページ操作等のボタンを含むレイアウトセクション
   def uiOperationSection(totalNumberOfPages: Int)
-                        (category: MineStackObjectCategory, page: Int)
+                        (category: MineStackObjectCategory[_], page: Int)
                         (implicit environment: Environment): Seq[(Int, Button)] = {
     import environment._
 

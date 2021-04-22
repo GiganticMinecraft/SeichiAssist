@@ -21,7 +21,7 @@ case object MineStackObjectCategory extends Enum[MineStackObjectCategory[_]] {
 
   case object MOB_DROP extends MineStackObjectCategory[MobDrop](1, "ドロップ系アイテム")
 
-  case object AGRICULTURAL extends MineStackObjectCategory[Arricultural](2, "農業・食料系アイテム")
+  case object AGRICULTURAL extends MineStackObjectCategory[Agricultural](2, "農業・食料系アイテム")
 
   case object BUILDING extends MineStackObjectCategory[Building](3, "建築系アイテム")
 
