@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Created by karayuu on 2018/04/20
  */
+@Deprecated
 public class ItemData {
     public static ItemStack getSuperPickaxe(int amount) {
         ItemStack itemstack = new ItemStack(Material.DIAMOND_PICKAXE, amount);
