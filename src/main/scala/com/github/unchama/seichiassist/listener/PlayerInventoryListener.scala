@@ -6,14 +6,14 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.player.GiganticBerserk
-import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
+import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.itemcodec.ShiinaRingoConvertedFromGachaPrizeCodec
+import com.github.unchama.seichiassist.util.itemcodec.{ShiinaRingoConvertedFromGachaPrizeCodec, VotePickaxeCodec, VotingGiftCodec}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -625,7 +625,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
           //ピッケルプレゼント処理(レベル50になるまで)
           if (playerLevel < 50) {
-            val pickaxe = ItemData.getSuperPickaxe(1)
+            val pickaxe = VotePickaxeCodec.create(())
             if (Util.isPlayerInventoryFull(player)) {
               Util.dropItem(player, pickaxe)
             } else {
@@ -635,7 +635,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
           //投票ギフト処理(レベル50から)
           if (playerLevel >= 50) {
-            val gift = ItemData.getVotingGift(1)
+            val gift = VotingGiftCodec.create(())
             if (Util.isPlayerInventoryFull(player)) {
               Util.dropItem(player, gift)
             } else {
