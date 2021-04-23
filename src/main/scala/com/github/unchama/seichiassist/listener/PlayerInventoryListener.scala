@@ -12,7 +12,8 @@ import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
+import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.itemcodec.ShiinaRingoConvertedFromGachaPrizeCodec
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -491,7 +492,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       /*
 			 * step3 椎名林檎をインベントリへ
 			 */
-      val ringo = StaticGachaPrizeFactory.getMaxRingo(player.getName)
+      val ringo = ShiinaRingoConvertedFromGachaPrizeCodec.create(ShiinaRingoConvertedFromGachaPrizeCodec.Property(player.getName))
       var count = 0
       while (giveringo > 0) {
         if (player.getInventory.contains(ringo) || !Util.isPlayerInventoryFull(player)) {

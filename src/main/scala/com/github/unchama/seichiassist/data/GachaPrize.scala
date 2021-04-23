@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.data
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
+import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.itemcodec.GachaRingoCodec
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
@@ -62,6 +63,6 @@ object GachaPrize {
       }
     }
 
-    new GachaPrize(StaticGachaPrizeFactory.getGachaRingo, 1.0)
+    new GachaPrize(GachaRingoCodec.create(()), 1.0)
   }
 }

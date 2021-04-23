@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.minestack.objects._
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.util.itemcodec.GachaRingoCodec
 import org.bukkit.Material
 
 import scala.collection.mutable
@@ -536,7 +536,7 @@ object MineStackObjectList {
    * デフォルトでガチャの内容に含まれている景品。
    */
   val minestackBuiltinGachaPrizes: List[MineStackObj] = List(
-    new MineStackObj("gachaimo", None, 1, StaticGachaPrizeFactory.getGachaRingo, true, -1, MineStackObjectCategory.GACHA_PRIZES),
+    new MineStackObj("gachaimo", None, 1, GachaRingoCodec.create(()), true, -1, MineStackObjectCategory.GACHA_PRIZES),
     new MineStackGachaObj("exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
 

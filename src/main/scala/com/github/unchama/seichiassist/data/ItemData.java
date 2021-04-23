@@ -1,12 +1,13 @@
 package com.github.unchama.seichiassist.data;
 
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
+import com.github.unchama.seichiassist.util.itemcodec.GachaRingoCodec$;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import scala.runtime.BoxedUnit;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,14 +31,8 @@ public class ItemData {
     }
 
     public static ItemStack getGachaApple(int amount) {
-        ItemStack gachaimo;
-        ItemMeta meta;
-        gachaimo = new ItemStack(Material.GOLDEN_APPLE, amount);
-        meta = Bukkit.getItemFactory().getItemMeta(Material.GOLDEN_APPLE);
-        meta.setDisplayName(StaticGachaPrizeFactory.getGachaRingoName());
-        List<String> lore = StaticGachaPrizeFactory.getGachaRingoLore();
-        meta.setLore(lore);
-        gachaimo.setItemMeta(meta);
+        final ItemStack gachaimo = GachaRingoCodec$.MODULE$.create(BoxedUnit.UNIT);
+        gachaimo.setAmount(amount);
         return gachaimo;
     }
 

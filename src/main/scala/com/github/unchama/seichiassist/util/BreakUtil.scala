@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
+import com.github.unchama.seichiassist.util.itemcodec.GachaRingoCodec
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -443,7 +444,7 @@ object BreakUtil {
         } else if (mineStackObj.hasNameLore && itemstack.getItemMeta.hasDisplayName && itemstack.getItemMeta.hasLore) {
           //ガチャ以外のアイテム(がちゃりんご)
           if (mineStackObj.gachaType == -1) {
-            if (!itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) return false
+            if (!itemstack.isSimilar(GachaRingoCodec.create(()))) return false
 
             return addToMineStackAfterLevelCheck()
           } else {
