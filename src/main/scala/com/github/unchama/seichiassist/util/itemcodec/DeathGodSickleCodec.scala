@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.util.itemcodec
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import org.bukkit.{ChatColor, Material}
-import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.{ItemFlag, ItemStack}
 
 /**
  * 死神の鎌をモデリングするコーデック。
@@ -17,6 +17,8 @@ object DeathGodSickleCodec extends ItemCodec[Unit] {
       ChatColor.GRAY + "左クリックで即時に回収できます",
       ChatColor.DARK_GRAY + "インベントリに空きを作って使いましょう"
     )
+    .flagged(ItemFlag.HIDE_ATTRIBUTES)
+    .unbreakable()
     .build()
 
   /**
