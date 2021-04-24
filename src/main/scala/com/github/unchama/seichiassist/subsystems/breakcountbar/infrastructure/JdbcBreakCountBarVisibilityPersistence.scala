@@ -12,12 +12,14 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
   override def read(key: UUID): F[Option[BreakCountBarVisibility]] =
     F.delay {
       DB.localTx { implicit session =>
-        sql"select expvisible from playerdata where uuid = ${key.toString}"
+        sql"select extended_barstyle from playerdata where uuid = ${key.toString}"
           .map { rs =>
-            if (rs.boolean("expvisible")) {
-              BreakCountBarVisibility.ShownSeichiBreakAmount
-            } else {
-              BreakCountBarVisibility.Hidden
+            rs.string("extended_barstyle") match {
+              case "break" => BreakCountBarVisibility.ShownSeichiBreakAmount
+              case "build" => BreakCountBarVisibility.ShownBuildAmount
+              case "berserk" => BreakCountBarVisibility.ShownGiganticBerserkAmount
+              case "none" => BreakCountBarVisibility.Hidden
+              case _ => throw new IllegalStateException("expected one of break, build, berserk, or none")
             }
           }
           .first().apply()
@@ -27,7 +29,13 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
   override def write(key: UUID, value: BreakCountBarVisibility): F[Unit] =
     F.delay {
       DB.localTx { implicit session =>
-        sql"update playerdata set expvisible = ${value == BreakCountBarVisibility.ShownSeichiBreakAmount} where uuid = ${key.toString}"
+        val show = value match {
+          case BreakCountBarVisibility.ShownSeichiBreakAmount => "break"
+          case BreakCountBarVisibility.ShownBuildAmount => "build"
+          case BreakCountBarVisibility.ShownGiganticBerserkAmount => "berserk"
+          case BreakCountBarVisibility.Hidden => "none"
+        }
+        sql"update playerdata set extended_barstyle = $show where uuid = ${key.toString}"
           .update().apply()
       }
     }
