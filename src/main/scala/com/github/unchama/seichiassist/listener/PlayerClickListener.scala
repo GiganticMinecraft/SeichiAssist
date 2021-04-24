@@ -261,8 +261,8 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
           }
 
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
-        Util.sendEveryMessageWithoutIgnore(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
-        Util.sendEveryMessageWithoutIgnore(message)
+        Util.sendEveryMessage(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
+        Util.sendEveryMessage(message)
         gachaGTWin += 1
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)

@@ -124,17 +124,17 @@ object Util {
     }
   }
 
-  def sendEveryMessage[T](content: T)(implicit send: PlayerSendable[T, IO]): Unit = {
-    sendEveryMessageM[T, IO](content).unsafeRunSync()
+  def sendEveryMessageIgnoringPreference[T](content: T)(implicit send: PlayerSendable[T, IO]): Unit = {
+    sendEveryMessageIgnoringPreferenceM[T, IO](content).unsafeRunSync()
   }
 
-  def sendEveryMessageM[T, F[_] : Sync : OnMinecraftServerThread](content: T)(implicit ev: PlayerSendable[T, F]): F[Unit] = {
+  def sendEveryMessageIgnoringPreferenceM[T, F[_] : Sync : OnMinecraftServerThread](content: T)(implicit ev: PlayerSendable[T, F]): F[Unit] = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.map(ev.send(_, content)).toList.sequence.as(())
   }
 
-  def sendEveryMessageWithoutIgnore[T](content: T)(implicit ev: PlayerSendable[T, IO]): Unit = {
+  def sendEveryMessage[T](content: T)(implicit ev: PlayerSendable[T, IO]): Unit = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.map { player =>

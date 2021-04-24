@@ -88,8 +88,8 @@ class PlayerJoinListener extends Listener {
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {
       //初見さんであることを全体告知
-      Util.sendEveryMessage(s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
-      Util.sendEveryMessage(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
+      Util.sendEveryMessageIgnoringPreference(s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
+      Util.sendEveryMessageIgnoringPreference(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       val inv = player.getInventory

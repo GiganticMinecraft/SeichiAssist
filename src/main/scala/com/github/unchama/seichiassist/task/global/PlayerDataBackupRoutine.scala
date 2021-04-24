@@ -27,7 +27,7 @@ object PlayerDataBackupRoutine {
 
         for {
           _ <- IO {
-            Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ中…")
+            Util.sendEveryMessageIgnoringPreference(s"${AQUA}プレイヤーデータセーブ中…")
             Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
           }
           players <- IO {
@@ -37,7 +37,7 @@ object PlayerDataBackupRoutine {
             PlayerDataSaveTask.savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
           }
           _ <- IO {
-            Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ完了")
+            Util.sendEveryMessageIgnoringPreference(s"${AQUA}プレイヤーデータセーブ完了")
             Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
           }
         } yield ()
