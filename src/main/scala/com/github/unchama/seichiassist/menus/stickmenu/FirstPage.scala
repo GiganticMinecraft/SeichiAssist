@@ -165,7 +165,7 @@ object FirstPage extends Menu {
             visibilityRef
               .updateAndGet(_.nextValue).toIO
               .map { updatedVisibility =>
-                val toggleSoundPitch = if (updatedVisibility == BreakCountBarVisibility.Shown) 1.0f else 0.5f
+                val toggleSoundPitch = if (updatedVisibility == BreakCountBarVisibility.ShownSeichiBreakAmount) 1.0f else 0.5f
                 FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, toggleSoundPitch)
               }
           }

@@ -158,15 +158,25 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
    */
   private def expBarDescription(): List[String] = {
     expBarVisibility match {
-      case BreakCountBarVisibility.Shown =>
+      case BreakCountBarVisibility.ShownSeichiBreakAmount =>
         List(
           s"${GREEN}整地量バーを表示",
-          s"$DARK_RED${UNDERLINE}クリックで非表示"
+          s"$DARK_RED${UNDERLINE}クリックで建築量バーを表示"
+        )
+      case BreakCountBarVisibility.ShownBuildAmount =>
+        List(
+          s"${GREEN}建築量バーを表示",
+          s"$DARK_RED${UNDERLINE}クリックでGiganticBerserkバーを表示"
+        )
+      case BreakCountBarVisibility.ShownGiganticBerserkAmount =>
+        List(
+          s"${GREEN}GiganticBerserkバーを表示",
+          s"$DARK_RED${UNDERLINE}クリックでバーを非表示"
         )
       case BreakCountBarVisibility.Hidden =>
         List(
-          s"${RED}整地量バーを非表示",
-          s"$DARK_GREEN${UNDERLINE}クリックで表示"
+          s"${RED}バーを非表示",
+          s"$DARK_GREEN${UNDERLINE}クリックで整地量バーを表示"
         )
     }
   }

@@ -19,7 +19,7 @@ object BreakCountBarVisibilityRepositoryDefinition {
   ](persistence: BreakCountBarVisibilityPersistence[G],
     publishChanges: Pipe[F, (Player, BreakCountBarVisibility), Unit]): RepositoryDefinition[G, Player, Ref[G, BreakCountBarVisibility]] =
     SignallingRepositoryDefinition.forPlayerTopic(publishChanges) {
-      RefDictBackedRepositoryDefinition.usingUuidRefDict(persistence)(BreakCountBarVisibility.Shown)
+      RefDictBackedRepositoryDefinition.usingUuidRefDict(persistence)(BreakCountBarVisibility.ShownSeichiBreakAmount)
     }
 
 }

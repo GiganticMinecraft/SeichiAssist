@@ -52,7 +52,7 @@ object ExpBarSynchronizationRepositoryTemplate {
 
         switching = visibilityValues
           .through(StreamExtra.valuesWithKeyOfSameUuidAs(player))
-          .evalTap(v => bossBar.visibility.write(BreakCountBarVisibility.Shown == v))
+          .evalTap(v => bossBar.visibility.write(BreakCountBarVisibility.ShownSeichiBreakAmount == v))
 
         fiberPromise <- Deferred.in[G, F, Fiber[F, Unit]]
 

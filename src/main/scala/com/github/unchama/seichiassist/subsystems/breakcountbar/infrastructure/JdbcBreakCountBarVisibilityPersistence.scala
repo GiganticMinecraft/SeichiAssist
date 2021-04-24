@@ -15,7 +15,7 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
         sql"select expvisible from playerdata where uuid = ${key.toString}"
           .map { rs =>
             if (rs.boolean("expvisible")) {
-              BreakCountBarVisibility.Shown
+              BreakCountBarVisibility.ShownSeichiBreakAmount
             } else {
               BreakCountBarVisibility.Hidden
             }
@@ -27,7 +27,7 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
   override def write(key: UUID, value: BreakCountBarVisibility): F[Unit] =
     F.delay {
       DB.localTx { implicit session =>
-        sql"update playerdata set expvisible = ${value == BreakCountBarVisibility.Shown} where uuid = ${key.toString}"
+        sql"update playerdata set expvisible = ${value == BreakCountBarVisibility.ShownSeichiBreakAmount} where uuid = ${key.toString}"
           .update().apply()
       }
     }
