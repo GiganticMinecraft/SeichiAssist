@@ -197,4 +197,33 @@ final class Config private(val config: FileConfiguration) {
     override val oneMinuteBuildExpLimit: BuildExpAmount =
       BuildExpAmount(BigDecimal(config.getString("BuildNum1minLimit")))
   }
+
+  private trait FirstJoinConfiguration {
+    def serverNumber: Int
+    def serverIdentifier: String
+    def worldName: String
+    def x: Double
+    def y: Double
+    def z: Double
+    def yaw: Double
+    def pitch: Double
+  }
+
+  def firstJoinConfig: FirstJoinConfiguration = new FirstJoinConfiguration {
+    override val serverNumber: Int = getIntFailFast("FirstJoin.servernum")
+
+    override val serverIdentifier: String = config.getString("FirstJoin.serverIdentifier")
+
+    override val worldName: String = config.getString("FirstJoin.world")
+
+    override val x: Double = getDoubleFailFast("FirstJoin.location.x")
+
+    override val y: Double = getDoubleFailFast("FirstJoin.location.y")
+
+    override val z: Double = getDoubleFailFast("FirstJoin.location.z")
+
+    override val yaw: Double = getDoubleFailFast("FirstJoin.rotation.yaw")
+
+    override val pitch: Double = getDoubleFailFast("FirstJoin.rotation.pitch")
+  }
 }
