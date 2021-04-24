@@ -82,7 +82,7 @@ case class SeichiRankingMenu(pageIndex: Int) extends Menu {
     def entry(position: Int, record: SeichiRankingRecord): Button = {
       val level = record.seichiAmountData.levelCorrespondingToExp.level
       val displayLevel = if (level == 200) {
-        s"$RESET${GREEN}整地Lv:$level★${record.seichiAmountData.starLevelCorrespondingToExp}"
+        s"$RESET${GREEN}整地Lv:$level☆${record.seichiAmountData.starLevelCorrespondingToExp}"
       } else {
         s"$RESET${GREEN}整地Lv:$level"
       }
