@@ -43,7 +43,7 @@ passiveportalinventorylevel: '1'
 dokodemoenderlevel: '25'
 
 # MineStackの開放レベルの設定
-minestacklevel1: '12'
+minestacklevel1: '1'
 minestacklevel2: '17'
 minestacklevel3: '22'
 minestacklevel4: '27'
