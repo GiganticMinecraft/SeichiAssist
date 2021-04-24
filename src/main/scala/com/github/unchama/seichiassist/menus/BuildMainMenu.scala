@@ -11,7 +11,8 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, a
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.BuildMainMenu.EMPHASIZE
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildLevel}
+import com.github.unchama.seichiassist.{LevelThresholds, SkullOwners}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -39,6 +40,7 @@ private case class ButtonComputations(player: Player)
           .lore(
             s"$RESET${AQUA}建築Lv: ${data.levelCorrespondingToExp.level}",
             s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}",
+            s"$RESET${AQUA}次のレベルまで: ${BuildAssistExpTable.expAt(BuildLevel(data.levelCorrespondingToExp.level + 1)).amount - data.expAmount.amount}"
           )
           .build()
 
