@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.bukkit.ItemStackUtil
 import enumeratum._
-import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
@@ -116,19 +115,12 @@ object Util {
     player.getInventory.addItem(itemstack)
   }
 
-  def sendAdminMessage(str: String): Unit = {
-    Bukkit.getOnlinePlayers.forEach { player =>
-      if (player.hasPermission("SeichiAssist.admin")) {
-        player.sendMessage(str)
-      }
-    }
-  }
-
   def sendEveryMessageIgnoringPreference[T](content: T)(implicit send: PlayerSendable[T, IO]): Unit = {
     sendEveryMessageIgnoringPreferenceM[T, IO](content).unsafeRunSync()
   }
 
-  def sendEveryMessageIgnoringPreferenceM[T, F[_] : Sync : OnMinecraftServerThread](content: T)(implicit ev: PlayerSendable[T, F]): F[Unit] = {
+  def sendEveryMessageIgnoringPreferenceM[T, F[_] : Sync : OnMinecraftServerThread](content: T)
+                                                                                   (implicit ev: PlayerSendable[T, F]): F[Unit] = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.map(ev.send(_, content)).toList.sequence.as(())
