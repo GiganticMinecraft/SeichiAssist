@@ -34,7 +34,7 @@ object AnnounceRankingRecord {
       sortedNonzeroRecords.map { case (player, SeichiExpAmount(amount)) =>
         SendMinecraftMessage[F, Player].string(
           player,
-          s"あなたの整地量は $AQUA$amount$WHITE でした"
+          s"あなたの整地量は $AQUA${amount.toLong.formatted("%,d")}$WHITE でした"
         )
       }
 
@@ -43,7 +43,7 @@ object AnnounceRankingRecord {
       .zipWithIndex
       .map { case (((player, SeichiExpAmount(amount)), decorationColorCode), index) =>
         val position = index + 1
-        val increaseAmountText = s"$AQUA$amount$WHITE"
+        val increaseAmountText = s"$AQUA${amount.toLong.formatted("%,d")}$WHITE"
 
         for {
           name <- resolveName(player)
@@ -82,7 +82,7 @@ object AnnounceRankingRecord {
       )
     ) ++ individualAnnouncements ++ List(
       BroadcastMinecraftMessage[F].string(
-        s"全体の整地量は $AQUA${totalBreakCount.amount}$WHITE でした"
+        s"全体の整地量は $AQUA${totalBreakCount.amount.toLong.formatted("%,d")}$WHITE でした"
       )
     ) ++ rankingAnnouncement ++ List(
       BroadcastMinecraftMessage[F].string(
