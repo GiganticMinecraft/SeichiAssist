@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki
 
 import cats.effect.{SyncEffect, SyncIO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._

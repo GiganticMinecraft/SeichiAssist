@@ -23,6 +23,7 @@ object PlayerDataBackupRoutine {
     val routineAction: IO[Boolean] = {
       val save = {
         import scala.jdk.CollectionConverters._
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 
         for {
           _ <- IO {
