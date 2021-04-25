@@ -198,7 +198,7 @@ final class Config private(val config: FileConfiguration) {
       BuildExpAmount(BigDecimal(config.getString("BuildNum1minLimit")))
   }
 
-  private trait FirstJoinConfiguration {
+  trait FirstJoinConfiguration {
     def serverNumber: Int
     def serverIdentifier: String
     def worldName: String
