@@ -81,9 +81,10 @@ case class SeichiRankingMenu(pageIndex: Int) extends Menu {
   private def rankingSection(ranking: SeichiRanking): Seq[(Int, Button)] = {
     def entry(position: Int, record: SeichiRankingRecord): Button = {
       val level = record.seichiAmountData.levelCorrespondingToExp.level
-      // スターレベルが非ゼロならスターレベルも表示
-      val displayLevel = if (level == 200) {
-        s"$RESET${GREEN}整地Lv:$level☆${record.seichiAmountData.starLevelCorrespondingToExp}"
+      val starLevel = record.seichiAmountData.starLevelCorrespondingToExp
+      
+      val displayLevel = if (starLevel > 0) {
+        s"$RESET${GREEN}整地Lv:$level☆$starLevel"
       } else {
         s"$RESET${GREEN}整地Lv:$level"
       }
