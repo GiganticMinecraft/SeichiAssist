@@ -4,8 +4,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import com.github.unchama.seichiassist.util.Util;
+import com.github.unchama.seichiassist.util.itemcodec.GachaRingoCodec$;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import scala.jdk.CollectionConverters;
+import scala.runtime.BoxedUnit;
 
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public class GachaCommand implements CommandExecutor {
             if (id >= 0) {
                 present = SeichiAssist.gachadatalist().apply(id).copy();
             } else {
-                present = new GachaPrize(StaticGachaPrizeFactory.getGachaRingo(), 1.0);
+                present = new GachaPrize(GachaRingoCodec$.MODULE$.create(BoxedUnit.UNIT), 1.0);
             }
             if (present.probability() < 0.1) {
                 if (name != null) {
