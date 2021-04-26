@@ -22,7 +22,9 @@ import org.bukkit.entity.Player
 object RankingRootMenu extends Menu {
   class Environment(implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
                     val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu,
-                    val ioCanOpenBuildRankingMenu: IO CanOpen BuildRankingMenu
+                    val ioCanOpenBuildRankingMenu: IO CanOpen BuildRankingMenu,
+                    val ioCanOpenLoginTimeRankingMenu: IO CanOpen LoginTimeRankingMenu,
+                    val ioCanOpenVoteCountRankingMenu: IO CanOpen VoteCountRankingMenu
                    )
   /**
    * メニューのサイズとタイトルに関する情報
@@ -67,8 +69,7 @@ object RankingRootMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingByPlayingTime(0)),
+          ioCanOpenLoginTimeRankingMenu.open(LoginTimeRankingMenu(0))
         )
       )
     }
@@ -88,7 +89,7 @@ object RankingRootMenu extends Menu {
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
           // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingByVotingCount(0)),
+          ioCanOpenVoteCountRankingMenu.open(VoteCountRankingMenu(0))
         )
       )
     }
