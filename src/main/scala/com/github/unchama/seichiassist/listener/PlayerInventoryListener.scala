@@ -30,7 +30,6 @@ import scala.collection.mutable.ArrayBuffer
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               manaApi: ManaApi[IO, SyncIO, Player],
                               ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-                              ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
                               ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   import com.github.unchama.targetedeffect._
