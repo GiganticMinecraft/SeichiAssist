@@ -183,7 +183,7 @@ class PlayerJoinListener extends Listener {
         }
       } else {
         player.sendMessage("チュートリアル地点へ転送します...")
-        PlayerEffects.connectToServerEffect("s7").run(player).unsafeRunSync()
+        PlayerEffects.connectToServerEffect(config.serverIdentifier).run(player).unsafeRunSync()
       }
     }
 
