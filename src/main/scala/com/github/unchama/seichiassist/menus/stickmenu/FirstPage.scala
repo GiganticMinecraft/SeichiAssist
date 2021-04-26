@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
-import com.github.unchama.seichiassist.menus.ranking.SeichiRankingMenu
+import com.github.unchama.seichiassist.menus.ranking.{BuildRankingMenu, SeichiRankingMenu}
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -25,6 +25,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDime
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
+import com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -57,7 +58,7 @@ object FirstPage extends Menu {
                     val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
                     val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
                     val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
-                    val rankingApi: RankingApi[IO],
+                    val rankingApi: RankingApi[IO, SeichiRanking],
                     val gachaPointApi: GachaPointApi[IO, SyncIO, Player],
                     val ioJavaTime: JavaTime[IO],
                     val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
@@ -68,7 +69,8 @@ object FirstPage extends Menu {
                     val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
                     val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type,
                     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
-                    val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu)
+                    val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu,
+                    val ioCanOpenBuildRankingMenu: IO CanOpen BuildRankingMenu)
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
@@ -150,7 +152,7 @@ object FirstPage extends Menu {
             .read.toIO
         ranking <-
           environment.rankingApi
-            .getSeichiRanking
+            .getRanking
         visibility <- visibilityRef.get.toIO
         lore <- new PlayerStatsLoreGenerator(
           openerData, ranking, seichiAmountData, visibility

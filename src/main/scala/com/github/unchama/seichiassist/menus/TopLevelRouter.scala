@@ -8,16 +8,19 @@ import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenu
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
 import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu}
-import com.github.unchama.seichiassist.menus.ranking.SeichiRankingMenu
+import com.github.unchama.seichiassist.menus.ranking.{BuildRankingMenu, SeichiRankingMenu}
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
+import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
+import com.github.unchama.seichiassist.subsystems.buildranking.domain.BuildRanking
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
+import com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
@@ -36,7 +39,8 @@ object TopLevelRouter {
             breakCountApi: BreakCountAPI[IO, SyncIO, Player],
             breakCountBarAPI: BreakCountBarAPI[SyncIO, Player],
             manaApi: ManaApi[IO, SyncIO, Player],
-            seichiRankingApi: RankingApi[IO],
+            seichiRankingApi: RankingApi[IO, SeichiRanking],
+            buildRankingApi: RankingApi[IO, BuildRanking],
             gachaPointApi: GachaPointApi[IO, SyncIO, Player],
             fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
             fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
@@ -56,6 +60,7 @@ object TopLevelRouter {
     implicit lazy val achievementCategoryMenuEnv: AchievementCategoryMenu.Environment = new AchievementCategoryMenu.Environment
     implicit lazy val achievementGroupMenuEnv: AchievementGroupMenu.Environment = new AchievementGroupMenu.Environment
     implicit lazy val passiveSkillMenuEnv: PassiveSkillMenu.Environment = new PassiveSkillMenu.Environment
+    implicit lazy val buildRankingMenuEnv: BuildRankingMenu.Environment = new BuildRankingMenu.Environment
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
     implicit lazy val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu = _.open
@@ -73,6 +78,7 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open
     implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
+    implicit lazy val ioCanOpenBuildRankingMenu: IO CanOpen BuildRankingMenu = _.open
     override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
   }
 

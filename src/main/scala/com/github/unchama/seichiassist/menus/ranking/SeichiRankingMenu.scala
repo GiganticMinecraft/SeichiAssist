@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
 object SeichiRankingMenu {
 
   class Environment(implicit
-                    val seichiRankingApi: RankingApi[IO],
+                    val seichiRankingApi: RankingApi[IO, SeichiRanking],
                     val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu,
                     val ioCanOpenStickMenu: IO CanOpen FirstPage.type)
 
@@ -104,7 +104,7 @@ case class SeichiRankingMenu(pageIndex: Int) extends Menu {
   override def computeMenuLayout(player: Player)
                                 (implicit environment: Environment): IO[MenuSlotLayout] = {
     for {
-      ranking <- environment.seichiRankingApi.getSeichiRanking
+      ranking <- environment.seichiRankingApi.getRanking
     } yield {
       val records = ranking.recordsWithPositions
       val recordsToInclude = records.size min rankCutoff

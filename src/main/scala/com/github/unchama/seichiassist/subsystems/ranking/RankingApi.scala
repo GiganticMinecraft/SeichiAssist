@@ -1,10 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.ranking
 
-import com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking
+/**
+ *
+ * @tparam F 作用の文脈
+ * @tparam R [[com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking SeichiRanking]]のようなレコードをまとめる型
+ */
+trait RankingApi[F[_], R] {
 
-trait RankingApi[F[_]] {
-
-  val getSeichiRanking: F[SeichiRanking]
+  val getRanking: F[R]
 
 }
 

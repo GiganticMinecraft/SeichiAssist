@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.{RankingRecordPersistence, SeichiRankingRecord}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-class JdbcRankingRecordPersistence[F[_] : Sync] extends RankingRecordPersistence[F] {
+class JdbcRankingRecordPersistence[F[_] : Sync] extends RankingRecordPersistence[F, SeichiRankingRecord] {
 
   override def getAllRankingRecords: F[Vector[SeichiRankingRecord]] = Sync[F].delay {
     DB.localTx { implicit session =>

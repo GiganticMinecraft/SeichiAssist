@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.ranking
 
 import cats.effect.{Concurrent, Timer}
-import com.github.unchama.seichiassist.subsystems.ranking.application.RefreshingRankingCache
-import com.github.unchama.seichiassist.subsystems.ranking.domain.{RankingRecordPersistence, SeichiRanking}
+import com.github.unchama.seichiassist.subsystems.ranking.application.GenericRefreshingRankingCache
+import com.github.unchama.seichiassist.subsystems.ranking.domain.{RankingRecordPersistence, SeichiRanking, SeichiRankingRecord}
 import com.github.unchama.seichiassist.subsystems.ranking.infrastructure.JdbcRankingRecordPersistence
 import io.chrisdavenport.log4cats.ErrorLogger
 
@@ -13,14 +13,15 @@ object System {
   def wired[
     F[_] : Timer : Concurrent : ErrorLogger,
     H[_]
-  ]: F[RankingApi[F]] = {
-    val persistence: RankingRecordPersistence[F] = new JdbcRankingRecordPersistence[F]
+  ]: F[RankingApi[F, SeichiRanking]] = {
+    val persistence: RankingRecordPersistence[F, SeichiRankingRecord] = new JdbcRankingRecordPersistence[F]
 
-    RefreshingRankingCache
+    GenericRefreshingRankingCache
+      .ofSeichiRanking
       .withPersistence(persistence)
       .map { getSeichiRankingCache =>
-        new RankingApi[F] {
-          override val getSeichiRanking: F[SeichiRanking] = getSeichiRankingCache
+        new RankingApi[F, SeichiRanking] {
+          override val getRanking: F[SeichiRanking] = getSeichiRankingCache
         }
       }
   }
