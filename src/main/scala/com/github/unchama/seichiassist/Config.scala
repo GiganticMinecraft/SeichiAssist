@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemCo
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
-import org.bukkit.World
+import org.bukkit.{Bukkit, Location, World}
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -201,12 +201,7 @@ final class Config private(val config: FileConfiguration) {
   trait FirstJoinConfiguration {
     def serverNumber: Int
     def serverIdentifier: String
-    def worldName: String
-    def x: Double
-    def y: Double
-    def z: Double
-    def yaw: Double
-    def pitch: Double
+    def location: Option[Location]
   }
 
   def firstJoinConfig: FirstJoinConfiguration = new FirstJoinConfiguration {
@@ -214,16 +209,21 @@ final class Config private(val config: FileConfiguration) {
 
     override val serverIdentifier: String = config.getString("FirstJoin.serverIdentifier")
 
-    override val worldName: String = config.getString("FirstJoin.world")
+    private val worldName: String = config.getString("FirstJoin.world")
 
-    override val x: Double = getDoubleFailFast("FirstJoin.location.x")
+    private val x: Double = getDoubleFailFast("FirstJoin.location.x")
 
-    override val y: Double = getDoubleFailFast("FirstJoin.location.y")
+    private val y: Double = getDoubleFailFast("FirstJoin.location.y")
 
-    override val z: Double = getDoubleFailFast("FirstJoin.location.z")
+    private val z: Double = getDoubleFailFast("FirstJoin.location.z")
 
-    override val yaw: Double = getDoubleFailFast("FirstJoin.rotation.yaw")
+    private val yaw: Float = getDoubleFailFast("FirstJoin.rotation.yaw").toFloat
 
-    override val pitch: Double = getDoubleFailFast("FirstJoin.rotation.pitch")
+    private val pitch: Float = getDoubleFailFast("FirstJoin.rotation.pitch").toFloat
+
+    override def location: Option[Location] = {
+      val realWorld = Bukkit.getWorld(worldName)
+      Option.when(realWorld ne null)(new Location(realWorld, x, y, z, yaw, pitch))
+    }
   }
 }
