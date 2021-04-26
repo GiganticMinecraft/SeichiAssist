@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenu
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{AchievementCategoryMenu, AchievementMenu}
 import com.github.unchama.seichiassist.menus.minestack.{CategorizedMineStackMenu, MineStackMainMenu}
-import com.github.unchama.seichiassist.menus.ranking.{BuildRankingMenu, SeichiRankingMenu}
+import com.github.unchama.seichiassist.menus.ranking.{BuildRankingMenu, RankingRootMenu, SeichiRankingMenu}
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillEffectMenu, ActiveSkillMenu, PassiveSkillMenu, PremiumPointTransactionHistoryMenu}
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, SecondPage}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
@@ -61,6 +61,7 @@ object TopLevelRouter {
     implicit lazy val achievementGroupMenuEnv: AchievementGroupMenu.Environment = new AchievementGroupMenu.Environment
     implicit lazy val passiveSkillMenuEnv: PassiveSkillMenu.Environment = new PassiveSkillMenu.Environment
     implicit lazy val buildRankingMenuEnv: BuildRankingMenu.Environment = new BuildRankingMenu.Environment
+    implicit lazy val rankingRootMenuEnv: RankingRootMenu.Environment = new RankingRootMenu.Environment
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
 
     implicit lazy val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu = _.open
@@ -79,6 +80,7 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
     implicit lazy val ioCanOpenBuildRankingMenu: IO CanOpen BuildRankingMenu = _.open
+    implicit lazy val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type = _.open
     override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
   }
 

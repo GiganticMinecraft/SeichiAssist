@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
-import com.github.unchama.seichiassist.menus.ranking.{BuildRankingMenu, SeichiRankingMenu}
+import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -69,8 +69,7 @@ object FirstPage extends Menu {
                     val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
                     val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type,
                     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
-                    val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu,
-                    val ioCanOpenBuildRankingMenu: IO CanOpen BuildRankingMenu)
+                    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type)
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
@@ -96,9 +95,11 @@ object FirstPage extends Menu {
         ChestSlotRef(2, 5) -> fastCraftButton,
         ChestSlotRef(3, 3) -> votePointMenuButton,
         ChestSlotRef(3, 4) -> mapCommandButton,
-        ChestSlotRef(3, 5) -> seichiGodRankingButton,
-        ChestSlotRef(3, 6) -> loginGodRankingButton,
-        ChestSlotRef(3, 7) -> voteGodRankingButton,
+        ChestSlotRef(3, 6) -> CommonButtons.transferButton(
+          new IconItemStackBuilder(Material.COOKIE),
+          "ランキングメニューを開く",
+          RankingRootMenu
+        ),
         ChestSlotRef(3, 8) -> secondPageButton
       )
 
@@ -604,64 +605,6 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
           ioCanOpenAchievementMenu.open(AchievementMenu)
-        )
-      )
-    }
-
-    def seichiGodRankingButton(implicit ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu): Button = {
-      val iconItemStack =
-        new IconItemStackBuilder(Material.COOKIE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}整地神ランキングを見る")
-          .lore(List(
-            s"$RESET$RED(整地神ランキング150位以内のプレイヤーのみ表記されます)",
-            s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
-          ))
-          .build()
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          ioCanOpenSeichiRankingMenu.open(SeichiRankingMenu(0)),
-        )
-      )
-    }
-
-    val loginGodRankingButton: Button = {
-      val iconItemStack =
-        new IconItemStackBuilder(Material.COOKIE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}ログイン神ランキングを見る")
-          .lore(List(
-            s"$RESET$RED(ログイン神ランキング150位以内のプレイヤーのみ表記されます)",
-            s"$RESET$DARK_RED${UNDERLINE}クリックで開く"))
-          .build()
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingByPlayingTime(0)),
-        )
-      )
-    }
-
-    val voteGodRankingButton: Button = {
-      val iconItemStack =
-        new IconItemStackBuilder(Material.COOKIE)
-          .title(s"$YELLOW$UNDERLINE${BOLD}投票神ランキングを見る")
-          .lore(List(
-            s"$RESET$RED(投票神ランキング150位以内のプレイヤーのみ表記されます)",
-            s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
-          ))
-          .build()
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
-          openInventoryEffect(MenuInventoryData.getRankingByVotingCount(0)),
         )
       )
     }

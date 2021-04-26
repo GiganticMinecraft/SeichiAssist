@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
+import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -28,7 +29,8 @@ import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               manaApi: ManaApi[IO, SyncIO, Player],
-                              ioCanOpenStickMenu: IO CanOpen FirstPage.type,
+                              ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+                              ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
                               ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   import com.github.unchama.targetedeffect._
@@ -83,7 +85,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
-            ioCanOpenStickMenu.open(StickMenu.firstPage)
+            ioCanOpenRankingRootMenu.open(RankingRootMenu)
           ),
           "棒メニューの1ページ目を開く"
         )
@@ -158,7 +160,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
             effectEnvironment.runAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
-                ioCanOpenStickMenu.open(StickMenu.firstPage)
+                ioCanOpenRankingRootMenu.open(RankingRootMenu)
               ),
               "棒メニューの1ページ目を開く"
             )
@@ -664,7 +666,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         effectEnvironment.runAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
-            ioCanOpenStickMenu.open(StickMenu.firstPage)
+            ioCanOpenFirstPage.open(StickMenu.firstPage)
           ),
           "棒メニューの1ページ目を開く"
         )

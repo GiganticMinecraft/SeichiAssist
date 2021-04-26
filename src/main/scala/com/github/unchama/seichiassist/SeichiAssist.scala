@@ -520,6 +520,7 @@ class SeichiAssist extends JavaPlugin() {
       new PlayerJoinListener(),
       new PlayerClickListener(),
       new PlayerBlockBreakListener(),
+      // fixme implicit not found
       new PlayerInventoryListener(),
       new EntityListener(),
       new PlayerPickupItemListener(),
