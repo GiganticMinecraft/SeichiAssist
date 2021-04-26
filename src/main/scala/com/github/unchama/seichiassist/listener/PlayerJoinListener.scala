@@ -167,18 +167,19 @@ class PlayerJoinListener extends Listener {
       val config = SeichiAssist.seichiAssistConfig.firstJoinConfig
       if (SeichiAssist.seichiAssistConfig.getServerNum == config.serverNumber) {
         player.sendMessage("チュートリアル地点へ転送しています...")
-        val worldName = config.worldName
-        val world = Bukkit.getWorld(worldName)
-        val tpSuccess = (world ne null) && player.teleport(
-          new Location(world, config.x, config.y, config.z),
-          PlayerTeleportEvent.TeleportCause.PLUGIN
-        )
+        val location = config.location
+        val tpSuccess = location.fold(false) { loc =>
+          player.teleport(
+            loc,
+            PlayerTeleportEvent.TeleportCause.PLUGIN
+          )
+        }
         if (tpSuccess) {
           player.sendMessage("チュートリアル地点に転送しました。")
         } else {
           player.sendMessage(s"${RED}チュートリアル地点への転送に失敗しました。")
-          if (world eq null) {
-            SeichiAssist.instance.loggerF.info(s"指定されたワールド${worldName}はサーバーに存在しません。").unsafeRunSync()
+          if (location.isEmpty) {
+            SeichiAssist.instance.loggerF.info(s"[FirstJoin] 指定されたワールドはサーバーに存在しません。").unsafeRunSync()
           }
         }
       } else {
