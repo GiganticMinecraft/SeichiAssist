@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.buildranking.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.buildranking.domain.BuildRankingRecord
 import com.github.unchama.seichiassist.subsystems.ranking.domain.RankingRecordPersistence
 import scalikejdbc._
@@ -13,7 +14,7 @@ class JdbcReadAllBuildAmountData[F[_] : Sync] extends RankingRecordPersistence[F
         .map { rs =>
           BuildRankingRecord(
             rs.string("name"),
-            BuildExpAmount(BigDecimal(rs.string("build_count")))
+            BuildAmountData(BuildExpAmount(BigDecimal(rs.string("build_count"))))
           )
         }
         .list()

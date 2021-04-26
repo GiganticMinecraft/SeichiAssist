@@ -254,6 +254,12 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
   }
 
+  implicit lazy val buildRankingApi: subsystems.ranking.RankingApi[IO, BuildRanking] = {
+    import PluginExecutionContexts.{asyncShift, timer}
+
+    subsystems.buildranking.System.wired[IO].unsafeRunSync()
+  }
+
   private lazy val fourDimensionalPocketSystem: subsystems.fourdimensionalpocket.System[IO, Player] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
