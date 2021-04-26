@@ -53,11 +53,13 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.loginranking.domain.LoginTimeRanking
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
+import com.github.unchama.seichiassist.subsystems.voteranking.domain.VoteCountRanking
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -258,6 +260,18 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, timer}
 
     subsystems.buildranking.System.wired[IO].unsafeRunSync()
+  }
+
+  implicit lazy val loginTimeRankingApi: subsystems.ranking.RankingApi[IO, LoginTimeRanking] = {
+    import PluginExecutionContexts.{asyncShift, timer}
+
+    subsystems.loginranking.System.wired[IO].unsafeRunSync()
+  }
+
+  implicit lazy val voteCountRankingApi: subsystems.ranking.RankingApi[IO, VoteCountRanking] = {
+    import PluginExecutionContexts.{asyncShift, timer}
+
+    subsystems.voteranking.System.wired[IO].unsafeRunSync()
   }
 
   private lazy val fourDimensionalPocketSystem: subsystems.fourdimensionalpocket.System[IO, Player] = {

@@ -10,6 +10,8 @@ import scala.concurrent.duration.DurationInt
 import cats.implicits._
 import cats.effect.implicits._
 import com.github.unchama.seichiassist.subsystems.buildranking.domain.{BuildRanking, BuildRankingRecord}
+import com.github.unchama.seichiassist.subsystems.loginranking.domain.{LoginTimeRanking, LoginTimeRankingRecord}
+import com.github.unchama.seichiassist.subsystems.voteranking.domain.{VoteCountRanking, VoteCountRankingRecord}
 
 class GenericRefreshingRankingCache[RR, R](recordsToRecord: Vector[RR] => R) {
   def withPersistence[F[_] : Concurrent : Timer : ErrorLogger](persistence: RankingRecordPersistence[F, RR]): F[F[R]] =
@@ -32,4 +34,8 @@ object GenericRefreshingRankingCache {
   val ofSeichiRanking = new GenericRefreshingRankingCache[SeichiRankingRecord, SeichiRanking](new SeichiRanking(_))
 
   val ofBuildExpAmountRanking = new GenericRefreshingRankingCache[BuildRankingRecord, BuildRanking](new BuildRanking(_))
+
+  val ofLoginRanking = new GenericRefreshingRankingCache[LoginTimeRankingRecord, LoginTimeRanking](new LoginTimeRanking(_))
+
+  val ofVoteRanking = new GenericRefreshingRankingCache[VoteCountRankingRecord, VoteCountRanking](new VoteCountRanking(_))
 }

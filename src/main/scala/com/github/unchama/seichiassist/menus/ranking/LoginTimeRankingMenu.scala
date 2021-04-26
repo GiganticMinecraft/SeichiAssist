@@ -2,35 +2,33 @@ package com.github.unchama.seichiassist.menus.ranking
 
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
-import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.buildranking.domain.{BuildRanking, BuildRankingRecord}
+import com.github.unchama.seichiassist.subsystems.loginranking.domain.{LoginTimeRanking, LoginTimeRankingRecord}
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
-object BuildRankingMenu {
-  class Environment(
-                     implicit val buildRankingApi: RankingApi[IO, BuildRanking],
-                     val ioCanOpenBuildCountRankingMenu: IO CanOpen BuildRankingMenu,
-                     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type
+object LoginTimeRankingMenu {
+  class Environment(implicit val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+                    val ioCanOpenLoginTimeRankingMenu: IO CanOpen LoginTimeRankingMenu,
+                    val loginTimeRankingApi: RankingApi[IO, LoginTimeRanking]
                    )
 }
 
-case class BuildRankingMenu(pageIndex: Int) extends Menu {
-  final private val perPage = 45
-  final private val cutoff = 150
+case class LoginTimeRankingMenu(pageIndex: Int) extends Menu {
+  private val perPage = 45
+  private val cutoff = 150
 
-  override type Environment = BuildRankingMenu.Environment
-  /**
-   * メニューのサイズとタイトルに関する情報
-   */
-  override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}建築神ランキング")
+  override type Environment = LoginTimeRankingMenu.Environment
+
+  override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}ログイン神ランキング")
 
   private def uiOperationSection(totalNumberOfPages: Int)
                                 (implicit environment: Environment): Seq[(Int, Button)] = {
@@ -39,16 +37,18 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
     def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(skullOwnerReference),
-        s"建築神ランキング${pageIndex + 1}ページ目へ",
-        BuildRankingMenu(pageIndex)
+        s"ログイン神ランキング${pageIndex + 1}ページ目へ",
+        LoginTimeRankingMenu(pageIndex)
       )
 
     val goBackToStickMenuSection =
-      Seq(ChestSlotRef(5, 0) -> CommonButtons.transferButton(
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-        "ランキングメニューへ戻る",
-        RankingRootMenu
-      ))
+      Seq(
+        ChestSlotRef(5, 0) -> CommonButtons.transferButton(
+          new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+          "ランキングメニューへ戻る",
+          RankingRootMenu
+        )
+      )
 
     val previousPageButtonSection =
       if (pageIndex > 0)
@@ -65,14 +65,13 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
     goBackToStickMenuSection ++ previousPageButtonSection ++ nextPageButtonSection
   }
 
-  private def rankingSection(ranking: BuildRanking): Seq[(Int, Button)] = {
-    def entry(position: Int, record: BuildRankingRecord): Button = {
+  private def rankingSection(ranking: LoginTimeRanking): Seq[(Int, Button)] = {
+    def entry(position: Int, record: LoginTimeRankingRecord): Button = {
       Button(
         new SkullItemStackBuilder(record.playerName)
           .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
           .lore(
-            s"$RESET${GREEN}建築Lv:${record.buildAmountData.levelCorrespondingToExp.level}",
-            s"$RESET${GREEN}総建築量:${record.buildAmountData.expAmount.amount.bigDecimal}"
+            s"$RESET${GREEN}総ログイン時間:${record.time.formatted}"
           )
           .build()
       )
@@ -88,24 +87,23 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
       }
   }
 
-  private def totalBuildAmountSection(ranking: BuildRanking): Seq[(Int, Button)] = {
+  private def totalLoginTimeSection(ranking: LoginTimeRanking): Seq[(Int, Button)] = {
     Seq(
       ChestSlotRef(5, 4) ->
         Button(
           new SkullItemStackBuilder(SkullOwners.unchama)
             .title(s"$YELLOW$UNDERLINE${BOLD}整地鯖統計データ")
-            .lore(s"$RESET${AQUA}全プレイヤー総建築量: ${ranking.totalBuildExp}")
+            .lore(s"$RESET${AQUA}全プレイヤー総ログイン時間: ${ranking.totalLoginTime.formatted}")
             .build()
         )
     )
   }
-
   /**
    * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player)(implicit environment: BuildRankingMenu.Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     for {
-      ranking <- environment.buildRankingApi.getRanking
+      ranking <- environment.loginTimeRankingApi.getRanking
     } yield {
       val records = ranking.recordsWithPositions
       val recordsToInclude = records.size min cutoff
@@ -114,10 +112,9 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
       val combinedLayout =
         rankingSection(ranking)
           .++(uiOperationSection(totalNumberOfPages))
-          .++(totalBuildAmountSection(ranking))
+          .++(totalLoginTimeSection(ranking))
 
       MenuSlotLayout(combinedLayout: _*)
     }
   }
 }
-

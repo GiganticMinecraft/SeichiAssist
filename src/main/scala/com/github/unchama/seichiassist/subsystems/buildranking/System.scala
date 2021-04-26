@@ -19,9 +19,9 @@ object System {
     GenericRefreshingRankingCache
       .ofBuildExpAmountRanking
       .withPersistence(persistence)
-      .map { getBuildExpAmountRankingCache =>
+      .map { getFromCache =>
         new RankingApi[F, BuildRanking] {
-          override val getRanking: F[BuildRanking] = getBuildExpAmountRankingCache
+          override val getRanking: F[BuildRanking] = getFromCache
         }
       }
   }

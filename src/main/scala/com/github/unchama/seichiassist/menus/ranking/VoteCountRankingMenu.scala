@@ -4,33 +4,30 @@ import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerReference}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
-import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
+import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.subsystems.buildranking.domain.{BuildRanking, BuildRankingRecord}
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
+import com.github.unchama.seichiassist.subsystems.voteranking.domain.{VoteCountRanking, VoteCountRankingRecord}
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
-object BuildRankingMenu {
-  class Environment(
-                     implicit val buildRankingApi: RankingApi[IO, BuildRanking],
-                     val ioCanOpenBuildCountRankingMenu: IO CanOpen BuildRankingMenu,
-                     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type
+object VoteCountRankingMenu {
+  class Environment(implicit val ioCanOpenVoteCountRankingMenu: IO CanOpen VoteCountRankingMenu,
+                    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+                    val voteCountRankingApi: RankingApi[IO, VoteCountRanking]
                    )
 }
 
-case class BuildRankingMenu(pageIndex: Int) extends Menu {
-  final private val perPage = 45
-  final private val cutoff = 150
+case class VoteCountRankingMenu(pageIndex: Int) extends Menu {
+  private val cutoff = 150
+  private val perPage = 45
 
-  override type Environment = BuildRankingMenu.Environment
-  /**
-   * メニューのサイズとタイトルに関する情報
-   */
-  override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}建築神ランキング")
+  override type Environment = VoteCountRankingMenu.Environment
+
+  override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}投票神ランキング")
 
   private def uiOperationSection(totalNumberOfPages: Int)
                                 (implicit environment: Environment): Seq[(Int, Button)] = {
@@ -39,16 +36,18 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
     def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(skullOwnerReference),
-        s"建築神ランキング${pageIndex + 1}ページ目へ",
-        BuildRankingMenu(pageIndex)
+        s"投票神ランキング${pageIndex + 1}ページ目へ",
+        VoteCountRankingMenu(pageIndex)
       )
 
     val goBackToStickMenuSection =
-      Seq(ChestSlotRef(5, 0) -> CommonButtons.transferButton(
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-        "ランキングメニューへ戻る",
-        RankingRootMenu
-      ))
+      Seq(
+        ChestSlotRef(5, 0) -> CommonButtons.transferButton(
+          new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+          "ランキングメニューへ戻る",
+          RankingRootMenu
+        )
+      )
 
     val previousPageButtonSection =
       if (pageIndex > 0)
@@ -65,14 +64,13 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
     goBackToStickMenuSection ++ previousPageButtonSection ++ nextPageButtonSection
   }
 
-  private def rankingSection(ranking: BuildRanking): Seq[(Int, Button)] = {
-    def entry(position: Int, record: BuildRankingRecord): Button = {
+  private def rankingSection(ranking: VoteCountRanking): Seq[(Int, Button)] = {
+    def entry(position: Int, record: VoteCountRankingRecord): Button = {
       Button(
         new SkullItemStackBuilder(record.playerName)
           .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
           .lore(
-            s"$RESET${GREEN}建築Lv:${record.buildAmountData.levelCorrespondingToExp.level}",
-            s"$RESET${GREEN}総建築量:${record.buildAmountData.expAmount.amount.bigDecimal}"
+            s"$RESET${GREEN}総投票回数:${record.count}回"
           )
           .build()
       )
@@ -88,13 +86,13 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
       }
   }
 
-  private def totalBuildAmountSection(ranking: BuildRanking): Seq[(Int, Button)] = {
+  private def totalVoteCountSection(ranking: VoteCountRanking): Seq[(Int, Button)] = {
     Seq(
       ChestSlotRef(5, 4) ->
         Button(
           new SkullItemStackBuilder(SkullOwners.unchama)
             .title(s"$YELLOW$UNDERLINE${BOLD}整地鯖統計データ")
-            .lore(s"$RESET${AQUA}全プレイヤー総建築量: ${ranking.totalBuildExp}")
+            .lore(s"$RESET${AQUA}全プレイヤー総投票回数: ${ranking.totalVoteCount}回")
             .build()
         )
     )
@@ -103,9 +101,9 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
   /**
    * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player)(implicit environment: BuildRankingMenu.Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(player: Player)(implicit environment: VoteCountRankingMenu.Environment): IO[MenuSlotLayout] = {
     for {
-      ranking <- environment.buildRankingApi.getRanking
+      ranking <- environment.voteCountRankingApi.getRanking
     } yield {
       val records = ranking.recordsWithPositions
       val recordsToInclude = records.size min cutoff
@@ -114,10 +112,9 @@ case class BuildRankingMenu(pageIndex: Int) extends Menu {
       val combinedLayout =
         rankingSection(ranking)
           .++(uiOperationSection(totalNumberOfPages))
-          .++(totalBuildAmountSection(ranking))
+          .++(totalVoteCountSection(ranking))
 
       MenuSlotLayout(combinedLayout: _*)
     }
   }
 }
-
