@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift.
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 /**
@@ -29,7 +30,8 @@ class GiftItemInterpreter[F[_] : OnMinecraftServerThread] extends (Gift.Item => 
       case _ => None
     }
 
-    SequentialEffect(message.toList :+ grantItemStacksEffect(itemStack))
+    // この明示的な型変数がないとビルドが通らない。とはいえ返り値は自明なので最低限の表記を選択した
+    SequentialEffect[_](message.toList :+ grantItemStacksEffect(itemStack))
   }
 
 }
