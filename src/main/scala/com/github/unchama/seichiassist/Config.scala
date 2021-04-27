@@ -207,7 +207,7 @@ final class Config private(val config: FileConfiguration) {
   def firstJoinConfig: FirstJoinConfiguration = new FirstJoinConfiguration {
     override val serverNumber: Int = getIntFailFast("FirstJoin.servernum")
 
-    override val serverIdentifier: String = config.getString("FirstJoin.serverIdentifier")
+    override val serverIdentifier: String = config.getString("FirstJoin.servername")
 
     private val worldName: String = config.getString("FirstJoin.world")
 

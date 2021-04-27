@@ -200,18 +200,22 @@ BungeeSemaphoreResponder:
     # Password: ""
 
 FirstJoin:
-  # servernumに指定できる値を指定
+  # servernumとserverはサーバーに対する一意の識別子という点ではほぼ同一の概念だが、
+  # servernumが「サーバ識別設定」で設定されるservernumのうちの一つでなければいけないのに対して、
+  # servernameは/serverコマンドで指定する識別子でなければいけないという違いがある。
+
+  # servernumに指定できる値を指定。
   servernum: 7
   # /serverコマンドで指定する識別子を指定すること。
-  server: s7
+  servername: s7
   # 存在するワールド名を指定すること。
   world: tutorial_world
+  # テレポートする座標
   point:
-    # 必要に応じて適切な場所を指定すること。
     x: 3.14159265357
     y: 1.41421356237
     z: 1.73205080757
+  # プレイヤーがテレポートしたときに設定される視点の向き
   rotation:
-    # 必要に応じて適切な向きを指定すること。
     yaw: 0
     pitch: 0
