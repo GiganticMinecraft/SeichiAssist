@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-build-dependencies
-          cache-version: v-1
+          cache-version: v-2
         with:
           # sbt等は$HOMEではなくユーザーディレクトリを見ているようで、
           # GH Actionsでの ~ は /github/home/ に展開されるにもかかわらず
@@ -41,14 +41,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Prepare build cache
         if: github.ref != 'refs/heads/master'
         uses: actions/cache@v2
         env:
           cache-name: cache-build
-          cache-version: v-1
+          cache-version: v-2
         with:
           path: |
             target
@@ -58,7 +57,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-${{ github.ref }}-
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.cache-version }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       # CIでのcheckoutはファイルのタイムスタンプをチェックアウト時刻に設定するため、
       # そのままビルドするとlocalDependenciesにあるjarに変更が行われたと見なされ
