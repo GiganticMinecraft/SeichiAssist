@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,23 +26,6 @@ public class ItemData {
         itemstack.setItemMeta(itemmeta);
 
         return itemstack;
-    }
-
-    public static ItemStack getForLevelUpskull(String name, int amount) {
-        ItemStack skull;
-        SkullMeta skullmeta;
-        skull = new ItemStack(Material.SKULL_ITEM, amount);
-        skullmeta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.SKULL_ITEM);
-        skull.setDurability((short) 3);
-        skullmeta.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "ガチャ券");
-        List<String> lore = Arrays.asList(
-                ChatColor.RESET + "" + ChatColor.GREEN + "右クリックで使えます",
-                ChatColor.RESET + "" + ChatColor.DARK_GREEN + "所有者：" + name,
-                ChatColor.RESET + "" + ChatColor.DARK_RED + "レベルアップ記念です");
-        skullmeta.setLore(lore);
-        skullmeta.setOwner("unchama");
-        skull.setItemMeta(skullmeta);
-        return skull;
     }
 
     public static ItemStack getGachaApple(int amount) {

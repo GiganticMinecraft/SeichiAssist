@@ -4,7 +4,7 @@ import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
 import com.github.unchama.menuinventory.{LayoutPreparationContext, Menu}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import org.bukkit.entity.Player
 
 object ReloadingButton {
@@ -15,7 +15,7 @@ object ReloadingButton {
                       (implicit
                        environment: menu.Environment,
                        ctx: LayoutPreparationContext,
-                       syncShift: MinecraftServerThreadShift[IO]): Button = {
+                       onMainThread: OnMinecraftServerThread[IO]): Button = {
     button.withAnotherEffect(
       ButtonEffect(scope => {
         val clicker = scope.event.getWhoClicked.asInstanceOf[Player]

@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.seichiskill.effect
 
-import cats.effect.{IO, Timer}
+import cats.effect.{IO, SyncIO, Timer}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
@@ -31,7 +32,7 @@ sealed trait ActiveSkillEffect {
                      tool: BreakTool,
                      breakBlocks: Set[BlockBreakableBySkill],
                      breakArea: AxisAlignedCuboid,
-                     standard: Location): IO[Unit]
+                     standard: Location)(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit]
 }
 
 object ActiveSkillEffect {
@@ -45,7 +46,8 @@ object ActiveSkillEffect {
                                 tool: BreakTool,
                                 breakBlocks: Set[BlockBreakableBySkill],
                                 breakArea: AxisAlignedCuboid,
-                                standard: Location): IO[Unit] =
+                                standard: Location)
+                               (implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] =
       BreakUtil.massBreakBlock(player, breakBlocks, player.getLocation, tool, shouldPlayBreakSound = false, Material.AIR)
   }
 }
@@ -76,8 +78,9 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
                               tool: BreakTool,
                               breakBlocks: Set[BlockBreakableBySkill],
                               breakArea: AxisAlignedCuboid,
-                              standard: Location): IO[Unit] = {
-    import PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
+                              standard: Location)
+                             (implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
+    import PluginExecutionContexts.{asyncShift, cachedThreadPool}
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
 
@@ -115,8 +118,7 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
               shouldPlayBreakSound = false, Material.PACKED_ICE
             )
           _ <- IO.sleep(10.ticks)
-          _ <- syncShift.shift
-          _ <- IO {
+          _ <- ioOnMainThread.runAction(SyncIO {
             breakBlocks
               .map(_.getLocation)
               .foreach(location =>
@@ -135,7 +137,7 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
               else
                 b.getWorld.playEffect(b.getLocation, Effect.STEP_SOUND, Material.PACKED_ICE)
             }
-          }
+          })
         } yield ()
 
       case Meteor =>
@@ -148,8 +150,7 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
 
         for {
           _ <- IO.sleep(delay.ticks)
-          _ <- syncShift.shift
-          _ <- IO {
+          _ <- ioOnMainThread.runAction(SyncIO {
             breakArea.gridPoints(2).foreach { xyzTuple =>
               val effectCoordinate = XYZTuple.of(standard) + xyzTuple
               val effectLocation = effectCoordinate.toLocation(world)
@@ -158,7 +159,7 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
                 world.spawnParticle(Particle.EXPLOSION_HUGE, effectLocation, 1)
               }
             }
-          }
+          })
           // [0.8, 1.2)
           vol <- IO { new Random().nextFloat() * 0.4f + 0.8f }
           _ <- FocusedSoundEffect(Sound.ENTITY_WITHER_BREAK_BLOCK, 1.0f, vol).run(player)
@@ -216,12 +217,10 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
                      tool: BreakTool,
                      breakBlocks: Set[BlockBreakableBySkill],
                      breakArea: AxisAlignedCuboid,
-                     standard: Location): IO[Unit] = {
-    import PluginExecutionContexts.{cachedThreadPool, syncShift}
+                     standard: Location)(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
+    import PluginExecutionContexts.{asyncShift, timer}
     import com.github.unchama.concurrent.syntax._
     import com.github.unchama.seichiassist.data.syntax._
-
-    implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     this match {
       case ActiveSkillPremiumEffect.MAGIC =>
@@ -246,8 +245,6 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
           period <- IO { if (SeichiAssist.DEBUG) 100 else 10 }
           _ <- IO.sleep(period.ticks)
 
-          _ <- syncShift.shift
-
           _ <- SeichiAssist.instance.magicEffectEntityScope
             .useTrackedForSome(BukkitResources.vanishingEntityResource(centerBreak, classOf[Chicken])) { e =>
               for {
@@ -259,7 +256,7 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
                 _ <- FocusedSoundEffect(Sound.ENTITY_WITCH_AMBIENT, 1f, 1.5f).run(player)
               } yield ()
             }
-            .start(syncShift)
+            .start(asyncShift)
 
           _ <- IO {
             breakBlocks.foreach { b =>

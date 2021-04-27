@@ -23,11 +23,11 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.setti
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
+import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
-import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
@@ -36,6 +36,7 @@ import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor.{DARK_RED, RESET, _}
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
 
 /**
@@ -46,7 +47,7 @@ import org.bukkit.{Material, Sound}
 object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import eu.timepit.refined.auto._
 
@@ -57,6 +58,7 @@ object FirstPage extends Menu {
                     val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
                     val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
                     val rankingApi: RankingApi[IO],
+                    val gachaPointApi: GachaPointApi[IO, SyncIO, Player],
                     val ioJavaTime: JavaTime[IO],
                     val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
                     val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type,
@@ -110,7 +112,6 @@ object FirstPage extends Menu {
         ChestSlotRef(2, 4) -> computeEnderChestButton,
         ChestSlotRef(2, 6) -> computeMineStackButton,
         ChestSlotRef(3, 0) -> computeGachaTicketButton,
-        ChestSlotRef(3, 1) -> computeGachaTicketDeliveryButton,
         ChestSlotRef(3, 2) -> computeApologyItemsButton,
       ).map(_.sequence)
 
@@ -511,102 +512,36 @@ object FirstPage extends Menu {
       )
     }
 
-    val computeGachaTicketButton: IO[Button] = RecomputedButton(IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
+    val computeGachaTicketButton: IO[Button] = {
+      val effect: FilteredButtonEffect = LeftClickButtonEffect(environment.gachaPointApi.receiveBatch)
 
-      val iconItemStack = {
-        val lore = {
-          val obtainableGachaTicket = playerData.gachapoint / 1000
-          val gachaPointToNextTicket = 1000 - playerData.gachapoint % 1000
-
-          val gachaTicketStatus = if (obtainableGachaTicket != 0)
-            s"$RESET${AQUA}未獲得ガチャ券：${obtainableGachaTicket}枚"
-          else
-            s"$RESET${RED}獲得できるガチャ券はありません"
-
-          val gachaPointStatus = s"$RESET${AQUA}次のガチャ券まで:${gachaPointToNextTicket}ブロック"
-
-          List(gachaTicketStatus, gachaPointStatus)
-        }
-
-        new SkullItemStackBuilder(SkullOwners.unchama)
-          .title(s"$DARK_AQUA$UNDERLINE${BOLD}整地報酬ガチャ券を受け取る")
-          .lore(lore)
-          .build()
-      }
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect {
-          if (playerData.gachacooldownflag) {
-            new CoolDownTask(player, false, true).runTaskLater(SeichiAssist.instance, 20)
-
-            val gachaPointPerTicket = SeichiAssist.seichiAssistConfig.getGachaPresentInterval
-            val gachaTicketsToGive = Math.min(playerData.gachapoint / gachaPointPerTicket, 576)
-
-            if (gachaTicketsToGive > 0) {
-              val itemToGive = GachaSkullData.gachaSkull
-              val itemStacksToGive = Seq.fill(gachaTicketsToGive)(itemToGive)
-
-              SequentialEffect(
-                Util.grantItemStacksEffect(itemStacksToGive: _*),
-                targetedeffect.UnfocusedEffect {
-                  playerData.gachapoint -= gachaPointPerTicket * gachaTicketsToGive
-                },
-                MessageEffect(s"${GOLD}ガチャ券${gachaTicketsToGive}枚${WHITE}プレゼントフォーユー"),
-                FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
-              )
-            } else emptyEffect
-          } else emptyEffect
-        }
-      )
-    })
-
-    val computeGachaTicketDeliveryButton: IO[Button] = RecomputedButton(IO {
-      val playerData = SeichiAssist.playermap(getUniqueId)
-
-      val iconItemStack = {
-        val lore = {
-          val settingsStatus =
-            if (playerData.settings.receiveGachaTicketEveryMinute)
-              s"$RESET${GREEN}毎分受け取ります"
+      val computeItemStack: IO[ItemStack] = environment
+        .gachaPointApi
+        .gachaPoint(player)
+        .read.toIO
+        .map { point =>
+          val lore = {
+            val gachaTicketStatus = if (point.availableTickets != BigInt(0))
+              s"$RESET${AQUA}未獲得ガチャ券：${point.availableTickets}枚"
             else
-              s"$RESET${RED}後でまとめて受け取ります"
+              s"$RESET${RED}獲得できるガチャ券はありません"
 
-          val navigationMessage = s"$RESET$DARK_RED${UNDERLINE}クリックで変更"
+            val requiredToNextTicket =
+              s"$RESET${AQUA}次のガチャ券まで:${point.amountUntilNextGachaTicket.amount}ブロック"
 
-          List(settingsStatus, navigationMessage)
+            List(gachaTicketStatus, requiredToNextTicket)
+          }
+
+          new SkullItemStackBuilder(SkullOwners.unchama)
+            .title(s"$DARK_AQUA$UNDERLINE${BOLD}整地報酬ガチャ券を受け取る")
+            .lore(lore)
+            .build()
         }
 
-        new IconItemStackBuilder(Material.STONE_BUTTON)
-          .title(s"$YELLOW$UNDERLINE${BOLD}整地報酬ガチャ券受け取り方法")
-          .lore(lore)
-          .build()
-      }
+      val computeButton: IO[Button] = computeItemStack.map { itemStack => Button(itemStack, effect) }
 
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          targetedeffect.UnfocusedEffect {
-            playerData.settings.receiveGachaTicketEveryMinute = !playerData.settings.receiveGachaTicketEveryMinute
-          },
-          DeferredEffect(IO {
-            if (playerData.settings.receiveGachaTicketEveryMinute) {
-              SequentialEffect(
-                MessageEffect(s"${GREEN}毎分のガチャ券受け取り:ON"),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
-              )
-            } else {
-              SequentialEffect(
-                MessageEffect(s"${RED}毎分のガチャ券受け取り:OFF"),
-                MessageEffect(s"${GREEN}ガチャ券受け取りボタンを押すともらえます"),
-                FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_OFF, 1.0f, 1.0f)
-              )
-            }
-          })
-        )
-      )
-    })
+      RecomputedButton(computeButton)
+    }
   }
 
   private object ConstantButtons {

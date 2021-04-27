@@ -182,7 +182,6 @@ object PlayerDataLoading {
         + " where uuid = '" + stringUuid + "'")
 
       stmt.executeQuery(command).recordIteration { rs: ResultSet =>
-        playerData.settings.receiveGachaTicketEveryMinute = rs.getBoolean("gachaflag")
         playerData.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
         playerData.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
@@ -222,14 +221,11 @@ object PlayerDataLoading {
           )
         ).unsafeRunSync()
 
-        playerData.gachapoint = rs.getInt("gachapoint")
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
         playerData.playTick = rs.getInt("playtick")
         playerData.p_givenvote = rs.getInt("p_givenvote")
         playerData.effectPoint = rs.getInt("effectpoint")
-        //マナの情報
-        playerData.manaState.setMana(rs.getDouble("mana"))
 
         playerData.totalexp = rs.getInt("totalexp")
 
@@ -326,9 +322,6 @@ object PlayerDataLoading {
         playerData.p_apple = rs.getLong("p_apple")
 
 
-        playerData.contribute_point = rs.getInt("contribute_point")
-        playerData.added_mana = rs.getInt("added_mana")
-
         playerData.giganticBerserk = GiganticBerserk(
           rs.getInt("GBlevel"),
           rs.getInt("GBexp"),
@@ -348,12 +341,6 @@ object PlayerDataLoading {
       loadGridTemplate(newStmt)
       loadMineStack(newStmt)
       loadSubHomeData(newStmt)
-    }
-
-    //貢献度pt増加によるマナ増加があるかどうか
-    if (playerData.added_mana < playerData.contribute_point) {
-      val addMana: Int = playerData.contribute_point - playerData.added_mana
-      playerData.setContributionPoint(addMana)
     }
 
     timer.sendLapTimeMessage(s"$GREEN${playerName}のプレイヤーデータ読込完了")

@@ -179,55 +179,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       true
   }
 
-  def addContributionPoint(targetPlayerName: String, point: Int): IO[ResponseEffectOrResult[CommandSender, Unit]] = {
-    val executeUpdate: IO[ResponseEffectOrResult[CommandSender, Unit]] = IO {
-      val updateCommand = s"UPDATE $tableReference SET contribute_point = contribute_point + $point WHERE name = '$targetPlayerName'"
-
-      if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
-        Bukkit.getLogger.warning(s"sql failed on updating $targetPlayerName's contribute_point")
-        Left(MessageEffect(s"${RED}貢献度ptの変更に失敗しました。"))
-      } else {
-        Right(())
-      }
-    }
-
-    val updatePlayerDataMemoryCache: IO[Unit] = IO {
-      val targetPlayer = Bukkit.getServer.getPlayer(targetPlayerName)
-      if (targetPlayer != null) {
-        val targetPlayerData = SeichiAssist.playermap(targetPlayer.getUniqueId)
-
-        targetPlayerData.contribute_point += point
-        targetPlayerData.setContributionPoint(point)
-      }
-    }
-
-    for {
-      _ <- EitherT(assertPlayerDataExistenceFor(targetPlayerName))
-      _ <- EitherT(executeUpdate)
-      _ <- EitherT.right[TargetedEffect[CommandSender]](updatePlayerDataMemoryCache)
-    } yield ()
-    }.value
-
-  private def assertPlayerDataExistenceFor(playerName: String): IO[ResponseEffectOrResult[CommandSender, Unit]] =
-    IO {
-      try {
-        // TODO: 本当にStarSelectじゃなきゃだめ?
-        val resultSet = gateway.executeQuery(s"select * from $tableReference where name = $playerName")
-
-        if (!resultSet.next()) {
-          Left(MessageEffect(s"$RED$playerName はデータベースに登録されていません。"))
-        } else {
-          Right(())
-        }
-      } catch {
-        case e: SQLException =>
-          Bukkit.getLogger.warning(s"sql failed on checking data existence of $playerName")
-          e.printStackTrace()
-
-          Left(MessageEffect(s"${RED}プレーヤーデータへのアクセスに失敗しました。"))
-      }
-    }
-
   // anniversary変更
   def setAnniversary(anniversary: Boolean, uuid: Option[UUID]): Boolean = {
     val command = s"UPDATE $tableReference SET anniversary = $anniversary" +
@@ -240,8 +191,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     true
   }
 
-  // TODO remove `playerData` from argument
-  def saveSharedInventory(player: Player, playerData: PlayerData, serializedInventory: String): IO[ResponseEffectOrResult[Player, Unit]] = {
+  def saveSharedInventory(player: Player, serializedInventory: String): IO[ResponseEffectOrResult[Player, Unit]] = {
     val assertSharedInventoryBeEmpty: EitherT[IO, TargetedEffect[CommandSender], Unit] =
       for {
         sharedInventorySerialized <- EitherT(loadShareInv(player))
@@ -434,17 +384,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   //全員に詫びガチャの配布
   def addAllPlayerBug(amount: Int): ActionStatus = {
     val command = s"update $tableReference set numofsorryforbug = numofsorryforbug + $amount"
-    gateway.executeUpdate(command)
-  }
-
-  /**
-   * プレイヤーのガチャ券枚数を変更します
-   * @param playerName プレイヤーの名前
-   * @param amount 変更後のプレーヤーのガチャ券の枚数
-   * @return [ActionStatus]
-   */
-  def changeGachaAmountOf(playerName: String, amount: Int): ActionStatus = {
-    val command = s"update $tableReference set gachapoint = ${1000 * amount} where name = '$playerName'"
     gateway.executeUpdate(command)
   }
 

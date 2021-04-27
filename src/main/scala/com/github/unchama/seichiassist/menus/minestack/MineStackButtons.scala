@@ -1,12 +1,11 @@
 package com.github.unchama.seichiassist.menus.minestack
 
 import cats.data.Kleisli
-import cats.effect.IO
-import com.github.unchama.concurrent.Execution
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util
@@ -60,7 +59,7 @@ private[minestack] case class MineStackButtons(player: Player) {
   import scala.jdk.CollectionConverters._
 
   def getMineStackItemButtonOf(mineStackObj: MineStackObj)
-                              (implicit ctx: MinecraftServerThreadShift[IO]): IO[Button] = RecomputedButton(IO {
+                              (implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -116,35 +115,36 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(implicit ctx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = {
-    Kleisli(player => Execution.onServerMainThread {
-      for {
-        playerData <- IO {
-          SeichiAssist.playermap(player.getUniqueId)
-        }
-        currentAmount <- IO {
-          playerData.minestack.getStackedAmountOf(mineStackObj)
-        }
-        grantAmount = Math.min(amount, currentAmount).toInt
+  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)
+                                (implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+    for {
+      pair <- Kleisli((player: Player) => onMainThread.runAction {
+        for {
+          playerData <- SyncIO {
+            SeichiAssist.playermap(player.getUniqueId)
+          }
+          currentAmount <- SyncIO {
+            playerData.minestack.getStackedAmountOf(mineStackObj)
+          }
 
-        soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
-        itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
+          grantAmount = Math.min(amount, currentAmount).toInt
 
-        _ <-
-          SequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, soundEffectPitch),
-            targetedeffect.UnfocusedEffect {
-              playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
-            },
-            // アイテム付与はアトミックな操作ではない(コンテキストシフトを含む)ので、
-            // subtractが終わってから行わなければならない
-            Util.grantItemStacksEffect(itemStackToGrant)
-          ).run(player)
-      } yield ()
-    })
+          soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
+          itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
+
+          _ <- SyncIO {
+            playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
+          }
+        } yield (soundEffectPitch, itemStackToGrant)
+      })
+      _ <- SequentialEffect(
+        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, pair._1),
+        Util.grantItemStacksEffect(pair._2)
+      )
+    } yield ()
   }
 
-  def computeAutoMineStackToggleButton(implicit syncShift: MinecraftServerThreadShift[IO]): IO[Button] =
+  def computeAutoMineStackToggleButton(implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] =
     RecomputedButton(IO {
       val playerData = SeichiAssist.playermap(getUniqueId)
 

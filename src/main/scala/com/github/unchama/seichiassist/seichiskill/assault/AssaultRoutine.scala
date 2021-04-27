@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.seichiskill.assault
 
-import cats.effect.{ExitCase, IO, Timer}
+import cats.effect.{ExitCase, IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
-import com.github.unchama.seichiassist.data.Mana
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
+import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
+import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor._
@@ -14,6 +15,7 @@ import org.bukkit.entity.Player
 import org.bukkit.{GameMode, Location, Material}
 
 object AssaultRoutine {
+
   private case class IterationState(previousLocation: Location, idleIterationCount: Int)
 
   private def locationsFarEnough(l1: Location, l2: Location): Boolean = {
@@ -22,7 +24,8 @@ object AssaultRoutine {
   }
 
   def tryStart(player: Player, skill: AssaultSkill)
-              (implicit syncShift: MinecraftServerThreadShift[IO], ctx: RepeatingTaskContext): IO[Unit] = {
+              (implicit ioOnMainThread: OnMinecraftServerThread[IO], ctx: RepeatingTaskContext,
+               manaApi: ManaWriteApi[SyncIO, Player]): IO[Unit] = {
     for {
       offHandTool <- IO {
         player.getInventory.getItemInOffHand
@@ -39,7 +42,8 @@ object AssaultRoutine {
 
 
   def apply(player: Player, toolToBeUsed: BreakTool, skill: AssaultSkill)
-           (implicit syncShift: MinecraftServerThreadShift[IO], ctx: RepeatingTaskContext): IO[Unit] = {
+           (implicit ioOnMainThread: OnMinecraftServerThread[IO], ctx: RepeatingTaskContext,
+            manaApi: ManaWriteApi[SyncIO, Player]): IO[Unit] = {
     val idleCountLimit = 20
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
@@ -128,21 +132,14 @@ object AssaultRoutine {
         (toolToBeUsed.getDurability +
           BreakUtil.calcDurability(toolToBeUsed.getEnchantmentLevel(Enchantment.DURABILITY), breakTargets)).toShort
 
-      val playerMana: Mana = playerData.manaState
-
-      //実際に経験値を減らせるか判定
-      if (!playerMana.has(manaUsage)) return None
-
       // 実際に耐久値を減らせるか判定
       if (toolToBeUsed.getType.getMaxDurability <= durability && !toolToBeUsed.getItemMeta.isUnbreakable) return None
 
-      // 経験値を減らす
-      playerMana.decrease(
-        manaUsage, player,
-        SeichiAssist.instance
-          .breakCountSystem.api.seichiAmountDataRepository(player)
-          .read.unsafeRunSync().levelCorrespondingToExp.level
-      )
+      // マナを消費する
+      manaApi.manaAmount(player).tryAcquire(ManaAmount(manaUsage)).unsafeRunSync() match {
+        case Some(_) =>
+        case None => return None
+      }
 
       // 耐久値を減らす
       if (!toolToBeUsed.getItemMeta.isUnbreakable) toolToBeUsed.setDurability(durability)
@@ -164,9 +161,8 @@ object AssaultRoutine {
 
     implicit val timer: Timer[IO] = IO.timer(ctx)
 
-    import cats.implicits._
-
     import scala.concurrent.duration._
+
     for {
       _ <- IO {
         player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} ON")
@@ -175,7 +171,7 @@ object AssaultRoutine {
         player.getLocation
       }
       _ <- RepeatingRoutine.recMTask(IterationState(currentLoc, 0))(s =>
-        syncShift.shift >> IO(routineAction(s))
+        ioOnMainThread.runAction(SyncIO(routineAction(s)))
       )(IO.pure(500.millis)).guaranteeCase {
         case ExitCase.Error(_) | ExitCase.Completed =>
           IO {

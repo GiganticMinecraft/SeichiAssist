@@ -8,6 +8,7 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, TargetedEffect, UnfocusedEffect}
@@ -18,7 +19,7 @@ import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, onMainThread}
   import menuinventory.syntax._
 
   class Environment(implicit

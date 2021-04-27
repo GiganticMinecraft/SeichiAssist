@@ -6,7 +6,9 @@ import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.listener.BuildMainMenuOpener
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, subsystems}
 import org.bukkit.entity.Player
@@ -20,7 +22,8 @@ import scala.collection.mutable
 class BuildAssist(plugin: Plugin)
                  (implicit
                   flyApi: ManagedFlyApi[SyncIO, Player],
-                  buildCountAPI: subsystems.buildcount.BuildCountAPI[SyncIO, Player]) {
+                  buildCountAPI: subsystems.buildcount.BuildCountAPI[SyncIO, Player],
+                  manaApi: ManaApi[IO, SyncIO, Player]) {
 
   // TODO この辺のフィールドを整理する
 
@@ -40,7 +43,7 @@ class BuildAssist(plugin: Plugin)
 
   def onEnable(): Unit = {
     implicit val menuRouter: BuildAssistMenuRouter[IO] = {
-      import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+      import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
 
       BuildAssistMenuRouter.apply
     }

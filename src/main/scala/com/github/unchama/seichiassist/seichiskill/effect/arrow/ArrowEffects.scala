@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.seichiskill.effect.arrow
 
 import cats.data.Kleisli
-import cats.effect.IO
+import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -94,13 +94,15 @@ object ArrowEffects {
       soundEffect,
       Kleisli(player =>
         for {
-          _ <- PluginExecutionContexts.syncShift.shift
-          playerLocation <- IO { player.getLocation.clone() }
+          playerLocation <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
+            player.getLocation.clone()
+          })
           spawnLocation = playerLocation.clone()
             .add(playerLocation.getDirection)
             .add(spawnConfiguration.offset)
           modifyProjectile = (projectile: P) => IO {
-            projectile.tap { p => import p._
+            projectile.tap { p =>
+              import p._
               setShooter(player)
               setGravity(spawnConfiguration.gravity)
               setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))

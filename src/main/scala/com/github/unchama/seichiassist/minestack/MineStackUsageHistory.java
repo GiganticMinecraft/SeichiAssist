@@ -9,7 +9,7 @@ import java.util.List;
 public final class MineStackUsageHistory {
     private static final int LIST_MAX_SIZE = 27;
 
-    public List<MineStackObj> usageHistory = new ArrayList<>();
+    public final List<MineStackObj> usageHistory = new ArrayList<>();
 
     /**
      * 履歴に追加します。ただし、データの保存可能な最大値を超えていた場合、先頭から削除されます。

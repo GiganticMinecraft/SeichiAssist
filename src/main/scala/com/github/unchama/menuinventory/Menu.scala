@@ -2,7 +2,7 @@ package com.github.unchama.menuinventory
 
 import cats.data
 import cats.effect.IO
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 
@@ -35,7 +35,7 @@ trait Menu {
    */
   def open(implicit environment: Environment,
            ctx: LayoutPreparationContext,
-           syncCtx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] = data.Kleisli { player =>
+           onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = data.Kleisli { player =>
     for {
       session <- MenuSession.createNewSessionWith[IO](frame)
       _ <- session.openInventory.run(player)

@@ -6,6 +6,8 @@ trait HasUuid[T] {
 
   def of(x: T): UUID
 
+  def asFunction: T => UUID = t => of(t)
+
 }
 
 object HasUuid {

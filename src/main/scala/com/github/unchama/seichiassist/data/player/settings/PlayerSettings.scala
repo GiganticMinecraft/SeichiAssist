@@ -11,8 +11,6 @@ class PlayerSettings {
 
   import com.github.unchama.targetedeffect._
   var autoMineStack = true
-  //ガチャ受け取り方法設定
-  var receiveGachaTicketEveryMinute = true
   //キルログ表示トグル
   var shouldDisplayDeathMessages = false
   //ワールドガード保護ログ表示トグル
@@ -24,7 +22,7 @@ class PlayerSettings {
   var multipleidbreakflag = false
   //PvPトグル
   var pvpflag = false
-  var nickname: PlayerNickname = PlayerNickname(NicknameStyle.Level, 0, 0)
+  var nickname: PlayerNickname = PlayerNickname(NicknameStyle.Level)
   //ハーフブロック破壊抑制用
   private var allowBreakingHalfBlocks = false
 

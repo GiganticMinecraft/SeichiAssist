@@ -2,22 +2,18 @@ package com.github.unchama.seichiassist.listener;
 
 import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.player.PlayerData;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import scala.Some;
 import scala.collection.mutable.HashMap;
 
 import java.util.UUID;
 
 public class PlayerDeathEventListener implements Listener {
-    private HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
-    private SeichiAssist plugin = SeichiAssist.instance();
+    private final HashMap<UUID, PlayerData> playermap = SeichiAssist.playermap();
+    private final SeichiAssist plugin = SeichiAssist.instance();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent event) {
