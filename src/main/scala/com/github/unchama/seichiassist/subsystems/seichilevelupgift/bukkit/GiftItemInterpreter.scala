@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift.Item
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -31,7 +31,7 @@ class GiftItemInterpreter[F[_] : OnMinecraftServerThread] extends (Gift.Item => 
     }
 
     // この明示的な型変数がないとビルドが通らない
-    SequentialEffect[List[TargetedEffect[Player]]](message.toList :+ grantItemStacksEffect(itemStack))
+    SequentialEffect[Player](message.toList :+ grantItemStacksEffect(itemStack))
   }
 
 }
