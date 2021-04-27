@@ -8,12 +8,9 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.syntax._
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
-import com.github.unchama.targetedeffect.player.PlayerEffects.openInventoryEffect
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.Material
