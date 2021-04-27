@@ -88,7 +88,6 @@ object RankingRootMenu extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
           ioCanOpenVoteCountRankingMenu.open(VoteCountRankingMenu(0))
         )
       )
