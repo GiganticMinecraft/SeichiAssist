@@ -34,14 +34,21 @@ private case class ButtonComputations(player: Player)
   def computeNotationOfStats(): IO[Button] = RecomputedButton {
     BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap(data =>
       IO {
+        val buildLevel = data.levelCorrespondingToExp
+        val rawLevel = buildLevel.level
+        val alwaysDisplayedInfo = List(
+          s"$RESET${AQUA}建築Lv: $rawLevel",
+          s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}",
+        )
+        // 最大レベルに到達した後は”次のレベル”が存在しないため、表示しない
+        val nextLevelInfo: Option[String] = Option.unless(BuildAssistExpTable.maxLevel == buildLevel) {
+          s"$RESET${AQUA}次のレベルまで: ${BuildAssistExpTable.expAt(BuildLevel(rawLevel + 1))}"
+        }
+        val info = alwaysDisplayedInfo ++ nextLevelInfo
         val iconItemStack = new SkullItemStackBuilder(getUniqueId)
           .enchanted()
           .title(s"$YELLOW$EMPHASIZE${player.getName}の建築データ")
-          .lore(
-            s"$RESET${AQUA}建築Lv: ${data.levelCorrespondingToExp.level}",
-            s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}",
-            s"$RESET${AQUA}次のレベルまで: ${BuildAssistExpTable.expAt(BuildLevel(data.levelCorrespondingToExp.level + 1)).amount - data.expAmount.amount}"
-          )
+          .lore(info)
           .build()
 
         Button(iconItemStack)
