@@ -47,7 +47,7 @@ jobs:
         uses: actions/cache@v2
         env:
           cache-name: cache-build
-          cache-version: v-1
+          cache-version: v-2
         with:
           path: |
             target
