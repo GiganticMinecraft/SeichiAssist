@@ -26,7 +26,7 @@ private object MineStackButtons {
     def withAmount(amount: Int): ItemStack = itemStack.clone().tap(_.setAmount(amount))
   }
 
-  implicit class MineStackObjectOps(val mineStackObj: MineStackObj[_]) extends AnyVal {
+  implicit class MineStackObjectOps(val mineStackObj: MineStackObj) extends AnyVal {
     def parameterizedWith(player: Player): ItemStack = {
       // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
       if (mineStackObj.stackType == MineStackObjectCategory.GACHA_PRIZES && mineStackObj.gachaType >= 0) {
@@ -58,7 +58,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(mineStackObj: MineStackObj[_])
+  def getMineStackItemButtonOf(mineStackObj: MineStackObj)
                               (implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
@@ -115,7 +115,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def withDrawItemEffect(mineStackObj: MineStackObj[_], amount: Int)
+  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)
                                 (implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
     for {
       pair <- Kleisli((player: Player) => onMainThread.runAction {

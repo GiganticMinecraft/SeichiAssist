@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
-import com.github.unchama.seichiassist.minestack.MineStackTag
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
 
@@ -10,7 +9,7 @@ import scala.collection.mutable
 
 object MineStackObjectList {
   // 採掘可能ブロック
-  val minestacklistmine: List[MineStackObj[MineStackTag.Ores]] = List(
+  val minestacklistmine: List[MineStackObj] = List(
     new MineStackObj(ORES, "coal_ore", "石炭鉱石", 1, Material.COAL_ORE, 0),
     new MineStackObj(ORES, "coal", "石炭", 1, Material.COAL, 0),
     new MineStackObj(ORES, "coal_block", "石炭ブロック", 1, Material.COAL_BLOCK, 0),
@@ -36,7 +35,7 @@ object MineStackObjectList {
   )
 
   // モンスター+動物ドロップ
-  val minestacklistdrop: List[MineStackObj[MineStackTag.MobDrop]] = List(
+  val minestacklistdrop: List[MineStackObj] = List(
     new MineStackObj(MOB_DROP, "ender_pearl", "エンダーパール", 1, Material.ENDER_PEARL, 0),
     new MineStackObj(MOB_DROP, "ender_eye", "エンダーアイ", 1, Material.EYE_OF_ENDER, 0),
     new MineStackObj(MOB_DROP, "slime_ball", "スライムボール", 1, Material.SLIME_BALL, 0),
@@ -70,7 +69,7 @@ object MineStackObjectList {
   )
 
   // 採掘で入手可能な農業系ブロック
-  val minestacklistfarm: List[MineStackObj[MineStackTag.Agricultural]] = List(
+  val minestacklistfarm: List[MineStackObj] = List(
     new MineStackObj(AGRICULTURAL, "seeds", "種", 1, Material.SEEDS, 0),
     new MineStackObj(AGRICULTURAL, "apple", "リンゴ", 1, Material.APPLE, 0),
     new MineStackObj(AGRICULTURAL, "long_grass1", "草", 1, Material.LONG_GRASS, 1),
@@ -157,7 +156,7 @@ object MineStackObjectList {
   )
 
   // 建築系ブロック
-  val minestacklistbuild: List[MineStackObj[MineStackTag.Building]] = List(
+  val minestacklistbuild: List[MineStackObj] = List(
     new MineStackObj(BUILDING, "log", "オークの原木", 1, Material.LOG, 0),
     new MineStackObj(BUILDING, "wood", "オークの木材", 1, Material.WOOD, 0),
     new MineStackObj(BUILDING, "wood_step0", "オークの木材ハーフブロック", 1, Material.WOOD_STEP, 0),
@@ -463,7 +462,7 @@ object MineStackObjectList {
   )
 
   // レッドストーン系ブロック
-  val minestacklistrs: List[MineStackObj[MineStackTag.RedstoneAndTransportation]] = List(
+  val minestacklistrs: List[MineStackObj] = List(
     new MineStackObj(REDSTONE_AND_TRANSPORTATION, "redstone", "レッドストーン", 1, Material.REDSTONE, 0),
     new MineStackObj(REDSTONE_AND_TRANSPORTATION, "stone_button", "石のボタン", 1, Material.STONE_BUTTON, 0),
     new MineStackObj(REDSTONE_AND_TRANSPORTATION, "wood_button", "木のボタン", 1, Material.WOOD_BUTTON, 0),
@@ -536,7 +535,7 @@ object MineStackObjectList {
   /**
    * デフォルトでガチャの内容に含まれている景品。
    */
-  val minestackBuiltinGachaPrizes: List[MineStackObj[MineStackTag.GachaPrize]] = List(
+  val minestackBuiltinGachaPrizes: List[MineStackObj] = List(
     new MineStackObj("gachaimo", None, 1, StaticGachaPrizeFactory.getGachaRingo, true, -1, GACHA_PRIZES),
     new MineStackObj(GACHA_PRIZES, "exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
   )
@@ -545,8 +544,8 @@ object MineStackObjectList {
    * マインスタックに格納できるガチャ景品。
    */
   // これは後に変更されるのでミュータブルでないといけない
-  val minestackGachaPrizes: mutable.ArrayBuffer[MineStackObj[_]] = mutable.ArrayBuffer.from(minestackBuiltinGachaPrizes)
+  val minestackGachaPrizes: mutable.ArrayBuffer[MineStackObj] = mutable.ArrayBuffer.from(minestackBuiltinGachaPrizes)
 
   // ランダムアクセスしないので
-  val minestacklist: mutable.ArrayBuffer[MineStackObj[_]] = mutable.ArrayBuffer()
+  val minestacklist: mutable.ArrayBuffer[MineStackObj] = mutable.ArrayBuffer()
 }

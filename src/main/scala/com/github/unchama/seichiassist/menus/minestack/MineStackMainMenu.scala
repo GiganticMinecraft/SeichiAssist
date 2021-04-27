@@ -29,7 +29,7 @@ object MineStackMainMenu extends Menu {
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
 
   def categoryButtonLayout(implicit ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu): MenuSlotLayout = {
-    def iconMaterialFor(category: MineStackObjectCategory[_]): Material = category match {
+    def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
       case ORES => Material.DIAMOND_ORE
       case MOB_DROP => Material.ENDER_PEARL
       case AGRICULTURAL => Material.SEEDS

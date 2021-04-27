@@ -43,7 +43,7 @@ import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCCon
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory, MineStackTag}
+import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
@@ -716,7 +716,7 @@ object SeichiAssist {
     }
   }
 
-  private def generateGachaPrizes(): List[MineStackObj[MineStackTag.GachaPrize]] =
+  private def generateGachaPrizes(): List[MineStackObj] =
     msgachadatalist
       .toList
       .zipWithIndex
