@@ -30,8 +30,8 @@ class GiftItemInterpreter[F[_] : OnMinecraftServerThread] extends (Gift.Item => 
       case _ => None
     }
 
-    // この明示的な型変数がないとビルドが通らない。とはいえ返り値は自明なので最低限の表記を選択した
-    SequentialEffect[_](message.toList :+ grantItemStacksEffect(itemStack))
+    // この明示的な型変数がないとビルドが通らない
+    SequentialEffect[List[TargetedEffect[Player]]](message.toList :+ grantItemStacksEffect(itemStack))
   }
 
 }
