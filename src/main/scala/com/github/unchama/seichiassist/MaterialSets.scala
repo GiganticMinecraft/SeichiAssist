@@ -37,7 +37,10 @@ object MaterialSets {
     Material.DOUBLE_STEP, Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL, Material.VINE,
     // #913
     Material.BED_BLOCK, Material.TRAP_DOOR, Material.IRON_TRAPDOOR, Material.CARPET, Material.IRON_DOOR_BLOCK,
-    Material.WOODEN_DOOR, Material.SMOOTH_STAIRS, Material.BREWING_STAND, Material.WOOD_STEP, Material.TNT
+    // 木のドアはそれぞれMaterialが別れている
+    Material.WOODEN_DOOR, Material.ACACIA_DOOR, Material.BIRCH_DOOR, Material.DARK_OAK_DOOR,
+    Material.JUNGLE_DOOR, Material.SPRUCE_DOOR,
+    Material.SMOOTH_STAIRS, Material.BREWING_STAND, Material.WOOD_STEP, Material.TNT,
   ) ++ fortuneMaterials
 
   // これらのマテリアルを持つブロックは破壊を整地量に計上しない
