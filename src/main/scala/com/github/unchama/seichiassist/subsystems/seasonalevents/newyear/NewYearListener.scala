@@ -38,6 +38,8 @@ class NewYearListener[
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
+      val player = event.getPlayer
+
       List(
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、新年イベントを開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
