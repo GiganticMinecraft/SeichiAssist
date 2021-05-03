@@ -290,11 +290,7 @@ object ChristmasItemData {
       setItemMeta(itemMeta)
     }
 
-    new NBTItem(itemStack).tap { nbtItem =>
-      import nbtItem._
-      setByte(NBTTagConstants.typeIdTag, 6.toByte)
-    }
-      .pipe(_.getItem)
+    itemStack
   }
 
   //endregion
