@@ -26,6 +26,7 @@ object System {
         case Gift.AutomaticGachaRun => Kleisli {
           player =>
             Sync[F].delay {
+              player.sendMessage("レベルアップ記念としてガチャを実行しました。")
               GachaCommand.Gachagive(player, 1, player.getName)
             }
         }
