@@ -14,7 +14,7 @@ object LoginBonusItemList {
     (EventLoginCount(9), Set(LoginBonus(LoginBonusGachaTicket, 100))),
     (EventLoginCount(15), Set(LoginBonus(LoginBonusGachaTicket, 200)))
   )
-  private val dailyItem: Option[LoginBonus] = None
+  private val dailyItem = Some(LoginBonus(LoginBonusGachaTicket, 20))
 
   def bonusAt(index: LoginBonusIndex): Option[Set[LoginBonus]] = index match {
     case EventLoginCount(count) => map.get(EventLoginCount(count))
