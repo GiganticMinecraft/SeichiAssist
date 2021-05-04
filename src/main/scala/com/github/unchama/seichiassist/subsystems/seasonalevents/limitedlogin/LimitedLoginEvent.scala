@@ -5,8 +5,8 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.dateRangeA
 import java.time.LocalDate
 
 object LimitedLoginEvent {
-  val START_DATE: LocalDate = LocalDate.of(2019, 3, 1)
-  val END_DATE: LocalDate = LocalDate.of(2019, 3, 31)
+  val START_DATE: LocalDate = LocalDate.of(2021, 6, 15)
+  val END_DATE: LocalDate = LocalDate.of(2021, 6, 29)
 
   def isInEvent: Boolean = dateRangeAsSequence(START_DATE, END_DATE).contains(LocalDate.now())
 }
