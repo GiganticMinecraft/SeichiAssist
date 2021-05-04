@@ -6,18 +6,23 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
+import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
-import org.bukkit.Sound
+import org.bukkit.block.{Block, Chest}
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.{Material, Sound, TreeType}
 
 import java.time.LocalDate
+import scala.util.Random
+import scala.util.control.Breaks
 
 class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
                           ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
@@ -49,9 +54,51 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
         grantItemStacksEffect(mineHead),
         MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-        UnfocusedEffect{playerData.anniversary = false}
+        UnfocusedEffect {
+          playerData.anniversary = false
+        }
       ),
       s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する"
     )
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  def onPlayerPlaceSapling(event: BlockPlaceEvent): Unit = {
+    if (!isStrangeSapling(event.getItemInHand)) return
+
+    val placedBlock = event.getBlock
+    // 苗木をなくす
+    placedBlock.setType(Material.AIR)
+    val location = placedBlock.getLocation
+    // オークの木を生やす
+    location.getWorld.generateTree(location, TreeType.TREE)
+
+    val breaks = new Breaks
+    // Y座標を下に動かして（木の上方から）オークの木の頂点を探し、そのブロックを置き換えて、ループを抜ける
+    breaks.breakable {
+      for (relY <- 10 to 0 by -1) {
+        val block = placedBlock.getRelative(0, relY, 0)
+
+        if (block.getType == Material.LOG || block.getType == Material.LEAVES) {
+          replaceBlockOnTreeTop(location.getBlock, event.getPlayer.getName)
+          breaks.break
+        }
+      }
+    }
+  }
+
+  /**
+   * 木の頂点を何かしらのブロックに変更する
+   * ただし、[[storangeSaplingSiinaRate]]の確率で、椎名林檎5個が入ったチェストを生成する
+   */
+  private def replaceBlockOnTreeTop(block: Block, playerName: String): Unit = {
+    if (new Random().nextDouble() < storangeSaplingSiinaRate) {
+      block.setType(Material.CHEST)
+      val chest = block.getState.asInstanceOf[Chest]
+      chest.getBlockInventory.addItem(List.fill(5)(getMaxRingo(playerName)): _*)
+    } else {
+      val random = new Random().nextInt(storangeSaplingBlockSet.size)
+      block.setType(storangeSaplingBlockSet.toVector(random))
+    }
   }
 }
