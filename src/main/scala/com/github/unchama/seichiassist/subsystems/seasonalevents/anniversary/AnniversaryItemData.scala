@@ -67,7 +67,35 @@ object AnniversaryItemData {
 
   //endregion
 
-  object NBTTagConstants {
+  val mendingBook: ItemStack = {
+    val loreList = List(
+      "手に持って右クリックすると",
+      "オフハンドにあるアイテムの耐久値を全回復する"
+    ).map(lore => s"$RESET$GRAY$lore")
+      .asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(WRITTEN_BOOK).tap { meta =>
+      import meta._
+      setDisplayName(s"$GOLD${BOLD}修繕の書")
+      setLore(loreList)
+    }
+
+    val itemStack = new ItemStack(WRITTEN_BOOK, 1)
+    itemStack.setItemMeta(itemMeta)
+
+    new NBTItem(itemStack).tap { item =>
+      import item._
+      setByte(NBTTagConstants.typeIdTag, 2.toByte)
+    }
+      .pipe(_.getItem)
+  }
+
+  def isMendingBook(item: ItemStack) =
+    item != null && item.getType != AIR && {
+      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
+    }
+
+  private object NBTTagConstants {
     val typeIdTag = "anniversaryItemTypeId"
   }
 
