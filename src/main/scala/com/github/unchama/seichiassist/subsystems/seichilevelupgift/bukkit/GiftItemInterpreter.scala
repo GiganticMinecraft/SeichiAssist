@@ -28,14 +28,12 @@ class GiftItemInterpreter[F[_] : OnMinecraftServerThread : Sync] extends (Gift.I
       case Item.Elsa => ItemData.getElsa(1)
     }
 
-    val message = item match {
-      case Item.GachaTicket => Some(MessageEffectF[F]("レベルアップ記念のガチャ券を配布しました。"))
-      case _ => None
-    }
-
     import cats.implicits._
     import cats.effect.implicits._
-    SequentialEffect(message.toList :+ grantItemStacksEffect[F]())
+    SequentialEffect(
+      MessageEffectF[F]("レベルアップ記念のアイテムを配布しました。"),
+      grantItemStacksEffect[F]()
+    )
   }
 
 }
