@@ -14,10 +14,11 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.block.{Block, Chest}
-import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.{Action, BlockPlaceEvent}
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.{PlayerInteractEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{Material, Sound, TreeType}
 
 import java.time.LocalDate
@@ -85,6 +86,20 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
         }
       }
     }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  def onPlayerRightClickMendingBook(event: PlayerInteractEvent): Unit = {
+    if (!isMendingBook(event.getItem)) return
+    if (event.getHand == EquipmentSlot.OFF_HAND) return
+
+    val player = event.getPlayer
+    val action = event.getAction
+    val offHandItem = player.getInventory.getItemInOffHand
+    if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return
+    if (offHandItem == null) return
+
+    offHandItem.setDurability(0.toShort)
   }
 
   /**
