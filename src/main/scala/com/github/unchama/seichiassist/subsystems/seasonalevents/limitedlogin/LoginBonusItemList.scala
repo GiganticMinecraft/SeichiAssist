@@ -10,7 +10,9 @@ case object Everyday extends LoginBonusIndex
 
 object LoginBonusItemList {
   private val map = Map(
-    (EventLoginCount(20), Set(LoginBonus(LoginBonusGachaTicket, 200)))
+    (EventLoginCount(3), Set(LoginBonus(LoginBonusGachaTicket, 100))),
+    (EventLoginCount(9), Set(LoginBonus(LoginBonusGachaTicket, 100))),
+    (EventLoginCount(15), Set(LoginBonus(LoginBonusGachaTicket, 200)))
   )
   private val dailyItem: Option[LoginBonus] = None
 
