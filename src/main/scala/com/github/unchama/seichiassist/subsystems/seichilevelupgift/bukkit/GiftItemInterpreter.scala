@@ -31,7 +31,7 @@ class GiftItemInterpreter[F[_] : OnMinecraftServerThread : Sync] extends (Gift.I
     import cats.implicits._
     import cats.effect.implicits._
     SequentialEffect(
-      MessageEffectF[F]("レベルアップ記念のガチャ券を配布しました。"),
+      MessageEffectF[F]("レベルアップ記念のアイテムを配布しました。"),
       grantItemStacksEffect[F]()
     )
   }
