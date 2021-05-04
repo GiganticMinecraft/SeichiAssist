@@ -21,7 +21,8 @@ object AnniversaryItemData {
     ))
     .build()
 
-  // 「気になる木」の苗
+  //region 「気になる木」の苗
+
   val strangeSapling: ItemStack = {
     val loreList = List(
       "植えるとすぐ成長する。",
@@ -58,6 +59,8 @@ object AnniversaryItemData {
     item != null && item.getType != AIR && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
+
+  //endregion
 
   object NBTTagConstants {
     val typeIdTag = "anniversaryItemTypeId"
