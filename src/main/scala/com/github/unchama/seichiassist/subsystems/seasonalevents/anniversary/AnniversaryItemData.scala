@@ -67,6 +67,8 @@ object AnniversaryItemData {
 
   //endregion
 
+  //region 修繕の書
+
   val mendingBook: ItemStack = {
     val loreList = List(
       "手に持って右クリックすると",
@@ -94,6 +96,8 @@ object AnniversaryItemData {
     item != null && item.getType != AIR && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
     }
+
+  //endregion
 
   private object NBTTagConstants {
     val typeIdTag = "anniversaryItemTypeId"
