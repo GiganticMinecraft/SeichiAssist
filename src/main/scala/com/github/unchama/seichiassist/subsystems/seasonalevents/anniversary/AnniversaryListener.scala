@@ -88,8 +88,8 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
   }
 
   /**
-   * 木の頂点を何かしらのブロックに変更する
-   * ただし、[[storangeSaplingSiinaRate]]の確率で、椎名林檎5個が入ったチェストを生成する
+   * 指定されたブロックを[[storangeSaplingBlockSet]]野中のいずれかに変更する
+   * ただし、[[storangeSaplingSiinaRate]]の確率で、椎名林檎5個が入ったチェストに変更する
    */
   private def replaceBlockOnTreeTop(block: Block, playerName: String): Unit = {
     if (new Random().nextDouble() < storangeSaplingSiinaRate) {
