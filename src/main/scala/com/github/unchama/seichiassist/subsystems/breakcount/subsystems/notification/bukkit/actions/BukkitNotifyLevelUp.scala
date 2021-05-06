@@ -31,15 +31,19 @@ object BukkitNotifyLevelUp {
 
     override def ofSeichiStarLevelTo(player: Player)(diff: Diff[SeichiStarLevel]): F[Unit] = {
       val Diff(oldStars, newStars) = diff
-      val message = {
+      val titleMessage = {
         if (oldStars == SeichiStarLevel.zero) {
-          s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv199→Lv200(☆(${newStars.level}))】"
+          s"【Lv199→Lv200(☆(${newStars.level}))】"
         } else {
-          s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★【Lv200(☆(${oldStars.level}))→Lv200(☆(${newStars.level}))】"
+          s"【Lv200(☆(${oldStars.level}))→Lv200(☆(${newStars.level}))】"
         }
       }
+      val subTitleMessage = s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★"
 
-      if (oldStars < newStars) Sync[F].delay(player.sendMessage(message))
+      if (oldStars < newStars) Sync[F].delay {
+        player.sendTitle(titleMessage, subTitleMessage, 10, 70, 20)
+        Util.launchFireWorks(player.getLocation)
+      }
       else Applicative[F].unit
     }
   }

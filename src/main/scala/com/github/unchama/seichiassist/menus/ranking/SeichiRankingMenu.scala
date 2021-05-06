@@ -80,11 +80,19 @@ case class SeichiRankingMenu(pageIndex: Int) extends Menu {
 
   private def rankingSection(ranking: SeichiRanking): Seq[(Int, Button)] = {
     def entry(position: Int, record: SeichiRankingRecord): Button = {
+      val level = record.seichiAmountData.levelCorrespondingToExp.level
+      val starLevel = record.seichiAmountData.starLevelCorrespondingToExp.level
+      
+      val displayLevel = if (starLevel > 0) {
+        s"$RESET${GREEN}整地Lv:$level☆$starLevel"
+      } else {
+        s"$RESET${GREEN}整地Lv:$level"
+      }
       Button(
         new SkullItemStackBuilder(record.playerName)
           .title(s"$YELLOW$BOLD${position}位:$WHITE${record.playerName}")
           .lore(
-            s"$RESET${GREEN}整地Lv:${record.seichiAmountData.levelCorrespondingToExp.level}",
+            s"$RESET${GREEN}整地Lv:$displayLevel",
             s"$RESET${GREEN}総整地量:${record.seichiAmountData.expAmount.amount}"
           )
           .build()
