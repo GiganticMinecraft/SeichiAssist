@@ -105,17 +105,17 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
   }
 
   /**
-   * 指定されたブロックを[[storangeSaplingBlockSet]]野中のいずれかに変更する
-   * ただし、[[storangeSaplingSiinaRate]]の確率で、椎名林檎5個が入ったチェストに変更する
+   * 指定されたブロックを[[strangeSaplingBlockSet]]野中のいずれかに変更する
+   * ただし、[[strangeSaplingSiinaRate]]の確率で、椎名林檎5個が入ったチェストに変更する
    */
   private def replaceBlockOnTreeTop(block: Block, playerName: String): Unit = {
-    if (new Random().nextDouble() < storangeSaplingSiinaRate) {
+    if (new Random().nextDouble() < strangeSaplingSiinaRate) {
       block.setType(Material.CHEST)
       val chest = block.getState.asInstanceOf[Chest]
       chest.getBlockInventory.addItem(List.fill(5)(getMaxRingo(playerName)): _*)
     } else {
-      val random = new Random().nextInt(storangeSaplingBlockSet.size)
-      block.setType(storangeSaplingBlockSet.toVector(random))
+      val random = new Random().nextInt(strangeSaplingBlockSet.size)
+      block.setType(strangeSaplingBlockSet.toVector(random))
     }
   }
 }

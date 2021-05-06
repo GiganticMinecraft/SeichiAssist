@@ -53,13 +53,13 @@ object AnniversaryItemData {
       .pipe(_.getItem)
   }
 
-  val storangeSaplingBlockSet = Set(
+  val strangeSaplingBlockSet = Set(
     ANVIL, BEACON, BONE_BLOCK, BOOKSHELF, BRICK, CAKE, CAULDRON, COAL_BLOCK, DIAMOND_BLOCK,
     DRAGON_EGG, FENCE, FLOWER_POT, GLOWSTONE, GOLD_BLOCK, GRASS, ICE, IRON_BLOCK, MELON_BLOCK,
     NETHER_BRICK, QUARTZ_BLOCK, SAND, SPONGE, WORKBENCH
   )
 
-  val storangeSaplingSiinaRate = 0.0003
+  val strangeSaplingSiinaRate = 0.0003
 
   def isStrangeSapling(item: ItemStack) =
     item != null && item.getType != AIR && {
