@@ -9,4 +9,6 @@ object Anniversary {
   val ANNIVERSARY_COUNT = EVENT_YEAR - 2016
   val EVENT_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 6, 29)
   val blogArticleUrl: String = validateUrl(s"https://www.seichi.network/post/anniversary$EVENT_YEAR")
+
+  def isInEvent: Boolean = EVENT_DATE.equals(LocalDate.now())
 }

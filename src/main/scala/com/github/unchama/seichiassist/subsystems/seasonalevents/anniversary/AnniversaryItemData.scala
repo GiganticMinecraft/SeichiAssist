@@ -7,6 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.Material._
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
@@ -98,6 +99,20 @@ object AnniversaryItemData {
     }
 
   //endregion
+
+  //TODO: unchamaさんシリーズ
+
+  // SeichiAssistで呼ばれてるだけ
+  def anniversaryPlayerHead(head: SkullMeta): SkullMeta = {
+    val lore = List(
+      "",
+      s"$GREEN${ITALIC}大切なあなたへ感謝を。",
+      s"$YELLOW$UNDERLINE$ITALIC${ANNIVERSARY_COUNT} Anniversary"
+    ).map(str => s"$RESET$str")
+      .asJava
+    head.setLore(lore)
+    head
+  }
 
   private object NBTTagConstants {
     val typeIdTag = "anniversaryItemTypeId"
