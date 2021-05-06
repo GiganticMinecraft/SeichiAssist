@@ -100,7 +100,7 @@ object AnniversaryItemData {
 
   //endregion
 
-  //TODO: unchamaさんシリーズ
+  // TODO: Pガチャ「月光」エンチャント
 
   // SeichiAssistで呼ばれてるだけ
   def anniversaryPlayerHead(head: SkullMeta): SkullMeta = {
