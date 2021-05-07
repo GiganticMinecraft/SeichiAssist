@@ -62,7 +62,7 @@ object AnniversaryItemData {
   val strangeSaplingSiinaRate = 0.0003
 
   def isStrangeSapling(item: ItemStack) =
-    item != null && item.getType != AIR && {
+    item != null && item.getType == SAPLING && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
@@ -94,7 +94,7 @@ object AnniversaryItemData {
   }
 
   def isMendingBook(item: ItemStack) =
-    item != null && item.getType != AIR && {
+    item != null && item.getType == WRITTEN_BOOK && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
     }
 
