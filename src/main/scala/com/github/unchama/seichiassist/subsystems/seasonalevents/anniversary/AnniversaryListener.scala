@@ -97,7 +97,7 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
   }
 
   /**
-   * 指定されたブロックを[[strangeSaplingBlockSet]]野中のいずれかに変更する
+   * 指定されたブロックを[[strangeSaplingBlockSet]]の中のいずれかに変更する
    * ただし、[[strangeSaplingSiinaRate]]の確率で、椎名林檎5個が入ったチェストに変更する
    */
   private def replaceBlockOnTreeTop(block: Block, playerName: String): Unit = {
