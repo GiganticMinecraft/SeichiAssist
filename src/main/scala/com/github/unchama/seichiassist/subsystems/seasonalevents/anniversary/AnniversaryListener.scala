@@ -23,7 +23,6 @@ import org.bukkit.{Material, Sound, TreeType}
 
 import java.time.LocalDate
 import scala.util.Random
-import scala.util.control.Breaks
 
 class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
                           ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
@@ -70,22 +69,15 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
     val placedBlock = event.getBlock
     // 苗木をなくす
     placedBlock.setType(Material.AIR)
-    val location = placedBlock.getLocation
+    val rootLocation = placedBlock.getLocation
     // オークの木を生やす
-    location.getWorld.generateTree(location, TreeType.TREE)
+    rootLocation.getWorld.generateTree(rootLocation, TreeType.TREE)
 
-    val breaks = new Breaks
-    // Y座標を下に動かして（木の上方から）オークの木の頂点を探し、そのブロックを置き換えて、ループを抜ける
-    breaks.breakable {
-      for (relY <- 10 to 0 by -1) {
-        val block = placedBlock.getRelative(0, relY, 0)
-
-        if (block.getType == Material.LOG || block.getType == Material.LEAVES) {
-          replaceBlockOnTreeTop(location.getBlock, event.getPlayer.getName)
-          breaks.break
-        }
-      }
-    }
+    // Y座標を下に動かして（木の上方から）オークの木の頂点を探し、そのブロックを置き換える
+    (10 to 0 by -1)
+      .map(placedBlock.getRelative(0, _, 0))
+      .find(block => block.getType == Material.LOG || block.getType == Material.LEAVES)
+      .foreach(replaceBlockOnTreeTop(_, event.getPlayer.getName))
   }
 
   @EventHandler(ignoreCancelled = true)
