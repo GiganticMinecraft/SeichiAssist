@@ -31,6 +31,7 @@ object AnniversaryItemData {
 
   val strangeSapling: ItemStack = {
     val loreList = List(
+      "",
       "植えるとすぐ成長する。",
       "先端のブロックがランダムで変化する。",
       "極稀にあの「林檎」も...？"
@@ -72,6 +73,7 @@ object AnniversaryItemData {
 
   val mendingBook: ItemStack = {
     val loreList = List(
+      "",
       "手に持って右クリックすると",
       "オフハンドにあるアイテムの耐久値を全回復する"
     ).map(lore => s"$RESET$GRAY$lore")
