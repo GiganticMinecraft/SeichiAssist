@@ -101,7 +101,7 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
    * ただし、[[strangeSaplingSiinaRate]]の確率で、椎名林檎5個が入ったチェストに変更する
    */
   private def replaceBlockOnTreeTop(block: Block, playerName: String): Unit = {
-    if (new Random().nextDouble() < strangeSaplingSiinaRate) {
+    if (new Random().nextDouble() <= strangeSaplingSiinaRate) {
       block.setType(Material.CHEST)
       val chest = block.getState.asInstanceOf[Chest]
       chest.getBlockInventory.addItem(List.fill(5)(getMaxRingo(playerName)): _*)
