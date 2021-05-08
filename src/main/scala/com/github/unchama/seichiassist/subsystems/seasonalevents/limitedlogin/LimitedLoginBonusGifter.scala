@@ -38,7 +38,7 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
       else playerData.LimitedLoginCount + 1
 
     giveLoginBonus(Everyday)
-    giveLoginBonus(EventLoginCount(loginDays))
+    giveLoginBonus(TotalDay(loginDays))
 
     playerData.LimitedLoginCount = loginDays
   }
