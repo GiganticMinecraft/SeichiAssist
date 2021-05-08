@@ -58,7 +58,7 @@ object ValentineItemData {
   }
 
   def isDroppedCookie(item: ItemStack): Boolean =
-    item != null && item.getType != Material.AIR && {
+    item != null && item.getType == Material.COOKIE && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
@@ -97,7 +97,7 @@ object ValentineItemData {
   }
 
   def isGiftedCookie(item: ItemStack): Boolean =
-    item != null && item.getType != Material.AIR && {
+    item != null && item.getType == Material.COOKIE && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
     }
 
