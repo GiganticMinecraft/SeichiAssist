@@ -84,12 +84,14 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
   def onPlayerRightClickMendingBook(event: PlayerInteractEvent): Unit = {
     val item = event.getItem
     if (!isMendingBook(item)) return
+
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
-    val player = event.getPlayer
     val action = event.getAction
-    val offHandItem = player.getInventory.getItemInOffHand
     if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return
+
+    val player = event.getPlayer
+    val offHandItem = player.getInventory.getItemInOffHand
     if (offHandItem == null) return
 
     offHandItem.setDurability(0.toShort)
