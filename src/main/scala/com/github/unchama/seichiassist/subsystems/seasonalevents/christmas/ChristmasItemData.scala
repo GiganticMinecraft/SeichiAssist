@@ -64,7 +64,7 @@ object ChristmasItemData {
   }
 
   def isChristmasCake(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
+    itemStack != null && itemStack.getType == Material.CAKE && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 1
     }
@@ -104,7 +104,7 @@ object ChristmasItemData {
   }
 
   def isChristmasTurkey(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
+    itemStack != null && itemStack.getType == Material.COOKED_CHICKEN && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 2
     }
@@ -149,7 +149,7 @@ object ChristmasItemData {
   }
 
   def isChristmasPotion(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
+    itemStack != null && itemStack.getType == Material.POTION && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 3
     }
@@ -192,7 +192,7 @@ object ChristmasItemData {
   }
 
   def isChristmasChestPlate(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
+    itemStack != null && itemStack.getType == Material.DIAMOND_CHESTPLATE && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 4
     }
