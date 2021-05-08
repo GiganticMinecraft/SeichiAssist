@@ -43,14 +43,14 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
     playerData.LimitedLoginCount = loginDays
   }
 
-  private def giveLoginBonus(index: LoginBonusDay)(implicit player: Player): Unit = {
-    val loginBonusSet = bonusAt(index)
+  private def giveLoginBonus(day: LoginBonusDay)(implicit player: Player): Unit = {
+    val loginBonusSet = bonusAt(day)
       .getOrElse(throw new NoSuchElementException("存在しないアイテムデータが指定されました。"))
 
     loginBonusSet.foreach { loginBonus =>
       import LoginBonusDay._
 
-      val messageOfDay = index match {
+      val messageOfDay = day match {
         case TotalDay(count) => s"${count}日目"
         case Everyday => "毎日"
       }
