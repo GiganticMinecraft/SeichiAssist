@@ -2,11 +2,15 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
 sealed trait LoginBonusDay
 
-case class EventLoginCount(count: Int) extends LoginBonusDay {
-  require(count > 0, "Login bonus count must be positive")
-}
+object LoginBonusDay {
 
-case object Everyday extends LoginBonusDay
+  case class TotalDay(totalDay: Int) extends LoginBonusDay {
+    require(totalDay > 0, "Login bonus count must be positive")
+  }
+
+  case object Everyday extends LoginBonusDay
+
+}
 
 object LoginBonusItemList {
   private val map = Map(
