@@ -49,8 +49,6 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
       .getOrElse(throw new NoSuchElementException("存在しないアイテムデータが指定されました。"))
 
     loginBonusSet.foreach { loginBonus =>
-      import LoginBonusDay._
-
       val messageOfDay = day match {
         case TotalDay(count) => s"${count}日目"
         case Everyday => "毎日"
