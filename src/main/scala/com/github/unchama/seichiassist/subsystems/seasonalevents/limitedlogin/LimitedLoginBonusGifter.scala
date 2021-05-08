@@ -69,8 +69,8 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
     DefaultEffectEnvironment.runEffectAsync(
       s"${itemName}を付与する",
       List.fill(amount)(
-        grantItemStacksEffect(item).run(player)
-      ).sequence
+        grantItemStacksEffect(item)
+      ).sequence.run(player)
     )
   }
 }
