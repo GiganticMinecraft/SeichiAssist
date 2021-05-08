@@ -43,7 +43,7 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
     playerData.LimitedLoginCount = loginDays
   }
 
-  private def giveLoginBonus(index: LoginBonusIndex)(implicit player: Player): Unit = {
+  private def giveLoginBonus(index: LoginBonusDay)(implicit player: Player): Unit = {
     val loginBonusSet = bonusAt(index)
       .getOrElse(throw new NoSuchElementException("存在しないアイテムデータが指定されました。"))
 

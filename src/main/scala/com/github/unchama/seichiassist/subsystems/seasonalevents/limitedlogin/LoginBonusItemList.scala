@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin
 
-sealed trait LoginBonusIndex
+sealed trait LoginBonusDay
 
-case class EventLoginCount(count: Int) extends LoginBonusIndex {
+case class EventLoginCount(count: Int) extends LoginBonusDay {
   require(count > 0, "Login bonus count must be positive")
 }
 
-case object Everyday extends LoginBonusIndex
+case object Everyday extends LoginBonusDay
 
 object LoginBonusItemList {
   private val map = Map(
@@ -16,7 +16,7 @@ object LoginBonusItemList {
   )
   private val dailyItem = Some(LoginBonus(LoginBonusGachaTicket, 20))
 
-  def bonusAt(index: LoginBonusIndex): Option[Set[LoginBonus]] = index match {
+  def bonusAt(index: LoginBonusDay): Option[Set[LoginBonus]] = index match {
     case EventLoginCount(count) => map.get(EventLoginCount(count))
     case Everyday => dailyItem.map(bonus => Set(bonus))
   }
