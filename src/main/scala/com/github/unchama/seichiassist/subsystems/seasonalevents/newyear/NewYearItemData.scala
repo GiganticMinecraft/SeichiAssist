@@ -45,7 +45,7 @@ object NewYearItemData {
   }
 
   def isNewYearApple(item: ItemStack): Boolean = {
-    item != null && item.getType == Material.GOLDEN_APPLE && {
+    item != null && item.getType != Material.AIR && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
   }

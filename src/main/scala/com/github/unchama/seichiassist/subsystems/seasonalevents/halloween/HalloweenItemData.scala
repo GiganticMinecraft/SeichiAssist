@@ -61,7 +61,7 @@ object HalloweenItemData {
   }
 
   def isHalloweenPotion(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType == Material.POTION && {
+    itemStack != null && itemStack.getType != Material.AIR && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 1
     }
@@ -121,7 +121,7 @@ object HalloweenItemData {
   }
 
   def isHalloweenHoe(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType == Material.DIAMOND_HOE && {
+    itemStack != null && itemStack.getType != Material.AIR && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 2
     }
