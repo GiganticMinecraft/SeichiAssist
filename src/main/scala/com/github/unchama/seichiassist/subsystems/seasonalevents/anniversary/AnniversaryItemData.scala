@@ -102,7 +102,37 @@ object AnniversaryItemData {
 
   //endregion
 
-  // TODO: Pガチャ「月光」エンチャント
+  //region 記念限定シャベル
+
+  val anniversaryShovel: ItemStack = {
+    val loreList = List(
+      "",
+      "特殊なエンチャントが付与されています",
+    ).map(lore => s"$RESET$YELLOW$lore")
+      .asJava
+
+    val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SPADE).tap { meta =>
+      import meta._
+      setDisplayName(s"$GOLD${BOLD}SCARLET")
+      setLore(loreList)
+    }
+
+    val itemStack = new ItemStack(DIAMOND_SPADE, 1)
+    itemStack.setItemMeta(itemMeta)
+
+    new NBTItem(itemStack).tap { item =>
+      import item._
+      setByte(NBTTagConstants.typeIdTag, 3.toByte)
+    }
+      .pipe(_.getItem)
+  }
+
+  def isAnniversaryShovel(item: ItemStack) =
+    item != null && item.getType == DIAMOND_SPADE && {
+      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 3
+    }
+
+  //endregion
 
   // SeichiAssistで呼ばれてるだけ
   def anniversaryPlayerHead(head: SkullMeta): SkullMeta = {
