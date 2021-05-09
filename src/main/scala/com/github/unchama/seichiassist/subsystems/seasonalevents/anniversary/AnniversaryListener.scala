@@ -8,13 +8,14 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
-import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
+import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, isEnemy}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.block.{Block, Chest}
-import org.bukkit.event.block.{Action, BlockPlaceEvent}
+import org.bukkit.entity.LivingEntity
+import org.bukkit.event.block.{Action, BlockBreakEvent, BlockPlaceEvent}
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.{PlayerInteractEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
@@ -22,6 +23,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{Material, Sound, TreeType}
 
 import java.time.LocalDate
+import scala.jdk.CollectionConverters._
 import scala.util.Random
 
 class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
@@ -96,6 +98,19 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
 
     offHandItem.setDurability(0.toShort)
     player.getInventory.removeItem(item)
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  def onPlayerBreakBlockWithAnniversaryShovel(event: BlockBreakEvent) = {
+    val player = event.getPlayer
+    if (!isAnniversaryShovel(player.getInventory.getItemInMainHand)) return
+
+    player.getNearbyEntities(20.0, 20.0, 20.0).asScala.filter(mob => isEnemy(mob.getType)).foreach { entity =>
+      entity match {
+        case enemy: LivingEntity => enemy.damage(10.0)
+        case _ =>
+      }
+    }
   }
 
   /**
