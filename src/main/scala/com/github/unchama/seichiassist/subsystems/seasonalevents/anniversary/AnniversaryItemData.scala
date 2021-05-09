@@ -62,7 +62,7 @@ object AnniversaryItemData {
 
   val strangeSaplingSiinaRate = 0.0003
 
-  def isStrangeSapling(item: ItemStack) =
+  def isStrangeSapling(item: ItemStack): Boolean =
     item != null && item.getType == SAPLING && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
@@ -95,7 +95,7 @@ object AnniversaryItemData {
       .pipe(_.getItem)
   }
 
-  def isMendingBook(item: ItemStack) =
+  def isMendingBook(item: ItemStack): Boolean =
     item != null && item.getType == WRITTEN_BOOK && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
     }
@@ -127,7 +127,7 @@ object AnniversaryItemData {
       .pipe(_.getItem)
   }
 
-  def isAnniversaryShovel(item: ItemStack) =
+  def isAnniversaryShovel(item: ItemStack): Boolean =
     item != null && item.getType == DIAMOND_SPADE && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 3
     }
