@@ -101,7 +101,7 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
   }
 
   @EventHandler(ignoreCancelled = true)
-  def onPlayerBreakBlockWithAnniversaryShovel(event: BlockBreakEvent) = {
+  def onPlayerBreakBlockWithAnniversaryShovel(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
     if (!isAnniversaryShovel(player.getInventory.getItemInMainHand)) return
 
