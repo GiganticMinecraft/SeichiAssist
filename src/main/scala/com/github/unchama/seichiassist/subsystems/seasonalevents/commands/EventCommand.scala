@@ -40,7 +40,7 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
 
   val anniversaryGrantEffect: TargetedEffect[Player] =
     Util.grantItemStacksEffect(
-      minehead,
+      mineHead,
       strangeSapling,
       mendingBook,
       anniversaryShovel
