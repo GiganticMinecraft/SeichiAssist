@@ -10,6 +10,10 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
+import com.github.unchama.seichiassist.subsystems.loginranking.domain.LoginTime
+import com.github.unchama.seichiassist.subsystems.ranking.domain.VoteCount
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.Material
@@ -19,10 +23,10 @@ import org.bukkit.inventory.ItemStack
 object RankingRootMenu extends Menu {
   class Environment(implicit
                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-                    val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu,
-                    val ioCanOpenBuildRankingMenu: IO CanOpen BuildRankingMenu,
-                    val ioCanOpenLoginTimeRankingMenu: IO CanOpen LoginTimeRankingMenu,
-                    val ioCanOpenVoteCountRankingMenu: IO CanOpen VoteCountRankingMenu
+                    val ioCanOpenSeichiRankingMenu: IO CanOpen RankingMenu[SeichiAmountData],
+                    val ioCanOpenBuildRankingMenu: IO CanOpen RankingMenu[BuildAmountData],
+                    val ioCanOpenLoginTimeRankingMenu: IO CanOpen RankingMenu[LoginTime],
+                    val ioCanOpenVoteCountRankingMenu: IO CanOpen RankingMenu[VoteCount]
                    )
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}ランキング")
@@ -43,7 +47,7 @@ object RankingRootMenu extends Menu {
       iconOf("整地神ランキング"),
       LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        ioCanOpenSeichiRankingMenu.open(SeichiRankingMenu(0)),
+        ioCanOpenSeichiRankingMenu.open(RankingMenu(RankingMenuTemplates.seichi)),
       )
     )
 
@@ -51,7 +55,7 @@ object RankingRootMenu extends Menu {
       iconOf("ログイン神ランキング"),
       LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        ioCanOpenLoginTimeRankingMenu.open(LoginTimeRankingMenu(0))
+        ioCanOpenLoginTimeRankingMenu.open(RankingMenu(RankingMenuTemplates.login))
       )
     )
 
@@ -59,7 +63,7 @@ object RankingRootMenu extends Menu {
       iconOf("投票神ランキング"),
       LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        ioCanOpenVoteCountRankingMenu.open(VoteCountRankingMenu(0))
+        ioCanOpenVoteCountRankingMenu.open(RankingMenu(RankingMenuTemplates.vote))
       )
     )
 
@@ -67,7 +71,7 @@ object RankingRootMenu extends Menu {
       iconOf("建築神ランキング"),
       LeftClickButtonEffect(
         CommonSoundEffects.menuTransitionFenceSound,
-        ioCanOpenBuildRankingMenu.open(BuildRankingMenu(0))
+        ioCanOpenBuildRankingMenu.open(RankingMenu(RankingMenuTemplates.build))
       )
     )
 

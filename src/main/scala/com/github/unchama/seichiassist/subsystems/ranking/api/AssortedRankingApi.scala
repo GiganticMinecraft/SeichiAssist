@@ -16,12 +16,12 @@ case class RankingProvider[F[_], R](ranking: ReadOnlyRef[F, Ranking[R]])
 
 trait AssortedRankingApi[F[_]] {
 
-  val seichiAmountRanking: RankingProvider[F, SeichiAmountData]
+  implicit val seichiAmountRanking: RankingProvider[F, SeichiAmountData]
 
-  val buildAmountRanking: RankingProvider[F, BuildAmountData]
+  implicit val buildAmountRanking: RankingProvider[F, BuildAmountData]
 
-  val loginTimeRanking: RankingProvider[F, LoginTime]
+  implicit val loginTimeRanking: RankingProvider[F, LoginTime]
 
-  val voteCountRanking: RankingProvider[F, VoteCount]
+  implicit val voteCountRanking: RankingProvider[F, VoteCount]
 
 }

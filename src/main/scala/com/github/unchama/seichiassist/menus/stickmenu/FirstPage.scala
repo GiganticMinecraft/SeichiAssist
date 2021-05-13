@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
@@ -24,8 +25,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDigging
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
-import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
-import com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking
+import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -58,7 +58,7 @@ object FirstPage extends Menu {
                     val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
                     val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player],
                     val fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
-                    val rankingApi: RankingApi[IO, SeichiRanking],
+                    val rankingApi: RankingProvider[IO, SeichiAmountData],
                     val gachaPointApi: GachaPointApi[IO, SyncIO, Player],
                     val ioJavaTime: JavaTime[IO],
                     val ioCanOpenSecondPage: IO CanOpen SecondPage.type,
@@ -151,9 +151,7 @@ object FirstPage extends Menu {
           environment.breakCountAPI
             .seichiAmountDataRepository(player)
             .read.toIO
-        ranking <-
-          environment.rankingApi
-            .getRanking
+        ranking <- environment.rankingApi.ranking.read
         visibility <- visibilityRef.get.toIO
         lore <- new PlayerStatsLoreGenerator(
           openerData, ranking, seichiAmountData, visibility
