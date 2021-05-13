@@ -52,10 +52,22 @@ object RankingMenuTemplates {
 
   val seichi: RankingMenuTemplate[SeichiAmountData] = new RankingMenuTemplate[SeichiAmountData] {
     override val rankingName: String = "整地神ランキング"
-    override def recordDataLore(data: SeichiAmountData): List[String] = List(
-      s"$RESET${GREEN}整地Lv:${data.levelCorrespondingToExp.level}",
-      s"$RESET${GREEN}総整地量:${data.expAmount.amount}"
-    )
+    override def recordDataLore(data: SeichiAmountData): List[String] = {
+      val levelLine = {
+        val starLevel = data.starLevelCorrespondingToExp.level
+        val level = data.levelCorrespondingToExp.level
+
+        if (starLevel > 0)
+          s"整地Lv:$level☆$starLevel"
+        else
+          s"整地Lv:$level"
+      }
+
+      List(
+        s"$RESET$GREEN$levelLine",
+        s"$RESET${GREEN}総整地量:${data.expAmount.amount}"
+      )
+    }
     override def combinedDataLore(data: SeichiAmountData): List[String] = List(
       s"$RESET${AQUA}全プレイヤー総整地量: ${data.expAmount.amount}"
     )
