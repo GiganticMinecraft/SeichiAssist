@@ -17,21 +17,17 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object RankingRootMenu extends Menu {
-  class Environment(implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+  class Environment(implicit
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
                     val ioCanOpenSeichiRankingMenu: IO CanOpen SeichiRankingMenu,
                     val ioCanOpenBuildRankingMenu: IO CanOpen BuildRankingMenu,
                     val ioCanOpenLoginTimeRankingMenu: IO CanOpen LoginTimeRankingMenu,
                     val ioCanOpenVoteCountRankingMenu: IO CanOpen VoteCountRankingMenu
                    )
-  /**
-   * メニューのサイズとタイトルに関する情報
-   */
+
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}ランキング")
 
-  /**
-   * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
-   */
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = IO {
+  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
 
     def iconOf(rankingName: String): ItemStack =
@@ -43,48 +39,46 @@ object RankingRootMenu extends Menu {
         ))
         .build()
 
-    val seichiGodRankingButton: Button =
-      Button(
-        iconOf("整地神ランキング"),
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          ioCanOpenSeichiRankingMenu.open(SeichiRankingMenu(0)),
-        )
+    val seichiGodRankingButton: Button = Button(
+      iconOf("整地神ランキング"),
+      LeftClickButtonEffect(
+        CommonSoundEffects.menuTransitionFenceSound,
+        ioCanOpenSeichiRankingMenu.open(SeichiRankingMenu(0)),
       )
-
-    val loginGodRankingButton: Button =
-      Button(
-        iconOf("ログイン神ランキング"),
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          ioCanOpenLoginTimeRankingMenu.open(LoginTimeRankingMenu(0))
-        )
-      )
-
-    val voteGodRankingButton: Button =
-      Button(
-        iconOf("投票神ランキング"),
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          ioCanOpenVoteCountRankingMenu.open(VoteCountRankingMenu(0))
-        )
-      )
-
-    val buildGodRankingButton =
-      Button(
-        iconOf("建築神ランキング"),
-        LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          ioCanOpenBuildRankingMenu.open(BuildRankingMenu(0))
-        )
-      )
-
-    MenuSlotLayout(
-      ChestSlotRef(1, 1) -> seichiGodRankingButton,
-      ChestSlotRef(1, 3) -> loginGodRankingButton,
-      ChestSlotRef(1, 5) -> voteGodRankingButton,
-      ChestSlotRef(1, 7) -> buildGodRankingButton,
-      ChestSlotRef(3, 0) -> CommonButtons.openStickMenu
     )
+
+    val loginGodRankingButton: Button = Button(
+      iconOf("ログイン神ランキング"),
+      LeftClickButtonEffect(
+        CommonSoundEffects.menuTransitionFenceSound,
+        ioCanOpenLoginTimeRankingMenu.open(LoginTimeRankingMenu(0))
+      )
+    )
+
+    val voteGodRankingButton: Button = Button(
+      iconOf("投票神ランキング"),
+      LeftClickButtonEffect(
+        CommonSoundEffects.menuTransitionFenceSound,
+        ioCanOpenVoteCountRankingMenu.open(VoteCountRankingMenu(0))
+      )
+    )
+
+    val buildGodRankingButton: Button = Button(
+      iconOf("建築神ランキング"),
+      LeftClickButtonEffect(
+        CommonSoundEffects.menuTransitionFenceSound,
+        ioCanOpenBuildRankingMenu.open(BuildRankingMenu(0))
+      )
+    )
+
+    IO.pure {
+      MenuSlotLayout(
+        ChestSlotRef(1, 1) -> seichiGodRankingButton,
+        ChestSlotRef(1, 3) -> loginGodRankingButton,
+        ChestSlotRef(1, 5) -> voteGodRankingButton,
+        ChestSlotRef(1, 7) -> buildGodRankingButton,
+        ChestSlotRef(3, 0) -> CommonButtons.openStickMenu
+      )
+    }
   }
 }
