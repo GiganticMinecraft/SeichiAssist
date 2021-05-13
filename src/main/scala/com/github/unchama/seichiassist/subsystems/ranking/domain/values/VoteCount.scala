@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.ranking.domain
+package com.github.unchama.seichiassist.subsystems.ranking.domain.values
 
 import cats.Order
 import cats.kernel.Monoid

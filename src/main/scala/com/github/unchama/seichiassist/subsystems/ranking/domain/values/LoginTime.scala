@@ -1,7 +1,10 @@
-package com.github.unchama.seichiassist.subsystems.loginranking.domain
+package com.github.unchama.seichiassist.subsystems.ranking.domain.values
 
 import cats.kernel.{Monoid, Order}
 
+/**
+ * TODO: rankingサブシステムから移す
+ */
 case class LoginTime(inTick: Int) {
   val formatted = s"${inTick / 3600 / 20}時間${inTick / 60 / 20 % 60}分${inTick / 20 % 60}秒"
 }

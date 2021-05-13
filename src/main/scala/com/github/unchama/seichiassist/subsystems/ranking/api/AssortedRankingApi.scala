@@ -3,8 +3,8 @@ package com.github.unchama.seichiassist.subsystems.ranking.api
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import com.github.unchama.seichiassist.subsystems.loginranking.domain.LoginTime
-import com.github.unchama.seichiassist.subsystems.ranking.domain.{Ranking, VoteCount}
+import com.github.unchama.seichiassist.subsystems.ranking.domain.Ranking
+import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 
 /**
  * 定期的に更新されるランキングデータを提供するオブジェクトのtrait。

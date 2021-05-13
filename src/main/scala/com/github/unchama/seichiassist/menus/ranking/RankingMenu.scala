@@ -10,9 +10,9 @@ import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import com.github.unchama.seichiassist.subsystems.loginranking.domain.LoginTime
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
-import com.github.unchama.seichiassist.subsystems.ranking.domain.{Ranking, RankingRecord, VoteCount}
+import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
+import com.github.unchama.seichiassist.subsystems.ranking.domain.{Ranking, RankingRecord}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 

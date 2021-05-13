@@ -12,8 +12,7 @@ import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import com.github.unchama.seichiassist.subsystems.loginranking.domain.LoginTime
-import com.github.unchama.seichiassist.subsystems.ranking.domain.VoteCount
+import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.Material

@@ -18,10 +18,9 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.B
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
-import com.github.unchama.seichiassist.subsystems.loginranking.domain.LoginTime
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
-import com.github.unchama.seichiassist.subsystems.ranking.domain.VoteCount
+import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
