@@ -246,7 +246,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
-  implicit lazy val rankingSystemApi: subsystems.ranking.RankingApi[IO] = {
+  implicit lazy val rankingSystemApi: subsystems.ranking.api.AssortedRankingApi[IO] = {
     import PluginExecutionContexts.{asyncShift, timer}
 
     subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
