@@ -42,7 +42,7 @@ object SeizonsikiItemData {
   }
 
   def isZongo(item: ItemStack): Boolean = {
-    item != null && item.getType != Material.AIR && {
+    item != null && item.getType == Material.GOLDEN_APPLE && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
   }

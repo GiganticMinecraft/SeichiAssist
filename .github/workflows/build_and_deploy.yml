@@ -155,13 +155,23 @@ jobs:
 
           git push origin master
 
-      - name: Notify discord webhook
+      - name: Notify debug-server update to discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_DEBUG_SERVER_NOTIFICATION_WEBHOOK }}
+          title: "デバッグサーバーへデプロイ"
+          description: "deb_s1等にプラグインを配置しました。数分後に再起動します。"
+          username: GitHub Actions
+          noprefix: true
+          avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
+
+      - name: Notify to plugin-dev notification channel on discord
         uses: sarisia/actions-status-discord@v1
         if: always()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           title: "デバッグサーバーへデプロイ"
-          description: "deb112等のステージング環境にプラグインを配置する"
+          description: "deb_s1等にプラグインを配置する"
           username: GitHub Actions
           avatar_url: ${{ secrets.DISCORD_AVATAR_URL }}
 

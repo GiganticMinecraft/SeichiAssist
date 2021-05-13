@@ -96,6 +96,7 @@ public final class MenuInventoryData {
                 ChatColor.RESET + "" + ChatColor.GRAY + "投票ページで投票した後",
                 ChatColor.RESET + "" + ChatColor.GRAY + "このボタンをクリックします",
                 ChatColor.RESET + "" + ChatColor.AQUA + "特典受取済投票回数：" + playerdata.p_givenvote(),
+                ChatColor.RESET + "" + ChatColor.AQUA + "特典未受取投票回数：" + (playerdata.p_vote_forT() - playerdata.p_givenvote()),
                 ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.effectPoint()
         );
     }
