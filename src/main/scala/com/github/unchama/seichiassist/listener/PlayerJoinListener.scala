@@ -1,18 +1,19 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusProperty, NormalMebius}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
-import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.{FocusedSoundEffect, PlayerEffects}
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerChangedWorldEvent, PlayerJoinEvent}
+import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerChangedWorldEvent, PlayerJoinEvent, PlayerTeleportEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
@@ -160,6 +161,51 @@ class PlayerJoinListener extends Listener {
       //初見さんにメッセージを送信
       player.sendMessage {
         "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
+      }
+
+      // 初見の場合は (公共施設鯖の) チュートリアルへ転送
+      val config = SeichiAssist.seichiAssistConfig.firstJoinConfig
+      if (SeichiAssist.seichiAssistConfig.getServerNum == config.serverNumber) {
+        player.sendMessage("チュートリアル地点へ転送しています...")
+        val location = config.location
+        val tpSuccess = location.fold(false) { loc =>
+          player.teleport(
+            loc,
+            PlayerTeleportEvent.TeleportCause.PLUGIN
+          )
+        }
+        if (tpSuccess) {
+          player.sendMessage("チュートリアル地点に転送しました。")
+          // FIXME: 多分もう少しまともなやり方がある
+          IO {
+            import scalikejdbc._
+            DB.localTx { implicit session =>
+              sql"""update seichiassist.tutorial set taken = true where uuid = ${player.getUniqueId}"""
+            }
+          }.unsafeRunAsyncAndForget()
+        } else {
+          player.sendMessage(s"${RED}チュートリアル地点への転送に失敗しました。")
+          if (location.isEmpty) {
+            SeichiAssist.instance.loggerF.info(s"[FirstJoin] 指定されたワールドはサーバーに存在しません。").unsafeRunSync()
+          }
+        }
+      } else {
+        val compute = IO {
+          import scalikejdbc._
+          DB.readOnly { implicit session =>
+            sql"""select taken from seichiassist.tutorial where uuid = ${player.getUniqueId}"""
+              .map { rs => rs.boolean("taken_tutorial") }
+              .first()
+              .apply()
+              .getOrElse(false)
+          }
+        }
+
+        val needed: Boolean = compute.unsafeRunSync()
+        if (needed) {
+          player.sendMessage("チュートリアル地点へ転送します...")
+          PlayerEffects.connectToServerEffect(config.serverIdentifier).run(player).unsafeRunSync()
+        }
       }
     }
 

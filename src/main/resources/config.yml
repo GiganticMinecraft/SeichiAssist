@@ -199,3 +199,23 @@ BungeeSemaphoreResponder:
     # Redisサーバーがパスワードを持っている場合、次の行をアンコメントしてパスワードを入れること。
     # Password: ""
 
+FirstJoin:
+  # servernumとserverはサーバーに対する一意の識別子という点ではほぼ同一の概念だが、
+  # servernumが「サーバ識別設定」で設定されるservernumのうちの一つでなければいけないのに対して、
+  # servernameは/serverコマンドで指定する識別子でなければいけないという違いがある。
+
+  # servernumに指定できる値を指定。
+  servernum: 7
+  # /serverコマンドで指定する識別子を指定すること。
+  servername: s7
+  # 存在するワールド名を指定すること。
+  world: tutorial_world
+  # テレポートする座標
+  point:
+    x: 3.14159265357
+    y: 1.41421356237
+    z: 1.73205080757
+  # プレイヤーがテレポートしたときに設定される視点の向き
+  rotation:
+    yaw: 0
+    pitch: 0

@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemCo
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
-import org.bukkit.World
+import org.bukkit.{Bukkit, Location, World}
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -196,5 +196,34 @@ final class Config private(val config: FileConfiguration) {
     }
     override val oneMinuteBuildExpLimit: BuildExpAmount =
       BuildExpAmount(BigDecimal(config.getString("BuildNum1minLimit")))
+  }
+
+  trait FirstJoinConfiguration {
+    def serverNumber: Int
+    def serverIdentifier: String
+    def location: Option[Location]
+  }
+
+  def firstJoinConfig: FirstJoinConfiguration = new FirstJoinConfiguration {
+    override val serverNumber: Int = getIntFailFast("FirstJoin.servernum")
+
+    override val serverIdentifier: String = config.getString("FirstJoin.servername")
+
+    private val worldName: String = config.getString("FirstJoin.world")
+
+    private val x: Double = getDoubleFailFast("FirstJoin.location.x")
+
+    private val y: Double = getDoubleFailFast("FirstJoin.location.y")
+
+    private val z: Double = getDoubleFailFast("FirstJoin.location.z")
+
+    private val yaw: Float = getDoubleFailFast("FirstJoin.rotation.yaw").toFloat
+
+    private val pitch: Float = getDoubleFailFast("FirstJoin.rotation.pitch").toFloat
+
+    override def location: Option[Location] = {
+      val realWorld = Bukkit.getWorld(worldName)
+      Option.when(realWorld ne null)(new Location(realWorld, x, y, z, yaw, pitch))
+    }
   }
 }
