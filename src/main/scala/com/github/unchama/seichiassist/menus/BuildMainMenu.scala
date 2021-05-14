@@ -9,9 +9,10 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.menus.BuildMainMenu.EMPHASIZE
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SkullOwners
+import com.github.unchama.seichiassist.menus.BuildMainMenu.EMPHASIZE
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildLevel}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -30,21 +31,33 @@ private case class ButtonComputations(player: Player)
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import player._
 
-  def computeNotationOfStats(): IO[Button] = RecomputedButton {
-    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.flatMap(data =>
-      IO {
-        val iconItemStack = new SkullItemStackBuilder(getUniqueId)
+  def computeStatsButton(): IO[Button] = RecomputedButton {
+    BuildAssist.instance.buildAmountDataRepository(player).read.toIO.map { data =>
+      val buildLevel = data.levelCorrespondingToExp
+      val rawLevel = buildLevel.level
+
+      val lore = {
+        val alwaysDisplayedInfo = List(
+          s"$RESET${AQUA}建築Lv: $rawLevel",
+          s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}",
+        )
+
+        // 最大レベルに到達した後は”次のレベル”が存在しないため、表示しない
+        val nextLevelInfo: Option[String] = Option.unless(BuildAssistExpTable.maxLevel == buildLevel) {
+          s"$RESET${AQUA}次のレベルまで: ${BuildAssistExpTable.expAt(BuildLevel(rawLevel + 1)).amount}"
+        }
+
+        alwaysDisplayedInfo ++ nextLevelInfo
+      }
+
+      Button {
+        new SkullItemStackBuilder(getUniqueId)
           .enchanted()
           .title(s"$YELLOW$EMPHASIZE${player.getName}の建築データ")
-          .lore(
-            s"$RESET${AQUA}建築Lv: ${data.levelCorrespondingToExp.level}",
-            s"$RESET${AQUA}総建築量: ${data.expAmount.toPlainString}",
-          )
+          .lore(lore)
           .build()
-
-        Button(iconItemStack)
       }
-    )
+    }
   }
 
   def computeButtonToShowStateOfFlying(implicit flyApi: ManagedFlyApi[SyncIO, Player]): IO[Button] = {
@@ -370,7 +383,7 @@ object BuildMainMenu extends Menu {
 
     val dynamicPartComputation: IO[List[(Int, Button)]] =
       List(
-        0 -> computeNotationOfStats(),
+        0 -> computeStatsButton(),
         2 -> computeButtonToShowStateOfFlying,
         18 -> computeButtonToToggleRangedPlaceSkill(),
         19 -> computeButtonToOpenRangedPlaceSkillMenu,
