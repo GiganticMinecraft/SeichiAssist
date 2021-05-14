@@ -9,7 +9,7 @@ import org.bukkit.Bukkit
 object SyncCanNotifyBukkitSaves {
 
   def apply[F[_] : Sync]: CanNotifySaves[F] = (message: String) => Sync[F].delay {
-    Util.sendEveryMessageIgnoringPreference(message)
+    Util.sendMessageToEveryoneIgnoringPreference(message)
     Bukkit.getLogger.info(message)
   }
 

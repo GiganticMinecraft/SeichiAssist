@@ -115,18 +115,18 @@ object Util {
     player.getInventory.addItem(itemstack)
   }
 
-  def sendEveryMessageIgnoringPreference[T](content: T)(implicit send: PlayerSendable[T, IO]): Unit = {
-    sendEveryMessageIgnoringPreferenceM[T, IO](content).unsafeRunSync()
+  def sendMessageToEveryoneIgnoringPreference[T](content: T)(implicit send: PlayerSendable[T, IO]): Unit = {
+    sendMessageToEveryoneIgnoringPreferenceM[T, IO](content).unsafeRunSync()
   }
 
-  def sendEveryMessageIgnoringPreferenceM[T, F[_] : Sync : OnMinecraftServerThread](content: T)
-                                                                                   (implicit ev: PlayerSendable[T, F]): F[Unit] = {
+  def sendMessageToEveryoneIgnoringPreferenceM[T, F[_] : Sync : OnMinecraftServerThread](content: T)
+                                                                                        (implicit ev: PlayerSendable[T, F]): F[Unit] = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.map(ev.send(_, content)).toList.sequence.as(())
   }
 
-  def sendEveryMessage[T](content: T)(implicit ev: PlayerSendable[T, IO]): Unit = {
+  def sendMessageToEveryone[T](content: T)(implicit ev: PlayerSendable[T, IO]): Unit = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.map { player =>
