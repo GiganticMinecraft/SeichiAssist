@@ -107,7 +107,7 @@ object RankingMenuTemplates {
 
 // TODO: Rは生のデータ型を想定しているが、何らかのenumを想定することはできるか？
 //       ここにSeichiAmountData等を書きたくない気持ちがある。
-case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 1) extends Menu {
+case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) extends Menu {
   import eu.timepit.refined.auto._
 
   final private val perPage = 45
