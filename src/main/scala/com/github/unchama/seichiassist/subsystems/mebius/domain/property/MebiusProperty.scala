@@ -4,6 +4,7 @@ import cats.effect.Sync
 
 /**
  * @param mebiusType            メビウスの種類
+ * @param forcedMaterial        メビウスの素材の強制書き換え設定
  * @param ownerPlayerId         オーナーのプレーヤーID
  * @param ownerUuid             オーナーのUUID文字列
  * @param enchantmentLevels     付与されるエンチャントのレベル
@@ -15,11 +16,13 @@ case class MebiusProperty private(mebiusType: MebiusType,
                                   ownerPlayerId: String,
                                   ownerUuid: String,
                                   enchantmentLevels: MebiusEnchantmentLevels,
+                                  forcedMaterial: MebiusForcedMaterial = MebiusForcedMaterial.None,
                                   level: MebiusLevel = MebiusLevel(1),
                                   ownerNicknameOverride: Option[String] = None,
                                   mebiusName: String = "MEBIUS") {
 
   require(enchantmentLevels.isValidAt(level))
+  require(forcedMaterial.allowedAt(level))
 
   import cats.implicits._
 
