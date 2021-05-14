@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.task
 
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
@@ -56,7 +57,7 @@ class GiganticBerserkTask {
       //最大レベルになった時の処理
       if (playerdata.giganticBerserk.reachedLimit()) {
         Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
-        Util.sendEveryMessage(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.lowercaseName + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！")
+        Util.sendMessageToEveryoneIgnoringPreference(ChatColor.GOLD + "" + ChatColor.BOLD + playerdata.lowercaseName + "がパッシブスキル:" + ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Gigantic" + ChatColor.RED + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Berserk" + ChatColor.GOLD + "" + ChatColor.BOLD + "を完成させました！")
       }
     }
     else { //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ
