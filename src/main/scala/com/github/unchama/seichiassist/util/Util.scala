@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.util
 
-import cats.data
 import cats.data.Kleisli
-import cats.effect.{IO, Sync, SyncIO}
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import cats.effect.{IO, SyncIO}
+import cats.{Monad, data}
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
+import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.minestack.MineStackObj
@@ -115,18 +116,26 @@ object Util {
     player.getInventory.addItem(itemstack)
   }
 
-  def sendMessageToEveryoneIgnoringPreference[T](content: T)(implicit send: PlayerSendable[T, IO]): Unit = {
+  def sendMessageToEveryoneIgnoringPreference[T](content: T)
+                                                (implicit send: PlayerSendable[T, IO]): Unit = {
+    implicit val g: GetConnectedBukkitPlayers[IO] = new GetConnectedBukkitPlayers[IO]
+
     sendMessageToEveryoneIgnoringPreferenceM[T, IO](content).unsafeRunSync()
   }
 
-  def sendMessageToEveryoneIgnoringPreferenceM[T, F[_] : Sync : OnMinecraftServerThread](content: T)
-                                                                                        (implicit ev: PlayerSendable[T, F]): F[Unit] = {
+  def sendMessageToEveryoneIgnoringPreferenceM[
+    T, F[_] : Monad : GetConnectedPlayers[*[_], Player]
+  ](content: T)(implicit ev: PlayerSendable[T, F]): F[Unit] = {
     import cats.implicits._
 
-    Bukkit.getOnlinePlayers.asScala.map(ev.send(_, content)).toList.sequence.as(())
+    for {
+      players <- GetConnectedPlayers[F, Player].now
+      _ <- players.traverse(ev.send(_, content))
+    } yield ()
   }
 
-  def sendMessageToEveryone[T](content: T)(implicit ev: PlayerSendable[T, IO]): Unit = {
+  def sendMessageToEveryone[T](content: T)
+                              (implicit ev: PlayerSendable[T, IO]): Unit = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.map { player =>
