@@ -9,12 +9,13 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider.Messages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusProperty
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusForcedMaterial, MebiusProperty}
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
+import org.bukkit.Material
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 
@@ -27,7 +28,8 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
     BranchedExecutor(
       Map(
         "nickname" -> ChildExecutors.NicknameCommand.executor,
-        "naming" -> namingExecutor
+        "naming" -> namingExecutor,
+        "convert" -> convertExecutor
       ), whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
   }
@@ -62,6 +64,7 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
     val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution { _ => IO(Messages.commandDescription) }
       .build()
+
     val namingExecutor: ContextualExecutor = playerCommandBuilder
       .argumentsParsers(List(Parsers.identity))
       .execution { context =>
@@ -87,6 +90,39 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
             )
           }
         ).effectOn(player)
+      }
+      .build()
+
+    val convertExecutor: ContextualExecutor = playerCommandBuilder
+      .argumentsParsers(List())
+      .execution { context =>
+        val mainHand = context.sender.getInventory.getItemInMainHand
+
+        BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand) match {
+          case Some(property) =>
+            if (property.level.isMaximum) {
+              val newProperty = property.toggleForcedMaterial
+              val newItem = BukkitMebiusItemStackCodec.materialize(newProperty, mainHand.getDurability)
+
+              val newMaterialName = newProperty.forcedMaterial match {
+                case MebiusForcedMaterial.None => "ダイヤモンド"
+                case MebiusForcedMaterial.Leather => "革"
+              }
+
+              IO.pure {
+                SequentialEffect(
+                  UnfocusedEffect {
+                    context.sender.getInventory.setItemInMainHand(newItem)
+                  },
+                  MessageEffect(s"メインハンドのメビウスの材質を${newMaterialName}に変換しました！")
+                )
+              }
+            } else {
+              IO.pure(MessageEffect("メビウスの見た目を変えるためには、メビウスが最大レベルに到達している必要があります！"))
+            }
+          case None =>
+            IO.pure(MessageEffect("メインハンドに持っているアイテムはメビウスではありません！"))
+        }
       }
       .build()
 
@@ -184,7 +220,9 @@ object MebiusCommandExecutorProvider {
           "",
           s"$RED/mebius nickname reset",
           s"$RED  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
-          ""
+          "",
+          s"$RED/mebius convert",
+          s"$RED  MEBIUSの材質を変換します",
         )
       }
   }
