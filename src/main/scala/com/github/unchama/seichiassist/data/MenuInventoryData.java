@@ -96,132 +96,9 @@ public final class MenuInventoryData {
                 ChatColor.RESET + "" + ChatColor.GRAY + "投票ページで投票した後",
                 ChatColor.RESET + "" + ChatColor.GRAY + "このボタンをクリックします",
                 ChatColor.RESET + "" + ChatColor.AQUA + "特典受取済投票回数：" + playerdata.p_givenvote(),
+                ChatColor.RESET + "" + ChatColor.AQUA + "特典未受取投票回数：" + (playerdata.p_vote_forT() - playerdata.p_givenvote()),
                 ChatColor.RESET + "" + ChatColor.AQUA + "所有投票pt：" + playerdata.effectPoint()
         );
-    }
-
-    /**
-     * ログイン時間
-     * @param page ページ
-     * @return メニュー
-     */
-    public static Inventory getRankingByPlayingTime(final int page) {
-        final int pageLimit = 14;
-        final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "ログイン神ランキング");
-        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
-        final int rankStart = 10 * page;
-        int invIndex = 0;
-        for (int rank = rankStart; rank < rankStart + 10; rank++) {
-            if (rank >= SeichiAssist.ranklist_playtick().size()) {
-                break;
-            }
-            final RankData rankdata = SeichiAssist.ranklist_playtick().apply(rank);
-
-            final SkullMeta skullmeta = buildSkullMeta(
-                ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (rank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
-                Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総ログイン時間:" + TypeConverter.toTimeString(TypeConverter.toSecond(rankdata.playtick))),
-                rankdata.name
-            );
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, invIndex, itemstack.clone());
-            invIndex++;
-        }
-
-        if (page != pageLimit) {
-            // 整地神ランキング次ページ目を開く
-            final SkullMeta skullmeta = buildSkullMeta(
-                ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ログイン神ランキング" + (page + 2) + "ページ目へ",
-                Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                "MHF_ArrowDown"
-            );
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, 52, itemstack.clone());
-        }
-
-        // 前のページ / ホームへ
-        {
-            final SkullMeta skullmeta;
-            if (page == 0) {
-                skullmeta = buildSkullMeta(
-                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ",
-                        Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                        "MHF_ArrowLeft"
-                );
-            } else {
-                // 整地神ランキング前ページを開く;
-                skullmeta = buildSkullMeta(
-                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ログイン神ランキング" + page + "ページ目へ",
-                        Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                        "MHF_ArrowUp"
-                );
-            }
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
-        }
-
-        return inventory;
-    }
-
-    /**
-     * 投票回数
-     * @param page ページ
-     * @return メニュー
-     */
-    public static Inventory getRankingByVotingCount(final int page) {
-        final int pageLimit = 14;
-        final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "投票神ランキング");
-        final ItemStack itemstack = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_SKULL);
-        for (int voteRank = 10 * page, invIndex = 0; voteRank < 10 + 10 * page; voteRank++, invIndex++) {
-            if (voteRank >= SeichiAssist.ranklist_p_vote().size()) {
-                break;
-            }
-
-            final RankData rankdata = SeichiAssist.ranklist_p_vote().apply(voteRank);
-            if (rankdata.p_vote == 0) {
-                break;
-            }
-
-            final SkullMeta skullmeta = buildSkullMeta(
-                    ChatColor.YELLOW + "" + ChatColor.BOLD + "" + (voteRank + 1) + "位:" + "" + ChatColor.WHITE + rankdata.name,
-                    Collections.singletonList(ChatColor.RESET + "" + ChatColor.GREEN + "総投票回数:" + rankdata.p_vote),
-                    rankdata.name
-            );
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, invIndex, itemstack.clone());
-        }
-
-        if (page != pageLimit) {
-            // 投票神ランキング次ページ目を開く
-            final SkullMeta skullmeta = buildSkullMeta(
-                ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票神ランキング" + (page + 2) + "ページ目へ",
-                Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                "MHF_ArrowDown"
-            );
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, 52, itemstack.clone());
-        }
-
-        // 1ページ目を開く
-        {
-            final SkullMeta skullmeta;
-            if (page == 0) {
-                skullmeta = buildSkullMeta(
-                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ホームへ",
-                        Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                        "MHF_ArrowLeft"
-                );
-            } else {
-                // 投票神ランキング前ページを開く
-                skullmeta = buildSkullMeta(
-                        ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "投票神ランキング" + page + "ページ目へ",
-                        Collections.singletonList(ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動"),
-                        "MHF_ArrowUp"
-                );
-            }
-            itemstack.setItemMeta(skullmeta);
-            AsyncInventorySetter.setItemAsync(inventory, 45, itemstack.clone());
-        }
-        return inventory;
     }
 
     /**
@@ -519,7 +396,7 @@ public final class MenuInventoryData {
                 break;
             }
         }
-        
+
         //パーツ未選択状態にするボタン
         {
             final ItemStack itemstack = build(
@@ -1026,7 +903,7 @@ public final class MenuInventoryData {
         }
         return inventory;
     }
-    
+
     private static Inventory getEmptyInventory(final int rows, final String title) {
         return Bukkit.getServer().createInventory(null, rows * 9, title);
     }
@@ -1092,7 +969,7 @@ public final class MenuInventoryData {
         ret.setItemMeta(sm);
         return ret;
     }
-    
+
     private static <T> Consumer<T> nullConsumer() {
         return nothing -> {};
     }

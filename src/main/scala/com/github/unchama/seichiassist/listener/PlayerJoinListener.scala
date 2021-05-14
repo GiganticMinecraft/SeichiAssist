@@ -166,8 +166,8 @@ class PlayerJoinListener extends Listener {
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
     if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
       player.sendTitle(
-        s"${WHITE}このサーバーは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}です",
-        s"${WHITE}始めたての頃は他のサーバーがおすすめです。", 10, 70, 20)
+        s"${WHITE}ここは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}",
+        s"${WHITE}始めたては他がおすすめ", 10, 70, 20)
   }
 
   // プレイヤーがワールドを移動したとき

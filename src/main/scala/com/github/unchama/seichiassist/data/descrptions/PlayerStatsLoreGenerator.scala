@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiStarLevel}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
-import com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking
+import com.github.unchama.seichiassist.subsystems.ranking.domain.Ranking
 import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
  * Created by karayuu on 2019/05/05
  */
 class PlayerStatsLoreGenerator(playerData: PlayerData,
-                               seichiRanking: SeichiRanking,
+                               seichiRanking: Ranking[SeichiAmountData],
                                seichiAmountData: SeichiAmountData,
                                expBarVisibility: BreakCountBarVisibility) {
   private val targetPlayer: Player = Bukkit.getPlayer(playerData.uuid)
@@ -118,8 +118,8 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
           val recordOneAbove = seichiRanking.recordsWithPositions(positionOneAbove - 1)._2
           val difference =
             SeichiExpAmount.orderedMonus.subtractTruncate(
-              recordOneAbove.seichiAmountData.expAmount,
-              record.seichiAmountData.expAmount
+              recordOneAbove.value.expAmount,
+              record.value.expAmount
             )
           Some(
             s"$AQUA${positionOneAbove}位(${recordOneAbove.playerName})との差：${difference.amount}"

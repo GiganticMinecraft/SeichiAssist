@@ -6,6 +6,7 @@ import cats.effect
 import cats.effect.concurrent.Ref
 import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
@@ -20,6 +21,7 @@ import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.concurrent.SessionMutex
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.{GetConnectedBukkitPlayers, SendBukkitMessage}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -39,7 +41,7 @@ import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.redisbungee.RedisBungeeNetworkConnectionCount
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
-import com.github.unchama.seichiassist.menus.TopLevelRouter
+import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
@@ -245,7 +247,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
-  implicit lazy val rankingSystemApi: subsystems.ranking.RankingApi[IO] = {
+  implicit lazy val rankingSystemApi: subsystems.ranking.api.AssortedRankingApi[IO] = {
     import PluginExecutionContexts.{asyncShift, timer}
 
     subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
@@ -486,6 +488,11 @@ class SeichiAssist extends JavaPlugin() {
 
     buildAssist.onEnable()
 
+    implicit val managedFlyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
+    // 本来は曖昧さ回避のためにRouterのインスタンスを生成するべきではないが、生成を回避しようとすると
+    // 巨大な変更が必要となる。そのため、Routerのインスタンスを新しく生成することで、それまでの間
+    // 機能を果たそうとするものである。
+    implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] = BuildAssistMenuRouter.apply.canOpenBuildMainMenu
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
@@ -503,7 +510,8 @@ class SeichiAssist extends JavaPlugin() {
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
-      "stickmenu" -> StickMenuCommand.executor
+      "stickmenu" -> StickMenuCommand.executor,
+      "hat" -> HatCommand.executor
     )
       .concat(wiredSubsystems.flatMap(_.commands))
       .foreach {
