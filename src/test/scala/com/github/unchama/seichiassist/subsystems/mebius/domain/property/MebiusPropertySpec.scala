@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.domain.property
+package com.github.unchama.seichiassist.subsystems.mebius.domain.property
 
 import java.util.UUID
 import cats.Monad

@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.bukkit.codec
+package com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec
 
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusLevel
 import org.bukkit.Material

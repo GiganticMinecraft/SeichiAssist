@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.mebius.domain.speech
+package com.github.unchama.seichiassist.subsystems.mebius.domain.speech
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.MebiusSpeechBlockageState
