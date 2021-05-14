@@ -9,7 +9,7 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider.Messages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusProperty
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusForcedMaterial, MebiusProperty}
 import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -64,6 +64,7 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
     val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
       .execution { _ => IO(Messages.commandDescription) }
       .build()
+
     val namingExecutor: ContextualExecutor = playerCommandBuilder
       .argumentsParsers(List(Parsers.identity))
       .execution { context =>
@@ -91,41 +92,36 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
         ).effectOn(player)
       }
       .build()
+
     val convertExecutor: ContextualExecutor = playerCommandBuilder
       .argumentsParsers(List())
       .execution { context =>
         val mainHand = context.sender.getInventory.getItemInMainHand
-        val isMebius = BukkitMebiusItemStackCodec.isMebius(mainHand)
 
-        if (isMebius) {
-          val property = BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand).get
+        BukkitMebiusItemStackCodec.decodeMebiusProperty(mainHand) match {
+          case Some(property) =>
+            if (property.level.isMaximum) {
+              val newProperty = property.toggleForcedMaterial
+              val newItem = BukkitMebiusItemStackCodec.materialize(newProperty, mainHand.getDurability)
 
-          if (property.level.isMaximum) {
-            IO {
-              val afterMaterial = mainHand.getType match {
-                case Material.LEATHER_HELMET => Material.DIAMOND_HELMET
-                case Material.DIAMOND_HELMET  => Material.LEATHER_HELMET
-                case _ => throw new AssertionError("This branch must not be reached!")
+              val newMaterialName = newProperty.forcedMaterial match {
+                case MebiusForcedMaterial.None => "ダイヤモンド"
+                case MebiusForcedMaterial.Leather => "革"
               }
 
-              val afterMaterialJapanese = mainHand.getType match {
-                case Material.LEATHER_HELMET => "ダイヤモンド"
-                case Material.DIAMOND_HELMET => "革"
-                case _ => throw new AssertionError("This branch must not be reached!")
+              IO.pure {
+                SequentialEffect(
+                  UnfocusedEffect {
+                    context.sender.getInventory.setItemInMainHand(newItem)
+                  },
+                  MessageEffect(s"メインハンドのメビウスの材質を${newMaterialName}に変換しました！")
+                )
               }
-
-              SequentialEffect(
-                UnfocusedEffect {
-                  mainHand.setType(afterMaterial)
-                },
-                MessageEffect(s"メインハンドのメビウスの材質を${afterMaterialJapanese}に変換しました！")
-              )
+            } else {
+              IO.pure(MessageEffect("メビウスの見た目を変えるためには、メビウスが最大レベルに到達している必要があります！"))
             }
-          } else {
-            IO.pure(MessageEffect("メビウスの見た目を変えるためには、メビウスが最大レベルに到達している必要があります！"))
-          }
-        } else {
-          IO.pure(MessageEffect("メインハンドに持っているアイテムはメビウスではありません！"))
+          case None =>
+            IO.pure(MessageEffect("メインハンドに持っているアイテムはメビウスではありません！"))
         }
       }
       .build()

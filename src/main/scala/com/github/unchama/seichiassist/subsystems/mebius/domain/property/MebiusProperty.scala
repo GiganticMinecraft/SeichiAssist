@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.subsystems.mebius.domain.property
 
 import cats.effect.Sync
 
+import scala.annotation.tailrec
+
 /**
  * @param mebiusType            メビウスの種類
  * @param forcedMaterial        メビウスの素材の強制書き換え設定
@@ -58,6 +60,19 @@ case class MebiusProperty private(mebiusType: MebiusType,
         }
       }
     } yield updatedProperty
+  }
+
+  def toggleForcedMaterial: MebiusProperty = {
+    @tailrec def loop(newMaterial: MebiusForcedMaterial): MebiusProperty =
+      if (newMaterial == forcedMaterial) this
+      else {
+        val next = newMaterial.next
+
+        if (next.allowedAt(level)) this.copy(forcedMaterial = next)
+        else loop(next)
+      }
+
+    loop(forcedMaterial.next)
   }
 
   lazy val ownerNickname: String = ownerNicknameOverride.getOrElse(ownerPlayerId)

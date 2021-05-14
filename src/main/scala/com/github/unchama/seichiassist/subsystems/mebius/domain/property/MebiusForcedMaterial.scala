@@ -9,6 +9,8 @@ sealed trait MebiusForcedMaterial {
 
   def allowedAt(level: MebiusLevel): Boolean
 
+  def next: MebiusForcedMaterial
+
 }
 
 object MebiusForcedMaterial {
@@ -16,9 +18,11 @@ object MebiusForcedMaterial {
 
   case object None extends MebiusForcedMaterial {
     override def allowedAt(level: MebiusLevel): Boolean = true
+    override def next: MebiusForcedMaterial = Leather
   }
 
   case object Leather extends MebiusForcedMaterial {
     override def allowedAt(level: MebiusLevel): Boolean = level >= MebiusLevel(30)
+    override def next: MebiusForcedMaterial = None
   }
 }
