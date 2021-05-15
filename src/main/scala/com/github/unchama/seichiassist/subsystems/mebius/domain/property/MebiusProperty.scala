@@ -65,12 +65,8 @@ case class MebiusProperty private(mebiusType: MebiusType,
   def toggleForcedMaterial: MebiusProperty = {
     @tailrec def loop(newMaterial: MebiusForcedMaterial): MebiusProperty =
       if (newMaterial == forcedMaterial) this
-      else {
-        val next = newMaterial.next
-
-        if (next.allowedAt(level)) this.copy(forcedMaterial = next)
-        else loop(next)
-      }
+      else if (newMaterial.allowedAt(level)) this.copy(forcedMaterial = newMaterial)
+      else loop(newMaterial.next)
 
     loop(forcedMaterial.next)
   }

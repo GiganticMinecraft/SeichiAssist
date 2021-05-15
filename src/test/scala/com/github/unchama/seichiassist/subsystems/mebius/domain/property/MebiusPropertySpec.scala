@@ -28,6 +28,12 @@ class MebiusPropertySpec extends AnyWordSpec {
 
       assert(upgradedToMaximum.level.isMaximum)
     }
+
+    "not allow toggling materials" in {
+      val i = MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid)
+
+      assert(i.forcedMaterial == i.toggleForcedMaterial.forcedMaterial)
+    }
   }
 
   "Property with the largest level" should {
@@ -41,6 +47,18 @@ class MebiusPropertySpec extends AnyWordSpec {
       }
 
       assert(upgradedToMaximum.enchantmentLevels.of(MebiusEnchantment.Unbreakable) == 1)
+    }
+
+    "allow toggling forced materials" in {
+      val upgradedToMaximum = {
+        val initialProperty = MebiusProperty.initialProperty(NormalMebius, testPlayerName, testPlayerUuid)
+
+        Monad[SyncIO]
+          .iterateWhileM(initialProperty)(_.upgradeByOneLevel[SyncIO])(!_.level.isMaximum)
+          .unsafeRunSync()
+      }
+
+      assert(upgradedToMaximum.toggleForcedMaterial.forcedMaterial != upgradedToMaximum.forcedMaterial)
     }
   }
 
