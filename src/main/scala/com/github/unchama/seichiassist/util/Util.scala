@@ -120,7 +120,7 @@ object Util {
                                                 (implicit send: PlayerSendable[T, IO]): Unit = {
     implicit val g: GetConnectedBukkitPlayers[IO] = new GetConnectedBukkitPlayers[IO]
 
-    sendMessageToEveryoneIgnoringPreferenceM[T, IO](content).unsafeRunSync()
+    sendMessageToEveryoneIgnoringPreferenceM[T, IO](content).unsafeRunAsyncAndForget()
   }
 
   def sendMessageToEveryoneIgnoringPreferenceM[
