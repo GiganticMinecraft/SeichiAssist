@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.subsystems.notification.service.GlobalNotification
+import com.github.unchama.seichiassist.subsystems.notification.GlobalNotificationAPI
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -52,7 +52,7 @@ object ActiveSkillMenu extends Menu {
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
                     val ioOnMainThread: OnMinecraftServerThread[IO],
-                    val globalNotification: GlobalNotification[IO])
+                    val globalNotification: GlobalNotificationAPI[IO])
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
@@ -266,7 +266,7 @@ object ActiveSkillMenu extends Menu {
     }
 
     def seichiSkillButton[
-      F[_] : ConcurrentEffect : NonServerThreadContextShift : GlobalNotification
+      F[_] : ConcurrentEffect : NonServerThreadContextShift : GlobalNotificationAPI
     ](state: SkillSelectionState, skill: SeichiSkill)
      (implicit environment: Environment): Button = {
       import environment._
@@ -351,7 +351,7 @@ object ActiveSkillMenu extends Menu {
 
                           val notify = for {
                             _ <- NonServerThreadContextShift[F].shift
-                            _ <- GlobalNotification[F].send(notificationMessage)
+                            _ <- GlobalNotificationAPI[F].send(notificationMessage)
                           } yield ()
 
                           (
