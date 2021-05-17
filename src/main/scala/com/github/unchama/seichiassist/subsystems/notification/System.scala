@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.notification.service.GlobalNotificationSender
 
 trait System[F[_]] extends Subsystem[F] {
-  val globalNotification: GlobalNotificationAPI[F]
+  implicit val globalNotification: GlobalNotificationAPI[F]
 }
 
 object System {
