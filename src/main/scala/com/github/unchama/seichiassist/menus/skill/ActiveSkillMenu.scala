@@ -354,7 +354,7 @@ object ActiveSkillMenu extends Menu {
                             SequentialEffect(
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                               BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-                              Kleisli((_: Any) => GlobalNotificationAPI[F].send(notificationMessage).toIO),
+                              Kleisli.liftF(GlobalNotificationAPI[F].send(notificationMessage).toIO),
                             )
                           )
                         } else (unlockedState, emptyEffect)
