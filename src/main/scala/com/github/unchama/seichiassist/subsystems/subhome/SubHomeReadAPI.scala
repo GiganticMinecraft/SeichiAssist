@@ -5,8 +5,14 @@ import simulacrum.typeclass
 
 import java.util.UUID
 
-@typeclass trait SubHomeReadAPI[F[_]] {
+trait SubHomeReadAPI[F[_]] {
   def get(player: UUID, number: SubHome.ID): F[Option[SubHome]]
 
   def list(player: UUID): F[Map[SubHome.ID, SubHome]]
+}
+
+object SubHomeReadAPI {
+
+  def apply[F[_]](implicit ev: SubHomeReadAPI[F]): SubHomeReadAPI[F] = ev
+
 }
