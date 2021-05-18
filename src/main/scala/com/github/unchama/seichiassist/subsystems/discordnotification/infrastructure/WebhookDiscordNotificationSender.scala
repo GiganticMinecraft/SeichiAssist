@@ -23,8 +23,6 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift](webhookURL: Str
     for {
       _ <- ContextShift[F].shift
       responseCode <- Sync[F].delay {
-        Bukkit.getOnlinePlayers.forEach(_.sendMessage(message))
-
         val json = s"""{"content":"$message"}"""
         parsedURL.openConnection().asInstanceOf[HttpURLConnection].pipe { con =>
           con.addRequestProperty("Content-Type", "application/json; charset=utf-8")

@@ -1,7 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.discordnotification
 
 /**
- * サーバーの全てのプレイヤー、及びDiscordのWebhookチャンネルにメッセージを送信する。
+ * Discordのチャンネルにメッセージを送信する。
+ *
+ * 送信先のチャンネルはサーバー全員が見れるような物を想定してよく、実質的に全体通知と考えて良い。
  */
 trait DiscordNotificationAPI[F[_]] {
 

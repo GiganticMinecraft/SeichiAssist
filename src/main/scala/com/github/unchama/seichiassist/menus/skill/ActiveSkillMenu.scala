@@ -21,8 +21,9 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -346,15 +347,17 @@ object ActiveSkillMenu extends Menu {
 
                           val notificationMessage = s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
 
-                          import cats.implicits._
                           import cats.effect.implicits._
 
                           (
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
-                              BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
                               Kleisli.liftF(DiscordNotificationAPI[F].send(notificationMessage).toIO),
+                              Kleisli.liftF(IO {
+                                Util.sendMessageToEveryoneIgnoringPreference(notificationMessage)
+                              }),
+                              BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
                             )
                           )
                         } else (unlockedState, emptyEffect)

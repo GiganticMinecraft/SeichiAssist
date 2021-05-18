@@ -3,13 +3,14 @@ package com.github.unchama.seichiassist.task
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
+import org.bukkit.ChatColor._
+import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.{ChatColor, Sound}
 
 import scala.util.Random
 
@@ -38,7 +39,7 @@ class GiganticBerserkTask {
     if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
       val i = getRecoveryValue(playerdata)
       manaApi.manaAmount(p).restoreAbsolute(ManaAmount(i)).unsafeRunSync()
-      player.sendMessage(s"${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.WHITE}の効果でマナが${i}回復しました")
+      player.sendMessage(s"${YELLOW}${BOLD}${UNDERLINE}Gigantic${RED}${BOLD}${UNDERLINE}Berserk${WHITE}の効果でマナが${i}回復しました")
       player.playSound(player.getLocation, Sound.ENTITY_WITHER_SHOOT, 1, 0.5f)
     }
 
@@ -59,23 +60,26 @@ class GiganticBerserkTask {
       playerdata.giganticBerserkLevelUp()
 
       //プレイヤーにメッセージ
-      player.sendMessage(s"${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.WHITE}のレベルがアップし、確率が上昇しました")
+      player.sendMessage(s"${YELLOW}${BOLD}${UNDERLINE}Gigantic${RED}${BOLD}${UNDERLINE}Berserk${WHITE}のレベルがアップし、確率が上昇しました")
       player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
 
       //最大レベルになった時の処理
       if (playerdata.giganticBerserk.reachedLimit()) {
-        import cats.implicits._
         import cats.effect.implicits._
+        import cats.implicits._
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 
-        val notify = DiscordNotificationAPI[F].send {
+        val messageWithoutColor =
           s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！"
-        }.toIO
+
+        val messageWithColor =
+          s"$GOLD$BOLD${playerdata.lowercaseName}がパッシブスキル:$YELLOW$BOLD${UNDERLINE}Gigantic$RED$BOLD${UNDERLINE}Berserk$GOLD${BOLD}を完成させました！"
 
         val program = List(
-          notify,
+          DiscordNotificationAPI[F].send(messageWithoutColor).toIO,
           IO {
             Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
-            Util.sendMessageToEveryoneIgnoringPreference(s"${ChatColor.GOLD}${ChatColor.BOLD}${playerdata.lowercaseName}がパッシブスキル:${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.GOLD}${ChatColor.BOLD}を完成させました！")
+            Util.sendMessageToEveryoneIgnoringPreference(messageWithColor)
           }
         ).sequence
 
@@ -84,7 +88,7 @@ class GiganticBerserkTask {
     }
     else { //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ
       if (playerdata.giganticBerserk.stage <= 4) {
-        player.sendMessage(s"${ChatColor.GREEN}パッシブスキルメニューより${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.GREEN}スキルが進化可能です。")
+        player.sendMessage(s"${GREEN}パッシブスキルメニューより${YELLOW}${BOLD}${UNDERLINE}Gigantic${RED}${BOLD}${UNDERLINE}Berserk${GREEN}スキルが進化可能です。")
         player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
         playerdata.isGBStageUp = true
       }
