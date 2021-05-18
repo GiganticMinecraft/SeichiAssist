@@ -18,7 +18,7 @@ class JdbcSubHomePersistence[F[_]: Sync] extends SubHomePersistence[F] {
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
         sql"""insert into seichiassist.sub_home
              |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name) values
-             |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${subHome.name}, $x, $y, $z, $worldName)
+             |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${subHome.name.orNull}, $x, $y, $z, $worldName)
              |    on duplicate key update
              |      name = values(name),
              |      location_x = values(location_x),
@@ -42,7 +42,7 @@ class JdbcSubHomePersistence[F[_]: Sync] extends SubHomePersistence[F] {
 
   private def extractSubHome(rs: WrappedResultSet): SubHome =
     SubHome(
-      rs.string("name"),
+      rs.stringOpt("name"),
       SubHomeLocation(
         rs.string("world_name"),
         rs.int("location_x"),

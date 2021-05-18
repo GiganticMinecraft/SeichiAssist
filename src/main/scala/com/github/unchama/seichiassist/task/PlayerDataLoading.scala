@@ -207,8 +207,6 @@ object PlayerDataLoading {
           serializedInventory != null && serializedInventory != ""
         }
 
-        playerData.selectHomeNum = 0
-
         //実績、二つ名の情報
         playerData.p_vote_forT = rs.getInt("p_vote")
         playerData.giveachvNo = rs.getInt("giveachvNo")

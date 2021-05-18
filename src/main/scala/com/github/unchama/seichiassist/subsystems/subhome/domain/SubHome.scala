@@ -5,4 +5,4 @@ case class SubHomeLocation(worldName: String, x: Int, y: Int, z: Int)
 /**
  * サブホームオブジェクトのクラス
  */
-case class SubHome(name: String, location: SubHomeLocation)
+case class SubHome(name: Option[String], location: SubHomeLocation)
