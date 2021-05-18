@@ -10,10 +10,8 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-  private val seichiAssistConfig = SeichiAssist.seichiAssistConfig
-
-  def wired[F[_] : Sync : ContextShift]: System[F] = new System[F] {
+  def wired[F[_] : Sync : ContextShift](configuration: SystemConfiguration): System[F] = new System[F] {
     implicit override val globalNotification: DiscordNotificationAPI[F] =
-      new WebhookDiscordNotificationSender[F](seichiAssistConfig.getWebhookUrl)
+      new WebhookDiscordNotificationSender[F](configuration.webhookUrl)
   }
 }

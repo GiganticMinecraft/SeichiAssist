@@ -6,6 +6,7 @@ import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemCo
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
+import com.github.unchama.seichiassist.subsystems.discordnotification.{SystemConfiguration => DiscordNotificationConfiguration}
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -185,10 +186,12 @@ final class Config private(val config: FileConfiguration) {
     }
   }
 
-  def getWebhookUrl: String = config.getString("Url.webhook.notification")
-
   def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
     override val autoSaveEnabled: Boolean = config.getBoolean("AutoSave.Enable")
+  }
+
+  def discordNotificationConfiguration: DiscordNotificationConfiguration = new DiscordNotificationConfiguration {
+    override val webhookUrl: String = config.getString("Url.webhook.notification")
   }
 
   def buildCountConfiguration: BuildCountConfiguration = new BuildCountConfiguration {

@@ -300,7 +300,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
-    subsystems.discordnotification.System.wired[IO]
+    subsystems.discordnotification.System.wired[IO](seichiAssistConfig.discordNotificationConfiguration)
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
