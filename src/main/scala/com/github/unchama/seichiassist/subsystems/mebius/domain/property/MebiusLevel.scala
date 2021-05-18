@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.mebius.domain.property
 
+import cats.Order
 import cats.effect.Sync
 
 import scala.util.Random
@@ -26,7 +27,7 @@ case class MebiusLevel private(value: Int) extends AnyVal {
 
 object MebiusLevel {
 
-  implicit val mebiusLevelOrder: Ordering[MebiusLevel] = Ordering.by(_.value)
+  implicit val mebiusLevelOrder: Order[MebiusLevel] = Order.by(_.value)
 
   val max: MebiusLevel = new MebiusLevel(30)
 
