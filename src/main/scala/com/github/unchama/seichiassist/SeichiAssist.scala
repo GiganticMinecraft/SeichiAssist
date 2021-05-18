@@ -294,7 +294,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
-  implicit lazy val globalNotificationSystem: subsystems.discordnotification.System[IO] = {
+  private implicit lazy val discordNotificationSystem: subsystems.discordnotification.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
@@ -319,7 +319,7 @@ class SeichiAssist extends JavaPlugin() {
     fastDiggingEffectSystem,
     fourDimensionalPocketSystem,
     gachaPointSystem,
-    globalNotificationSystem,
+    discordNotificationSystem,
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -470,7 +470,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val globalNotification: DiscordNotificationAPI[IO] = globalNotificationSystem.globalNotification
+    implicit val globalNotification: DiscordNotificationAPI[IO] = discordNotificationSystem.globalNotification
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
 
