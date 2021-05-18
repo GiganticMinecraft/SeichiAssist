@@ -11,6 +11,13 @@ case class SubHome(location: Location, name: String) {
   }
 }
 
+case class SubHomeLocation(worldName: String, x: Int, y: Int, z: Int)
+
+/**
+ * サブホームオブジェクトのクラス
+ */
+case class SubHomeV2(name: String, location: SubHomeLocation)
+
 object SubHome {
   type ID = Int
 }
