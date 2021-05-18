@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.subhome.infrastructure
+package com.github.unchama.seichiassist.subsystems.subhome
 
 import com.github.unchama.seichiassist.subsystems.subhome.domain.SubHome
 import org.bukkit.Location

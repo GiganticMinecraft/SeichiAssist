@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.subhome.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.subhome.{SubHomeReadAPI, SubHomeWriteAPI}
 import com.github.unchama.seichiassist.subsystems.subhome.domain.SubHome
 import org.bukkit.{Bukkit, Location}
 import scalikejdbc._
