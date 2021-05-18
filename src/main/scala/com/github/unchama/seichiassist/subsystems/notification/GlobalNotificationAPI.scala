@@ -5,7 +5,7 @@ package com.github.unchama.seichiassist.subsystems.notification
  */
 trait GlobalNotificationAPI[F[_]] {
 
-  def send(message: String): F[Either[Exception, Unit]]
+  def send(message: String): F[Unit]
 
 }
 
