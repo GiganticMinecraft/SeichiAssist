@@ -1,17 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.subhome.infrastructure
 
 import cats.effect.Sync
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHomeId, SubHomeLocation, SubHomePersistence, SubHome}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId, SubHomeLocation, SubHomePersistence}
 import scalikejdbc._
 
 import java.util.UUID
 
-class JdbcSubHomePersistence[F[_]: Sync] extends SubHomePersistence[F] {
+class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends SubHomePersistence[F] {
   private val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
-  override def upsert(ownerUuid: UUID, id: SubHomeId)(subHome: SubHome): F[Unit] = {
-    Sync[F].delay {
+  import cats.implicits._
+
+  override def upsert(ownerUuid: UUID, id: SubHomeId)(subHome: SubHome): F[Unit] =
+    NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.readOnly { implicit session =>
         val SubHomeLocation(worldName, x, y, z) = subHome.location
 
@@ -29,25 +32,27 @@ class JdbcSubHomePersistence[F[_]: Sync] extends SubHomePersistence[F] {
           .apply()
       }
     }
-  }
 
-  override def list(ownerUuid: UUID): F[Map[SubHomeId, SubHome]] = Sync[F].delay {
-    DB.readOnly { implicit session =>
-      // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
-      sql"""SELECT id, name, location_x, location_y, location_z, world_name FROM seichiassist.sub_home"""
-        .map(rs => (SubHomeId(rs.int("id") + 1), extractSubHome(rs)))
-        .list().apply()
-    }.toMap
-  }
-
-  private def extractSubHome(rs: WrappedResultSet): SubHome =
-    SubHome(
-      rs.stringOpt("name"),
-      SubHomeLocation(
-        rs.string("world_name"),
-        rs.int("location_x"),
-        rs.int("location_y"),
-        rs.int("location_z")
-      )
-    )
+  override def list(ownerUuid: UUID): F[Map[SubHomeId, SubHome]] =
+    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+      DB.readOnly { implicit session =>
+        // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
+        sql"""SELECT id, name, location_x, location_y, location_z, world_name FROM seichiassist.sub_home"""
+          .map(rs =>
+            (
+              SubHomeId(rs.int("id") + 1),
+              SubHome(
+                rs.stringOpt("name"),
+                SubHomeLocation(
+                  rs.string("world_name"),
+                  rs.int("location_x"),
+                  rs.int("location_y"),
+                  rs.int("location_z")
+                )
+              )
+            )
+          )
+          .list().apply()
+      }.toMap
+    }
 }
