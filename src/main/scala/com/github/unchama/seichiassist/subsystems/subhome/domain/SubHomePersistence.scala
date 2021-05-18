@@ -18,19 +18,19 @@ trait SubHomePersistence[F[_]] {
   /**
    * 指定したUUIDのプレーヤーが現在のサーバーにて設定しているすべてのサブホームを取得する。
    */
-  def list(ownerUuid: UUID): F[Map[SubHomeId, SubHomeV2]]
+  def list(ownerUuid: UUID): F[Map[SubHomeId, SubHome]]
 
   /**
    * サブホームを登録する。idの範囲などのバリデーションはしない。
    *
    * すでにサブホームが指定されたidで存在した場合、サブホームを上書きする。
    */
-  def upsert(ownerUuid: UUID, id: SubHomeId)(subHome: SubHomeV2): F[Unit]
+  def upsert(ownerUuid: UUID, id: SubHomeId)(subHome: SubHome): F[Unit]
 
   /**
    * 所有者のUUIDとサブホームのIDから単一のサブホームを取得する。
    */
-  final def get(ownerUuid: UUID, id: SubHomeId)(implicit F: Functor[F]): F[Option[SubHomeV2]] =
+  final def get(ownerUuid: UUID, id: SubHomeId)(implicit F: Functor[F]): F[Option[SubHome]] =
     list(ownerUuid).map(_.get(id))
 
   /**
@@ -38,7 +38,7 @@ trait SubHomePersistence[F[_]] {
    *
    * 作用の結果として更新が行われたかどうかを示すBooleanを返す。
    */
-  final def alter(ownerUuid: UUID, id: SubHomeId)(f: SubHomeV2 => SubHomeV2)(implicit F: Monad[F]): F[Boolean] =
+  final def alter(ownerUuid: UUID, id: SubHomeId)(f: SubHome => SubHome)(implicit F: Monad[F]): F[Boolean] =
     for {
       current <- get(ownerUuid, id)
       _ <- current match {

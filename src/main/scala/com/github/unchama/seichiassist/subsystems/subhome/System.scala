@@ -5,8 +5,12 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.SeichiAssist.Scopes.globalChatInterceptionScope
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.command.SubHomeCommand
-import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.SubHomePersistence
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHomeId, SubHome}
+import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.JdbcSubHomePersistence
+import org.bukkit.Location
 import org.bukkit.command.TabExecutor
+
+import java.util.UUID
 
 trait System[F[_]] extends Subsystem[F] {
   val api: SubHomeReadAPI[F] with SubHomeWriteAPI[F]
@@ -18,10 +22,21 @@ object System {
     : ConcurrentEffect
     : NonServerThreadContextShift
   ]: System[F] = {
-    val persistence = new SubHomePersistence[F]()
+    import cats.implicits._
+
+    val persistence = new JdbcSubHomePersistence[F]()
 
     new System[F] {
-      override implicit val api: SubHomeReadAPI[F] with SubHomeWriteAPI[F] = persistence
+      override implicit val api: SubHomeAPI[F] = new SubHomeAPI[F] {
+        override def updateLocation(ownerUuid: UUID, id: SubHomeId, location: Location): F[Unit] =
+          ??? // TODO semantics not clear
+        override def updateName(ownerUuid: UUID, id: SubHomeId, name: String): F[Unit] =
+          persistence.rename(ownerUuid, id)(name).as(())
+        override def get(ownerUuid: UUID, id: SubHomeId): F[Option[SubHome]] =
+          persistence.get(ownerUuid, id)
+        override def list(ownerUuid: UUID): F[Map[SubHomeId, SubHome]] =
+          persistence.list(ownerUuid)
+      }
       override val commands: Map[String, TabExecutor] =
         Map(
           "subhome" -> SubHomeCommand.executor

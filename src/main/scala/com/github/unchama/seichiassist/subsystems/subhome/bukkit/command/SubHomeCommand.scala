@@ -1,9 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.subhome.bukkit.command
 
 import cats.data.Kleisli
+import cats.effect.implicits._
 import cats.effect.{ConcurrentEffect, IO}
 import cats.implicits._
-import cats.effect.implicits._
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
@@ -11,8 +11,8 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHomeId, SubHome}
 import com.github.unchama.seichiassist.subsystems.subhome.{SubHomeReadAPI, SubHomeWriteAPI}
-import com.github.unchama.seichiassist.subsystems.subhome.domain.SubHome
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
@@ -31,7 +31,9 @@ object SubHomeCommand {
       )
     )
   )
+
   private val subHomeMax = SeichiAssist.seichiAssistConfig.getSubHomeMax
+
   private val argsAndSenderConfiguredBuilder = playerCommandBuilder
     .argumentsParsers(
       List(
@@ -41,6 +43,7 @@ object SubHomeCommand {
       ),
       onMissingArguments = printDescriptionExecutor
     )
+
   private def warpExecutor[
     F[_]
     : ConcurrentEffect
@@ -48,17 +51,17 @@ object SubHomeCommand {
     : SubHomeReadAPI
   ] = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
+      val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
       val player = context.sender
 
       val eff = for {
         _ <- NonServerThreadContextShift[F].shift
-        subHomeLocation <- SubHomeReadAPI[F].get(player.getUniqueId, subHomeId - 1)
+        subHomeLocation <- SubHomeReadAPI[F].get(player.getUniqueId, subHomeId)
       } yield {
         subHomeLocation match {
           case None => MessageEffect(s"サブホームポイント${subHomeId}が設定されてません")
           case Some(SubHome(location, _)) =>
-            player.teleport(location)
+            player.teleport(location) // TODO これは副作用
             MessageEffect(s"サブホームポイント${subHomeId}にワープしました")
         }
       }
@@ -66,6 +69,7 @@ object SubHomeCommand {
       eff.toIO
     }
     .build()
+
   private def setExecutor[
     F[_]
     : ConcurrentEffect
@@ -73,12 +77,12 @@ object SubHomeCommand {
     : SubHomeWriteAPI
   ] = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
+      val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
       val player = context.sender
 
       val eff = for {
         _ <- NonServerThreadContextShift[F].shift
-        _ <- SubHomeWriteAPI[F].updateLocation(player.getUniqueId, subHomeId - 1, player.getLocation)
+        _ <- SubHomeWriteAPI[F].updateLocation(player.getUniqueId, subHomeId, player.getLocation)
       } yield {
         MessageEffect(s"現在位置をサブホームポイント${subHomeId}に設定しました")
       }
@@ -94,7 +98,7 @@ object SubHomeCommand {
     : SubHomeWriteAPI
   ](implicit scope: ChatInterceptionScope) = argsAndSenderConfiguredBuilder
     .execution { context =>
-      val subHomeId = context.args.parsed.head.asInstanceOf[Int]
+      val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
 
       IO.pure {
         val sendInterceptionMessage =
@@ -124,7 +128,7 @@ object SubHomeCommand {
           scope.interceptFrom(uuid).flatMap {
             case Left(newName) =>
               val eff = for {
-                _ <- SubHomeWriteAPI[F].updateName(uuid, subHomeId - 1, newName)
+                _ <- SubHomeWriteAPI[F].updateName(uuid, subHomeId, newName)
               } yield {}
               eff.toIO *>
                 sendCompletionMessage(newName)(player)

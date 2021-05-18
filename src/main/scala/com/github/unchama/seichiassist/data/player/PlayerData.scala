@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
-import com.github.unchama.seichiassist.subsystems.subhome.domain.SubHome
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.Util.DirectionType
@@ -52,7 +51,6 @@ class PlayerData(
   //プレイヤー名
   val lowercaseName: String = name.toLowerCase()
 
-  private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
   private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
   //チェスト破壊トグル
   var chestflag = true

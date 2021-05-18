@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
-import com.github.unchama.seichiassist.subsystems.subhome.domain.SubHome
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHomeId, SubHome}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
@@ -160,20 +160,26 @@ object HomeMenu extends Menu {
   private case class ButtonComputations(player: Player) {
     def setSubHomeNameButton[F[_] : SubHomeReadAPI : ConcurrentEffect](subHomeNumber: Int): IO[Button] = {
       import cats.implicits._
+
+      val subHomeId = SubHomeId(subHomeNumber)
+
       val program = for {
-        subhomeOpt <- SubHomeReadAPI[F].get(player.getUniqueId, subHomeNumber - 1)
+        subhomeOpt <- SubHomeReadAPI[F].get(player.getUniqueId, subHomeId)
       } yield {
         val lore = subhomeOpt match {
-          case None => List(s"${GRAY}サブホームポイント$subHomeNumber", s"${GRAY}ポイント未設定")
+          case None => List(s"${GRAY}サブホームポイント$subHomeId", s"${GRAY}ポイント未設定")
           case Some(SubHome(location, name)) =>
-            val worldName = ManagedWorld.fromBukkitWorld(location.getWorld).map(_.japaneseName)
-              .getOrElse(location.getWorld.getName)
+            val worldName =
+              ManagedWorld
+                .fromBukkitWorld(location.getWorld).map(_.japaneseName)
+                .getOrElse(location.getWorld.getName)
+
             List(
-              s"${GRAY}サブホームポイント${subHomeNumber}は",
+              s"${GRAY}サブホームポイント${subHomeId}は",
               s"$GRAY$name",
               s"${GRAY}と名付けられています",
               s"$DARK_RED${UNDERLINE}クリックで名称変更",
-              s"${DARK_GRAY}command->[/subhome name $subHomeNumber]",
+              s"${DARK_GRAY}command->[/subhome name $subHomeId]",
               s"$GRAY$worldName x:${location.getBlockX} y:${location.getBlockY} z:${location.getBlockZ}"
             )
         }
