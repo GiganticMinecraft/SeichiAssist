@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.SubHome
 import org.bukkit.command.TabExecutor
 
 trait System[F[_]] extends Subsystem[F] {
-  def api: SubHomeReadAPI[F] with SubHomeWriteAPI[F]
+  val api: SubHomeReadAPI[F] with SubHomeWriteAPI[F]
 }
 
 object System {
@@ -17,16 +17,15 @@ object System {
     F[_]
     : ConcurrentEffect
     : NonServerThreadContextShift
-  ]: System[F] = new System[F] {
+  ]: System[F] = {
     val persistence = new SubHomePersistence[F]()
-    override def api: SubHomeReadAPI[F] with SubHomeWriteAPI[F] = persistence
 
-    private implicit val writer: SubHomeWriteAPI[F] = api
-    private implicit val reader: SubHomeReadAPI[F] = api
-
-    override val commands: Map[String, TabExecutor] =
-      Map(
-        "subhome" -> SubHomeCommand.executor
-      )
+    new System[F] {
+      override implicit val api: SubHomeReadAPI[F] with SubHomeWriteAPI[F] = persistence
+      override val commands: Map[String, TabExecutor] =
+        Map(
+          "subhome" -> SubHomeCommand.executor
+        )
+    }
   }
 }
