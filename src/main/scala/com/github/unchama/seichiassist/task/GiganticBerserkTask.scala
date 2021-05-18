@@ -57,24 +57,29 @@ class GiganticBerserkTask {
     //レベルアップするかどうか判定
     if (LevelThresholds.giganticBerserkLevelList(n).asInstanceOf[Integer] <= playerdata.giganticBerserk.exp) if (level <= 8) {
       playerdata.giganticBerserkLevelUp()
+
       //プレイヤーにメッセージ
       player.sendMessage(s"${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.WHITE}のレベルがアップし、確率が上昇しました")
       player.playSound(player.getLocation, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 0.8f)
+
       //最大レベルになった時の処理
       if (playerdata.giganticBerserk.reachedLimit()) {
         import cats.implicits._
         import cats.effect.implicits._
 
-        val effect = for {
-          _ <- NonServerThreadContextShift[F].shift
-          _ <- GlobalNotificationAPI[F].send(s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！")
-        } yield ()
+        val notify = GlobalNotificationAPI[F].send {
+          s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！"
+        }.toIO
 
-        val program = effect.toIO *> IO {
-          Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
-          Util.sendEveryMessage(s"${ChatColor.GOLD}${ChatColor.BOLD}${playerdata.lowercaseName}がパッシブスキル:${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.GOLD}${ChatColor.BOLD}を完成させました！")
-        }
-        program.unsafeRunSync()
+        val program = List(
+          notify,
+          IO {
+            Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
+            Util.sendEveryMessage(s"${ChatColor.GOLD}${ChatColor.BOLD}${playerdata.lowercaseName}がパッシブスキル:${ChatColor.YELLOW}${ChatColor.BOLD}${ChatColor.UNDERLINE}Gigantic${ChatColor.RED}${ChatColor.BOLD}${ChatColor.UNDERLINE}Berserk${ChatColor.GOLD}${ChatColor.BOLD}を完成させました！")
+          }
+        ).sequence
+
+        program.unsafeRunAsyncAndForget()
       }
     }
     else { //レベルが10かつ段階が第2段階の木の剣未満の場合は進化待機状態へ

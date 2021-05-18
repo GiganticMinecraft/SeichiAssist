@@ -349,17 +349,12 @@ object ActiveSkillMenu extends Menu {
                           import cats.implicits._
                           import cats.effect.implicits._
 
-                          val notify = for {
-                            _ <- NonServerThreadContextShift[F].shift
-                            _ <- GlobalNotificationAPI[F].send(notificationMessage)
-                          } yield ()
-
                           (
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                               BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-                              Kleisli((_: Any) => notify.toIO),
+                              Kleisli((_: Any) => GlobalNotificationAPI[F].send(notificationMessage).toIO),
                             )
                           )
                         } else (unlockedState, emptyEffect)
