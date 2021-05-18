@@ -54,7 +54,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDime
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
-import com.github.unchama.seichiassist.subsystems.notification.GlobalNotificationAPI
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
@@ -294,13 +294,13 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
-  implicit lazy val globalNotificationSystem: subsystems.notification.System[IO] = {
+  implicit lazy val globalNotificationSystem: subsystems.discordnotification.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
-    subsystems.notification.System.wired[IO]
+    subsystems.discordnotification.System.wired[IO]
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
@@ -470,7 +470,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
-    implicit val globalNotification: GlobalNotificationAPI[IO] = globalNotificationSystem.globalNotification
+    implicit val globalNotification: DiscordNotificationAPI[IO] = globalNotificationSystem.globalNotification
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
 

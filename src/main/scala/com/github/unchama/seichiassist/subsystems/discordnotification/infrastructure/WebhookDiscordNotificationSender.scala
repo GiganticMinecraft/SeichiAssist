@@ -1,7 +1,7 @@
-package com.github.unchama.seichiassist.subsystems.notification.service
+package com.github.unchama.seichiassist.subsystems.discordnotification.infrastructure
 
 import cats.effect.{ContextShift, Sync}
-import com.github.unchama.seichiassist.subsystems.notification.GlobalNotificationAPI
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import org.bukkit.Bukkit
 
 import java.io.IOException
@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets
 import scala.util.Using
 import scala.util.chaining.scalaUtilChainingOps
 
-class GlobalNotificationSender[F[_]: Sync: ContextShift](webhookURL: String) extends GlobalNotificationAPI[F] {
+class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift](webhookURL: String) extends DiscordNotificationAPI[F] {
   assert(
     webhookURL.nonEmpty,
     "GlobalNotificationSenderのURLに空文字列が指定されました。コンフィグを確認してください。"

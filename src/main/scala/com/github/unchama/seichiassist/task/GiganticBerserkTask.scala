@@ -5,7 +5,7 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.subsystems.notification.GlobalNotificationAPI
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import org.bukkit.entity.Player
@@ -18,7 +18,7 @@ class GiganticBerserkTask {
     F[_]
     : ConcurrentEffect
     : NonServerThreadContextShift
-    : GlobalNotificationAPI
+    : DiscordNotificationAPI
   ](p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p
     val uuid = p.getUniqueId
@@ -67,7 +67,7 @@ class GiganticBerserkTask {
         import cats.implicits._
         import cats.effect.implicits._
 
-        val notify = GlobalNotificationAPI[F].send {
+        val notify = DiscordNotificationAPI[F].send {
           s"${playerdata.lowercaseName}がパッシブスキル:GiganticBerserkを完成させました！"
         }.toIO
 

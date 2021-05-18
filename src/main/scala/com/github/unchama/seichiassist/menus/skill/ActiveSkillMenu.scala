@@ -22,7 +22,7 @@ import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.subsystems.notification.GlobalNotificationAPI
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -52,7 +52,7 @@ object ActiveSkillMenu extends Menu {
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
                     val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
                     val ioOnMainThread: OnMinecraftServerThread[IO],
-                    val globalNotification: GlobalNotificationAPI[IO])
+                    val globalNotification: DiscordNotificationAPI[IO])
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
@@ -266,7 +266,7 @@ object ActiveSkillMenu extends Menu {
     }
 
     def seichiSkillButton[
-      F[_] : ConcurrentEffect : NonServerThreadContextShift : GlobalNotificationAPI
+      F[_] : ConcurrentEffect : NonServerThreadContextShift : DiscordNotificationAPI
     ](state: SkillSelectionState, skill: SeichiSkill)
      (implicit environment: Environment): Button = {
       import environment._
@@ -354,7 +354,7 @@ object ActiveSkillMenu extends Menu {
                             SequentialEffect(
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                               BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-                              Kleisli.liftF(GlobalNotificationAPI[F].send(notificationMessage).toIO),
+                              Kleisli.liftF(DiscordNotificationAPI[F].send(notificationMessage).toIO),
                             )
                           )
                         } else (unlockedState, emptyEffect)

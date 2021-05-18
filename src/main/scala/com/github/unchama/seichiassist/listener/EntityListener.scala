@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.subsystems.notification.GlobalNotificationAPI
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import org.bukkit._
@@ -20,7 +20,7 @@ import org.bukkit.event.{EventHandler, Listener}
 class EntityListener(implicit effectEnvironment: EffectEnvironment,
                      ioOnMainThread: OnMinecraftServerThread[IO],
                      manaApi: ManaApi[IO, SyncIO, Player],
-                     globalNotification: GlobalNotificationAPI[IO]) extends Listener {
+                     globalNotification: DiscordNotificationAPI[IO]) extends Listener {
   private val playermap = SeichiAssist.playermap
 
   @EventHandler def onPlayerActiveSkillEvent(event: ProjectileHitEvent): Unit = { //矢を取得する
