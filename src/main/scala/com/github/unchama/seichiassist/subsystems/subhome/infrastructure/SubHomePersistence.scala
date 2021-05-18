@@ -48,13 +48,13 @@ class SubHomePersistence[F[_]: Sync] extends SubHomeReadAPI[F] with SubHomeWrite
       DB.localTx { implicit session =>
         // 重複したとき、もとのエントリを残す必要はないので黙って上書きする
         sql"""insert into seichiassist.sub_home
-             |(player_uuid,server_id,id,location_x,location_y,location_z,world_name) values
-             |(${player.toString},$serverId,$id,$x,$y,$z,$worldName)
-             |on duplicate key update
-             |location_x = values(location_x),
-             |location_y = values(location_y),
-             |location_z = values(location_z),
-             |world_name = values(world_name)"""
+             |(player_uuid, server_id, id, location_x, location_y, location_z, world_name) values
+             |  (${player.toString}, $serverId, $id, $x, $y, $z, $worldName)
+             |    on duplicate key update
+             |      location_x = values(location_x),
+             |      location_y = values(location_y),
+             |      location_z = values(location_z),
+             |      world_name = values(world_name)"""
           .stripMargin('|')
           .execute()
           .apply()
@@ -64,11 +64,11 @@ class SubHomePersistence[F[_]: Sync] extends SubHomeReadAPI[F] with SubHomeWrite
   override def updateName(player: UUID, number: SubHome.ID, name: String): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"""insert into seichiassist.sub_home
-             |(player_uuid, server_id, id, name) values
-             |(${player.toString},$serverId,$number,$name)
-             |on duplicate key update
-             |name = values(name)"""
+        sql"""update seichiassist.sub_home set name = $name where
+             |  player_uuid = ${player.toString} and
+             |  server_id = $serverId and
+             |  id = $number
+             |"""
           .stripMargin('|')
           .execute()
           .apply()
