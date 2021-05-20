@@ -2,11 +2,13 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COUNT
+import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.Material._
-import org.bukkit.inventory.ItemStack
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.inventory.meta.SkullMeta
 
 import scala.jdk.CollectionConverters._
@@ -105,16 +107,31 @@ object AnniversaryItemData {
   //region 記念限定シャベル
 
   val anniversaryShovel: ItemStack = {
-    val loreList = List(
-      "",
-      "特殊なエンチャントが付与されています",
-    ).map(lore => s"$RESET$YELLOW$lore")
+
+    val loreList = {
+      val enchDescription = enchantments
+        .map { case (ench, lvl) => s"$GRAY${Util.getEnchantName(ench.getName, lvl)}" }
+      val lore = List(
+        "",
+        "特殊なエンチャントが付与されています",
+      ).map(lore => s"$YELLOW$lore")
+
+      enchDescription ::: lore
+    }.map(lore => s"$RESET$lore")
       .asJava
+
+    val enchantments = Set(
+      (Enchantment.DIG_SPEED, 3),
+      (Enchantment.DURABILITY, 4),
+      (Enchantment.MENDING, 1)
+    )
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SPADE).tap { meta =>
       import meta._
       setDisplayName(s"$GOLD${BOLD}SCARLET")
       setLore(loreList)
+      addItemFlags(ItemFlag.HIDE_ENCHANTS)
+      enchantments.foreach { case (ench, lvl) => addEnchant(ench, lvl, true) }
     }
 
     val itemStack = new ItemStack(DIAMOND_SPADE, 1)
