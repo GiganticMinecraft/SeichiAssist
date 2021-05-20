@@ -107,6 +107,11 @@ object AnniversaryItemData {
   //region 記念限定シャベル
 
   val anniversaryShovel: ItemStack = {
+    val enchantments = Set(
+      (Enchantment.DIG_SPEED, 3),
+      (Enchantment.DURABILITY, 4),
+      (Enchantment.MENDING, 1)
+    )
 
     val loreList = {
       val enchDescription = enchantments
@@ -120,12 +125,6 @@ object AnniversaryItemData {
       enchDescription ::: lore
     }.map(lore => s"$RESET$lore")
       .asJava
-
-    val enchantments = Set(
-      (Enchantment.DIG_SPEED, 3),
-      (Enchantment.DURABILITY, 4),
-      (Enchantment.MENDING, 1)
-    )
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(DIAMOND_SPADE).tap { meta =>
       import meta._
