@@ -5,20 +5,6 @@ import org.bukkit.inventory.Inventory
 
 trait IMenuInventoryData {
   /**
-   * ログイン時間
-   * @param page
-   * @return
-   */
-  def getRankingByPlayingTime(page: Int): Inventory
-
-  /**
-   * 投票回数
-   * @param page
-   * @return
-   */
-  def getRankingByVotingCount(page: Int): Inventory
-
-  /**
    * 二つ名組み合わせ
    * @param player
    * @return
