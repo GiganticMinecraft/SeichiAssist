@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import org.bukkit._
@@ -18,7 +19,8 @@ import org.bukkit.event.{EventHandler, Listener}
 
 class EntityListener(implicit effectEnvironment: EffectEnvironment,
                      ioOnMainThread: OnMinecraftServerThread[IO],
-                     manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
+                     manaApi: ManaApi[IO, SyncIO, Player],
+                     globalNotification: DiscordNotificationAPI[IO]) extends Listener {
   private val playermap = SeichiAssist.playermap
 
   @EventHandler def onPlayerActiveSkillEvent(event: ProjectileHitEvent): Unit = { //矢を取得する
@@ -183,6 +185,8 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
   }
 
   @EventHandler def onDeath(event: EntityDeathEvent): Unit = {
+    import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+    implicit val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
     /*GiganticBerserk用*/
     //死んだMOBがGiganticBerserkの対象MOBでなければ終了
     if (!Util.isEnemy(event.getEntity.getType)) return

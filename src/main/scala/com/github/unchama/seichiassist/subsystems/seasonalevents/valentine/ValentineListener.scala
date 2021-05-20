@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuit
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
-import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendEveryMessage}
+import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendMessageToEveryoneIgnoringPreference}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -69,7 +69,7 @@ class ValentineListener[
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       Seq(
-        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(
@@ -135,7 +135,7 @@ class ValentineListener[
       player.setHealth(0)
 
       val messages = deathMessages(player.getName, new NBTItem(item).getString(NBTTagConstants.producerNameTag))
-      sendEveryMessage(messages(new Random().nextInt(messages.size)))
+      sendMessageToEveryoneIgnoringPreference(messages(new Random().nextInt(messages.size)))
     }
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }

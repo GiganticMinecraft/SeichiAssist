@@ -64,7 +64,7 @@ object ChristmasItemData {
   }
 
   def isChristmasCake(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
+    itemStack != null && itemStack.getType == Material.CAKE && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 1
     }
@@ -104,7 +104,7 @@ object ChristmasItemData {
   }
 
   def isChristmasTurkey(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
+    itemStack != null && itemStack.getType == Material.COOKED_CHICKEN && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 2
     }
@@ -149,7 +149,7 @@ object ChristmasItemData {
   }
 
   def isChristmasPotion(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
+    itemStack != null && itemStack.getType == Material.POTION && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 3
     }
@@ -192,7 +192,7 @@ object ChristmasItemData {
   }
 
   def isChristmasChestPlate(itemStack: ItemStack): Boolean =
-    itemStack != null && itemStack.getType != Material.AIR && {
+    itemStack != null && itemStack.getType == Material.DIAMOND_CHESTPLATE && {
       new NBTItem(itemStack)
         .getByte(NBTTagConstants.typeIdTag) == 4
     }
@@ -277,7 +277,7 @@ object ChristmasItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.INK_SACK).tap { meta =>
       import meta._
-      setDisplayName(s"${AQUA}靴下")
+      setDisplayName(s"${AQUA}靴下(${EVENT_YEAR}年)")
       setLore(loreList)
       addEnchant(Enchantment.DIG_SPEED, 1, true)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
@@ -290,12 +290,7 @@ object ChristmasItemData {
       setItemMeta(itemMeta)
     }
 
-    new NBTItem(itemStack).tap { nbtItem =>
-      import nbtItem._
-      setByte(NBTTagConstants.typeIdTag, 6.toByte)
-      setObject(NBTTagConstants.expiryDateTag, END_DATE)
-    }
-      .pipe(_.getItem)
+    itemStack
   }
 
   //endregion
@@ -321,7 +316,6 @@ object ChristmasItemData {
     val typeIdTag = "christmasItemTypeId"
     val cakePieceTag = "christmasCakePiece"
     val camouflageEnchLevelTag = "camouflageEnchLevel"
-    val expiryDateTag = "christmasSockExpiryDate"
   }
 
 }

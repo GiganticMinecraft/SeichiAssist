@@ -33,7 +33,8 @@ object AchievementConditions {
     val predicate: PlayerPredicate = { player: Player =>
       SeichiAssist.instance
         .rankingSystemApi
-        .getSeichiRanking
+        .seichiAmountRanking
+        .ranking.read
         .map(_.positionOf(player.getName))
         .map(_.exists(_ <= n))
     }

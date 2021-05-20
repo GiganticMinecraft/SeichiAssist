@@ -22,11 +22,13 @@ object PlayerDataBackupRoutine {
 
     val routineAction: IO[Boolean] = {
       val save = {
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+
         import scala.jdk.CollectionConverters._
 
         for {
           _ <- IO {
-            Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ中…")
+            Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ中…")
             Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ中…")
           }
           players <- IO {
@@ -36,7 +38,7 @@ object PlayerDataBackupRoutine {
             PlayerDataSaveTask.savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
           }
           _ <- IO {
-            Util.sendEveryMessage(s"${AQUA}プレイヤーデータセーブ完了")
+            Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ完了")
             Bukkit.getLogger.info(s"${AQUA}プレイヤーデータセーブ完了")
           }
         } yield ()

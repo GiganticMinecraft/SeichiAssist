@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, 
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.{GameMode, Location, Material}
+import org.bukkit.{GameMode, Location, Material, Sound}
 
 object AssaultRoutine {
 
@@ -177,6 +177,7 @@ object AssaultRoutine {
           IO {
             // 継続条件が満たされなかった場合の表示
             player.sendMessage(s"${YELLOW}アサルトスキルがOFFになりました")
+            player.playSound(currentLoc, Sound.BLOCK_LEVER_CLICK, 1f, 0.7f)
           }
         case ExitCase.Canceled =>
           IO {

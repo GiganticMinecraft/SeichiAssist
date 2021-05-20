@@ -6,6 +6,8 @@ import scala.util.Random
 
 class MebiusEnchantmentLevels private(val mapping: Map[MebiusEnchantment, Int]) {
 
+  import cats.implicits._
+
   mapping.foreach { case m@(MebiusEnchantment(_, maxLevel, _), enchantmentLevel) =>
     require(
       1 <= enchantmentLevel && enchantmentLevel <= maxLevel,
@@ -23,8 +25,6 @@ class MebiusEnchantmentLevels private(val mapping: Map[MebiusEnchantment, Int]) 
     } else {
       this
     }
-
-  import MebiusLevel.mebiusLevelOrder._
 
   def isValidAt(mebiusLevel: MebiusLevel): Boolean = {
     if (mebiusLevel.isMaximum && !has(MebiusEnchantment.Unbreakable)) {
