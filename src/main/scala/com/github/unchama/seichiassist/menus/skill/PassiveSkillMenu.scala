@@ -9,6 +9,7 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.menus.giganticberserk.GiganticBerserkBeforeEvolutionMenu
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.targetedeffect._
@@ -30,7 +31,8 @@ object PassiveSkillMenu extends Menu {
 
   class Environment(implicit
                     val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
-                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+                    val ioCanOpenGiganticBerserkBeforeEvolutionMenu: IO CanOpen GiganticBerserkBeforeEvolutionMenu.type)
 
   /**
    * メニューのサイズとタイトルに関する情報
@@ -234,9 +236,8 @@ object PassiveSkillMenu extends Menu {
                   FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
                 )
               } else if (openerData.giganticBerserk.canEvolve) {
-                //TODO: メニューに置き換える
                 SequentialEffect(
-                  ComputedEffect(player => openInventoryEffect(MenuInventoryData.getGiganticBerserkBeforeEvolutionMenu(player))),
+                  environment.ioCanOpenGiganticBerserkBeforeEvolutionMenu.open(GiganticBerserkBeforeEvolutionMenu),
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.5f)
                 )
               } else {

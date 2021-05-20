@@ -27,7 +27,7 @@ import scala.collection.mutable.Map;
 import java.util.*;
 import java.util.function.Consumer;
 
-public final class MenuInventoryData {
+public final class MenuInventoryData implements IMenuInventoryData {
     private MenuInventoryData() {
     }
 
@@ -107,118 +107,8 @@ public final class MenuInventoryData {
      * @return メニュー
      */
     public static Inventory computeRefreshedCombineMenu(final Player p) {
-        final UUID uuid = p.getUniqueId();
-        final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (isError(p, playerdata, "二つ名組み合わせ")) return null;
-        final Inventory inventory = getEmptyInventory(4, MenuType.COMBINE.invName);
-
-        //各ボタンの設定
-        finishedHeadPageBuild.put(uuid, false);
-        finishedMiddlePageBuild.put(uuid, false);
-        finishedTailPageBuild.put(uuid, false);
-        finishedShopPageBuild.put(uuid, false);
-        headPartIndex.put(uuid, 0);
-        middlePartIndex.put(uuid, 0);
-        tailPartIndex.put(uuid, 0);
-        shopIndex.put(uuid, 0);
-        taihiIndex.put(uuid, 0);
-
-        //実績ポイントの最新情報反映ボタン
-        {
-            // dynamic button
-            final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "クリックで情報を最新化",
-                    ChatColor.RESET + "" + ChatColor.RED + "累計獲得量：" + playerdata.achievePoint().cumulativeTotal(),
-                    ChatColor.RESET + "" + ChatColor.RED + "累計消費量：" + playerdata.achievePoint().used(),
-                    ChatColor.RESET + "" + ChatColor.AQUA + "使用可能量：" + playerdata.achievePoint().left()
-            );
-
-            final ItemStack itemstack = build(
-                    Material.EMERALD_ORE,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイント 情報",
-                    lore
-            );
-
-            AsyncInventorySetter.setItemAsync(inventory, 0,  itemstack);
-        }
-        //パーツショップ
-        {
-            // const button
-            final ItemStack itemstack = build(
-                    Material.ITEM_FRAME,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績ポイントショップ",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "クリックで開きます"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 9,  itemstack);
-        }
-        //エフェクトポイントからの変換ボタン
-        {
-            // dynamic button
-            final List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.RED + "JMS投票で手に入るポイントを",
-                    ChatColor.RESET + "" + ChatColor.RED + "実績ポイントに変換できます。",
-                    ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "投票pt 10pt → 実績pt 3pt",
-                    ChatColor.RESET + "" + ChatColor.AQUA + "クリックで変換を一回行います。",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "所有投票pt :" + playerdata.effectPoint(),
-                    ChatColor.RESET + "" + ChatColor.GREEN + "所有実績pt :" + playerdata.achievePoint().left()
-            );
-
-            final ItemStack itemstack = build(
-                    Material.EMERALD,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "ポイント変換ボタン",
-                    lore
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 1,  itemstack);
-        }
-
-        {
-            final PlayerNickname nickname = playerdata.settings().nickname();
-            final String playerTitle = Nicknames.getTitleFor(nickname.id1(), nickname.id2(), nickname.id3());
-            final ItemStack itemStack = build(
-                    Material.BOOK,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "現在の二つ名の確認",
-                    ChatColor.RESET + "" + ChatColor.RED + "「" + playerTitle + "」"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 4,  itemStack);
-        }
-
-        {
-            // const button
-            final ItemStack toHeadSelection = build(
-                    Material.WATER_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "前パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-
-            // const button
-            final ItemStack toMiddleSelection = build(
-                    Material.MILK_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "中パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-
-            // const button
-            final ItemStack toTailSelection = build(
-                    Material.LAVA_BUCKET,
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "後パーツ選択画面",
-                    ChatColor.RESET + "" + ChatColor.RED + "クリックで移動します"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 11, toHeadSelection);
-            AsyncInventorySetter.setItemAsync(inventory, 13, toMiddleSelection);
-            AsyncInventorySetter.setItemAsync(inventory, 15, toTailSelection);
-        }
-
-        // 1ページ目を開く
-        {
-            // const Button
-            final ItemStack itemstack = buildPlayerSkull(
-                    ChatColor.YELLOW + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "実績・二つ名メニューへ",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + "" + ChatColor.UNDERLINE + "クリックで移動",
-                    "MHF_ArrowLeft"
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 27, itemstack.clone());
-        }
-        return inventory;
+        // migrated into NicknameCombineMenu
+        return null;
     }
 
     public enum MenuType {
@@ -810,98 +700,6 @@ public final class MenuInventoryData {
 
         itemmeta.setLore(lore);
         return itemmeta;
-    }
-
-    /**
-     * GiganticBerserk進化設定
-     * @param p
-     * @return メニュー
-     */
-    public static Inventory getGiganticBerserkBeforeEvolutionMenu(final Player p) {
-        //UUID取得
-        final UUID uuid = p.getUniqueId();
-        //プレイヤーデータ
-        final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (isError(p, playerdata, "Gigantic進化前確認")) return null;
-        final Inventory inventory = getEmptyInventory(6, ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "スキルを進化させますか?");
-        {
-            // 色
-            final byte[] table = {12, 15, 4, 0, 3};
-            final ItemStack itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, table[playerdata.giganticBerserk().stage()]);
-            final ItemMeta itemmeta = itemstack.getItemMeta();
-            itemmeta.setDisplayName(" ");
-            itemstack.setItemMeta(itemmeta);
-            placeGiganticBerserkGlass(inventory, itemstack);
-        }
-
-        placeGiganticBerserkShape(inventory);
-
-        {
-            // const button
-            final List<String> lore = Arrays.asList(
-                    ChatColor.RESET + "" + ChatColor.GREEN + "進化することにより、スキルの秘めたる力を解放できますが",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "スキルは更に大量の魂を求めるようになり",
-                    ChatColor.RESET + "" + ChatColor.GREEN + "レベル(回復確率)がリセットされます",
-                    ChatColor.RESET + "" + ChatColor.RED + "本当に進化させますか?",
-                    ChatColor.RESET + "" + ChatColor.DARK_RED + ChatColor.UNDERLINE + "クリックで進化させる"
-            );
-
-            final ItemStack itemstack = build(
-                    Material.NETHER_STAR,
-                    ChatColor.WHITE + "スキルを進化させる",
-                    lore
-            );
-
-            AsyncInventorySetter.setItemAsync(inventory, 31,  itemstack);
-        }
-        return inventory;
-    }
-
-    /**
-     * GiganticBerserk進化設定
-     * @param p
-     * @return メニュー
-     */
-    public static Inventory getGiganticBerserkAfterEvolutionMenu(final Player p) {
-        //UUID取得
-        final UUID uuid = p.getUniqueId();
-        //プレイヤーデータ
-        final PlayerData playerdata = SeichiAssist.playermap().apply(uuid);
-        //念のためエラー分岐
-        if (isError(p, playerdata, "GiganticBerserk進化後画面")) return null;
-        final Inventory inventory = getEmptyInventory(6, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "スキルを進化させました");
-        {
-            final byte[] table = {12, 15, 4, 0, 3, 12};
-            final byte b = table[playerdata.giganticBerserk().stage()];
-
-            final ItemStack itemstack = new ItemStack(Material.STAINED_GLASS_PANE, 1, b);
-
-            final ItemMeta itemmeta = itemstack.getItemMeta();
-            if (playerdata.giganticBerserk().stage() >= 4) {
-                itemmeta.addEnchant(Enchantment.DAMAGE_ALL,1,true);
-                itemmeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            }
-            itemmeta.setDisplayName(" ");
-            itemstack.setItemMeta(itemmeta);
-
-            placeGiganticBerserkGlass(inventory, itemstack);
-        }
-
-        placeGiganticBerserkShape(inventory);
-
-        {
-            final ItemStack itemstack = build(
-                    Material.NETHER_STAR,
-                    ChatColor.WHITE + "スキルを進化させました！",
-                    Arrays.asList(
-                            ChatColor.RESET + "" + ChatColor.GREEN + "スキルの秘めたる力を解放することで、マナ回復量が増加し",
-                            ChatColor.RESET + "" + ChatColor.DARK_RED + "スキルはより魂を求めるようになりました"
-                    )
-            );
-            AsyncInventorySetter.setItemAsync(inventory, 31,  itemstack);
-        }
-        return inventory;
     }
 
     private static Inventory getEmptyInventory(final int rows, final String title) {

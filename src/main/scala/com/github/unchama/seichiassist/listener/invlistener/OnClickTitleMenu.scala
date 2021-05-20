@@ -2,12 +2,14 @@ package com.github.unchama.seichiassist.listener.invlistener
 
 import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.menuinventory.Menu
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
+import com.github.unchama.seichiassist.menus.nickname.NicknameCombineMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.entity.{EntityType, Player}
@@ -28,7 +30,9 @@ object OnClickTitleMenu {
     is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight"
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(implicit effectEnvironment: EffectEnvironment,
-                                                              ioCanOpenStickMenu: IO CanOpen FirstPage.type): Unit = {
+                                                              ioCanOpenStickMenu: IO CanOpen FirstPage.type,
+                                                              ioCanOpenNicknameCombineMenu: IO CanOpen NicknameCombineMenu.type
+  ): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
     //外枠のクリック処理なら終了
@@ -67,6 +71,7 @@ object OnClickTitleMenu {
       case MenuType.COMBINE.invName =>
         event.setCancelled(true)
         // 二つ名組み合わせトップ
+        // TODO migrate these action to NicknameCombineMenu
         mat match {
           //実績ポイント最新化
           case Material.EMERALD_ORE =>
@@ -119,7 +124,7 @@ object OnClickTitleMenu {
         mat match {
           case Material.EMERALD_ORE | Material.EMERALD =>
             pd.recalculateAchievePoint()
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            openMenu(player, NicknameCombineMenu)
 
           case _ =>
         }
@@ -148,7 +153,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            openMenu(player, NicknameCombineMenu)
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             // 次ページ
@@ -184,7 +189,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            openMenu(player, NicknameCombineMenu)
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
@@ -219,7 +224,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            openMenu(player, NicknameCombineMenu)
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
@@ -266,7 +271,7 @@ object OnClickTitleMenu {
 
           case Material.BARRIER =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
-            player.openInventory(MenuInventoryData.computeRefreshedCombineMenu(player))
+            openMenu(player, NicknameCombineMenu)
 
           case _ if isSkull && isApplicableAsNextPageButton(current) =>
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
@@ -282,4 +287,7 @@ object OnClickTitleMenu {
       case _ =>
     }
   }
+  
+  private def openMenu[M <: Menu](player: Player, menu: M)(implicit ioCanOpenM: IO CanOpen M): Unit =
+    ioCanOpenM.open(menu).run(player).unsafeRunSync()
 }
