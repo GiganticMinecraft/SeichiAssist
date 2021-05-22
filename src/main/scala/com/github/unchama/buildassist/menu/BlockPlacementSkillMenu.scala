@@ -6,13 +6,14 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, TargetedEffect, UnfocusedEffect}
 import com.github.unchama.{menuinventory, targetedeffect}
+import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -320,14 +321,14 @@ object BlockPlacementSkillMenu extends Menu {
 
     val dynamicPartComputation =
       List(
-        4 -> computeButtonToToggleDirtPlacement(),
-        13 -> computeButtonToShowCurrentStatus(),
-        19 -> computeButtonToMaximizeRange(),
-        20 -> computeButtonToIncreaseRange(),
-        22 -> computeButtonToResetRange(),
-        24 -> computeButtonToDecreaseRange(),
-        25 -> computeButtonToMinimizeRange(),
-        35 -> computeButtonToToggleConsumingMineStack()
+        ChestSlotRef(0, 4) -> computeButtonToToggleDirtPlacement(),
+        ChestSlotRef(1, 4) -> computeButtonToShowCurrentStatus(),
+        ChestSlotRef(2, 1) -> computeButtonToMaximizeRange(),
+        ChestSlotRef(2, 2) -> computeButtonToIncreaseRange(),
+        ChestSlotRef(2, 4) -> computeButtonToResetRange(),
+        ChestSlotRef(2, 6) -> computeButtonToDecreaseRange(),
+        ChestSlotRef(2, 7) -> computeButtonToMinimizeRange(),
+        ChestSlotRef(3, 8) -> computeButtonToToggleConsumingMineStack()
       )
         .map(_.sequence)
         .sequence

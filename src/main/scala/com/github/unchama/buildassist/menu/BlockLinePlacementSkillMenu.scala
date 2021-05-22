@@ -7,12 +7,13 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
+import eu.timepit.refined.auto._
 import net.md_5.bungee.api.ChatColor.GREEN
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -41,7 +42,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
     new MenuSlotLayout(
       Map(
         // ホームを開く
-        27 -> {
+        ChestSlotRef(3, 0) -> {
           val item = new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft)
             .amount(1)
             .title(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
@@ -54,7 +55,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
           button
         },
         //直列設置設定
-        0 -> {
+        ChestSlotRef(0, 0) -> {
           val item = new IconItemStackBuilder(Material.WOOD)
             .amount(1)
             .title(s"$YELLOW$UNDERLINE${BOLD}直列設置 ：${BuildAssist.lineFillStateDescriptions(openerData.lineFillStatus)}")
@@ -80,7 +81,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
           button
         },
         //直列設置ハーフブロック設定
-        1 -> {
+        ChestSlotRef(0, 1) -> {
           val item = new IconItemStackBuilder(Material.STEP)
             .amount(1)
             .title(s"$YELLOW$UNDERLINE${BOLD}ハーフブロック設定 ：${BuildAssist.lineFillSlabPositionDescriptions(openerData.lineFillSlabPosition)}")
@@ -104,7 +105,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
           button
         },
         //直列設置一部ブロックを破壊して並べる設定
-        2 -> {
+        ChestSlotRef(0, 2) -> {
           val item = new IconItemStackBuilder(Material.TNT)
             .amount(1)
             .title(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.toText(openerData.lineFillDestructWeakBlocks)}")
@@ -129,7 +130,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
           button
         },
         //MineStackの方を優先して消費する設定
-        8 -> {
+        ChestSlotRef(0, 8) -> {
           val item = new IconItemStackBuilder(Material.CHEST)
             .amount(1)
             .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.toText(openerData.lineFillPrioritizeMineStack)}")
