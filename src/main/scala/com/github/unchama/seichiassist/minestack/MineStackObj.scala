@@ -17,6 +17,22 @@ class MineStackObj(val mineStackObjName: String,
     cloned
   }
 
+  def this(category: MineStackObjectCategory,
+           objname: String,
+           japanesename: String,
+           level: Int,
+           material: Material,
+           durability: Short) =
+    this(
+      objname,
+      Some(japanesename),
+      level,
+      new ItemStack(material, 1, durability),
+      false,
+      category.serializedValue,
+      category
+    )
+
   def this(objName: String, uiName: Option[String],
            level: Int, material: Material, durability: Int,
            nameLoreFlag: Boolean, gachaType: Int, stackType: MineStackObjectCategory) =

@@ -8,8 +8,9 @@ import enumeratum._
 sealed abstract class MebiusEnchantment(val unlockLevel: MebiusLevel,
                                         val maxLevel: Int,
                                         val displayName: String) extends EnumEntry {
+  import cats.implicits._
+
   require {
-    import MebiusLevel.mebiusLevelOrder._
     unlockLevel <= MebiusLevel.max && maxLevel >= 1
   }
 }

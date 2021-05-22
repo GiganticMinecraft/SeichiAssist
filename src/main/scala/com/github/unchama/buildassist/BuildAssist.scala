@@ -7,6 +7,7 @@ import com.github.unchama.buildassist.enums._
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.listener.BuildMainMenuOpener
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
@@ -74,6 +75,8 @@ class BuildAssist(plugin: Plugin)
 
 object BuildAssist {
   var instance: BuildAssist = _
+  // TODO autodestructible     , Material.STATIONARY_LAVA // 溶岩
+  //    , Material.VINE // ツタ
   var plugin: Plugin = _
   var config: BuildAssistConfig = _
 

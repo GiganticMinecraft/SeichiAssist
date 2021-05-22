@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE, EVENT_YEAR}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -45,7 +45,7 @@ object NewYearItemData {
   }
 
   def isNewYearApple(item: ItemStack): Boolean = {
-    item != null && item.getType != Material.AIR && {
+    item != null && item.getType == Material.GOLDEN_APPLE && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
   }
@@ -61,7 +61,7 @@ object NewYearItemData {
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.PAPER).tap { meta =>
       import meta._
-      setDisplayName(s"${AQUA}お年玉袋")
+      setDisplayName(s"${AQUA}お年玉袋(${EVENT_YEAR}年)")
       setLore(loreList)
       addEnchant(Enchantment.DIG_SPEED, 1, true)
       addItemFlags(ItemFlag.HIDE_ENCHANTS)
@@ -70,12 +70,7 @@ object NewYearItemData {
     val itemStack = new ItemStack(Material.PAPER, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
-      setByte(NBTTagConstants.typeIdTag, 2.toByte)
-      setObject(NBTTagConstants.expiryDateTag, END_DATE)
-    }
-      .pipe(_.getItem)
+    itemStack
   }
 
   // https://minecraft-heads.com/custom-heads/food-drinks/413-bowl-of-noodles

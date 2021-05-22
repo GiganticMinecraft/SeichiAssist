@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata
 
+import cats.Order
+import cats.kernel.Monoid
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildExpAmount, BuildLevel}
 
 /**
@@ -21,4 +23,8 @@ object BuildAmountData {
 
   val initial: BuildAmountData = BuildAmountData(BuildExpAmount(BigDecimal(0)))
 
+  implicit val order: Order[BuildAmountData] = Order.by(_.expAmount)
+
+  implicit val monoid: Monoid[BuildAmountData] =
+    Monoid.instance(initial, (a, b) => BuildAmountData(a.expAmount.add(b.expAmount)))
 }
