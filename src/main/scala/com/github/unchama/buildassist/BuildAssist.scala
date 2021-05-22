@@ -19,7 +19,7 @@ import org.bukkit.plugin.Plugin
 import java.util.UUID
 import scala.collection.mutable
 
-class BuildAssist(plugin: Plugin)
+class BuildAssist(hostPlugin: Plugin)
                  (implicit
                   flyApi: ManagedFlyApi[SyncIO, Player],
                   buildCountAPI: subsystems.buildcount.BuildCountAPI[SyncIO, Player],
@@ -37,7 +37,6 @@ class BuildAssist(plugin: Plugin)
     buildCountAPI.playerBuildAmountRepository
 
   {
-    BuildAssist.plugin = plugin
     BuildAssist.instance = this
   }
 
@@ -49,7 +48,7 @@ class BuildAssist(plugin: Plugin)
     }
 
     //コンフィグ系の設定は全てConfig.javaに移動
-    BuildAssist.config = new BuildAssistConfig(plugin)
+    BuildAssist.config = new BuildAssistConfig(hostPlugin)
     BuildAssist.config.loadConfig()
 
     import buildCountAPI._
@@ -65,17 +64,16 @@ class BuildAssist(plugin: Plugin)
     )
 
     listeners.foreach { listener =>
-      Bukkit.getServer.getPluginManager.registerEvents(listener, plugin)
+      Bukkit.getServer.getPluginManager.registerEvents(listener, hostPlugin)
     }
 
-    plugin.getLogger.info("BuildAssist is Enabled!")
+    hostPlugin.getLogger.info("BuildAssist is Enabled!")
   }
 
 }
 
 object BuildAssist {
   var instance: BuildAssist = _
-  var plugin: Plugin = _
   var config: BuildAssistConfig = _
 
   val lineFillStateDescriptions = Map(
@@ -89,8 +87,6 @@ object BuildAssist {
     LineFillSlabPosition.Lower -> "下側",
     LineFillSlabPosition.Both -> "両方",
   )
-
-  val lineFillPrioritizeMineStackDescriptions = asDescription _
 
   private[buildassist] def asDescription(isTurnedOn: Boolean): String =
     if (isTurnedOn) "ON" else "OFF"
