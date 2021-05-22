@@ -179,7 +179,7 @@ object MaterialSets {
   )
 
   /**
-   * 直接設置時に自動的に破壊されるブロックリスト
+   * 直列設置時に自動的に破壊されるブロックリスト
    */
   val autoDestructibleWhenLineFill: java.util.Set[Material] = EnumSet.of(
     Material.LONG_GRASS //草
