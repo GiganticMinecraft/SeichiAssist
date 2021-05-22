@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist.menus
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.buildassist.menu.{BlockPlacementSkillMenu, MineStackMassCraftMenu}
-import com.github.unchama.buildassist.menu.BuildMainMenu.EMPHASIZE
-import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
+import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.menu.{BlockLinePlacementSkillMenu, BlockPlacementSkillMenu, MineStackMassCraftMenu}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.router.CanOpen
@@ -221,8 +220,8 @@ private case class ButtonComputations(player: Player)
         s"$RESET${GRAY}現在の設定",
         s"$RESET${GRAY}スキル設定: ${BuildAssist.lineFillStateDescriptions(openerData.lineFillStatus)}",
         s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.lineFillSlabPositionDescriptions(openerData.lineFillSlabPosition)}",
-        s"$RESET${GRAY}破壊設定: ${BuildAssist.asDescription(openerData.lineFillDestructWeakBlocks)}",
-        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.asDescription(openerData.lineFillPrioritizeMineStack)}"
+        s"$RESET${GRAY}破壊設定: ${BuildAssist.toText(openerData.lineFillDestructWeakBlocks)}",
+        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.toText(openerData.lineFillPrioritizeMineStack)}"
       )
       .build()
 

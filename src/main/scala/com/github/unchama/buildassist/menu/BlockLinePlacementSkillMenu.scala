@@ -9,7 +9,7 @@ import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, Fi
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SkullOwners
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
+import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
@@ -107,7 +107,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
         2 -> {
           val item = new IconItemStackBuilder(Material.TNT)
             .amount(1)
-            .title(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.asDescription(openerData.lineFillDestructWeakBlocks)}")
+            .title(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.toText(openerData.lineFillDestructWeakBlocks)}")
             .lore(
               s"$RESET${GRAY}ブロックを並べるとき特定のブロックを破壊して並べます。",
               s"$RESET${GRAY}破壊対象ブロック：草,花,水,雪,松明,きのこ",
@@ -119,7 +119,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
             UnfocusedEffect {
               openerData.lineFillDestructWeakBlocks = !openerData.lineFillDestructWeakBlocks
             },
-            MessageEffect(s"${GREEN}破壊設定 ：${BuildAssist.asDescription(openerData.lineFillDestructWeakBlocks)}"),
+            MessageEffect(s"${GREEN}破壊設定 ：${BuildAssist.toText(openerData.lineFillDestructWeakBlocks)}"),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             openSelf
           )
@@ -132,7 +132,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
         8 -> {
           val item = new IconItemStackBuilder(Material.CHEST)
             .amount(1)
-            .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.asDescription(openerData.lineFillPrioritizeMineStack)}")
+            .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定 ：${BuildAssist.toText(openerData.lineFillPrioritizeMineStack)}")
             .lore(
               s"$RESET${GRAY}スキルでブロックを並べるとき",
               s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
@@ -149,7 +149,7 @@ case class BlockLinePlacementSkillMenu() extends Menu {
               UnfocusedEffect {
                 openerData.lineFillPrioritizeMineStack = !openerData.lineFillPrioritizeMineStack
               },
-              MessageEffect(s"${GREEN}マインスタック優先設定 ：${BuildAssist.asDescription(openerData.lineFillPrioritizeMineStack)}"),
+              MessageEffect(s"${GREEN}マインスタック優先設定 ：${BuildAssist.toText(openerData.lineFillPrioritizeMineStack)}"),
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               openSelf
             )

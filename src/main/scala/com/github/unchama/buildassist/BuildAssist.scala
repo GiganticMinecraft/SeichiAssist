@@ -76,18 +76,20 @@ object BuildAssist {
   var instance: BuildAssist = _
   var config: BuildAssistConfig = _
 
-  val lineFillStateDescriptions = Map(
+  // no-infer-product
+  val lineFillStateDescriptions: Map[LineFillStatusFlag, String] = Map(
     LineFillStatusFlag.Disabled -> "OFF",
     LineFillStatusFlag.UpperSide -> "上側",
     LineFillStatusFlag.LowerSide -> "下側"
   )
 
-  val lineFillSlabPositionDescriptions = Map(
+  // no-infer-product
+  val lineFillSlabPositionDescriptions: Map[LineFillSlabPosition, String] = Map(
     LineFillSlabPosition.Upper -> "上側",
     LineFillSlabPosition.Lower -> "下側",
     LineFillSlabPosition.Both -> "両方",
   )
 
-  private[buildassist] def asDescription(isTurnedOn: Boolean): String =
+  def toText(isTurnedOn: Boolean): String =
     if (isTurnedOn) "ON" else "OFF"
 }
