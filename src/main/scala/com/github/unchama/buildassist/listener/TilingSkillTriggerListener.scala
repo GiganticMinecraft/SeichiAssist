@@ -83,8 +83,8 @@ class TilingSkillTriggerListener[
         targetXValues.foreach { targetX =>
           val eachBlockFill = new Breaks
           eachBlockFill.breakable {
-            val targetSurfaceLocation = new Location(playerWorld, targetX, surfaceY, targetZ)
-            val targetSurfaceBlock = targetSurfaceLocation.getBlock
+            val targetLocation = new Location(playerWorld, targetX, surfaceY, targetZ)
+            val targetBlock = targetLocation.getBlock
 
             def fillBelowSurfaceWithDirt(): Unit = {
               (1 to 5).foreach { setBlockYOffsetBelow =>
@@ -107,8 +107,8 @@ class TilingSkillTriggerListener[
                 fillBelowSurfaceWithDirt()
               }
 
-              targetSurfaceBlock.setType(offHandType)
-              targetSurfaceBlock.setData(offHandRawType)
+              targetBlock.setType(offHandType)
+              targetBlock.setData(offHandRawType)
 
               placementCount += 1
             }
@@ -147,9 +147,9 @@ class TilingSkillTriggerListener[
               }
             }
 
-            if (TilingSkillTriggerListener.replaceableMaterials.contains(targetSurfaceBlock.getType)) {
+            if (TilingSkillTriggerListener.replaceableMaterials.contains(targetBlock.getType)) {
               //他人の保護がかかっている場合は処理を終了
-              if (!ExternalPlugins.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
+              if (!ExternalPlugins.getWorldGuard.canBuild(player, targetLocation)) {
                 player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
                 blockFill.break()
               }
