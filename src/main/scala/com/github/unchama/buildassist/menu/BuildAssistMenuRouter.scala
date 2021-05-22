@@ -22,9 +22,9 @@ object BuildAssistMenuRouter {
     implicit lazy val mineStackMassCraftMenuEnvironment: MineStackMassCraftMenu.Environment = new MineStackMassCraftMenu.Environment
     implicit lazy val blockLinePlacementSkillMenuEnvironment: BlockLinePlacementSkillMenu.Environment = new BlockLinePlacementSkillMenu.Environment
 
-    implicit lazy val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type] = _.open
-    implicit lazy val canOpenMineStackMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu] = _.open
-    implicit lazy val canOpenLinePlacementSkillMenuEnvironment: CanOpen[IO, BlockLinePlacementSkillMenu] = _.open
-    override implicit lazy val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] = _.open
+    implicit lazy val canOpenBlockPlacementSkillMenu: IO CanOpen BlockPlacementSkillMenu.type = _.open
+    implicit lazy val canOpenMineStackMassCraftMenu: IO CanOpen MineStackMassCraftMenu = _.open
+    implicit lazy val canOpenLinePlacementSkillMenuEnvironment: IO CanOpen BlockLinePlacementSkillMenu = _.open
+    override implicit lazy val canOpenBuildMainMenu: IO CanOpen BuildMainMenu.type = _.open
   }
 }
