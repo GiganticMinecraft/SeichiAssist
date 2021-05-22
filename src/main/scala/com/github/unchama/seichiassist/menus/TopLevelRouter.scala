@@ -29,6 +29,8 @@ trait TopLevelRouter[F[_]] {
 
   implicit val canOpenStickMenu: F CanOpen FirstPage.type
 
+  implicit val canOpenAchievementMenu: F CanOpen AchievementMenu.type
+
 }
 
 object TopLevelRouter {
@@ -83,7 +85,6 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenRegionMenu: IO CanOpen RegionMenu.type = _.open
     implicit lazy val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type = _.open
     implicit lazy val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type = _.open
-    implicit lazy val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open
     implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
 
@@ -94,6 +95,7 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type = _.open
 
     override implicit lazy val canOpenStickMenu: IO CanOpen FirstPage.type = _.open
+    override implicit lazy val canOpenAchievementMenu: IO CanOpen AchievementMenu.type = _.open
   }
 
 }

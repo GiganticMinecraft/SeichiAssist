@@ -9,6 +9,7 @@ import com.github.unchama.seichiassist.data.player.GiganticBerserk
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInventoryData}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
+import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -30,6 +31,7 @@ import scala.collection.mutable.ArrayBuffer
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               manaApi: ManaApi[IO, SyncIO, Player],
                               ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+                              ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
                               ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   import com.github.unchama.targetedeffect._
