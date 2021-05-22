@@ -75,8 +75,6 @@ class BuildAssist(plugin: Plugin)
 
 object BuildAssist {
   var instance: BuildAssist = _
-  // TODO autodestructible     , Material.STATIONARY_LAVA // 溶岩
-  //    , Material.VINE // ツタ
   var plugin: Plugin = _
   var config: BuildAssistConfig = _
 
