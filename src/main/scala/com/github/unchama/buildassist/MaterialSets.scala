@@ -2,13 +2,13 @@ package com.github.unchama.buildassist
 
 import org.bukkit.Material
 
-import java.util
+import java.util.EnumSet
 
 object MaterialSets {
-  //範囲設置ブロックの対象リスト
-  val targetForRectangleFill: java.util.Set[Material] = util.EnumSet.of(
-
-
+  /**
+   * 範囲設置の対象ブロックリスト
+   */
+  val targetForRectangleFill: java.util.Set[Material] = EnumSet.of(
     Material.STONE //石
     , Material.GRASS //草
     , Material.DIRT //土
@@ -94,8 +94,10 @@ object MaterialSets {
     Material.WOOL, Material.CARPET, Material.WORKBENCH
   )
 
-  //直列設置ブロックの対象リスト
-  val targetForLineFill: java.util.Set[Material] = util.EnumSet.of(
+  /**
+   * 直列設置の対象ブロックリスト
+   */
+  val targetForLineFill: java.util.Set[Material] = EnumSet.of(
     Material.STONE //石
     , Material.GRASS //草
     , Material.DIRT //土
@@ -166,15 +168,20 @@ object MaterialSets {
     , Material.CONCRETE_POWDER //コンクリートパウダー
   )
 
-  //ハーフブロックとして扱うMaterial
-  val halfBlocks: java.util.Set[Material] = util.EnumSet.of(
+  /**
+   * ハーフブロック
+   */
+  val halfBlocks: java.util.Set[Material] = EnumSet.of(
     Material.STONE_SLAB2 //赤砂岩
     , Material.PURPUR_SLAB //プルパー
     , Material.WOOD_STEP //木
     , Material.STEP //石
   )
 
-  val autoDestructibleWhenLineFill: java.util.Set[Material] = util.EnumSet.of(
+  /**
+   * 直接設置時に自動的に破壊されるブロックリスト
+   */
+  val autoDestructibleWhenLineFill: java.util.Set[Material] = EnumSet.of(
     Material.LONG_GRASS //草
     , Material.DEAD_BUSH //枯れ木
     , Material.YELLOW_FLOWER //タンポポ
