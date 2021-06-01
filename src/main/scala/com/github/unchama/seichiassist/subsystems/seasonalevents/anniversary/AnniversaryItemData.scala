@@ -51,7 +51,7 @@ object AnniversaryItemData {
 
     new NBTItem(itemStack).tap { item =>
       import item._
-      setByte(NBTTagConstants.typeIdTag, 1)
+      setByte(NBTTagConstants.typeIdTag, 1.toByte)
     }
       .pipe(_.getItem)
   }
@@ -92,7 +92,7 @@ object AnniversaryItemData {
 
     new NBTItem(itemStack).tap { item =>
       import item._
-      setByte(NBTTagConstants.typeIdTag, 2)
+      setByte(NBTTagConstants.typeIdTag, 2.toByte)
     }
       .pipe(_.getItem)
   }
@@ -139,7 +139,7 @@ object AnniversaryItemData {
 
     new NBTItem(itemStack).tap { item =>
       import item._
-      setByte(NBTTagConstants.typeIdTag, 3)
+      setByte(NBTTagConstants.typeIdTag, 3.toByte)
     }
       .pipe(_.getItem)
   }
