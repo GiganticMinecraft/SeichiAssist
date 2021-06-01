@@ -8,10 +8,10 @@ object LoginBonusItemList {
     TotalDay(9) -> Set(LoginBonus(LoginBonusGachaTicket, 100)),
     TotalDay(15) -> Set(LoginBonus(LoginBonusGachaTicket, 200))
   )
-  private val dailyItem = Some(LoginBonus(LoginBonusGachaTicket, 20))
+  private val dailyItem = Set(LoginBonus(LoginBonusGachaTicket, 20))
 
   def bonusAt(day: LoginBonusDay): Option[Set[LoginBonus]] = day match {
     case TotalDay(count) => map.get(TotalDay(count))
-    case Everyday => dailyItem.map(bonus => Set(bonus))
+    case Everyday => Some(dailyItem)
   }
 }
