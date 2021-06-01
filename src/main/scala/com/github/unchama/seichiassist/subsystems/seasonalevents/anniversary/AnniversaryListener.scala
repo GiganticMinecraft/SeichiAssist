@@ -96,7 +96,7 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
     val offHandItem = player.getInventory.getItemInOffHand
     if (offHandItem == null) return
 
-    offHandItem.setDurability(0.toShort)
+    offHandItem.setDurability(0)
     player.getInventory.removeItem(item)
   }
 
