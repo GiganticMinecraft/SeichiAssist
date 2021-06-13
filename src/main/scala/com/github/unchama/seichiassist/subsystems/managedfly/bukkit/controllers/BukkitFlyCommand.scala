@@ -110,7 +110,8 @@ object BukkitFlyCommand {
       Map(
         "endless" -> startEndlessCommand[F, G],
         "add" -> addCommand[F, G],
-        "finish" -> finishCommand[F, G]
+        "finish" -> finishCommand[F, G],
+        "end" -> finishCommand[F, G]
       ),
       whenArgInsufficient = Some(printUsageExecutor), whenBranchNotFound = Some(printUsageExecutor)
     ).asNonBlockingTabExecutor()
