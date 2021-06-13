@@ -64,7 +64,7 @@ object SeichiSkill extends Enum[SeichiSkill] {
   object MoerakiBoulders extends AssaultSkill("moeraki_boulders", "モエラキ・ボールダーズ", condenseLava(11, 11, 11), 60, 80)
   object Eldfell extends AssaultSkill("eldfell", "エルト・フェットル", condenseLava(13, 13, 13), 150, 90)
 
-  object VenderBlizzard extends AssaultSkill("vender_blizzard", "ヴェンダー・ブリザード", condenseLiquid(11, 11, 11), 170, 110)
+  object VenderBlizzard extends AssaultSkill("vender_blizzard", "ヴェンダー・ブリザード", condenseLiquid(15, 15, 15), 170, 110)
 
   object AssaultArmor extends AssaultSkill("assault_armor", "アサルト・アーマー", armor(11, 11, 11), 600, 0)
 
