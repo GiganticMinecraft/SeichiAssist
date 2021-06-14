@@ -67,7 +67,8 @@ object RegionMenu extends Menu {
           if (!playerHasPermission)
             Seq(
               s"${RED}このワールドでは",
-              s"${RED}保護を申請できません"
+              s"${RED}保護を
+              できません"
             )
           else if (isSelectionNull)
             Seq(
@@ -81,7 +82,7 @@ object RegionMenu extends Menu {
             )
           else Seq(
             s"$DARK_GREEN${UNDERLINE}範囲指定されています",
-            s"$DARK_GREEN${UNDERLINE}クリックすると保護を申請します"
+            s"$DARK_GREEN${UNDERLINE}クリックすると保護を作成します"
           )
         } ++ {
           if (playerHasPermission)
@@ -110,7 +111,7 @@ object RegionMenu extends Menu {
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           if (!playerHasPermission)
-            MessageEffect(s"${RED}このワールドでは保護を申請できません")
+            MessageEffect(s"${RED}このワールドでは保護を作成できません")
           else if (isSelectionNull)
             SequentialEffect(
               MessageEffect(s"${RED}先に木の斧で範囲を指定してからこのボタンを押してください"),
