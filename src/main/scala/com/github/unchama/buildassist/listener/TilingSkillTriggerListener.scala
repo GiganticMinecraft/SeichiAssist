@@ -1,10 +1,11 @@
 package com.github.unchama.buildassist.listener
 
 import cats.effect.{SyncEffect, SyncIO}
-import com.github.unchama.buildassist.{BuildAssist, Util}
+import com.github.unchama.buildassist.{BuildAssist, MaterialSets}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltWithSkill
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor.RED
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -41,19 +42,21 @@ class TilingSkillTriggerListener[
       case _ => return
     }
 
-    if (!(player.isSneaking &&
-      BuildAssist.materiallist.contains(offHandItem.getType) &&
-      buildAssistPlayerData.ZoneSetSkillFlag)) return
+    if (!player.isSneaking) return
+    if (!buildAssistPlayerData.rectFillEnabled) return
+    val offHandType = offHandItem.getType
+    if (!MaterialSets.targetForRectangleFill.contains(offHandType)) return
 
+    val offHandRawType = offHandItem.getData.getData
     val clickedBlock = event.getClickedBlock
 
-    if (!(offHandItem.getType == clickedBlock.getType && offHandItem.getData.getData == clickedBlock.getData)) {
+    if (!(offHandType == clickedBlock.getType && offHandRawType == clickedBlock.getData)) {
       player.sendMessage(s"$RED「オフハンドと同じブロック」をクリックしてください。(基準になります)")
       return
     }
 
     //スキルの範囲設定
-    val areaInt = buildAssistPlayerData.AREAint
+    val areaInt = buildAssistPlayerData.rectFillRangeStep
 
     //設置範囲の基準となる座標
     val centerX = clickedBlock.getX
@@ -64,51 +67,32 @@ class TilingSkillTriggerListener[
 
     var placementCount = 0
 
-    val minestackObjectToUse =
+    val minestackObjectToUse = Option.when(buildAssistPlayerData.rectFillPrioritizeMineStack) {
       MineStackObjectList.minestacklist
         .find { obj =>
-          offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
+          offHandType == obj.material && offHandRawType.toInt == obj.durability
         }
-        .filter(_ => buildAssistPlayerData.zs_minestack_flag)
+    }.flatten
 
-    val replaceableMaterials = Set(
-      Material.AIR,
-      Material.SNOW,
-      Material.LONG_GRASS,
-      Material.DEAD_BUSH,
-      Material.YELLOW_FLOWER,
-      Material.RED_ROSE,
-      Material.RED_MUSHROOM,
-      Material.BROWN_MUSHROOM
-    )
-
-    val fillTargetMaterials = Set(
-      Material.AIR,
-      Material.LAVA,
-      Material.STATIONARY_LAVA,
-      Material.WATER,
-      Material.STATIONARY_WATER
-    )
-
-    val b1 = new Breaks
-    b1.breakable {
+    val blockFill = new Breaks
+    blockFill.breakable {
       val targetXValues = centerX - areaInt to centerX + areaInt
       val targetZValues = centerZ - areaInt to centerZ + areaInt
 
       targetZValues.foreach { targetZ =>
         targetXValues.foreach { targetX =>
-          val b2 = new Breaks
-          b2.breakable {
-            val targetSurfaceLocation = new Location(playerWorld, targetX, surfaceY, targetZ)
-            val targetSurfaceBlock = targetSurfaceLocation.getBlock
+          val eachBlockFill = new Breaks
+          eachBlockFill.breakable {
+            val targetLocation = new Location(playerWorld, targetX, surfaceY, targetZ)
+            val targetBlock = targetLocation.getBlock
 
             def fillBelowSurfaceWithDirt(): Unit = {
               (1 to 5).foreach { setBlockYOffsetBelow =>
                 val fillLocation = new Location(playerWorld, targetX, surfaceY - setBlockYOffsetBelow, targetZ)
                 val blockToBeReplaced = fillLocation.getBlock
 
-                if (fillTargetMaterials.contains(blockToBeReplaced.getType)) {
-                  if (Util.getWorldGuard.canBuild(player, fillLocation)) {
+                if (TilingSkillTriggerListener.fillTargetMaterials.contains(blockToBeReplaced.getType)) {
+                  if (ExternalPlugins.getWorldGuard.canBuild(player, fillLocation)) {
                     blockToBeReplaced.setType(Material.DIRT)
                   } else {
                     //他人の保護がかかっている場合は通知を行う
@@ -119,12 +103,12 @@ class TilingSkillTriggerListener[
             }
 
             def commitPlacement(): Unit = {
-              if (buildAssistPlayerData.zsSkillDirtFlag) {
+              if (buildAssistPlayerData.rectFillIncludeUnderCaves) {
                 fillBelowSurfaceWithDirt()
               }
 
-              targetSurfaceBlock.setType(offHandItem.getType)
-              targetSurfaceBlock.setData(offHandItem.getData.getData)
+              targetBlock.setType(offHandType)
+              targetBlock.setData(offHandRawType)
 
               placementCount += 1
             }
@@ -163,22 +147,20 @@ class TilingSkillTriggerListener[
               }
             }
 
-            if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
+            if (TilingSkillTriggerListener.replaceableMaterials.contains(targetBlock.getType)) {
               //他人の保護がかかっている場合は処理を終了
-              if (!Util.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
+              if (!ExternalPlugins.getWorldGuard.canBuild(player, targetLocation)) {
                 player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
-                b1.break()
+                blockFill.break()
               }
 
-              minestackObjectToUse match {
-                case Some(mineStackObject) =>
-                  if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObject) > 0) {
-                    seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObject, 1)
+              minestackObjectToUse.foreach { mineStackObject =>
+                if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObject) > 0) {
+                  seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObject, 1)
 
-                    commitPlacement()
-                    b2.break()
-                  }
-                case None =>
+                  commitPlacement()
+                  eachBlockFill.break()
+                }
               }
 
               consumeOnePlacementItemFromInventory() match {
@@ -186,7 +168,7 @@ class TilingSkillTriggerListener[
                   commitPlacement()
                 case None =>
                   player.sendMessage(s"${RED}アイテムが不足しています!")
-                  b1.break()
+                  blockFill.break()
               }
             }
           }
@@ -201,4 +183,25 @@ class TilingSkillTriggerListener[
       .unsafeRunSync()
   }
 
+}
+
+object TilingSkillTriggerListener {
+  val replaceableMaterials = Set(
+    Material.AIR,
+    Material.SNOW,
+    Material.LONG_GRASS,
+    Material.DEAD_BUSH,
+    Material.YELLOW_FLOWER,
+    Material.RED_ROSE,
+    Material.RED_MUSHROOM,
+    Material.BROWN_MUSHROOM
+  )
+
+  val fillTargetMaterials = Set(
+    Material.AIR,
+    Material.LAVA,
+    Material.STATIONARY_LAVA,
+    Material.WATER,
+    Material.STATIONARY_WATER
+  )
 }

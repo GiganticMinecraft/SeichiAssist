@@ -1,22 +1,27 @@
 package com.github.unchama.buildassist
 
+import com.github.unchama.buildassist.enums.{LineFillSlabPosition, LineFillStatusFlag}
+
 class TemporaryMutableBuildAssistPlayerData {
-  var ZoneSetSkillFlag = false
-  var zsSkillDirtFlag = false
+  var rectFillEnabled = false
+  var rectFillIncludeUnderCaves = false
 
   // TODO: こいつは殺す
-  var AREAint = 2
+  var rectFillRangeStep = 2
 
   /**
    * 直列設置設定フラグ
    */
-  var line_up_flg = 0
-  var line_up_step_flg = 0
-  var line_up_des_flg = 0
-  var line_up_minestack_flg = 0
+  var lineFillStatus: LineFillStatusFlag with Product = LineFillStatusFlag.Disabled
+
+  var lineFillSlabPosition: LineFillSlabPosition with Product = LineFillSlabPosition.Lower
+
+  var lineFillDestructWeakBlocks = false
+
+  var lineFillPrioritizeMineStack = false
 
   /**
    * ブロック範囲設置スキル設定フラグ
    */
-  var zs_minestack_flag = false
+  var rectFillPrioritizeMineStack = false
 }

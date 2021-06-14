@@ -1,8 +1,8 @@
 package com.github.unchama.seichiassist.menus
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.buildassist.menu.{BlockPlacementSkillMenu, MineStackMassCraftMenu}
-import com.github.unchama.buildassist.{BuildAssist, MenuInventoryData}
+import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.menu.{BlockLinePlacementSkillMenu, BlockPlacementSkillMenu, MineStackMassCraftMenu}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory.router.CanOpen
@@ -16,9 +16,9 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{Bu
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, openInventoryEffect}
+import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
-import com.github.unchama.targetedeffect.{ComputedEffect, DeferredEffect, SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
@@ -97,7 +97,7 @@ private case class ButtonComputations(player: Player)
         val openerLevel = amountData.levelCorrespondingToExp.level
 
         val iconItemStack = new IconItemStackBuilder(Material.STONE)
-          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.ZoneSetSkillFlag) "ON" else "OFF"}")
+          .title(s"$GREEN$EMPHASIZE「範囲設置スキル」現在：${if (openerData.rectFillEnabled) "ON" else "OFF"}")
           .lore(
             s"$RESET$YELLOW「スニーク+左クリック」をすると、",
             s"$RESET${YELLOW}オフハンドに持っているブロックと同じ物を",
@@ -113,17 +113,17 @@ private case class ButtonComputations(player: Player)
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               DeferredEffect {
                 IO {
-                  if (openerLevel < BuildAssist.config.getZoneSetSkillLevel) {
+                  if (openerLevel < BuildAssist.config.getRectangleFillUnlockLevel) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
-                    if (openerData.ZoneSetSkillFlag) SequentialEffect(
+                    if (openerData.rectFillEnabled) SequentialEffect(
                       UnfocusedEffect {
-                        openerData.ZoneSetSkillFlag = false
+                        openerData.rectFillEnabled = false
                       },
                       MessageEffect(s"${RED}範囲設置スキルOFF")
                     ) else SequentialEffect(
                       UnfocusedEffect {
-                        openerData.ZoneSetSkillFlag = true
+                        openerData.rectFillEnabled = true
                       },
                       MessageEffect(s"${RED}範囲設置スキルON")
                     )
@@ -147,7 +147,7 @@ private case class ButtonComputations(player: Player)
           .lore(
             s"$RESET$DARK_RED${UNDERLINE}クリックで移動",
             s"$RESET${GRAY}現在の設定",
-            s"$RESET${GRAY}MineStack優先設定:${if (openerData.zs_minestack_flag) "ON" else "OFF"}"
+            s"$RESET${GRAY}MineStack優先設定:${if (openerData.rectFillPrioritizeMineStack) "ON" else "OFF"}"
           )
           .build()
 
@@ -157,7 +157,7 @@ private case class ButtonComputations(player: Player)
               FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
               DeferredEffect {
                 IO {
-                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
+                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getLineFillUnlockLevel) {
                     MessageEffect(s"${RED}建築Lvが足りません")
                   } else {
                     canOpenBlockPlacementSkillMenu.open(BlockPlacementSkillMenu)
@@ -176,7 +176,7 @@ private case class ButtonComputations(player: Player)
         val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
         val iconItemStack = new IconItemStackBuilder(Material.WOOD)
-          .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+          .title(s"$YELLOW${EMPHASIZE}直列設置: ${BuildAssist.lineFillStateDescriptions(openerData.lineFillStatus)}")
           .lore(
             s"$RESET${GRAY}オフハンドに木の棒、メインハンドに設置したいブロックを持って",
             s"$RESET${GRAY}左クリックすると向いてる方向に並べて設置します。",
@@ -188,18 +188,17 @@ private case class ButtonComputations(player: Player)
           action.FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
             DeferredEffect {
               IO {
-                if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getblocklineuplevel) {
+                if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getLineFillUnlockLevel) {
                   MessageEffect(s"${RED}建築Lvが足りません")
                 } else {
                   SequentialEffect(
                     FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                     UnfocusedEffect {
-                      openerData.line_up_flg += 1
-                      openerData.line_up_flg %= 3
+                      openerData.lineFillStatus = openerData.lineFillStatus.next
                     },
                     DeferredEffect {
                       IO {
-                        MessageEffect(s"${GREEN}直列設置: ${BuildAssist.line_up_str(openerData.line_up_flg)}")
+                        MessageEffect(s"${GREEN}直列設置: ${BuildAssist.lineFillStateDescriptions(openerData.lineFillStatus)}")
                       }
                     }
                   )
@@ -212,17 +211,17 @@ private case class ButtonComputations(player: Player)
     }
   )
 
-  def computeButtonToOpenLineUpBlocksMenu(): IO[Button] = IO {
+  def computeButtonToOpenLineUpBlocksMenu()(implicit canOpenBlockLinePlacementSkillMenu: IO CanOpen BlockLinePlacementSkillMenu): IO[Button] = IO {
     val openerData = BuildAssist.instance.temporaryData(getUniqueId)
 
     val iconItemStack = new IconItemStackBuilder(Material.PAPER)
-      .title(s"$YELLOW$EMPHASIZE「直列設置 」設定画面へ")
+      .title(s"$YELLOW$EMPHASIZE「直列設置」設定画面へ")
       .lore(
         s"$RESET${GRAY}現在の設定",
-        s"$RESET${GRAY}スキル設定: ${BuildAssist.line_up_str(openerData.line_up_flg)}",
-        s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.line_up_step_str(openerData.line_up_step_flg)}",
-        s"$RESET${GRAY}破壊設定: ${BuildAssist.line_up_off_on_str(openerData.line_up_des_flg)}",
-        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.line_up_off_on_str(openerData.line_up_minestack_flg)}"
+        s"$RESET${GRAY}スキル設定: ${BuildAssist.lineFillStateDescriptions(openerData.lineFillStatus)}",
+        s"$RESET${GRAY}ハーフブロック設定: ${BuildAssist.lineFillSlabPositionDescriptions(openerData.lineFillSlabPosition)}",
+        s"$RESET${GRAY}破壊設定: ${BuildAssist.toText(openerData.lineFillDestructWeakBlocks)}",
+        s"$RESET${GRAY}MineStack優先設定: ${BuildAssist.toText(openerData.lineFillPrioritizeMineStack)}"
       )
       .build()
 
@@ -230,7 +229,7 @@ private case class ButtonComputations(player: Player)
       FilteredButtonEffect(ClickEventFilter.ALWAYS_INVOKE) { _ =>
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-          ComputedEffect(p => openInventoryEffect(MenuInventoryData.getBlockLineUpData(p)))
+          canOpenBlockLinePlacementSkillMenu.open(BlockLinePlacementSkillMenu())
         )
       }
     )
@@ -359,7 +358,8 @@ object BuildMainMenu extends Menu {
                     val flyApi: ManagedFlyApi[SyncIO, Player],
                     val ioOnMainThread: OnMinecraftServerThread[IO],
                     val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type],
-                    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu])
+                    val canOpenMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu],
+                    val canOpenBlockLinePlacementSkillMenu: CanOpen[IO, BlockLinePlacementSkillMenu])
 
   val EMPHASIZE = s"$UNDERLINE$BOLD"
 

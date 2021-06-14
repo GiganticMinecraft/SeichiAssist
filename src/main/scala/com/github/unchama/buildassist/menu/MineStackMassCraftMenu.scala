@@ -69,7 +69,7 @@ object MineStackMassCraftMenu {
       def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObj, Int)]): String =
         chunks.map { case (obj, amount) => s"${obj.uiName.get}${amount}個" }.mkString_("+")
 
-      val requiredBuildLevel = BuildAssist.config.getMinestackBlockCraftlevel(requiredMassCraftLevel)
+      val requiredBuildLevel = BuildAssist.config.getMineStackBulkCraftUnlockLevel(requiredMassCraftLevel)
 
       val ingredientObjects = ingredients.map(toMineStackObjectChunk)
       val productObjects = products.map(toMineStackObjectChunk)

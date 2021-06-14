@@ -6,13 +6,14 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, TargetedEffect, UnfocusedEffect}
 import com.github.unchama.{menuinventory, targetedeffect}
+import eu.timepit.refined.auto._
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Material, Sound}
@@ -49,13 +50,13 @@ object BlockPlacementSkillMenu extends Menu {
     import player._
 
     implicit class PlayerDataOps(val playerData: TemporaryMutableBuildAssistPlayerData) {
-      def computeCurrentSkillRange(): Int = playerData.AREAint * 2 + 1
+      def computeCurrentSkillRange(): Int = playerData.rectFillRangeStep * 2 + 1
     }
 
     def computeButtonToToggleDirtPlacement(): IO[Button] = RecomputedButton {
       IO {
         val playerData = BuildAssist.instance.temporaryData(getUniqueId)
-        val currentStatus = playerData.zsSkillDirtFlag
+        val currentStatus = playerData.rectFillIncludeUnderCaves
 
         val iconItemStack = new IconItemStackBuilder(Material.DIRT)
           .title(s"$YELLOW$UNDERLINE${BOLD}設置時に下の空洞を埋める機能")
@@ -70,7 +71,7 @@ object BlockPlacementSkillMenu extends Menu {
           LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             targetedeffect.UnfocusedEffect {
-              playerData.zsSkillDirtFlag = !currentStatus
+              playerData.rectFillIncludeUnderCaves = !currentStatus
             },
             MessageEffect(s"${RED}土設置機能${if (currentStatus) "OFF" else "ON"}")
           )
@@ -81,9 +82,9 @@ object BlockPlacementSkillMenu extends Menu {
     def computeButtonToShowCurrentStatus(): IO[Button] = RecomputedButton {
       IO {
         val playerData = BuildAssist.instance.temporaryData(getUniqueId)
-        val isSkillEnabled = playerData.ZoneSetSkillFlag
+        val isSkillEnabled = playerData.rectFillEnabled
         val skillRange = playerData.computeCurrentSkillRange()
-        val isConsumingMineStack = playerData.zs_minestack_flag
+        val isConsumingMineStack = playerData.rectFillPrioritizeMineStack
 
         val iconItemStack = new IconItemStackBuilder(Material.STONE)
           .title(s"$YELLOW$UNDERLINE${BOLD}現在の設定は以下の通りです")
@@ -116,7 +117,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 5
+            playerData.rectFillRangeStep = 5
           },
           MessageEffect(s"${RED}現在の範囲設定は 11×11 です"),
           open
@@ -133,7 +134,7 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階大きくする")
         .lore {
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
-            if (playerData.AREAint == 5) {
+            if (playerData.rectFillRangeStep == 5) {
               Seq(
                 s"$RESET${RED}これ以上範囲設定を大きくできません。"
               )
@@ -153,11 +154,11 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           DeferredEffect(
             IO {
-              if (playerData.AREAint < 5)
+              if (playerData.rectFillRangeStep < 5)
                 SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                   UnfocusedEffect {
-                    playerData.AREAint += 1
+                    playerData.rectFillRangeStep += 1
                   },
                   MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
                   open
@@ -187,7 +188,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 2
+            playerData.rectFillRangeStep = 2
           },
           MessageEffect(s"${RED}現在の範囲設定は 5×5 です"),
           open
@@ -204,7 +205,7 @@ object BlockPlacementSkillMenu extends Menu {
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
         .lore(
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
-            if (playerData.AREAint == 1) {
+            if (playerData.rectFillRangeStep == 1) {
               List(
                 s"${RED}これ以上範囲設定を小さくできません。"
               )
@@ -224,11 +225,11 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           DeferredEffect(
             IO {
-              if (playerData.AREAint > 1)
+              if (playerData.rectFillRangeStep > 1)
                 SequentialEffect(
                   FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
                   UnfocusedEffect {
-                    playerData.AREAint -= 1
+                    playerData.rectFillRangeStep -= 1
                   },
                   MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
                   open
@@ -258,7 +259,7 @@ object BlockPlacementSkillMenu extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           targetedeffect.UnfocusedEffect {
-            playerData.AREAint = 1
+            playerData.rectFillRangeStep = 1
           },
           MessageEffect(s"${RED}現在の範囲設定は 3×3 です"),
           open
@@ -271,14 +272,14 @@ object BlockPlacementSkillMenu extends Menu {
         IO {
           val playerData = BuildAssist.instance.temporaryData(getUniqueId)
 
-          val currentStatus = playerData.zs_minestack_flag
+          val currentStatus = playerData.rectFillPrioritizeMineStack
 
           val iconItemStackBuilder = new IconItemStackBuilder(Material.CHEST)
             .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
             .lore(
               s"$RESET${GRAY}スキルでブロックを並べるとき",
               s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
-              s"$RESET${GRAY}建築Lv ${BuildAssist.config.getblocklineupMinestacklevel} 以上で利用可能",
+              s"$RESET${GRAY}建築Lv ${BuildAssist.config.getLineFillFromMineStackUnlockLevel} 以上で利用可能",
               s"$RESET${GRAY}クリックで切り替え"
             )
             .build()
@@ -289,12 +290,12 @@ object BlockPlacementSkillMenu extends Menu {
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               DeferredEffect {
                 IO {
-                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getZoneskillMinestacklevel)
+                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getRectangleFillFromMineStackUnlockLevel)
                     MessageEffect(s"${RED}建築Lvが足りません")
                   else
                     SequentialEffect(
                       targetedeffect.UnfocusedEffect {
-                        playerData.zs_minestack_flag = !currentStatus
+                        playerData.rectFillPrioritizeMineStack = !currentStatus
                       },
                       MessageEffect(s"MineStack優先設定${if (currentStatus) "OFF" else "ON"}"),
                       open
@@ -320,14 +321,14 @@ object BlockPlacementSkillMenu extends Menu {
 
     val dynamicPartComputation =
       List(
-        4 -> computeButtonToToggleDirtPlacement(),
-        13 -> computeButtonToShowCurrentStatus(),
-        19 -> computeButtonToMaximizeRange(),
-        20 -> computeButtonToIncreaseRange(),
-        22 -> computeButtonToResetRange(),
-        24 -> computeButtonToDecreaseRange(),
-        25 -> computeButtonToMinimizeRange(),
-        35 -> computeButtonToToggleConsumingMineStack()
+        ChestSlotRef(0, 4) -> computeButtonToToggleDirtPlacement(),
+        ChestSlotRef(1, 4) -> computeButtonToShowCurrentStatus(),
+        ChestSlotRef(2, 1) -> computeButtonToMaximizeRange(),
+        ChestSlotRef(2, 2) -> computeButtonToIncreaseRange(),
+        ChestSlotRef(2, 4) -> computeButtonToResetRange(),
+        ChestSlotRef(2, 6) -> computeButtonToDecreaseRange(),
+        ChestSlotRef(2, 7) -> computeButtonToMinimizeRange(),
+        ChestSlotRef(3, 8) -> computeButtonToToggleConsumingMineStack()
       )
         .map(_.sequence)
         .sequence
