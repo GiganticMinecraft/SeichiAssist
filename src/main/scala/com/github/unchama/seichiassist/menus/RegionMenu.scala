@@ -67,8 +67,7 @@ object RegionMenu extends Menu {
           if (!playerHasPermission)
             Seq(
               s"${RED}このワールドでは",
-              s"${RED}保護を
-              できません"
+              s"${RED}保護を作成できません"
             )
           else if (isSelectionNull)
             Seq(
