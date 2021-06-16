@@ -258,6 +258,7 @@ object BuildAssist {
     , Material.DOUBLE_PLANT //高い花、草
     , Material.WATER //水
     , Material.STATIONARY_WATER //水
+    , Material.LAVA
     , Material.STATIONARY_LAVA // 溶岩
     , Material.VINE // ツタ
   )
