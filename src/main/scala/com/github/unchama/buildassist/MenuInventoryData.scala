@@ -225,7 +225,7 @@ object MenuInventoryData {
     itemmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}破壊設定 ：${BuildAssist.line_up_off_on_str(playerdata.line_up_des_flg)}")
     lore = List(
       s"$RESET${GRAY}ブロックを並べるとき特定のブロックを破壊して並べます。",
-      s"$RESET${GRAY}破壊対象ブロック：草,花,水,雪,松明,きのこ",
+      s"$RESET${GRAY}破壊対象ブロック：草、花、水、雪、松明、きのこ、マグマ、ツタ",
       s"$RESET${GRAY}クリックで切り替え"
     )
     itemmeta.setLore(lore.asJava)
