@@ -23,10 +23,21 @@ object UpdateManaCaps {
         ContextCoercion {
           repository.lift(player)
             .traverse { ref =>
-              ref.updateMaybe(_.withHigherLevelOption(newLevel)) *> ref.update(_.fillToCap)
+              ref.updateMaybe(_.withHigherLevelOption(newLevel))
             }
             .as(())
         }
-      }
+      } *>
+      breakCountReadAPI
+        .seichiStarLevelUpdates
+        .evalMap { case (player, Diff(_, _)) =>
+          ContextCoercion {
+            repository.lift(player)
+              .traverse {
+                _.update(_.fillToCap)
+              }
+              .as(())
+          }
+        }
 
 }
