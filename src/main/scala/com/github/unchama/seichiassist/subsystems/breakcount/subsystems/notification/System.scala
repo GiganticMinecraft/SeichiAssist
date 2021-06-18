@@ -7,7 +7,6 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.bukkit.actions.BukkitNotifyLevelUp
-import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
@@ -17,9 +16,8 @@ object System {
     F[_] : Concurrent : OnMinecraftServerThread : ErrorLogger,
     G[_] : ContextCoercion[*[_], F],
     A
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
-   (implicit manaWriteApi: ManaWriteApi[G, Player]) : F[A] = {
-    val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F, G]
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]) : F[A] = {
+    val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
 
     StreamExtra.compileToRestartingStream {
       breakCountReadAPI

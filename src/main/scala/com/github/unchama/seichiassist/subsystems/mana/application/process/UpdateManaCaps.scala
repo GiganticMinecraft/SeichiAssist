@@ -22,8 +22,8 @@ object UpdateManaCaps {
       .evalMap { case (player, Diff(_, newLevel)) =>
         ContextCoercion {
           repository.lift(player)
-            .traverse {
-              _.updateMaybe(_.withHigherLevelOption(newLevel))
+            .traverse { ref =>
+              ref.updateMaybe(_.withHigherLevelOption(newLevel)) *> ref.update(_.fillToCap)
             }
             .as(())
         }

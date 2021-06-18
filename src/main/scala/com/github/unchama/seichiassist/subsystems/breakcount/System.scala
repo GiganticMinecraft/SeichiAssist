@@ -14,7 +14,6 @@ import com.github.unchama.seichiassist.subsystems.breakcount.application.actions
 import com.github.unchama.seichiassist.subsystems.breakcount.bukkit.actions.SyncClassifyBukkitPlayerWorld
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmountData, SeichiAmountDataPersistence}
 import com.github.unchama.seichiassist.subsystems.breakcount.infrastructure.JdbcSeichiAmountDataPersistence
-import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
@@ -42,7 +41,7 @@ object System {
   def wired[
     F[_] : ConcurrentEffect : OnMinecraftServerThread : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
-  ](implicit effectEnvironment: EffectEnvironment, manaWriteApi: ManaWriteApi[G, Player]): F[System[F, G]] = {
+  ](implicit effectEnvironment: EffectEnvironment): F[System[F, G]] = {
     implicit val persistence: SeichiAmountDataPersistence[G] = new JdbcSeichiAmountDataPersistence[G]
 
     val createSystem: F[System[F, G]] = for {
