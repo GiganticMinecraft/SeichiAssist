@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.bukkit.actions
 
-import cats.Applicative
+import cats.{Applicative, ~>}
 import cats.effect.{Sync, SyncIO}
-import com.github.unchama.generic.Diff
+import com.github.unchama.generic.{ContextCoercion, Diff}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiLevel, SeichiStarLevel}
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
-import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaWriteApi}
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.ChatColor.GOLD
 import org.bukkit.entity.Player
@@ -15,7 +15,10 @@ object BukkitNotifyLevelUp {
 
   import cats.implicits._
 
-  def apply[F[_] : OnMinecraftServerThread : Sync](implicit manaApi: ManaWriteApi[F, Player]): NotifyLevelUp[F, Player] = new NotifyLevelUp[F, Player] {
+  def apply[
+    F[_] : OnMinecraftServerThread : Sync,
+    G[_] : ContextCoercion[*[_], F]
+  ](implicit manaApi: ManaWriteApi[G, Player]): NotifyLevelUp[F, Player] = new NotifyLevelUp[F, Player] {
     override def ofSeichiLevelTo(player: Player)(diff: Diff[SeichiLevel]): F[Unit] = {
       val Diff(oldLevel, newLevel) = diff
 
@@ -44,7 +47,9 @@ object BukkitNotifyLevelUp {
       if (oldStars < newStars) Sync[F].delay {
         player.sendTitle(titleMessage, subTitleMessage, 10, 70, 20)
         Util.launchFireWorks(player.getLocation)
-      } *> manaApi.manaAmount(player).restoreCompletely
+      } *> implicitly[ContextCoercion[G, F]]
+        // noinspection unnecessary-apply
+        .apply(manaApi.manaAmount(player).restoreCompletely)
       else Applicative[F].unit
     }
   }
