@@ -69,8 +69,9 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 protocol以下のファイルは`git clone`では入手することができません。以下のどちらかのコマンドを実行してください:
 * `git clone --recursive`
 * `git submodule update --init --recursive`
-## JavaDocs
-publicなメソッドについては、JavaDocsを記載するよう心がけてください。
+
+## ドキュメンテーション
+publicなメソッドについては、ドキュメンテーションを記載するよう心がけてください。
 その他は各自が必要だと判断した場合のみ記載してください。
 
 ## Commit Style
