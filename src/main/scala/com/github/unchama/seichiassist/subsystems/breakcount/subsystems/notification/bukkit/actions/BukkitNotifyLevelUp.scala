@@ -15,7 +15,7 @@ object BukkitNotifyLevelUp {
 
   import cats.implicits._
 
-  def apply[F[_] : OnMinecraftServerThread : Sync](implicit manaApi: ManaApi[F, F, Player]): NotifyLevelUp[F, Player] = new NotifyLevelUp[F, Player] {
+  def apply[F[_] : OnMinecraftServerThread : Sync](implicit manaApi: ManaWriteApi[F, Player]): NotifyLevelUp[F, Player] = new NotifyLevelUp[F, Player] {
     override def ofSeichiLevelTo(player: Player)(diff: Diff[SeichiLevel]): F[Unit] = {
       val Diff(oldLevel, newLevel) = diff
 
