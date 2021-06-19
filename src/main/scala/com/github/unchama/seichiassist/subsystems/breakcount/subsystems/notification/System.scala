@@ -15,7 +15,7 @@ object System {
     F[_] : Concurrent : OnMinecraftServerThread : ErrorLogger,
     G[_],
     A
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[A] = {
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]) : F[A] = {
     val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
 
     StreamExtra.compileToRestartingStream {
