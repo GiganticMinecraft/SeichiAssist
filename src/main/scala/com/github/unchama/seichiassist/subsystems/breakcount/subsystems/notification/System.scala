@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification
 
 import cats.effect.Concurrent
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
