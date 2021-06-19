@@ -14,7 +14,7 @@ object System {
 
   def backgroundProcess[
     F[_] : Concurrent : OnMinecraftServerThread : ErrorLogger,
-    G[_] : ContextCoercion[*[_], F],
+    G[_],
     A
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]) : F[A] = {
     val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
