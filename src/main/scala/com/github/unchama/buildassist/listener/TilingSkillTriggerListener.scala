@@ -46,8 +46,8 @@ class TilingSkillTriggerListener[
       buildAssistPlayerData.ZoneSetSkillFlag)) return
 
     val clickedBlock = event.getClickedBlock
-
-    if (!(offHandItem.getType == clickedBlock.getType && offHandItem.getData.getData == clickedBlock.getData)) {
+    val offHandItemSelector = offHandItem.getData.getData
+    if (!(offHandItem.getType == clickedBlock.getType && offHandItemSelector == clickedBlock.getData)) {
       player.sendMessage(s"$RED「オフハンドと同じブロック」をクリックしてください。(基準になります)")
       return
     }
@@ -67,7 +67,7 @@ class TilingSkillTriggerListener[
     val minestackObjectToUse =
       MineStackObjectList.minestacklist
         .find { obj =>
-          offHandItem.getType == obj.material && offHandItem.getData.getData.toInt == obj.durability
+          offHandItem.getType == obj.material && offHandItemSelector.toInt == obj.durability
         }
         .filter(_ => buildAssistPlayerData.zs_minestack_flag)
 
@@ -91,6 +91,13 @@ class TilingSkillTriggerListener[
     )
 
     val b1 = new Breaks
+    val rawDataModifier: Option[Byte => Byte] = offHandItem.getType match {
+      case Material.LEAVES | Material.LEAVES_2 =>
+        val noDecayBit: Byte = 8
+        Some(x => (x | noDecayBit).asInstanceOf[Byte])
+      case _ => None
+    }
+
     b1.breakable {
       val targetXValues = centerX - areaInt to centerX + areaInt
       val targetZValues = centerZ - areaInt to centerZ + areaInt
@@ -124,7 +131,7 @@ class TilingSkillTriggerListener[
               }
 
               targetSurfaceBlock.setType(offHandItem.getType)
-              targetSurfaceBlock.setData(offHandItem.getData.getData)
+              targetSurfaceBlock.setData(rawDataModifier.map(_(offHandItemSelector)).getOrElse(offHandItemSelector))
 
               placementCount += 1
             }
