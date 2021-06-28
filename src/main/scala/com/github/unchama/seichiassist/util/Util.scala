@@ -15,6 +15,7 @@ import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
 import org.bukkit.entity.{EntityType, Firework, Player}
+import org.bukkit.entity.EntityType._
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
 
@@ -440,32 +441,32 @@ object Util {
     MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
   }
 
-  def isEnemy(entityType: EntityType): Boolean = {
-    entityType match {
-      case
-        //通常世界MOB
-        EntityType.CAVE_SPIDER |
-        EntityType.CREEPER |
-        EntityType.GUARDIAN |
-        EntityType.SILVERFISH |
-        EntityType.SKELETON |
-        EntityType.SLIME |
-        EntityType.SPIDER |
-        EntityType.WITCH |
-        EntityType.ZOMBIE |
-        //ネザーMOB
-        EntityType.BLAZE |
-        EntityType.GHAST |
-        EntityType.MAGMA_CUBE |
-        EntityType.PIG_ZOMBIE |
-        //エンドMOB
-        EntityType.ENDERMAN |
-        EntityType.ENDERMITE |
-        EntityType.SHULKER => true
-      //敵MOB以外(エンドラ,ウィザーは除外)
-      case _ => false
-    }
-  }
+  def isEnemy(entityType: EntityType): Boolean = Set(
+    BLAZE,
+    CAVE_SPIDER,
+    CREEPER,
+    ELDER_GUARDIAN,
+    ENDERMAN,
+    ENDERMITE,
+    EVOKER,
+    GHAST,
+    GUARDIAN,
+    HUSK,
+    MAGMA_CUBE,
+    PIG_ZOMBIE,
+    SHULKER,
+    SILVERFISH,
+    SKELETON,
+    SLIME,
+    SPIDER,
+    STRAY,
+    VEX,
+    VINDICATOR,
+    WITCH,
+    WITHER_SKELETON,
+    ZOMBIE,
+    ZOMBIE_VILLAGER
+  ).contains(entityType)
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.CARROT_STICK &&
