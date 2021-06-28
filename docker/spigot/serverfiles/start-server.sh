@@ -20,7 +20,9 @@ config_update_expr="\
   .host = \"$DB_HOST\" |\
   .pw = \"$DB_PASSWORD\" |\
   .BungeeSemaphoreResponder.Redis.Host = \"$REDIS_HOST\" |\
-  .BungeeSemaphoreResponder.Redis.Port = \"$REDIS_PORT\""
+  .BungeeSemaphoreResponder.Redis.Port = \"$REDIS_PORT\" |\
+  .RedisBungee.redis-host = \"$REDIS_HOST\" |\
+  .RedisBungee.redis-port = \"$REDIS_PORT\""
 
 yq e "$config_update_expr" config.yml > tmpfile ; mv tmpfile config.yml
 

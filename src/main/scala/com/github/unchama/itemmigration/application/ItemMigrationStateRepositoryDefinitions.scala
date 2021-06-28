@@ -2,7 +2,8 @@ package com.github.unchama.itemmigration.application
 
 import cats.Applicative
 import cats.effect.Sync
-import com.github.unchama.datarepository.template.{RepositoryFinalization, SinglePhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
+import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.itemmigration.domain.PlayerMigrationState
 
 object ItemMigrationStateRepositoryDefinitions {

@@ -1,23 +1,27 @@
 package com.github.unchama.seichiassist.util
 
-import java.text.SimpleDateFormat
-import java.util.stream.IntStream
-import java.util.{Calendar, Random}
-
-import cats.data
-import cats.effect.IO
+import cats.data.Kleisli
+import cats.effect.{IO, SyncIO}
+import cats.{Monad, data}
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
+import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MineStackObjectList, SeichiAssist}
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.util.bukkit.ItemStackUtil
 import enumeratum._
-import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
 import org.bukkit.entity.{EntityType, Firework, Player}
+import org.bukkit.entity.EntityType._
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
+
+import java.text.SimpleDateFormat
+import java.util.stream.IntStream
+import java.util.{Calendar, Random}
 
 object Util {
 
@@ -73,6 +77,8 @@ object Util {
    */
   @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
     // Javaから呼ばれているのでimplicitが使いづらい　grantItemStacksEffectに置き換えたい
+    import PluginExecutionContexts.onMainThread
+
     DefaultEffectEnvironment.runEffectAsync(
       "アイテムスタックを付与する",
       grantItemStacksEffect(itemStack).run(player)
@@ -85,24 +91,18 @@ object Util {
    *
    * @param itemStacks 付与するアイテム
    */
-  def grantItemStacksEffect(itemStacks: ItemStack*): TargetedEffect[Player] = data.Kleisli { player =>
-    val toGive: Seq[ItemStack] = itemStacks.filter(_.getType != Material.AIR)
+  def grantItemStacksEffect[F[_] : OnMinecraftServerThread](itemStacks: ItemStack*): Kleisli[F, Player, Unit] =
+    data.Kleisli { player =>
+      val amalgamated = ItemStackUtil.amalgamate(itemStacks).filter(_.getType != Material.AIR)
 
-    for {
-      _ <- IO {
-        if (toGive.size != itemStacks.size)
-          Bukkit.getLogger.warning("attempt to add Material.AIR to player inventory")
-      }
-      _ <- PluginExecutionContexts.syncShift.shift
-      _ <- IO {
+      OnMinecraftServerThread[F].runAction(SyncIO {
         player.getInventory
-          .addItem(itemStacks: _*)
+          .addItem(amalgamated: _*)
           .values().asScala
           .filter(_.getType != Material.AIR)
           .foreach(dropItem(player, _))
-      }
-    } yield ()
-  }
+      })
+    }
 
   //プレイヤーのインベントリがフルかどうか確認
   def isPlayerInventoryFull(player: Player): Boolean = player.getInventory.firstEmpty() == -1
@@ -117,46 +117,34 @@ object Util {
     player.getInventory.addItem(itemstack)
   }
 
-  def sendAdminMessage(str: String): Unit = {
-    Bukkit.getOnlinePlayers.forEach { player =>
-      if (player.hasPermission("SeichiAssist.admin")) {
-        player.sendMessage(str)
-      }
-    }
+  def sendMessageToEveryoneIgnoringPreference[T](content: T)
+                                                (implicit send: PlayerSendable[T, IO]): Unit = {
+    implicit val g: GetConnectedBukkitPlayers[IO] = new GetConnectedBukkitPlayers[IO]
+
+    sendMessageToEveryoneIgnoringPreferenceM[T, IO](content).unsafeRunAsyncAndForget()
   }
 
-  def sendEveryMessage(str: String): Unit = {
-    Bukkit.getOnlinePlayers.forEach(_.sendMessage(str))
+  def sendMessageToEveryoneIgnoringPreferenceM[
+    T, F[_] : Monad : GetConnectedPlayers[*[_], Player]
+  ](content: T)(implicit ev: PlayerSendable[T, F]): F[Unit] = {
+    import cats.implicits._
+
+    for {
+      players <- GetConnectedPlayers[F, Player].now
+      _ <- players.traverse(ev.send(_, content))
+    } yield ()
   }
 
-  def sendEveryMessageWithoutIgnore(str: String): Unit = {
+  def sendMessageToEveryone[T](content: T)
+                              (implicit ev: PlayerSendable[T, IO]): Unit = {
     import cats.implicits._
 
     Bukkit.getOnlinePlayers.asScala.map { player =>
       for {
         playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO { if (!playerSettings.shouldMuteMessages) player.sendMessage(str) }
+        _ <- IO { if (!playerSettings.shouldMuteMessages) ev.send(player, content) }
       } yield ()
     }.toList.sequence.unsafeRunSync()
-  }
-
-  def sendEveryMessageWithoutIgnore(base: BaseComponent): Unit = {
-    import cats.implicits._
-
-    // TODO remove duplicates
-    Bukkit.getOnlinePlayers.asScala.map { player =>
-      for {
-        playerSettings <- SeichiAssist.playermap(player.getUniqueId).settings.getBroadcastMutingSettings
-        _ <- IO { if (!playerSettings.shouldMuteMessages) player.spigot().sendMessage(base) }
-      } yield ()
-    }.toList.sequence.unsafeRunSync()
-  }
-
-  /**
-   * json形式のチャットを送信する際に使用
-   */
-  def sendEveryMessage(base: BaseComponent): Unit = {
-    Bukkit.getOnlinePlayers.asScala.foreach(_.spigot().sendMessage(base))
   }
 
   def getEnchantName(vaname: String, enchlevel: Int): String = {
@@ -453,32 +441,32 @@ object Util {
     MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
   }
 
-  def isEnemy(entityType: EntityType): Boolean = {
-    entityType match {
-      case
-        //通常世界MOB
-        EntityType.CAVE_SPIDER |
-        EntityType.CREEPER |
-        EntityType.GUARDIAN |
-        EntityType.SILVERFISH |
-        EntityType.SKELETON |
-        EntityType.SLIME |
-        EntityType.SPIDER |
-        EntityType.WITCH |
-        EntityType.ZOMBIE |
-        //ネザーMOB
-        EntityType.BLAZE |
-        EntityType.GHAST |
-        EntityType.MAGMA_CUBE |
-        EntityType.PIG_ZOMBIE |
-        //エンドMOB
-        EntityType.ENDERMAN |
-        EntityType.ENDERMITE |
-        EntityType.SHULKER => true
-      //敵MOB以外(エンドラ,ウィザーは除外)
-      case _ => false
-    }
-  }
+  def isEnemy(entityType: EntityType): Boolean = Set(
+    BLAZE,
+    CAVE_SPIDER,
+    CREEPER,
+    ELDER_GUARDIAN,
+    ENDERMAN,
+    ENDERMITE,
+    EVOKER,
+    GHAST,
+    GUARDIAN,
+    HUSK,
+    MAGMA_CUBE,
+    PIG_ZOMBIE,
+    SHULKER,
+    SILVERFISH,
+    SKELETON,
+    SLIME,
+    SPIDER,
+    STRAY,
+    VEX,
+    VINDICATOR,
+    WITCH,
+    WITHER_SKELETON,
+    ZOMBIE,
+    ZOMBIE_VILLAGER
+  ).contains(entityType)
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.CARROT_STICK &&

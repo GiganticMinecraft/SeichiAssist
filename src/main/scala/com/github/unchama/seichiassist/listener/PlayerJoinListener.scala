@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
@@ -87,8 +88,8 @@ class PlayerJoinListener extends Listener {
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {
       //初見さんであることを全体告知
-      Util.sendEveryMessage(s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
-      Util.sendEveryMessage(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
+      Util.sendMessageToEveryoneIgnoringPreference(s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
+      Util.sendMessageToEveryoneIgnoringPreference(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       val inv = player.getInventory
@@ -112,7 +113,7 @@ class PlayerJoinListener extends Listener {
       inv.addItem(new ItemStack(Material.WRITTEN_BOOK).tap { is =>
         val meta = is.getItemMeta.asInstanceOf[BookMeta]
         // per https://github.com/GiganticMinecraft/SeichiAssist/issues/914#issuecomment-792534164
-        // 改行コードを明確にするためにLRで再結合する
+        // 改行コードを明確にするためにLFで再結合する
         val contents = List(
           """基本的にはこの４つを守ってください。ルール違反をした場合、BANなどの処罰が与えられます。
             |・正規のアカウントを使用する
@@ -166,8 +167,8 @@ class PlayerJoinListener extends Listener {
     // 整地専用サーバーの場合は上級者向けのサーバーである旨を通知
     if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
       player.sendTitle(
-        s"${WHITE}このサーバーは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}です",
-        s"${WHITE}始めたての頃は他のサーバーがおすすめです。", 10, 70, 20)
+        s"${WHITE}ここは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}",
+        s"${WHITE}始めたては他がおすすめ", 10, 70, 20)
   }
 
   // プレイヤーがワールドを移動したとき

@@ -82,7 +82,7 @@ object AchievementGroupMenuButtons {
 
       val clickEffect = {
         import com.github.unchama.targetedeffect._
-      val clickSound = FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+        val clickSound = FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
 
         val effect =
           if (hasUnlocked) {
@@ -96,7 +96,7 @@ object AchievementGroupMenuButtons {
               player.sendMessage(s"二つ名「${NicknameMapping.getTitleFor(achievement)}」が設定されました。")
             }
 
-            TargetedEffect.delay(setNickname)
+            TargetedEffect.delay[IO, Player](setNickname)
           } else {
             achievement match {
               case _: AutoUnlocked =>
@@ -143,7 +143,7 @@ object AchievementGroupMenuButtons {
     )
   )
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
 
   def entryComputationFor(viewer: Player): GroupMenuEntry => IO[Button] = {
     case AchievementEntry(achievement) => RecomputedButton {

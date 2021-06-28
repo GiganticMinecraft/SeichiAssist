@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.bukkit
 
 import cats.data.Kleisli
-import cats.effect.{Concurrent, Sync, Timer}
-import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import cats.effect.{Concurrent, Sync, SyncIO, Timer}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
 import com.github.unchama.seichiassist.subsystems.managedfly.domain._
@@ -12,7 +11,7 @@ import org.bukkit.ChatColor.{GRAY, GREEN, RED}
 import org.bukkit.entity.Player
 
 class BukkitPlayerFlyStatusManipulation[
-  AsyncContext[_] : Timer : Concurrent : MinecraftServerThreadShift : NonServerThreadContextShift
+  AsyncContext[_] : Timer : Concurrent : OnMinecraftServerThread
 ](implicit configuration: SystemConfiguration)
   extends PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]] {
 
@@ -26,11 +25,9 @@ class BukkitPlayerFlyStatusManipulation[
     val expManager = new ExperienceManager(player)
 
     for {
-      _ <- MinecraftServerThreadShift[AsyncContext].shift
-      hasExp <- Sync[AsyncContext].delay {
+      hasExp <- OnMinecraftServerThread[AsyncContext].runAction(SyncIO {
         expManager.hasExp(configuration.expConsumptionAmount)
-      }
-      _ <- NonServerThreadContextShift[AsyncContext].shift
+      })
       _ <- if (hasExp) Sync[AsyncContext].unit else Sync[AsyncContext].raiseError(PlayerExpNotEnough)
     } yield ()
   }
@@ -42,15 +39,14 @@ class BukkitPlayerFlyStatusManipulation[
     val expManager = new ExperienceManager(player)
 
     for {
-      _ <- MinecraftServerThreadShift[AsyncContext].shift
-      consumed <- Sync[AsyncContext].delay {
+      consumed <- OnMinecraftServerThread[AsyncContext].runAction(SyncIO {
         if (expManager.hasExp(configuration.expConsumptionAmount)) {
           expManager.changeExp(-configuration.expConsumptionAmount)
           true
         } else {
           false
         }
-      }
+      })
       _ <- if (consumed)
         Sync[AsyncContext].unit
       else
@@ -79,10 +75,10 @@ class BukkitPlayerFlyStatusManipulation[
         case NotFlying => false
       }
 
-      MinecraftServerThreadShift[AsyncContext].shift >> Sync[AsyncContext].delay {
+      OnMinecraftServerThread[AsyncContext].runAction(SyncIO {
         player.setAllowFlight(shouldBeFlying)
         player.setFlying(shouldBeFlying)
-      }
+      })
     }
   }
 

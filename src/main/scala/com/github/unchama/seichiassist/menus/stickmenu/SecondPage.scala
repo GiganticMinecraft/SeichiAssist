@@ -10,6 +10,8 @@ import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, a
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
 import com.github.unchama.seichiassist.menus.CommonButtons
+import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
+import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.anniversaryPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData.christmasPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
@@ -29,7 +31,7 @@ import org.bukkit.{Material, Sound}
  */
 object SecondPage extends Menu {
 
-  import PluginExecutionContexts.syncShift
+  import PluginExecutionContexts.onMainThread
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import com.github.unchama.util.InventoryUtil._
@@ -113,6 +115,9 @@ object SecondPage extends Menu {
               }
               else if (Christmas.isInEventNow) setItemMeta {
                 christmasPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
+              }
+              else if (Anniversary.isInEvent) setItemMeta {
+                anniversaryPlayerHead(getItemMeta.asInstanceOf[SkullMeta])
               }
             }
 

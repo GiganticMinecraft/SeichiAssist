@@ -1,25 +1,30 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.minecraft.actions.{GetConnectedPlayers, MinecraftServerThreadShift, SendMinecraftMessage}
+import com.github.unchama.generic.effect.stream.StreamExtra
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage
+import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process.{BreakCountEffectSynchronization, EffectStatsNotification, PlayerCountEffectSynchronization, SynchronizationProcess}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{EffectListRepositoryDefinitions, EffectStatsSettingsRepository, SuppressionSettingsRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{EffectListRepositoryDefinitions, EffectStatsSettingsRepositoryDefinition, SuppressionSettingsRepositoryDefinition}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.bukkit.actions.GrantBukkitFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actions.GrantFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingEffect, FastDiggingEffectList}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectSuppressionState, FastDiggingEffectSuppressionStatePersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{JdbcFastDiggingEffectStatsSettingsPersistence, JdbcFastDiggingEffectSuppressionStatePersistence}
+import io.chrisdavenport.log4cats.ErrorLogger
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 import java.util.UUID
@@ -43,11 +48,13 @@ object System {
     G[_]
     : SyncEffect,
     F[_]
-    : MinecraftServerThreadShift
+    : OnMinecraftServerThread
     : Timer
     : ConcurrentEffect
+    : ErrorLogger
     : ContextCoercion[G, *[_]]
-    : GetConnectedPlayers[*[_], Player],
+    : GetConnectedPlayers[*[_], Player]
+    : GetNetworkConnectionCount,
     H[_]
   ](implicit breakCountReadAPI: BreakCountReadAPI[F, H, Player], config: Configuration): F[System[F, F, Player]] = {
 
@@ -68,42 +75,40 @@ object System {
 
       effectListRepositoryHandles <- {
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTappingSinglePhasedRepositoryAndHandles(
+          BukkitRepositoryControls.createHandles(
+            RepositoryDefinition.SinglePhased(
               EffectListRepositoryDefinitions.initialization[F, G],
               EffectListRepositoryDefinitions.tappingAction[F, G, Player](effectListTopic),
               EffectListRepositoryDefinitions.finalization[F, G, UUID]
             )
+          )
         }
       }
 
       suppressionSettingsRepositoryHandles <- {
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTwoPhasedRepositoryAndHandles(
-              SuppressionSettingsRepositoryDefinitions.initialization(suppressionStatePersistence),
-              SuppressionSettingsRepositoryDefinitions.finalization(suppressionStatePersistence)(_.getUniqueId)
-            )
+          BukkitRepositoryControls.createHandles(
+            SuppressionSettingsRepositoryDefinition.withContext(suppressionStatePersistence)
+          )
         }
       }
 
       statsSettingsRepositoryHandles <- {
         ContextCoercion {
-          BukkitRepositoryControls
-            .createTappingSinglePhasedRepositoryAndHandles(
-              EffectStatsSettingsRepository.initialization[F, G](settingsPersistence),
-              EffectStatsSettingsRepository.tappingAction[F, G, Player](
-                effectListDiffTopic,
-                effectListTopic.subscribe(1).mapFilter(identity)
-              ),
-              EffectStatsSettingsRepository.finalization[F, G, Player](settingsPersistence)
+          BukkitRepositoryControls.createHandles(
+            EffectStatsSettingsRepositoryDefinition.withContext[F, G, Player](
+              settingsPersistence,
+              stream => stream.map(Some.apply).through(effectListDiffTopic.publish),
+              effectListTopic.subscribe(1).mapFilter(identity)
             )
+          )
         }
       }
 
-      _ <- EffectStatsNotification.using[F, Player](
-        effectListDiffTopic.subscribe(1).mapFilter(identity)
-      ).compile.drain.start
+      _ <-
+        StreamExtra.compileToRestartingStream[F, Unit] {
+          EffectStatsNotification.using[F, Player](effectListDiffTopic.subscribe(1).mapFilter(identity))
+        }.start
 
     } yield new System[F, F, Player] {
       override val effectApi: FastDiggingEffectApi[F, Player] = new FastDiggingEffectApi[F, Player] {
@@ -125,6 +130,18 @@ object System {
               }
               .as(())
           }
+
+        override def addEffectToAllPlayers(effect: FastDiggingEffect, duration: FiniteDuration): F[Unit] = {
+          import cats.implicits._
+
+          import scala.concurrent.duration._
+          import scala.jdk.CollectionConverters._
+
+          for {
+            players <- OnMinecraftServerThread[F].runAction(SyncIO(Bukkit.getOnlinePlayers.asScala.toList))
+            _ <- players.traverse(addEffect(effect, 1.hour).run)
+          } yield ()
+        }.as(())
 
       }
       override val settingsApi: FastDiggingSettingsApi[F, Player] = new FastDiggingSettingsApi[F, Player] {
@@ -165,7 +182,9 @@ object System {
           system.settingsApi.currentSuppressionSettings,
           system.effectApi.effectClock
         )
-      ).traverse(_.compile.drain.start)
+      ).traverse(
+        StreamExtra.compileToRestartingStream(_).start
+      )
     }
   }
 }

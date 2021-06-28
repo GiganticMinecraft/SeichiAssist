@@ -137,9 +137,6 @@ road_blockdamage: 0
 #再生成時のワールドサイズ
 world_size: 2000
 
-#貢献度1当たりのマナ増加量
-contribute_added_mana: 10
-
 #GiganticBerserk
 #1分間上限
 GBLimit: 50
@@ -150,6 +147,10 @@ Url:
   rule: "https://www.seichi.network/rule"
   map: "https://www.seichi.network/map"
   jms: "https://minecraft.jp/servers/54d3529e4ddda180780041a7"
+  # アサルト開放やバーサーク完成時にDiscordに通知するWebhookのURL
+  webhook:
+    # 全体通知用
+    notification: ""
 
 #Fly時の1分辺りの経験値消費量
 flyexp: '50'
@@ -180,6 +181,13 @@ BuildNum1minLimit: '256'
 # オートセーブの設定
 AutoSave:
   Enable: true
+
+# RedisBungeeが利用しているRedisインスタンスの接続情報
+RedisBungee:
+  redis-host: localhost
+  redis-port: 6379
+  # Redisサーバーがパスワードを持っている場合、次の行をアンコメントしてパスワードを入れること。
+  # redis-password: ""
 
 # BungeeCordと協調してデータ保存周りのロックを管理するシステムの設定項目
 BungeeSemaphoreResponder:

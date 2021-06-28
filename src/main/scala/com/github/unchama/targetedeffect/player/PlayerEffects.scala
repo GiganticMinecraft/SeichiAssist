@@ -1,9 +1,8 @@
 package com.github.unchama.targetedeffect.player
 
 import cats.data.Kleisli
-import cats.effect.IO
-import com.github.unchama.concurrent.Execution
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import cats.effect.{IO, SyncIO}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
@@ -13,19 +12,19 @@ object PlayerEffects {
   val closeInventoryEffect: TargetedEffect[Player] = TargetedEffect.delay(_.closeInventory())
 
   def openInventoryEffect(inventory: => Inventory)
-                         (implicit ctx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] =
+                         (implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     Kleisli { player =>
       // インベントリを開く操作はサーバースレッドでなければならない(Spigot 1.12.2)
-      Execution.onServerMainThread(IO {
+      onMainThread.runAction(SyncIO {
         player.openInventory(inventory)
-      })
+      }).as(())
     }
 
   def connectToServerEffect(serverIdentifier: String)
-                           (implicit ctx: MinecraftServerThreadShift[IO]): TargetedEffect[Player] =
+                           (implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     Kleisli { player =>
       // BungeeCordのサーバ移動はサーバスレッドでなければならない(Spigot 1.12.2)
-      Execution.onServerMainThread(IO {
+      onMainThread.runAction(SyncIO {
 
         import com.google.common.io.ByteStreams
 

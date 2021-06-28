@@ -1,9 +1,9 @@
 package com.github.unchama.targetedeffect
 
-import cats.FlatMap
 import cats.data.Kleisli
-import cats.effect.{IO, Timer}
+import cats.effect.{IO, Sync, Timer}
 import cats.kernel.Monoid
+import cats.{Applicative, FlatMap}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -16,7 +16,7 @@ object TargetedEffect {
   /**
    * 同期的な副作用`f`を`TargetedEffect`内に持ち回すようにする.
    */
-  def delay[T](f: T => Unit): TargetedEffect[T] = Kleisli(t => IO.delay(f(t)))
+  def delay[F[_] : Sync, T](f: T => Unit): Kleisli[F, T, Unit] = Kleisli(t => Sync[F].delay(f(t)))
 }
 
 object DeferredEffect {
@@ -39,13 +39,19 @@ object DeferredEffect {
 }
 
 object SequentialEffect {
-  def apply[T](effects: TargetedEffect[T]*): TargetedEffect[T] =
+  def apply[F[_] : Applicative, T](effects: Kleisli[F, T, Unit]*): Kleisli[F, T, Unit] = {
     SequentialEffect(effects.toList)
+  }
 
-  def apply[T](effects: List[TargetedEffect[T]]): TargetedEffect[T] = {
+  def apply[F[_] : Applicative, T](effects: List[Kleisli[F, T, Unit]]): Kleisli[F, T, Unit] = {
     import cats.implicits._
 
-    Monoid[TargetedEffect[T]].combineAll(effects)
+    // NOTE: [G[_] : Applicative, A]のときG[A]についていつもMonoid[G[A]]が提供されるわけではない
+
+    implicit val ev: Monoid[F[Unit]] = Applicative.monoid[F, Unit]
+    Monoid[Kleisli[F, T, Unit]].combineAll(
+      effects
+    )
   }
 }
 

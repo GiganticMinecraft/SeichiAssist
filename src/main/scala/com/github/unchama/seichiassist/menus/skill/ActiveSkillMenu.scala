@@ -2,23 +2,28 @@ package com.github.unchama.seichiassist.menus.skill
 
 import cats.data.Kleisli
 import cats.effect.concurrent.Ref
-import cats.effect.{IO, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.XYZTuple
 import com.github.unchama.seichiassist.data.player.PlayerSkillState
-import com.github.unchama.seichiassist.effects.unfocused.{BroadcastMessageEffect, BroadcastSoundEffect}
+import com.github.unchama.seichiassist.effects.unfocused.BroadcastSoundEffect
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.AssaultArmor
 import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -39,13 +44,16 @@ object ActiveSkillMenu extends Menu {
   private case object Selected extends SkillSelectionState
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, syncShift}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, layoutPreparationContext}
 
   class Environment(implicit
                     val breakCountApi: BreakCountAPI[IO, SyncIO, Player],
+                    val manaApi: ManaApi[IO, SyncIO, Player],
                     val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
                     val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+                    val ioOnMainThread: OnMinecraftServerThread[IO],
+                    val globalNotification: DiscordNotificationAPI[IO])
 
   override val frame: MenuFrame = MenuFrame(5.chestRows, s"$DARK_PURPLE${BOLD}整地スキル選択")
 
@@ -66,6 +74,7 @@ object ActiveSkillMenu extends Menu {
 
   private class ButtonComputations(player: Player)(implicit environment: Environment) {
 
+    import environment._
     import player._
 
     val availableActiveSkillPoint: IO[Int] =
@@ -118,6 +127,8 @@ object ActiveSkillMenu extends Menu {
         state <- ref.get
       } yield {
         val selectionState = ButtonComputations.selectionStateOf(skill)(state)
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+        implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
         ButtonComputations.seichiSkillButton(selectionState, skill)
       }
     }
@@ -255,8 +266,12 @@ object ActiveSkillMenu extends Menu {
       }
     }
 
-    def seichiSkillButton(state: SkillSelectionState, skill: SeichiSkill)
-                         (implicit environment: Environment): Button = {
+    def seichiSkillButton[
+      F[_] : ConcurrentEffect : NonServerThreadContextShift : DiscordNotificationAPI
+    ](state: SkillSelectionState, skill: SeichiSkill)
+     (implicit environment: Environment): Button = {
+      import environment._
+
       val itemStack = {
         val base = state match {
           case Locked =>
@@ -329,16 +344,23 @@ object ActiveSkillMenu extends Menu {
                       val (newState, assaultSkillUnlockEffects) =
                         if (!unlockedState.obtainedSkills.contains(AssaultArmor) &&
                           unlockedState.lockedDependency(SeichiSkill.AssaultArmor).isEmpty) {
+
+                          val notificationMessage = s"${player.getName}が全てのスキルを習得し、アサルト・アーマーを解除しました！"
+
+                          import cats.effect.implicits._
+
                           (
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
+                              Kleisli.liftF(DiscordNotificationAPI[F].send(notificationMessage).toIO),
+                              Kleisli.liftF(IO {
+                                Util.sendMessageToEveryoneIgnoringPreference(notificationMessage)
+                              }),
                               BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-                              BroadcastMessageEffect(s"$GOLD$BOLD${player.getName}が全てのスキルを習得し、アサルトアーマーを解除しました！")
                             )
                           )
-                        } else
-                          (unlockedState, emptyEffect)
+                        } else (unlockedState, emptyEffect)
 
                       (
                         newState,
@@ -379,6 +401,7 @@ object ActiveSkillMenu extends Menu {
                       case skill: AssaultSkill =>
                         import cats.implicits._
                         import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+                        import environment.manaApi
 
                         val tryStartRoutine = TryableFiber.start(AssaultRoutine.tryStart(player, skill))
                         val fiberRepository = SeichiAssist.instance.assaultSkillRoutines
@@ -412,7 +435,9 @@ object ActiveSkillMenu extends Menu {
   }
 
   private object ConstantButtons {
-    def skillEffectMenuButton(implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type): Button = {
+    def skillEffectMenuButton(implicit
+                              ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
+                              ioOnMainThread: OnMinecraftServerThread[IO]): Button = {
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
           .title(s"$UNDERLINE$BOLD${LIGHT_PURPLE}演出効果設定")
@@ -429,6 +454,8 @@ object ActiveSkillMenu extends Menu {
     }
 
     def resetSkillsButton(implicit environment: Environment): Button = {
+      import environment._
+
       ReloadingButton(ActiveSkillMenu) {
         Button(
           new IconItemStackBuilder(Material.GLASS)
@@ -502,8 +529,8 @@ object ActiveSkillMenu extends Menu {
       ChestSlotRef(4, 4) -> computeSkillButtonFor(MoerakiBoulders),
       ChestSlotRef(4, 5) -> computeSkillButtonFor(Eldfell),
 
-      ChestSlotRef(1, 1) -> computeSkillButtonFor(AssaultArmor),
-      ChestSlotRef(3, 1) -> computeSkillButtonFor(VenderBlizzard),
+      ChestSlotRef(4, 7) -> computeSkillButtonFor(VenderBlizzard),
+      ChestSlotRef(4, 8) -> computeSkillButtonFor(AssaultArmor),
     )
       .map(_.sequence)
       .sequence

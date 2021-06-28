@@ -33,15 +33,15 @@ public final class StaticGachaPrizeFactory {
 
     //がちゃりんごの名前を取得
     public static String getGachaRingoName() {
-        String name = ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんご";
-        return name;
+        return ChatColor.GOLD + "" + ChatColor.BOLD + "がちゃりんご";
     }
 
     //がちゃりんごの説明を取得
     public static List<String> getGachaRingoLore() {
-        List<String> lore = Arrays.asList(ChatColor.RESET + "" + ChatColor.GRAY + "序盤に重宝します。"
-                , ChatColor.RESET + "" + ChatColor.AQUA + "マナ回復（小）");
-        return lore;
+        return Arrays.asList(
+                ChatColor.RESET + "" + ChatColor.GRAY + "序盤に重宝します。",
+                ChatColor.RESET + "" + ChatColor.AQUA + "マナ回復（小）"
+        );
     }
 
     /**

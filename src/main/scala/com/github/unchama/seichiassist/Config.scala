@@ -1,10 +1,12 @@
 package com.github.unchama.seichiassist
 
 import com.github.unchama.bungeesemaphoreresponder.{RedisConnectionSettings, Configuration => BungeeSemaphoreResponderConfiguration}
+import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
 import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemConfiguration => AutoSaveConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
+import com.github.unchama.seichiassist.subsystems.discordnotification.{SystemConfiguration => DiscordNotificationConfiguration}
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -111,8 +113,6 @@ final class Config private(val config: FileConfiguration) {
 
   def getRoadBlockDamage: Int = getIntFailFast("road_blockdamage")
 
-  def getContributeAddedMana: Int = getIntFailFast("contribute_added_mana")
-
   def getWorldSize: Int = getIntFailFast("world_size")
 
   def getGiganticFeverMinutes: Int = getIntFailFast("gigantic_fever_minutes")
@@ -136,6 +136,20 @@ final class Config private(val config: FileConfiguration) {
     new FastDiggingEffectConfiguration {
       override val amplifierPerBlockMined: Double = getDoubleFailFast("minutespeedamount")
       override val amplifierPerPlayerConnection: Double = getDoubleFailFast("onlineplayersamount")
+    }
+  }
+
+  def getRedisBungeeRedisConfiguration: RedisBungeeRedisConfiguration = {
+    val settingsSection = config.getConfigurationSection("RedisBungee")
+
+    new RedisBungeeRedisConfiguration {
+      override val redisHost: String = settingsSection.getString("redis-host")
+      override val redisPort: Int = settingsSection.getInt("redis-port")
+      override val redisPassword: Option[String] =
+        if (settingsSection.contains("redis-password"))
+          Some(settingsSection.getString("redis-password"))
+        else
+          None
     }
   }
 
@@ -174,6 +188,10 @@ final class Config private(val config: FileConfiguration) {
 
   def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
     override val autoSaveEnabled: Boolean = config.getBoolean("AutoSave.Enable")
+  }
+
+  def discordNotificationConfiguration: DiscordNotificationConfiguration = new DiscordNotificationConfiguration {
+    override val webhookUrl: String = config.getString("Url.webhook.notification")
   }
 
   def buildCountConfiguration: BuildCountConfiguration = new BuildCountConfiguration {

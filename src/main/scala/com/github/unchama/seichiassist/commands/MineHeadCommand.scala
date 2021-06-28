@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -8,7 +9,8 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
-object MineHeadCommand {
+class MineHeadCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
+
   import com.github.unchama.targetedeffect._
 
   val effect: TargetedEffect[Player] =

@@ -1,16 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import java.util.{Random, UUID}
-
 import cats.effect.{ConcurrentEffect, IO, LiftIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
-import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendEveryMessage}
+import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendMessageToEveryoneIgnoringPreference}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -26,10 +25,15 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import java.util.{Random, UUID}
 import scala.util.chaining._
 
-class ValentineListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
-  (implicit effectEnvironment: EffectEnvironment, repository: LastQuitPersistenceRepository[F, UUID]) extends Listener {
+class ValentineListener[
+  F[_] : ConcurrentEffect : NonServerThreadContextShift
+](implicit
+  effectEnvironment: EffectEnvironment,
+  repository: LastQuitPersistenceRepository[F, UUID],
+  ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
 
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
@@ -65,7 +69,7 @@ class ValentineListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       Seq(
-        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、限定イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(
@@ -131,7 +135,7 @@ class ValentineListener[F[_] : ConcurrentEffect : NonServerThreadContextShift]
       player.setHealth(0)
 
       val messages = deathMessages(player.getName, new NBTItem(item).getString(NBTTagConstants.producerNameTag))
-      sendEveryMessage(messages(new Random().nextInt(messages.size)))
+      sendMessageToEveryoneIgnoringPreference(messages(new Random().nextInt(messages.size)))
     }
     player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
   }

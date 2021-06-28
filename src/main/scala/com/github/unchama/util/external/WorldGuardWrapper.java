@@ -6,10 +6,10 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * WorldGuardの各種関数を集めたクラスです.
@@ -20,7 +20,7 @@ public class WorldGuardWrapper {
     /**
      * ワールドガードのインスタンス
      */
-    private static WorldGuardPlugin plugin = ExternalPlugins.getWorldGuard();
+    private static final WorldGuardPlugin plugin = ExternalPlugins.getWorldGuard();
 
     /**
      * 与えられた {@link World} の {@link Player} の最大保護可能数を取得します.

@@ -18,7 +18,7 @@ import org.bukkit.{Material, Sound}
 
 object RegionMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.syncShift
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
   import com.github.unchama.targetedeffect._
   import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, _}
 
@@ -67,7 +67,7 @@ object RegionMenu extends Menu {
           if (!playerHasPermission)
             Seq(
               s"${RED}このワールドでは",
-              s"${RED}保護を申請できません"
+              s"${RED}保護を作成できません"
             )
           else if (isSelectionNull)
             Seq(
@@ -81,7 +81,7 @@ object RegionMenu extends Menu {
             )
           else Seq(
             s"$DARK_GREEN${UNDERLINE}範囲指定されています",
-            s"$DARK_GREEN${UNDERLINE}クリックすると保護を申請します"
+            s"$DARK_GREEN${UNDERLINE}クリックすると保護を作成します"
           )
         } ++ {
           if (playerHasPermission)
@@ -101,7 +101,7 @@ object RegionMenu extends Menu {
         import scala.util.chaining._
         new IconItemStackBuilder(Material.GOLD_AXE)
           .tap { b => if (canMakeRegion) b.enchanted() }
-          .title(s"$YELLOW$UNDERLINE${BOLD}保護の申請")
+          .title(s"$YELLOW$UNDERLINE${BOLD}保護の作成")
           .lore(lore.toList)
           .build()
       }
@@ -110,7 +110,7 @@ object RegionMenu extends Menu {
         iconItemStack,
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK)(_ =>
           if (!playerHasPermission)
-            MessageEffect(s"${RED}このワールドでは保護を申請できません")
+            MessageEffect(s"${RED}このワールドでは保護を作成できません")
           else if (isSelectionNull)
             SequentialEffect(
               MessageEffect(s"${RED}先に木の斧で範囲を指定してからこのボタンを押してください"),

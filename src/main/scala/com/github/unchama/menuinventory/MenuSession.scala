@@ -2,10 +2,10 @@ package com.github.unchama.menuinventory
 
 import cats.Parallel.Aux
 import cats.effect.concurrent.Ref
-import cats.effect.{IO, Sync}
+import cats.effect.{IO, Sync, SyncIO}
 import cats.{Eq, effect}
 import com.github.unchama.menuinventory.slot.Slot
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects
 import org.bukkit.Material
@@ -22,14 +22,14 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
   private val sessionInventory = frame.createConfiguredInventory(this)
 
   /**
-   * このセッションが持つ共有インベントリを同期スレッドで開く[TargetedEffect]を返します.
+   * このセッションが持つ共有インベントリを開く[TargetedEffect]を返します.
    */
-  def openInventory(implicit context: MinecraftServerThreadShift[IO]): TargetedEffect[Player] =
+  def openInventory(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     PlayerEffects.openInventoryEffect(sessionInventory)
 
   def overwriteViewWith(newLayout: MenuSlotLayout)
                        (implicit ctx: LayoutPreparationContext,
-                        syncShift: MinecraftServerThreadShift[IO]): IO[Unit] = {
+                        onMainThread: OnMinecraftServerThread[IO]): IO[Unit] = {
     type LayoutDiff = Map[Int, Option[Slot]]
 
     // 差分があるインデックスを列挙する
@@ -67,18 +67,17 @@ class MenuSession private(private val frame: MenuFrame) extends InventoryHolder 
       diff = differences(oldLayout, newLayout)
       _ <- currentLayout.set(newLayout)
       _ <- updateMenuSlots(diff)
-      _ <- syncShift.shift
-      // sessionInventory.getViewersが返してくるjava.util.ListはConcurrentな変更をされると例外を投げる
-      viewerList <- IO {
-        sessionInventory.getViewers
-      }
-      _ <- IO.shift(ctx)
-      _ <- IO {
-        import scala.jdk.CollectionConverters._
 
-        viewerList.asScala.toList.foreach {
-          case p: Player => p.updateInventory()
-          case _ =>
+      // sessionInventory.getViewersが返してくるjava.util.ListはConcurrentな変更をされると例外を投げる上、
+      // パケットはメインスレッドから送るべき
+      _ <- onMainThread.runAction {
+        SyncIO {
+          import scala.jdk.CollectionConverters._
+
+          sessionInventory.getViewers.asScala.toList.foreach {
+            case player: Player => player.updateInventory()
+            case _ =>
+          }
         }
       }
     } yield ()

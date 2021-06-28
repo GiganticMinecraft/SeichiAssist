@@ -83,7 +83,7 @@ import scala.jdk.CollectionConverters._
             ItemListSerialization.serializeToBase64(inventory),
             MessageEffect(s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。")
           )
-        _ <- EitherT(databaseGateway.playerDataManipulator.saveSharedInventory(player, playerData, serializedInventory))
+        _ <- EitherT(databaseGateway.playerDataManipulator.saveSharedInventory(player, serializedInventory))
         successEffect <- EitherT.right[TargetedEffect[Player]] {
           IO {
             // 現所持アイテムを全て削除

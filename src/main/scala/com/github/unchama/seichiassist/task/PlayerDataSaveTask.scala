@@ -157,9 +157,7 @@ object PlayerDataSaveTask {
 
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.effectPoint
-          + ",mana = " + playerdata.manaState.getMana
           + ",totalexp = " + playerdata.totalexp
-          + ",expmarge = " + playerdata.expmarge
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
           + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteMessages
 
@@ -185,9 +183,6 @@ object PlayerDataSaveTask {
           + ",toggleGiveApple = " + playerdata.toggleGiveApple
           + ",toggleVotingFairy = " + playerdata.toggleVotingFairy
           + ",p_apple = " + playerdata.p_apple
-
-          //貢献度pt
-          + ",added_mana = " + playerdata.added_mana
 
           + ",GBstage = " + playerdata.giganticBerserk.stage
           + ",GBexp = " + playerdata.giganticBerserk.exp

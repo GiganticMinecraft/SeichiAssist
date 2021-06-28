@@ -1,31 +1,31 @@
 package com.github.unchama.seichiassist.task.global
 
-import cats.effect.{IO, Timer}
+import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
-import com.github.unchama.minecraft.actions.MinecraftServerThreadShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.SeichiAchievement
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 
 import scala.concurrent.duration.FiniteDuration
 
 object PlayerDataRecalculationRoutine {
 
-  import cats.implicits._
-
   def apply()
-           (implicit syncContext: MinecraftServerThreadShift[IO], context: RepeatingTaskContext): IO[Nothing] = {
+           (implicit onMainThread: OnMinecraftServerThread[IO],
+            context: RepeatingTaskContext,
+            manaApi: ManaApi[IO, SyncIO, Player]): IO[Nothing] = {
     val getRepeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._
 
       if (SeichiAssist.DEBUG) 10.seconds else 1.minute
     }
 
-    val routineOnMainThread = IO {
+    val routineOnMainThread = SyncIO {
       import scala.jdk.CollectionConverters._
-
-      val config = SeichiAssist.seichiAssistConfig
 
       //オンラインプレイヤーの人数を取得
       val onlinePlayers = Bukkit.getServer.getOnlinePlayers.asScala
@@ -46,7 +46,7 @@ object PlayerDataRecalculationRoutine {
         }
 
         // 表示名とマナをレベルと同期する
-        playerData.synchronizeDisplayNameAndManaStateToLevelState()
+        playerData.synchronizeDisplayNameToLevelState()
 
         //総プレイ時間更新
         playerData.updatePlayTick()
@@ -89,7 +89,7 @@ object PlayerDataRecalculationRoutine {
 
     RepeatingRoutine.permanentRoutine(
       getRepeatInterval,
-      syncContext.shift >> routineOnMainThread
+      onMainThread.runAction(routineOnMainThread)
     )
   }
 }

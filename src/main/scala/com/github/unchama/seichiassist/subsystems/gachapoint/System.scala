@@ -1,21 +1,23 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, IO, SyncEffect, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.minecraft.actions.GetConnectedPlayers
+import com.github.unchama.generic.effect.stream.StreamExtra
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.gachapoint.application.process.AddSeichiExpAsGachaPoint
-import com.github.unchama.seichiassist.subsystems.gachapoint.application.repository.GachaPointRepositoryDefinitions
+import com.github.unchama.seichiassist.subsystems.gachapoint.application.repository.GachaPointRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.gachapoint.bukkit.GrantBukkitGachaTicketToAPlayer
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.GachaPoint
 import com.github.unchama.seichiassist.subsystems.gachapoint.infrastructure.JdbcGachaPointPersistence
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 trait System[F[_], G[_], Player] extends Subsystem[F] {
@@ -30,9 +32,10 @@ object System {
   import cats.implicits._
 
   def wired[
-    F[_] : ConcurrentEffect : Timer : GetConnectedPlayers[*[_], Player],
+    F[_] : ConcurrentEffect : Timer : GetConnectedPlayers[*[_], Player] : ErrorLogger,
     G[_] : SyncEffect
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): G[System[F, G, Player]] = {
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
+   (implicit ioOnMainThread: OnMinecraftServerThread[IO]): G[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val gachaPointPersistence = new JdbcGachaPointPersistence[G]
@@ -42,9 +45,8 @@ object System {
 
     for {
       gachaPointRepositoryControls <-
-        BukkitRepositoryControls.createTwoPhasedRepositoryAndHandles(
-          GachaPointRepositoryDefinitions.initialization[G, F, Player](gachaPointPersistence)(grantEffectFactory),
-          GachaPointRepositoryDefinitions.finalization[G, F, Player](gachaPointPersistence)
+        BukkitRepositoryControls.createHandles(
+          GachaPointRepositoryDefinition.withContext[G, F, Player](gachaPointPersistence)(grantEffectFactory)
         )
 
       _ <- {
@@ -56,7 +58,9 @@ object System {
         )
 
         EffectExtra.runAsyncAndForget[F, G, Unit] {
-          streams.traverse(_.compile.drain.start).as(())
+          streams
+            .traverse(StreamExtra.compileToRestartingStream(_).start)
+            .as(())
         }
       }
     } yield {

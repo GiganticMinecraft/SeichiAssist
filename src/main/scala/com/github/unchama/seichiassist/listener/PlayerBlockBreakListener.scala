@@ -1,13 +1,16 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.{Fiber, IO}
+import cats.effect.{Fiber, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
+import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -17,6 +20,7 @@ import org.bukkit.ChatColor.RED
 import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
@@ -24,9 +28,12 @@ import org.bukkit.inventory.ItemStack
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
-class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) extends Listener {
+class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
+                               ioOnMainThread: OnMinecraftServerThread[IO],
+                               manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
   private val plugin = SeichiAssist.instance
 
+  import cats.implicits._
   import plugin.activeSkillAvailability
 
   //アクティブスキルの実行
@@ -87,10 +94,8 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
       return
     }
 
-    val manaState = playerData.manaState
-
     // 追加マナ獲得
-    manaState.increase(BreakUtil.calcManaDrop(player), player, playerLevel)
+    manaApi.manaAmount(player).restoreAbsolute(ManaAmount(BreakUtil.calcManaDrop(player))).unsafeRunSync()
 
     val selectedSkill = skillState.activeSkill.getOrElse(return)
 
@@ -121,10 +126,11 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
       val multiBreakList = new ArrayBuffer[Set[BlockBreakableBySkill]]
       //壊される溶岩の全てのリストデータ
       val multiLavaList = new ArrayBuffer[Set[Block]]
-      // 全てのマナ消費量
-      var manaConsumption = 0.0
       // 全ての耐久消費量
       var toolDamageToSet = tool.getDurability.toInt
+
+      // 消費が予約されたマナ
+      val reservedMana = new ArrayBuffer[ManaAmount]
 
       //繰り返し回数だけ繰り返す
       val b = new Breaks
@@ -143,17 +149,21 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
                 player.isSneaking || targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
               )
 
-          //減る経験値計算
-          manaConsumption += (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
+          // このチャンクで消費されるマナ
+          val manaToConsumeOnThisChunk = ManaAmount {
+            (gravity + 1) * selectedSkill.manaCost * (breakBlocks.size + 1).toDouble / totalBreakRangeVolume
+          }
+
+          // マナを消費する
+          manaApi.manaAmount(player).tryAcquire(manaToConsumeOnThisChunk).unsafeRunSync() match {
+            case Some(value) => reservedMana.addOne(value)
+            case None => b.break()
+          }
 
           //減る耐久値の計算(１マス溶岩を破壊するのにはブロック１０個分の耐久が必要)
           toolDamageToSet += BreakUtil.calcDurability(
             tool.getEnchantmentLevel(Enchantment.DURABILITY), breakBlocks.size + 10 * lavaBlocks.size
           )
-
-          //実際に経験値を減らせるか判定
-          if (!manaState.has(manaConsumption))
-            b.break()
 
           //実際に耐久値を減らせるか判定
           if (tool.getType.getMaxDurability <= toolDamageToSet && !tool.getItemMeta.isUnbreakable)
@@ -167,12 +177,13 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
       if (multiBreakList.headOption.forall(_.size == 1)) {
         // 破壊するブロックがプレーヤーが最初に破壊を試みたブロックだけの場合
         BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
+        reservedMana.toList.traverse(manaApi.manaAmount(player).restoreAbsolute).unsafeRunSync()
       } else {
         // スキルの処理
         import cats.implicits._
         import com.github.unchama.concurrent.syntax._
         import com.github.unchama.generic.ContextCoercion._
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool, syncShift}
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool}
 
         val effectPrograms = for {
           ((blocks, lavas), chunkIndex) <- multiBreakList.zip(multiLavaList).zipWithIndex
@@ -181,13 +192,13 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
           SeichiAssist.instance.lockedBlockChunkScope.useTracked(blockChunk) { blocks =>
             for {
               _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
-              _ <- syncShift.shift
-              _ <- IO { lavas.foreach(_.setType(Material.AIR)) }
-              _ <-
-                playerData.skillEffectState.selection.runBreakEffect(
-                  player, selectedSkill, tool, blocks,
-                  breakAreaList(chunkIndex), block.getLocation.add(0.5, 0.5, 0.5)
-                )
+              _ <- ioOnMainThread.runAction(SyncIO {
+                lavas.foreach(_.setType(Material.AIR))
+              })
+              _ <- playerData.skillEffectState.selection.runBreakEffect(
+                player, selectedSkill, tool, blocks,
+                breakAreaList(chunkIndex), block.getLocation.add(0.5, 0.5, 0.5)
+              )
             } yield ()
           }.start(asyncShift)
         }
@@ -214,9 +225,8 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment) ex
           }
         }
 
-        // マナやツールの耐久値を減らす
+        // ツールの耐久値を減らす
         val adjustManaAndDurability = IO {
-          manaState.decrease(manaConsumption, player, playerLevel)
           if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
         }
 
