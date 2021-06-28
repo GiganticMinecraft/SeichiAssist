@@ -583,7 +583,7 @@ class SeichiAssist extends JavaPlugin() {
     try {
       monitoredInitialization()
     } catch {
-      case e: Exception =>
+      case e: Throwable =>
         logger.error("初期化処理に失敗しました。シャットダウンしています…")
         e.printStackTrace()
         Bukkit.shutdown()
