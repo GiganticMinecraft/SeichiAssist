@@ -5,7 +5,7 @@ import org.bukkit.Material
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.event.block.BlockPlaceEvent
 
-class PlayerBlockPlaceListener extends Listener {
+object PlayerBlockPlaceListener extends Listener {
   /**
    * 以下の条件をすべて満たすときにブロックの設置をキャンセルし、その旨を示すメッセージを送出する
    *   - プレイヤーが対象座標にブロックを設置できる
