@@ -5,7 +5,7 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, blogArticleUrl, isInEvent}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
 import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, isEnemy}
@@ -33,9 +33,9 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
 
-    if (LocalDate.now().isEqual(EVENT_DATE)) {
+    if (isInEvent) {
       List(
-        s"${BLUE}本日でギガンティック☆整地鯖は${ANNIVERSARY_COUNT}周年を迎えます。",
+        s"${BLUE}ギガンティック☆整地鯖は${ANNIVERSARY_COUNT}周年を迎えました。",
         s"${BLUE}これを記念し、限定アイテムを入手可能です。詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(player.sendMessage)
@@ -45,7 +45,7 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
 
   @EventHandler
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
-    if (!LocalDate.now().isEqual(EVENT_DATE)) return
+    if (!isInEvent) return
 
     val player = event.getEntity
     val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
