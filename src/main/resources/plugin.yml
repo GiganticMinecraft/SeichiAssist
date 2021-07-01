@@ -107,7 +107,6 @@ commands:
     description: send a gift
     usage: /<command> [player name]
     permission-message: *denied
-    permission: seichiassist.present
   hat:
     description: set item in hand to head
     usage: /<command>
