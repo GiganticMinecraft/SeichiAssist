@@ -62,7 +62,7 @@ object AnniversaryItemData {
     NETHER_BRICK, QUARTZ_BLOCK, SAND, SPONGE, WORKBENCH
   )
 
-  val strangeSaplingSiinaRate = 0.0003
+  val strangeSaplingSiinaRate = 0.0008
 
   def isStrangeSapling(item: ItemStack): Boolean =
     item != null && item.getType == SAPLING && {
