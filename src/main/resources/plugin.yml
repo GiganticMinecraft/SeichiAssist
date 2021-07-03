@@ -95,7 +95,7 @@ commands:
     permission-message: *denied
   fly:
     description: This is a fly command.
-    usage: /<command> <操作>
+    usage: /<command> <操作> (詳細については/fly helpを参照してください)
     permission-message: *denied
     permission: seichiassist.fly
   stickmenu:
