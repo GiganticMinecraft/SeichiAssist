@@ -1,0 +1,64 @@
+name: Migration CI
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  execute_migration:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.5
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.RootPassword }}
+        options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch initial SQL files
+        run: |
+          stat=$(curl -I https://redmine.seichi.click/attachments/download/895/gachadata.sql | head -n 1 | awk '{print $2}')
+          # check if status code is HTTP OK
+          if [[ "$stat" -ne "200" ]]; then
+          echo "status: $stat"
+          exit 1
+          fi
+          wget https://redmine.seichi.click/attachments/download/895/gachadata.sql
+          
+          stat=$(curl -I https://redmine.seichi.click/attachments/download/894/msgachadata.sql | head -n 1 | awk '{print $2}')
+          if [[ "$stat" -ne "200" ]]; then
+          echo "status: $stat"
+          exit 1
+          fi
+          wget https://redmine.seichi.click/attachments/download/894/msgachadata.sql
+          echo Initial files: fetched.
+      - name: Check if online
+        run: |
+          echo Apply test SQL:
+          sudo mysql -h 127.0.0.1 --port 3306 -u root -p${{ secrets.RootPassword }} -e "SHOW DATABASES"
+      - name: CREATE DATABASE seichiassist
+        run: |
+          mysql -h 127.0.0.1 --port 3306 -u root -p${{ secrets.RootPassword }} -e "create database if not exists seichiassist character set utf8 collate utf8_general_ci"
+      - name: Import dumped SQL
+        run: |
+          echo Applying gachadata.sql ...
+          mysql -h 127.0.0.1 --port 3306 -u root -p${{ secrets.RootPassword }} seichiassist < gachadata.sql
+          echo Applying msgachadata.sql ...
+          mysql -h 127.0.0.1 --port 3306 -u root -p${{ secrets.RootPassword }} seichiassist < msgachadata.sql
+      - name: Apply migration SQL
+        run: |
+          cd $GITHUB_WORKSPACE/src/main/resources/db/migration
+          ruby -e '`ls`.split("\n").sort_by {|x| x.gsub(/V(\d+)\.(\d+)\.(\d+)/) {
+                     $1.to_i * 9999999999 + $2.to_i * 999999 + $3.to_i * 1}.to_i
+                   }.each {|x|
+                     puts "Applying #{x} ..."
+                     puts `mysql -h 127.0.0.1 --port 3306 -u root -p${{ secrets.RootPassword }} < #{x}`
+                   }'
+      - name: Finalization
+        run: |
+          echo -e "\e[38;5;119m\e[1m\e[4mMigration test: Succeeded\e[0m"
+          exit 0
