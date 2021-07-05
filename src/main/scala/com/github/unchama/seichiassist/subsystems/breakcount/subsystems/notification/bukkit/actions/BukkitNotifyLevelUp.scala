@@ -44,7 +44,7 @@ object BukkitNotifyLevelUp {
       val subTitleMessage = s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★"
 
       if (oldStars < newStars) Sync[F].delay {
-        player.sendTitle(titleMessage, subTitleMessage, 10, 70, 20)
+        player.sendTitle(titleMessage, subTitleMessage, 1, 20 * 5, 1)
         player.sendMessage(s"$subTitleMessage$titleMessage")
         Util.launchFireWorks(player.getLocation)
       }
