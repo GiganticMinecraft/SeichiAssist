@@ -75,7 +75,7 @@ object PlayerDataRecalculationRoutine {
           .unsafeRunSync()
 
         //投票妖精関連
-        if (playerData.usingVotingFairy) {
+        if (playerData.isInVotingFairyDuration) {
           VotingFairyTask.run(player)
         }
 

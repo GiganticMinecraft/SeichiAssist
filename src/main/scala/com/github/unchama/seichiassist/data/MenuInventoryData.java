@@ -702,7 +702,7 @@ public final class MenuInventoryData {
         }
 
 
-        if (playerdata.usingVotingFairy()) {
+        if (playerdata.isInVotingFairyDuration()) {
             //妖精 時間確認
             {
                 // const button

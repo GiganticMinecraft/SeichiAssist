@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.task
 
+import com.github.unchama.generic.ClosedRange
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
@@ -15,7 +16,7 @@ import org.bukkit.{Bukkit, Location}
 
 import java.sql.{ResultSet, Statement}
 import java.text.{ParseException, SimpleDateFormat}
-import java.util.{Calendar, UUID}
+import java.util.{Calendar, GregorianCalendar, UUID}
 import scala.collection.mutable
 import scala.util.Using
 
@@ -312,12 +313,47 @@ object PlayerDataLoading {
         }
 
         //マナ妖精
-        playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
         playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
         playerData.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
         playerData.toggleGiveApple = rs.getInt("toggleGiveApple")
         playerData.toggleVotingFairy = rs.getInt("toggleVotingFairy")
-        playerData.setVotingFairyTime(rs.getString("newVotingFairyTime"))
+
+        val timeFromDatabase = rs.getString("newVotingFairyTime")
+        locally {
+          // setVotingFairyTime
+          // yyyy-MM-ddThh:mm; iso8601WithoutSecond
+          // 0____5____0____5
+          def iso8601WithoutSecond_Decode(input: String): GregorianCalendar = {
+            val year = input.slice(0, 4).toInt
+            // 頭のゼロは暗黙のうちにドロップされるので、特別な処理は不要
+            val month = input.slice(5, 7).toInt
+            val day = input.slice(8, 10).toInt
+            val hour = input.slice(11, 13).toInt
+            val minute = input.slice(14, 16).toInt
+            new GregorianCalendar(year, month, day, hour, minute)
+          }
+
+          val starts = iso8601WithoutSecond_Decode(timeFromDatabase)
+
+          val startHour = starts.get(Calendar.HOUR_OF_DAY)
+          val startMinute = starts.get(Calendar.MINUTE)
+          val min = if (playerData.toggleVotingFairy % 2 != 0) startMinute + 30 else startMinute
+          val hour = playerData.toggleVotingFairy match {
+            case 2 | 3 => startHour + 1
+            case 4 => startHour + 2
+            case _ => startHour
+          }
+
+          val ends = new GregorianCalendar(
+            starts.get(Calendar.YEAR),
+            starts.get(Calendar.MONTH) + 1,
+            starts.get(Calendar.DAY_OF_MONTH),
+            hour,
+            min
+          )
+
+          playerData.votingFairyDuration = Some(new ClosedRange(starts, ends))
+        }
         playerData.p_apple = rs.getLong("p_apple")
 
 

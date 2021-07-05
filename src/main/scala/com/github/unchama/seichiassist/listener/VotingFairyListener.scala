@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.generic.ClosedRange
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
@@ -21,14 +22,14 @@ object VotingFairyListener {
     val playerdata = playermap.apply(uuid)
 
     //召喚した時間を取り出す
-    playerdata.votingFairyStartTime =
-      new GregorianCalendar(
-        Calendar.getInstance.get(Calendar.YEAR),
-        Calendar.getInstance.get(Calendar.MONTH),
-        Calendar.getInstance.get(Calendar.DATE),
-        Calendar.getInstance.get(Calendar.HOUR_OF_DAY),
-        Calendar.getInstance.get(Calendar.MINUTE)
-      )
+    val start = new GregorianCalendar(
+      Calendar.getInstance.get(Calendar.YEAR),
+      Calendar.getInstance.get(Calendar.MONTH),
+      Calendar.getInstance.get(Calendar.DATE),
+      Calendar.getInstance.get(Calendar.HOUR_OF_DAY),
+      Calendar.getInstance.get(Calendar.MINUTE)
+    )
+
 
     var min = Calendar.getInstance.get(Calendar.MINUTE) + 1
     var hour = Calendar.getInstance.get(Calendar.HOUR_OF_DAY)
@@ -38,19 +39,15 @@ object VotingFairyListener {
     else if (playerdata.toggleVotingFairy == 4) hour + 2
     else hour
 
-    playerdata.votingFairyEndTime =
-      new GregorianCalendar(
-        Calendar.getInstance.get(Calendar.YEAR),
-        Calendar.getInstance.get(Calendar.MONTH),
-        Calendar.getInstance.get(Calendar.DATE),
-        hour, min
-      )
-
+    val end = new GregorianCalendar(
+      Calendar.getInstance.get(Calendar.YEAR),
+      Calendar.getInstance.get(Calendar.MONTH),
+      Calendar.getInstance.get(Calendar.DATE),
+      hour, min
+    )
+    playerdata.votingFairyDuration = Some(new ClosedRange(start, end))
     //投票ptを減らす
     playerdata.effectPoint_$eq(playerdata.effectPoint - playerdata.toggleVotingFairy * 2)
-
-    //フラグ
-    playerdata.usingVotingFairy = true
 
     //マナ回復量最大値の決定
     val n = manaApi.readManaAmount(p).unsafeRunSync().cap.value
@@ -76,11 +73,14 @@ object VotingFairyListener {
       "もう寝ようと思ってたのにー。[str1]はしょうがないなぁ", "こんな時間に呼ぶなんて…りんごははずんでもらうよ？"
     )
 
-    if (Util.getTimeZone(playerdata.votingFairyStartTime) == "morning") {
-      VotingFairyTask.speak(p, getMessage(morning, p.getName), playerdata.toggleVFSound)
-    } else if (Util.getTimeZone(playerdata.votingFairyStartTime) == "day") {
-      VotingFairyTask.speak(p, getMessage(day, p.getName), playerdata.toggleVFSound)
-    } else VotingFairyTask.speak(p, getMessage(night, p.getName), playerdata.toggleVFSound)
+    if (playerdata.isInVotingFairyDuration) {
+      val start = playerdata.votingFairyDurationStart.get
+      if (Util.getTimeZone(start) == "morning") {
+        VotingFairyTask.speak(p, getMessage(morning, p.getName), playerdata.toggleVFSound)
+      } else if (Util.getTimeZone(start) == "day") {
+        VotingFairyTask.speak(p, getMessage(day, p.getName), playerdata.toggleVFSound)
+      } else VotingFairyTask.speak(p, getMessage(night, p.getName), playerdata.toggleVFSound)
+    }
   }
 
   def regeneMana(player: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {

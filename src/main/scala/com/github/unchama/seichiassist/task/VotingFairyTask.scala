@@ -18,11 +18,11 @@ object VotingFairyTask {
     //マナ回復
     VotingFairyListener.regeneMana(p)
     //効果時間中か
-    if (!Util.isVotingFairyPeriod(playerdata.votingFairyStartTime, playerdata.votingFairyEndTime)) {
+    if (!playerdata.isInVotingFairyDuration) {
       speak(p, "あっ、もうこんな時間だ！", b = false)
       speak(p, s"じゃーねー！${p.getName}", b = true)
       p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった")
-      playerdata.usingVotingFairy_$eq(false)
+      playerdata.unsetVotingFairyDuration()
     }
   }
 

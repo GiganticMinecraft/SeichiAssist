@@ -10,6 +10,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
 import java.sql.{SQLException, Statement}
+import java.text.SimpleDateFormat
 import scala.util.Using
 
 object PlayerDataSaveTask {
@@ -176,8 +177,16 @@ object PlayerDataSaveTask {
           + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
           //投票
-          + ",canVotingFairyUse = " + playerdata.usingVotingFairy
-          + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString + "'"
+          + ",canVotingFairyUse = " + playerdata.isInVotingFairyDuration
+          + ",newVotingFairyTime = '" + {
+          // getVotingFairyTime
+          playerdata.votingFairyDurationStart.fold("") { cal =>
+            val date = cal.getTime
+            // iso8601WithoutSecond_Encode
+            val format = new SimpleDateFormat("yyyy-MM-ddTHH:mm")
+            format.format(date)
+          }
+        } + "'"
           + ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
           + ",hasVotingFairyMana = " + playerdata.hasVotingFairyMana
           + ",toggleGiveApple = " + playerdata.toggleGiveApple
