@@ -30,6 +30,8 @@ val providedDependencies = Seq(
   "com.sk89q.worldguard" % "worldguard-legacy" % "6.2",
   "net.coreprotect" % "coreprotect" % "2.14.2",
   "com.mojang" % "authlib" % "1.5.25",
+  // towny
+  "com.github.TownyAdvanced" % "Towny" % "0.96.3.0",
 
   // no runtime
   "org.typelevel" %% "simulacrum" % "1.0.0"
