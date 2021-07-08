@@ -284,7 +284,7 @@ object BreakUtil {
       if (managedWorld.contains(ManagedWorld.WORLD_SW)) {
         // 5周年記念企画のうち21億チャレンジ用の条件分岐
         // TODO: 終わったら消去する
-        if (LocalDate.now().isEqual(LocalDate.of(2021, 7, 22))) 1.5
+        if (LocalDate.now().isEqual(LocalDate.of(2021, 7, 22))) 2.5
         else 0.8
       }
       else 1.0
