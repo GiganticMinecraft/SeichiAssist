@@ -106,8 +106,8 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
 
           val arrowEffect = playerData.skillEffectState.selection.arrowEffect(player)
 
-          effectEnvironment.runEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
-          effectEnvironment.runEffectAsync("ArrowEffectを非同期で実行する", arrowEffect)
+          effectEnvironment.unsafeRunEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
+          effectEnvironment.unsafeRunEffectAsync("ArrowEffectを非同期で実行する", arrowEffect)
         case _ =>
       }
     }
@@ -393,7 +393,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     if (event.getHand == EquipmentSlot.OFF_HAND) return
     event.setCancelled(true)
 
-    effectEnvironment.runAsyncTargetedEffect(player)(
+    effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         ioCanOpenStickMenu.open(StickMenu.firstPage)

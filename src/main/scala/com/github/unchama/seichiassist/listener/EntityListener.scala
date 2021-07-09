@@ -6,9 +6,9 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import org.bukkit._
@@ -150,7 +150,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
     //元ブロックの真ん中の位置
     val centerOfBlock = hitBlock.getLocation.add(0.5, 0.5, 0.5)
 
-    effectEnvironment.runEffectAsync(
+    effectEnvironment.unsafeRunEffectAsync(
       "破壊エフェクトを再生する",
       playerData.skillEffectState.selection
         .runBreakEffect(player, selectedSkill, tool, breakBlocks.toSet, breakArea, centerOfBlock)

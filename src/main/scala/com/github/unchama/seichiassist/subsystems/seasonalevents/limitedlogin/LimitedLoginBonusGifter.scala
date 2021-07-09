@@ -67,7 +67,7 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
   private def giveItem(itemName: String, amount: Int, item: ItemStack)(implicit player: Player): Unit = {
     import cats.implicits._
 
-    DefaultEffectEnvironment.runEffectAsync(
+    DefaultEffectEnvironment.unsafeRunEffectAsync(
       s"${itemName}を付与する",
       List.fill(amount)(
         grantItemStacksEffect(item)

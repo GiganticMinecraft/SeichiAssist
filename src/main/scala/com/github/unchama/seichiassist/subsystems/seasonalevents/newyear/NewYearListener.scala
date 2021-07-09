@@ -76,7 +76,7 @@ class NewYearListener[
       })
     } yield ()
 
-    effectEnvironment.runEffectAsync("大晦日ログインボーナスヘッドを付与するかどうかを判定する", program)
+    effectEnvironment.unsafeRunEffectAsync("大晦日ログインボーナスヘッドを付与するかどうかを判定する", program)
   }
 
   @EventHandler

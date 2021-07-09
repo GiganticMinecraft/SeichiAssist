@@ -10,7 +10,6 @@ import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData, MenuInven
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
-import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -232,7 +231,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     val ticketsToGive = Seq.fill(ticketAmount)(exchangeTicket)
 
     if (ticketsToGive.nonEmpty) {
-      effectEnvironment.runAsyncTargetedEffect(player)(
+      effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
         SequentialEffect(
           Util.grantItemStacksEffect(ticketsToGive: _*),
           FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
@@ -257,7 +256,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         }.++(rejectedItems)
 
     //返却処理
-    effectEnvironment.runAsyncTargetedEffect(player)(
+    effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
       Util.grantItemStacksEffect(itemStacksToReturn: _*),
       "鉱石交換でのアイテム返却を行う"
     )
@@ -516,7 +515,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         player.closeInventory()
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
 
-        effectEnvironment.runAsyncTargetedEffect(player)(
+        effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             ioCanOpenFirstPage.open(StickMenu.firstPage)

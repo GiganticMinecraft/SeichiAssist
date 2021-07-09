@@ -130,7 +130,7 @@ object BreakUtil {
                  tool: BreakTool,
                  shouldPlayBreakSound: Boolean)
                 (implicit effectEnvironment: EffectEnvironment): Unit =
-    effectEnvironment.runEffectAsync(
+    effectEnvironment.unsafeRunEffectAsync(
       "単一ブロックを破壊する",
       massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
     )

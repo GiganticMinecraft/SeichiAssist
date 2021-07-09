@@ -37,7 +37,7 @@ class MenuHandler(implicit val cs: NonServerThreadContextShift[IO], env: EffectE
       return
     }
 
-    env.runEffectAsync(
+    env.unsafeRunEffectAsync(
       "メニューのクリックを非同期で処理する",
       for {
         currentLayout <- holder.currentLayout.get

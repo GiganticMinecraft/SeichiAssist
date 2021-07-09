@@ -32,7 +32,7 @@ class OpenPocketInventoryOnPlacingEnderPortalFrame[
     //設置をキャンセル
     event.setCancelled(true)
 
-    effectEnvironment.runEffectAsync(
+    effectEnvironment.unsafeRunEffectAsync(
       "ポケットインベントリを開く",
       api.openPocketInventory(player)
     )
