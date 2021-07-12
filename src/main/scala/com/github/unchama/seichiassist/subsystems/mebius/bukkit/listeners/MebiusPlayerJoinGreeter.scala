@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners
 
-import java.util.concurrent.TimeUnit
-
 import cats.effect.{Effect, IO, SyncIO, Timer}
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -12,6 +10,7 @@ import com.github.unchama.targetedeffect.DelayEffect
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 
 class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: EffectEnvironment,
@@ -27,7 +26,7 @@ class MebiusPlayerJoinGreeter[F[_] : Effect](implicit effectEnvironment: EffectE
     BukkitMebiusItemStackCodec
       .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
       .foreach { property =>
-        effectEnvironment.runEffectAsync(
+        effectEnvironment.unsafeRunEffectAsync(
           "参加時のMebiusのメッセージを送信する",
           DelayEffect(FiniteDuration(500, TimeUnit.MILLISECONDS)).run(player) >>
             speechServiceRepository(player)

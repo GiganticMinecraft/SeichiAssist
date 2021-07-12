@@ -63,7 +63,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       if (itemstackcurrent.getType == Material.SKULL_ITEM) {
         //ホームメニューへ帰還
 
-        effectEnvironment.runAsyncTargetedEffect(player)(
+        effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
           SequentialEffect(
             CommonSoundEffects.menuTransitionFenceSound,
             ioCanOpenBuildMainMenu.open(BuildMainMenu)

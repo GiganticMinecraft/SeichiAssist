@@ -32,7 +32,7 @@ class BuildMainMenuOpener(implicit effectEnvironment: EffectEnvironment,
       if (!hasStickOnMainHand || !actionWasOnMainHand) return
     }
 
-    effectEnvironment.runAsyncTargetedEffect(player)(
+    effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         ioCanOpenBuildMainMenu.open(BuildMainMenu)

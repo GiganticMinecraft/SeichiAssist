@@ -14,8 +14,8 @@ import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
-import org.bukkit.entity.{EntityType, Firework, Player}
 import org.bukkit.entity.EntityType._
+import org.bukkit.entity.{EntityType, Firework, Player}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
 
@@ -79,7 +79,7 @@ object Util {
     // Javaから呼ばれているのでimplicitが使いづらい　grantItemStacksEffectに置き換えたい
     import PluginExecutionContexts.onMainThread
 
-    DefaultEffectEnvironment.runEffectAsync(
+    DefaultEffectEnvironment.unsafeRunEffectAsync(
       "アイテムスタックを付与する",
       grantItemStacksEffect(itemStack).run(player)
     )

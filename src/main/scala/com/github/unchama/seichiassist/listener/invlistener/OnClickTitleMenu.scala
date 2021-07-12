@@ -107,7 +107,7 @@ object OnClickTitleMenu {
           case _ if isSkull && isApplicableAsPrevPageButton(current) =>
 
 
-            effectEnvironment.runAsyncTargetedEffect(player)(
+            effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
                 ioCanOpenAchievementMenu.open(AchievementMenu)

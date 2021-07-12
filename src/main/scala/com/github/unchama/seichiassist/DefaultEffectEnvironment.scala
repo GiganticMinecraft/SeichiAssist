@@ -7,7 +7,7 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 // TODO prepare alternative environment that uses dedicated Logger for effect execution
 object DefaultEffectEnvironment extends EffectEnvironment {
 
-  override def runEffectAsync[U, F[_] : Effect](context: String, program: F[U]): Unit = {
+  override def unsafeRunEffectAsync[U, F[_] : Effect](context: String, program: F[U]): Unit = {
     import cats.effect.implicits._
 
     program

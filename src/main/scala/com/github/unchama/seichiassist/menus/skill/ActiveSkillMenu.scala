@@ -355,7 +355,7 @@ object ActiveSkillMenu extends Menu {
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
                               Kleisli.liftF(DiscordNotificationAPI[F].send(notificationMessage).toIO),
                               Kleisli.liftF(IO {
-                                Util.sendMessageToEveryoneIgnoringPreference(notificationMessage)
+                                Util.sendMessageToEveryoneIgnoringPreference(s"$GOLD$BOLD$notificationMessage")
                               }),
                               BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
                             )

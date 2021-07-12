@@ -105,7 +105,7 @@ class ValentineListener[
       })
     } yield ()
 
-    effectEnvironment.runEffectAsync("チョコチップクッキーを付与するかどうかを判定する", program)
+    effectEnvironment.unsafeRunEffectAsync("チョコチップクッキーを付与するかどうかを判定する", program)
   }
 
   @EventHandler

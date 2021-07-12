@@ -13,7 +13,7 @@ object ManaBarManipulation {
 
   // 3桁毎カンマ区切り、小数点以下一桁を表示
   private def formatAmount(manaAmount: ManaAmount): String = {
-    val decimalFormat = new DecimalFormat("#,###.0")
+    val decimalFormat = new DecimalFormat("#,##0.0")
     decimalFormat.format(manaAmount.value)
   }
 

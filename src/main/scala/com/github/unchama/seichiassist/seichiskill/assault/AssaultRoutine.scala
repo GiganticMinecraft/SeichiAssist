@@ -147,7 +147,7 @@ object AssaultRoutine {
       // ブロックを書き換える
       if (shouldBreakAllBlocks) {
         (foundWaters ++ foundLavas).foreach(_.setType(Material.AIR))
-        DefaultEffectEnvironment.runEffectAsync(
+        DefaultEffectEnvironment.unsafeRunEffectAsync(
           "ブロックを大量破壊する",
           BreakUtil.massBreakBlock(player, foundBlocks, player.getLocation, toolToBeUsed, shouldPlayBreakSound = false)
         )

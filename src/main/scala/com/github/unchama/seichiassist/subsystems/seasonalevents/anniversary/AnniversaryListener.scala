@@ -22,7 +22,6 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{Material, Sound, TreeType}
 
-import java.time.LocalDate
 import scala.jdk.CollectionConverters._
 import scala.util.Random
 
@@ -51,7 +50,7 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
     val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
     if (playerData.anniversary) return
 
-    effectEnvironment.runAsyncTargetedEffect(player)(
+    effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
       SequentialEffect(
         grantItemStacksEffect(mineHead),
         MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
