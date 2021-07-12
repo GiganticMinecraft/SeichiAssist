@@ -1,6 +1,6 @@
 package com.github.unchama.fs2.workaround
 
-import cats.effect.Concurrent
+import cats.effect.{Concurrent, Sync}
 import cats.effect.concurrent.{Deferred, Ref}
 import cats.implicits._
 import fs2.Stream._
@@ -9,6 +9,7 @@ import fs2.{Sink, Stream}
 
 /*
 Code directly copied from https://github.com/typelevel/fs2/blob/4ddd75a2dc032b7604dc1205c86d7d6adc993859/core/shared/src/main/scala/fs2/concurrent/Topic.scala.
+and then generalized to a more generic version.
 This is due to https://github.com/typelevel/fs2/issues/1406, and the recommended workaround
 was to switch back to an old implementation of Topic which is better in terms of performance.
 
@@ -116,7 +117,7 @@ abstract class Topic[F[_], A] {
 
 object Topic {
 
-  def apply[F[_], A](initial: A)(implicit F: Concurrent[F]): F[Topic[F, A]] = {
+  def in[G[_], F[_], A](initial: A)(implicit G: Sync[G], F: Concurrent[F]): G[Topic[F, A]] = {
     // Id identifying each subscriber uniquely
     class ID
 
@@ -133,9 +134,9 @@ object Topic {
     }
 
     Ref
-      .of[F, (A, Vector[Subscriber])]((initial, Vector.empty[Subscriber]))
+      .in[G, F, (A, Vector[Subscriber])]((initial, Vector.empty[Subscriber]))
       .flatMap { state =>
-        SignallingRef[F, Int](0).map { subSignal =>
+        SignallingRef.in[G, F, Int](0).map { subSignal =>
           def mkSubscriber(maxQueued: Int): F[Subscriber] =
             for {
               q <- InspectableQueue.bounded[F, A](maxQueued)
@@ -200,4 +201,6 @@ object Topic {
         }
       }
   }
+
+  def apply[F[_], A](initial: A)(implicit F: Concurrent[F]): F[Topic[F, A]] = in[F, F, A](initial)
 }

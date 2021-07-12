@@ -8,8 +8,9 @@ import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.ReorderingPipe
 import com.github.unchama.generic.effect.stream.ReorderingPipe.TimeStamped
 import com.github.unchama.generic.{ContextCoercion, Token}
+import com.github.unchama.fs2.workaround.Topic
 import fs2.Stream
-import fs2.concurrent.{Signal, Topic}
+import fs2.concurrent.Signal
 
 /**
  * 更新が [[Stream]] により読め出せるような可変参照セル。
