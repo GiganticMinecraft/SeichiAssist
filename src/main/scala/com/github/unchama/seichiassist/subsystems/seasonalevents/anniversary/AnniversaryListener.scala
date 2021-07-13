@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, blogArticleUrl, isInEvent}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
-import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, isEnemy}
+import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, isEnemy, removeItemfromPlayerInventory}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
@@ -96,7 +96,7 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
     if (offHandItem == null) return
 
     offHandItem.setDurability(0)
-    player.getInventory.removeItem(item)
+    removeItemfromPlayerInventory(player.getInventory, item, 1)
   }
 
   @EventHandler(ignoreCancelled = true)
