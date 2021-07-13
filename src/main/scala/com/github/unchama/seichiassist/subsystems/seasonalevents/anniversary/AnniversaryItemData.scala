@@ -156,7 +156,7 @@ object AnniversaryItemData {
     val lore = List(
       "",
       s"$GREEN${ITALIC}大切なあなたへ感謝を。",
-      s"$YELLOW$UNDERLINE$ITALIC${ANNIVERSARY_COUNT} Anniversary"
+      s"$YELLOW$UNDERLINE$ITALIC${ANNIVERSARY_COUNT}th Anniversary"
     ).map(str => s"$RESET$str")
       .asJava
     head.setLore(lore)
