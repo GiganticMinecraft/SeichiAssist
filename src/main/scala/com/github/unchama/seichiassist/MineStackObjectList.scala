@@ -537,7 +537,7 @@ object MineStackObjectList {
    */
   val minestackBuiltinGachaPrizes: List[MineStackObj] = List(
     new MineStackObj("gachaimo", None, 1, StaticGachaPrizeFactory.getGachaRingo, true, -1, GACHA_PRIZES),
-    new MineStackObj(GACHA_PRIZES, "exp_bottle", "エンチャントの瓶", 1, Material.EXP_BOTTLE, 0)
+    new MineStackObj("exp_bottle", Some("エンチャントの瓶"), 1, Material.EXP_BOTTLE, 0, false, -1, GACHA_PRIZES)
   )
 
   /**
