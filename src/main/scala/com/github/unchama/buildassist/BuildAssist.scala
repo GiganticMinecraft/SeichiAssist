@@ -163,7 +163,9 @@ object BuildAssist {
     Material.STEP, Material.STONE, Material.STONE_SLAB2, Material.THIN_GLASS,
     Material.TORCH, Material.WOOD,
     Material.WOOD_STAIRS, Material.WOOD_STEP,
-    Material.WOOL, Material.CARPET, Material.WORKBENCH
+    Material.WOOL, Material.CARPET, Material.WORKBENCH,
+    // #1008
+    Material.LEAVES, Material.LEAVES_2
   )
 
   //直列設置ブロックの対象リスト
@@ -236,6 +238,7 @@ object BuildAssist {
     , Material.NETHER_WART_BLOCK //ネザーウォートB
     , Material.CONCRETE //コンクリート
     , Material.CONCRETE_POWDER //コンクリートパウダー
+    , Material.LEAVES, Material.LEAVES_2
   )
 
   //ハーフブロックとして扱うMaterial

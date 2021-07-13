@@ -135,13 +135,19 @@ class BlockLineUpTriggerListener[
     }
 
     val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
+    val doesHoldLeaves = (mainHandItemType eq Material.LEAVES) || (mainHandItemType eq Material.LEAVES_2)
     val slabLineUpStepMode = buildAssistData.line_up_step_flg
     val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
 
+    val upsideBit = 8
+    val noDecayBit = 8
     val placingBlockData: Byte =
       if (playerHoldsSlabBlock && slabLineUpStepMode == 0)
-        (mainHandItemData + 8).toByte
-      else mainHandItemData
+        (mainHandItemData | upsideBit).toByte
+      else if (doesHoldLeaves)
+        (mainHandItemData | noDecayBit).toByte
+      else
+        mainHandItemData
 
     val (placingBlockType, itemConsumptionPerPlacement, placementIteration) =
       if (shouldPlaceDoubleSlabs)
