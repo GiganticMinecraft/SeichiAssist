@@ -533,6 +533,7 @@ class SeichiAssist extends JavaPlugin() {
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
       SpawnRegionProjectileInterceptor,
+      PlayerBlockPlaceListener,
     )
       .concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat {
