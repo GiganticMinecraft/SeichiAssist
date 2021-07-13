@@ -73,7 +73,7 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
    */
   private def levelProgressionDescription(): List[String] = {
     if (seichiAmountData.starLevelCorrespondingToExp == SeichiStarLevel.zero) {
-      List(s"${AQUA}次のレベルまで:${seichiAmountData.levelProgress.expAmountToNextLevel.amount}")
+      List(s"${AQUA}次のレベルまで:${seichiAmountData.levelProgress.expAmountToNextLevel.formatted}")
     } else {
       Nil
     }
@@ -94,7 +94,7 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
   /**
    * 総整地量の説明文
    */
-  private def totalBreakAmountDescription(): String = s"${AQUA}総整地量：${seichiAmountData.expAmount.amount}"
+  private def totalBreakAmountDescription(): String = s"${AQUA}総整地量：${seichiAmountData.expAmount.formatted}"
 
   /**
    * ランキングの順位の説明文
@@ -122,7 +122,7 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
               record.value.expAmount
             )
           Some(
-            s"$AQUA${positionOneAbove}位(${recordOneAbove.playerName})との差：${difference.amount}"
+            s"$AQUA${positionOneAbove}位(${recordOneAbove.playerName})との差：${difference.formatted}"
           )
         } else
           None
