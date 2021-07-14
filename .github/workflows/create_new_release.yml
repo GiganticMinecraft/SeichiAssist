@@ -42,12 +42,16 @@ jobs:
             exit 1
           fi
 
+          echo "::set-output name=old_version::$(get_defined_versions)"
+
           update_version_to $(get_defined_versions | xargs expr 1 +)
-      - name: Commit & Push changes to ${{ needs.get_branch_name.outputs.value }}
+      - name: Check target branch name
+        run: echo "Pushing to ${{ needs.get_branch_name.outputs.value }}"
+      - name: Commit & Push changes
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "[bump] ${{ steps.bump.outputs.new_version }} にバージョンを書き換える"
+          message: "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
           branch: ${{ needs.get_branch_name.outputs.value }}
 
   create_pr:
