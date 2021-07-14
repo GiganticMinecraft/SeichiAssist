@@ -34,7 +34,7 @@ jobs:
           update_version_to () {
             echo "置換先のバージョン： $1"
             echo "::set-output name=new_version::$1"
-            sed -ie "s/ThisBuild \/ version := \"[0-9]+\"/ThisBuild \/ version := \"$1\"/g" build.sbt
+            sed -i -e "s/ThisBuild \/ version := \"[0-9]+\"/ThisBuild \/ version := \"$1\"/g" build.sbt
           }
 
           if [ ! $(get_defined_versions | wc -l) = "1" ]; then
