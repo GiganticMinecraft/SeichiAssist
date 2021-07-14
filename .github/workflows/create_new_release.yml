@@ -4,11 +4,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  see_github_ref:
-    runs-on: ubuntu-20.04
-    steps:
-      - run: echo $GITHUB_REF
-
   get_branch_name:
     runs-on: ubuntu-20.04
     outputs:
@@ -16,7 +11,7 @@ jobs:
     steps:
       - name: Extract branch name
         id: job
-        run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
+        run: echo "::set-output name=value::$(echo ${GITHUB_REF#refs/heads/})"
 
   bump_version:
     runs-on: ubuntu-20.04
