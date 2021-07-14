@@ -1,0 +1,61 @@
+name: 新規リリース(Pull Request)を作成する
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bump_version:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.bump.outputs.new_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bump version
+        id: bump
+        run: |
+          get_defined_versions () {
+            grep -o -P "(?<=ThisBuild / version := \")\d+(?=\")" build.sbt
+          }
+
+          update_version_to () {
+            echo "置換先のバージョン： $1"
+            echo "::set-output name=new_version::$1"
+            sed -E "s/ThisBuild \/ version := \"[0-9]+\"/ThisBuild \/ version := \"$1\"/g" build.sbt
+          }
+
+          if [ ! $(get_defined_versions | wc -l) = "1" ]; then
+            echo "エラー：build.sbt でのバージョン指定が一意でありません。"
+            exit 1
+          fi
+
+          update_version_to $(get_defined_versions | xargs expr 1 +)
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  create_pr:
+    runs-on: ubuntu-latest
+    needs: bump_version
+    steps:
+      - uses: actions/checkout@master
+      - name: Extract branch name
+        run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Merge master to current branch
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: master
+          target_branch: ${{ steps.extract_branch.outputs.branch }}
+          github_token: ${{ github.token }}
+      - name: Create pull request
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: "master"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
