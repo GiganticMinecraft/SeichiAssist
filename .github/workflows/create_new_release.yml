@@ -48,11 +48,15 @@ jobs:
       - name: Check target branch name
         run: echo "Pushing to ${{ needs.get_branch_name.outputs.value }}"
       - name: Commit & Push changes
-        uses: actions-js/push@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
-          branch: ${{ needs.get_branch_name.outputs.value }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add -A
+          git commit -m "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
+          git push \
+            https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/SeichiAssist.git \
+            HEAD:${{ needs.get_branch_name.outputs.value }}
 
   create_pr:
     runs-on: ubuntu-20.04
