@@ -43,10 +43,11 @@ jobs:
           fi
 
           update_version_to $(get_defined_versions | xargs expr 1 +)
-      - name: Commit & Push changes
+      - name: Commit & Push changes to ${{ needs.get_branch_name.outputs.value }}
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "[bump] ${{ steps.bump.outputs.new_version }} にバージョンを書き換える"
           branch: ${{ needs.get_branch_name.outputs.value }}
 
   create_pr:
