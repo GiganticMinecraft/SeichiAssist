@@ -4,8 +4,13 @@ on:
   workflow_dispatch:
 
 jobs:
+  see_github_ref:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo $GITHUB_REF
+
   get_branch_name:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       value: ${{ steps.job.outputs.value }}
     steps:
@@ -14,7 +19,7 @@ jobs:
         run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
 
   bump_version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: get_branch_name
     outputs:
       new_version: ${{ steps.bump.outputs.new_version }}
@@ -55,7 +60,7 @@ jobs:
           branch: ${{ needs.get_branch_name.outputs.value }}
 
   create_pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [get_branch_name, bump_version]
     steps:
       - uses: actions/checkout@master
