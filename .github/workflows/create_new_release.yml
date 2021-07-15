@@ -54,9 +54,7 @@ jobs:
 
           git add -A
           git commit -m "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
-          git push \
-            https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/SeichiAssist.git \
-            HEAD:${{ needs.get_branch_name.outputs.value }}
+          git push origin HEAD
 
   create_pr:
     runs-on: ubuntu-20.04
