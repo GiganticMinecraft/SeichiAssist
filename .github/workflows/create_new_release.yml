@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: get_branch_name
     outputs:
+      old_version: ${{ steps.bump.outputs.old_version }}
       new_version: ${{ steps.bump.outputs.new_version }}
     steps:
       - name: Checkout
