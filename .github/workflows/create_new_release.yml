@@ -71,6 +71,21 @@ jobs:
           from_branch: master
           target_branch: ${{ needs.get_branch_name.outputs.value }}
           github_token: ${{ github.token }}
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ needs.bump_version.outputs.new_version }}"
+          release_name: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
+          draft: false
+          # これらはすべて本番に入る直前のバージョンなので、すべてprereleaseとする
+          # 以下の事情に留意されたい：
+          #  - タグ付けされてから本番に入るまでのコードの変更は想定しない
+          #  - 開発ブランチ上ではバージョン更新が行われ、履歴に残る
+          #  - バージョン更新+タグ付けした後に本番に必ずしも適用されるとは限らない
+          prerelease: true
       - name: Create pull request
         uses: repo-sync/pull-request@v2
         with:
