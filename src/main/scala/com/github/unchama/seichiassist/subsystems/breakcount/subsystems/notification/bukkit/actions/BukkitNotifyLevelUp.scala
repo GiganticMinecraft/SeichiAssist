@@ -35,7 +35,7 @@ object BukkitNotifyLevelUp {
       val Diff(oldStars, newStars) = diff
       val titleMessage = {
         if (oldStars == SeichiStarLevel.zero) {
-          s"【Lv199→Lv200(☆(${newStars.level}))】"
+          s"【Lv199→Lv200(☆${newStars.level})】"
         } else {
           s"【Lv200(☆${oldStars.level})→Lv200(☆${newStars.level})】"
         }
