@@ -65,11 +65,11 @@ object RankingMenuTemplates {
 
       List(
         s"$RESET$GREEN$levelLine",
-        s"$RESET${GREEN}総整地量:${data.expAmount.amount}"
+        s"$RESET${GREEN}総整地量:${data.expAmount.formatted}"
       )
     }
     override def combinedDataLore(data: SeichiAmountData): List[String] = List(
-      s"$RESET${AQUA}全プレイヤー総整地量: ${data.expAmount.amount}"
+      s"$RESET${AQUA}全プレイヤー総整地量: ${data.expAmount.formatted}"
     )
   }
 
