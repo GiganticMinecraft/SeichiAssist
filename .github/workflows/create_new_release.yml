@@ -62,17 +62,14 @@ jobs:
 
           git add -A
           git commit -m "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
+
+          # masterへのマージはブランチが最新であることが要求されるため、ここでマージしておく
+          git fetch origin master
+          git merge origin/master
+
           git push \
             https://$ACTOR:$TOKEN@github.com/GiganticMinecraft/SeichiAssist.git \
             HEAD:${{ needs.get_branch_name.outputs.value }}
-      # masterへのマージはブランチが最新であることが要求されるため、ここでマージしておく
-      - name: Merge master to current branch
-        uses: devmasx/merge-branch@v1.3.1
-        with:
-          type: now
-          from_branch: master
-          target_branch: ${{ needs.get_branch_name.outputs.value }}
-          github_token: ${{ secrets.VERSION_BUMP_WORKFLOW_PUSH_TOKEN }}
 
   create_release:
     runs-on: ubuntu-20.04
