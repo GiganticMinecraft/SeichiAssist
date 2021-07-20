@@ -62,7 +62,7 @@ object AnniversaryItemData {
     NETHER_BRICK, QUARTZ_BLOCK, SAND, SPONGE, WORKBENCH
   )
 
-  val strangeSaplingSiinaRate = 0.0003
+  val strangeSaplingSiinaRate = 0.0008
 
   def isStrangeSapling(item: ItemStack): Boolean =
     item != null && item.getType == SAPLING && {
@@ -156,7 +156,7 @@ object AnniversaryItemData {
     val lore = List(
       "",
       s"$GREEN${ITALIC}大切なあなたへ感謝を。",
-      s"$YELLOW$UNDERLINE$ITALIC${ANNIVERSARY_COUNT} Anniversary"
+      s"$YELLOW$UNDERLINE$ITALIC${ANNIVERSARY_COUNT}th Anniversary"
     ).map(str => s"$RESET$str")
       .asJava
     head.setLore(lore)

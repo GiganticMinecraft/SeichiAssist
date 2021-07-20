@@ -37,7 +37,7 @@ object BukkitNotifyLevelUp {
         if (oldStars == SeichiStarLevel.zero) {
           s"【Lv199→Lv200(☆(${newStars.level}))】"
         } else {
-          s"【Lv200(☆(${oldStars.level}))→Lv200(☆(${newStars.level}))】"
+          s"【Lv200(☆${oldStars.level})→Lv200(☆${newStars.level})】"
         }
       }
       val subTitleMessage = s"$GOLD★☆★ﾑﾑｯwwwwwwwﾚﾍﾞﾙｱｯﾌﾟwwwwwww★☆★"
