@@ -58,8 +58,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
           ACTOR=${{ secrets.VERSION_BUMP_WORKFLOW_ACTOR }}
-          # FIXME: replace with VERSION_BUMP_WORKFLOW_PUSH_TOKEN
-          TOKEN=${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
+          TOKEN=${{ secrets.VERSION_BUMP_WORKFLOW_PUSH_TOKEN }}
 
           git add -A
           git commit -m "[bump] ${{ steps.bump.outputs.old_version }} -> ${{ steps.bump.outputs.new_version }}"
@@ -73,8 +72,7 @@ jobs:
           type: now
           from_branch: master
           target_branch: ${{ needs.get_branch_name.outputs.value }}
-          # FIXME: replace with VERSION_BUMP_WORKFLOW_PUSH_TOKEN
-          github_token: ${{ secrets.SERVER_DEFINITION_REPOSITORY_PUSH_TOKEN }}
+          github_token: ${{ secrets.VERSION_BUMP_WORKFLOW_PUSH_TOKEN }}
 
   create_release:
     runs-on: ubuntu-20.04
