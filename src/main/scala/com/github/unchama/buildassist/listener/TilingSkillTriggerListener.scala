@@ -91,11 +91,11 @@ class TilingSkillTriggerListener[
     )
 
     val b1 = new Breaks
-    val rawDataModifier: Option[Byte => Byte] = offHandItem.getType match {
+    val rawDataModifier: Byte => Byte = offHandItem.getType match {
       case Material.LEAVES | Material.LEAVES_2 =>
         val noDecayBit: Byte = 8
-        Some(x => (x | noDecayBit).asInstanceOf[Byte])
-      case _ => None
+        x => (x | noDecayBit).asInstanceOf[Byte]
+      case _ => identity
     }
 
     b1.breakable {
@@ -131,7 +131,7 @@ class TilingSkillTriggerListener[
               }
 
               targetSurfaceBlock.setType(offHandItem.getType)
-              targetSurfaceBlock.setData(rawDataModifier.map(_(offHandItemSelector)).getOrElse(offHandItemSelector))
+              targetSurfaceBlock.setData(rawDataModifier(offHandItemSelector))
 
               placementCount += 1
             }
