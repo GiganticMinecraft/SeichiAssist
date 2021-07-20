@@ -125,15 +125,16 @@ object AchievementConditions {
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
 
-  def playedOn(day: NamedHoliday): AchievementCondition[String] = {
+  def playedOn(holiday: NamedHoliday): AchievementCondition[String] = {
     val predicate: PlayerPredicate = _ =>
       IO{
         val now = LocalDate.now()
+        val target = holiday.dateOn(now.getYear)
 
-        now.getMonth == day.month && now.getDayOfMonth == day.getDayOfMonth()
+        now.getMonth == target.getMonth && now.getDayOfMonth == target.getDayOfMonth
       }
 
-    AchievementCondition(predicate, _ + "にプレイ", day.name)
+    AchievementCondition(predicate, _ + "にプレイ", holiday.name)
   }
 
   object SecretAchievementConditions {
