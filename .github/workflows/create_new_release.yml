@@ -65,7 +65,7 @@ jobs:
 
           # masterへのマージはブランチが最新であることが要求されるため、ここでマージしておく
           git fetch origin master
-          git merge origin/master
+          git merge --no-ff origin/master
 
           git push \
             https://$ACTOR:$TOKEN@github.com/GiganticMinecraft/SeichiAssist.git \
