@@ -29,27 +29,28 @@ class AsymmetricSignallingRefSpec
 
   type Value = Int
 
-  "KeyedWrappedValueRepository when made with SignallingRepository" should {
+  "AsymmetricSignallingRef" should {
     import cats.implicits._
 
-    "signal all the values" in {
+    "signal all the changes" in {
       val initialValue: Value = 0
 
       forAll(minSuccessful(100)) { updates: List[Value] =>
         val task = for {
           ref <- AsymmetricSignallingRef.in[Task, SyncIO, Task, Value](initialValue)
-          fiber <-
+          updateResult <-
             ref
-              .values.discrete
-              .take(updates.size + 1)
-              .compile.toList.start
-          // subscriptionのpullが優先されるようにsleepする
-          _ <- monixTimer.sleep(1.second)
-          _ <- Task.liftFrom[SyncIO].apply(updates.traverse(ref.set))
-          updateResult <- fiber.join
+              .valuesAwait
+              .use { stream =>
+                for {
+                  resultFiber <- stream.take(updates.length).compile.toList.start
+                  _ <- Task.liftFrom[SyncIO].apply(updates.traverse(ref.set))
+                  result <- resultFiber.join
+                } yield result
+              }
         } yield updateResult
 
-        assertResult(initialValue +: updates)(awaitForProgram(task, 1.second))
+        assertResult(updates)(awaitForProgram(task, 1.second))
       }
     }
   }
