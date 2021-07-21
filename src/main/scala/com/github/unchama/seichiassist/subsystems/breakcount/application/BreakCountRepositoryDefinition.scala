@@ -10,6 +10,8 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmoun
 
 object BreakCountRepositoryDefinition {
 
+  import cats.implicits._
+
   def withContext[
     F[_] : Effect, G[_] : Sync, Player
   ](topic: Fs3Topic[F, Option[(Player, SeichiAmountData)]],
@@ -18,7 +20,7 @@ object BreakCountRepositoryDefinition {
       .usingUuidRefDict[G, Player, SeichiAmountData](persistence)(SeichiAmountData.initial)
       .withAnotherTappingAction { (player, data) =>
         EffectExtra.runAsyncAndForget[F, G, Unit] {
-          topic.publish1(Some(player, data))
+          topic.publish1(Some(player, data)).void
         }
       }
       .toRefRepository

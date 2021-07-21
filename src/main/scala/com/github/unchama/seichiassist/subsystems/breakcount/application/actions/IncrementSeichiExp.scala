@@ -41,7 +41,7 @@ object IncrementSeichiExp {
         for {
           newData <- dataRepository(player).updateAndGet(_.addExpAmount(by))
           _ <- EffectExtra.runAsyncAndForget[G, F, Unit] {
-            dataTopic.publish1(Some((player, newData)))
+            dataTopic.publish1(Some((player, newData))).void
           }
         } yield (),
         F.unit

@@ -1,8 +1,9 @@
 package com.github.unchama.fs2.workaround.fs3
 
 import cats.Applicative
-import cats.effect.concurrent.{Deferred, Ref}
-import cats.effect.{Bracket, Concurrent, Resource}
+import cats.effect.concurrent.Ref
+import cats.effect.{Bracket, Concurrent, Resource, Sync}
+import com.github.unchama.generic.effect.concurrent.AsymmetricTryableDeferred
 import fs2.concurrent.SignallingRef
 import fs2.{INothing, Pipe, Stream}
 
@@ -142,19 +143,22 @@ object Fs3Topic {
 
   import cats.implicits._
 
+  def apply[F[_], A](initial: A)(implicit F: Concurrent[F]): F[Fs3Topic[F, A]] = in[F, F, A](initial)
+
   /** Constructs a Topic */
-  def apply[F[_], A](implicit F: Concurrent[F]): F[Fs3Topic[F, A]] =
+  //noinspection ScalaUnusedSymbol
+  def in[G[_], F[_], A](initial: A)(implicit G: Sync[G], F: Concurrent[F]): G[Fs3Topic[F, A]] =
     (
-      Ref.of[F, (LongMap[Fs3Channel[F, A]], Long)](LongMap.empty[Fs3Channel[F, A]] -> 1L),
-      SignallingRef.apply[F, Int](0),
-      Deferred.tryable[F, Unit]
+      Ref.in[G, F, (LongMap[Fs3Channel[F, A]], Long)](LongMap.empty[Fs3Channel[F, A]] -> 1L),
+      SignallingRef.in[G, F, Int](0),
+      AsymmetricTryableDeferred.concurrentIn[F, G, Unit]
     ).mapN { case (state, subscriberCount, signalClosure) =>
       new Fs3Topic[F, A] {
         def foreach[B](lm: LongMap[B])(f: B => F[Unit]): F[Unit] =
           lm.foldLeft(F.unit) { case (op, (_, b)) => op >> f(b) }
 
         def publish1(a: A): F[Either[Fs3Topic.Closed, Unit]] =
-          signalClosure.tryGet.flatMap {
+          signalClosure.tryGet[F].flatMap {
             case Some(_) => Fs3Topic.closed.pure[F]
             case None =>
               state.get
@@ -215,7 +219,7 @@ object Fs3Topic {
         }
 
         def closed: F[Unit] = signalClosure.get
-        def isClosed: F[Boolean] = signalClosure.tryGet.map(_.isDefined)
+        def isClosed: F[Boolean] = signalClosure.tryGet[F].map(_.isDefined)
       }
     }
 

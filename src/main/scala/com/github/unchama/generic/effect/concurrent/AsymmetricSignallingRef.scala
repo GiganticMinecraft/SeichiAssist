@@ -119,7 +119,7 @@ object AsymmetricSignallingRef {
       case TimeStamped(_, nextStamp, a) =>
         val (newA, result) = f(a)
         val newATimeStamped = TimeStamped(nextStamp, new Token, newA)
-        val action = EffectExtra.runAsyncAndForget[F, G, Unit](changeTopic.publish1(newATimeStamped))
+        val action = EffectExtra.runAsyncAndForget[F, G, Unit](changeTopic.publish1(newATimeStamped).void)
         newATimeStamped -> action.as(result)
     }
 

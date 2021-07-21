@@ -48,7 +48,7 @@ object EffectListRepositoryDefinitions {
           fs2.Stream
             .awakeEvery[F](1.second)
             .evalMap[F, FastDiggingEffectList](_ => ContextCoercion(mutexRef.readLatest))
-            .evalTap[F, Unit](effectList => effectTopic.publish1(Some(player, effectList)))
+            .evalTap[F, Unit](effectList => effectTopic.publish1(Some(player, effectList)).void)
         }.start >>= fiberPromise.complete
 
       EffectExtra.runAsyncAndForget[F, G, Unit](programToRun)
