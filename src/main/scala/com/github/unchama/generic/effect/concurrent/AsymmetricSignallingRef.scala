@@ -3,14 +3,13 @@ package com.github.unchama.generic.effect.concurrent
 import cats.Applicative
 import cats.data.State
 import cats.effect.concurrent.Ref
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{ConcurrentEffect, Resource, Sync}
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.ReorderingPipe
 import com.github.unchama.generic.effect.stream.ReorderingPipe.TimeStamped
 import com.github.unchama.generic.{ContextCoercion, Token}
 import fs2.Stream
-import fs2.concurrent.Signal
 
 /**
  * 更新が [[Stream]] により読め出せるような可変参照セル。
@@ -22,9 +21,11 @@ import fs2.concurrent.Signal
 abstract class AsymmetricSignallingRef[G[_], F[_], A] extends Ref[G, A] {
 
   /**
-   * pullした時点での [[Ref]] の値と、その後に変更された値をすべて出力する [[Signal]]。
+   * 更新値へのsubscriptionを [[Resource]] として表現したもの。
+   * subscriptionが有効になった瞬間に [[Resource]] として利用可能になり、
+   * 利用が終了した後に自動的にunsubscribeされる。
    */
-  val values: Signal[F, A]
+  val valuesAwait: Resource[F, Stream[F, A]]
 
 }
 
@@ -95,16 +96,10 @@ object AsymmetricSignallingRef {
 
     private val topicQueueSize = 10
 
-    override val values: Signal[F, A] = new Signal[F, A] {
-      override def discrete: Stream[F, A] =
-        changeTopic
-          .subscribe(topicQueueSize)
-          .through(ReorderingPipe[F, A])
-
-      override def continuous: Stream[F, A] = Stream.repeatEval(get)
-
-      override def get: F[A] = GToF(AsymmetricSignallingRefImpl.this.get)
-    }
+    override val valuesAwait: Resource[F, Stream[F, A]] =
+      changeTopic
+        .subscribeAwait(topicQueueSize)
+        .map(_.through(ReorderingPipe[F, A]))
 
     override def get: G[A] = state.get.map(_.value)
 
