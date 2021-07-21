@@ -5,7 +5,7 @@ import cats.effect.concurrent.Ref
 import cats.effect.{Async, Concurrent}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.algebra.HasUuid
-import fs2.{Pull, Stream}
+import fs2.{Chunk, Pull, Stream}
 import io.chrisdavenport.log4cats.ErrorLogger
 
 object StreamExtra {
@@ -31,11 +31,11 @@ object StreamExtra {
   }
 
   /**
-   * 与えられた [[Stream]] の最初の要素とその後続の [[Stream]] を高々一度だけ流す [[Stream]] を作成する。
+   * 与えられた [[Stream]] の最初の空でないチャンクと、その後続の [[Stream]] を高々一度だけ流す [[Stream]] を作成する。
    * 与えられた [[Stream]] が空だった場合、空の [[Stream]] が返る。
    */
-  def uncons[F[_], O](stream: Stream[F, O]): Stream[F, (O, Stream[F, O])] =
-    stream.pull.uncons1.flatMap {
+  def uncons[F[_], O](stream: Stream[F, O]): Stream[F, (Chunk[O], Stream[F, O])] =
+    stream.pull.unconsNonEmpty.flatMap {
       case Some((head, tail)) => Pull.output1(head, tail)
       case None => Pull.done
     }.stream
