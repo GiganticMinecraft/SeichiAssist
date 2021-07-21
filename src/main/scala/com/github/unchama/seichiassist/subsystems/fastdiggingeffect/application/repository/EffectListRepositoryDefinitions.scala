@@ -4,7 +4,7 @@ import cats.effect.concurrent.Deferred
 import cats.effect.{Concurrent, ConcurrentEffect, Effect, Fiber, Sync, SyncEffect, Timer}
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization}
-import com.github.unchama.fs2.workaround.Topic
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.Mutex
@@ -39,7 +39,7 @@ object EffectListRepositoryDefinitions {
     F[_] : ConcurrentEffect : Timer : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F],
     Player
-  ](effectTopic: Topic[F, Option[(Player, FastDiggingEffectList)]]): (Player, RepositoryValue[F, G]) => G[Unit] =
+  ](effectTopic: Fs3Topic[F, Option[(Player, FastDiggingEffectList)]]): (Player, RepositoryValue[F, G]) => G[Unit] =
     (player, value) => {
       val (mutexRef, fiberPromise) = value
 

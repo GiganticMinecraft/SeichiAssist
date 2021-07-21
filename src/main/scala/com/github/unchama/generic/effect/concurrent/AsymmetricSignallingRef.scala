@@ -4,11 +4,11 @@ import cats.Applicative
 import cats.data.State
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync}
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.ReorderingPipe
 import com.github.unchama.generic.effect.stream.ReorderingPipe.TimeStamped
 import com.github.unchama.generic.{ContextCoercion, Token}
-import com.github.unchama.fs2.workaround.Topic
 import fs2.Stream
 import fs2.concurrent.Signal
 
@@ -79,7 +79,7 @@ object AsymmetricSignallingRef {
 
     Applicative[H].map2(
       Ref.in[H, G, TimeStamped[A]](initialState),
-      Topic.in[H, F, TimeStamped[A]](initialState)
+      Fs3Topic.in[H, F, TimeStamped[A]](initialState)
     ) { case (ref, topic) =>
       new AsymmetricSignallingRefImpl[G, F, A](ref, topic)
     }
@@ -89,7 +89,7 @@ object AsymmetricSignallingRef {
     G[_],
     F[_],
     A
-  ](state: Ref[G, TimeStamped[A]], changeTopic: Topic[F, TimeStamped[A]])
+  ](state: Ref[G, TimeStamped[A]], changeTopic: Fs3Topic[F, TimeStamped[A]])
    (implicit G: Sync[G], F: ConcurrentEffect[F], GToF: ContextCoercion[G, F])
     extends AsymmetricSignallingRef[G, F, A] {
 

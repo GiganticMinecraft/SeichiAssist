@@ -4,7 +4,7 @@ import cats.Monad
 import cats.effect.concurrent.Ref
 import cats.effect.{Effect, Sync}
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.fs2.workaround.Topic
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
@@ -33,7 +33,7 @@ object IncrementSeichiExp {
     G[_] : Effect : ContextCoercion[F, *[_]],
     Player
   ](dataRepository: KeyedDataRepository[Player, Ref[F, SeichiAmountData]],
-    dataTopic: Topic[G, Option[(Player, SeichiAmountData)]]): IncrementSeichiExp[F, Player] =
+    dataTopic: Fs3Topic[G, Option[(Player, SeichiAmountData)]]): IncrementSeichiExp[F, Player] =
     (player, by) => {
       val F: Monad[F] = implicitly
 
