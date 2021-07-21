@@ -4,7 +4,7 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.fs2.workaround.Topic
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -36,7 +36,7 @@ object System {
     val manaPersistence: ManaAmountPersistence[G] = new JdbcManaAmountPersistence[G]
 
     for {
-      topic <- Topic[F, Option[(Player, LevelCappedManaAmount)]](None)
+      topic <- Fs3Topic[F, Option[(Player, LevelCappedManaAmount)]](None)
       globalMultiplierRef <- Ref.in[F, G, ManaMultiplier](ManaMultiplier(1))
       handles <- ContextCoercion {
         BukkitRepositoryControls.createHandles(

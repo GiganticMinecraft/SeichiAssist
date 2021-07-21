@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.breakcount
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.fs2.workaround.Topic
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
@@ -45,7 +45,7 @@ object System {
     implicit val persistence: SeichiAmountDataPersistence[G] = new JdbcSeichiAmountDataPersistence[G]
 
     val createSystem: F[System[F, G]] = for {
-      breakCountTopic <- Topic[F, Option[(Player, SeichiAmountData)]](None)
+      breakCountTopic <- Fs3Topic[F, Option[(Player, SeichiAmountData)]](None)
       /*
        * NOTE:
        *
