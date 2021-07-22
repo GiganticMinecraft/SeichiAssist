@@ -92,13 +92,17 @@ object StreamExtra {
   /**
    * 与えられたストリームを、エラーが発生したときに再起動するストリームに変換してコンパイルする。
    */
-  def compileToRestartingStream[F[_] : Async : ErrorLogger, A](stream: Stream[F, _]): F[A] =
+  def compileToRestartingStream[F[_] : Async : ErrorLogger, A](stream: Stream[F, _]): F[A] = {
     stream
       .handleErrorWith { error =>
         Stream.eval {
-          ErrorLogger[F].error(error)("fs2.Stream が予期せぬエラーで終了しました。再起動します。")
-        }.append(stream)
+          ErrorLogger[F]
+            .error(error)("fs2.Stream が予期せぬエラーで終了しました。再起動します。")
+        }
       }
-      .compile.drain
+      .repeat
+      .compile
+      .drain
       .flatMap(_ => Async[F].never[A])
+  }
 }
