@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.seichiskill.effect.arrow
 
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -24,22 +25,25 @@ object ArrowEffects {
 
   implicit val plugin: JavaPlugin = SeichiAssist.instance
 
-  val normalArrowEffect: TargetedEffect[Player] = arrowEffect[Arrow](
-    ProjectileSpawnConfiguration(
-      1.0,
-      (0.0, 1.6, 0.0)
-    ),
-    Some(Sound.ENTITY_ARROW_SHOOT)
-  )
+  def normalArrowEffect(implicit mainThread: OnMinecraftServerThread[IO]) : TargetedEffect[Player] =
+    arrowEffect[Arrow](
+      ProjectileSpawnConfiguration(
+        1.0,
+        (0.0, 1.6, 0.0)
+      ),
+      Some(Sound.ENTITY_ARROW_SHOOT)
+    )
 
-  val singleArrowBlizzardEffect: TargetedEffect[Player] = arrowEffect[Snowball](
-    ProjectileSpawnConfiguration(
-      1.0,
-      (0.0, 1.6, 0.0)
-    ),
-    Some(Sound.ENTITY_SNOWBALL_THROW)
-  )
-  val singleArrowMagicEffect: TargetedEffect[Player] = {
+  def singleArrowBlizzardEffect(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+    arrowEffect[Snowball](
+      ProjectileSpawnConfiguration(
+        1.0,
+        (0.0, 1.6, 0.0)
+      ),
+      Some(Sound.ENTITY_SNOWBALL_THROW)
+    )
+
+  def singleArrowMagicEffect(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
     import scala.util.chaining._
     val thrownPotionItem = new ItemStack(Material.SPLASH_POTION).tap { itemStack =>
       itemStack.setItemMeta {
@@ -60,7 +64,7 @@ object ArrowEffects {
     )
   }
 
-  val singleArrowMeteoEffect: TargetedEffect[Player] =
+  def singleArrowMeteoEffect(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     arrowEffect[Arrow](
       ProjectileSpawnConfiguration(
         1.0,
@@ -70,7 +74,7 @@ object ArrowEffects {
       _.setGlowing(true)
     )
 
-  val singleArrowExplosionEffect: TargetedEffect[Player] =
+  def singleArrowExplosionEffect(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     arrowEffect[SmallFireball](
       ProjectileSpawnConfiguration(
         0.4,
@@ -79,9 +83,12 @@ object ArrowEffects {
       Some(Sound.ENTITY_GHAST_SHOOT)
     )
 
-  def arrowEffect[P <: Projectile : ClassTag](spawnConfiguration: ProjectileSpawnConfiguration,
-                                              sound: Option[Sound] = None,
-                                              projectileModifier: P => Unit = (_: P) => ()): TargetedEffect[Player] = {
+  def arrowEffect[
+    P <: Projectile : ClassTag
+  ](spawnConfiguration: ProjectileSpawnConfiguration,
+    sound: Option[Sound] = None,
+    projectileModifier: P => Unit = (_: P) => ())
+   (implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
 
     val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
 
@@ -117,7 +124,7 @@ object ArrowEffects {
            * サーバーが停止したときにも開放するためである。
            */
           _ <- SeichiAssist.instance.arrowSkillProjectileScope
-            .useTracked(BukkitResources.vanishingEntityResource(spawnLocation, runtimeClass)) { projectile =>
+            .useTracked(BukkitResources.vanishingEntityResource[IO, P](spawnLocation, runtimeClass)) { projectile =>
               modifyProjectile(projectile) >> waitForCollision
             }
         } yield ()
