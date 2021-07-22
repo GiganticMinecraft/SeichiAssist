@@ -47,7 +47,6 @@ object ReorderingPipe {
    *
    * 与えられたストリームの最初のChunkの極小の [[TimeStamped.currentStamp]] よりも
    * タイムスタンプが古い要素は返されるストリームに出力されない。
-   * また、そのような要素が存在した場合、返されるストリームは終了しない。
    */
   def apply[F[_], A]: Pipe[F, TimeStamped[A], A] =
     in => StreamExtra.uncons(in).flatMap { case (firstChunk, rest) =>
