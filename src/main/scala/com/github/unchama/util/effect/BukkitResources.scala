@@ -1,6 +1,7 @@
 package com.github.unchama.util.effect
 
-import cats.effect.{IO, Resource}
+import cats.effect.{Resource, Sync, SyncIO}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.{Location, Material}
@@ -9,21 +10,35 @@ object BukkitResources {
   /**
    * 参照された`Block`達が開放時に空気ブロックに書き換えられるような`Resource`としての`Block`
    */
-  def vanishingBlockSetResource[B <: Block](reference: Set[B]): Resource[IO, Set[B]] =
+  def vanishingBlockSetResource[
+    F[_] : Sync : OnMinecraftServerThread,
+    B <: Block
+  ](referenceSet: Set[B]): Resource[F, Set[B]] =
     Resource.make(
-      IO(reference)
+      Sync[F].delay(referenceSet)
     )(block =>
-      IO { block.foreach(_.setType(Material.AIR)) }
+      OnMinecraftServerThread[F].runAction[SyncIO, Unit] {
+        SyncIO {
+          block.foreach(_.setType(Material.AIR))
+        }
+      }
     )
 
   /**
    * 確保された`Entity`が開放時に除去されるような`Resource`としての`Entity`
    */
-  def vanishingEntityResource[E <: Entity](spawnLocation: Location, tag: Class[E]): Resource[IO, E] = {
+  def vanishingEntityResource[
+    F[_] : Sync : OnMinecraftServerThread,
+    E <: Entity
+  ](spawnLocation: Location, tag: Class[E]): Resource[F, E] = {
     Resource.make(
-      IO(spawnLocation.getWorld.spawn(spawnLocation, tag))
+      Sync[F].delay(spawnLocation.getWorld.spawn(spawnLocation, tag))
     )(e =>
-      IO(e.remove())
+      OnMinecraftServerThread[F].runAction[SyncIO, Unit] {
+        SyncIO {
+          e.remove()
+        }
+      }
     )
   }
 }
