@@ -32,7 +32,11 @@ object BukkitResources {
     E <: Entity
   ](spawnLocation: Location, tag: Class[E]): Resource[F, E] = {
     Resource.make(
-      Sync[F].delay(spawnLocation.getWorld.spawn(spawnLocation, tag))
+      OnMinecraftServerThread[F].runAction[SyncIO, E] {
+        SyncIO {
+          spawnLocation.getWorld.spawn(spawnLocation, tag)
+        }
+      }
     )(e =>
       OnMinecraftServerThread[F].runAction[SyncIO, Unit] {
         SyncIO {
