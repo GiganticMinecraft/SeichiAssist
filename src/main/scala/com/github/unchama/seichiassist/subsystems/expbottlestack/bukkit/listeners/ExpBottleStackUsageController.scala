@@ -49,7 +49,7 @@ class ExpBottleStackUsageController[
       val bottleCount = BottleCount(playerInventory.getItemInMainHand.getAmount)
       val bottleResource = Resources.bottleResourceSpawningAt[F](player.getLocation, bottleCount)
 
-      effectEnvironment.runEffectAsync(
+      effectEnvironment.unsafeRunEffectAsync(
         "経験値瓶の消費を待つ",
         managedBottleScope.useTracked[ThrownExpBottle, Nothing](bottleResource) { _ => Effect[F].never }
       )

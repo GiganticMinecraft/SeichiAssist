@@ -26,13 +26,18 @@ object SignallingRepositoryDefinition {
         AsymmetricSignallingRef[G, F, T](initialValue)
           .flatTap { ref =>
             EffectExtra.runAsyncAndForget[F, G, Unit] {
-              StreamExtra.compileToRestartingStream {
-                ref
-                  .values
-                  .discrete
-                  .map(player -> _)
-                  .through(publishSink)
-              }
+              ref
+                .valuesAwait
+                .use { stream =>
+                  // FIXME: This *never* returns. It is likely that this is not garbage collected.
+                  //  We might need to find a way to
+                  //   - restart the stream when the downstream stream fails
+                  //   - unsubscribe when the player exits
+                  //  We should be able to achieve this by returning a CancelToken or something on this flatXmapWithPlayer
+                  StreamExtra.compileToRestartingStream {
+                    stream.map(player -> _).through(publishSink)
+                  }
+                }
             }
           }
           .widen[Ref[G, T]]

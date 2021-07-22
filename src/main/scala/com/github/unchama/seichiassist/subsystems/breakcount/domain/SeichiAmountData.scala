@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.domain
 
-import cats.Eq
+import cats.kernel.Monoid
+import cats.{Eq, Order}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level._
 
 case class SeichiAmountData(expAmount: SeichiExpAmount) {
@@ -48,4 +49,8 @@ object SeichiAmountData {
   val initial: SeichiAmountData = SeichiAmountData(SeichiExpAmount.zero)
 
   implicit val eq: Eq[SeichiAmountData] = Eq.by(_.expAmount)
+
+  implicit val order: Order[SeichiAmountData] = Order.by(_.expAmount)
+
+  implicit val monoid: Monoid[SeichiAmountData] = Monoid.instance(initial, (a, b) => a.addExpAmount(b.expAmount))
 }

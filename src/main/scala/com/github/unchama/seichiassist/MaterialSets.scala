@@ -34,7 +34,13 @@ object MaterialSets {
     Material.MOB_SPAWNER, Material.WORKBENCH, Material.FURNACE, Material.QUARTZ_BLOCK, Material.CHEST,
     Material.TRAPPED_CHEST, Material.NETHER_FENCE, Material.NETHER_BRICK_STAIRS, Material.CAULDRON, Material.END_ROD,
     Material.PURPUR_STAIRS, Material.END_BRICKS, Material.PURPUR_SLAB, Material.ENDER_CHEST, Material.PURPUR_SLAB, Material.STEP,
-    Material.DOUBLE_STEP, Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL, Material.VINE
+    Material.DOUBLE_STEP, Material.ENDER_PORTAL_FRAME, Material.ENDER_PORTAL, Material.VINE,
+    // #913
+    Material.BED_BLOCK, Material.TRAP_DOOR, Material.IRON_TRAPDOOR, Material.CARPET, Material.IRON_DOOR_BLOCK,
+    // 木のドアはそれぞれMaterialが別れている
+    Material.WOODEN_DOOR, Material.ACACIA_DOOR, Material.BIRCH_DOOR, Material.DARK_OAK_DOOR,
+    Material.JUNGLE_DOOR, Material.SPRUCE_DOOR,
+    Material.SMOOTH_STAIRS, Material.BREWING_STAND, Material.WOOD_STEP, Material.TNT,
   ) ++ fortuneMaterials
 
   // これらのマテリアルを持つブロックは破壊を整地量に計上しない

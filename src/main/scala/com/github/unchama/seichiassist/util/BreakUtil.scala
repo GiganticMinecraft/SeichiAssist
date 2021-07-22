@@ -20,6 +20,7 @@ import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Dye
 
+import java.time.LocalDate
 import java.util.Random
 import java.util.stream.IntStream
 
@@ -130,7 +131,7 @@ object BreakUtil {
                  tool: BreakTool,
                  shouldPlayBreakSound: Boolean)
                 (implicit effectEnvironment: EffectEnvironment): Unit =
-    effectEnvironment.runEffectAsync(
+    effectEnvironment.unsafeRunEffectAsync(
       "単一ブロックを破壊する",
       massBreakBlock(player, Set(targetBlock), dropLocation, tool, shouldPlayBreakSound)
     )
@@ -279,7 +280,14 @@ object BreakUtil {
   def blockCountWeight(world: World): Double = {
     val managedWorld = ManagedWorld.fromBukkitWorld(world)
     val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
+    val sw01Penalty =
+      if (managedWorld.contains(ManagedWorld.WORLD_SW)) {
+        // 5周年記念企画のうち21億チャレンジ用の条件分岐
+        // TODO: 終わったら消去する
+        if (LocalDate.now().isEqual(LocalDate.of(2021, 7, 22))) 2.5
+        else 0.8
+      }
+      else 1.0
 
     seichiWorldFactor * sw01Penalty
   }
@@ -404,8 +412,30 @@ object BreakUtil {
     //minestackflagがfalseの時は処理を終了
     if (!playerData.settings.autoMineStack) return false
 
+    /**
+     * 必要であれば引数を対応するアイテム向けの[[Material]]へ変換する
+     * @param material 変換対象
+     * @return 変換されたかもしれないMaterial
+     */
+    def intoItem(material: Material): Material = {
+      material match {
+        case Material.ACACIA_DOOR => Material.ACACIA_DOOR_ITEM
+        case Material.BIRCH_DOOR => Material.BIRCH_DOOR_ITEM
+        case Material.BED_BLOCK => Material.BED
+        case Material.BREWING_STAND => Material.BREWING_STAND_ITEM
+        case Material.CAULDRON => Material.CAULDRON_ITEM
+        case Material.DARK_OAK_DOOR => Material.DARK_OAK_DOOR_ITEM
+        case Material.FLOWER_POT => Material.FLOWER_POT_ITEM
+        case Material.JUNGLE_DOOR => Material.JUNGLE_DOOR_ITEM
+        case Material.SPRUCE_DOOR => Material.SPRUCE_DOOR_ITEM
+        case Material.SKULL => Material.SKULL_ITEM
+        case Material.NETHER_BRICK => Material.NETHER_BRICK_ITEM
+        case Material.WOODEN_DOOR => Material.WOOD_DOOR
+        case others => others
+      }
+    }
     val amount = itemstack.getAmount
-    val material = itemstack.getType
+    val material = intoItem(itemstack.getType)
 
     //線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
     //拾った時のサブIDに合わせる

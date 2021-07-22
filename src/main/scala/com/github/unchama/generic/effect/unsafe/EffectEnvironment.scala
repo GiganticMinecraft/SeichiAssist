@@ -15,10 +15,8 @@ trait EffectEnvironment {
    * 理想的には、これはプログラムの最も外側にて「一度だけ」呼び出されるべきである。
    *
    * このメソッドの実装は `context` を用いて実行に関するロギングを行ってよい。
-   *
-   * TODO rename to unsafeRunEffectAsync
    */
-  def runEffectAsync[U, F[_] : Effect](context: String, program: F[U]): Unit
+  def unsafeRunEffectAsync[U, F[_] : Effect](context: String, program: F[U]): Unit
 
   /**
    * `receiver`を`effect`に適用して得られる`IO`を例外を補足して実行する。
@@ -30,7 +28,7 @@ trait EffectEnvironment {
    * @tparam T レシーバの型
    * @deprecated use [[EffectEnvironment]]
    */
-  def runAsyncTargetedEffect[T](receiver: T)(effect: TargetedEffect[T], context: String): Unit =
-    runEffectAsync(context, effect(receiver))
+  def unsafeRunAsyncTargetedEffect[T](receiver: T)(effect: TargetedEffect[T], context: String): Unit =
+    unsafeRunEffectAsync(context, effect(receiver))
 
 }

@@ -6,6 +6,7 @@ import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
+import com.github.unchama.seichiassist.listener.BuildMainMenuOpener
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
@@ -162,7 +163,9 @@ object BuildAssist {
     Material.STEP, Material.STONE, Material.STONE_SLAB2, Material.THIN_GLASS,
     Material.TORCH, Material.WOOD,
     Material.WOOD_STAIRS, Material.WOOD_STEP,
-    Material.WOOL, Material.CARPET, Material.WORKBENCH
+    Material.WOOL, Material.CARPET, Material.WORKBENCH,
+    // #1008
+    Material.LEAVES, Material.LEAVES_2
   )
 
   //直列設置ブロックの対象リスト
@@ -235,6 +238,7 @@ object BuildAssist {
     , Material.NETHER_WART_BLOCK //ネザーウォートB
     , Material.CONCRETE //コンクリート
     , Material.CONCRETE_POWDER //コンクリートパウダー
+    , Material.LEAVES, Material.LEAVES_2
   )
 
   //ハーフブロックとして扱うMaterial
@@ -257,6 +261,9 @@ object BuildAssist {
     , Material.DOUBLE_PLANT //高い花、草
     , Material.WATER //水
     , Material.STATIONARY_WATER //水
+    , Material.LAVA // 溶岩
+    , Material.STATIONARY_LAVA // 溶岩
+    , Material.VINE // ツタ
   )
 
   var plugin: Plugin = _

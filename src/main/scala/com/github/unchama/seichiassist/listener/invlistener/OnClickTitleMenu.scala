@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.data.MenuInventoryData.MenuType
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
-import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
+import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.entity.{EntityType, Player}
 import org.bukkit.event.inventory.{InventoryClickEvent, InventoryType}
@@ -24,11 +24,14 @@ object OnClickTitleMenu {
   private def clickedSound(player: Player, sound: Sound, pitch: Float): Unit =
     player.playSound(player.getLocation, sound, 1f, pitch)
 
+  private def isApplicableAsPrevPageButton(is: ItemStack): Boolean =
+    is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft"
+  
   private def isApplicableAsNextPageButton(is: ItemStack): Boolean =
     is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight"
-
+  
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(implicit effectEnvironment: EffectEnvironment,
-                                                              ioCanOpenStickMenu: IO CanOpen FirstPage.type): Unit = {
+                                                              ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type): Unit = {
     import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 
     //外枠のクリック処理なら終了
@@ -101,13 +104,13 @@ object OnClickTitleMenu {
             clickedSound(player, Sound.BLOCK_FENCE_GATE_OPEN, 0.1f)
             player.openInventory(MenuInventoryData.computeTailPartCustomMenu(player))
 
-          case _ if isSkull && isApplicableAsNextPageButton(current) =>
+          case _ if isSkull && isApplicableAsPrevPageButton(current) =>
 
 
-            effectEnvironment.runAsyncTargetedEffect(player)(
+            effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
               SequentialEffect(
                 CommonSoundEffects.menuTransitionFenceSound,
-                ioCanOpenStickMenu.open(StickMenu.firstPage)
+                ioCanOpenAchievementMenu.open(AchievementMenu)
               ),
               "実績メニューを開く"
             )

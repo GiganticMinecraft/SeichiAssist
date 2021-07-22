@@ -4,6 +4,7 @@ import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
+import com.github.unchama.seichiassist.achievement.NamedHoliday._
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -13,6 +14,7 @@ import org.bukkit.inventory.meta.SkullMeta
 import java.time.temporal.TemporalAdjusters
 import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 import scala.concurrent.duration.FiniteDuration
+import scala.math.floor
 
 object AchievementConditions {
   def playerDataPredicate(predicate: PlayerData => IO[Boolean]): PlayerPredicate = { player =>
@@ -33,7 +35,8 @@ object AchievementConditions {
     val predicate: PlayerPredicate = { player: Player =>
       SeichiAssist.instance
         .rankingSystemApi
-        .getSeichiRanking
+        .seichiAmountRanking
+        .ranking.read
         .map(_.positionOf(player.getName))
         .map(_.exists(_ <= n))
     }
@@ -121,6 +124,18 @@ object AchievementConditions {
       }
 
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
+  }
+
+  def playedOn(holiday: NamedHoliday): AchievementCondition[String] = {
+    val predicate: PlayerPredicate = _ =>
+      IO{
+        val now = LocalDate.now()
+        val target = holiday.dateOn(now.getYear)
+
+        now.getMonth == target.getMonth && now.getDayOfMonth == target.getDayOfMonth
+      }
+
+    AchievementCondition(predicate, _ + "にプレイ", holiday.name)
   }
 
   object SecretAchievementConditions {

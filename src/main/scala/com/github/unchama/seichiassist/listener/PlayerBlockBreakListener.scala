@@ -187,7 +187,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
 
         val effectPrograms = for {
           ((blocks, lavas), chunkIndex) <- multiBreakList.zip(multiLavaList).zipWithIndex
-          blockChunk = BukkitResources.vanishingBlockSetResource(blocks)
+          blockChunk = BukkitResources.vanishingBlockSetResource[IO, BlockBreakableBySkill](blocks)
         } yield {
           SeichiAssist.instance.lockedBlockChunkScope.useTracked(blockChunk) { blocks =>
             for {
@@ -230,11 +230,11 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
           if (!tool.getItemMeta.isUnbreakable) tool.setDurability(toolDamageToSet.toShort)
         }
 
-        effectEnvironment.runEffectAsync(
+        effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトを実行する",
           effectPrograms.toList.sequence[IO, Fiber[IO, Unit]]
         )
-        effectEnvironment.runEffectAsync(
+        effectEnvironment.unsafeRunEffectAsync(
           "複数破壊エフェクトの後処理を実行する",
           adjustManaAndDurability >> availabilityFlagManipulation
         )
@@ -251,7 +251,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
         BreakUtil.blockCountWeight(event.getPlayer.getWorld) * BreakUtil.totalBreakCount(Seq(block.getType))
       }
 
-    effectEnvironment.runEffectAsync(
+    effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance
         .breakCountSystem.api

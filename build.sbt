@@ -4,7 +4,9 @@ import sbt.Keys.baseDirectory
 import java.io._
 
 ThisBuild / scalaVersion := "2.13.1"
-ThisBuild / version := "1.6.18"
+// ThisBuild / version はGitHub Actionsによって自動更新される。
+// 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
+ThisBuild / version := "10"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -18,7 +20,7 @@ resolvers ++= Seq(
   "hub.spigotmc.org" at "https://hub.spigotmc.org/nexus/content/repositories/snapshots",
   "oss.sonatype.org" at "https://oss.sonatype.org/content/repositories/snapshots",
   "nexus.okkero.com" at "https://nexus.okkero.com/repository/maven-releases/",
-  "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // stouma915#0915の環境ではなぜかspigot-apiがダウンロードできないため一応追加
+  "maven.elmakers.com" at "https://maven.elmakers.com/repository/", // spigot-api 1.12.2がhub.spigotmc.orgからダウンロードできなくなったため
   "repo.phoenix616.dev" at "https://repo.phoenix616.dev" // authlibのための
 )
 
@@ -126,7 +128,7 @@ testOptions in Test += Tests.Argument("-oS")
 lazy val root = (project in file("."))
   .settings(
     name := "SeichiAssist",
-    assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist-${version.value}.jar",
+    assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
     libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
     excludeDependencies := Seq(
       ExclusionRule(organization = "org.bukkit", name = "bukkit")

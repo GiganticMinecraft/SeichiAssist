@@ -5,7 +5,7 @@ import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.fs2.workaround.Topic
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
@@ -70,8 +70,8 @@ object System {
       new GrantBukkitFastDiggingEffect[F]
 
     val yieldSystem: F[System[F, F, Player]] = for {
-      effectListTopic <- Topic[F, Option[(Player, FastDiggingEffectList)]](None)
-      effectListDiffTopic <- Topic[F, Option[(Player, (EffectListDiff, FastDiggingEffectStatsSettings))]](None)
+      effectListTopic <- Fs3Topic[F, Option[(Player, FastDiggingEffectList)]](None)
+      effectListDiffTopic <- Fs3Topic[F, Option[(Player, (EffectListDiff, FastDiggingEffectStatsSettings))]](None)
 
       effectListRepositoryHandles <- {
         ContextCoercion {

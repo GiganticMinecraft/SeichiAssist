@@ -39,6 +39,6 @@ class GrantBookedAchievementListener[F[_] : ConcurrentEffect : NonServerThreadCo
       }.sequence)
     } yield ()
 
-    effectEnvironment.runEffectAsync("未受け取りの予約実績を読み込み、付与する", program)
+    effectEnvironment.unsafeRunEffectAsync("未受け取りの予約実績を読み込み、付与する", program)
   }
 }

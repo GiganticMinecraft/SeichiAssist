@@ -69,7 +69,7 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
 
         import cats.implicits._
 
-        effectEnvironment.runEffectAsync(
+        effectEnvironment.unsafeRunEffectAsync(
           "Mebius破壊時のエフェクトを再生する",
           MebiusMessages.onMebiusBreak.pickOne[SyncIO].toIO.flatMap { message =>
             speechService.makeSpeechIgnoringBlockage(

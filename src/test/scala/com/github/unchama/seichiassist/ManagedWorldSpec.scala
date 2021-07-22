@@ -37,7 +37,7 @@ class ManagedWorldSpec extends AnyWordSpec with MockFactory {
   )
 
   "World.isBlockLineUpSkillEnabled" should {
-    "return the appropreate truth-value" in {
+    "return the appropriate truth-value" in {
       forAll(blockLineUpSkillEnableMap) { case (worldName, value) =>
         val world = mock[World]
         (world.getName _).expects().returning(worldName)
@@ -47,7 +47,7 @@ class ManagedWorldSpec extends AnyWordSpec with MockFactory {
   }
 
   "World.shouldTrackBuildBlock" should {
-    "return the approprate truth-value" in {
+    "return the appropriate truth-value" in {
       forAll(inTrackedWorldMap) { case (worldName, value) =>
         val world = mock[World]
         (world.getName _).expects().returning(worldName)

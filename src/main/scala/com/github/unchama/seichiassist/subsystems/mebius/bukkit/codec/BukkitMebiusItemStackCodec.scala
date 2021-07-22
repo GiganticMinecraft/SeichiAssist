@@ -41,6 +41,7 @@ object BukkitMebiusItemStackCodec {
     val levelTag = "mebiusLevel"
     val ownerNicknameTag = "mebiusOwnerNickname"
     val nameTag = "mebiusName"
+    val forcedMaterialTag = "mebiusForcedMaterial"
   }
 
   def encodeTypeId(mebiusType: MebiusType): Int =
@@ -55,6 +56,17 @@ object BukkitMebiusItemStackCodec {
       case 2 => Some(ChristmasMebius)
       case _ => None
     }
+
+  def encodeForcedMaterial(forcedMaterial: MebiusForcedMaterial): Byte = forcedMaterial match {
+    case MebiusForcedMaterial.None => 0
+    case MebiusForcedMaterial.Leather => 1
+  }
+
+  def decodeForcedMaterial(forcedMaterialByte: Byte): MebiusForcedMaterial = forcedMaterialByte match {
+    case 0 => MebiusForcedMaterial.None
+    case 1 => MebiusForcedMaterial.Leather
+    case _ => MebiusForcedMaterial.None
+  }
 
   def isMebius(itemStack: ItemStack): Boolean =
     itemStack != null && itemStack.getType != Material.AIR && {
@@ -78,11 +90,21 @@ object BukkitMebiusItemStackCodec {
     val enchantments = MebiusEnchantmentLevels.fromUnsafeCounts(
       BukkitMebiusEnchantmentCodec.getLevelOf(_)(itemStack)
     )
+    val mebiusForcedMaterial = decodeForcedMaterial(nbtItem.getByte(forcedMaterialTag))
     val mebiusLevel = MebiusLevel(nbtItem.getInteger(levelTag))
     val ownerNickname = Some(nbtItem.getString(ownerNicknameTag)).filter(_.nonEmpty)
     val mebiusName = nbtItem.getString(nameTag)
 
-    Some(MebiusProperty(mebiusType, ownerName, ownerUuid, enchantments, mebiusLevel, ownerNickname, mebiusName))
+    Some(MebiusProperty(
+      mebiusType,
+      ownerName,
+      ownerUuid,
+      enchantments,
+      mebiusForcedMaterial,
+      mebiusLevel,
+      ownerNickname,
+      mebiusName
+    ))
   }
 
   /**
@@ -93,7 +115,10 @@ object BukkitMebiusItemStackCodec {
    * を満足する。
    */
   def materialize(property: MebiusProperty, damageValue: Short): ItemStack = {
-    val material = BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
+    val material = property.forcedMaterial match {
+      case MebiusForcedMaterial.None => BukkitMebiusAppearanceMaterialCodec.appearanceMaterialAt(property.level)
+      case MebiusForcedMaterial.Leather => Material.LEATHER_HELMET
+    }
 
     import scala.util.chaining._
 
@@ -145,6 +170,7 @@ object BukkitMebiusItemStackCodec {
       nbtItem.setByte(typeIdTag, encodeTypeId(property.mebiusType).toByte)
       nbtItem.setString(ownerNameTag, property.ownerPlayerId)
       nbtItem.setString(ownerUuidTag, property.ownerUuid)
+      nbtItem.setByte(forcedMaterialTag, encodeForcedMaterial(property.forcedMaterial))
       nbtItem.setInteger(levelTag, property.level.value)
       property.ownerNicknameOverride.foreach(nbtItem.setString(ownerNicknameTag, _))
       nbtItem.setString(nameTag, property.mebiusName)

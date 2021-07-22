@@ -36,7 +36,7 @@ class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepositor
       }
 
       import cats.implicits._
-      effectEnvironment.runEffectAsync(
+      effectEnvironment.unsafeRunEffectAsync(
         "Mebiusのレベルアップ時の通知を行う",
         serviceRepository(player).makeSpeechIgnoringBlockage(
           newMebiusProperty,

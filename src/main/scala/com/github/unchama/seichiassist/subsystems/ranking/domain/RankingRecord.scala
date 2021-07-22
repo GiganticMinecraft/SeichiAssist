@@ -1,0 +1,3 @@
+package com.github.unchama.seichiassist.subsystems.ranking.domain
+
+case class RankingRecord[V](playerName: String, value: V)

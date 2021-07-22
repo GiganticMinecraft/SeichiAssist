@@ -10,7 +10,7 @@ mkdir -p /spigot/plugins/SeichiAssist/
 cd /spigot/plugins/SeichiAssist
 
 rm config.yml || true
-jar xf ../SeichiAssist-*.jar config.yml
+jar xf ../SeichiAssist.jar config.yml
 
 cd /spigot/plugins/SeichiAssist
 
