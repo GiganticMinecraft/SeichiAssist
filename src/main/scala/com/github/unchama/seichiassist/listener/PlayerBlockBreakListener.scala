@@ -187,7 +187,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
 
         val effectPrograms = for {
           ((blocks, lavas), chunkIndex) <- multiBreakList.zip(multiLavaList).zipWithIndex
-          blockChunk = BukkitResources.vanishingBlockSetResource(blocks)
+          blockChunk = BukkitResources.vanishingBlockSetResource[IO, BlockBreakableBySkill](blocks)
         } yield {
           SeichiAssist.instance.lockedBlockChunkScope.useTracked(blockChunk) { blocks =>
             for {

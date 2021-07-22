@@ -25,7 +25,7 @@ import scala.util.Random
 sealed trait ActiveSkillEffect {
   val nameOnUI: String
 
-  val arrowEffect: TargetedEffect[Player]
+  def arrowEffect(implicit ioOnMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player]
 
   def runBreakEffect(player: Player,
                      usedSkill: ActiveSkill,
@@ -39,7 +39,8 @@ object ActiveSkillEffect {
   object NoEffect extends ActiveSkillEffect {
     override val nameOnUI: String = "未設定"
 
-    override val arrowEffect: TargetedEffect[Player] = ArrowEffects.normalArrowEffect
+    override def arrowEffect(implicit ioOnMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+      ArrowEffects.normalArrowEffect
 
     override def runBreakEffect(player: Player,
                                 usedSkill: ActiveSkill,
@@ -171,7 +172,7 @@ sealed abstract class ActiveSkillNormalEffect(stringId: String,
   /**
    * エフェクト選択時の遠距離エフェクト
    */
-  lazy val arrowEffect: TargetedEffect[Player] =
+  override def arrowEffect(implicit ioOnMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     this match {
       case Explosion => ArrowEffects.singleArrowExplosionEffect
       case Blizzard => ArrowEffects.singleArrowBlizzardEffect
@@ -246,7 +247,7 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
           _ <- IO.sleep(period.ticks)
 
           _ <- SeichiAssist.instance.magicEffectEntityScope
-            .useTrackedForSome(BukkitResources.vanishingEntityResource(centerBreak, classOf[Chicken])) { e =>
+            .useTrackedForSome(BukkitResources.vanishingEntityResource[IO, Chicken](centerBreak, classOf[Chicken])) { e =>
               for {
                 _ <- IO {
                   e.playEffect(EntityEffect.WITCH_MAGIC)
@@ -270,7 +271,7 @@ sealed abstract class ActiveSkillPremiumEffect(stringId: String,
   /**
    * エフェクト選択時の遠距離エフェクト
    */
-  lazy val arrowEffect: TargetedEffect[Player] =
+  override def arrowEffect(implicit ioOnMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     this match {
       case ActiveSkillPremiumEffect.MAGIC => ArrowEffects.singleArrowMagicEffect
     }

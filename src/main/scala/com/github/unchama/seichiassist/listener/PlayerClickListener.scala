@@ -104,10 +104,10 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
               activeSkillAvailability(player).set(true).coerceTo[IO] >>
               soundEffectAfterCoolDown
 
-          val arrowEffect = playerData.skillEffectState.selection.arrowEffect(player)
+          val arrowEffect = playerData.skillEffectState.selection.arrowEffect
 
           effectEnvironment.unsafeRunEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
-          effectEnvironment.unsafeRunEffectAsync("ArrowEffectを非同期で実行する", arrowEffect)
+          effectEnvironment.unsafeRunEffectAsync("ArrowEffectを非同期で実行する", arrowEffect.run(player))
         case _ =>
       }
     }
