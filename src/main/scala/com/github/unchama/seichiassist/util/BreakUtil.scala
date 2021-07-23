@@ -280,8 +280,10 @@ object BreakUtil {
   def blockCountWeight(world: World): Double = {
     val managedWorld = ManagedWorld.fromBukkitWorld(world)
     val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
+    val isMonthlyPrizeDay = LocalDate.now().getDayOfMonth.equals(21)
+    val monthlyPrize = if (isMonthlyPrizeDay) 1.75 else 1.0
     val sw01Penalty =
-      if (managedWorld.contains(ManagedWorld.WORLD_SW)) {
+      if (managedWorld.contains(ManagedWorld.WORLD_SW) && !isMonthlyPrizeDay) {
         // 5周年記念企画のうち21億チャレンジ用の条件分岐
         // TODO: 終わったら消去する
         if (LocalDate.now().isEqual(LocalDate.of(2021, 7, 22))) 2.5
@@ -289,7 +291,7 @@ object BreakUtil {
       }
       else 1.0
 
-    seichiWorldFactor * sw01Penalty
+    seichiWorldFactor * sw01Penalty * monthlyPrize
   }
 
   /**
