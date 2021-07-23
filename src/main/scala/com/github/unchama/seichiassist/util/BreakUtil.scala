@@ -278,7 +278,7 @@ object BreakUtil {
    * world 内での整地量倍率を計算する。
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
    */
-  def blockCountWeight[F: JavaTime](world: World): F[Double] = {
+  def blockCountWeight[F[_]: JavaTime](world: World): F[Double] = {
     val managedWorld = ManagedWorld.fromBukkitWorld(world)
     val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
     val isMonthlyPrizeDay = LocalDate.now().getDayOfMonth == 21
