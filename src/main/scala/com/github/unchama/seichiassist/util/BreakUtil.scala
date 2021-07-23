@@ -280,7 +280,7 @@ object BreakUtil {
   def blockCountWeight(world: World): Double = {
     val managedWorld = ManagedWorld.fromBukkitWorld(world)
     val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val isMonthlyPrizeDay = LocalDate.now().getDayOfMonth.equals(21)
+    val isMonthlyPrizeDay = LocalDate.now().getDayOfMonth == 21
     val monthlyPrize = if (isMonthlyPrizeDay) 1.75 else 1.0
     val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW) && !isMonthlyPrizeDay) 0.8 else 1.0
 
