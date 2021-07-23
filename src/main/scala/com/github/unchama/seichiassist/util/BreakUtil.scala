@@ -12,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
+import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.Block
@@ -277,7 +278,7 @@ object BreakUtil {
    * world 内での整地量倍率を計算する。
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
    */
-  def blockCountWeight(world: World): Double = {
+  def blockCountWeight[F: JavaTime](world: World): F[Double] = {
     val managedWorld = ManagedWorld.fromBukkitWorld(world)
     val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
     val isMonthlyPrizeDay = LocalDate.now().getDayOfMonth == 21
