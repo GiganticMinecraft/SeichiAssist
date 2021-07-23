@@ -20,7 +20,7 @@ import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Dye
 
-import java.util.LocalDate
+import java.time.LocalDate
 import java.util.Random
 import java.util.stream.IntStream
 
