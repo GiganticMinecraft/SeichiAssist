@@ -300,12 +300,12 @@ object Util {
     if (itemstack.getAmount == count) {
       // アイテムをcount個使うので、プレイヤーの手を素手にする
       inventory.setItemInMainHand(new ItemStack(Material.AIR))
+      true
     } else if (itemstack.getAmount > count) {
       // プレイヤーが持っているアイテムをcount個減らす
       itemstack.setAmount(itemstack.getAmount - count)
-    } else
-      return false
-    true
+      true
+    } else false
   }
 
   def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {
