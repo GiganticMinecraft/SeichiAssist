@@ -304,7 +304,7 @@ object Util {
       // プレイヤーが持っているアイテムをcount個減らす
       itemstack.setAmount(itemstack.getAmount - count)
     } else
-      return itemstack.getAmount >= count
+      return false
     true
   }
 
