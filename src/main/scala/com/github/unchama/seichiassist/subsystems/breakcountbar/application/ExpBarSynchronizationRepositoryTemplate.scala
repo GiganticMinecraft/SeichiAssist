@@ -58,7 +58,7 @@ object ExpBarSynchronizationRepositoryTemplate {
 
         _ <- EffectExtra.runAsyncAndForget[F, G, Unit](bossBar.players.add(player))
         _ <- EffectExtra.runAsyncAndForget[F, G, Unit] {
-          StreamExtra.compileToRestartingStream[F, Unit] {
+          StreamExtra.compileToRestartingStream[F, Unit]("[ExpBarSynchronizationRepositoryTemplate]") {
             switching.concurrently(synchronization)
           }.start >>= fiberPromise.complete
         }
