@@ -49,7 +49,7 @@ object System {
 
     repositoryControls <-
       BukkitRepositoryControls.createHandles(
-        RepositoryDefinition.SinglePhased.withoutTappingAction(
+        RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(
           ItemMigrationStateRepositoryDefinitions.initialization[G],
           ItemMigrationStateRepositoryDefinitions.finalization[G, UUID]
         )

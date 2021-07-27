@@ -42,7 +42,7 @@ object System {
     implicit val randomEffect: RandomEffect[G] = RandomEffect.createFromRandom(Random)
 
     BukkitRepositoryControls.createHandles(
-      RepositoryDefinition.TwoPhased(
+      RepositoryDefinition.Phased.TwoPhased(
         SpeechServiceRepositoryDefinitions.initialization[SyncIO, Player],
         SpeechServiceRepositoryDefinitions.finalization[SyncIO, Player]
       )
@@ -51,7 +51,7 @@ object System {
         speechServiceRepositoryControls.repository
 
       BukkitRepositoryControls.createHandles(
-        RepositoryDefinition.TwoPhased(
+        RepositoryDefinition.Phased.TwoPhased(
           MebiusSpeechRoutineFiberRepositoryDefinitions.initialization[SyncIO],
           MebiusSpeechRoutineFiberRepositoryDefinitions.finalization[SyncIO, Player]
         )

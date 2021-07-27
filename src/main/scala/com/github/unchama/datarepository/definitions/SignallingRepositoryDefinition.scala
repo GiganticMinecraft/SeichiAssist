@@ -20,9 +20,8 @@ object SignallingRepositoryDefinition {
     F[_] : ConcurrentEffect : ContextCoercion[G, *[_]] : ErrorLogger,
     Player: HasUuid, T
   ](publishSink: Pipe[F, (Player, T), Unit])
-   (definition: RepositoryDefinition[G, Player, T]): RepositoryDefinition[G, Player, Ref[G, T]] = {
-    definition.toTwoPhased.flatXmapWithPlayer { player =>
-      initialValue =>
+   (definition: RepositoryDefinition.Phased[G, Player, T]): RepositoryDefinition[G, Player, Ref[G, T]] = {
+    definition.toTwoPhased.flatXmapWithPlayer { player => initialValue =>
         AsymmetricSignallingRef[G, F, T](initialValue)
           .flatTap { ref =>
             EffectExtra.runAsyncAndForget[F, G, Unit] {
