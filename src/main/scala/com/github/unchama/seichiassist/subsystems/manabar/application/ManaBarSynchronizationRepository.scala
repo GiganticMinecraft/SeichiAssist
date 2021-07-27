@@ -36,8 +36,8 @@ object ManaBarSynchronizationRepository {
 
       val programToRunAsync =
         bossBar.players.add(player) >>
-          Concurrent[F].start {
-            StreamExtra.compileToRestartingStream[F, Nothing]("[ManaBarSynchronization]")(synchronization)
+          Concurrent[F].start[Nothing] {
+            StreamExtra.compileToRestartingStream("[ManaBarSynchronization]")(synchronization)
           } >>= promise.complete
 
       EffectExtra.runAsyncAndForget[F, G, Unit](programToRunAsync)
