@@ -16,7 +16,6 @@ object ManaBarSynchronizationRepository {
   type BossBarWithPlayer[F[_], P] = MinecraftBossBar[F] {type Player = P}
 
   import cats.implicits._
-  import cats.effect.implicits._
 
   def withContext[
     G[_] : Sync,
@@ -37,8 +36,9 @@ object ManaBarSynchronizationRepository {
 
       val programToRunAsync =
         bossBar.players.add(player) >>
-          StreamExtra.compileToRestartingStream[F, Nothing]("[ManaBarSynchronization]")(synchronization).start >>=
-          promise.complete
+          Concurrent[F].start {
+            StreamExtra.compileToRestartingStream[F, Nothing]("[ManaBarSynchronization]")(synchronization)
+          } >>= promise.complete
 
       EffectExtra.runAsyncAndForget[F, G, Unit](programToRunAsync)
     }
