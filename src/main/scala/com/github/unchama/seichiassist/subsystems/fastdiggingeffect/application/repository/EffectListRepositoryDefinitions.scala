@@ -44,7 +44,7 @@ object EffectListRepositoryDefinitions {
       val (mutexRef, fiberPromise) = value
 
       val programToRun: F[Unit] =
-        StreamExtra.compileToRestartingStream {
+        StreamExtra.compileToRestartingStream("[EffectListRepositoryDefinitions]") {
           fs2.Stream
             .awakeEvery[F](1.second)
             .evalMap[F, FastDiggingEffectList](_ => ContextCoercion(mutexRef.readLatest))

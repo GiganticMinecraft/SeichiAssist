@@ -54,7 +54,8 @@ object PocketInventoryRepositoryDefinition {
         }
 
         EffectExtra.runAsyncAndForget[F, G, Unit] {
-          StreamExtra.compileToRestartingStream(processStream).start >>= fiberPromise.complete
+          StreamExtra.compileToRestartingStream("[PocketInventoryRepository]")(processStream).start >>=
+            fiberPromise.complete
         }
       }
     }

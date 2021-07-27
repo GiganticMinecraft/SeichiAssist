@@ -49,7 +49,7 @@ object System {
       _ <- List(
         UpdateManaCaps.using[F, G, Player](handles.repository),
         RefillToCap.using[F, G, Player](handles.repository)
-      ).traverse(StreamExtra.compileToRestartingStream[F, Unit](_).start)
+      ).traverse(StreamExtra.compileToRestartingStream[F, Unit]("[Mana]")(_).start)
     } yield new System[F, G, Player] {
       override val manaApi: ManaApi[F, G, Player] = new ManaApi[F, G, Player] {
         override val readManaAmount: KeyedDataRepository[Player, G[LevelCappedManaAmount]] =

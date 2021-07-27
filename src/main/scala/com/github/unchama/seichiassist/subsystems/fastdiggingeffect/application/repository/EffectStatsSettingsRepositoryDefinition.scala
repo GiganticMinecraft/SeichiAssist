@@ -58,7 +58,9 @@ object EffectStatsSettingsRepositoryDefinition {
       }
 
       EffectExtra.runAsyncAndForget[F, G, Unit] {
-        StreamExtra.compileToRestartingStream(processStream).start >>= fiberPromise.complete
+        StreamExtra.compileToRestartingStream("[EffectStatsSettingsRepository]") {
+          processStream
+        }.start >>= fiberPromise.complete
       }
     }
   }

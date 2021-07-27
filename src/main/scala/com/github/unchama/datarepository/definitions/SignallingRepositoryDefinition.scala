@@ -34,7 +34,7 @@ object SignallingRepositoryDefinition {
                   //   - restart the stream when the downstream stream fails
                   //   - unsubscribe when the player exits
                   //  We should be able to achieve this by returning a CancelToken or something on this flatXmapWithPlayer
-                  StreamExtra.compileToRestartingStream {
+                  StreamExtra.compileToRestartingStream("[SignallingRepositoryDefinition]") {
                     stream.map(player -> _).through(publishSink)
                   }
                 }

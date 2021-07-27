@@ -22,7 +22,7 @@ object GenericRefreshingRankingCache {
       initialRankingRecords <- persistence.getAllRankingRecords
       rankingRef <- Ref.of(new Ranking(initialRankingRecords))
       _ <-
-        StreamExtra.compileToRestartingStream[F, Unit] {
+        StreamExtra.compileToRestartingStream[F, Unit]("[GenericRefreshingRankingCache]") {
           fs2.Stream
             .awakeEvery[F](30.seconds)
             .evalMap(_ => persistence.getAllRankingRecords)
