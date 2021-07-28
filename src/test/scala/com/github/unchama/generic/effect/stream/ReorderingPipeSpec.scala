@@ -51,14 +51,13 @@ class ReorderingPipeSpec
           }
 
           val createRandomizedInput: SyncIO[Vector[TimeStamped[TestInputType]]] = SyncIO {
-            val Vector(a, b@_*) = timeStamped
-            a +: Random.shuffle(b.toVector)
+            Random.shuffle(timeStamped)
           }
 
           val program =
             fs2.Stream
               .evals(createRandomizedInput)
-              .through(ReorderingPipe[SyncIO, TestInputType])
+              .through(ReorderingPipe.withInitialToken[SyncIO, TestInputType](timeStamped.head.currentStamp))
               .compile
               .toList
 
