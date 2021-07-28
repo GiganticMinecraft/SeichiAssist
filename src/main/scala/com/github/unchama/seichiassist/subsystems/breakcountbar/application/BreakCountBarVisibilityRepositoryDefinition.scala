@@ -18,7 +18,7 @@ object BreakCountBarVisibilityRepositoryDefinition {
     Player: HasUuid,
   ](persistence: BreakCountBarVisibilityPersistence[G],
     publishChanges: Pipe[F, (Player, BreakCountBarVisibility), Unit]): RepositoryDefinition[G, Player, Ref[G, BreakCountBarVisibility]] =
-    SignallingRepositoryDefinition.forPlayerTopic(publishChanges) {
+    SignallingRepositoryDefinition.withPublishSinkHidden(publishChanges) {
       RefDictBackedRepositoryDefinition.usingUuidRefDict(persistence)(BreakCountBarVisibility.Shown)
     }
 

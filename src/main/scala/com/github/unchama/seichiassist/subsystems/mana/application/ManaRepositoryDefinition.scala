@@ -35,7 +35,7 @@ object ManaRepositoryDefinition {
         )(cappedMana => Monad[G].pure(cappedMana.manaAmount))
 
     SignallingRepositoryDefinition
-      .forPlayerTopic[G, F, Player, LevelCappedManaAmount](publishChanges)(valueRepository)
+      .withPublishSinkHidden[G, F, Player, LevelCappedManaAmount](publishChanges)(valueRepository)
   }
 
 }
