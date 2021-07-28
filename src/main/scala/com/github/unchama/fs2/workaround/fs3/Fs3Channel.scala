@@ -165,8 +165,7 @@ object Fs3Channel {
                       //   The latest implementation of fs2.concurrent.Channel would poll on the producer.get
                       //   to allow cancellation of the send action. This is achieved by the MonadCancel typeclass of
                       //   cats-effect 3, which is not available on cats-effect 2.
-                      //   However, on SeichiAssist, we hardly cancel any concurrent action,
-                      //   hence we are not allowing any cancellation to happen.
+                      //   We are temporarily not allowing any cancellation to happen here, but this can be improved.
                       notifyStream(waiting) <* producer.get
                     )
               }.flatten
