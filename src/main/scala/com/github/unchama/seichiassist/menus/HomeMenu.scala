@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
-import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHomeId, SubHome}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
@@ -168,11 +168,12 @@ object HomeMenu extends Menu {
       } yield {
         val lore = subhomeOpt match {
           case None => List(s"${GRAY}サブホームポイント$subHomeId", s"${GRAY}ポイント未設定")
-          case Some(SubHome(location, name)) =>
-            val worldName =
+          case Some(SubHome(name, location)) =>
+            val worldName = {
               ManagedWorld
-                .fromBukkitWorld(location.getWorld).map(_.japaneseName)
-                .getOrElse(location.getWorld.getName)
+                .fromName(location.worldName).map(_.japaneseName)
+                .getOrElse(location.worldName)
+            }
 
             List(
               s"${GRAY}サブホームポイント${subHomeId}は",
@@ -180,7 +181,7 @@ object HomeMenu extends Menu {
               s"${GRAY}と名付けられています",
               s"$DARK_RED${UNDERLINE}クリックで名称変更",
               s"${DARK_GRAY}command->[/subhome name $subHomeId]",
-              s"$GRAY$worldName x:${location.getBlockX} y:${location.getBlockY} z:${location.getBlockZ}"
+              s"$GRAY$worldName x:${location.x} y:${location.y} z:${location.z}"
             )
         }
 

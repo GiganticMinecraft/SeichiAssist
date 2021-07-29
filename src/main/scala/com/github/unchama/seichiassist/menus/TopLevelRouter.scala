@@ -15,15 +15,14 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.subsystems.ranking.RankingApi
-import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
-import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
+import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
@@ -53,7 +52,6 @@ object TopLevelRouter {
             subHomeReadApi: SubHomeReadAPI[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
-    implicit lazy val seichiRankingMenuEnv: SeichiRankingMenu.Environment = new SeichiRankingMenu.Environment
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment
     implicit lazy val mineStackMainMenuEnv: MineStackMainMenu.Environment = new MineStackMainMenu.Environment
     implicit lazy val categorizedMineStackMenuEnv: CategorizedMineStackMenu.Environment = new CategorizedMineStackMenu.Environment

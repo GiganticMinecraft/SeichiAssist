@@ -11,11 +11,12 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHomeId, SubHome}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
 import com.github.unchama.seichiassist.subsystems.subhome.{SubHomeReadAPI, SubHomeWriteAPI}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
+import org.bukkit.{Bukkit, Location}
 
 object SubHomeCommand {
   private val printDescriptionExecutor = new EchoExecutor(
@@ -60,8 +61,9 @@ object SubHomeCommand {
       } yield {
         subHomeLocation match {
           case None => MessageEffect(s"サブホームポイント${subHomeId}が設定されてません")
-          case Some(SubHome(location, _)) =>
-            player.teleport(location) // TODO これは副作用
+          case Some(SubHome(_, location)) =>
+            // TODO これは副作用
+            player.teleport(new Location(Bukkit.getWorld(location.worldName), location.x, location.y, location.z))
             MessageEffect(s"サブホームポイント${subHomeId}にワープしました")
         }
       }
