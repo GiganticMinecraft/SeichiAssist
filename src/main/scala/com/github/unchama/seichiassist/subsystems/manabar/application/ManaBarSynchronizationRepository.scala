@@ -24,7 +24,7 @@ object ManaBarSynchronizationRepository {
   ](manaValues: fs2.Stream[F, (Player, LevelCappedManaAmount)])
    (createFreshBossBar: G[BossBarWithPlayer[F, Player]]): RepositoryDefinition[G, Player, _] = {
     FiberAdjoinedRepositoryDefinition.extending {
-      RepositoryDefinition.SinglePhased
+      RepositoryDefinition.Phased.SinglePhased
         .withSupplierAndTrivialFinalization[G, Player, BossBarWithPlayer[F, Player]](createFreshBossBar)
     }.withAnotherTappingAction { (player, pair) =>
       val (bossBar, promise) = pair

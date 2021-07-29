@@ -14,7 +14,7 @@ object RefDictBackedRepositoryDefinition {
 
   def usingUuidRefDictWithEffectfulDefault[
     F[_] : Monad, Player, R
-  ](refDict: RefDict[F, UUID, R])(getDefaultValue: F[R]): RepositoryDefinition.SinglePhased[F, Player, R] = {
+  ](refDict: RefDict[F, UUID, R])(getDefaultValue: F[R]): RepositoryDefinition.Phased.SinglePhased[F, Player, R] = {
     val initialization: SinglePhasedRepositoryInitialization[F, R] =
       (uuid, _) => refDict
         .read(uuid)
@@ -27,12 +27,12 @@ object RefDictBackedRepositoryDefinition {
     val finalization: RepositoryFinalization[F, UUID, R] =
       RepositoryFinalization.withoutAnyFinalization((uuid, r) => refDict.write(uuid, r))
 
-    RepositoryDefinition.SinglePhased.withoutTappingAction(initialization, finalization)
+    RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(initialization, finalization)
   }
 
 
   def usingUuidRefDict[F[_] : Monad, Player, R](refDict: RefDict[F, UUID, R])
-                                               (defaultValue: R): RepositoryDefinition.SinglePhased[F, Player, R] =
+                                               (defaultValue: R): RepositoryDefinition.Phased.SinglePhased[F, Player, R] =
     usingUuidRefDictWithEffectfulDefault(refDict)(Monad[F].pure(defaultValue))
 
 }

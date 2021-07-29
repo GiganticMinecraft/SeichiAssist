@@ -16,7 +16,7 @@ object FiberAdjoinedRepositoryDefinition {
     G[_] : Sync,
     F[_] : ConcurrentEffect,
     Player, R
-  ](definition: RepositoryDefinition[G, Player, R]): definition.Self[R FiberAdjoined F] =
+  ](definition: RepositoryDefinition.Phased[G, Player, R]): definition.Self[R FiberAdjoined F] =
     definition
       .flatXmapWithIntermediateEffects(r =>
         Deferred

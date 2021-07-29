@@ -19,7 +19,7 @@ object SessionMutexRepositoryDefinition {
     G[_] : Sync : ContextCoercion[*[_], F],
     Player
   ]: RepositoryDefinition[G, Player, SessionMutex[F, G]] = {
-    RepositoryDefinition.SinglePhased.withoutTappingAction(
+    RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(
       SinglePhasedRepositoryInitialization.withSupplier(SessionMutex.newIn[F, G]),
       RepositoryFinalization.withoutAnyPersistence[G, UUID, SessionMutex[F, G]] { (_, mutex) =>
         EffectExtra.runAsyncAndForget[F, G, Unit] {

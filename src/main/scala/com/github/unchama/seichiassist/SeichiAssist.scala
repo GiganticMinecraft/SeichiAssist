@@ -111,7 +111,7 @@ class SeichiAssist extends JavaPlugin() {
 
   private val activeSkillAvailabilityRepositoryControls: BukkitRepositoryControls[SyncIO, Ref[SyncIO, Boolean]] =
     BukkitRepositoryControls.createHandles[SyncIO, Ref[SyncIO, Boolean]](
-      RepositoryDefinition.SinglePhased.withoutTappingAction(
+      RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(
         SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
         RepositoryFinalization.trivial
       )

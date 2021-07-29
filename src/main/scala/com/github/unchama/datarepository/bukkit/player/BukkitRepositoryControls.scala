@@ -12,6 +12,7 @@ import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import java.util.UUID
+import scala.annotation.tailrec
 import scala.collection.concurrent.TrieMap
 
 case class BukkitRepositoryControls[F[_], R](repository: PlayerDataRepository[R],
@@ -26,6 +27,11 @@ case class BukkitRepositoryControls[F[_], R](repository: PlayerDataRepository[R]
       trans(backupProcess),
       finalizer.transformContext(trans)
     )
+
+  import cats.implicits._
+
+  def map[S](f: R => S): BukkitRepositoryControls[F, S] =
+    BukkitRepositoryControls(repository.map(f), initializer, backupProcess, finalizer)
 
   def coerceFinalizationContextTo[G[_] : ContextCoercion[F, *[_]]]: BukkitRepositoryControls[G, R] =
     transformFinalizationContext(ContextCoercion.asFunctionK)
@@ -159,7 +165,7 @@ object BukkitRepositoryControls {
     import cats.implicits._
 
     definition match {
-      case RepositoryDefinition.SinglePhased(initialization, tappingAction, finalization) => Sync[F].delay {
+      case RepositoryDefinition.Phased.SinglePhased(initialization, tappingAction, finalization) => Sync[F].delay {
         TrieMap.empty[UUID, R]
       }.map { dataMap =>
         // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
@@ -173,7 +179,7 @@ object BukkitRepositoryControls {
         )
       }
 
-      case RepositoryDefinition.TwoPhased(initialization, finalization) => Sync[F].delay {
+      case RepositoryDefinition.Phased.TwoPhased(initialization, finalization) => Sync[F].delay {
         (TrieMap.empty[Player, R], TrieMap.empty[UUID, initialization.IntermediateData])
       }.map { case (dataMap, temporaryDataMap) =>
         // workaround of https://youtrack.jetbrains.com/issue/SCL-18638
@@ -186,6 +192,9 @@ object BukkitRepositoryControls {
           Finalizers.twoPhased(finalization)(temporaryDataMap, dataMap)
         )
       }
+
+      case rd: RepositoryDefinition.Mapped[F, Player, s, R] =>
+        createHandles[F, s](rd.source).map(_.map(rd.sr))
     }
   }
 }

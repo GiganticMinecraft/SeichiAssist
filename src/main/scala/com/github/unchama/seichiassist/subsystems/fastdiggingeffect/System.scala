@@ -76,7 +76,7 @@ object System {
       effectListRepositoryHandles <- {
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.SinglePhased(
+            RepositoryDefinition.Phased.SinglePhased(
               EffectListRepositoryDefinitions.initialization[F, G],
               EffectListRepositoryDefinitions.tappingAction[F, G, Player](effectListTopic),
               EffectListRepositoryDefinitions.finalization[F, G, UUID]

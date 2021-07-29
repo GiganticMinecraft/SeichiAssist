@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{Concurrent, ConcurrentEffect, Effect, Fiber, Sync, SyncEffect, Timer}
+import com.github.unchama.datarepository.definitions.FiberAdjoinedRepositoryDefinition.FiberAdjoined
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization}
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
@@ -22,7 +23,7 @@ object EffectListRepositoryDefinitions {
   /**
    * [[FastDiggingEffectList]] と、それを1秒ごとにトピックへ通知するファイバーの組。
    */
-  type RepositoryValue[F[_], G[_]] = (Mutex[F, G, FastDiggingEffectList], Deferred[F, Fiber[F, Nothing]])
+  type RepositoryValue[F[_], G[_]] = Mutex[F, G, FastDiggingEffectList] FiberAdjoined F
 
   def initialization[
     F[_] : Concurrent,
@@ -39,20 +40,21 @@ object EffectListRepositoryDefinitions {
     F[_] : ConcurrentEffect : Timer : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F],
     Player
-  ](effectTopic: Fs3Topic[F, Option[(Player, FastDiggingEffectList)]]): (Player, RepositoryValue[F, G]) => G[Unit] =
-    (player, value) => {
-      val (mutexRef, fiberPromise) = value
-
+  ](effectTopic: Fs3Topic[F, Option[(Player, FastDiggingEffectList)]]): (Player, RepositoryValue[F, G]) => G[Unit] = {
+    case (player, (mutexRef, fiberPromise)) =>
       val programToRun: F[Unit] =
         StreamExtra.compileToRestartingStream("[EffectListRepositoryDefinitions]") {
           fs2.Stream
-            .awakeEvery[F](1.second)
-            .evalMap[F, FastDiggingEffectList](_ => ContextCoercion(mutexRef.readLatest))
-            .evalTap[F, Unit](effectList => effectTopic.publish1(Some(player, effectList)).void)
+            .fixedRate[F](1.second)
+            .evalMap { _ =>
+              ContextCoercion(mutexRef.readLatest).flatMap { latestEffectList =>
+                effectTopic.publish1(Some(player, latestEffectList))
+              }
+            }
         }.start >>= fiberPromise.complete
 
       EffectExtra.runAsyncAndForget[F, G, Unit](programToRun)
-    }
+  }
 
   def finalization[
     F[_] : Effect,
