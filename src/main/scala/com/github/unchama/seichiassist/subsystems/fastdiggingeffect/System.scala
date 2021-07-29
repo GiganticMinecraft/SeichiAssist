@@ -5,7 +5,7 @@ import cats.effect.{ConcurrentEffect, SyncEffect, SyncIO, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.fs2.workaround.Topic
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
@@ -70,13 +70,13 @@ object System {
       new GrantBukkitFastDiggingEffect[F]
 
     val yieldSystem: F[System[F, F, Player]] = for {
-      effectListTopic <- Topic[F, Option[(Player, FastDiggingEffectList)]](None)
-      effectListDiffTopic <- Topic[F, Option[(Player, (EffectListDiff, FastDiggingEffectStatsSettings))]](None)
+      effectListTopic <- Fs3Topic[F, Option[(Player, FastDiggingEffectList)]](None)
+      effectListDiffTopic <- Fs3Topic[F, Option[(Player, (EffectListDiff, FastDiggingEffectStatsSettings))]](None)
 
       effectListRepositoryHandles <- {
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.SinglePhased(
+            RepositoryDefinition.Phased.SinglePhased(
               EffectListRepositoryDefinitions.initialization[F, G],
               EffectListRepositoryDefinitions.tappingAction[F, G, Player](effectListTopic),
               EffectListRepositoryDefinitions.finalization[F, G, UUID]
@@ -106,7 +106,7 @@ object System {
       }
 
       _ <-
-        StreamExtra.compileToRestartingStream[F, Unit] {
+        StreamExtra.compileToRestartingStream[F, Unit]("[FastDiggingEffect/EffectStatsNotification]") {
           EffectStatsNotification.using[F, Player](effectListDiffTopic.subscribe(1).mapFilter(identity))
         }.start
 
@@ -176,15 +176,15 @@ object System {
       implicit val api: FastDiggingEffectApi[F, Player] = system.effectApi
 
       List(
-        BreakCountEffectSynchronization.using[F, H, Player],
-        PlayerCountEffectSynchronization.using[F, Player],
-        SynchronizationProcess.using[F, Player](
+        "BreakCountEffectSynchronization" -> BreakCountEffectSynchronization.using[F, H, Player],
+        "PlayerCountEffectSynchronization" -> PlayerCountEffectSynchronization.using[F, Player],
+        "SynchronizationProcess" -> SynchronizationProcess.using[F, Player](
           system.settingsApi.currentSuppressionSettings,
           system.effectApi.effectClock
         )
-      ).traverse(
-        StreamExtra.compileToRestartingStream(_).start
-      )
+      ).traverse { case (str, stream) =>
+        StreamExtra.compileToRestartingStream(s"[FastDiggingEffect/$str]")(stream).start
+      }
     }
   }
 }

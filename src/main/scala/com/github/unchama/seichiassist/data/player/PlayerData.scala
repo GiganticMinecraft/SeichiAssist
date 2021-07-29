@@ -92,8 +92,6 @@ class PlayerData(
   var playTick = 0
   //合計経験値
   var totalexp = 0L
-  //合計経験値統合済みフラグ
-  var expmarge: Byte = 0
   //特典受け取り済み投票数
   var p_givenvote = 0
   //連続・通算ログイン用
@@ -176,7 +174,6 @@ class PlayerData(
 
     synchronizeDisplayNameToLevelState()
 
-    //サーバー保管経験値をクライアントに読み込み
     loadTotalExp()
     isVotingFairy()
   }
@@ -254,20 +251,8 @@ class PlayerData(
     cachedPlayer.get
   }
 
+  //サーバー保管経験値をクライアントに読み込み
   private def loadTotalExp(): Unit = {
-    val internalServerId = SeichiAssist.seichiAssistConfig.getServerNum
-    //経験値が統合されてない場合は統合する
-    if (expmarge.toInt != 0x07 && (1 to 3).contains(internalServerId)) {
-      if (expmarge.&(0x01 << internalServerId - 1).toByte == 0.toByte) {
-        if (expmarge.toInt == 0) {
-          // 初回は加算じゃなくベースとして代入にする
-          totalexp = expmanager.getCurrentExp
-        } else {
-          totalexp += expmanager.getCurrentExp
-        }
-        expmarge = (expmarge | (0x01 << internalServerId - 1).toByte).toByte
-      }
-    }
     expmanager.setExp(totalexp)
   }
 

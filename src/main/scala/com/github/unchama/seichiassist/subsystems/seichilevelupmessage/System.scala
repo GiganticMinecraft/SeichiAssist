@@ -14,7 +14,7 @@ object System {
     G[_],
     Player
   ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[Nothing] = {
-    StreamExtra.compileToRestartingStream {
+    StreamExtra.compileToRestartingStream("[SeichiLevelUpMessage]") {
       breakCountReadAPI
         .seichiLevelUpdates
         .evalMap { case (player, diff) =>

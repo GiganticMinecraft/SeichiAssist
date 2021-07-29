@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.achievement
 import java.time.{DayOfWeek, Month}
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.achievement.NamedHoliday.SpringEquinoxDay
 import enumeratum.{Enum, EnumEntry}
 import org.bukkit.entity.Player
 
@@ -209,7 +210,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_9009 extends NormalManual(9009, playedIn(Month.MARCH))
   case object No_9010 extends NormalManual(9010, playedOn(Month.MARCH, 3, "とある女の子の日"))
   case object No_9011 extends NormalManual(9011, playedOn(Month.MARCH, 14, "燃え尽きたカカオだらけの日"))
-  case object No_9012 extends NormalManual(9012, playedOn(Month.MARCH, 20, "春分の日"))
+  case object No_9012 extends NormalManual(9012, playedOn(SpringEquinoxDay))
   case object No_9013 extends NormalManual(9013, playedIn(Month.APRIL))
   case object No_9014 extends NormalManual(9014, playedOn(Month.APRIL, 1, "とある嘘の日"))
   case object No_9015 extends NormalManual(9015, playedOn(Month.APRIL, 15, "とある良い子の日"))
@@ -220,7 +221,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_9020 extends NormalManual(9020, playedOn(Month.MAY, 2, DayOfWeek.SUNDAY, "母の日"))
   case object No_9021 extends NormalManual(9021, playedIn(Month.JUNE))
   case object No_9022 extends NormalManual(9022, playedOn(Month.JUNE, 12, "とある日記の日"))
-  case object No_9023 extends NormalManual(9023, playedOn(Month.JUNE, 17, "父の日"))
+  case object No_9023 extends NormalManual(9023, playedOn(Month.JUNE, 3, DayOfWeek.SUNDAY, "父の日"))
   case object No_9024 extends NormalManual(9024, playedOn(Month.JUNE, 29, "とある生誕の日"))
   case object No_9025 extends NormalManual(9025, playedIn(Month.JULY))
   case object No_9026 extends NormalManual(9026, playedOn(Month.JULY, 7, "七夕"))
@@ -228,7 +229,7 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_9028 extends NormalManual(9028, playedOn(Month.JULY, 29, "とある肉の日"))
   case object No_9029 extends NormalManual(9029, playedIn(Month.AUGUST))
   case object No_9030 extends NormalManual(9030, playedOn(Month.AUGUST, 7, "とあるバナナの日"))
-  case object No_9031 extends NormalManual(9031, playedOn(Month.AUGUST, 16, "とあるJDの日"))
+  case object No_9031 extends NormalManual(9031, playedOn(Month.AUGUST, 21, "とあるJDの日"))
   case object No_9032 extends NormalManual(9032, playedOn(Month.AUGUST, 29, "とある焼肉の日"))
   case object No_9033 extends NormalManual(9033, playedIn(Month.SEPTEMBER))
   case object No_9034 extends NormalManual(9034, playedOn(Month.SEPTEMBER, 2, "とあるくじの日"))

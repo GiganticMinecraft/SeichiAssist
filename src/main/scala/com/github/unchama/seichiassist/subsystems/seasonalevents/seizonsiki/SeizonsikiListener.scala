@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki
 
 import cats.effect.{SyncEffect, SyncIO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
-import com.github.unchama.seichiassist.util.Util.sendEveryMessage
+import com.github.unchama.seichiassist.util.Util.sendMessageToEveryoneIgnoringPreference
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Sound
@@ -38,7 +39,7 @@ class SeizonsikiListener[
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
       List(
-        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、限定イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(
@@ -65,7 +66,7 @@ class SeizonsikiListener[
       player.setHealth(0)
 
       val messages = deathMessages(player.getName)
-      sendEveryMessage(messages(new Random().nextInt(messages.size)))
+      sendMessageToEveryoneIgnoringPreference(messages(new Random().nextInt(messages.size)))
     }
   }
 }

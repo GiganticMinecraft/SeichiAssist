@@ -6,6 +6,7 @@ import cats.effect
 import cats.effect.concurrent.Ref
 import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
+import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.bungeesemaphoreresponder.{System => BungeeSemaphoreResponderSystem}
 import com.github.unchama.chatinterceptor.{ChatInterceptor, InterceptionScope}
@@ -20,6 +21,7 @@ import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.generic.effect.concurrent.SessionMutex
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.{GetConnectedBukkitPlayers, SendBukkitMessage}
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -39,13 +41,14 @@ import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.redisbungee.RedisBungeeNetworkConnectionCount
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
-import com.github.unchama.seichiassist.menus.TopLevelRouter
+import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
@@ -110,7 +113,7 @@ class SeichiAssist extends JavaPlugin() {
 
   private val activeSkillAvailabilityRepositoryControls: BukkitRepositoryControls[SyncIO, Ref[SyncIO, Boolean]] =
     BukkitRepositoryControls.createHandles[SyncIO, Ref[SyncIO, Boolean]](
-      RepositoryDefinition.SinglePhased.withoutTappingAction(
+      RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(
         SinglePhasedRepositoryInitialization.withSupplier(Ref[SyncIO].of(true)),
         RepositoryFinalization.trivial
       )
@@ -215,7 +218,6 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-
     subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
@@ -246,7 +248,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
-  implicit lazy val rankingSystemApi: subsystems.ranking.RankingApi[IO] = {
+  implicit lazy val rankingSystemApi: subsystems.ranking.api.AssortedRankingApi[IO] = {
     import PluginExecutionContexts.{asyncShift, timer}
 
     subsystems.ranking.System.wired[IO, IO].unsafeRunSync()
@@ -293,6 +295,15 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.mebius.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
+  private implicit lazy val discordNotificationSystem: subsystems.discordnotification.System[IO] = {
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+
+    subsystems.discordnotification.System.wired[IO](seichiAssistConfig.discordNotificationConfiguration)
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -309,6 +320,7 @@ class SeichiAssist extends JavaPlugin() {
     fastDiggingEffectSystem,
     fourDimensionalPocketSystem,
     gachaPointSystem,
+    discordNotificationSystem,
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -467,6 +479,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player] = fourDimensionalPocketSystem.api
     implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+    implicit val globalNotification: DiscordNotificationAPI[IO] = discordNotificationSystem.globalNotification
     implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
 
     val menuRouter = TopLevelRouter.apply
@@ -486,6 +499,11 @@ class SeichiAssist extends JavaPlugin() {
 
     buildAssist.onEnable()
 
+    implicit val managedFlyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
+    // 本来は曖昧さ回避のためにRouterのインスタンスを生成するべきではないが、生成を回避しようとすると
+    // 巨大な変更が必要となる。そのため、Routerのインスタンスを新しく生成することで、それまでの間
+    // 機能を果たそうとするものである。
+    implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] = BuildAssistMenuRouter.apply.canOpenBuildMainMenu
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
@@ -502,13 +520,15 @@ class SeichiAssist extends JavaPlugin() {
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
-      "stickmenu" -> StickMenuCommand.executor
+      "stickmenu" -> StickMenuCommand.executor,
+      "hat" -> HatCommand.executor
     )
       .concat(wiredSubsystems.flatMap(_.commands))
       .foreach {
         case (commandName, executor) => getCommand(commandName).setExecutor(executor)
       }
 
+    import menuRouter.canOpenAchievementMenu
     //リスナーの登録
     val listeners = Seq(
       new PlayerJoinListener(),
@@ -524,6 +544,7 @@ class SeichiAssist extends JavaPlugin() {
       new ChatInterceptor(List(globalChatInterceptionScope)),
       new MenuHandler(),
       SpawnRegionProjectileInterceptor,
+      Y5DoubleSlabCanceller,
     )
       .concat(bungeeSemaphoreResponderSystem.listenersToBeRegistered)
       .concat {
@@ -574,7 +595,7 @@ class SeichiAssist extends JavaPlugin() {
     try {
       monitoredInitialization()
     } catch {
-      case e: Exception =>
+      case e: Throwable =>
         logger.error("初期化処理に失敗しました。シャットダウンしています…")
         e.printStackTrace()
         Bukkit.shutdown()

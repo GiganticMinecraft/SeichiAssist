@@ -5,19 +5,25 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, EVENT_DATE, blogArticleUrl}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.mineHead
-import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
+import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, blogArticleUrl, isInEvent}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
+import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, isEnemy, removeItemfromPlayerInventory}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
-import org.bukkit.Sound
+import org.bukkit.block.{Block, Chest}
+import org.bukkit.entity.LivingEntity
+import org.bukkit.event.block.{Action, BlockBreakEvent, BlockPlaceEvent}
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.{PlayerInteractEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.{Material, Sound, TreeType}
 
-import java.time.LocalDate
+import scala.jdk.CollectionConverters._
+import scala.util.Random
 
 class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
                           ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
@@ -26,9 +32,9 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     val player = event.getPlayer
 
-    if (LocalDate.now().isEqual(EVENT_DATE)) {
+    if (isInEvent) {
       List(
-        s"${BLUE}本日でギガンティック☆整地鯖は${ANNIVERSARY_COUNT}周年を迎えます。",
+        s"${BLUE}ギガンティック☆整地鯖は${ANNIVERSARY_COUNT}周年を迎えました。",
         s"${BLUE}これを記念し、限定アイテムを入手可能です。詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(player.sendMessage)
@@ -38,20 +44,86 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
 
   @EventHandler
   def onPlayerDeath(event: PlayerDeathEvent): Unit = {
-    if (!LocalDate.now().isEqual(EVENT_DATE)) return
+    if (!isInEvent) return
 
     val player = event.getEntity
     val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
     if (playerData.anniversary) return
 
-    effectEnvironment.runAsyncTargetedEffect(player)(
+    effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
       SequentialEffect(
         grantItemStacksEffect(mineHead),
         MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
-        UnfocusedEffect{playerData.anniversary = false}
+        UnfocusedEffect {
+          playerData.anniversary = false
+        }
       ),
       s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する"
     )
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  def onPlayerPlaceSapling(event: BlockPlaceEvent): Unit = {
+    if (!isStrangeSapling(event.getItemInHand)) return
+
+    val placedBlock = event.getBlock
+    // 苗木をなくす
+    placedBlock.setType(Material.AIR)
+    val rootLocation = placedBlock.getLocation
+    // オークの木を生やす
+    rootLocation.getWorld.generateTree(rootLocation, TreeType.TREE)
+
+    // Y座標を下に動かして（木の上方から）オークの木の頂点を探し、そのブロックを置き換える
+    (10 to 0 by -1)
+      .map(placedBlock.getRelative(0, _, 0))
+      .find(block => block.getType == Material.LOG || block.getType == Material.LEAVES)
+      .foreach(replaceBlockOnTreeTop(_, event.getPlayer.getName))
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  def onPlayerRightClickMendingBook(event: PlayerInteractEvent): Unit = {
+    val item = event.getItem
+    if (!isMendingBook(item)) return
+
+    if (event.getHand == EquipmentSlot.OFF_HAND) return
+
+    val action = event.getAction
+    if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return
+
+    val player = event.getPlayer
+    val offHandItem = player.getInventory.getItemInOffHand
+    if (offHandItem == null) return
+
+    offHandItem.setDurability(0)
+    removeItemfromPlayerInventory(player.getInventory, item, 1)
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  def onPlayerBreakBlockWithAnniversaryShovel(event: BlockBreakEvent): Unit = {
+    val player = event.getPlayer
+    if (!isAnniversaryShovel(player.getInventory.getItemInMainHand)) return
+
+    player.getNearbyEntities(20.0, 20.0, 20.0).asScala.filter(mob => isEnemy(mob.getType)).foreach { entity =>
+      entity match {
+        case enemy: LivingEntity => enemy.damage(10.0)
+        case _ =>
+      }
+    }
+  }
+
+  /**
+   * 指定されたブロックを[[strangeSaplingBlockSet]]の中のいずれかに変更する
+   * ただし、[[strangeSaplingSiinaRate]]の確率で、椎名林檎5個が入ったチェストに変更する
+   */
+  private def replaceBlockOnTreeTop(block: Block, playerName: String): Unit = {
+    if (new Random().nextDouble() <= strangeSaplingSiinaRate) {
+      block.setType(Material.CHEST)
+      val chest = block.getState.asInstanceOf[Chest]
+      chest.getBlockInventory.addItem(List.fill(5)(getMaxRingo(playerName)): _*)
+    } else {
+      val random = new Random().nextInt(strangeSaplingBlockSet.size)
+      block.setType(strangeSaplingBlockSet.toVector(random))
+    }
   }
 }

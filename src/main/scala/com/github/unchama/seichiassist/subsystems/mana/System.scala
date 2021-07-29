@@ -4,13 +4,13 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
-import com.github.unchama.fs2.workaround.Topic
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.mana.application.ManaRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.mana.application.process.UpdateManaCaps
+import com.github.unchama.seichiassist.subsystems.mana.application.process.{RefillToCap, UpdateManaCaps}
 import com.github.unchama.seichiassist.subsystems.mana.domain.{LevelCappedManaAmount, ManaAmountPersistence, ManaManipulation, ManaMultiplier}
 import com.github.unchama.seichiassist.subsystems.mana.infrastructure.JdbcManaAmountPersistence
 import io.chrisdavenport.log4cats.ErrorLogger
@@ -36,7 +36,7 @@ object System {
     val manaPersistence: ManaAmountPersistence[G] = new JdbcManaAmountPersistence[G]
 
     for {
-      topic <- Topic[F, Option[(Player, LevelCappedManaAmount)]](None)
+      topic <- Fs3Topic[F, Option[(Player, LevelCappedManaAmount)]](None)
       globalMultiplierRef <- Ref.in[F, G, ManaMultiplier](ManaMultiplier(1))
       handles <- ContextCoercion {
         BukkitRepositoryControls.createHandles(
@@ -47,8 +47,9 @@ object System {
         )
       }
       _ <- List(
-        UpdateManaCaps.using[F, G, Player](handles.repository)
-      ).traverse(StreamExtra.compileToRestartingStream[F, Unit](_).start)
+        UpdateManaCaps.using[F, G, Player](handles.repository),
+        RefillToCap.using[F, G, Player](handles.repository)
+      ).traverse(StreamExtra.compileToRestartingStream[F, Unit]("[Mana]")(_).start)
     } yield new System[F, G, Player] {
       override val manaApi: ManaApi[F, G, Player] = new ManaApi[F, G, Player] {
         override val readManaAmount: KeyedDataRepository[Player, G[LevelCappedManaAmount]] =

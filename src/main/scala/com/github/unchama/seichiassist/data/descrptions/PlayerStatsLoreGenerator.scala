@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiStarLevel}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
-import com.github.unchama.seichiassist.subsystems.ranking.domain.SeichiRanking
+import com.github.unchama.seichiassist.subsystems.ranking.domain.Ranking
 import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
  * Created by karayuu on 2019/05/05
  */
 class PlayerStatsLoreGenerator(playerData: PlayerData,
-                               seichiRanking: SeichiRanking,
+                               seichiRanking: Ranking[SeichiAmountData],
                                seichiAmountData: SeichiAmountData,
                                expBarVisibility: BreakCountBarVisibility) {
   private val targetPlayer: Player = Bukkit.getPlayer(playerData.uuid)
@@ -73,7 +73,7 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
    */
   private def levelProgressionDescription(): List[String] = {
     if (seichiAmountData.starLevelCorrespondingToExp == SeichiStarLevel.zero) {
-      List(s"${AQUA}次のレベルまで:${seichiAmountData.levelProgress.expAmountToNextLevel.amount}")
+      List(s"${AQUA}次のレベルまで:${seichiAmountData.levelProgress.expAmountToNextLevel.formatted}")
     } else {
       Nil
     }
@@ -94,7 +94,7 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
   /**
    * 総整地量の説明文
    */
-  private def totalBreakAmountDescription(): String = s"${AQUA}総整地量：${seichiAmountData.expAmount.amount}"
+  private def totalBreakAmountDescription(): String = s"${AQUA}総整地量：${seichiAmountData.expAmount.formatted}"
 
   /**
    * ランキングの順位の説明文
@@ -118,11 +118,11 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
           val recordOneAbove = seichiRanking.recordsWithPositions(positionOneAbove - 1)._2
           val difference =
             SeichiExpAmount.orderedMonus.subtractTruncate(
-              recordOneAbove.seichiAmountData.expAmount,
-              record.seichiAmountData.expAmount
+              recordOneAbove.value.expAmount,
+              record.value.expAmount
             )
           Some(
-            s"$AQUA${positionOneAbove}位(${recordOneAbove.playerName})との差：${difference.amount}"
+            s"$AQUA${positionOneAbove}位(${recordOneAbove.playerName})との差：${difference.formatted}"
           )
         } else
           None

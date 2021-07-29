@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{START_DATE, isInEvent, itemDropRate}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
@@ -36,6 +36,21 @@ class NewYearListener[
   import cats.implicits._
 
   @EventHandler
+  def onPlayerJoin(event: PlayerJoinEvent): Unit = {
+    if (isInEvent) {
+      val player = event.getPlayer
+
+      List(
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、新年イベントを開催しています。",
+        "詳しくは下記URLのサイトをご覧ください。",
+        s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
+      ).foreach(
+        player.sendMessage(_)
+      )
+    }
+  }
+
+  @EventHandler
   def giveSobaToPlayer(event: PlayerJoinEvent): Unit = {
     if (!NewYear.sobaWillBeDistributed) return
 
@@ -61,7 +76,7 @@ class NewYearListener[
       })
     } yield ()
 
-    effectEnvironment.runEffectAsync("大晦日ログインボーナスヘッドを付与するかどうかを判定する", program)
+    effectEnvironment.unsafeRunEffectAsync("大晦日ログインボーナスヘッドを付与するかどうかを判定する", program)
   }
 
   @EventHandler

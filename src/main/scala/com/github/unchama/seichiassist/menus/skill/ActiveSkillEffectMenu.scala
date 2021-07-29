@@ -53,7 +53,7 @@ object ActiveSkillEffectMenu extends Menu {
             SequentialEffect(
               MessageEffect(s"${DARK_RED}エフェクトポイントが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
-            )(player)
+            ).apply(player)
           } else {
             IO {
               playerData.effectPoint -= effect.usePoint
@@ -62,7 +62,7 @@ object ActiveSkillEffectMenu extends Menu {
             } >> SequentialEffect(
               MessageEffect(s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"),
               FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
-            )(player)
+            ).apply(player)
           }
       } yield ()
 
@@ -74,7 +74,7 @@ object ActiveSkillEffectMenu extends Menu {
             SequentialEffect(
               MessageEffect(s"${DARK_RED}プレミアムエフェクトポイントが足りません"),
               FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1.0f, 0.5f)
-            )(player)
+            ).apply(player)
           } else {
             for {
               transactionResult <- SeichiAssist.databaseGateway.donateDataManipulator.recordPremiumEffectPurchase(player, effect)
@@ -86,7 +86,7 @@ object ActiveSkillEffectMenu extends Menu {
                   } >> SequentialEffect(
                     MessageEffect(s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"),
                     FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
-                  )(player)
+                  ).apply(player)
                 case ActionStatus.Fail =>
                   MessageEffect("購入履歴が正しく記録されませんでした。管理者に報告してください。")(player)
               }

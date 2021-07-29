@@ -26,13 +26,14 @@ object System {
         case Gift.AutomaticGachaRun => Kleisli {
           player =>
             Sync[F].delay {
+              player.sendMessage("レベルアップ記念としてガチャを回しました。")
               GachaCommand.Gachagive(player, 1, player.getName)
             }
         }
       }
     }
 
-    StreamExtra.compileToRestartingStream {
+    StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {
       breakCountReadApi
         .seichiLevelUpdates
         .evalTap { case (player, diff) => interpreter.onLevelDiff(diff).run(player) }

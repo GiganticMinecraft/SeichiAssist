@@ -5,7 +5,7 @@ import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.fs2.workaround.Topic
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -38,7 +38,7 @@ object System {
       new JdbcBreakCountBarVisibilityPersistence[G]
 
     for {
-      topic <- Topic[F, Option[(Player, BreakCountBarVisibility)]](None)
+      topic <- Fs3Topic[F, Option[(Player, BreakCountBarVisibility)]](None)
 
       visibilityRepositoryHandles <- {
         ContextCoercion {
@@ -56,7 +56,7 @@ object System {
       expBarSynchronizationRepositoryHandles <- {
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.TwoPhased(
+            RepositoryDefinition.Phased.TwoPhased(
               ExpBarSynchronizationRepositoryTemplate.initialization[G, F, Player](
                 breakCountReadAPI.seichiAmountUpdates,
                 visibilityValues

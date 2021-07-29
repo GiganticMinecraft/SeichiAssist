@@ -104,10 +104,10 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
               activeSkillAvailability(player).set(true).coerceTo[IO] >>
               soundEffectAfterCoolDown
 
-          val arrowEffect = playerData.skillEffectState.selection.arrowEffect(player)
+          val arrowEffect = playerData.skillEffectState.selection.arrowEffect
 
-          effectEnvironment.runEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
-          effectEnvironment.runEffectAsync("ArrowEffectを非同期で実行する", arrowEffect)
+          effectEnvironment.unsafeRunEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
+          effectEnvironment.unsafeRunEffectAsync("ArrowEffectを非同期で実行する", arrowEffect.run(player))
         case _ =>
       }
     }
@@ -261,8 +261,8 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
           }
 
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
-        Util.sendEveryMessageWithoutIgnore(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
-        Util.sendEveryMessageWithoutIgnore(message)
+        Util.sendMessageToEveryone(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
+        Util.sendMessageToEveryone(message)
         gachaGTWin += 1
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
@@ -393,7 +393,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     if (event.getHand == EquipmentSlot.OFF_HAND) return
     event.setCancelled(true)
 
-    effectEnvironment.runAsyncTargetedEffect(player)(
+    effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
       SequentialEffect(
         CommonSoundEffects.menuTransitionFenceSound,
         ioCanOpenStickMenu.open(StickMenu.firstPage)

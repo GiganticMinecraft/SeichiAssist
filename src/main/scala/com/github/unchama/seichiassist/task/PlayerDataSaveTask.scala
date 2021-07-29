@@ -127,7 +127,6 @@ object PlayerDataSaveTask {
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.effectPoint
           + ",totalexp = " + playerdata.totalexp
-          + ",expmarge = " + playerdata.expmarge
           + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
           + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteMessages
 

@@ -46,7 +46,7 @@ object System {
     for {
       rateLimiterRepositoryControls <-
         BukkitRepositoryControls.createHandles(
-          RepositoryDefinition.SinglePhased.withoutTappingAction(
+          RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(
             RateLimiterRepositoryDefinitions.initialization[F, G],
             RateLimiterRepositoryDefinitions.finalization[G, UUID]
           )
