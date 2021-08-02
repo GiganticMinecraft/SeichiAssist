@@ -28,6 +28,7 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends Su
              |      location_y = values(location_y),
              |      location_z = values(location_z),
              |      world_name = values(world_name)"""
+          .stripMargin
           .update()
           .apply()
       }
@@ -52,7 +53,9 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends Su
               )
             )
           )
-          .list().apply()
+          .stripMargin
+          .list()
+          .apply()
       }.toMap
     }
 }
