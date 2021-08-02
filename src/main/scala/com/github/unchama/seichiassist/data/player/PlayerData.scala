@@ -7,7 +7,6 @@ import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.achievement.Nicknames
 import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
-import com.github.unchama.seichiassist.data.subhome.SubHome
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -52,7 +51,6 @@ class PlayerData(
   //プレイヤー名
   val lowercaseName: String = name.toLowerCase()
 
-  private val subHomeMap: mutable.Map[Int, SubHome] = mutable.HashMap[Int, SubHome]()
   private val dummyDate = new GregorianCalendar(2100, 1, 1, 0, 0, 0)
   //チェスト破壊トグル
   var chestflag = true
@@ -72,7 +70,6 @@ class PlayerData(
   var gachacooldownflag = true
   //インベントリ共有ボタン連打防止用
   var shareinvcooldownflag = true
-  var selectHomeNum = 0
   var samepageflag = false //実績ショップ用
 
   //endregion
@@ -143,8 +140,6 @@ class PlayerData(
   // TODO many properties here may be inlined and deleted
   //グリッド式保護関連
   private var claimUnit = ClaimUnit(0, 0, 0, 0)
-
-  def subHomeEntries: Set[(Int, SubHome)] = subHomeMap.toSet
 
   def gridChunkAmount: Int = (claimUnit.ahead + claimUnit.behind + 1) * (claimUnit.right + claimUnit.left + 1)
 
@@ -367,36 +362,6 @@ class PlayerData(
     else if (level < 88) SeichiAssist.seichiAssistConfig.getDropExplevel(8)
     else if (level < 98) SeichiAssist.seichiAssistConfig.getDropExplevel(9)
     else SeichiAssist.seichiAssistConfig.getDropExplevel(10)
-  }
-
-  //サブホームの位置をセットする
-  def setSubHomeLocation(location: Location, subHomeIndex: Int): Unit = {
-    if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
-      val currentSubHome = this.subHomeMap.get(subHomeIndex)
-      val currentSubHomeName = currentSubHome.map(_.name).orNull
-
-      this.subHomeMap(subHomeIndex) = new SubHome(location, currentSubHomeName)
-    }
-  }
-
-  def setSubHomeName(name: String, subHomeIndex: Int): Unit = {
-    if (subHomeIndex >= 0 && subHomeIndex < SeichiAssist.seichiAssistConfig.getSubHomeMax) {
-      val currentSubHome = this.subHomeMap.getOrElse(subHomeIndex, return)
-
-      this.subHomeMap(subHomeIndex) = new SubHome(currentSubHome.getLocation, name)
-    }
-  }
-
-  // サブホームの位置を読み込む
-  def getSubHomeLocation(subHomeIndex: Int): Option[Location] = {
-    val subHome = this.subHomeMap.get(subHomeIndex)
-    subHome.map(_.getLocation)
-  }
-
-  def getSubHomeName(subHomeIndex: Int): String = {
-    val subHome = this.subHomeMap.get(subHomeIndex)
-    val subHomeName = subHome.map(_.name)
-    subHomeName.getOrElse(s"サブホームポイント${subHomeIndex + 1}")
   }
 
   def canBreakHalfBlock: Boolean = this.allowBreakingHalfBlocks
