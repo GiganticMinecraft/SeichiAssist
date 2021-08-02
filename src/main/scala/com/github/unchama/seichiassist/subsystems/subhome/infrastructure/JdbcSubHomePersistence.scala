@@ -15,7 +15,7 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends Su
 
   override def upsert(ownerUuid: UUID, id: SubHomeId)(subHome: SubHome): F[Unit] =
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
-      DB.readOnly { implicit session =>
+      DB.localTx { implicit session =>
         val SubHomeLocation(worldName, x, y, z) = subHome.location
 
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
