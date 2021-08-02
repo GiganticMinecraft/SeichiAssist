@@ -1,9 +1,7 @@
-package com.github.unchama.seichiassist.subsystems.present.infrastructure
+package com.github.unchama.seichiassist.subsystems.present.domain
 
-import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.Positive
-import org.bukkit.inventory.ItemStack
 
 import java.util.UUID
 
@@ -13,8 +11,8 @@ import java.util.UUID
  *   - 引数で渡される`PresentID`は対応するプレゼントが存在し、一意でなければならない
  *   - 返り値としての`PresentID`は対応するプレゼントが存在する
  */
-trait PresentPersistence[F[_]] {
-  type PresentID
+trait PresentPersistence[F[_], ItemStack] {
+  type PresentID = Long
 
   /**
    * 指定した[[ItemStack]]に対応するプレゼントを新しく定義する。
@@ -26,6 +24,7 @@ trait PresentPersistence[F[_]] {
 
   /**
    * 指定したPresentIDに対応するプレゼントを消去する。
+   *
    * @param presentID プレゼントID
    */
   def delete(presentID: PresentID): F[Unit]
@@ -51,7 +50,7 @@ trait PresentPersistence[F[_]] {
   /**
    * 永続化層でプレゼントを受け取ったことにする。
    *
-   * @param player プレイヤーのUUID
+   * @param player    プレイヤーのUUID
    * @param presentID プレゼントID
    * @return 永続化層への書き込みを行う作用
    */
@@ -77,15 +76,15 @@ trait PresentPersistence[F[_]] {
    *
    * この時 `pp.mappingWithPagination(A, 1, 5)` を呼び出すと、作用の中で計算される結果は次のとおりになる:
    *
-   *    `Map(1 -> Claimed, 2 -> Claimed, 3 -> Claimed, 4 -> NotClaimed, 5 -> Unavailable)`
+   * `Map(1 -> Claimed, 2 -> Claimed, 3 -> Claimed, 4 -> NotClaimed, 5 -> Unavailable)`
    *
    * 備考:
    *   - 実装によっては、[[fetchState]]などを呼び出して既知のエントリを全列挙する可能性がある。
    *   - このメソッドは一貫性のために[[fetchState]]のドキュメントにある制約を継承する。
    *
-   * @param player 調べる対象のプレイヤー
+   * @param player  調べる対象のプレイヤー
    * @param perPage ページごとのエントリの数
-   * @param page ページ、1オリジン
+   * @param page    ページ、1オリジン
    * @return ページネーションを計算して返す作用
    */
   def fetchStateWithPagination(player: UUID, perPage: Int Refined Positive, page: Int Refined Positive): F[Map[PresentID, PresentClaimingState]]

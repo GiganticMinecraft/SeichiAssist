@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
+import com.github.unchama.seichiassist.subsystems.present.domain.{PresentClaimingState, PresentPersistence}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
@@ -13,31 +13,16 @@ import java.util.UUID
 /**
  * [[PresentPersistence]]のJDBC実装。この実装は[[PresentPersistence]]の制約を引き継ぐ。
  */
-class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
-  override type PresentID = Int
-
+class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, ItemStack] {
   override def define(itemstack: ItemStack): F[PresentID] = Sync[F].delay {
     val stackAsBlob = ItemStackBlobProxy.itemStackToBlob(itemstack)
     DB.localTx { implicit session =>
       // プレゼントのIDはauto_incrementなので明示的に指定しなくて良い
       sql"""INSERT INTO present (itemstack) VALUES ($stackAsBlob)"""
-        .execute()
+        .updateAndReturnGeneratedKey("present_id")
         .apply()
-
-      val newPresentID = DB.readOnly { implicit session =>
-        // ここで、itemstackは同じItemStackであるプレゼントが複数存在させたいケースを考慮して、UNIQUEではない。
-        // 他方、present_idは主キーであり、AUTO_INCREMENTであることから単調増加なので、単純にMAXを取れば良い。
-        sql"""SELECT MAX(present_id) FROM present WHERE itemstack = $stackAsBlob"""
-          .map { rs => rs.int("present_id") }
-          .first()
-          .apply()
-          // 上でINSERTしてるんだから、必ず見つかるはず
-          .get
       }
-
-      newPresentID
     }
-  }
 
   /**
    * 指定したPresentIDに対応するプレゼントを物理消去する。
@@ -95,7 +80,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
       sql"""SELECT present_id, itemstack FROM present"""
         .map { rs =>
           (
-            rs.int("present_id"),
+            rs.long("present_id"),
             unwrapItemStack(rs)
           )
         }
@@ -105,7 +90,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
   }
 
-  override def fetchStateWithPagination(player: UUID, perPage: Int Refined Positive, page: Int Refined Positive): F[Map[Int, PresentClaimingState]] = {
+  override def fetchStateWithPagination(player: UUID, perPage: Int Refined Positive, page: Int Refined Positive): F[Map[PresentID, PresentClaimingState]] = {
     import cats.implicits._
     for {
       idSliceWithPagination <- idSliceWithPagination(perPage, page)
@@ -160,20 +145,20 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
       val offset = (page - 1) * perPage
       DB.readOnly { implicit session =>
         sql"""SELECT present_id FROM present ORDER BY present_id LIMIT $perPage OFFSET $offset"""
-          .map { _.int("present_id") }
+          .map { _.long("present_id") }
           .toList()
           .apply()
           .toSet
       }
     }
 
-  private def wrapResultForState(rs: WrappedResultSet): (Int, PresentClaimingState) = {
+  private def wrapResultForState(rs: WrappedResultSet): (Long, PresentClaimingState) = {
     val claimState = if (rs.boolean("claimed"))
       PresentClaimingState.Claimed
     else
       PresentClaimingState.NotClaimed
 
-    (rs.int("present_id"), claimState)
+    (rs.long("present_id"), claimState)
   }
 
   private def unwrapItemStack(rs: WrappedResultSet): ItemStack = {
