@@ -11,8 +11,7 @@ import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoEx
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
-import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
-import com.github.unchama.seichiassist.subsystems.present.infrastructure.JdbcBackedPresentPersistence
+import com.github.unchama.seichiassist.subsystems.present.domain.{PresentClaimingState, PresentPersistence}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -22,6 +21,7 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.{ChatColor, Material}
 
 /**
@@ -59,7 +59,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
    *
    * 出力: 定義が成功した場合は、割り振られたアイテムのIDを表示する。失敗した場合は、適切なエラーメッセージを表示する。
    */
-  private def defineExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) =
+  private def defineExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: PresentPersistence[F, ItemStack]) =
     playerCommandBuilder
       .argumentsParsers(List())
       .execution { context =>
@@ -92,7 +92,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
    *
    * 出力: 操作の結果とそれに伴うメッセージ。
    */
-  private def deleteExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) =
+  private def deleteExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: PresentPersistence[F, ItemStack]) =
     playerCommandBuilder
       .argumentsParsers(List(presentIdParser))
       .execution { context =>
@@ -125,7 +125,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
    * 備考:
    *   - †: スペース区切り。
    */
-  private def grantRightExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F], globalPlayerAccessor: UuidToLastSeenName[F]) =
+  private def grantRightExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: PresentPersistence[F, ItemStack], globalPlayerAccessor: UuidToLastSeenName[F]) =
     playerCommandBuilder
       .argumentsParsers(
         List(
@@ -178,7 +178,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
    * 備考:
    *   - ✝: スペース区切り。
    */
-  private def revokeRightExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F], globalPlayerAccessor: UuidToLastSeenName[F]) =
+  private def revokeRightExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: PresentPersistence[F, ItemStack], globalPlayerAccessor: UuidToLastSeenName[F]) =
     playerCommandBuilder
       .argumentsParsers(
         List(
@@ -228,7 +228,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
    *
    * 出力: 受け取った場合は、その旨表示する。失敗した場合は、適切なエラーメッセージを表示する。
    */
-  private def claimExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) =
+  private def claimExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: PresentPersistence[F, ItemStack]) =
     playerCommandBuilder
       .argumentsParsers(List(presentIdParser))
       .execution { context =>
@@ -275,7 +275,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
    * 構文:
    *   - /present state
    */
-  private def showStateExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) = playerCommandBuilder
+  private def showStateExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: PresentPersistence[F, ItemStack]) = playerCommandBuilder
     .execution { context =>
       val eff = for {
         // off-main-thread
@@ -304,7 +304,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
    *
    *   - /present list &lt;page: PositiveInt&gt;
    */
-  private def listExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F]) =
+  private def listExecutor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: PresentPersistence[F, ItemStack]) =
     playerCommandBuilder
       .argumentsParsers(List(Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数には1以上の数を指定してください。"))))
       .execution { context =>
@@ -359,7 +359,9 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
     )
   )
 
-  def executor[F[_] : ConcurrentEffect : NonServerThreadContextShift](implicit persistence: JdbcBackedPresentPersistence[F], globalPlayerAccessor: UuidToLastSeenName[F]): TabExecutor = BranchedExecutor(
+  def executor[
+    F[_] : ConcurrentEffect : NonServerThreadContextShift
+  ](implicit persistence: PresentPersistence[F, ItemStack], globalPlayerAccessor: UuidToLastSeenName[F]): TabExecutor = BranchedExecutor(
     Map(
       "define" -> defineExecutor,
       "delete" -> deleteExecutor,
