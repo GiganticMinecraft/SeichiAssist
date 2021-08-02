@@ -58,7 +58,6 @@ import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
-import com.github.unchama.seichiassist.subsystems.subhome.bukkit.command.SubHomeCommand
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
 import com.github.unchama.util.{ActionStatus, ClassUtils}
@@ -304,6 +303,14 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.discordnotification.System.wired[IO](seichiAssistConfig.discordNotificationConfiguration)
   }
 
+  lazy val subhomeSystem: subhome.System[IO] = {
+    import PluginExecutionContexts.asyncShift
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    subhome.System.wired
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -321,6 +328,7 @@ class SeichiAssist extends JavaPlugin() {
     fourDimensionalPocketSystem,
     gachaPointSystem,
     discordNotificationSystem,
+    subhomeSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -369,14 +377,6 @@ class SeichiAssist extends JavaPlugin() {
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     implicit val uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
     subsystems.present.System.wired
-  }
-
-  lazy val subhomeSystem: subhome.System[IO] = {
-    import PluginExecutionContexts.{asyncShift, onMainThread}
-
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    subhome.System.wired
   }
 
   //endregion
