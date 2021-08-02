@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.subhome.domain
 
 import cats.{Functor, Monad}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
 
 import java.util.UUID
 
@@ -49,10 +50,10 @@ trait SubHomePersistence[F[_]] {
 
   /**
    * 指定されたサブホームをnon-atomicにリネームする。存在しないサブホームが指定された場合何も行わない。
-   *
-   * 作用の結果として更新が行われたかどうかを示すBooleanを返す。
    */
-  final def rename(ownerUuid: UUID, id: SubHomeId)(newName: String)(implicit F: Monad[F]): F[Boolean] =
-    alter(ownerUuid, id)(_.copy(name = Some(newName)))
+  final def rename(ownerUuid: UUID, id: SubHomeId)(newName: String)(implicit F: Monad[F]): F[OperationResult.RenameResult] =
+    alter(ownerUuid, id)(_.copy(name = Some(newName))).map { r =>
+      if (r) RenameResult.Done else RenameResult.NotFound
+    }
 
 }
