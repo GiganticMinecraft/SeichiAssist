@@ -8,8 +8,9 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
 import org.bukkit.Material._
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.meta.BookMeta.Generation
+import org.bukkit.inventory.meta.{BookMeta, ItemMeta, SkullMeta}
 import org.bukkit.inventory.{ItemFlag, ItemStack}
-import org.bukkit.inventory.meta.SkullMeta
 
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
@@ -97,10 +98,17 @@ object AnniversaryItemData {
       .pipe(_.getItem)
   }
 
-  def isMendingBook(item: ItemStack): Boolean =
+  def isMendingBook(item: ItemStack): Boolean = {
+    def isOriginal(meta: ItemMeta) =
+      meta match {
+        case bookMeta: BookMeta => bookMeta.hasGeneration && bookMeta.getGeneration == Generation.ORIGINAL
+        case _ => false
+      }
+
     item != null && item.getType == WRITTEN_BOOK && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
-    }
+    } && item.hasItemMeta && isOriginal(item.getItemMeta)
+  }
 
   //endregion
 
