@@ -101,7 +101,7 @@ object AnniversaryItemData {
   def isMendingBook(item: ItemStack): Boolean =
     item != null && item.getType == WRITTEN_BOOK && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
-    } && isOriginalBook(item.getItemMeta)
+    } && item.hasItemMeta && isOriginalBook(item.getItemMeta)
 
   private def isOriginalBook(meta: ItemMeta) =
     meta match {
