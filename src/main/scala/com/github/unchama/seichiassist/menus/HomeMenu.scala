@@ -168,21 +168,35 @@ object HomeMenu extends Menu {
       } yield {
         val lore = subhomeOpt match {
           case None => List(s"${GRAY}サブホームポイント$subHomeId", s"${GRAY}ポイント未設定")
-          case Some(SubHome(name, location)) =>
+          case Some(SubHome(optionName, location)) =>
             val worldName = {
               ManagedWorld
                 .fromName(location.worldName).map(_.japaneseName)
                 .getOrElse(location.worldName)
             }
 
-            List(
-              s"${GRAY}サブホームポイント${subHomeId}は",
-              s"$GRAY$name",
-              s"${GRAY}と名付けられています",
+            val nameStatus = optionName match {
+              case Some(name) => List(
+                s"${GRAY}サブホームポイント${subHomeId}は",
+                s"$GRAY$name",
+                s"${GRAY}と名付けられています",
+              )
+              case None => List(
+                s"${GRAY}サブホームポイント${subHomeId}は",
+                s"${GRAY}名前が未設定です",
+              )
+            }
+
+            val commandInfo = List(
               s"$DARK_RED${UNDERLINE}クリックで名称変更",
               s"${DARK_GRAY}command->[/subhome name $subHomeId]",
+            )
+
+            val coordinates = List(
               s"$GRAY$worldName x:${location.x} y:${location.y} z:${location.z}"
             )
+
+            nameStatus ++ commandInfo ++ coordinates
         }
 
         Button(
