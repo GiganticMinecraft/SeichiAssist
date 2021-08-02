@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.subhome
 
+import cats.Functor
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{OperationResult, SubHome, SubHomeId, SubHomeLocation}
 
 import java.util.UUID
@@ -9,6 +10,9 @@ trait SubHomeReadAPI[F[_]] {
   def list(ownerUuid: UUID): F[Map[SubHomeId, SubHome]]
 
   def get(ownerUuid: UUID, id: SubHomeId): F[Option[SubHome]]
+
+  final def configured(ownerUuid: UUID, id: SubHomeId)(implicit F: Functor[F]): F[Boolean] =
+    F.map(get(ownerUuid, id))(_.nonEmpty)
 
 }
 

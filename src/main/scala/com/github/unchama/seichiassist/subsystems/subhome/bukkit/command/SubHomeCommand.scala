@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.subhome.bukkit.command
 
-import cats.data.Kleisli
+import cats.Monad
 import cats.effect.implicits._
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
@@ -11,8 +11,10 @@ import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoEx
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.{LocationCodec, TeleportEffect}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
 import com.github.unchama.seichiassist.subsystems.subhome.{SubHomeAPI, SubHomeReadAPI, SubHomeWriteAPI}
+import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
@@ -46,6 +48,10 @@ object SubHomeCommand {
       ),
       onMissingArguments = printDescriptionExecutor
     )
+
+  private def subHomeNotSetMessage(id: SubHomeId): List[String] = List(
+    s"${YELLOW}指定されたサブホームポイントが設定されていません。"
+  )
 
   def executor[
     F[_]
@@ -122,41 +128,45 @@ object SubHomeCommand {
     F[_]
     : ConcurrentEffect
     : NonServerThreadContextShift
-    : SubHomeWriteAPI
+    : SubHomeAPI
   ](implicit scope: ChatInterceptionScope) = argsAndSenderConfiguredBuilder
     .execution { context =>
       val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
 
-      IO.pure {
-        val sendInterceptionMessage =
-          MessageEffect(List(
-            s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
-            s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
-          ))
+      val player = context.sender
+      val uuid = player.getUniqueId
 
-        val sendCancellationMessage =
-          MessageEffect(s"${YELLOW}入力がキャンセルされました。")
+      val instruction = List(
+        s"サブホームポイント${subHomeId}に設定する名前をチャットで入力してください",
+        s"$YELLOW※入力されたチャット内容は他のプレイヤーには見えません"
+      )
 
-        def sendCompletionMessage(inputName: String) =
-          MessageEffect(List(
-            s"${GREEN}サブホームポイント${subHomeId}の名前を",
-            s"$GREEN${inputName}に更新しました"
-          ))
+      def doneMessage(inputName: String) = List(
+        s"${GREEN}サブホームポイント${subHomeId}の名前を",
+        s"$GREEN${inputName}に更新しました"
+      )
 
-        import com.github.unchama.generic.syntax._
+      val cancelledInputMessage = List(
+        s"${YELLOW}入力がキャンセルされました。"
+      )
 
-        sendInterceptionMessage.followedBy(Kleisli { player =>
-          val uuid = player.getUniqueId
-
-          scope.interceptFrom(uuid).flatMap {
-            case Left(newName) =>
-              SubHomeWriteAPI[F].rename(uuid, subHomeId)(newName).toIO >>
-                sendCompletionMessage(newName)(player)
-            case Right(Overridden) => sendCancellationMessage(player)
-            case Right(_) => IO.pure(())
-          }
-        })
-      }
+      for {
+        _ <- Monad[IO].ifM(SubHomeReadAPI[F].configured(uuid, subHomeId).toIO)(
+          MessageEffect(instruction)(player) >>
+            scope.interceptFrom(uuid).flatMap {
+              case Left(newName) =>
+                SubHomeWriteAPI[F].rename(uuid, subHomeId)(newName).toIO.flatMap {
+                  case RenameResult.Done =>
+                    MessageEffect(doneMessage(newName))(player)
+                  case RenameResult.NotFound =>
+                    MessageEffect(subHomeNotSetMessage(subHomeId))(player)
+                }
+              case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
+              case Right(_) => IO.unit
+            },
+          MessageEffect(subHomeNotSetMessage(subHomeId))(player)
+        )
+      } yield TargetedEffect.emptyEffect
     }
     .build()
 }
