@@ -1,18 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit
 
 import cats.data.Kleisli
-import cats.effect.{IO, LiftIO, Sync, SyncIO}
-import cats.kernel.Monoid
-import com.github.unchama.seichiassist.SeichiAssist
+import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift.Item
 import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
-import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
-import org.bukkit.command.CommandSender
+import com.github.unchama.targetedeffect.SequentialEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.entity.Player
 
 /**
@@ -28,11 +24,9 @@ class GiftItemInterpreter[F[_] : OnMinecraftServerThread : Sync] extends (Gift.I
       case Item.Elsa => ItemData.getElsa(1)
     }
 
-    import cats.implicits._
-    import cats.effect.implicits._
     SequentialEffect(
       MessageEffectF[F]("レベルアップ記念のアイテムを配布しました。"),
-      grantItemStacksEffect[F]()
+      grantItemStacksEffect[F](itemStack)
     )
   }
 
