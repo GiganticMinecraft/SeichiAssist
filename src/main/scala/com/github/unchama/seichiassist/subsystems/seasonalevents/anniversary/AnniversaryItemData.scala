@@ -98,16 +98,17 @@ object AnniversaryItemData {
       .pipe(_.getItem)
   }
 
-  def isMendingBook(item: ItemStack): Boolean =
+  def isMendingBook(item: ItemStack): Boolean = {
+    def isOriginal(meta: ItemMeta) =
+      meta match {
+        case bookMeta: BookMeta => bookMeta.hasGeneration && bookMeta.getGeneration == Generation.ORIGINAL
+        case _ => false
+      }
+
     item != null && item.getType == WRITTEN_BOOK && {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
-    } && item.hasItemMeta && isOriginalBook(item.getItemMeta)
-
-  private def isOriginalBook(meta: ItemMeta) =
-    meta match {
-      case bookMeta: BookMeta => bookMeta.hasGeneration && bookMeta.getGeneration == Generation.ORIGINAL
-      case _ => false
-    }
+    } && item.hasItemMeta && isOriginal(item.getItemMeta)
+  }
 
   //endregion
 
