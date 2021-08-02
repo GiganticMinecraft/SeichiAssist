@@ -311,6 +311,15 @@ class SeichiAssist extends JavaPlugin() {
     subhome.System.wired
   }
 
+  lazy val presentSystem: Subsystem[IO] = {
+    import PluginExecutionContexts.{asyncShift, onMainThread}
+
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
+    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
+    subsystems.present.System.wired
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -328,7 +337,8 @@ class SeichiAssist extends JavaPlugin() {
     fourDimensionalPocketSystem,
     gachaPointSystem,
     discordNotificationSystem,
-    subhomeSystem
+    subhomeSystem,
+    presentSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -368,15 +378,6 @@ class SeichiAssist extends JavaPlugin() {
       ),
       PluginExecutionContexts.asyncShift
     )
-  }
-
-  lazy val presentSystem: Subsystem[IO] = {
-    import PluginExecutionContexts.{asyncShift, onMainThread}
-
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-    implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    implicit val uuidToLastSeenName: UuidToLastSeenName[IO] = new GlobalPlayerAccessor[IO]
-    subsystems.present.System.wired
   }
 
   //endregion
