@@ -2,9 +2,9 @@ package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.present.domain.PresentClaimingState
-import eu.timepit.refined.numeric.{NonNegative, Positive}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
+import eu.timepit.refined.numeric.Positive
 import org.bukkit.inventory.ItemStack
 import scalikejdbc._
 
@@ -15,25 +15,20 @@ import java.util.UUID
  */
 class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
   override type PresentID = Int
-  private final val definitionTable = "present"
-  private final val stateTable = "present_state"
-  private final val claimingStateColumn = "claimed"
-  private final val presentIdColumn = "present_id"
-  private final val itemStackColumn = "itemstack"
 
   override def define(itemstack: ItemStack): F[PresentID] = Sync[F].delay {
     val stackAsBlob = ItemStackBlobProxy.itemStackToBlob(itemstack)
     DB.localTx { implicit session =>
       // プレゼントのIDはauto_incrementなので明示的に指定しなくて良い
-      sql"""INSERT INTO $definitionTable ($itemStackColumn) VALUES ($stackAsBlob)"""
+      sql"""INSERT INTO present (itemstack) VALUES ($stackAsBlob)"""
         .execute()
         .apply()
 
       val newPresentID = DB.readOnly { implicit session =>
         // ここで、itemstackは同じItemStackであるプレゼントが複数存在させたいケースを考慮して、UNIQUEではない。
         // 他方、present_idは主キーであり、AUTO_INCREMENTであることから単調増加なので、単純にMAXを取れば良い。
-        sql"""SELECT MAX($presentIdColumn) FROM $definitionTable WHERE $itemStackColumn = $stackAsBlob"""
-          .map { rs => rs.int(presentIdColumn) }
+        sql"""SELECT MAX(present_id) FROM present WHERE itemstack = $stackAsBlob"""
+          .map { rs => rs.int("present_id") }
           .first()
           .apply()
           // 上でINSERTしてるんだから、必ず見つかるはず
@@ -51,12 +46,12 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
    */
   override def delete(presentId: PresentID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      // 制約をかけているので$stateTableの方から先に消さないと整合性エラーを吐く
-      sql"""DELETE $stateTable WHERE $presentIdColumn = $presentId"""
+      // 制約をかけているのでpresent_stateの方から先に消さないと整合性エラーを吐く
+      sql"""DELETE FROM present_state WHERE present_id = $presentId"""
         .execute()
         .apply()
 
-      sql"""DELETE $definitionTable WHERE $presentIdColumn = $presentId"""
+      sql"""DELETE FROM present WHERE present_id = $presentId"""
         .execute()
         .apply()
     }
@@ -70,7 +65,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
       .toSeq
 
     DB.localTx { implicit session =>
-      sql"""INSERT INTO $stateTable VALUES (?, ?, ?)"""
+      sql"""INSERT INTO present_state VALUES (?, ?, ?)"""
         .batch(initialValues: _*)
         .apply()
     }
@@ -81,7 +76,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
 
     DB.localTx { implicit session =>
       // https://discord.com/channels/237758724121427969/565935041574731807/824107651985834004
-      sql"""DELETE FROM $stateTable WHERE $presentIdColumn = $presentID AND uuid IN ($scopeAsSQL)"""
+      sql"""DELETE FROM present_state WHERE present_id = $presentID AND uuid IN ($scopeAsSQL)"""
         .execute()
         .apply()
     }
@@ -89,7 +84,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
 
   override def markAsClaimed(presentId: PresentID, player: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"""UPDATE $stateTable SET $claimingStateColumn = TRUE WHERE uuid = ${player.toString} AND $presentIdColumn = $presentId"""
+      sql"""UPDATE present_state SET claimed = TRUE WHERE uuid = ${player.toString} AND present_id = $presentId"""
         .update()
         .apply()
     }
@@ -97,10 +92,10 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
 
   override def mapping: F[Map[PresentID, ItemStack]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"""SELECT $presentIdColumn, $itemStackColumn FROM $definitionTable"""
+      sql"""SELECT present_id, itemstack FROM present"""
         .map { rs =>
           (
-            rs.int(presentIdColumn),
+            rs.int("present_id"),
             unwrapItemStack(rs)
           )
         }
@@ -118,10 +113,11 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
       // ページネーションはIDを列挙するときにすでに完了している
       val associatedEntries = DB.readOnly { implicit session =>
         sql"""
-              SELECT $presentIdColumn, $claimingStateColumn
-        FROM $stateTable
-        WHERE uuid = ${player.toString} AND $presentIdColumn IN ($idSliceWithPagination)
-"""
+             |SELECT present_id, claimed
+             |FROM present_state
+             |WHERE uuid = ${player.toString} AND present_id IN ($idSliceWithPagination)
+        """
+          .stripMargin
           .map(wrapResultForState)
           .toList()
           .apply()
@@ -139,7 +135,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
       validPresentIDs = validPresentMapping.keys
     } yield {
       val associatedEntries = DB.readOnly { implicit session =>
-        sql"""SELECT $presentIdColumn, $claimingStateColumn FROM $stateTable WHERE uuid = ${player.toString}"""
+        sql"""SELECT present_id, claimed FROM present_state WHERE uuid = ${player.toString}"""
           .map(wrapResultForState)
           .list()
           .apply()
@@ -152,7 +148,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
 
   override def lookup(presentID: PresentID): F[Option[ItemStack]] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"""SELECT $itemStackColumn FROM $definitionTable WHERE $presentIdColumn = $presentID"""
+      sql"""SELECT itemstack FROM present WHERE present_id = $presentID"""
         .map(unwrapItemStack)
         .first()
         .apply()
@@ -163,10 +159,8 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     Sync[F].delay {
       val offset = (page - 1) * perPage
       DB.readOnly { implicit session =>
-        sql"""SELECT $presentIdColumn ORDER BY $presentIdColumn LIMIT $perPage OFFSET $offset"""
-          .map { rs =>
-            rs.int(presentIdColumn)
-          }
+        sql"""SELECT present_id FROM present ORDER BY present_id LIMIT $perPage OFFSET $offset"""
+          .map { _.int("present_id") }
           .toList()
           .apply()
           .toSet
@@ -174,16 +168,16 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F] {
     }
 
   private def wrapResultForState(rs: WrappedResultSet): (Int, PresentClaimingState) = {
-    val claimState = if (rs.boolean(claimingStateColumn))
+    val claimState = if (rs.boolean("claimed"))
       PresentClaimingState.Claimed
     else
       PresentClaimingState.NotClaimed
 
-    (rs.int(presentIdColumn), claimState)
+    (rs.int("present_id"), claimState)
   }
 
   private def unwrapItemStack(rs: WrappedResultSet): ItemStack = {
-    ItemStackBlobProxy.blobToItemStack(rs.string(itemStackColumn))
+    ItemStackBlobProxy.blobToItemStack(rs.string("itemstack"))
   }
 
   private def filledEntries(knownState: Map[PresentID, PresentClaimingState], validGlobalId: Iterable[PresentID]) = {
