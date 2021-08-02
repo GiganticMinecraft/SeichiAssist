@@ -26,8 +26,8 @@ object System {
 
     new System[F] {
       override implicit val api: SubHomeAPI[F] = new SubHomeAPI[F] {
-        override def upsertLocation(ownerUuid: UUID, id: SubHomeId, location: SubHomeLocation): F[Unit] =
-          persistence.upsert(ownerUuid, id)(SubHome(None, location))
+        override def upsertLocation(ownerUuid: UUID, id: SubHomeId)(location: SubHomeLocation): F[Unit] =
+          persistence.upsertLocation(ownerUuid, id)(location)
         override def rename(ownerUuid: UUID, id: SubHomeId)(name: String): F[RenameResult] =
           persistence.rename(ownerUuid, id)(name)
         override def get(ownerUuid: UUID, id: SubHomeId): F[Option[SubHome]] =

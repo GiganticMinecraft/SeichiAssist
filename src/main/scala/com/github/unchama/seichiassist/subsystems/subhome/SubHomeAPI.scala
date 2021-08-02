@@ -24,7 +24,7 @@ object SubHomeReadAPI {
 
 trait SubHomeWriteAPI[F[_]] {
 
-  def upsertLocation(ownerUuid: UUID, id: SubHomeId, location: SubHomeLocation): F[Unit]
+  def upsertLocation(ownerUuid: UUID, id: SubHomeId)(location: SubHomeLocation): F[Unit]
 
   def rename(ownerUuid: UUID, id: SubHomeId)(name: String): F[OperationResult.RenameResult]
 

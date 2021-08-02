@@ -111,13 +111,11 @@ object SubHomeCommand {
       val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
       val player = context.sender
 
+      val subHomeLocation = LocationCodec.fromBukkitLocation(player.getLocation)
+
       val eff = for {
         _ <- NonServerThreadContextShift[F].shift
-        _ <- SubHomeWriteAPI[F].upsertLocation(
-          player.getUniqueId,
-          subHomeId,
-          LocationCodec.fromBukkitLocation(player.getLocation)
-        )
+        _ <- SubHomeWriteAPI[F].upsertLocation(player.getUniqueId, subHomeId)(subHomeLocation)
       } yield MessageEffect(s"現在位置をサブホームポイント${subHomeId}に設定しました")
 
       eff.toIO

@@ -35,6 +35,19 @@ trait SubHomePersistence[F[_]] {
     list(ownerUuid).map(_.get(id))
 
   /**
+   * 指定されたidのサブホームを登録する。idの範囲などのバリデーションはしない。
+   *
+   * サブホームがすでに存在した場合、古いサブホームの名前を新しいサブホームへと引き継ぐ。
+   */
+  final def upsertLocation(ownerUuid: UUID, id: SubHomeId)(location: SubHomeLocation)
+                          (implicit F: Monad[F]): F[Unit] =
+    for {
+      old <- get(ownerUuid, id)
+      newSubHome = SubHome(old.flatMap(_.name), location)
+      _ <- upsert(ownerUuid, id)(newSubHome)
+    } yield ()
+
+  /**
    * 指定されたサブホームをnon-atomicに更新する。存在しないサブホームが指定された場合何も行わない。
    *
    * 作用の結果として更新が行われたかどうかを示すBooleanを返す。
