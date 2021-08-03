@@ -105,7 +105,7 @@ commands:
     permission-message: *denied
   present:
     description: send a gift
-    usage: /<command> [player name]
+    usage: /present <操作> (詳細については/present helpを参照してください)
     permission-message: *denied
   hat:
     description: set item in hand to head
