@@ -269,7 +269,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
               } yield result match {
                 case DeleteResult.Done =>
                   MessageEffect(s"IDが${presentId}のプレゼントの消去は正常に行われました。")
-                case DeleteResult.NotFount =>
+                case DeleteResult.NotFound =>
                   MessageEffect(s"IDが${presentId}のプレゼントは存在しませんでした。")
               }
 

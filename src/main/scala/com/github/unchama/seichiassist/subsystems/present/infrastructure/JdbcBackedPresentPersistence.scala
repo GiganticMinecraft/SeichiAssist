@@ -43,7 +43,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
           .update()
           .apply()
 
-      if (deletedRows == 1) DeleteResult.Done else DeleteResult.NotFount
+      if (deletedRows == 1) DeleteResult.Done else DeleteResult.NotFound
     }
   }
 

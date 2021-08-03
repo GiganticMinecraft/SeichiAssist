@@ -4,6 +4,6 @@ object OperationResult {
   sealed trait DeleteResult
   object DeleteResult {
     case object Done extends DeleteResult
-    case object NotFount extends DeleteResult
+    case object NotFound extends DeleteResult
   }
 }
