@@ -22,8 +22,8 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
       sql"""INSERT INTO present (itemstack) VALUES ($stackAsBlob)"""
         .updateAndReturnGeneratedKey
         .apply()
-      }
     }
+  }
 
   /**
    * 指定したPresentIDに対応するプレゼントを物理消去する。
@@ -60,14 +60,26 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     }
   }
 
-  override def revoke(presentID: PresentID, players: Set[UUID]): F[Unit] = Sync[F].delay {
-    val scopeAsSQL = players.map(_.toString)
-
-    DB.localTx { implicit session =>
-      // https://discord.com/channels/237758724121427969/565935041574731807/824107651985834004
-      sql"""DELETE FROM present_state WHERE present_id = $presentID AND uuid IN ($scopeAsSQL)"""
-        .execute()
+  override def revoke(presentID: PresentID, players: Set[UUID]): F[Unit] = {
+    val existence = DB.readOnly { implicit session =>
+      sql"""SELECT present_state FROM present_state WHERE present_id = $presentID"""
+        .map(_ => ()) // avoid NoExtractor
+        .first()
         .apply()
+    }
+
+    import cats.Applicative
+    existence.fold(Applicative[F].pure(())) { _ =>
+      Sync[F].delay {
+        val scopeAsSQL = players.map(_.toString)
+
+        DB.localTx { implicit session =>
+          // https://discord.com/channels/237758724121427969/565935041574731807/824107651985834004
+          sql"""DELETE FROM present_state WHERE present_id = $presentID AND uuid IN ($scopeAsSQL)"""
+            .execute()
+            .apply()
+        }
+      }
     }
   }
 
