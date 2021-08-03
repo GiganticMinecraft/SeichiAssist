@@ -111,13 +111,20 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     for {
       idSliceWithPagination <- idSliceWithPagination(perPage, page)
     } yield {
-      // ページネーションはIDを列挙するときにすでに完了している
-      val associatedEntries = DB.readOnly { implicit session =>
-        sql"""
-             |SELECT present_id, claimed
-             |FROM present_state
-             |WHERE uuid = ${player.toString} AND present_id IN ($idSliceWithPagination)
-             |ORDER BY present_id
+      if (idSliceWithPagination.isEmpty) {
+        for {
+          entries <- fetchState(player)
+        } yield {
+          Left(PaginationRejectReason.TooLargePage(Math.ceil(entries.size.toDouble / perPage).toInt))
+        }
+      } else {
+        // ページネーションはIDを列挙するときにすでに完了している
+        val associatedEntries = DB.readOnly { implicit session =>
+          sql"""
+               |SELECT present_id, claimed
+               |FROM present_state
+               |WHERE uuid = ${player.toString} AND present_id IN ($idSliceWithPagination)
+               |ORDER BY present_id
         """
           .stripMargin
           .map(wrapResultForState)

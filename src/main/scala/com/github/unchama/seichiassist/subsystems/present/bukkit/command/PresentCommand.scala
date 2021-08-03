@@ -12,7 +12,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import com.github.unchama.seichiassist.subsystems.present.domain.{PresentClaimingState, PresentPersistence}
+import com.github.unchama.seichiassist.subsystems.present.domain.{PaginationRejectReason, PresentClaimingState, PresentPersistence}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -128,11 +128,12 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
             val eff = for {
               _ <- NonServerThreadContextShift[F].shift
               states <- persistence.fetchStateWithPagination(player, perPage, page)
-              messageLine = states
-                .map { case (id, state) =>
-                  s"ID=$id: ${decoratePresentState(state)}"
-                }
-                .toList
+              messageLine = states.fold({
+                case PaginationRejectReason.TooLargePage(max) =>
+                  List(s"ページ数が大きすぎます。${max}ページ以下にしてください")
+              }, b => b.map { case (id, state) =>
+                s"ID=$id: ${decoratePresentState(state)}"
+              }.toList)
             } yield {
               MessageEffect(messageLine)
             }
