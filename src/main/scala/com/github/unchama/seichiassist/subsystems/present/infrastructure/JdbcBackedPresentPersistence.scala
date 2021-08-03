@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
 import cats.effect.Sync
+import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
 import com.github.unchama.seichiassist.subsystems.present.domain.{PresentClaimingState, PresentPersistence}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
@@ -29,16 +30,19 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
    *
    * @param presentId プレゼントID
    */
-  override def delete(presentId: PresentID): F[Unit] = Sync[F].delay {
+  override def delete(presentId: PresentID): F[DeleteResult] = Sync[F].delay {
     DB.localTx { implicit session =>
       // 制約をかけているのでpresent_stateの方から先に消さないと整合性エラーを吐く
       sql"""DELETE FROM present_state WHERE present_id = $presentId"""
         .execute()
         .apply()
 
-      sql"""DELETE FROM present WHERE present_id = $presentId"""
-        .execute()
-        .apply()
+      val deletedRows =
+        sql"""DELETE FROM present WHERE present_id = $presentId"""
+          .update()
+          .apply()
+
+      if (deletedRows == 1) DeleteResult.Done else DeleteResult.NotFount
     }
   }
 
@@ -144,7 +148,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     Sync[F].delay {
       val offset = (page - 1) * perPage
       DB.readOnly { implicit session =>
-        sql"""SELECT present_id FROM present ORDER BY present_id LIMIT $perPage OFFSET $offset"""
+        sql"""SELECT present_id FROM present ORDER BY present_id LIMIT ${perPage.value} OFFSET $offset"""
           .map { _.long("present_id") }
           .toList()
           .apply()

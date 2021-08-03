@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.present.domain
 
+import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.Positive
 
@@ -27,7 +28,7 @@ trait PresentPersistence[F[_], ItemStack] {
    *
    * @param presentID プレゼントID
    */
-  def delete(presentID: PresentID): F[Unit]
+  def delete(presentID: PresentID): F[DeleteResult]
 
   /**
    * 指定したUUIDを持つプレイヤーに対して`presentID`で指定されたプレゼントを受け取ることができるようにする。
