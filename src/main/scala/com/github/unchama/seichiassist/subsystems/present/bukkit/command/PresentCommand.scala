@@ -70,7 +70,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
             _ <- NonServerThreadContextShift[F].shift
             state <- persistence.fetchState(context.sender.getUniqueId)
           } yield {
-            val mes = state
+            val presents = state
               .toList
               // 配布対象外のプレゼントを除外
               .filter { case (_, state) => state != PresentClaimingState.Unavailable }
@@ -78,7 +78,17 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                 s"ID=$id: ${decoratePresentState(state)}"
               }
               .filter(_.nonEmpty)
-            MessageEffect(mes)
+
+            val lines = if (presents.isEmpty) {
+              List("対象のプレゼントが存在しません")
+            } else {
+              List(
+                "対象のプレゼント一覧：",
+                "------------------"
+              ) ::: presents
+            }
+
+            MessageEffect(lines)
           }
 
           eff.toIO
