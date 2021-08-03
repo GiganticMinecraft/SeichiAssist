@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import com.github.unchama.seichiassist.subsystems.present.domain.{PresentClaimingState, PresentPersistence}
+import com.github.unchama.seichiassist.subsystems.present.domain.{PaginationRejectReason, PresentClaimingState, PresentPersistence}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
@@ -46,17 +46,32 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     }
   }
 
-  override def grant(presentID: PresentID, players: Set[UUID]): F[Unit] = Sync[F].delay {
-    import scala.collection.Seq.iterableFactory
+  override def grant(presentID: PresentID, players: Set[UUID]): F[Unit] = {
+    import cats.implicits._
+    for {
+      alreadyAddedPlayers <- Sync[F].delay {
+        DB.readOnly { implicit session =>
+          sql"""SELECT uuid FROM present_state WHERE present_id = $presentID"""
+            .map(x => UUID.fromString(x.string("uuid")))
+            .list()
+            .apply()
+        }
+      }
+    } yield {
+      import scala.collection.Seq.iterableFactory
 
-    val initialValues = players
-      .map { uuid => Seq(presentID, uuid.toString, false) }
-      .toSeq
+      val initialValues = players
+        // すでに存在しているプレゼントIDとプレイヤーの組をINSERT
+        // すると整合性違反になるためフィルタ
+        .filterNot { alreadyAddedPlayers contains _ }
+        .map { uuid => Seq(presentID, uuid.toString, false) }
+        .toSeq
 
-    DB.localTx { implicit session =>
-      sql"""INSERT INTO present_state VALUES (?, ?, ?)"""
-        .batch(initialValues: _*)
-        .apply()
+      DB.localTx { implicit session =>
+        sql"""INSERT INTO present_state VALUES (?, ?, ?)"""
+          .batch(initialValues: _*)
+          .apply()
+      }
     }
   }
 
@@ -106,7 +121,11 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     }
   }
 
-  override def fetchStateWithPagination(player: UUID, perPage: Int Refined Positive, page: Int Refined Positive): F[Map[PresentID, PresentClaimingState]] = {
+  override def fetchStateWithPagination(
+                                         player: UUID,
+                                         perPage: Int Refined Positive,
+                                         page: Int Refined Positive
+                                       ): F[Either[PaginationRejectReason, Map[PresentID, PresentClaimingState]]] = {
     import cats.implicits._
     for {
       idSliceWithPagination <- idSliceWithPagination(perPage, page)
@@ -126,14 +145,15 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
                |WHERE uuid = ${player.toString} AND present_id IN ($idSliceWithPagination)
                |ORDER BY present_id
         """
-          .stripMargin
-          .map(wrapResultForState)
-          .toList()
-          .apply()
-          .toMap
-      }
+            .stripMargin
+            .map(wrapResultForState)
+            .toList()
+            .apply()
+            .toMap
+        }
 
-      filledEntries(associatedEntries, idSliceWithPagination)
+        Right(filledEntries(associatedEntries, idSliceWithPagination))
+      }
     }
   }
 
