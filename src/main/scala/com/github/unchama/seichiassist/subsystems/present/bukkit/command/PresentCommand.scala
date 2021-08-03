@@ -314,7 +314,10 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                   globalUUID2Name.filter { case (_, name) => restArg.contains(name) }.keys
                 errorIfNobody = if (target.isEmpty) Some(MessageEffect("対象のプレイヤーが存在しません！")) else None
                 _ <- persistence.grant(presentId, target.toSet)
-              } yield errorIfNobody.getOrElse(MessageEffect(s"プレゼントIDが${presentId}のプレゼントを受け取れるプレイヤーを追加することに成功しました。"))
+              } yield
+                errorIfNobody.getOrElse(MessageEffect(
+                  s"プレゼント(id: $presentId)を受け取れるプレイヤーを追加しました。"
+                ))
 
               eff.toIO
             } else {
@@ -368,9 +371,9 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                 errorIfNobody = if (target.isEmpty) Some(MessageEffect("対象のプレイヤーが存在しません！")) else None
                 _ <- persistence.revoke(presentId, target.toSet)
               } yield {
-                errorIfNobody.getOrElse(
-                  MessageEffect(s"プレゼントIDが${presentId}のプレゼントを受け取ることができるプレイヤーの削除に成功しました。")
-                )
+                errorIfNobody.getOrElse(MessageEffect(
+                  s"プレゼント(id: $presentId)を受け取れるプレイヤーを削除しました。"
+                ))
               }
               eff.toIO
             } else {
