@@ -12,7 +12,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import com.github.unchama.seichiassist.subsystems.present.domain.{PaginationRejectReason, PresentClaimingState, PresentPersistence}
+import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -323,12 +323,15 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                   globalUUID2Name.keys
                 else
                   globalUUID2Name.filter { case (_, name) => restArg.contains(name) }.keys
-                errorIfNobody = if (target.isEmpty) Some(MessageEffect("対象のプレイヤーが存在しません！")) else None
-                _ <- persistence.grant(presentId, target.toSet)
+                errorIfNobody = Option.when(target.isEmpty) { MessageEffect("対象のプレイヤーが存在しません！") }
+                grantError <- persistence.grant(presentId, target.toSet)
               } yield
-                errorIfNobody.getOrElse(MessageEffect(
+                errorIfNobody.getOrElse(grantError.map {
+                  case GrantRejectReason.NoSuchPresentID =>
+                    MessageEffect("指定されたプレゼントIDは存在しません！")
+                }.getOrElse(MessageEffect(
                   s"プレゼント(id: $presentId)を受け取れるプレイヤーを追加しました。"
-                ))
+                )))
 
               eff.toIO
             } else {

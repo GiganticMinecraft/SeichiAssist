@@ -1,8 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
+import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import com.github.unchama.seichiassist.subsystems.present.domain.{PaginationRejectReason, PresentClaimingState, PresentPersistence}
+import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
@@ -46,33 +47,47 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     }
   }
 
-  override def grant(presentID: PresentID, players: Set[UUID]): F[Unit] = {
+  override def grant(presentID: PresentID, players: Set[UUID]): F[Option[GrantRejectReason]] = {
     import cats.implicits._
     for {
-      alreadyAddedPlayers <- Sync[F].delay {
+      exists <- Sync[F].delay {
         DB.readOnly { implicit session =>
+          sql"""SELECT present_id FROM present"""
+            .map(x => x.long("present_id"))
+            .list()
+            .apply()
+        }.contains(presentID)
+      }
+    } yield {
+      if (exists) {
+        val alreadyAddedPlayers = DB.readOnly { implicit session =>
           sql"""SELECT uuid FROM present_state WHERE present_id = $presentID"""
             .map(x => UUID.fromString(x.string("uuid")))
             .list()
             .apply()
         }
-      }
-    } yield {
-      import scala.collection.Seq.iterableFactory
 
-      val initialValues = players
-        // すでに存在しているプレゼントIDとプレイヤーの組をINSERT
-        // すると整合性違反になるためフィルタ
-        .filterNot { alreadyAddedPlayers contains _ }
-        .map { uuid => Seq(presentID, uuid.toString, false) }
-        .toSeq
+        import scala.collection.Seq.iterableFactory
 
-      DB.localTx { implicit session =>
-        sql"""INSERT INTO present_state VALUES (?, ?, ?)"""
-          .batch(initialValues: _*)
-          .apply()
+        val initialValues = players
+          // すでに存在しているプレゼントIDとプレイヤーの組をINSERT
+          // すると整合性違反になるためフィルタ
+          .filterNot { alreadyAddedPlayers contains _ }
+          .map { uuid => Seq(presentID, uuid.toString, false) }
+          .toSeq
+
+        DB.localTx { implicit session =>
+          sql"""INSERT INTO present_state VALUES (?, ?, ?)"""
+            .batch(initialValues: _*)
+            .apply()
+        }
+
+        None
+      } else {
+        Some(GrantRejectReason.NoSuchPresentID)
       }
     }
+
   }
 
   override def revoke(presentID: PresentID, players: Set[UUID]): F[Unit] = {
@@ -83,7 +98,6 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
         .apply()
     }
 
-    import cats.Applicative
     existence.fold(Applicative[F].pure(())) { _ =>
       Sync[F].delay {
         val scopeAsSQL = players.map(_.toString)
@@ -129,13 +143,10 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     import cats.implicits._
     for {
       idSliceWithPagination <- idSliceWithPagination(perPage, page)
+      count <- computeValidPresentCount
     } yield {
       if (idSliceWithPagination.isEmpty) {
-        for {
-          entries <- fetchState(player)
-        } yield {
-          Left(PaginationRejectReason.TooLargePage(Math.ceil(entries.size.toDouble / perPage).toInt))
-        }
+        Left(PaginationRejectReason.TooLargePage(Math.ceil(count.toDouble / perPage).toLong))
       } else {
         // ページネーションはIDを列挙するときにすでに完了している
         val associatedEntries = DB.readOnly { implicit session =>
@@ -212,5 +223,15 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
   private def filledEntries(knownState: Map[PresentID, PresentClaimingState], validGlobalId: Iterable[PresentID]) = {
     val globalEntries = validGlobalId.map(id => (id, PresentClaimingState.Unavailable)).toMap
     globalEntries ++ knownState
+  }
+
+  private def computeValidPresentCount: F[Long] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      sql"""SELECT COUNT(*) AS c FROM present"""
+        .map(rs => rs.long("c"))
+        .first()
+        .apply()
+        .get // safe
+    }
   }
 }

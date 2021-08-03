@@ -38,7 +38,7 @@ trait PresentPersistence[F[_], ItemStack] {
    * @param players   受け取ることができるようにするプレイヤーのUUID
    * @return 永続化層への書き込みを行う作用
    */
-  def grant(presentID: PresentID, players: Set[UUID]): F[Unit]
+  def grant(presentID: PresentID, players: Set[UUID]): F[Option[GrantRejectReason]]
 
   /**
    * 指定したUUIDを持つプレイヤー群が`presentID`で指定されたプレゼントを受け取ることができないようにする。
