@@ -117,6 +117,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
              |SELECT present_id, claimed
              |FROM present_state
              |WHERE uuid = ${player.toString} AND present_id IN ($idSliceWithPagination)
+             |ORDER BY present_id
         """
           .stripMargin
           .map(wrapResultForState)
