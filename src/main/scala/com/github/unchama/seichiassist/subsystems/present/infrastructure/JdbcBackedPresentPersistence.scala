@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.present.infrastructure
 import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence}
+import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence, RevokeWarning}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
@@ -49,7 +49,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
 
   override def grant(presentID: PresentID, players: Set[UUID]): F[Option[GrantRejectReason]] = {
     import cats.implicits._
-    for {
+    val program = for {
       exists <- Sync[F].delay {
         DB.readOnly { implicit session =>
           sql"""SELECT present_id FROM present"""
@@ -60,54 +60,58 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
       }
     } yield {
       if (exists) {
-        val alreadyAddedPlayers = DB.readOnly { implicit session =>
-          sql"""SELECT uuid FROM present_state WHERE present_id = $presentID"""
-            .map(x => UUID.fromString(x.string("uuid")))
-            .list()
-            .apply()
+        Sync[F].delay {
+          val alreadyAddedPlayers = DB.readOnly { implicit session =>
+            sql"""SELECT uuid FROM present_state WHERE present_id = $presentID"""
+              .map(x => UUID.fromString(x.string("uuid")))
+              .list()
+              .apply()
+          }
+
+          import scala.collection.Seq.iterableFactory
+
+          val initialValues = players
+            // すでに存在しているプレゼントIDとプレイヤーの組をINSERT
+            // すると整合性違反になるためフィルタ
+            .filterNot { alreadyAddedPlayers contains _ }
+            .map { uuid => Seq(presentID, uuid.toString, false) }
+            .toSeq
+
+          DB.localTx { implicit session =>
+            sql"""
+                  INSERT INTO present_state VALUES (?, ?, ?)
+                  ON DUPLICATE KEY UPDATE present_id=present_id
+                 """
+              .batch(initialValues: _*)
+              .apply()
+          }
+
+          None
         }
-
-        import scala.collection.Seq.iterableFactory
-
-        val initialValues = players
-          // すでに存在しているプレゼントIDとプレイヤーの組をINSERT
-          // すると整合性違反になるためフィルタ
-          .filterNot { alreadyAddedPlayers contains _ }
-          .map { uuid => Seq(presentID, uuid.toString, false) }
-          .toSeq
-
-        DB.localTx { implicit session =>
-          sql"""INSERT INTO present_state VALUES (?, ?, ?)"""
-            .batch(initialValues: _*)
-            .apply()
-        }
-
-        None
       } else {
-        Some(GrantRejectReason.NoSuchPresentID)
+        // 型推論
+        Applicative[F].pure(Some(GrantRejectReason.NoSuchPresentID: GrantRejectReason))
       }
     }
 
+    program.flatten
   }
 
-  override def revoke(presentID: PresentID, players: Set[UUID]): F[Unit] = {
-    val existence = DB.readOnly { implicit session =>
-      sql"""SELECT present_state FROM present_state WHERE present_id = $presentID"""
-        .map(_ => ()) // avoid NoExtractor
-        .first()
-        .apply()
-    }
-
-    existence.fold(Applicative[F].pure(())) { _ =>
+  override def revoke(presentID: PresentID, players: Set[UUID]): F[Option[RevokeWarning]] = {
+    if (players.isEmpty) {
+      Applicative[F].pure(Some(RevokeWarning.NoPlayers))
+    } else {
       Sync[F].delay {
         val scopeAsSQL = players.map(_.toString)
 
-        DB.localTx { implicit session =>
+        val deleteCount = DB.localTx { implicit session =>
           // https://discord.com/channels/237758724121427969/565935041574731807/824107651985834004
           sql"""DELETE FROM present_state WHERE present_id = $presentID AND uuid IN ($scopeAsSQL)"""
-            .execute()
+            .update()
             .apply()
         }
+
+        Option.when(deleteCount == 0) { RevokeWarning.NoSuchPresentID }
       }
     }
   }
@@ -139,7 +143,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
                                          player: UUID,
                                          perPage: Int Refined Positive,
                                          page: Int Refined Positive
-                                       ): F[Either[PaginationRejectReason, Map[PresentID, PresentClaimingState]]] = {
+                                       ): F[Either[PaginationRejectReason, List[(PresentID, PresentClaimingState)]]] = {
     import cats.implicits._
     for {
       idSliceWithPagination <- idSliceWithPagination(perPage, page)
@@ -160,7 +164,6 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
             .map(wrapResultForState)
             .toList()
             .apply()
-            .toMap
         }
 
         Right(filledEntries(associatedEntries, idSliceWithPagination))
@@ -179,7 +182,6 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
           .map(wrapResultForState)
           .list()
           .apply()
-          .toMap
       }
 
       filledEntries(associatedEntries, validPresentIDs)
@@ -220,7 +222,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     ItemStackBlobProxy.blobToItemStack(rs.string("itemstack"))
   }
 
-  private def filledEntries(knownState: Map[PresentID, PresentClaimingState], validGlobalId: Iterable[PresentID]) = {
+  private def filledEntries(knownState: List[(PresentID, PresentClaimingState)], validGlobalId: Iterable[PresentID]) = {
     val globalEntries = validGlobalId.map(id => (id, PresentClaimingState.Unavailable)).toMap
     globalEntries ++ knownState
   }
@@ -228,7 +230,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
   private def computeValidPresentCount: F[Long] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"""SELECT COUNT(*) AS c FROM present"""
-        .map(rs => rs.long("c"))
+        .map(_.long("c"))
         .first()
         .apply()
         .get // safe

@@ -12,7 +12,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence}
+import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence, RevokeWarning}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -83,8 +83,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
               List("対象のプレゼントが存在しません")
             } else {
               List(
-                "対象のプレゼント一覧：",
-                "------------------"
+                s"${ChatColor.GRAY}${ChatColor.UNDERLINE}対象のプレゼント一覧：${ChatColor.RESET}",
               ) ::: presents
             }
 
@@ -383,11 +382,18 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                 else
                   globalUUID2Name.filter { case (_, name) => restArg.contains(name) }.keys
                 errorIfNobody = if (target.isEmpty) Some(MessageEffect("対象のプレイヤーが存在しません！")) else None
-                _ <- persistence.revoke(presentId, target.toSet)
+                warning <- persistence.revoke(presentId, target.toSet)
               } yield {
-                errorIfNobody.getOrElse(MessageEffect(
-                  s"プレゼント(id: $presentId)を受け取れるプレイヤーを削除しました。"
-                ))
+                errorIfNobody.getOrElse {
+                  warning.map {
+                    case RevokeWarning.NoSuchPresentID => MessageEffect("そのようなプレゼントIDはありません！")
+                    case RevokeWarning.NoPlayers => MessageEffect("対象となるプレイヤーが存在しません！")
+                  }.getOrElse {
+                    MessageEffect(
+                      s"プレゼント(id: $presentId)を受け取れるプレイヤーを削除しました。"
+                    )
+                  }
+                }
               }
               eff.toIO
             } else {

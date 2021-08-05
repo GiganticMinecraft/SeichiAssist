@@ -47,7 +47,7 @@ trait PresentPersistence[F[_], ItemStack] {
    * @param players   受け取ることができないようにするプレイヤーのUUID
    * @return 永続化層への書き込みを行う作用
    */
-  def revoke(presentID: PresentID, players: Set[UUID]): F[Unit]
+  def revoke(presentID: PresentID, players: Set[UUID]): F[Option[RevokeWarning]]
 
   /**
    * 永続化層でプレゼントを受け取ったことにする。
@@ -67,8 +67,8 @@ trait PresentPersistence[F[_], ItemStack] {
 
   /**
    * ページネーション付きでプレイヤーがプレゼントを受け取ることができるかどうか列挙する。
-   * このときのページネーションは、[[PresentID]]が最も若いエントリから先に出現するように行われるが、
-   * ページネーションされたMap内での各エントリの出現順序は未規定である。
+   * このときのページネーションは、[[PresentID]]が最も若いエントリから先に出現するように行われる。
+   * また、ページネーションされたListの中での出現順序も、[[PresentID]]が最も若いエントリから先に出現する。
    *
    * 例として以下のような状況を仮定する:
    *   - 既知のPresentIDとItemStackのエントリ: `List((1, aaa), (3, ccc), (6, fff), (4, ddd), (5, eee), (2, bbb))`
@@ -79,7 +79,7 @@ trait PresentPersistence[F[_], ItemStack] {
    *
    * この時 `pp.mappingWithPagination(A, 1, 5)` を呼び出すと、作用の中で計算される結果は次のとおりになる:
    *
-   * `Map(1 -> Claimed, 2 -> Claimed, 3 -> Claimed, 4 -> NotClaimed, 5 -> Unavailable)`
+   * `List(1 -> Claimed, 2 -> Claimed, 3 -> Claimed, 4 -> NotClaimed, 5 -> Unavailable)`
    *
    * 備考:
    *   - 実装によっては、[[fetchState]]などを呼び出して有効なエントリを全列挙する可能性がある。
@@ -96,7 +96,7 @@ trait PresentPersistence[F[_], ItemStack] {
                                 player: UUID,
                                 perPage: Int Refined Positive,
                                 page: Int Refined Positive
-                              ): F[Either[PaginationRejectReason, Map[PresentID, PresentClaimingState]]]
+                              ): F[Either[PaginationRejectReason, List[(PresentID, PresentClaimingState)]]]
 
   /**
    * プレイヤーがプレゼントを受け取ることができるかどうか列挙する。このとき、計算されるMapは次の性質を満たす:
@@ -112,7 +112,7 @@ trait PresentPersistence[F[_], ItemStack] {
   def fetchState(player: UUID): F[Map[PresentID, PresentClaimingState]]
 
   /**
-   * 指定したプレゼントIDからプレゼントを引き出す。
+   * 指定したプレゼントIDでプレゼントを検索する。
    *
    * @param presentID プレゼントID
    * @return 存在する場合は`Some[ItemStack]`、存在しない場合は`None`を返す作用
