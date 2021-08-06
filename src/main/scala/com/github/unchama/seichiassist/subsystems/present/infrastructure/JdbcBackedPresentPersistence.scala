@@ -71,16 +71,14 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
           import scala.collection.Seq.iterableFactory
 
           val initialValues = players
-            // すでに存在しているプレゼントIDとプレイヤーの組をINSERT
-            // すると整合性違反になるためフィルタ
-            .filterNot { alreadyAddedPlayers contains _ }
             .map { uuid => Seq(presentID, uuid.toString, false) }
             .toSeq
 
           DB.localTx { implicit session =>
+            // upsert - これによってfilterなしで整合性違反を起こすことはなくなる
             sql"""
                   INSERT INTO present_state VALUES (?, ?, ?)
-                  ON DUPLICATE KEY UPDATE present_id=present_id
+                  ON DUPLICATE KEY UPDATE present_id=present_id, uuid=uuid
                  """
               .batch(initialValues: _*)
               .apply()
