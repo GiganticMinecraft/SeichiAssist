@@ -86,11 +86,12 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
               .apply()
           }
 
-          None
+          // 型推論
+          None: Option[GrantRejectReason]
         }
       } else {
         // 型推論
-        Applicative[F].pure(Some(GrantRejectReason.NoSuchPresentID: GrantRejectReason))
+        Applicative[F].pure(Some(GrantRejectReason.NoSuchPresentID: GrantRejectReason): Option[GrantRejectReason])
       }
     }
 
@@ -166,7 +167,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
             .apply()
         }
 
-        Right(filledEntries(associatedEntries, idSliceWithPagination))
+        Right(filledEntries(associatedEntries, idSliceWithPagination).toList)
       }
     }
   }
@@ -184,7 +185,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
           .apply()
       }
 
-      filledEntries(associatedEntries, validPresentIDs)
+      filledEntries(associatedEntries, validPresentIDs).toMap
     }
   }
 
@@ -222,9 +223,9 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     ItemStackBlobProxy.blobToItemStack(rs.string("itemstack"))
   }
 
-  private def filledEntries(knownState: List[(PresentID, PresentClaimingState)], validGlobalId: Iterable[PresentID]) = {
-    val globalEntries = validGlobalId.map(id => (id, PresentClaimingState.Unavailable)).toMap
-    globalEntries ++ knownState
+  private def filledEntries(knownState: List[(PresentID, PresentClaimingState)], validGlobalId: Iterable[PresentID]): Iterable[(PresentID, PresentClaimingState)] = {
+    val globalEntries = validGlobalId.map(id => (id, PresentClaimingState.Unavailable))
+    (globalEntries ++ knownState)
   }
 
   private def computeValidPresentCount: F[Long] = Sync[F].delay {
