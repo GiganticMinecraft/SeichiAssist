@@ -97,8 +97,8 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
 
     object ListSubCommand {
       val help: EchoExecutor = EchoExecutor(MessageEffect(List(
-        "/present list",
-        "    全てのプレゼントを表示します",
+        "/present list <ページ数>",
+        "    全てのプレゼントをページに分けて表示します",
       )))
 
       /**
