@@ -48,6 +48,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
 
     //整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
+      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_FALL, 0.0F, -1.0F)
       player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。")
       return
     }
