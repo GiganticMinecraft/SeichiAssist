@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.util
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
@@ -278,7 +278,7 @@ object BreakUtil {
    * world 内での整地量倍率を計算する。
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
    */
-  def blockCountWeight[F[_]: JavaTime](world: World): F[Double] = {
+  def blockCountWeight[F[_]: JavaTime: Sync](world: World): F[Double] = Sync[F].delay {
     val managedWorld = ManagedWorld.fromBukkitWorld(world)
     val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
     val isMonthlyPrizeDay = LocalDate.now().getDayOfMonth == 21
@@ -316,6 +316,7 @@ object BreakUtil {
                      shouldPlayBreakSound: Boolean,
                      toMaterial: Material = Material.AIR): IO[Unit] = {
 
+    import PluginExecutionContexts.timer
     for {
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
@@ -377,7 +378,7 @@ object BreakUtil {
 
       //プレイヤーの統計を増やす
       totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m, _) => m })
-      blockCountWeight <- IO(blockCountWeight(player.getWorld))
+      blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 
       _ <- SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, expIncrease).toIO
