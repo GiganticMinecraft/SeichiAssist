@@ -12,6 +12,7 @@ object Y5DoubleSlabCanceller extends Listener {
    *   - プレイヤーが手に持っているブロックが焼き石のハーフブロックである
    *   - 対象座標の改変後ブロックが焼き石の二段重ねハーフブロックである
    *   - 対象座標が整地ワールドを指している
+   *   - 対象ブロックのY座標が5である
    * @see https://github.com/GiganticMinecraft/SeichiAssist/issues/775
    * @param event 対象イベント
    */
@@ -23,6 +24,7 @@ object Y5DoubleSlabCanceller extends Listener {
     if (event.getBlockPlaced.getType ne Material.DOUBLE_STEP) return
     if (event.getBlockPlaced.getData != 0) return
     if (!event.getBlockPlaced.getWorld.isSeichi) return
+    if (event.getBlockPlaced.getY != 5) return
     event.setCancelled(true)
     event.getPlayer.sendMessage("Y5のハーフブロックを二段重ねにすることはできません。")
   }
