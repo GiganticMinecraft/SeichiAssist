@@ -31,7 +31,7 @@ object System {
     implicit val sendBukkitMessage: SendMinecraftMessage[F, Player] = SendBukkitMessage[F]
     implicit val broadcastBukkitMessage: BroadcastMinecraftMessage[F] = BroadcastBukkitMessage[F]
 
-    StreamExtra.compileToRestartingStream {
+    StreamExtra.compileToRestartingStream("[HalfHourRanking]") {
       breakCountReadAPI
         .batchedIncreases(30.minutes)
         .map(RankingRecord.apply)

@@ -56,11 +56,9 @@ object System {
       expBarSynchronizationRepositoryHandles <- {
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.TwoPhased(
-              ExpBarSynchronizationRepositoryTemplate.initialization[G, F, Player](
-                breakCountReadAPI.seichiAmountUpdates,
-                visibilityValues
-              )(CreateFreshBossBar.in[G, F]),
+            RepositoryDefinition.Phased.TwoPhased(
+              ExpBarSynchronizationRepositoryTemplate
+                .initialization[G, F, Player](breakCountReadAPI, visibilityValues)(CreateFreshBossBar.in[G, F]),
               ExpBarSynchronizationRepositoryTemplate.finalization[G, F, Player]
             )
           )

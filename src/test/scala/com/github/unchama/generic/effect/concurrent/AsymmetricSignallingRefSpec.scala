@@ -1,6 +1,6 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.effect.{ContextShift, IO, SyncIO, Timer}
+import cats.effect.{ContextShift, IO, Timer}
 import com.github.unchama.testutil.concurrent.tests.ConcurrentEffectTest
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.eval.Task
@@ -35,16 +35,16 @@ class AsymmetricSignallingRefSpec
     "signal all the changes" in {
       val initialValue: Value = 0
 
-      forAll(minSuccessful(100)) { updates: List[Value] =>
+      forAll(minSuccessful(10000)) { updates: List[Value] =>
         val task = for {
-          ref <- AsymmetricSignallingRef.in[Task, SyncIO, Task, Value](initialValue)
+          ref <- AsymmetricSignallingRef.in[Task, Task, Task, Value](initialValue)
           updateResult <-
             ref
               .valuesAwait
               .use { stream =>
                 for {
                   resultFiber <- stream.take(updates.length).compile.toList.start
-                  _ <- Task.liftFrom[SyncIO].apply(updates.traverse(ref.set))
+                  _ <- updates.traverse(ref.set)
                   result <- resultFiber.join
                 } yield result
               }

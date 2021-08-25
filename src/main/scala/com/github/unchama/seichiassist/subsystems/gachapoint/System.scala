@@ -59,7 +59,7 @@ object System {
 
         EffectExtra.runAsyncAndForget[F, G, Unit] {
           streams
-            .traverse(StreamExtra.compileToRestartingStream(_).start)
+            .traverse(StreamExtra.compileToRestartingStream("[GachaPoint]")(_).start)
             .as(())
         }
       }

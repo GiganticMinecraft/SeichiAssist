@@ -1,6 +1,5 @@
 package com.github.unchama.generic.effect.stream
 
-import cats.{Id, Monad}
 import com.github.unchama.generic.Token
 import fs2.{Chunk, Pipe, Stream}
 
@@ -17,7 +16,7 @@ object ReorderingPipe {
   case class TimeStamped[+A](currentStamp: Token, nextStamp: Token, value: A)
 
   /**
-   * [[ReorderingPipe.apply]] で返される[[Pipe]]が使用する内部状態。
+   * ReorderingPipeの内部状態。
    *
    * @param nextToken 次の値のタイムスタンプ
    * @param waitMap   [[TimeStamped.currentStamp]]をキーに、パイプにすでに到着した値とその次のタイムスタンプを保持する [[Map]]
@@ -45,38 +44,12 @@ object ReorderingPipe {
   /**
    * シーケンスされたタイムスタンプ付きの値を流す [[Stream]] を並び替える [[Pipe]]。
    *
-   * 与えられたストリームの最初のChunkの極小の [[TimeStamped.currentStamp]] よりも
-   * タイムスタンプが古い要素は返されるストリームに出力されない。
+   * `token` よりもタイムスタンプが古い要素は返されるストリームに出力されない。
+   *
+   * @param token 出力 [[Stream]] の最初の要素となることを期待される入力が持つタイムスタンプ
    */
-  def apply[F[_], A]: Pipe[F, TimeStamped[A], A] =
-    in => StreamExtra.uncons(in).flatMap { case (firstChunk, rest) =>
-      val vector = firstChunk.toVector // nonempty
-      val nextTokenMap: Map[Token, TimeStamped[A]] = vector.map(t => (t.nextStamp, t)).toMap
-      val minimalTimeStamp = {
-        @tailrec
-        def go(currentCandidate: TimeStamped[A]): TimeStamped[A] =
-          nextTokenMap.get(currentCandidate.currentStamp) match {
-            case Some(value) => go(value)
-            case None => currentCandidate
-          }
-
-        go(vector.head)
-      }
-
-      val (initialWaitMap, initialChunk) = {
-        val remainingValuesInFirstChunk = nextTokenMap.removed(minimalTimeStamp.nextStamp).values
-
-        WaitMap[A](
-          minimalTimeStamp.nextStamp,
-          remainingValuesInFirstChunk
-            .map { case TimeStamped(currentStamp, nextStamp, value) =>
-              (currentStamp, (value, nextStamp))
-            }
-            .toMap
-        ).flushWith(Chunk.empty)
-      }
-
-      Stream.emit(minimalTimeStamp.value) ++ Stream.chunk(initialChunk) ++
-        rest.scanChunks(initialWaitMap) { case (waitMap, nextChunk) => waitMap.flushWith(nextChunk) }
+  def withInitialToken[F[_], A](token: Token): Pipe[F, TimeStamped[A], A] =
+    _.scanChunks(WaitMap[A](token, Map.empty)) { case (waitMap, nextChunk) =>
+      waitMap.flushWith(nextChunk)
     }
 }

@@ -22,8 +22,10 @@ abstract class AsymmetricSignallingRef[G[_], F[_], A] extends Ref[G, A] {
 
   /**
    * 更新値へのsubscriptionを [[Resource]] として表現したもの。
-   * subscriptionが有効になった瞬間に [[Resource]] として利用可能になり、
+   * subscriptionが有効になった後に [[Resource]] として利用可能になり、
    * 利用が終了した後に自動的にunsubscribeされる。
+   *
+   * [[Resource]] として利用可能である間は更新が行われた順に更新値が全て得られることが保証される。
    */
   val valuesAwait: Resource[F, Stream[F, A]]
 
@@ -99,7 +101,13 @@ object AsymmetricSignallingRef {
     override val valuesAwait: Resource[F, Stream[F, A]] =
       changeTopic
         .subscribeAwait(topicQueueSize)
-        .map(_.through(ReorderingPipe[F, A]))
+        .flatMap { subscription =>
+          Resource.liftF {
+            state.get.map { currentValue =>
+              subscription.through(ReorderingPipe.withInitialToken[F, A](currentValue.nextStamp))
+            }
+          }.mapK(GToF)
+        }
 
     override def get: G[A] = state.get.map(_.value)
 

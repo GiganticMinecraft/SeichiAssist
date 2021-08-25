@@ -18,7 +18,7 @@ object System {
   ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]) : F[A] = {
     val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
 
-    StreamExtra.compileToRestartingStream {
+    StreamExtra.compileToRestartingStream("[breakcount.notification]") {
       breakCountReadAPI
         .seichiLevelUpdates
         .either(breakCountReadAPI.seichiStarLevelUpdates)

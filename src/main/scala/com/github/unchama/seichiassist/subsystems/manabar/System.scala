@@ -20,7 +20,7 @@ object System {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val definition =
-      ManaBarSynchronizationRepository.withContext(manaApi.manaAmountUpdates)(CreateFreshBossBar.in[G, F])
+      ManaBarSynchronizationRepository.withContext(manaApi)(CreateFreshBossBar.in[G, F])
 
     BukkitRepositoryControls.createHandles(definition).map { control =>
       new Subsystem[F] {

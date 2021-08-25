@@ -24,7 +24,7 @@ object ManaRepositoryDefinition {
    (implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player])
   : RepositoryDefinition[G, Player, Ref[G, LevelCappedManaAmount]] = {
 
-    val valueRepository: RepositoryDefinition.TwoPhased[G, Player, LevelCappedManaAmount] =
+    val valueRepository: RepositoryDefinition.Phased.TwoPhased[G, Player, LevelCappedManaAmount] =
       RefDictBackedRepositoryDefinition
         .usingUuidRefDict[G, Player, ManaAmount](persistence)(ManaAmount(0))
         .toTwoPhased
@@ -35,7 +35,7 @@ object ManaRepositoryDefinition {
         )(cappedMana => Monad[G].pure(cappedMana.manaAmount))
 
     SignallingRepositoryDefinition
-      .forPlayerTopic[G, F, Player, LevelCappedManaAmount](publishChanges)(valueRepository)
+      .withPublishSinkHidden[G, F, Player, LevelCappedManaAmount](publishChanges)(valueRepository)
   }
 
 }

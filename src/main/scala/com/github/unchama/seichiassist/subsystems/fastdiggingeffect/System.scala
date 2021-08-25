@@ -76,7 +76,7 @@ object System {
       effectListRepositoryHandles <- {
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.SinglePhased(
+            RepositoryDefinition.Phased.SinglePhased(
               EffectListRepositoryDefinitions.initialization[F, G],
               EffectListRepositoryDefinitions.tappingAction[F, G, Player](effectListTopic),
               EffectListRepositoryDefinitions.finalization[F, G, UUID]
@@ -106,7 +106,7 @@ object System {
       }
 
       _ <-
-        StreamExtra.compileToRestartingStream[F, Unit] {
+        StreamExtra.compileToRestartingStream[F, Unit]("[FastDiggingEffect/EffectStatsNotification]") {
           EffectStatsNotification.using[F, Player](effectListDiffTopic.subscribe(1).mapFilter(identity))
         }.start
 
@@ -176,15 +176,15 @@ object System {
       implicit val api: FastDiggingEffectApi[F, Player] = system.effectApi
 
       List(
-        BreakCountEffectSynchronization.using[F, H, Player],
-        PlayerCountEffectSynchronization.using[F, Player],
-        SynchronizationProcess.using[F, Player](
+        "BreakCountEffectSynchronization" -> BreakCountEffectSynchronization.using[F, H, Player],
+        "PlayerCountEffectSynchronization" -> PlayerCountEffectSynchronization.using[F, Player],
+        "SynchronizationProcess" -> SynchronizationProcess.using[F, Player](
           system.settingsApi.currentSuppressionSettings,
           system.effectApi.effectClock
         )
-      ).traverse(
-        StreamExtra.compileToRestartingStream(_).start
-      )
+      ).traverse { case (str, stream) =>
+        StreamExtra.compileToRestartingStream(s"[FastDiggingEffect/$str]")(stream).start
+      }
     }
   }
 }

@@ -33,7 +33,7 @@ object System {
       }
     }
 
-    StreamExtra.compileToRestartingStream {
+    StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {
       breakCountReadApi
         .seichiLevelUpdates
         .evalTap { case (player, diff) => interpreter.onLevelDiff(diff).run(player) }
