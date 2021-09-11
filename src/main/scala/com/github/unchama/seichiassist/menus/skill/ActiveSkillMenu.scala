@@ -298,7 +298,7 @@ object ActiveSkillMenu extends Menu {
                   List(
                     requiredPointDescription,
                     s"$RESET${DARK_RED}水凝固/熔岩凝固の双方を扱える者にのみ発現する上位凝固スキル",
-                    s"$RESET${DARK_RED}アサルト・アーマーの発現には影響しない",
+                    s"$RESET${DARK_RED}アサルト・アーマーの取得には必要ない",
                     s"$RESET$AQUA${UNDERLINE}クリックで解除"
                   )
                 case SeichiSkill.AssaultArmor =>
