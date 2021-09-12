@@ -13,7 +13,7 @@ import org.bukkit.command.TabExecutor
 object FourDimensionalPocketCommand{
     def executor(implicit api: FourDimensionalPocketApi[IO, Player] ):TabExecutor =
     playerCommandBuilder
-      .execution {player => IO.pure(UnfocusedEffect(api.openPocketInventory(player)))}
+      .execution {player => IO.pure(UnfocusedEffect(api.openPocketInventory(Player)))}
       .build()
       .asNonBlockingTabExecutor()
 }
