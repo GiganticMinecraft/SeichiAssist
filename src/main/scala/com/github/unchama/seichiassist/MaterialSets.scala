@@ -41,6 +41,9 @@ object MaterialSets {
     Material.WOODEN_DOOR, Material.ACACIA_DOOR, Material.BIRCH_DOOR, Material.DARK_OAK_DOOR,
     Material.JUNGLE_DOOR, Material.SPRUCE_DOOR,
     Material.SMOOTH_STAIRS, Material.BREWING_STAND, Material.WOOD_STEP, Material.TNT,
+    //#1027,#1159
+    Material.WOOD_STEP, Material.WOOD_DOUBLE_STEP,
+    Material.DISPENSER, Material.PISTON_STICKY_BASE, Material.STRING
   ) ++ fortuneMaterials
 
   // これらのマテリアルを持つブロックは破壊を整地量に計上しない
