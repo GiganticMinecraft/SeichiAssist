@@ -631,7 +631,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
     val inventory = event.getInventory
 
-    //インベントリサイズが36でなければ処理を終了させる
+    //インベントリサイズが36、あるいはインベントリのタイトルが予期したものでなければ処理を終了させる
     if (inventory.row != 4 ||  inventory.getTitle != s"$GOLD${BOLD}名義をなくしたいアイテムを投入してください"){
       return
     }
@@ -661,7 +661,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         player.sendMessage(s"{GREEN} ${count}個のアイテムのを認識し、所有者表記「なし」に変更しました")
       }
     }
-  
+
 }
 
 
