@@ -643,7 +643,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
               val RemovedNameLore = itemLore.filterNot( n => itemLore.startsWith("所有者"))
               val NewLore = RemovedNameLore.::("名義:なし").asInstanceOf[java.util.List[String]]
               //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
-                  itemLore.map(x => Nil).foldLeft(Nil: List[Int])(_ ++ _)
+                  itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
                 m.getItemMeta.setLore(NewLore)
             }
             if (!Util.isPlayerInventoryFull(player)) {
