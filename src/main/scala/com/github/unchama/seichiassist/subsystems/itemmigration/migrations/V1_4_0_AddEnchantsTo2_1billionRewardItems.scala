@@ -46,7 +46,13 @@ object V1_4_0_AddEnchantsTo2_1billionRewardItems {
   def migrationFunction(itemStack: ItemStack): ItemStack = {
     if (!is2_1billionRewardItems(itemStack)) return itemStack
 
-    itemStack.clone().addEnchantments(Map(Enchantment.MENDING -> 1, Enchantment.DURABILITY -> 5).asJava)
+    import scala.util.chaining._
+
+    itemStack.clone().tap { item =>
+      import item._
+      addEnchantment(Enchantment.MENDING, 1)
+      addEnchantment(Enchantment.DURABILITY, 5)
+    }
   }
 
   def is2_1billionRewardItems(itemStack: ItemStack): Boolean = {
