@@ -654,7 +654,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
               item.getItemMeta.setLore(newLore)
             }
           }
-         Util.grantItemStacksEffect[IO]()
+         Util.grantItemStacksEffect[IO](item)
         }
       }
       if (count < 1){
