@@ -27,7 +27,6 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
-import scala.util.chaining.scalaUtilChainingOps
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               manaApi: ManaApi[IO, SyncIO, Player],
@@ -617,7 +616,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
 
   }
-  
+
   @EventHandler
   /**
    * 名義除去システム
