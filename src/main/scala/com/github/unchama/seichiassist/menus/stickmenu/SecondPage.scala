@@ -57,7 +57,7 @@ object SecondPage extends Menu {
       ChestSlotRef(0, 8) -> hubCommandButton,
       ChestSlotRef(3, 0) -> CommonButtons.openStickMenu,
       ChestSlotRef(3, 3) -> recycleBinButton,
-      ChestSlotRef(3, 6) -> ItemNameRemoveButton,
+      ChestSlotRef(3, 6) -> removeItemOwnerNameButton,
       ChestSlotRef(3, 7) -> titanConversionButton,
       ChestSlotRef(3, 8) -> appleConversionButton
     )
@@ -478,7 +478,7 @@ object SecondPage extends Menu {
       )
     }
 
-    val ItemNameRemoveButton:Button = {
+    val removeItemOwnerNameButton:Button = {
       val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_BARDING, durability = 1)
         .title(s"$YELLOW$UNDERLINE${BOLD}所有者表記削除システム")
         .lore(
