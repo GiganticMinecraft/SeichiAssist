@@ -44,7 +44,7 @@ object V1_4_0_AddEnchantsTo2_1billionRewardItems {
   )
 
   def migrationFunction(itemStack: ItemStack): ItemStack = {
-    if (!is2_1billionRewardItems(itemStack)) return itemStack
+    if (!is21billionRewardItems(itemStack)) return itemStack
 
     import scala.util.chaining._
 
@@ -55,17 +55,17 @@ object V1_4_0_AddEnchantsTo2_1billionRewardItems {
     }
   }
 
-  def is2_1billionRewardItems(itemStack: ItemStack): Boolean = {
+  def is21billionRewardItems(itemStack: ItemStack): Boolean = {
     if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasDisplayName || !itemStack.getItemMeta.hasLore) return false
-    isRewardGaeaReplica(itemStack) || isRewardTitanReplica(itemStack)
+    isRewardedGaeaReplica(itemStack) || isRewardedTitanReplica(itemStack)
   }
 
-  def isRewardTitanReplica(item: ItemStack): Boolean = {
+  def isRewardedTitanReplica(item: ItemStack): Boolean = {
     val lores = item.getItemMeta.getLore.asScala
     item.getItemMeta.getDisplayName == titanReplicaName && lores.contains(titanReplicaLore) && lores.contains(commonLore)
   }
 
-  def isRewardGaeaReplica(item: ItemStack): Boolean = {
+  def isRewardedGaeaReplica(item: ItemStack): Boolean = {
     val lores = item.getItemMeta.getLore.asScala
     item.getItemMeta.getDisplayName == gaeaReplicaName && lores.contains(gaeaReplicaLore) && lores.contains(commonLore)
   }
