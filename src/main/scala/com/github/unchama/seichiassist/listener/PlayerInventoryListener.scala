@@ -621,7 +621,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
    * 名義除去システム
    */
   @EventHandler
-  def onItemNameRemoveEvent(event: InventoryCloseEvent): Unit = {
+  def onItemOwnerNameRemoveEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer match {
       case p: Player => p
       case _ => return
