@@ -26,7 +26,7 @@ import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
+import scala.jdk.CollectionConverters._
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               manaApi: ManaApi[IO, SyncIO, Player],
