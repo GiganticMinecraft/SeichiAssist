@@ -480,12 +480,12 @@ object SecondPage extends Menu {
 
     val ItemNameRemoveButton:Button = {
       val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_BARDING, durability = 1)
-        .title(s"$YELLOW$UNDERLINE${BOLD}名義削除システム")
+        .title(s"$YELLOW$UNDERLINE${BOLD}所有者表記削除システム")
         .lore(List(
-          s"$RESET${GREEN}所有者表記を取り除きたいアイテムの所有者を",
+          s"$RESET${GREEN}所有者表記のあるアイテムの所有者を",
           s"$RESET${GOLD}「所有者：なし」RESET${GREEN}に変更します",
           s"$RESET${GREEN}出てきたインベントリに",
-          s"$RESET${GREEN}名義を削除したいアイテムを入れて",
+          s"$RESET${GREEN}表記を削除したいアイテムを入れて",
           s"$RESET${GREEN}escキーを押してください",
           s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
           s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
