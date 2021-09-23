@@ -620,7 +620,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
   @EventHandler
   def onItemNameRemoveEvent(event: InventoryCloseEvent): Unit = {
-    val player = event.getPlayer.asInstanceOf[Player]
+    val player = event.getPlayer match {
+      case p: Player => p
+      case _ => return
+    }
     val inventory = event.getInventory
 
     //インベントリサイズが36でなければ処理を終了させる
@@ -628,29 +631,29 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       return
     }
     if (inventory.getTitle == s"$GOLD${BOLD}名義をなくしたいアイテムを投入してください") {
-      val item = inventory.getContents
+      val items = inventory.getContents
 
       var count = 0
       //for文を使い、1つずつアイテムを見ていく
-      for(m <- item){
-        if(m != null){
-          if (m.getItemMeta.hasLore && m.getItemMeta.hasLore){
-            val itemstack: ItemStack = m.getData.toItemStack
+      for(item <- items){
+        if(item != null){
+          if (item.getItemMeta.hasLore && item.getItemMeta.hasLore){
+            val itemstack= item
             if (Util.itemStackContainsOwnerName(itemstack:ItemStack, player.getName)){
-              val itemLore = m.getItemMeta.getLore.asInstanceOf[List[String]]
+              val itemLore = item.getItemMeta.getLore.asInstanceOf[List[String]]
 
               //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
               val removedNameLore = itemLore.filterNot(n => n.startsWith("所有者"))
               val newLore = removedNameLore.::("所有者:なし").asInstanceOf[java.util.List[String]]
               //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
               itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
-              m.getItemMeta.setLore(newLore)
+              item.getItemMeta.setLore(newLore)
             }
           }
           if (Util.isPlayerInventoryFull(player)) {
-            Util.dropItem(player, m)
+            Util.dropItem(player, item)
           } else {
-            Util.addItem(player, m)
+            Util.addItem(player, item)
           }
         }
       }
