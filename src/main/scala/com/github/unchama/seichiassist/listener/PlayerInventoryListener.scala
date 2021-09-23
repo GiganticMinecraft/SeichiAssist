@@ -26,6 +26,7 @@ import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, SeqHasAsJava}
 import scala.util.chaining.scalaUtilChainingOps
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
@@ -618,8 +619,8 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
   }
 
 
-  @EventHandler
 
+  @EventHandler
   /**
    * 名義除去システム
    */
@@ -644,11 +645,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
           if (item.getItemMeta.hasLore && item.getItemMeta.hasLore){
             val itemstack= item
             if (Util.itemStackContainsOwnerName(itemstack:ItemStack, player.getName)){
-              val itemLore = item.getItemMeta.getLore.asInstanceOf[List[String]]
-
+              val itemLore = item.getItemMeta.getLore.asScala.toList
               //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
               val removedNameLore = itemLore.filterNot(n => n.startsWith("所有者"))
-              val newLore = removedNameLore.::("所有者:なし").asInstanceOf[java.util.List[String]]
+              val newLore = removedNameLore.::("所有者:なし").asJava
               //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
               itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
               item.getItemMeta.setLore(newLore)
