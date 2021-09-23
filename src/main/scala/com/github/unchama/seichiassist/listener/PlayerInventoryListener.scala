@@ -644,7 +644,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         if(item != null){
           if (item.hasItemMeta && item.getItemMeta.hasLore) {
             val itemstack= item
-            if (Util.itemStackContainsOwnerName(itemstack:ItemStack, player.getName)){
+            if (Util.itemStackContainsOwnerName(itemstack, player.getName)){
               val itemLore = item.getItemMeta.getLore.asScala.toList
               //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
               val removedNameLore = itemLore.filterNot(n => n.startsWith("所有者"))
