@@ -26,6 +26,7 @@ import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.chaining.scalaUtilChainingOps
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               manaApi: ManaApi[IO, SyncIO, Player],
@@ -613,5 +614,54 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     } else if (topinventory.getTitle == LIGHT_PURPLE.toString + "" + BOLD + "スキルを進化させました") {
       event.setCancelled(true)
     }
+
+  }
+
+
+  @EventHandler
+  def onItemNameRemoveEvent(event: InventoryCloseEvent): Unit = {
+    val player = event.getPlayer.asInstanceOf[Player]
+  //エラー分岐
+    val inventory = event.getInventory
+
+    //インベントリサイズが36でなければ処理を終了させる
+    if (inventory.row !=4){
+      return
+    }
+    if (inventory.getTitle == GOLD.toString + "" + BOLD + "名義をなくしたいアイテムを投入してください"){
+      val item = inventory.getContents
+
+      var count = 0
+      //for文を使い、1つずつアイテムを見ていく
+      for(m <- item){
+        if(m !=null){
+          if (m.getItemMeta.hasLore){
+            val itemstack: ItemStack = m.getData.toItemStack
+            if (Util.itemStackContainsOwnerName(itemstack:ItemStack, player.getName)){
+              val itemLore = m.getItemMeta.getLore.asInstanceOf[List[String]]
+              //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
+              val RemovedNameLore = itemLore.filterNot( n => itemLore.startsWith("所有者"))
+              val NewLore = RemovedNameLore.::("名義:なし").asInstanceOf[java.util.List[String]]
+              //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
+                  itemLore.map(x => Nil).foldLeft(Nil: List[Int])(_ ++ _)
+                m.getItemMeta.setLore(NewLore)
+            }
+            if (!Util.isPlayerInventoryFull(player)) {
+              Util.addItem(player, m)
+            } else {
+              Util.dropItem(player, m)
+            }
+          }
+        }
+      }
+      if (count < 1){
+        player.sendMessage(GREEN.toString + "所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
+      } else {
+        player.sendMessage(GREEN.toString + count +"個の認識されたアイテムの名義を「なし」に変更しました")
+      }
+    }
+
   }
 }
+
+
