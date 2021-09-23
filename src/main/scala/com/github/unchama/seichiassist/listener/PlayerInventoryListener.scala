@@ -617,9 +617,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
 
   }
-
-
-
+  
   @EventHandler
   /**
    * 名義除去システム
