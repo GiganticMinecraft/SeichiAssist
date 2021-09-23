@@ -635,32 +635,32 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     if (inventory.row != 4 ||  inventory.getTitle != s"$GOLD${BOLD}名義をなくしたいアイテムを投入してください"){
       return
     }
-      val items = inventory.getContents
+    val items = inventory.getContents
 
-      var count = 0
-      //for文を使い、1つずつアイテムを見ていく
-      for(item <- items){
-        if(item != null){
-          if (item.hasItemMeta && item.getItemMeta.hasLore) {
-            if (Util.itemStackContainsOwnerName(item, player.getName)){
-              val itemLore = item.getItemMeta.getLore.asScala.toList
-              //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
-              val removedNameLore = itemLore.filterNot(n => n.startsWith("所有者"))
-              val newLore = removedNameLore.::("所有者:なし").asJava
-              //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
-              itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
-              item.getItemMeta.setLore(newLore)
-            }
+    var count = 0
+    //for文を使い、1つずつアイテムを見ていく
+    for(item <- items){
+      if(item != null){
+        if (item.hasItemMeta && item.getItemMeta.hasLore) {
+          if (Util.itemStackContainsOwnerName(item, player.getName)){
+            val itemLore = item.getItemMeta.getLore.asScala.toList
+            //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
+            val removedNameLore = itemLore.filterNot(n => n.startsWith("所有者"))
+            val newLore = removedNameLore.::("所有者:なし").asJava
+            //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
+            itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
+            item.getItemMeta.setLore(newLore)
           }
-         Util.grantItemStacksEffect[IO](item)
         }
-      }
-      if (count < 1){
-        player.sendMessage(s"{GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
-      } else {
-        player.sendMessage(s"{GREEN} ${count}個のアイテムのを認識し、所有者表記「なし」に変更しました")
+        Util.grantItemStacksEffect[IO](item)
       }
     }
+    if (count < 1){
+      player.sendMessage(s"{GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
+    } else {
+        player.sendMessage(s"{GREEN} ${count}個のアイテムのを認識し、所有者表記「なし」に変更しました")
+    }
+  }
 
 }
 
