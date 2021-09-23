@@ -639,12 +639,13 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
             val itemstack: ItemStack = m.getData.toItemStack
             if (Util.itemStackContainsOwnerName(itemstack:ItemStack, player.getName)){
               val itemLore = m.getItemMeta.getLore.asInstanceOf[List[String]]
+
               //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
               val RemovedNameLore = itemLore.filterNot( n => itemLore.startsWith("所有者"))
               val NewLore = RemovedNameLore.::("名義:なし").asInstanceOf[java.util.List[String]]
               //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
-                  itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
-                m.getItemMeta.setLore(NewLore)
+              itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
+              m.getItemMeta.setLore(NewLore)
             }
             if (!Util.isPlayerInventoryFull(player)) {
               Util.addItem(player, m)
