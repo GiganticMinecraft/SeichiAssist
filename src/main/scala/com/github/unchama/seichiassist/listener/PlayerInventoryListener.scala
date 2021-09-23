@@ -625,10 +625,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     val inventory = event.getInventory
 
     //インベントリサイズが36でなければ処理を終了させる
-    if (inventory.row !=4){
+    if (inventory.row != 4){
       return
     }
-    if (inventory.getTitle == GOLD.toString + "" + BOLD + "名義をなくしたいアイテムを投入してください"){
+    if (inventory.getTitle == s"${GOLD}${BOLD}名義をなくしたいアイテムを投入してください") {
       val item = inventory.getContents
 
       var count = 0
