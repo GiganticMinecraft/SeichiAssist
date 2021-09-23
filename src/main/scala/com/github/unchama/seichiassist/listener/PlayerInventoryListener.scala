@@ -643,7 +643,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
             val itemLore = item.getItemMeta.getLore.asScala.toList
             //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
             val removedNameLore = itemLore.filterNot(n => n.startsWith("所有者"))
-            val newLore = removedNameLore.::("所有者:なし").asJava
+            val newLore = removedNameLore :: List[String]("所有者:なし").asJava
             //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
             itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
             item.getItemMeta.setLore(newLore)
