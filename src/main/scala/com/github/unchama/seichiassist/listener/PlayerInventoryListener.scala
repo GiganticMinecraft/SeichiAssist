@@ -642,7 +642,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       //for文を使い、1つずつアイテムを見ていく
       for(item <- items){
         if(item != null){
-          if (item.getItemMeta.hasLore && item.getItemMeta.hasLore) {
+          if (item.hasItemMeta && item.getItemMeta.hasLore) {
             val itemstack= item
             if (Util.itemStackContainsOwnerName(itemstack:ItemStack, player.getName)){
               val itemLore = item.getItemMeta.getLore.asScala.toList
