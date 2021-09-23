@@ -616,11 +616,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
 
   }
-
-  @EventHandler
   /**
    * 名義除去システム
    */
+  @EventHandler
   def onItemNameRemoveEvent(event: InventoryCloseEvent): Unit = {
     val player = event.getPlayer match {
       case p: Player => p
