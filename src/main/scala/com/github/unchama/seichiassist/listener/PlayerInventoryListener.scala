@@ -644,8 +644,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
               if (lore.contains("所有者")) "所有者:なし"
               else lore
             ).asJava
-            //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
-            itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
             item.getItemMeta.setLore(newItemLore)
             count += 1
           }
