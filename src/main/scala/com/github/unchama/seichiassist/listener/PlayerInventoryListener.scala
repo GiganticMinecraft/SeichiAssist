@@ -658,7 +658,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     if (count < 1) {
       player.sendMessage(s"{GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
     } else {
-      player.sendMessage(s"{GREEN} ${count}個のアイテムのを認識し、所有者表記「なし」に変更しました")
+      player.sendMessage(s"{GREEN} ${count}個のアイテムのを認識し、所有者表記を「なし」に変更しました")
     }
   }
 
