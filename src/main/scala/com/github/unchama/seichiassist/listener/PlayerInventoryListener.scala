@@ -27,6 +27,7 @@ import org.bukkit.{Bukkit, Material, Sound}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
+import scala.util.chaining._
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               manaApi: ManaApi[IO, SyncIO, Player],
@@ -644,7 +645,14 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
               if (lore.contains("所有者")) "所有者:なし"
               else lore
             ).asJava
-            item.getItemMeta.setLore(newItemLore)
+            val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
+              import meta._
+              //一度取り消してから新しくLoreを付与しないとついていたLoreが削除されず、Loreが二重になる?
+              getLore.clear()
+              setLore(newItemLore)
+            }
+            val itemStack = new ItemStack(item.getType, item.getAmount)
+            itemStack.setItemMeta(itemMeta)
             count += 1
           }
         }
