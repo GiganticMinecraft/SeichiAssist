@@ -647,7 +647,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
             //ついているitemLoreをNilに置き換え、そこからまたNewLoreをセットする
             itemLore.map(loreElement => Nil).foldLeft(Nil: List[Int])(_ ++ _)
             item.getItemMeta.setLore(newItemLore)
-		  count += 1
+            count += 1
           }
         }
         Util.grantItemStacksEffect[IO](item)
