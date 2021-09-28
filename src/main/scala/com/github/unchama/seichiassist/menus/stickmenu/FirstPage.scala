@@ -549,7 +549,6 @@ object FirstPage extends Menu {
     def teleportServerButton(implicit ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type): Button = {
       val buttonLore = List(
         s"$GRAY・各サバイバルサーバー",
-        s"$GRAY・建築サーバー",
         s"$GRAY・公共施設サーバー",
         s"${GRAY}間を移動する時に使います",
         s"$DARK_RED${UNDERLINE}クリックして開く"
