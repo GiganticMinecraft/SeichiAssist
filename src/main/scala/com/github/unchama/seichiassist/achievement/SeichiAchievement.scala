@@ -1,19 +1,22 @@
 package com.github.unchama.seichiassist.achievement
 
-import java.time.{DayOfWeek, Month}
-
 import cats.effect.IO
 import com.github.unchama.seichiassist.achievement.NamedHoliday.SpringEquinoxDay
 import enumeratum.{Enum, EnumEntry}
 import org.bukkit.entity.Player
+
+import java.time.{DayOfWeek, Month}
 
 sealed abstract class SeichiAchievement extends EnumEntry {
   val id: Int
 }
 
 object SeichiAchievement extends Enum[SeichiAchievement] {
+
   sealed trait Unlockable
+
   sealed trait AutoUnlocked
+
   sealed trait ManuallyUnlocked
 
   sealed abstract class Normal[P] extends SeichiAchievement with Unlockable {
@@ -234,7 +237,18 @@ object SeichiAchievement extends Enum[SeichiAchievement] {
   case object No_9033 extends NormalManual(9033, playedIn(Month.SEPTEMBER))
   case object No_9034 extends NormalManual(9034, playedOn(Month.SEPTEMBER, 2, "とあるくじの日"))
   case object No_9035 extends NormalManual(9035, playedOn(Month.SEPTEMBER, 12, "とあるマラソンの日"))
-  case object No_9036 extends NormalManual(9036, playedOn(Month.SEPTEMBER, 29, "とあるふぐの日"))
+  case object No_9036 extends NormalManual(9036, playedOn(Month.SEPTEMBER, 15, "とある月見の日"))
+  case object No_9037 extends NormalManual(9037, playedOn(Month.SEPTEMBER, 21, "とある中秋の日"))
+  case object No_9038 extends NormalManual(9038, playedOn(Month.SEPTEMBER, 21, "とあるファッションショーの日"))
+  case object No_9039 extends NormalManual(9039, playedOn(Month.SEPTEMBER, 29, "とあるふぐの日"))
+  case object No_9040 extends NormalManual(9040, playedIn(Month.OCTOBER))
+  case object No_9041 extends NormalManual(9041, playedOn(Month.OCTOBER, 10, "とあるスポーツの日"))
+  case object No_9042 extends NormalManual(9042, playedIn(Month.NOVEMBER))
+  case object No_9043 extends NormalManual(9043, playedOn(Month.NOVEMBER, 15, "とある七五三の日"))
+  case object No_9044 extends NormalManual(9044, playedOn(Month.NOVEMBER, 29, "とある特上の肉の日"))
+  case object No_9045 extends NormalManual(9045, playedIn(Month.DECEMBER))
+  case object No_9046 extends NormalManual(9046, playedOn(Month.DECEMBER, 1, "とある年の暮れの日"))
+  case object No_9047 extends NormalManual(9047, playedOn(Month.DECEMBER, 25, "とあるクリスマスの日"))
 
   val values: IndexedSeq[SeichiAchievement] = findValues
 
