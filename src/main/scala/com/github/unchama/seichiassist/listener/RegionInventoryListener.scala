@@ -282,7 +282,7 @@ object RegionInventoryListener {
       case Util.Direction.EAST =>
         (
           new Location(world, start_x - 15 * behindUnitAmount, 0.0, start_z + 15 * leftsideUnitAmount),
-          new Location(world, end_x + 15 * aheadUnitAmount, 256.0, end_z + 15 * rightsideUnitAmount)
+          new Location(world, end_x - 15 * aheadUnitAmount, 256.0, end_z + 15 * rightsideUnitAmount)
         )
 
       case Util.Direction.SOUTH =>
