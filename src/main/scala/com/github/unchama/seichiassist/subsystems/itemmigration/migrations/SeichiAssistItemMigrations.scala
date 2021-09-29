@@ -17,7 +17,8 @@ object SeichiAssistItemMigrations {
     V1_0_0_MigrateMebiusToNewCodec.migration,
     V1_1_0_AddUnbreakableToNarutoRemake.migration,
     V1_2_0_FixTypoOf4thAnniversaryGT.migration,
-    V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem.migration
+    V1_3_0_RemoveUnnecessaryLoreOfHalloweenItem.migration,
+    V1_4_0_AddEnchantsTo2_1billionRewardItems.migration
   ))
 
 }

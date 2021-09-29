@@ -58,7 +58,6 @@ object SecondPage extends Menu {
       ChestSlotRef(3, 0) -> CommonButtons.openStickMenu,
       ChestSlotRef(3, 3) -> recycleBinButton,
       ChestSlotRef(3, 6) -> removeItemOwnerNameButton,
-      ChestSlotRef(3, 7) -> titanConversionButton,
       ChestSlotRef(3, 8) -> appleConversionButton
     )
 

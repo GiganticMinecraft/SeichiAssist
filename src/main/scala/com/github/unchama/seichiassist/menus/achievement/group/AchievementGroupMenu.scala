@@ -53,7 +53,7 @@ object AchievementGroupMenu {
       AchievementEntry.within(8001 to 8003)
 
     case Anniversaries =>
-      AchievementEntry.within(9001 to 9036)
+      AchievementEntry.within(9001 to 9047)
 
     case MebiusBreeder =>
       AchievementEntry.within(0 until 0)

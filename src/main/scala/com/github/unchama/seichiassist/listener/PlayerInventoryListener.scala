@@ -366,47 +366,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
   }
 
-  @EventHandler
-  def onTitanRepairEvent(event: InventoryCloseEvent): Unit = {
-    val player = event.getPlayer.asInstanceOf[Player]
-    //エラー分岐
-    val inventory = event.getInventory
-
-    //インベントリサイズが36でない時終了
-    if (inventory.row != 4) {
-      return
-    }
-    if (inventory.getTitle == GOLD.toString + "" + BOLD + "修繕したい限定タイタンを入れてネ") {
-      //インベントリの中身を取得
-      val item = inventory.getContents
-
-      var count = 0
-      //for文で１個ずつ対象アイテムか見る
-      //インベントリを一個ずつ見ていくfor文
-      for (m <- item) {
-        if (m != null) {
-          if (m.getItemMeta.hasLore) {
-            if (Util.isLimitedTitanItem(m)) {
-              m.setDurability(1.toShort)
-              count += 1
-            }
-          }
-
-          if (!Util.isPlayerInventoryFull(player)) {
-            Util.addItem(player, m)
-          } else {
-            Util.dropItem(player, m)
-          }
-        }
-      }
-      if (count < 1) {
-        player.sendMessage(GREEN.toString + "限定タイタンを認識しませんでした。すべてのアイテムを返却します")
-      } else {
-        player.sendMessage(GREEN.toString + "限定タイタンを" + count + "個認識し、修繕しました。")
-      }
-    }
-  }
-
   //投票ptメニュー
   @EventHandler
   def onVotingMenuEvent(event: InventoryClickEvent): Unit = {
