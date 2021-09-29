@@ -43,7 +43,7 @@ object MaterialSets {
     Material.SMOOTH_STAIRS, Material.BREWING_STAND, Material.WOOD_STEP, Material.TNT,
     //#1027,#1159
     Material.WOOD_STEP, Material.WOOD_DOUBLE_STEP,
-    Material.DISPENSER, Material.PISTON_STICKY_BASE, Material.STRING
+    Material.DISPENSER, Material.PISTON_STICKY_BASE, Material.WEB
   ) ++ fortuneMaterials
 
   // これらのマテリアルを持つブロックは破壊を整地量に計上しない
