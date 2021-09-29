@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket
 
 import cats.data.Kleisli
+import cats.effect.IO
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
@@ -8,13 +9,13 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.commands.FourDimensionalPocketCommand
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.OpenPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.FourDimensionalPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
@@ -39,7 +40,7 @@ object System {
   def wired[
     F[_] : ConcurrentEffect : OnMinecraftServerThread : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])(fourDimensionalPocketApi:FourDimensionalPocketApi[IO,Player])
    (implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
     val persistence: PocketInventoryPersistence[G, Inventory] =
       new JdbcBukkitPocketInventoryPersistence[G]
@@ -99,7 +100,6 @@ object System {
             },
           persistence.coerceContextTo[F]
         )
-
       new System[F, Player] {
         override val api: FourDimensionalPocketApi[F, Player] = systemApi
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
