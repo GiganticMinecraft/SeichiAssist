@@ -50,8 +50,11 @@ object V1_4_0_AddEnchantsTo2_1billionRewardItems {
 
     itemStack.clone().tap { item =>
       import item._
+
       addEnchantment(Enchantment.MENDING, 1)
-      addEnchantment(Enchantment.DURABILITY, 5)
+
+      // Durabilityはバニラ範囲では5に到達しないためunsafeに付与すべき
+      addUnsafeEnchantment(Enchantment.DURABILITY, 5)
     }
   }
 
