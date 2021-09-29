@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.util
 
+import cats.Functor
 import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
@@ -21,7 +22,7 @@ import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Dye
 
-import java.time.LocalDate
+import java.time.{LocalDate, ZoneId}
 import java.util.Random
 import java.util.stream.IntStream
 
@@ -275,18 +276,20 @@ object BreakUtil {
   }
 
   /**
-   * world 内での整地量倍率を計算する。
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
+   * @param world 対象ワールド
+   * @return ワールドに対応する整地量の倍率を計算する作用
    */
-  def blockCountWeight[F[_]: JavaTime: Sync](world: World): F[Double] = Sync[F].delay {
-    val managedWorld = ManagedWorld.fromBukkitWorld(world)
-    val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val isMonthlyPrizeDay = LocalDate.now().getDayOfMonth == 21
-    val monthlyPrize = if (isMonthlyPrizeDay) 1.75 else 1.0
-    val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW) && !isMonthlyPrizeDay) 0.8 else 1.0
+  def blockCountWeight[F[_]: JavaTime: Functor](world: World): F[Double] =
+    Functor[F].map(JavaTime[F].getLocalDate(ZoneId.of("Asia/Tokyo" /* JST */))){ date =>
+      val managedWorld = ManagedWorld.fromBukkitWorld(world)
+      val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
+      val isMonthlyPrizeDay = date.getDayOfMonth == 21
+      val monthlyPrize = if (isMonthlyPrizeDay) 1.75 else 1.0
+      val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW) && !isMonthlyPrizeDay) 0.8 else 1.0
 
-    seichiWorldFactor * sw01Penalty * monthlyPrize
-  }
+      seichiWorldFactor * sw01Penalty * monthlyPrize
+    }
 
   /**
    * マテリアルごとに倍率を掛けた整地量を計算する。

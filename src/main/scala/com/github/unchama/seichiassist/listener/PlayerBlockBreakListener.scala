@@ -246,13 +246,12 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
   def onPlayerBreakBlockFinally(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
     val block = event.getBlock
-    val amount = Sync[IO].delay {
-      import PluginExecutionContexts.timer
-      SeichiExpAmount.ofNonNegative {
-        BreakUtil.blockCountWeight[IO](event.getPlayer.getWorld).unsafeRunSync() *
-          BreakUtil.totalBreakCount(Seq(block.getType))
-      }
-    }.unsafeRunSync()
+    import PluginExecutionContexts.timer
+    val amount = SeichiExpAmount.ofNonNegative {
+      BreakUtil.blockCountWeight[IO](event.getPlayer.getWorld)
+        .map(multiplier => BreakUtil.totalBreakCount(Seq(block.getType)) * multiplier)
+        .unsafeRunSync()
+    }
 
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
