@@ -22,7 +22,6 @@ object PlayerDataSaveTask {
    */
   def savePlayerData[F[_] : Sync](player: Player, playerdata: PlayerData): F[Unit] = {
     val databaseGateway = SeichiAssist.databaseGateway
-    val serverId = SeichiAssist.seichiAssistConfig.getServerNum
 
     def updatePlayerMineStack(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
@@ -36,36 +35,6 @@ object PlayerDataSaveTask {
           + "on duplicate key update amount = values(amount)")
 
         stmt.executeUpdate(updateCommand)
-      }
-    }
-
-    def updateSubHome(): Unit = {
-      val playerUuid = playerdata.uuid.toString
-      playerdata.subHomeEntries.foreach { case (subHomeId, subHome) =>
-        val subHomeLocation = subHome.getLocation
-
-        val template = ("insert into seichiassist.sub_home"
-          + "(player_uuid,server_id,id,name,location_x,location_y,location_z,world_name) values "
-          + "(?,?,?,?,?,?,?,?) "
-          + "on duplicate key update "
-          + "name = values(name), "
-          + "location_x = values(location_x), "
-          + "location_y = values(location_y), "
-          + "location_z = values(location_z), "
-          + "world_name = values(world_name)")
-
-        Using(databaseGateway.con.prepareStatement(template)) { statement =>
-          statement.setString(1, playerUuid)
-          statement.setInt(2, serverId)
-          statement.setInt(3, subHomeId)
-          statement.setString(4, subHome.name)
-          statement.setInt(5, subHomeLocation.getX.toInt)
-          statement.setInt(6, subHomeLocation.getY.toInt)
-          statement.setInt(7, subHomeLocation.getZ.toInt)
-          statement.setString(8, subHomeLocation.getWorld.getName)
-
-          statement.executeUpdate()
-        }
       }
     }
 
@@ -208,7 +177,6 @@ object PlayerDataSaveTask {
         updatePlayerDataColumns(localStatement)
         updatePlayerMineStack(localStatement)
         updateGridTemplate(localStatement)
-        updateSubHome()
         ActionStatus.Ok
       } catch {
         case exception: SQLException =>

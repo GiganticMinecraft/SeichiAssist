@@ -9,7 +9,7 @@ import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.minecraft.objects.MinecraftBossBar
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
 import io.chrisdavenport.log4cats.ErrorLogger
 
@@ -38,7 +38,7 @@ object ExpBarSynchronizationRepositoryTemplate {
     G[_] : Sync,
     F[_] : ConcurrentEffect : ContextCoercion[G, *[_]] : ErrorLogger,
     Player: HasUuid,
-  ](breakCountValues: fs2.Stream[F, (Player, SeichiAmountData)],
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player],
     visibilityValues: fs2.Stream[F, (Player, BreakCountBarVisibility)])
    (createFreshBossBar: G[BossBarWithPlayer[F, Player]])
   : TwoPhasedRepositoryInitialization[G, Player, RepositoryValueType[F, Player]] =
@@ -46,8 +46,10 @@ object ExpBarSynchronizationRepositoryTemplate {
       for {
         bossBar <- createFreshBossBar
 
-        synchronization = breakCountValues
-          .through(StreamExtra.valuesWithKeyOfSameUuidAs(player))
+        synchronization = fs2.Stream
+          .eval(breakCountReadAPI.seichiAmountDataRepository(player).read)
+          .translate(ContextCoercion.asFunctionK[G, F])
+          .append(breakCountReadAPI.seichiAmountUpdates.through(StreamExtra.valuesWithKeyOfSameUuidAs(player)))
           .evalTap(BreakCountBarManipulation.write(_, bossBar))
 
         switching = visibilityValues

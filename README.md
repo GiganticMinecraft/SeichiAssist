@@ -6,7 +6,7 @@
 - [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
 - [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 - [Scala 2.13](https://www.scala-lang.org/download/)
-- [sbt 1.3.7](https://www.scala-sbt.org/1.x/docs/Setup.html)
+- [sbt 1.5.5](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - Spigot 1.12.2
 
 ## 前提プラグイン
@@ -87,7 +87,7 @@ masterブランチは本番環境に反映されます。
 
 ## AutoRelease
 - developブランチが更新されると、そのコードを基に実行用jarがビルドされ、デバッグ環境に配布されます。デバッグ環境はjarの配布を検知すると自動で再起動し、最新のjarを使用して稼働します。
-  - デバッグ環境へは、Minecraft Java Editionで`play.seichi.click`に接続し、`T`キーでチャットを開き、`/server deb112`と入力して`Enter`を押すとアクセスできます。
+  - デバッグ環境へは、Minecraft Java Editionで`play-debug.seichi.click`に接続し、`T`キーでチャットを開き、`/server deb112`と入力して`Enter`を押すとアクセスできます。
 - masterブランチが更新されると、そのコードを基に実行用jarがビルドされ、本番環境に配布されます。本番環境は翌再起動時に自動で最新のjarを取り込んで稼働します。
 - jar以外の自動リリースは未対応です(config.ymlなど)。運営チームへ更新を依頼する必要があります。
   - 各サーバーや環境で共通で構わないパラメータはconfig.ymlを読まず、コードへの直接実装を推奨します。
