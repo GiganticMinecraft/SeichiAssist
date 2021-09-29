@@ -108,7 +108,7 @@ object System {
         override val listeners: Seq[Listener] = Vector(openPocketListener)
         override val commands: Map[String, TabExecutor] = Map(
           "openpocket" -> openPocketCommand.executor,
-          "fd" -> FourDimensionalPocketCommand.executor(fourDimensionalPocketApi)
+          "fd" -> FourDimensionalPocketCommand.executor
         )
       }
     }
