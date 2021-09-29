@@ -12,7 +12,7 @@ import org.bukkit.command.TabExecutor
  * StickMenuCommand.scalaを参考に作成
  */
 object FourDimensionalPocketCommand {
-  def executor(implicit api: FourDimensionalPocketApi[IO, Player]): TabExecutor = {
+  def executor[F[_]](implicit api: FourDimensionalPocketApi[F, Player]): TabExecutor = {
     playerCommandBuilder
       .execution { context =>
         IO.pure(UnfocusedEffect(api.openPocketInventory(context.sender)))
