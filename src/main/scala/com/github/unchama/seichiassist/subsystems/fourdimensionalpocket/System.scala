@@ -60,7 +60,7 @@ object System {
           )
         }
     } yield {
-      val systemApi = new FourDimensionalPocketApi[F, Player] {
+      implicit val systemApi = new FourDimensionalPocketApi[F, Player] {
         override val openPocketInventory: Kleisli[F, Player, Unit] = Kleisli { player =>
           Sync[F].delay {
             //開く音を再生
