@@ -40,8 +40,9 @@ object System {
   def wired[
     F[_] : ConcurrentEffect : OnMinecraftServerThread : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F]
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])(fourDimensionalPocketApi:FourDimensionalPocketApi[IO,Player])
-   (implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
+  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
+   (implicit effectEnvironment: EffectEnvironment,
+    fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player]): F[System[F, Player]] = {
     val persistence: PocketInventoryPersistence[G, Inventory] =
       new JdbcBukkitPocketInventoryPersistence[G]
 
