@@ -38,7 +38,10 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends Su
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.readOnly { implicit session =>
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
-        sql"""SELECT id, name, location_x, location_y, location_z, world_name FROM seichiassist.sub_home"""
+        sql"""SELECT id, name, location_x, location_y, location_z, world_name
+             |  FROM seichiassist.sub_home
+             |  where server_id = $serverId"""
+          .stripMargin
           .map(rs =>
             (
               SubHomeId(rs.int("id") + 1),
