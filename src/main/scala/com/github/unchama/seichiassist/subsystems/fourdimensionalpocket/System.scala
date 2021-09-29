@@ -8,6 +8,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.commands.FourDimensionalPocketCommand
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
@@ -106,7 +107,8 @@ object System {
         )
         override val listeners: Seq[Listener] = Vector(openPocketListener)
         override val commands: Map[String, TabExecutor] = Map(
-          "openpocket" -> openPocketCommand.executor
+          "openpocket" -> openPocketCommand.executor,
+          "fd" -> FourDimensionalPocketCommand.executor
         )
       }
     }
