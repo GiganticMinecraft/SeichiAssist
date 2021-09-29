@@ -522,7 +522,6 @@ class SeichiAssist extends JavaPlugin() {
       "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
       "stickmenu" -> StickMenuCommand.executor,
-      "fd"-> FourDimensionalPocketCommand.executor,
       "hat" -> HatCommand.executor
     )
       .concat(wiredSubsystems.flatMap(_.commands))
