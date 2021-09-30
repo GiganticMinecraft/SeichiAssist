@@ -2,12 +2,13 @@ package com.github.unchama.seichiassist.subsystems.subhome.bukkit.command
 
 import cats.Monad
 import cats.effect.implicits._
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{ConcurrentEffect, Effect, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
 import com.github.unchama.chatinterceptor.ChatInterceptionScope
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.{LocationCodec, TeleportEffect}
@@ -58,6 +59,7 @@ object SubHomeCommand {
     : SubHomeAPI
     : ConcurrentEffect
     : NonServerThreadContextShift
+    : OnMinecraftServerThread
   ](implicit scope: ChatInterceptionScope): TabExecutor = BranchedExecutor(
     Map(
       "warp" -> warpExecutor,
@@ -71,6 +73,7 @@ object SubHomeCommand {
     F[_]
     : ConcurrentEffect
     : NonServerThreadContextShift
+    : OnMinecraftServerThread
     : SubHomeReadAPI
   ] = argsAndSenderConfiguredBuilder
     .execution { context =>
@@ -86,7 +89,7 @@ object SubHomeCommand {
           case Some(SubHome(_, location)) =>
             LocationCodec.toBukkitLocation(location) match {
               case Some(bukkitLocation) =>
-                TeleportEffect.to[IO](bukkitLocation) >>
+                TeleportEffect.to[F](bukkitLocation).mapK(Effect.toIOK[F]) >>
                   MessageEffect(s"サブホームポイント${subHomeId}にワープしました")
               case None =>
                 MessageEffect(List(
