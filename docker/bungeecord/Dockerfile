@@ -6,10 +6,10 @@ WORKDIR /RedisBungee
 RUN git checkout 934e4543d695f1e79f6690ac4ee435e3fa5d50d4
 RUN mvn clean install
 
-FROM docker.pkg.github.com/giganticminecraft/bungeesemaphore/bungeesemaphore-jar:6ba557d03c38 as bungeesemaphore-provider
+FROM ghcr.io/giganticminecraft/bungeesemaphore/bungeesemaphore-jar:b61f4e1de9d5 as bungeesemaphore-provider
 
 # use seichiassist-runner to overwrite line endings of shell script using nkf
-FROM docker.pkg.github.com/giganticminecraft/dockers/seichiassist-runner:e2c3c8f7c3cc
+FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
 WORKDIR /bungeecord
 ADD 'https://ci.md-5.net/job/BungeeCord/lastSuccessfulBuild/artifact/bootstrap/target/BungeeCord.jar' BungeeCord.jar
