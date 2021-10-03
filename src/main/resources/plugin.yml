@@ -105,7 +105,7 @@ commands:
     permission-message: *denied
   fd:
     description: 四次元ポケットを開く
-    usage:/<command>
+    usage: /<command>
     permission: seichiassist.fd
     permission-message: *denied
   present:
