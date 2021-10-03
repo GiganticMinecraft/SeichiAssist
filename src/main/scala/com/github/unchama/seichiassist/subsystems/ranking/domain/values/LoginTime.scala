@@ -5,7 +5,7 @@ import cats.kernel.{Monoid, Order}
 /**
  * TODO: rankingサブシステムから移す
  */
-case class LoginTime(inTick: Int) {
+case class LoginTime(inTick: Long) {
   val formatted = s"${inTick / 3600 / 20}時間${inTick / 60 / 20 % 60}分${inTick / 20 % 60}秒"
 }
 

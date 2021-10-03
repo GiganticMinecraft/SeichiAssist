@@ -304,7 +304,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   lazy val subhomeSystem: subhome.System[IO] = {
-    import PluginExecutionContexts.asyncShift
+    import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)

@@ -23,11 +23,11 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends Su
              |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name) values
              |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${subHome.name.orNull}, $x, $y, $z, $worldName)
              |    on duplicate key update
-             |      name = values(name),
-             |      location_x = values(location_x),
-             |      location_y = values(location_y),
-             |      location_z = values(location_z),
-             |      world_name = values(world_name)"""
+             |      name = values(${subHome.name.orNull}),
+             |      location_x = values($x),
+             |      location_y = values($y),
+             |      location_z = values($z),
+             |      world_name = values($worldName)"""
           .stripMargin
           .update()
           .apply()
@@ -38,7 +38,10 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends Su
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.readOnly { implicit session =>
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
-        sql"""SELECT id, name, location_x, location_y, location_z, world_name FROM seichiassist.sub_home"""
+        sql"""SELECT id, name, location_x, location_y, location_z, world_name
+             |  FROM seichiassist.sub_home
+             |  where server_id = $serverId"""
+          .stripMargin
           .map(rs =>
             (
               SubHomeId(rs.int("id") + 1),

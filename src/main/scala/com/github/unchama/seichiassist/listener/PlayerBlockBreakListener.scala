@@ -52,6 +52,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
     if (!MaterialSets.gravityMaterials.contains(block.getType) &&
       !MaterialSets.cancelledMaterials.contains(block.getType) && gravity > 15) {
 
+      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_FALL, 0.0F, -1.0F)
       player.sendMessage(s"${RED}整地ワールドでは必ず上から掘ってください。")
       event.setCancelled(true)
       return

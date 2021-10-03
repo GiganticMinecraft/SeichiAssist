@@ -1,14 +1,18 @@
 package com.github.unchama.seichiassist.subsystems.subhome.bukkit
 
 import cats.data.Kleisli
-import cats.effect.Sync
+import cats.effect.SyncIO
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
 object TeleportEffect {
-  def to[F[_]: Sync](location: Location): Kleisli[F, Player, Unit] = {
+  def to[F[_]: OnMinecraftServerThread](location: Location): Kleisli[F, Player, Unit] = {
     Kleisli { player =>
-      Sync[F].delay(player.teleport(location))
+      OnMinecraftServerThread[F].runAction(SyncIO {
+        player.teleport(location)
+        ()
+      })
     }
   }
 }

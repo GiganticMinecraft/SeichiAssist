@@ -97,10 +97,10 @@ object RankingMenuTemplates {
   val vote: RankingMenuTemplate[VoteCount] = new RankingMenuTemplate[VoteCount] {
     override val rankingName: String = "投票神ランキング"
     override def recordDataLore(data: VoteCount): List[String] = List(
-      s"$RESET${GREEN}総投票回数:${data}回"
+      s"$RESET${GREEN}総投票回数:${data.value}回"
     )
     override def combinedDataLore(data: VoteCount): List[String] = List(
-      s"$RESET${AQUA}全プレイヤー総投票回数: ${data}回"
+      s"$RESET${AQUA}全プレイヤー総投票回数: ${data.value}回"
     )
   }
 }

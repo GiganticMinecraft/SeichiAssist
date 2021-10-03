@@ -6,7 +6,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.1"
 // ThisBuild / version はGitHub Actionsによって自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "13"
+ThisBuild / version := "16"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -81,8 +81,8 @@ val dependenciesToEmbed = Seq(
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
 
 // localDependenciesはprovidedとして扱い、jarに埋め込まない
-assemblyExcludedJars in assembly := {
-  (fullClasspath in assembly).value
+assembly / assemblyExcludedJars := {
+  (assembly / fullClasspath).value
     .filter { a =>
       def directoryContainsFile(directory: File, file: File) =
         file.absolutePath.startsWith(directory.absolutePath)
@@ -102,33 +102,33 @@ val filesToBeReplacedInResourceFolder = Seq("plugin.yml")
 
 val filteredResourceGenerator = taskKey[Seq[File]]("Resource generator to filter resources")
 
-filteredResourceGenerator in Compile :=
+Compile / filteredResourceGenerator :=
   filterResources(
     filesToBeReplacedInResourceFolder,
     tokenReplacementMap.value,
-    (resourceManaged in Compile).value, (resourceDirectory in Compile).value
+    (Compile / resourceManaged).value, (Compile / resourceDirectory).value
   )
 
-resourceGenerators in Compile += (filteredResourceGenerator in Compile)
+Compile / resourceGenerators += (Compile / filteredResourceGenerator)
 
-unmanagedResources in Compile += baseDirectory.value / "LICENSE"
+Compile / unmanagedResources += baseDirectory.value / "LICENSE"
 
 // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
-excludeFilter in unmanagedResources :=
-  filesToBeReplacedInResourceFolder.foldLeft((excludeFilter in unmanagedResources).value)(_.||(_))
+unmanagedResources / excludeFilter :=
+  filesToBeReplacedInResourceFolder.foldLeft((unmanagedResources / excludeFilter).value)(_.||(_))
 
 logLevel := Level.Debug
 
 // ScalaPBの設定
-PB.protoSources in Compile := Seq(baseDirectory.value / "protocol")
-PB.targets in Compile := Seq(scalapb.gen() -> (sourceManaged in Compile).value / "scalapb")
+Compile / PB.protoSources := Seq(baseDirectory.value / "protocol")
+Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "scalapb")
 
-testOptions in Test += Tests.Argument("-oS")
+Compile / testOptions += Tests.Argument("-oS")
 
 lazy val root = (project in file("."))
   .settings(
     name := "SeichiAssist",
-    assemblyOutputPath in assembly := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
+    assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
     libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
     excludeDependencies := Seq(
       ExclusionRule(organization = "org.bukkit", name = "bukkit")
