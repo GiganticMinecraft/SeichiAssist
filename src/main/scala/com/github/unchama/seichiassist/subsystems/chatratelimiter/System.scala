@@ -16,15 +16,11 @@ import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
-trait System[F[_], G[_], Player] extends Subsystem[F] {
-  implicit val api: InspectChatRateLimit[G, Player]
-}
-
 object System {
   def wired[
     F[_] : ConcurrentEffect : Timer : ErrorLogger,
     G[_] : SyncEffect : ContextCoercion[*[_], F] : Monad,
-  ](implicit breakCountAPI: BreakCountAPI[F, G, Player]): F[System[F, G, Player]] = {
+  ](implicit breakCountAPI: BreakCountAPI[F, G, Player]): F[Subsystem[F]] = {
     val repository = ChatRateLimitRepositoryDefinition.withContext[F, G, Player]
     for {
       handle <- ContextCoercion(BukkitRepositoryControls.createHandles(repository))
@@ -36,24 +32,23 @@ object System {
         )
       )
     } yield {
-      new System[F, G, Player] {
+      new Subsystem[F] {
+        implicit val api: InspectChatRateLimit[G, Player] = player => for {
+          rateLimiterOpt <- handle.repository(player).get
+          folded <- rateLimiterOpt.fold(
+            Monad[G].pure[ChatPermissionRequestResult](ChatPermissionRequestResult.Success)
+          ) { rateLimiter =>
+            rateLimiter.requestPermission(ChatCount(1)).map(count =>
+              if (count == ChatCount(1)) ChatPermissionRequestResult.Success
+              else ChatPermissionRequestResult.Failed)
+          }
+        } yield folded
+
         override val listeners: Seq[Listener] =
           Seq(new RateLimitCheckListener)
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
           Seq(handle.coerceFinalizationContextTo[F])
-
-        override implicit val api: InspectChatRateLimit[G, Player] = (player: Player) => {
-          for {
-            rateLimiterOpt <- handle.repository(player).get
-            folded <- rateLimiterOpt.fold(Monad[G].pure[ChatPermissionRequestResult](ChatPermissionRequestResult.Success)) { rateLimiter =>
-              val canPermittedG = rateLimiter.requestPermission(ChatCount(1)).map(_ == ChatCount(1))
-              canPermittedG.map(canPermitted =>
-                if (canPermitted) ChatPermissionRequestResult.Success
-                else ChatPermissionRequestResult.Failed)
-            }
-          } yield folded
-        }
       }
     }
   }

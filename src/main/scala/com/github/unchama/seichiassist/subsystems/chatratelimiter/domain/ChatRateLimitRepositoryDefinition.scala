@@ -24,9 +24,9 @@ object ChatRateLimitRepositoryDefinition {
       TwoPhasedRepositoryInitialization.augment(
         SinglePhased.trivial[G, Player].initialization
       )((p, _) => for {
-        sad <- breakCountAPI.seichiAmountDataRepository(p).read
+        seichiAmount <- breakCountAPI.seichiAmountDataRepository(p).read
         rateLimiter <- FixedWindowRateLimiter.in[F, G, ChatCount](ChatCount(1), 30.seconds)
-        ref <- Ref[G].of(Option.when(sad.levelCorrespondingToExp.level == 1)(rateLimiter))
+        ref <- Ref[G].of(Option.when(seichiAmount.levelCorrespondingToExp.level == 1)(rateLimiter))
       } yield ref),
       // does not need any finalization
       RepositoryFinalization.trivial
