@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket
 
 import cats.data.Kleisli
+import cats.effect.IO
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
@@ -14,6 +15,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.applicat
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.OpenPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.FourDimensionalPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
@@ -57,7 +59,7 @@ object System {
           )
         }
     } yield {
-      val systemApi = new FourDimensionalPocketApi[F, Player] {
+      implicit val systemApi = new FourDimensionalPocketApi[F, Player] {
         override val openPocketInventory: Kleisli[F, Player, Unit] = Kleisli { player =>
           Sync[F].delay {
             //開く音を再生
@@ -98,7 +100,6 @@ object System {
             },
           persistence.coerceContextTo[F]
         )
-
       new System[F, Player] {
         override val api: FourDimensionalPocketApi[F, Player] = systemApi
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
@@ -106,7 +107,8 @@ object System {
         )
         override val listeners: Seq[Listener] = Vector(openPocketListener)
         override val commands: Map[String, TabExecutor] = Map(
-          "openpocket" -> openPocketCommand.executor
+          "openpocket" -> openPocketCommand.executor,
+          "fd" -> FourDimensionalPocketCommand.executor
         )
       }
     }
