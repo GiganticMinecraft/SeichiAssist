@@ -1,7 +1,7 @@
 package com.github.unchama.contextualexecutor.builder
 
 import cats.data.{Kleisli, OptionT}
-import cats.effect.IO
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{ContextualExecutor, ParsedArgCommandContext, PartiallyParsedArgs, RawCommandContext}
 import com.github.unchama.targetedeffect.TargetedEffect
@@ -71,6 +71,21 @@ case class ContextualExecutorBuilder[CS <: CommandSender](senderTypeValidation: 
    */
   def execution(execution: ScopedContextualExecution[CS]): ContextualExecutorBuilder[CS] =
     this.copy(contextualExecution = execution)
+
+  /**
+   * [contextualExecution]に[execution]に相当する関数が入った新しい[ContextualExecutorBuilder]を作成する.
+   * ここで、`execution` はコンテキストを受け取って作用を起こすようなプログラムである.
+   *
+   * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
+   */
+  def executionF[F[_]: ConcurrentEffect, U](execution: ExecutionF[F, CS, U]): ContextualExecutorBuilder[CS] =
+    this.copy(
+      contextualExecution = context => {
+        ConcurrentEffect[F]
+          .toIO(execution(context))
+          .as(TargetedEffect.emptyEffect)
+      }
+    )
 
   /**
    * [[contextualExecution]]に、コンテキストを利用せずに走る `effect` が入った
