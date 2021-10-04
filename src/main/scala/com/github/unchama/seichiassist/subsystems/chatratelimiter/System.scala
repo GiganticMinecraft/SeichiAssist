@@ -19,7 +19,7 @@ import org.bukkit.event.Listener
 object System {
   def wired[
     F[_] : ConcurrentEffect : Timer : ErrorLogger,
-    G[_] : SyncEffect : ContextCoercion[*[_], F] : Monad,
+    G[_] : SyncEffect : ContextCoercion[*[_], F],
   ](implicit breakCountAPI: BreakCountAPI[F, G, Player]): F[Subsystem[F]] = {
     val repository = ChatRateLimitRepositoryDefinition.withContext[F, G, Player]
     for {
@@ -38,8 +38,8 @@ object System {
           folded <- rateLimiterOpt.fold(
             Monad[G].pure[ChatPermissionRequestResult](ChatPermissionRequestResult.Success)
           ) { rateLimiter =>
-            rateLimiter.requestPermission(ChatCount(1)).map(count =>
-              if (count == ChatCount(1)) ChatPermissionRequestResult.Success
+            rateLimiter.requestPermission(ChatCount.One).map(count =>
+              if (count == ChatCount.One) ChatPermissionRequestResult.Success
               else ChatPermissionRequestResult.Failed)
           }
         } yield folded

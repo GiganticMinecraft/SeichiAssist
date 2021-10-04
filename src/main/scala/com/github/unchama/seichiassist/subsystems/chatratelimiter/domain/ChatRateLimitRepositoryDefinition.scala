@@ -16,8 +16,8 @@ import scala.concurrent.duration.DurationInt
 
 object ChatRateLimitRepositoryDefinition {
   def withContext[
-    F[_] : ConcurrentEffect : Timer : Monad,
-    G[_] : Sync : ContextCoercion[*[_], F] : Monad,
+    F[_] : ConcurrentEffect : Timer,
+    G[_] : Sync : ContextCoercion[*[_], F],
     Player : HasUuid
   ](implicit breakCountAPI: BreakCountAPI[F, G, Player]): TwoPhased[G, Player, Ref[G, Option[RateLimiter[G, ChatCount]]]] = {
     TwoPhased(
@@ -25,7 +25,7 @@ object ChatRateLimitRepositoryDefinition {
         SinglePhased.trivial[G, Player].initialization
       )((p, _) => for {
         seichiAmount <- breakCountAPI.seichiAmountDataRepository(p).read
-        rateLimiter <- FixedWindowRateLimiter.in[F, G, ChatCount](ChatCount(1), 30.seconds)
+        rateLimiter <- FixedWindowRateLimiter.in[F, G, ChatCount](ChatCount.One, 30.seconds)
         ref <- Ref[G].of(Option.when(seichiAmount.levelCorrespondingToExp.level == 1)(rateLimiter))
       } yield ref),
       // does not need any finalization
