@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.chatratelimiter.domain
 
-import cats.Monad
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync, Timer}
 import cats.implicits._

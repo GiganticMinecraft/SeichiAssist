@@ -1,14 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.chatratelimiter.bukkit.listeners
 
 import cats.effect.{SyncEffect, SyncIO}
-import com.github.unchama.seichiassist.subsystems.chatratelimiter.InspectChatRateLimit
+import com.github.unchama.seichiassist.subsystems.chatratelimiter.ObtainChatPermission
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.ChatPermissionRequestResult
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class RateLimitCheckListener[F[_] : SyncEffect](implicit api: InspectChatRateLimit[F, Player]) extends Listener {
+class RateLimitCheckListener[F[_] : SyncEffect](implicit api: ObtainChatPermission[F, Player]) extends Listener {
   @EventHandler
   def onEvent(e: AsyncPlayerChatEvent): Unit = {
     val player = e.getPlayer

@@ -33,7 +33,7 @@ object System {
       )
     } yield {
       new Subsystem[F] {
-        implicit val api: InspectChatRateLimit[G, Player] = InspectChatRateLimit.from(handle.repository)
+        implicit val api: ObtainChatPermission[G, Player] = ObtainChatPermission.from(handle.repository)
 
         override val listeners: Seq[Listener] =
           Seq(new RateLimitCheckListener)

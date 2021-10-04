@@ -7,14 +7,16 @@ import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.{ChatCount, ChatPermissionRequestResult}
 import org.bukkit.entity.Player
 
-trait InspectChatRateLimit[F[_], Player] {
+trait ObtainChatPermission[F[_], Player] {
   def tryPermitted(player: Player): F[ChatPermissionRequestResult]
 }
 
-object InspectChatRateLimit {
+object ObtainChatPermission {
   import cats.implicits._
 
-  def from[G[_] : Monad](repository: PlayerDataRepository[Ref[G, Option[RateLimiter[G, ChatCount]]]]): InspectChatRateLimit[G, Player] = {
+  def from[G[_] : Monad](
+                          repository: PlayerDataRepository[Ref[G, Option[RateLimiter[G, ChatCount]]]]
+                        ): ObtainChatPermission[G, Player] =
     player => for {
       rateLimiterOpt <- repository.apply(player).get
       folded <- rateLimiterOpt.fold(
@@ -25,5 +27,4 @@ object InspectChatRateLimit {
           else ChatPermissionRequestResult.Failed)
       }
     } yield folded
-  }
 }
