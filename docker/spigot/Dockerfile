@@ -4,7 +4,7 @@ WORKDIR /work
 ADD https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar BuildTools.jar
 RUN java -jar BuildTools.jar -o /artifact --rev 1.12.2
 
-FROM ghcr.io/giganticminecraft/chunk-search-rs/chunk-search-rs:51191c960930 as chunk-search-provider
+FROM ghcr.io/giganticminecraft/chunk-search-rs:ea37d2d as chunk-search-provider
 
 FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
