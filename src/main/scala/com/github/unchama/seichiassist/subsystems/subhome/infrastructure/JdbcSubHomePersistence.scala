@@ -23,11 +23,11 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends Su
              |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name) values
              |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${subHome.name.orNull}, $x, $y, $z, $worldName)
              |    on duplicate key update
-             |      name = values(${subHome.name.orNull}),
-             |      location_x = values($x),
-             |      location_y = values($y),
-             |      location_z = values($z),
-             |      world_name = values($worldName)"""
+             |      name = ${subHome.name.orNull},
+             |      location_x = $x,
+             |      location_y = $y,
+             |      location_z = $z,
+             |      world_name = $worldName"""
           .stripMargin
           .update()
           .apply()
