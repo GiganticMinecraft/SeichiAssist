@@ -33,16 +33,7 @@ object System {
       )
     } yield {
       new Subsystem[F] {
-        implicit val api: InspectChatRateLimit[G, Player] = player => for {
-          rateLimiterOpt <- handle.repository(player).get
-          folded <- rateLimiterOpt.fold(
-            Monad[G].pure[ChatPermissionRequestResult](ChatPermissionRequestResult.Success)
-          ) { rateLimiter =>
-            rateLimiter.requestPermission(ChatCount.One).map(count =>
-              if (count == ChatCount.One) ChatPermissionRequestResult.Success
-              else ChatPermissionRequestResult.Failed)
-          }
-        } yield folded
+        implicit val api: InspectChatRateLimit[G, Player] = InspectChatRateLimit.from(handle.repository)
 
         override val listeners: Seq[Listener] =
           Seq(new RateLimitCheckListener)
