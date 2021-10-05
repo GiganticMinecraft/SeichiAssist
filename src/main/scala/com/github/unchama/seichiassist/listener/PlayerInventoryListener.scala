@@ -589,7 +589,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     val inventory = event.getInventory
 
     //インベントリサイズが36、あるいはインベントリのタイトルが予期したものでなければ処理を終了させる
-    if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}所有者名義を削除したいアイテムを投入してください") return
+    if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}所有者表記を削除したいアイテムを投入してネ") return
     val items = inventory.getContents
 
     var count = 0
@@ -606,7 +606,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
             ).asJava
             val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
               import meta._
-             //所有者表記をなしにしたLoreを付与する
+              //所有者表記をなしにしたLoreを付与する
               setLore(newItemLore)
             }
             val itemStack = new ItemStack(item.getType, item.getAmount)

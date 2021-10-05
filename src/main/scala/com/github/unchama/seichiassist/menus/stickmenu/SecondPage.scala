@@ -208,7 +208,7 @@ object SecondPage extends Menu {
               s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
             ))
         }
-        }.build()
+      }.build()
 
       Button(
         iconItemStack,
@@ -257,7 +257,7 @@ object SecondPage extends Menu {
               s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
             ))
         }
-        }.build()
+      }.build()
 
       Button(
         iconItemStack,
@@ -477,7 +477,7 @@ object SecondPage extends Menu {
       )
     }
 
-    val removeItemOwnerNameButton:Button = {
+    val removeItemOwnerNameButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_BARDING, durability = 1)
         .title(s"$YELLOW$UNDERLINE${BOLD}所有者表記削除システム")
         .lore(
@@ -499,7 +499,7 @@ object SecondPage extends Menu {
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
             openInventoryEffect(
-              createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}名義をなくしたいアイテムを投入してください"))
+              createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}所有者表記をなくしたいアイテムを投入してネ"))
             )
           )
         }
