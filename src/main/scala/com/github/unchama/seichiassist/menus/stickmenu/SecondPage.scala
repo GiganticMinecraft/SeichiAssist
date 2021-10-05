@@ -498,7 +498,6 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            // TODO メニューインベントリに差し替える
             openInventoryEffect(
               createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}名義をなくしたいアイテムを投入してください"))
             )
