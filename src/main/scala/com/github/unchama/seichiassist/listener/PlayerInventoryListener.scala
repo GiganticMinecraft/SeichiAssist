@@ -606,8 +606,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
             ).asJava
             val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
               import meta._
-              //一度取り消してから新しくLoreを付与しないとついていたLoreが削除されず、Loreが二重になる?
-              getLore.clear()
+             //所有者表記をなしにしたLoreを付与する
               setLore(newItemLore)
             }
             val itemStack = new ItemStack(item.getType, item.getAmount)
