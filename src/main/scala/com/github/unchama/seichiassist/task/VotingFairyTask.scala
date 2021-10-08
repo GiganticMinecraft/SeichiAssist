@@ -26,7 +26,7 @@ object VotingFairyTask {
     } else {
       //ハロウィンイベントのメッセージを送信(普通のメッセージと同時に送信されないように少しずらす)
       Bukkit.getServer().getScheduler().runTaskLater(
-        SeichiAssist.instance(),
+        SeichiAssist.instance,
         () -> VotingFairyListener.sendHalloweenEventMessage(p),
         15 * 20
       )
