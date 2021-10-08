@@ -102,6 +102,12 @@ object VotingFairyListener {
     else msg
   }
 
+  def sendHalloweenEventMessage(player: Player): Unit = {
+    SeichiAssist.playermap.get(player.getUniqueId).foreach { playerData =>
+      VotingFairyTask.speak(player, getMessage(halloweenEventMessages, player.getName), playerData.toggleVFSound)
+    }
+  }
+
   def regeneMana(player: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = player.getUniqueId
