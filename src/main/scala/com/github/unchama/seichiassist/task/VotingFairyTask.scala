@@ -28,7 +28,7 @@ object VotingFairyTask {
       Bukkit.getServer().getScheduler().runTaskLater(
         SeichiAssist.instance,
         () -> VotingFairyListener.sendHalloweenEventMessage(p),
-        15 * 20
+        15 * 20L
       )
     }
   }
