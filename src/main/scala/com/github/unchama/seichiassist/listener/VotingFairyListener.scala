@@ -15,6 +15,19 @@ import java.util.{Calendar, GregorianCalendar}
 import scala.util.Random
 
 object VotingFairyListener {
+  val halloweenEventMessages = Set(
+    "[str1]！僕と一緒に、せーの！Happy Halloween！",
+    "Happy Helloween！ あれ...スペル違う？",
+    "Trick or Treat！がちゃりんごくれなきゃいたずらしちゃうぞ！",
+    "がちゃりんごがランタンだったらいいのになー",
+    "シイナorトリート！",
+    "[str1]。そういえば、ハロウィンらしいけど、僕って仮装する必要ある？",
+    "ハロウィンだとみんなたくさんがちゃりんごをくれるんだ！[str1]もくれるよね？",
+    "ハロウィンっておばけが集まるらしいけど...僕場違いじゃない？",
+    "ハロウィンのカボチャって最初はカブだったらしいよ！[str1]は知ってた？",
+    "わるい子はいねぇーかー！…え？これはハロウィンじゃないの？"
+  )
+
   def summon(p: Player)(implicit manaApi: ManaReadApi[IO, SyncIO, Player]): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = p.getUniqueId
