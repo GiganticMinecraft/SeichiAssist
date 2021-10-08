@@ -47,7 +47,8 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
     if (!isInEvent) return
 
     val player = event.getEntity
-    val playerData: PlayerData = SeichiAssist.playermap(player.getUniqueId)
+    val playerUuid = player.getUniqueId
+    val playerData = SeichiAssist.playermap(playerUuid)
     if (playerData.anniversary) return
 
     effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
@@ -56,7 +57,7 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
         MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
         UnfocusedEffect {
-          playerData.anniversary = false
+          SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(false, Some(playerUuid))
         }
       ),
       s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する"
