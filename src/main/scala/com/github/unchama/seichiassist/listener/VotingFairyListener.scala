@@ -104,7 +104,7 @@ object VotingFairyListener {
 
   def sendHalloweenEventMessage(player: Player): Unit = {
     SeichiAssist.playermap.get(player.getUniqueId).foreach { playerData =>
-      VotingFairyTask.speak(player, getMessage(halloweenEventMessages, player.getName), playerData.toggleVFSound)
+      VotingFairyTask.speak(player, getMessage(halloweenEventMessages.toList, player.getName), playerData.toggleVFSound)
     }
   }
 
