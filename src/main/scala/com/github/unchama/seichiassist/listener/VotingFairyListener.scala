@@ -83,6 +83,12 @@ object VotingFairyListener {
     } else VotingFairyTask.speak(p, getMessage(night, p.getName), playerdata.toggleVFSound)
   }
 
+  private def getMessage(messages: List[String], str1: String) = {
+    val msg = messages(Random.nextInt(messages.size))
+    if (str1.nonEmpty) msg.replace("[str1]", str1 + RESET)
+    else msg
+  }
+
   def regeneMana(player: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = player.getUniqueId
@@ -193,12 +199,6 @@ object VotingFairyListener {
     val levelDividedByTen = playerLevel.level / 10
 
     (levelDividedByTen * levelDividedByTen) max 1
-  }
-
-  private def getMessage(messages: List[String], str1: String) = {
-    val msg = messages(Random.nextInt(messages.size))
-    if (str1.nonEmpty) msg.replace("[str1]", str1 + RESET)
-    else msg
   }
 }
 
