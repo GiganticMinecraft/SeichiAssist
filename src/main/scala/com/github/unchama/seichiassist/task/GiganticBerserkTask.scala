@@ -37,9 +37,14 @@ class GiganticBerserkTask {
     //確率でマナを回復させる
     val d = Math.random
     if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
-      val i = getRecoveryValue(playerdata)
-      manaApi.manaAmount(p).restoreAbsolute(ManaAmount(i)).unsafeRunSync()
-      player.sendMessage(s"${YELLOW}${BOLD}${UNDERLINE}Gigantic${RED}${BOLD}${UNDERLINE}Berserk${WHITE}の効果でマナが${i}回復しました")
+      if(playerdata.giganticBerserk.reachedLimit()){
+        manaApi.manaAmount(p).restoreCompletely.unsafeRunSync()
+        player.sendMessage(s"${YELLOW}${BOLD}${UNDERLINE}Gigantic${RED}${BOLD}${UNDERLINE}Berserk${WHITE}の効果でマナが完全回復しました")
+      }else {
+        val i = getRecoveryValue(playerdata)
+        manaApi.manaAmount(p).restoreAbsolute(ManaAmount(i)).unsafeRunSync()
+        player.sendMessage(s"${YELLOW}${BOLD}${UNDERLINE}Gigantic${RED}${BOLD}${UNDERLINE}Berserk${WHITE}の効果でマナが${i}回復しました")
+      }
       player.playSound(player.getLocation, Sound.ENTITY_WITHER_SHOOT, 1, 0.5f)
     }
 
@@ -252,8 +257,6 @@ class GiganticBerserkTask {
             l = 43000
           case 8 =>
             l = 46000
-          case 9 =>
-            l = 50000
           case _ =>
             l = 0
         }
