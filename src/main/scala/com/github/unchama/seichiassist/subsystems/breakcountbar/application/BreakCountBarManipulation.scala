@@ -20,7 +20,7 @@ object BreakCountBarManipulation {
 
     // 3桁毎カンマ区切り、小数点以下一桁を表示
     def formatAmount(expAmount: SeichiExpAmount): String = {
-      val decimalFormat = new DecimalFormat("#,###.0")
+      val decimalFormat = new DecimalFormat("#,##0.0")
       decimalFormat.format(expAmount.amount.bigDecimal)
     }
 
