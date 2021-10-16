@@ -40,7 +40,8 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift] extends Su
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
         sql"""SELECT id, name, location_x, location_y, location_z, world_name
              |  FROM seichiassist.sub_home
-             |  where server_id = $serverId"""
+             |  where server_id = $serverId
+             |  and player_uuid = ${ownerUuid.toString}"""
           .stripMargin
           .map(rs =>
             (
