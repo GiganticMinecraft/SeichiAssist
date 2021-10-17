@@ -405,11 +405,7 @@ object FirstPage extends Menu {
       val iconItemStack = {
         val lore = {
           val explanation = List(
-            s"$RESET${GRAY}運営からのガチャ券を受け取ります",
-            s"$RESET${GRAY}以下の場合に配布されます",
-            s"$RESET$GRAY・各種不具合のお詫びとして",
-            s"$RESET$GRAY・イベント景品として",
-            s"$RESET$GRAY・各種謝礼として"
+            s"$RESET${GRAY}運営からのガチャ券を受け取ります"
           )
 
           val obtainableApologyItems = playerData.unclaimedApologyItems
@@ -440,7 +436,7 @@ object FirstPage extends Menu {
             val numberOfItemsToGive = SeichiAssist.databaseGateway.playerDataManipulator.givePlayerBug(player)
 
             if (numberOfItemsToGive > 0) {
-              val itemToGive = GachaSkullData.gachaFromAdministrator
+              val itemToGive = GachaSkullData.gachaSkull
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
