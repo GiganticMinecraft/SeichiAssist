@@ -148,7 +148,9 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
       idSliceWithPagination <- idSliceWithPagination(perPage, page)
       count <- computeValidPresentCount
     } yield {
-      if (idSliceWithPagination.isEmpty) {
+      if (count == 0) {
+        Left(PaginationRejectReason.Empty)
+      } else if (idSliceWithPagination.isEmpty) {
         Left(PaginationRejectReason.TooLargePage(Math.ceil(count.toDouble / perPage).toLong))
       } else {
         // ページネーションはIDを列挙するときにすでに完了している
