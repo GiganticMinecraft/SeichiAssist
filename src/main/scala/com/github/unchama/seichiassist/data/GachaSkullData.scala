@@ -16,27 +16,6 @@ object GachaSkullData {
   val gachaSkull: ItemStack =
     new ItemStack(Material.SKULL_ITEM, 1).tap { skull =>
       import skull._
-      setDurability(3.toShort)
-      setItemMeta {
-        ItemMetaFactory.SKULL.getValue.tap { skullMeta =>
-          import skullMeta._
-          setDisplayName(s"$YELLOW${BOLD}ガチャ券")
-          setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます"
-            ).asJava
-          }
-          setOwner("unchama")
-        }
-      }
-    }
-
-  /**
-   * お詫びガチャ券
-   */
-  val gachaFromAdministrator: ItemStack =
-    new ItemStack(Material.SKULL_ITEM, 1).tap { itemStack =>
-      import itemStack._
       setDurability(3)
       setItemMeta {
         ItemMetaFactory.SKULL.getValue.tap { meta =>
@@ -44,8 +23,7 @@ object GachaSkullData {
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
             List(
-              s"$RESET${GREEN}右クリックで使えます",
-              s"$RESET${DARK_RED}運営から不具合のお詫びです"
+              s"$RESET${GREEN}右クリックで使えます"
             ).asJava
           }
           setOwner("unchama")
