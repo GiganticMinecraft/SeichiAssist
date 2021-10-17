@@ -103,6 +103,11 @@ commands:
     usage: /<command>
     permission: seichiassist.stickmenu
     permission-message: *denied
+  fd:
+    description: 四次元ポケットを開く
+    usage: /<command>
+    permission: seichiassist.fd
+    permission-message: *denied
   present:
     description: send a gift
     usage: /present <操作> (詳細については/present helpを参照してください)
@@ -135,6 +140,7 @@ permissions:
       - seichiassist.x-transfer
       - seichiassist.fly
       - seichiassist.stickmenu
+      - seichiassist.fd
       - seichiassist.present.*
       - seichiassist.hat
   seichiassist.event:

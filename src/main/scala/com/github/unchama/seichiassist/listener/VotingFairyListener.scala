@@ -15,6 +15,19 @@ import java.util.{Calendar, GregorianCalendar}
 import scala.util.Random
 
 object VotingFairyListener {
+  val halloweenEventMessages = Set(
+    "[str1]！僕と一緒に、せーの！Happy Halloween！",
+    "Happy Helloween！ あれ...スペル違う？",
+    "Trick or Treat！がちゃりんごくれなきゃいたずらしちゃうぞ！",
+    "がちゃりんごがランタンだったらいいのになー",
+    "シイナorトリート！",
+    "[str1]。そういえば、ハロウィンらしいけど、僕って仮装する必要ある？",
+    "ハロウィンだとみんなたくさんがちゃりんごをくれるんだ！[str1]もくれるよね？",
+    "ハロウィンっておばけが集まるらしいけど...僕場違いじゃない？",
+    "ハロウィンのカボチャって最初はカブだったらしいよ！[str1]は知ってた？",
+    "わるい子はいねぇーかー！…え？これはハロウィンじゃないの？"
+  )
+
   def summon(p: Player)(implicit manaApi: ManaReadApi[IO, SyncIO, Player]): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = p.getUniqueId
@@ -81,6 +94,18 @@ object VotingFairyListener {
     } else if (Util.getTimeZone(playerdata.votingFairyStartTime) == "day") {
       VotingFairyTask.speak(p, getMessage(day, p.getName), playerdata.toggleVFSound)
     } else VotingFairyTask.speak(p, getMessage(night, p.getName), playerdata.toggleVFSound)
+  }
+
+  private def getMessage(messages: List[String], str1: String) = {
+    val msg = messages(Random.nextInt(messages.size))
+    if (str1.nonEmpty) msg.replace("[str1]", str1 + RESET)
+    else msg
+  }
+
+  def sendHalloweenEventMessage(player: Player): Unit = {
+    SeichiAssist.playermap.get(player.getUniqueId).foreach { playerData =>
+      VotingFairyTask.speak(player, getMessage(halloweenEventMessages.toList, player.getName), playerData.toggleVFSound)
+    }
   }
 
   def regeneMana(player: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
@@ -193,12 +218,6 @@ object VotingFairyListener {
     val levelDividedByTen = playerLevel.level / 10
 
     (levelDividedByTen * levelDividedByTen) max 1
-  }
-
-  private def getMessage(messages: List[String], str1: String) = {
-    val msg = messages(Random.nextInt(messages.size))
-    if (str1.nonEmpty) msg.replace("[str1]", str1 + RESET)
-    else msg
   }
 }
 

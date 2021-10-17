@@ -4,9 +4,9 @@ WORKDIR /work
 ADD https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar BuildTools.jar
 RUN java -jar BuildTools.jar -o /artifact --rev 1.12.2
 
-FROM docker.pkg.github.com/giganticminecraft/chunk-search-rs/chunk-search-rs:8673f70e880b as chunk-search-provider
+FROM ghcr.io/giganticminecraft/chunk-search-rs:ea37d2d as chunk-search-provider
 
-FROM docker.pkg.github.com/giganticminecraft/dockers/seichiassist-runner:e2c3c8f7c3cc
+FROM ghcr.io/giganticminecraft/seichiassist-runner:ba2aa54
 
 # /spigot-filesをコンテナが提供するファイル群とする
 

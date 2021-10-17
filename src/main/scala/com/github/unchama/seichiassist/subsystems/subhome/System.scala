@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.subhome
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist.Scopes.globalChatInterceptionScope
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.command.SubHomeCommand
@@ -19,6 +20,7 @@ trait System[F[_]] extends Subsystem[F] {
 object System {
   def wired[
     F[_]
+    : OnMinecraftServerThread
     : ConcurrentEffect
     : NonServerThreadContextShift
   ]: System[F] = {
