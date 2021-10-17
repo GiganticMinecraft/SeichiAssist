@@ -113,7 +113,7 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
     seichiRanking
       .positionAndRecordOf(targetPlayer.getName)
       .flatMap { case (position, record) =>
-        if (position > 1) {
+        val above = if (position > 1) {
           val positionOneAbove = position - 1
           val recordOneAbove = seichiRanking.recordsWithPositions(positionOneAbove - 1)._2
           val difference =
@@ -126,6 +126,25 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
           )
         } else
           None
+
+        val below = if (position < seichiRanking.recordCount) {
+          val positionOneBelow = position + 1
+          val recordOneBelow = seichiRanking.recordsWithPositions(positionOneBelow - 1)._2
+          val difference = {
+            SeichiExpAmount.orderedMonus.subtractTruncate(
+              record.value.expAmount,
+              recordOneBelow.value.expAmount,
+            )
+          }
+          Some(
+            s"$AQUA${positionOneBelow}位(${recordOneBelow.playerName})との差：${difference.formatted}"
+          )
+        } else
+          None
+
+        // FIXME: うまいやり方がありそう
+        val computed = Seq(above, below).foldLeft("")((s, o) => s + o.getOrElse(""))
+        Option.when(computed.nonEmpty)(computed)
       }
 
   /**
