@@ -43,9 +43,9 @@ private case class ButtonComputations(player: Player)
         )
 
         // 最大レベルに到達した後は”次のレベル”が存在しないため、表示しない
-        val nextLevelInfo: Option[String] = Option.unless(BuildAssistExpTable.maxLevel == buildLevel) {
-          s"$RESET${AQUA}次のレベルまで: ${BuildAssistExpTable.expAt(BuildLevel(rawLevel + 1)).amount}"
-        }
+        val nextLevelInfo: Option[String] = data.levelProgress.map(blp =>
+          s"$RESET${AQUA}次のレベルまで: ${blp.expAmountToNextLevel}"
+        )
 
         alwaysDisplayedInfo ++ nextLevelInfo
       }
