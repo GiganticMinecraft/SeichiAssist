@@ -13,7 +13,7 @@ object BreakCountBarManipulation {
   import cats.implicits._
 
   def write[F[_] : Applicative](seichiAmountData: SeichiAmountData, bossBar: MinecraftBossBar[F]): F[Unit] = {
-    val currentExp = seichiAmountData.expAmount.formatted
+    val currentExp = seichiAmountData.expAmount
     val levelProgress = seichiAmountData.levelProgress
     val level = seichiAmountData.levelCorrespondingToExp
     val starLevel = seichiAmountData.starLevelCorrespondingToExp
