@@ -18,9 +18,9 @@ object BreakCountBarManipulation {
     val level = seichiAmountData.levelCorrespondingToExp
     val starLevel = seichiAmountData.starLevelCorrespondingToExp
 
-    // 3桁毎カンマ区切り、小数点以下一桁を表示
+    // 3桁毎カンマ区切り
     def formatAmount(expAmount: SeichiExpAmount): String = {
-      val decimalFormat = new DecimalFormat("#,##0.0")
+      val decimalFormat = new DecimalFormat("#,##0")
       decimalFormat.format(expAmount.amount.bigDecimal)
     }
 
