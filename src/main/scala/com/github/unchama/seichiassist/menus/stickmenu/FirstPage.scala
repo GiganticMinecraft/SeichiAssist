@@ -110,11 +110,11 @@ object FirstPage extends Menu {
         ChestSlotRef(0, 0) -> computeStatsButton,
         ChestSlotRef(0, 1) -> computeEffectSuppressionButton,
         ChestSlotRef(0, 3) -> computeRegionMenuButton,
+        ChestSlotRef(0, 5) -> computeGachaTicketButton,
         ChestSlotRef(1, 4) -> computeActiveSkillButton,
         ChestSlotRef(2, 3) -> computePocketOpenButton,
         ChestSlotRef(2, 4) -> computeEnderChestButton,
         ChestSlotRef(2, 6) -> computeMineStackButton,
-        ChestSlotRef(3, 0) -> computeGachaTicketButton,
         ChestSlotRef(3, 2) -> computeApologyItemsButton,
       ).map(_.sequence)
 
