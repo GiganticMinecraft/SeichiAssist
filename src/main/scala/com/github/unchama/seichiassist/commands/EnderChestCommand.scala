@@ -23,7 +23,7 @@ object EnderChestCommand {
         import cats.implicits._
 
         for {
-          ref <- breakAmountApi.seichiAmountDataRepository(sender).read
+          ref <- breakAmountApi.seichiAmountDataRepository(sender).read.toIO
           level = ref.levelCorrespondingToExp
         } yield {
           if (level >= SeichiLevel(25)) {
