@@ -16,7 +16,7 @@ class JdbcGachaPointPersistence[F[_] : Sync] extends GachaPointPersistence[F] {
   override def read(key: UUID): F[Option[GachaPoint]] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"select gachapoint from playerdata where uuid = ${key.toString}"
-        .map { rs => decode(rs.int("gachapoint")) }
+        .map { rs => decode(rs.bigInt("gachapoint")) }
         .headOption()
         .apply()
     }

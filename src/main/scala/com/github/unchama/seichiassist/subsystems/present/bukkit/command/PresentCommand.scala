@@ -130,6 +130,8 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
               messageLine = states.fold({
                 case PaginationRejectReason.TooLargePage(max) =>
                   List(s"ページ数が大きすぎます。${max}ページ以下にしてください")
+                case PaginationRejectReason.Empty =>
+                  List(s"プレゼントが定義されていません。プレゼントを定義するには/present defineを使用してください。")
               }, b => b.map { case (id, state) =>
                 s"ID=$id: ${decoratePresentState(state)}"
               }.toList)

@@ -3,7 +3,9 @@ package com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel
 import cats.{Eq, Order}
 import com.github.unchama.generic.algebra.typeclasses.PositiveInt
 
-case class BuildLevel private(level: Int) extends AnyVal
+case class BuildLevel private(level: Int) extends AnyVal {
+  def incremented: BuildLevel = BuildLevel(level + 1)
+}
 
 private[explevel] abstract class SeichiLevelInstances {
 
