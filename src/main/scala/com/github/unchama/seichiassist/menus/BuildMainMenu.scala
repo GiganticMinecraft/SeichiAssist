@@ -44,7 +44,7 @@ private case class ButtonComputations(player: Player)
 
         // 最大レベルに到達した後は”次のレベル”が存在しないため、表示しない
         val nextLevelInfo: Option[String] = data.levelProgress.map(blp =>
-          s"$RESET${AQUA}次のレベルまで: ${blp.expAmountToNextLevel}"
+          s"$RESET${AQUA}次のレベルまで: ${blp.expAmountToNextLevel.toPlainString}"
         )
 
         alwaysDisplayedInfo ++ nextLevelInfo
