@@ -327,7 +327,8 @@ class SeichiAssist extends JavaPlugin() {
   lazy val everywhereEnderChestSystem: subsystems.everywhereender.System[IO] = {
     import PluginExecutionContexts.onMainThread
 
-    subsystems.everywhereender.System.wired
+    implicit val seichiAmountReadApi = breakCountSystem.api
+    subsystems.everywhereender.System.wired[SyncIO, IO]
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(

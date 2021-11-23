@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmount
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
+import com.github.unchama.seichiassist.subsystems.everywhereender.EverywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
@@ -69,7 +70,8 @@ object FirstPage extends Menu {
                     val ioCanOpenAchievementMenu: IO CanOpen AchievementMenu.type,
                     val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type,
                     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
-                    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type)
+                    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+                    val enderChestAccessApi: EverywhereEnderChestAPI[IO])
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
@@ -365,7 +367,7 @@ object FirstPage extends Menu {
         .read.toIO
         .flatMap(breakAmountData => IO {
           val level = breakAmountData.levelCorrespondingToExp.level
-          val minimumRequiredLevel = SeichiAssist.seichiAssistConfig.getDokodemoEnderlevel
+          val minimumRequiredLevel = environment.enderChestAccessApi.minimumLevel.unsafeRunSync()
           val hasEnoughLevel = level >= minimumRequiredLevel
           val enderChest = player.getEnderChest
 
