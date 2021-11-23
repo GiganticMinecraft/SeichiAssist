@@ -49,6 +49,8 @@ import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.everywhereender.EverywhereEnderChestAPI
+import com.github.unchama.seichiassist.subsystems.everywhereender.bukkit.command.EnderChestCommand
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
@@ -322,6 +324,12 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.present.System.wired
   }
 
+  lazy val everywhereEnderChestSystem: subsystems.everywhereender.System[IO] = {
+    import PluginExecutionContexts.onMainThread
+
+    subsystems.everywhereender.System.wired
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -340,7 +348,8 @@ class SeichiAssist extends JavaPlugin() {
     gachaPointSystem,
     discordNotificationSystem,
     subhomeSystem,
-    presentSystem
+    presentSystem,
+    everywhereEnderChestSystem,
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -484,6 +493,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val globalNotification: DiscordNotificationAPI[IO] = discordNotificationSystem.globalNotification
     implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
+    implicit val everywhereEnderChestApi: EverywhereEnderChestAPI[IO] = everywhereEnderChestSystem.accessApi
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
