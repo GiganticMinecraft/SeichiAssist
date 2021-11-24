@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.util
 
 import cats.Functor
 import cats.effect.{IO, Sync, SyncIO}
+import cats.implicits._
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
@@ -281,7 +282,7 @@ object BreakUtil {
    * @return ワールドに対応する整地量の倍率を計算する作用
    */
   def blockCountWeight[F[_]: JavaTime: Functor](world: World): F[Double] =
-    Functor[F].map(JavaTime[F].getLocalDate(ZoneId.of("Asia/Tokyo" /* JST */))){ date =>
+    JavaTime[F].getLocalDate(ZoneId.of("Asia/Tokyo" /* JST */)).map { date =>
       val managedWorld = ManagedWorld.fromBukkitWorld(world)
       val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
       val isMonthlyPrizeDay = date.getDayOfMonth == 21
