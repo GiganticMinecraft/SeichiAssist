@@ -21,7 +21,7 @@ trait System[G[_]] extends Subsystem[G] {
 
 object System {
   def wired[
-    F[_]: BreakCountReadAPI[IO, *, Player] : Functor : Semigroupal : ContextCoercion[*, G],
+    F[_]: BreakCountReadAPI[IO, *[_], Player] : Functor : Semigroupal : ContextCoercion[*[_], G],
     G[_]: Effect: LiftIO
   ](implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
     override def accessApi: EverywhereEnderChestAPI[G] = new EverywhereEnderChestAPI[G] {
