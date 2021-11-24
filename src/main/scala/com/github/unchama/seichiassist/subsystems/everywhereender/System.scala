@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.everywhereender
 
 import cats.data.Kleisli
 import cats.effect.implicits.toEffectOps
-import cats.effect.{Effect, IO, LiftIO}
+import cats.effect.{Effect, IO, LiftIO, Sync}
 import cats.implicits._
 import cats.{Functor, Semigroupal}
 import com.github.unchama.generic.ContextCoercion
@@ -31,7 +31,7 @@ object System {
           .read
 
         val g = ContextCoercion(f)
-          .product(minimumLevel.to[G])
+          .product(minimumLevel)
           .map { case (sad, minLevel) =>
             sad.levelCorrespondingToExp >= minLevel
           }
@@ -41,7 +41,7 @@ object System {
 
       override def openEnderChestOrError(player: Player): Kleisli[G, Player, Unit] = {
         val effG = canAccessEverywhereEnderChest(player)
-          .product(minimumLevel.to[G])
+          .product(minimumLevel)
           .map { case (canOpen, minLevel) =>
             if (canOpen) {
               PlayerEffects.openInventoryEffect(player.getEnderChest)
@@ -53,7 +53,7 @@ object System {
         Kleisli(player => effG.toIO.flatMap(_(player)).to[G])
       }
 
-      override def minimumLevel: IO[SeichiLevel] = IO.delay {
+      override def minimumLevel: G[SeichiLevel] = Sync[G].delay {
         SeichiLevel(SeichiAssist.seichiAssistConfig.getDokodemoEnderlevel)
       }
     }

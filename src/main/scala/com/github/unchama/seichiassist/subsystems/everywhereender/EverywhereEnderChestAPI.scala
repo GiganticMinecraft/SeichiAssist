@@ -23,5 +23,5 @@ trait EverywhereEnderChestAPI[F[_]] {
   /**
    * 開くのに必要な最小レベル
    */
-  def minimumLevel: IO[SeichiLevel]
+  def minimumLevel: F[SeichiLevel]
 }
