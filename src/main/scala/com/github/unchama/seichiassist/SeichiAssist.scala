@@ -50,7 +50,6 @@ import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
-import com.github.unchama.seichiassist.subsystems.anywhereender.bukkit.command.EnderChestCommand
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi

@@ -25,12 +25,14 @@ object System {
   def wired[
     F[_]: BreakCountReadAPI[IO, *[_], Player] : Functor : Semigroupal : ContextCoercion[*[_], G],
     G[_]: Effect: LiftIO
-  ](minimumRequiredLevel: Int)(implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
+  ](minimumRequiredLevel: Int)(
+    implicit onMainThread: OnMinecraftServerThread[IO]
+  ): System[G] = new System[G] {
     override val commands: Map[String, TabExecutor] = Map(
-      "ec" -> EnderChestCommand
+      "ec" -> EnderChestCommand.executor[G]
     )
 
-    override def accessApi: AnywhereEnderChestAPI[G] = new AnywhereEnderChestAPI[G] {
+    override implicit val accessApi: AnywhereEnderChestAPI[G] = new AnywhereEnderChestAPI[G] {
       override def canAccessEverywhereEnderChest(player: Player): G[Boolean] = {
         val f: F[SeichiAmountData] = implicitly[BreakCountReadAPI[IO, F, Player]]
           .seichiAmountDataRepository
