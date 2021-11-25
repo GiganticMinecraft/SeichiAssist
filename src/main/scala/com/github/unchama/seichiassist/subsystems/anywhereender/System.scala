@@ -28,10 +28,6 @@ object System {
   ](minimumRequiredLevel: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO]
   ): System[G] = new System[G] {
-    override val commands: Map[String, TabExecutor] = Map(
-      "ec" -> EnderChestCommand.executor[G]
-    )
-
     override implicit val accessApi: AnywhereEnderChestAPI[G] = new AnywhereEnderChestAPI[G] {
       override def canAccessEverywhereEnderChest(player: Player): G[Boolean] = {
         val f: F[SeichiAmountData] = implicitly[BreakCountReadAPI[IO, F, Player]]
@@ -62,5 +58,10 @@ object System {
 
       override def minimumLevel: SeichiLevel = SeichiLevel(minimumRequiredLevel)
     }
+
+    override val commands: Map[String, TabExecutor] = Map(
+      "ec" -> EnderChestCommand.executor[G]
+    )
+
   }
 }
