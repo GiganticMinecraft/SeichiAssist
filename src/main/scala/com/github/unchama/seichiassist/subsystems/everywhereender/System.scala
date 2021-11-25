@@ -39,18 +39,20 @@ object System {
         g
       }
 
-      override def openEnderChestOrNotifyInsufficientLevel(player: Player): Kleisli[G, Player, Unit] = {
-        val effG = canAccessEverywhereEnderChest(player)
-          .product(minimumLevel)
-          .map { case (canOpen, minLevel) =>
-            if (canOpen) {
-              PlayerEffects.openInventoryEffect(player.getEnderChest)
-            } else {
-              MessageEffect(s"どこでもエンダーチェストを開くには整地レベルがLv${minLevel.level}以上である必要があります。")
+      override def openEnderChestOrNotifyInsufficientLevel: Kleisli[G, Player, Unit] = {
+        Kleisli(player => {
+          val effG = canAccessEverywhereEnderChest(player)
+            .product(minimumLevel)
+            .map { case (canOpen, minLevel) =>
+              if (canOpen) {
+                PlayerEffects.openInventoryEffect(player.getEnderChest)
+              } else {
+                MessageEffect(s"どこでもエンダーチェストを開くには整地レベルがLv${minLevel.level}以上である必要があります。")
+              }
             }
-          }
 
-        Kleisli(player => effG.toIO.flatMap(_(player)).to[G])
+          effG.toIO.flatMap(_ (player)).to[G]
+        })
       }
 
       override def minimumLevel: G[SeichiLevel] = Sync[G].delay {

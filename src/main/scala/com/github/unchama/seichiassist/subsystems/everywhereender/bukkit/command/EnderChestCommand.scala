@@ -17,7 +17,7 @@ object EnderChestCommand {
 
         // * 参照透明ではない
         IO {
-          enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel(sender)
+          enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel
         }
       }
       .build()

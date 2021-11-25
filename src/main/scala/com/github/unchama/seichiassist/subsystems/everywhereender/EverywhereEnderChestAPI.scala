@@ -18,7 +18,7 @@ trait EverywhereEnderChestAPI[F[_]] {
    *   - `true`を返す場合はどこでもエンダーチェストを開ける。
    * @return 上記したような作用を記述する[[Kleisli]]
    */
-  def openEnderChestOrNotifyInsufficientLevel(player: Player): Kleisli[F, Player, Unit]
+  def openEnderChestOrNotifyInsufficientLevel: Kleisli[F, Player, Unit]
 
   /**
    * 開くのに必要な最小レベル
