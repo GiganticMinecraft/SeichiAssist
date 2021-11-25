@@ -1,11 +1,11 @@
-package com.github.unchama.seichiassist.subsystems.everywhereender
+package com.github.unchama.seichiassist.subsystems.anywhereender
 
 import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import org.bukkit.entity.Player
 
-trait EverywhereEnderChestAPI[F[_]] {
+trait AnywhereEnderChestAPI[F[_]] {
   /**
    * どこでもエンダーチェストにアクセスできるかどうかを計算する作用を返す。
    * @return どこでもエンダーチェストにアクセスできるかどうかを計算する作用

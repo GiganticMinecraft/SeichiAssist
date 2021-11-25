@@ -1,18 +1,18 @@
-package com.github.unchama.seichiassist.subsystems.everywhereender.bukkit.command
+package com.github.unchama.seichiassist.subsystems.anywhereender.bukkit.command
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.subsystems.everywhereender.EverywhereEnderChestAPI
+import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import org.bukkit.command.TabExecutor
 
 /**
  * エンダーチェストを開くコマンド
  */
 object EnderChestCommand {
-  def executor(implicit enderChestAccessApi: EverywhereEnderChestAPI[IO]): TabExecutor =
+  def executor(implicit enderChestAccessApi: AnywhereEnderChestAPI[IO]): TabExecutor =
     playerCommandBuilder
       .argumentsParsers(List())
-      .execution { context =>
+      .execution { _ =>
         IO {
           enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel
         }

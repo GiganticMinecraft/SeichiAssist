@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.everywhereender
+package com.github.unchama.seichiassist.subsystems.anywhereender
 
 import cats.data.Kleisli
 import cats.effect.implicits._
@@ -11,14 +11,14 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
-import com.github.unchama.seichiassist.subsystems.everywhereender.bukkit.command.EnderChestCommand
+import com.github.unchama.seichiassist.subsystems.anywhereender.bukkit.command.EnderChestCommand
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 trait System[G[_]] extends Subsystem[G] {
-  def accessApi: EverywhereEnderChestAPI[G]
+  def accessApi: AnywhereEnderChestAPI[G]
 }
 
 object System {
@@ -30,7 +30,7 @@ object System {
       "ec" -> EnderChestCommand
     )
 
-    override def accessApi: EverywhereEnderChestAPI[G] = new EverywhereEnderChestAPI[G] {
+    override def accessApi: AnywhereEnderChestAPI[G] = new AnywhereEnderChestAPI[G] {
       override def canAccessEverywhereEnderChest(player: Player): G[Boolean] = {
         val f: F[SeichiAmountData] = implicitly[BreakCountReadAPI[IO, F, Player]]
           .seichiAmountDataRepository

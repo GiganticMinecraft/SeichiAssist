@@ -49,8 +49,8 @@ import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, Bre
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
-import com.github.unchama.seichiassist.subsystems.everywhereender.EverywhereEnderChestAPI
-import com.github.unchama.seichiassist.subsystems.everywhereender.bukkit.command.EnderChestCommand
+import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
+import com.github.unchama.seichiassist.subsystems.anywhereender.bukkit.command.EnderChestCommand
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
@@ -324,11 +324,11 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.present.System.wired
   }
 
-  lazy val everywhereEnderChestSystem: subsystems.everywhereender.System[IO] = {
+  lazy val everywhereEnderChestSystem: subsystems.anywhereender.System[IO] = {
     import PluginExecutionContexts.onMainThread
 
     implicit val seichiAmountReadApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
-    subsystems.everywhereender.System.wired[SyncIO, IO](seichiAssistConfig.getDokodemoEnderlevel)
+    subsystems.anywhereender.System.wired[SyncIO, IO](seichiAssistConfig.getDokodemoEnderlevel)
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
@@ -494,7 +494,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val globalNotification: DiscordNotificationAPI[IO] = discordNotificationSystem.globalNotification
     implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
-    implicit val everywhereEnderChestApi: EverywhereEnderChestAPI[IO] = everywhereEnderChestSystem.accessApi
+    implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] = everywhereEnderChestSystem.accessApi
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
