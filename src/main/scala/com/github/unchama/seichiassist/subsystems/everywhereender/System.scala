@@ -10,6 +10,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects
@@ -26,17 +27,16 @@ object System {
   ](implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
     override def accessApi: EverywhereEnderChestAPI[G] = new EverywhereEnderChestAPI[G] {
       override def canAccessEverywhereEnderChest(player: Player): G[Boolean] = {
-        val f = implicitly[BreakCountReadAPI[IO, F, Player]].seichiAmountDataRepository
+        val f: F[SeichiAmountData] = implicitly[BreakCountReadAPI[IO, F, Player]]
+          .seichiAmountDataRepository
           .apply(player)
           .read
 
-        val g = ContextCoercion(f)
+        ContextCoercion(f)
           .product(minimumLevel)
           .map { case (sad, minLevel) =>
             sad.levelCorrespondingToExp >= minLevel
           }
-
-        g
       }
 
       override def openEnderChestOrNotifyInsufficientLevel: Kleisli[G, Player, Unit] = {
