@@ -365,9 +365,9 @@ object FirstPage extends Menu {
         .breakCountAPI
         .seichiAmountDataRepository(player)
         .read.toIO
-      minimumRequiredLevel <- environment.enderChestAccessApi.minimumLevel
     } yield {
       import cats.implicits._
+      val minimumRequiredLevel = environment.enderChestAccessApi.minimumLevel
       val level = breakAmountData.levelCorrespondingToExp
       val hasEnoughLevel = level >= minimumRequiredLevel
       val enderChest = player.getEnderChest

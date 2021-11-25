@@ -1,13 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.everywhereender
 
 import cats.data.Kleisli
-import cats.effect.implicits.toEffectOps
-import cats.effect.{Effect, IO, LiftIO, Sync}
+import cats.effect.implicits._
+import cats.effect.{Effect, IO, LiftIO}
 import cats.implicits._
 import cats.{Functor, Semigroupal}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
@@ -24,7 +23,7 @@ object System {
   def wired[
     F[_]: BreakCountReadAPI[IO, *[_], Player] : Functor : Semigroupal : ContextCoercion[*[_], G],
     G[_]: Effect: LiftIO
-  ](implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
+  ](minimumRequiredLevel: Int)(implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
     override def accessApi: EverywhereEnderChestAPI[G] = new EverywhereEnderChestAPI[G] {
       override def canAccessEverywhereEnderChest(player: Player): G[Boolean] = {
         val f: F[SeichiAmountData] = implicitly[BreakCountReadAPI[IO, F, Player]]
@@ -33,21 +32,19 @@ object System {
           .read
 
         ContextCoercion(f)
-          .product(minimumLevel)
-          .map { case (sad, minLevel) =>
-            sad.levelCorrespondingToExp >= minLevel
+          .map { sad =>
+            sad.levelCorrespondingToExp >= minimumLevel
           }
       }
 
       override def openEnderChestOrNotifyInsufficientLevel: Kleisli[G, Player, Unit] = {
         Kleisli(player => {
           val effG = canAccessEverywhereEnderChest(player)
-            .product(minimumLevel)
-            .map { case (canOpen, minLevel) =>
+            .map { canOpen =>
               if (canOpen) {
                 PlayerEffects.openInventoryEffect(player.getEnderChest)
               } else {
-                MessageEffect(s"どこでもエンダーチェストを開くには整地レベルがLv${minLevel.level}以上である必要があります。")
+                MessageEffect(s"どこでもエンダーチェストを開くには整地レベルがLv${minimumLevel}以上である必要があります。")
               }
             }
 
@@ -55,9 +52,7 @@ object System {
         })
       }
 
-      override def minimumLevel: G[SeichiLevel] = Sync[G].delay {
-        SeichiLevel(SeichiAssist.seichiAssistConfig.getDokodemoEnderlevel)
-      }
+      override def minimumLevel: SeichiLevel = SeichiLevel(minimumRequiredLevel)
     }
   }
 }
