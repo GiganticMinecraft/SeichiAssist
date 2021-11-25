@@ -536,7 +536,6 @@ class SeichiAssist extends JavaPlugin() {
       "x-transfer" -> RegionOwnerTransferCommand.executor,
       "stickmenu" -> StickMenuCommand.executor,
       "hat" -> HatCommand.executor,
-      "ec" -> EnderChestCommand.executor,
     )
       .concat(wiredSubsystems.flatMap(_.commands))
       .foreach {

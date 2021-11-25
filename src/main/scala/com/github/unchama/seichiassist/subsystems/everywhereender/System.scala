@@ -11,8 +11,10 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
+import com.github.unchama.seichiassist.subsystems.everywhereender.bukkit.command.EnderChestCommand
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects
+import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 
 trait System[G[_]] extends Subsystem[G] {
@@ -24,6 +26,10 @@ object System {
     F[_]: BreakCountReadAPI[IO, *[_], Player] : Functor : Semigroupal : ContextCoercion[*[_], G],
     G[_]: Effect: LiftIO
   ](minimumRequiredLevel: Int)(implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
+    override val commands: Map[String, TabExecutor] = Map(
+      "ec" -> EnderChestCommand
+    )
+
     override def accessApi: EverywhereEnderChestAPI[G] = new EverywhereEnderChestAPI[G] {
       override def canAccessEverywhereEnderChest(player: Player): G[Boolean] = {
         val f: F[SeichiAmountData] = implicitly[BreakCountReadAPI[IO, F, Player]]
