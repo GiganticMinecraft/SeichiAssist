@@ -421,7 +421,6 @@ object BreakUtil {
         case Material.JUNGLE_DOOR => Material.JUNGLE_DOOR_ITEM
         case Material.SPRUCE_DOOR => Material.SPRUCE_DOOR_ITEM
         case Material.SKULL => Material.SKULL_ITEM
-        case Material.NETHER_BRICK => Material.NETHER_BRICK_ITEM
         case Material.WOODEN_DOOR => Material.WOOD_DOOR
         case others => others
       }
