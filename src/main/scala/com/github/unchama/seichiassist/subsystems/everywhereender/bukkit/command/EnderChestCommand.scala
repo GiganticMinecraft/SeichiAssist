@@ -13,9 +13,6 @@ object EnderChestCommand {
     playerCommandBuilder
       .argumentsParsers(List())
       .execution { context =>
-        val sender = context.sender
-
-        // * 参照透明ではない
         IO {
           enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel
         }
