@@ -39,7 +39,7 @@ object System {
         g
       }
 
-      override def openEnderChestOrError(player: Player): Kleisli[G, Player, Unit] = {
+      override def openEnderChestOrNotifyInsufficientLevel(player: Player): Kleisli[G, Player, Unit] = {
         val effG = canAccessEverywhereEnderChest(player)
           .product(minimumLevel)
           .map { case (canOpen, minLevel) =>
