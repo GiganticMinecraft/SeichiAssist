@@ -3,7 +3,7 @@ import sbt.Keys.baseDirectory
 
 import java.io._
 
-ThisBuild / scalaVersion := "2.13.1"
+ThisBuild / scalaVersion := "2.13.7"
 // ThisBuild / version はGitHub Actionsによって自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "19"
