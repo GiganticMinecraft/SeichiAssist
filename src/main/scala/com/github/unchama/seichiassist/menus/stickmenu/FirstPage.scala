@@ -360,46 +360,46 @@ object FirstPage extends Menu {
       }
     }
 
-    val computeEnderChestButton: IO[Button] =
-      environment
+    val computeEnderChestButton: IO[Button] = for {
+      breakAmountData <- environment
         .breakCountAPI
         .seichiAmountDataRepository(player)
         .read.toIO
-        .flatMap(breakAmountData => IO {
-          import cats.implicits._
-          val level = breakAmountData.levelCorrespondingToExp
-          val minimumRequiredLevel = environment.enderChestAccessApi.minimumLevel.unsafeRunSync()
-          val hasEnoughLevel = level >= minimumRequiredLevel
-          val enderChest = player.getEnderChest
+      minimumRequiredLevel <- environment.enderChestAccessApi.minimumLevel
+    } yield {
+      import cats.implicits._
+      val level = breakAmountData.levelCorrespondingToExp
+      val hasEnoughLevel = level >= minimumRequiredLevel
+      val enderChest = player.getEnderChest
 
-          val iconItemStack = {
-            val loreHeading = {
-              if (hasEnoughLevel) {
-                s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
-              } else {
-                s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です"
-              }
-            }
-
-            new IconItemStackBuilder(Material.ENDER_CHEST)
-              .title(s"$DARK_PURPLE$UNDERLINE${BOLD}どこでもエンダーチェスト")
-              .lore(List(loreHeading))
-              .build()
+      val iconItemStack = {
+        val loreHeading = {
+          if (hasEnoughLevel) {
+            s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+          } else {
+            s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です"
           }
+        }
 
-          Button(
-            iconItemStack,
-            LeftClickButtonEffect(
-              if (hasEnoughLevel)
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
-                  openInventoryEffect(enderChest)
-                )
-              else
-                FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+        new IconItemStackBuilder(Material.ENDER_CHEST)
+          .title(s"$DARK_PURPLE$UNDERLINE${BOLD}どこでもエンダーチェスト")
+          .lore(List(loreHeading))
+          .build()
+      }
+
+      Button(
+        iconItemStack,
+        LeftClickButtonEffect(
+          if (hasEnoughLevel)
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
+              openInventoryEffect(enderChest)
             )
-          )
-        })
+          else
+            FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+        )
+      )
+    }
 
     val computeApologyItemsButton: IO[Button] = RecomputedButton(IO {
       val playerData = SeichiAssist.playermap(getUniqueId)
