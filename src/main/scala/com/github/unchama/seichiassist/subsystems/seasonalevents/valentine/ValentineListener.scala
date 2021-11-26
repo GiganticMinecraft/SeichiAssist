@@ -79,36 +79,6 @@ class ValentineListener[
   }
 
   @EventHandler
-  def giveValentineCookieToPlayer(event: PlayerJoinEvent): Unit = {
-    if (!isInEvent) return
-
-    val player = event.getPlayer
-
-    import cats.implicits._
-    val program = for {
-      _ <- NonServerThreadContextShift[F].shift
-      lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
-      _ <- LiftIO[F].liftIO(IO{
-        val hasNotJoinedInEventYet = lastQuit match {
-          case Some(dateTime) => dateTime.isBefore(START_DATE.atStartOfDay())
-          case None => true
-        }
-
-        val effects =
-          if (hasNotJoinedInEventYet) List(
-            grantItemStacksEffect(cookieOf(player)),
-            MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
-            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
-          else List(emptyEffect)
-
-        effects.traverse(_.run(player))
-      })
-    } yield ()
-
-    effectEnvironment.unsafeRunEffectAsync("チョコチップクッキーを付与するかどうかを判定する", program)
-  }
-
-  @EventHandler
   def onPlayerItemConsumeEvent(event: PlayerItemConsumeEvent): Unit = {
     val item = event.getItem
     val player = event.getPlayer
