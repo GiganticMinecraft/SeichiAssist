@@ -66,7 +66,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 			 * あったらdurabilityに応じてgivegachaを増やし、非対象商品は返却boxへ
 			 */
       //ガチャ景品交換インベントリの中身を取得
-      val item = inventory.getContents
+      val items = inventory.getContents
       //ドロップ用アイテムリスト(返却box)作成
       val dropitem = ArrayBuffer[ItemStack]()
       //カウント用
@@ -75,54 +75,55 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
       //for文で１個ずつ対象アイテムか見る
       //ガチャ景品交換インベントリを一個ずつ見ていくfor文
-      item.foreach {
+      items.foreach {
         case null =>
-        case m if
+        case item if
+          // TODO: gachamenteフラグがtrueのときはすべてのアイテムが返却されるんだからearly-returnするべき
         SeichiAssist.gachamente ||
-          !m.hasItemMeta ||
-          !m.getItemMeta.hasLore ||
-          m.getType == Material.SKULL_ITEM =>
-          dropitem += m
-        case m =>
+          !item.hasItemMeta ||
+          !item.getItemMeta.hasLore ||
+          item.getType == Material.SKULL_ITEM =>
+          dropitem += item
+        case item =>
           //ガチャ景品リスト上を線形探索する
           val matchingGachaData = gachaDataList.find { gachadata =>
             //ガチャ景品リストにある商品の場合(Lore=説明文と表示名で判別),無い場合はアイテム返却
-            if (gachadata.itemStack.hasItemMeta && gachadata.itemStack.getItemMeta.hasLore && gachadata.compare(m, name)) {
+            if (gachadata.itemStack.hasItemMeta && gachadata.itemStack.getItemMeta.hasLore && gachadata.compare(item, name)) {
               if (SeichiAssist.DEBUG) player.sendMessage(gachadata.itemStack.getItemMeta.getDisplayName)
-              val amount = m.getAmount
+              val amount = item.getAmount
 
               if (gachadata.probability < 0.001) {
                 //ギガンティック大当たりの部分
                 //ガチャ券に交換せずそのままアイテムを返す
-                dropitem += m
+                dropitem += item
               } else if (gachadata.probability < 0.01) {
                 //大当たりの部分
                 givegacha += 12 * amount
-                big += 1
+                big += amount
               } else if (gachadata.probability < 0.1) {
                 //当たりの部分
                 givegacha += 3 * amount
-                reg += 1
+                reg += amount
               } else {
                 //それ以外アイテム返却(経験値ポーションとかがここにくるはず)
-                dropitem += m
+                dropitem += item
               }
               true
             } else false
           }
           matchingGachaData match {
             //ガチャ景品リストに対象アイテムが無かった場合
-            case None => dropitem += m
+            case None => dropitem += item
             case _ =>
           }
       }
       //ガチャシステムメンテナンス中は全て返却する
       if (SeichiAssist.gachamente) {
-        player.sendMessage(RED.toString + "ガチャシステムメンテナンス中の為全てのアイテムを返却します")
+        player.sendMessage(s"${RED}ガチャシステムメンテナンス中の為全てのアイテムを返却します")
       } else if (big <= 0 && reg <= 0) {
-        player.sendMessage(YELLOW.toString + "景品を認識しませんでした。全てのアイテムを返却します")
+        player.sendMessage(s"${YELLOW}景品を認識しませんでした。全てのアイテムを返却します")
       } else {
-        player.sendMessage(GREEN.toString + "大当たり景品を" + big + "個、当たり景品を" + reg + "個認識しました")
+        player.sendMessage(s"${GREEN}大当たり景品を${big}個、当たり景品を${reg}個認識しました")
       }
       /*
 			 * step2 非対象商品をインベントリに戻す
