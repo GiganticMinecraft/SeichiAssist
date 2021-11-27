@@ -177,7 +177,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
 
       if (multiBreakList.headOption.forall(_.size == 1)) {
         // 破壊するブロックがプレーヤーが最初に破壊を試みたブロックだけの場合
-        BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
+        event.setCancelled(false)
         reservedMana.toList.traverse(manaApi.manaAmount(player).restoreAbsolute).unsafeRunSync()
       } else {
         // スキルの処理
