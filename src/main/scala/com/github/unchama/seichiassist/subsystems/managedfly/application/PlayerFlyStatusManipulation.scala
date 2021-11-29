@@ -1,14 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{IdleStatus, PlayerFlyStatus, RemainingFlyDuration}
-import simulacrum.typeclass
 
 /**
  * プレーヤーの飛行状態に`F`の文脈で干渉する手段を与える型クラスインスタンスのtrait。
  *
  * `F` は `Kleisli[G, Player, *]` の形をしていることを想定している。
  */
-@typeclass trait PlayerFlyStatusManipulation[F[_]] extends AnyRef {
+trait PlayerFlyStatusManipulation[F[_]] extends AnyRef {
   /**
    * 飛行に必要な経験値をプレーヤーが持っていることを保証するアクション。
    * このアクションは [[PlayerExpNotEnough]] を `raiseError` してよい。
@@ -40,4 +39,8 @@ import simulacrum.typeclass
    * [[InternalInterruption]] に対応して、プレーヤーへセッションが終了することを通知するアクション。
    */
   val sendNotificationsOnInterruption: InternalInterruption => F[Unit]
+}
+
+object PlayerFlyStatusManipulation {
+  def apply[F[_]: PlayerFlyStatusManipulation]: PlayerFlyStatusManipulation[F] = implicitly
 }
