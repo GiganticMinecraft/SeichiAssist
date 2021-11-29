@@ -321,9 +321,9 @@ object SecondPage extends Menu {
   private object ConstantButtons {
     val officialWikiNavigationButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.BOOK)
-        .title(s"$YELLOW$UNDERLINE${BOLD}公式Wikiにアクセス")
+        .title(s"$YELLOW$UNDERLINE${BOLD}公式サイトにアクセス")
         .lore(List(
-          s"$RESET${GREEN}鯖内の「困った」は公式Wikiで解決！",
+          s"$RESET${GREEN}鯖内の「困った」は公式サイトで解決！",
           s"$RESET${DARK_GRAY}クリックするとチャット欄に",
           s"$RESET${DARK_GRAY}URLが表示されますので",
           s"$RESET${DARK_GRAY}Tキーを押してから",
