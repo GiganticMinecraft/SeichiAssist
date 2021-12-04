@@ -564,8 +564,9 @@ object FirstPage extends Menu {
 
     val spawnCommandButton: Button = {
       val buttonLore = List(
-        s"$GRAY・整地ワールド",
-        s"${GRAY}間を移動するときに使います",
+        s"$GRAY・整地ワールド間を移動するとき",
+        s"$GRAY・拠点を建築するとき",
+        s"に使います",
         s"$DARK_RED${UNDERLINE}クリックするとワープします",
         s"${DARK_GRAY}command=>[/spawn]"
       )
