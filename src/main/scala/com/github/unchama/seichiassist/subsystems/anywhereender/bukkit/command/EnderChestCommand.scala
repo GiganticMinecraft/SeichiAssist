@@ -14,12 +14,8 @@ object EnderChestCommand {
   def executor[F[_]: Effect](implicit enderChestAccessApi: AnywhereEnderChestAPI[F]): TabExecutor =
     playerCommandBuilder
       .argumentsParsers(List())
-      .execution { _ =>
-        IO {
-          enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel.mapK(new FunctionK[F, IO] {
-            override def apply[A](fa: F[A]): IO[A] = fa.toIO
-          })
-        }
+      .withEffectAsExecution {
+        enderChestAccessApi.openEnderChestOrNotifyInsufficientLevel.mapK(Effect.toIOK)
       }
       .build()
       .asNonBlockingTabExecutor()

@@ -24,7 +24,7 @@ trait System[G[_]] extends Subsystem[G] {
 object System {
   def wired[
     F[_]: BreakCountReadAPI[IO, *[_], Player] : Functor : Semigroupal : ContextCoercion[*[_], G],
-    G[_]: Effect: LiftIO
+    G[_]: Effect
   ](minimumRequiredLevel: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO]
   ): System[G] = new System[G] {
@@ -43,16 +43,16 @@ object System {
 
       override def openEnderChestOrNotifyInsufficientLevel: Kleisli[G, Player, Unit] = {
         Kleisli(player => {
-          val effG = canAccessEverywhereEnderChest(player)
+          canAccessEverywhereEnderChest(player)
             .map { canOpen =>
-              if (canOpen) {
+              val eff = if (canOpen) {
                 PlayerEffects.openInventoryEffect(player.getEnderChest)
               } else {
                 MessageEffect(s"どこでもエンダーチェストを開くには整地レベルがLv${minimumLevel}以上である必要があります。")
               }
-            }
 
-          effG.toIO.flatMap(_ (player)).to[G]
+              eff(player)
+            }
         })
       }
 
