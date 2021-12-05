@@ -1,9 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime.application
 
-trait Notifiable[F[_]] {
-  def notify(message: String): F[Unit]
-}
+import simulacrum.typeclass
 
-object Notifiable {
-  def apply[F[_]: Notifiable]: Notifiable[F] = implicitly
+@typeclass trait Notifiable[F[_]] {
+  def notify(message: String): F[Unit]
 }
