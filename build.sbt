@@ -141,6 +141,7 @@ lazy val root = (project in file("."))
       "-deprecation",
       "-Ypatmat-exhaust-depth", "320",
       "-Ymacro-annotations",
+      "-Ywarn-unused",
     ),
     javacOptions ++= Seq("-encoding", "utf8")
   )
