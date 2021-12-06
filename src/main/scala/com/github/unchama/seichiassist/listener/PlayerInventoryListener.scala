@@ -591,16 +591,16 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
     //インベントリサイズが36、あるいはインベントリのタイトルが予期したものでなければ処理を終了させる
     if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}所有者表記を削除したいアイテムを投入してネ") return
-    val items = inventory.getContents
+    val items = inventory.getContents.toSeq
 
-    val (itemsHaveOwner, itemsHaveNotOwner) = items.zipWithIndex.partition { case (item, _) =>
+    val (itemsWithOwner, itemsWithoutOwner) = items.partition { item =>
       (item ne null) &&
         item.hasItemMeta &&
         item.getItemMeta.hasLore &&
         Util.itemStackContainsOwnerName(item, player.getName)
     }
 
-    val count = itemsHaveOwner.length
+    val count = itemsWithOwner.length
     if (count == 0) {
       player.sendMessage(s"${GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
       // items are not modified so its ok
@@ -609,11 +609,11 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
 
     import cats.implicits._
-    val kleisliArray = itemsHaveOwner.map { case (item, index) =>
+    val modifiedItemStacks = itemsWithOwner.map { item =>
       val itemLore = item.getItemMeta.getLore.asScala.toList
       //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
       val newItemLore = itemLore.map(lore =>
-        if (lore.contains("所有者")) "所有者:なし"
+        if (lore.startsWith("所有者")) "所有者:なし"
         else lore
       ).asJava
       val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
@@ -621,20 +621,14 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
         //所有者表記をなしにしたLoreを付与する
         setLore(newItemLore)
       }
-      val itemStack = new ItemStack(item.getType, item.getAmount)
-      itemStack.setItemMeta(itemMeta)
-      // TODO アイテムを除去するかin-place-modifyしないとdupeになる
-      Util.grantItemStacksEffect(itemStack)
+      new ItemStack(item.getType, item.getAmount).tap(_.setItemMeta(itemMeta))
     }
 
-    kleisliArray
-      .toList
-      .traverse(_.apply(player))
-      .void
-      .unsafeRunSync()
+    val returnItems = modifiedItemStacks ++ itemsWithoutOwner
 
-    player.sendMessage(s"${GREEN} ${count}個のアイテムを認識し、所有者表記を「なし」に変更しました")
+    Util.grantItemStacksEffect(returnItems: _*).run(player).unsafeRunSync()
 
+    player.sendMessage(s"$GREEN${count}個のアイテムを認識し、所有者表記を「なし」に変更しました")
   }
 }
 
