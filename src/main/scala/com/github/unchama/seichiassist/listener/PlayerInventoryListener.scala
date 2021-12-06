@@ -593,39 +593,49 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}所有者表記を削除したいアイテムを投入してネ") return
     val items = inventory.getContents
 
-    var count = 0
-    //for文を使い、1つずつアイテムを見ていく
-    for (item <- items) {
-      if (item != null) {
-        if (item.hasItemMeta && item.getItemMeta.hasLore) {
-          if (Util.itemStackContainsOwnerName(item, player.getName)) {
-            val itemLore = item.getItemMeta.getLore.asScala.toList
-            //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
-            val newItemLore = itemLore.map(lore =>
-              if (lore.contains("所有者")) "所有者:なし"
-              else lore
-            ).asJava
-            val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
-              import meta._
-              //所有者表記をなしにしたLoreを付与する
-              setLore(newItemLore)
-            }
-            val itemStack = new ItemStack(item.getType, item.getAmount)
-            itemStack.setItemMeta(itemMeta)
-            count += 1
-          }
-        }
-        Util.grantItemStacksEffect[IO](item)
-      }
+    val (itemsHaveOwner, itemsHaveNotOwner) = items.zipWithIndex.partition { case (item, _) =>
+      (item ne null) &&
+        item.hasItemMeta &&
+        item.getItemMeta.hasLore &&
+        Util.itemStackContainsOwnerName(item, player.getName)
     }
-    if (count > 1) {
-      player.sendMessage(s"${GREEN} ${count}個のアイテムを認識し、所有者表記を「なし」に変更しました")
-    } else {
+
+    val count = itemsHaveOwner.length
+    if (count == 0) {
       player.sendMessage(s"${GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
-
+      // items are not modified so its ok
+      inventory.setContents(items)
+      return
     }
-  }
 
+    import cats.implicits._
+    val kleisliArray = itemsHaveOwner.map { case (item, index) =>
+      val itemLore = item.getItemMeta.getLore.asScala.toList
+      //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
+      val newItemLore = itemLore.map(lore =>
+        if (lore.contains("所有者")) "所有者:なし"
+        else lore
+      ).asJava
+      val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
+        import meta._
+        //所有者表記をなしにしたLoreを付与する
+        setLore(newItemLore)
+      }
+      val itemStack = new ItemStack(item.getType, item.getAmount)
+      itemStack.setItemMeta(itemMeta)
+      // TODO アイテムを除去するかin-place-modifyしないとdupeになる
+      Util.grantItemStacksEffect(itemStack)
+    }
+
+    kleisliArray
+      .toList
+      .traverse(_.apply(player))
+      .void
+      .unsafeRunSync()
+
+    player.sendMessage(s"${GREEN} ${count}個のアイテムを認識し、所有者表記を「なし」に変更しました")
+
+  }
 }
 
 
