@@ -45,7 +45,7 @@ class NewYearListener[
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(
-        player.sendMessage(_)
+        player.sendMessage
       )
     }
   }
