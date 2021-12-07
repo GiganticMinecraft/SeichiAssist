@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 object NewYear {
   // 新年が何年かを西暦で入力しておくと、自動的に他の日付が設定される
-  val EVENT_YEAR: Int = 2021
+  val EVENT_YEAR: Int = 2022
   val START_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 1, 1)
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 1, 31)
   val DISTRIBUTED_SOBA_DATE: LocalDate = START_DATE.minusDays(1)
