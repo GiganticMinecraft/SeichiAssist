@@ -105,11 +105,9 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
     val player = event.getPlayer
     if (!isAnniversaryShovel(player.getInventory.getItemInMainHand)) return
 
-    player.getNearbyEntities(20.0, 20.0, 20.0).asScala.filter(mob => isEnemy(mob.getType)).foreach { entity =>
-      entity match {
-        case enemy: LivingEntity => enemy.damage(10.0)
-        case _ =>
-      }
+    player.getNearbyEntities(20.0, 20.0, 20.0).asScala.filter(mob => isEnemy(mob.getType)).foreach {
+      case enemy: LivingEntity => enemy.damage(10.0)
+      case _ =>
     }
   }
 
