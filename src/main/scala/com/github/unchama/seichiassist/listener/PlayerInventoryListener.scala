@@ -591,41 +591,47 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
     //インベントリサイズが36、あるいはインベントリのタイトルが予期したものでなければ処理を終了させる
     if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}所有者表記を削除したいアイテムを投入してネ") return
-    val items = inventory.getContents
 
-    var count = 0
-    //for文を使い、1つずつアイテムを見ていく
-    for (item <- items) {
-      if (item != null) {
-        if (item.hasItemMeta && item.getItemMeta.hasLore) {
-          if (Util.itemStackContainsOwnerName(item, player.getName)) {
-            val itemLore = item.getItemMeta.getLore.asScala.toList
-            //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
-            val newItemLore = itemLore.map(lore =>
-              if (lore.contains("所有者")) "所有者:なし"
-              else lore
-            ).asJava
-            val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
-              import meta._
-              //所有者表記をなしにしたLoreを付与する
-              setLore(newItemLore)
-            }
-            val itemStack = new ItemStack(item.getType, item.getAmount)
-            itemStack.setItemMeta(itemMeta)
-            count += 1
-          }
-        }
-        Util.grantItemStacksEffect[IO](item)
+    val items: List[ItemStack] = inventory.getContents.toList
+    val shouldConvert = (item: ItemStack) => {
+      (item ne null) &&
+        item.hasItemMeta &&
+        item.getItemMeta.hasLore &&
+        Util.itemStackContainsOwnerName(item, player.getName)
+    }
+    val doConvert = (item: ItemStack) => {
+      val itemLore = item.getItemMeta.getLore.asScala.toList
+      //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
+      val newItemLore = itemLore.map(lore =>
+        if (lore.startsWith("所有者")) "所有者:なし"
+        else lore
+      ).asJava
+      val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
+        import meta._
+        //所有者表記をなしにしたLoreを付与する
+        setLore(newItemLore)
+      }
+      new ItemStack(item.getType, item.getAmount).tap(_.setItemMeta(itemMeta))
+    }
+
+    val conversionResult = items.map { item =>
+      if (shouldConvert(item)) {
+        (doConvert(item), true)
+      } else {
+        (item, false)
       }
     }
-    if (count > 1) {
-      player.sendMessage(s"{GREEN} ${count}個のアイテムを認識し、所有者表記を「なし」に変更しました")
-    } else {
-      player.sendMessage(s"{GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
+    val convertedCount = conversionResult.count(_._2)
+    val convertedItems = conversionResult.map(_._1)
 
-    }
+    SequentialEffect(
+      Util.grantItemStacksEffect(convertedItems: _*),
+      if (convertedCount == 0)
+        MessageEffect(s"${GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
+      else
+        MessageEffect(s"$GREEN${convertedCount}個のアイテムを認識し、所有者表記を「なし」に変更しました")
+    ).run(player).unsafeRunSync()
   }
-
 }
 
 
