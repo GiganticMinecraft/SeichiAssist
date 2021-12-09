@@ -629,8 +629,8 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       if (convertedCount == 0)
         MessageEffect(s"${GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
       else
-        MessageEffect(s"$GREEN${convertedCount}個のアイテムを認識し、所有者表記を「なし」に変更しました"))
-    )
+        MessageEffect(s"$GREEN${convertedCount}個のアイテムを認識し、所有者表記を「なし」に変更しました")
+    ).run(player).unsafeRunSync()
   }
 }
 
