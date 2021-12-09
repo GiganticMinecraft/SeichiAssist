@@ -591,24 +591,15 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
 
     //インベントリサイズが36、あるいはインベントリのタイトルが予期したものでなければ処理を終了させる
     if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}所有者表記を削除したいアイテムを投入してネ") return
-    val items = inventory.getContents.toSeq
 
-    val (itemsWithOwner, itemsWithoutOwner) = items.partition { item =>
+    val items: List[ItemStack] = inventory.getContents.toList
+    val shouldConvert = (item: ItemStack) => {
       (item ne null) &&
         item.hasItemMeta &&
         item.getItemMeta.hasLore &&
         Util.itemStackContainsOwnerName(item, player.getName)
     }
-
-    val count = itemsWithOwner.length
-    if (count == 0) {
-      player.sendMessage(s"${GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
-      // items are not modified so its ok
-      inventory.setContents(items.toArray)
-      return
-    }
-
-    val modifiedItemStacks = itemsWithOwner.map { item =>
+    val doConvert = (item: ItemStack) => {
       val itemLore = item.getItemMeta.getLore.asScala.toList
       //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
       val newItemLore = itemLore.map(lore =>
@@ -623,11 +614,23 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       new ItemStack(item.getType, item.getAmount).tap(_.setItemMeta(itemMeta))
     }
 
-    val returnItems = modifiedItemStacks ++ itemsWithoutOwner
+    val conversionResult = items.map { item =>
+      if (shouldConvert(item)) {
+        (doConvert(item), true)
+      } else {
+        (item, false)
+      }
+    }
+    val convertedCount = conversionResult.count(_._2)
+    val convertedItems = conversionResult.map(_._1)
 
-    Util.grantItemStacksEffect(returnItems: _*).run(player).unsafeRunSync()
-
-    player.sendMessage(s"$GREEN${count}個のアイテムを認識し、所有者表記を「なし」に変更しました")
+    SequentialEffect(
+      Util.grantItemStacksEffect(convertedItems: _*),
+      if (convertedCount == 0)
+        MessageEffect(s"${GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
+      else
+        MessageEffect(s"$GREEN${convertedCount}個のアイテムを認識し、所有者表記を「なし」に変更しました"))
+    )
   }
 }
 
