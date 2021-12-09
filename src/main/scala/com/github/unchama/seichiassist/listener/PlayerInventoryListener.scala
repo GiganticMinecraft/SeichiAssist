@@ -604,11 +604,10 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     if (count == 0) {
       player.sendMessage(s"${GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
       // items are not modified so its ok
-      inventory.setContents(items)
+      inventory.setContents(items.toArray)
       return
     }
 
-    import cats.implicits._
     val modifiedItemStacks = itemsWithOwner.map { item =>
       val itemLore = item.getItemMeta.getLore.asScala.toList
       //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
