@@ -20,7 +20,7 @@
 - [worldguard-bukkit-6.2.2](https://dev.bukkit.org/projects/worldguard/files/2610618/download)
 
 ## 前提プラグイン(整地鯖内製)
-- RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
+- RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://redmine.seichi.click/attachments/download/890/RegenWorld-1.0.jar)
 
 ## ビルド
 
