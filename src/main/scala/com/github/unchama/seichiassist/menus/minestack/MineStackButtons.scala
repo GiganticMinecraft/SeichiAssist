@@ -80,7 +80,7 @@ private[minestack] case class MineStackButtons(player: Player) {
             val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
 
             List(
-              s"$RESET$GREEN${stackedAmount}個",
+              s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
               s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
               s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
               s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
