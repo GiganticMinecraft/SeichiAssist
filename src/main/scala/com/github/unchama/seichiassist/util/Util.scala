@@ -15,7 +15,8 @@ import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
 import org.bukkit.entity.EntityType._
-import org.bukkit.entity.{EntityType, Firework, Player}
+import org.bukkit.entity.{EntityType, Firework, LivingEntity, Player}
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
 
@@ -565,5 +566,16 @@ object Util {
     case object EAST extends Direction
 
     case object WEST extends Direction
+  }
+
+  /**
+   * 死亡したエンティティの死因が棘の鎧かどうか
+   */
+  def isEntityKilledByThornsEnchant(entity: LivingEntity): Boolean = {
+    if (entity == null) return false
+    val event = entity.getLastDamageCause
+    if (event == null) return false
+
+    event.getCause == DamageCause.THORNS
   }
 }
