@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
  */
 class WarningsGenerator(player: Player) {
   /**
-   * 整地ワールド以外では建築量・ガチャ券が増加しないという警告.
+   * 整地ワールド以外では整地量・ガチャ券が増加しないという警告.
    */
   val noRewardsOutsideSeichiWorld: List[String] =
     if (ManagedWorld.fromBukkitWorld(player.getWorld).exists(_.isSeichi))
