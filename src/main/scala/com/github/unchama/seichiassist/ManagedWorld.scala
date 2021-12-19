@@ -40,8 +40,7 @@ case object ManagedWorld extends Enum[ManagedWorld] {
            | WORLD_SW_3
            | WORLD_SW_4
            | WORLD_SW_NETHER
-           | WORLD_SW_END
-           | WORLD_BUILD => true
+           | WORLD_SW_END => true
       case _ => false
     }
 
