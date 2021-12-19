@@ -30,6 +30,10 @@ case object ManagedWorld extends Enum[ManagedWorld] {
   case object WORLD_DOT extends ManagedWorld("world_dot", "ドット絵ワールド")
 
   implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
+    /**
+     * 整地ワールドであるかどうか
+     * 整地スキルが使えるかどうか、整地量をカウントするワールドであるかどうかと等しい
+     */
     def isSeichi: Boolean = managedWorld match {
       case WORLD_SW
            | WORLD_SW_2
@@ -53,6 +57,7 @@ case object ManagedWorld extends Enum[ManagedWorld] {
 
     /**
      * 建築量をカウントするワールドかどうか
+     * 建築スキルが使えるかどうかと等しい
      */
     def shouldTrackBuildBlock: Boolean = managedWorld match {
       case WORLD_2
