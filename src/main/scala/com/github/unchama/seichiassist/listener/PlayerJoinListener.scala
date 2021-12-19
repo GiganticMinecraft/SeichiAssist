@@ -7,7 +7,8 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusProperty, NormalMebius}
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
@@ -174,29 +175,29 @@ class PlayerJoinListener extends Listener {
   // プレイヤーがワールドを移動したとき
   @EventHandler
   def onPlayerChangedWorld(event: PlayerChangedWorldEvent): Unit = {
-    // 整地ワールドから他のワールドに移動したとき
-    if (ManagedWorld.fromBukkitWorld(event.getFrom).exists(_.isSeichi)) {
-      val p = event.getPlayer
-      val pd = playerMap(p.getUniqueId)
+    // 整地ワールドから他のワールドに移動したときに限る
+    if (!event.getFrom.isSeichi) return
 
-      // coreprotectを切る
-      // inspectマップにtrueで登録されている場合
-      if (Config.inspecting.getOrDefault(p.getName, false)) {
-        // falseに変更する
-        p.sendMessage("§3CoreProtect §f- Inspector now disabled.")
-        Config.inspecting.put(p.getName, false)
-      }
+    val p = event.getPlayer
+    val pd = playerMap(p.getUniqueId)
 
-      // アサルトスキルを切る
-      val skillState = pd.skillState.get.unsafeRunSync()
-      if (skillState.usageMode != Disabled) {
-        SeichiAssist.instance.assaultSkillRoutines(p).stopAnyFiber.flatMap(stopped =>
-          if (stopped)
-            FocusedSoundEffect(Sound.BLOCK_LEVER_CLICK, 1f, 1f).run(p)
-          else
-            IO.unit
-        ).unsafeRunSync()
-      }
+    // coreprotectを切る
+    // inspectマップにtrueで登録されている場合
+    if (Config.inspecting.getOrDefault(p.getName, false)) {
+      // falseに変更する
+      p.sendMessage("§3CoreProtect §f- Inspector now disabled.")
+      Config.inspecting.put(p.getName, false)
+    }
+
+    // アサルトスキルを切る
+    val skillState = pd.skillState.get.unsafeRunSync()
+    if (skillState.usageMode != Disabled) {
+      SeichiAssist.instance.assaultSkillRoutines(p).stopAnyFiber.flatMap(stopped =>
+        if (stopped)
+          FocusedSoundEffect(Sound.BLOCK_LEVER_CLICK, 1f, 1f).run(p)
+        else
+          IO.unit
+      ).unsafeRunSync()
     }
   }
 }

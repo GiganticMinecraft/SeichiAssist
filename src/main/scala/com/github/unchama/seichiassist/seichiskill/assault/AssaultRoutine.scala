@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.seichiskill.assault
 import cats.effect.{ExitCase, IO, SyncIO, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
@@ -57,7 +58,7 @@ object AssaultRoutine {
         return None
       }
 
-      if (!Util.seichiSkillsAllowedIn(player.getWorld)) {
+      if (!player.getWorld.isSeichiSkillAllowed) {
         player.sendMessage(s"${GREEN}スキルは整地ワールドでのみ使用可能です。")
         return None
       }

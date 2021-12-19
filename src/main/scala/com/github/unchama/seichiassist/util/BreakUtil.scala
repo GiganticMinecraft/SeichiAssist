@@ -68,7 +68,7 @@ object BreakUtil {
       }
     }
 
-    if (ManagedWorld.fromBukkitWorld(checkTarget.getWorld).exists(_.isSeichi)) {
+    if (checkTarget.getWorld.isSeichi) {
       val halfBlockLayerYCoordinate = {
         val managedWorld = ManagedWorld.fromBukkitWorld(checkTarget.getWorld)
         // 整地専用サーバー（s5）のWORLD_SW_3（Earth整地）は、外部ワールドのため岩盤高度がY0
@@ -105,7 +105,7 @@ object BreakUtil {
             .run(player)
             .unsafeRunSync()
           true
-        } else if (!ManagedWorld.fromBukkitWorld(player.getWorld).exists(_.isSeichi)) {
+        } else if (!player.getWorld.isSeichi) {
           ActionBarMessageEffect(s"${RED}スキルでのチェスト破壊は整地ワールドでのみ有効です")
             .run(player)
             .unsafeRunSync()
@@ -518,7 +518,7 @@ object BreakUtil {
   def getGravity(player: Player, block: Block, isAssault: Boolean): Int = {
     // 1. 重力値を適用すべきか判定
     // 整地ワールド判定
-    if (!Util.isSeichiWorld(player))
+    if (!player.getWorld.isSeichi)
       return 0
 
     // 2. 破壊要因判定
