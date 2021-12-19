@@ -76,7 +76,7 @@ case object ManagedWorld extends Enum[ManagedWorld] {
      */
     def isSeichiSkillAllowed: Boolean = isSeichi || {
       managedWorld match {
-        case WORLD_2 | WORLD_BUILD => true,
+        case WORLD_2 | WORLD_BUILD => true
         case _ => false
       }
     }
