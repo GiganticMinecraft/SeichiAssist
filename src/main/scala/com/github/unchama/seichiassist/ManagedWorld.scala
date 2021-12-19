@@ -68,6 +68,16 @@ case object ManagedWorld extends Enum[ManagedWorld] {
     }
 
     /**
+     * 整地スキルを使えるワールドかどうか
+     */
+    def isSeichiSkillAllowed: Boolean = isSeichi || {
+      managedWorld match {
+        case WORLD_2 | WORLD_BUILD => true,
+        case _ => false
+      }
+    }
+
+    /**
      * 直列設置スキルを発動できるワールドかどうか
      */
     def isBlockLineUpSkillEnabled: Boolean = if (SeichiAssist.DEBUG) {
@@ -81,6 +91,8 @@ case object ManagedWorld extends Enum[ManagedWorld] {
     def isSeichi: Boolean = asManagedWorld().exists(_.isSeichi)
 
     def shouldTrackBuildBlock: Boolean = asManagedWorld().exists(_.shouldTrackBuildBlock)
+
+    def isSeichiSkillAllowed: Boolean = asManagedWorld().exists(_.isSeichiSkillAllowed)
 
     def isBlockLineUpSkillEnabled: Boolean = asManagedWorld().exists(_.isBlockLineUpSkillEnabled)
   }
