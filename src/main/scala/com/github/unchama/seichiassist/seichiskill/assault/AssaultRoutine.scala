@@ -59,7 +59,7 @@ object AssaultRoutine {
       }
 
       if (!player.getWorld.isSeichiSkillAllowed) {
-        player.sendMessage(s"${GREEN}スキルは整地ワールドでのみ使用可能です。")
+        player.sendMessage(s"${GREEN}スキルは整地・建築ワールドでのみ使用可能です。")
         return None
       }
 
