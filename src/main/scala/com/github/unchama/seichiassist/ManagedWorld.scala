@@ -32,7 +32,7 @@ case object ManagedWorld extends Enum[ManagedWorld] {
   implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
     /**
      * 整地ワールドであるかどうか
-     * 整地スキルが使えるかどうか、整地量をカウントするワールドであるかどうかと等しい
+     * これらのワールドは整地スキルが利用可能であり、整地量をカウントするワールドである。
      */
     def isSeichi: Boolean = managedWorld match {
       case WORLD_SW
