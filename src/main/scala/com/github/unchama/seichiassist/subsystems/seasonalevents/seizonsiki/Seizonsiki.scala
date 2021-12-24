@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{dateRange
 import java.time.LocalDate
 
 object Seizonsiki {
-  val EVENT_YEAR: Int = 2022
+  val EVENT_YEAR: Int = 202
   val START_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 1, 9)
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 1, 22)
   val itemDropRate: Double = validateItemDropRate(0.3)
