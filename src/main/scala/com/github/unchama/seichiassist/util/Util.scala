@@ -35,6 +35,7 @@ object Util {
     player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
   }
 
+  @deprecated("please use ManagedWorld#isSeichiSkillAllowed")
   def seichiSkillsAllowedIn(world: World): Boolean = {
     val seichiWorldPrefix = if (SeichiAssist.DEBUG) SeichiAssist.DEBUGWORLDNAME else SeichiAssist.SEICHIWORLDNAME
     val worldNameLowerCase = world.getName.toLowerCase()
