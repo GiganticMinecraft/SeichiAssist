@@ -191,13 +191,14 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
     implicit val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
     /*GiganticBerserk用*/
     //死んだMOBがGiganticBerserkの対象MOBでなければ終了
-    if (!Util.isEnemy(event.getEntity.getType)) return
-    val player = event.getEntity.getKiller
+    val entity = event.getEntity
+    if (!Util.isEnemy(entity.getType)) return
+    val player = entity.getKiller
     //MOBを倒したプレイヤーがいなければ終了
     if (player == null) return
     //プレイヤーが整地ワールドに居ない場合終了
     if (!player.getWorld.isSeichi) return
     val GBTR = new GiganticBerserkTask
-    GBTR.PlayerKillEnemy(player)
+    GBTR.PlayerKillEnemy(player, entity)
   }
 }

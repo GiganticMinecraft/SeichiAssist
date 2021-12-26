@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
-import com.github.unchama.seichiassist.util.Util.sendMessageToEveryoneIgnoringPreference
+import com.github.unchama.seichiassist.util.Util.{isEntityKilledByThornsEnchant, sendMessageToEveryoneIgnoringPreference}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Sound
@@ -29,9 +29,12 @@ class SeizonsikiListener[
   def onZombieKilledByPlayer(event: EntityDeathEvent): Unit = {
     val entity = event.getEntity
     if (!isInEvent || entity == null) return
+    val killer = entity.getKiller
+    if (entity.getType != EntityType.ZOMBIE || killer == null) return
 
-    if (entity.getType == EntityType.ZOMBIE && entity.getKiller != null) {
-      randomlyDropItemAt(entity, seizonsikiZongo, itemDropRate)
+    killer match {
+      case _: Player if isEntityKilledByThornsEnchant(entity) => randomlyDropItemAt(entity, seizonsikiZongo, itemDropRate)
+      case _ =>
     }
   }
 
