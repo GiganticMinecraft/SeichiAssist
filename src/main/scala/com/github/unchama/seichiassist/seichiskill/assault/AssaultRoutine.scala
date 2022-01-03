@@ -166,7 +166,7 @@ object AssaultRoutine {
 
     for {
       _ <- IO {
-        player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} ON")
+        player.sendMessage(s"${GREEN}アサルトスキル：${skill.name} ON")
       }
       currentLoc <- IO {
         player.getLocation
@@ -183,7 +183,7 @@ object AssaultRoutine {
         case ExitCase.Canceled =>
           IO {
             // 明示的にプレーヤーが切り替えた場合
-            player.sendMessage(s"${GOLD}アサルトスキル：${skill.name} OFF")
+            player.sendMessage(s"${GREEN}アサルトスキル：${skill.name} OFF")
           }
       }
     } yield ()
