@@ -95,7 +95,7 @@ class PlayerJoinListener extends Listener {
 
       // ルール熟読をタイトル・メッセージ で迫る//
       /**
-       * サブタイトルと分ける理由はGUIサイズによって見切れる可能性がある
+       * サブタイトルと分ける理由はGUIサイズによって見切れる可能性があるため
        */
       player.sendTitle(s"${YELLOW}ルールは確認されましたか？", s"${LIGHT_PURPLE}公式サイトで確認できます。", 10, 10, 10)
       player.sendMessage(s"${YELLOW}ルール→ $YELLOW${UNDERLINE}https://www.seichi.network/rule")
