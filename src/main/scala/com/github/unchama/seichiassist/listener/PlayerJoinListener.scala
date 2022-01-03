@@ -92,6 +92,14 @@ class PlayerJoinListener extends Listener {
       Util.sendMessageToEveryoneIgnoringPreference(s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
       Util.sendMessageToEveryoneIgnoringPreference(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
+
+      // ルール熟読をタイトル・メッセージ で迫る//
+      /**
+       * サブタイトルと分ける理由はGUIサイズによって見切れる可能性があるため
+       */
+      player.sendTitle(s"${YELLOW}ルールは確認されましたか？", s"${LIGHT_PURPLE}公式サイトで確認できます。", 10, 10, 10)
+      player.sendMessage(s"${YELLOW}ルール→ $YELLOW${UNDERLINE}https://www.seichi.network/rule")
+
       //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       val inv = player.getInventory
       inv.addItem(new ItemStack(Material.STICK))
