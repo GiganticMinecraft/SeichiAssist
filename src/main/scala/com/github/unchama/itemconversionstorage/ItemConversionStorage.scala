@@ -1,4 +1,4 @@
-package com.github.unchama.processingstorage
+package com.github.unchama.itemconversionstorage
 
 import cats.data
 import cats.effect.IO

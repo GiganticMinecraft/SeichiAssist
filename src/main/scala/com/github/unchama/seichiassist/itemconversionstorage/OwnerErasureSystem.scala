@@ -1,9 +1,9 @@
-package com.github.unchama.seichiassist.processingstorage
+package com.github.unchama.seichiassist.itemconversionstorage
 
 import cats.effect.IO
 import com.github.unchama.menuinventory.MenuFrame
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
-import com.github.unchama.processingstorage.ProcessingStorage
+import com.github.unchama.itemconversionstorage.ItemConversionStorage
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.ChatColor._
@@ -11,7 +11,7 @@ import org.bukkit.ChatColor._
 /**
  * 名義除去システム
  */
-object OwnerErasureSystem extends ProcessingStorage {
+object OwnerErasureSystem extends ItemConversionStorage {
   override type Environment = ()
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$GOLD${BOLD}所有者表記をなくしたいアイテムを投入してネ")
 

@@ -1,4 +1,4 @@
-package com.github.unchama.processingstorage
+package com.github.unchama.itemconversionstorage
 
 import org.bukkit.inventory.ItemStack
 

@@ -1,4 +1,4 @@
-package com.github.unchama.processingstorage
+package com.github.unchama.itemconversionstorage
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
