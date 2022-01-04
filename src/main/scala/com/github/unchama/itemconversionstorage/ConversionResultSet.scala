@@ -10,4 +10,9 @@ case class ConversionResultSet(list: List[ConversionResult]) {
   def giveEffect: TargetedEffect[Player] = {
     Util.grantItemStacksEffect[IO](list.map(_.itemStack).filter(_.nonEmpty).map(_.get): _*)
   }
+
+  def convertedCount: Int = list.count {
+    case ConversionResult.Mapped(_) => true
+    case _ => false
+  }
 }
