@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.itemconversionstorage
 
 import cats.effect.IO
-import com.github.unchama.itemconversionstorage.{ConversionResultSet, ItemConversionStorage}
+import cats.kernel.Monoid
+import com.github.unchama.itemconversionstorage.{ConversionResultSet, ItemConversionStorage, ResultSet}
 import com.github.unchama.menuinventory.MenuFrame
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.seichiassist.util.Util
@@ -17,12 +18,13 @@ import org.bukkit.inventory.ItemStack
  */
 object OwnerErasureSystem extends ItemConversionStorage {
   override type Environment = ()
+  override type ResultSet = ConversionResultSet.Plane
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$GOLD${BOLD}所有者表記をなくしたいアイテムを投入してネ")
 
   /**
    * @inheritdoc
    */
-  override def doMap(player: Player, itemStack: ItemStack): IO[ConversionResultSet] = IO {
+  override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ResultSet] = IO {
     val shouldConvert = (item: ItemStack) => {
       (item ne null) &&
         item.hasItemMeta &&
@@ -45,13 +47,13 @@ object OwnerErasureSystem extends ItemConversionStorage {
         setLore(newItemLore)
       }
 
-      ConversionResultSet(Seq(new ItemStack(itemStack.getType, itemStack.getAmount).tap(_.setItemMeta(itemMeta))), Nil)
+      ConversionResultSet.Plane(Seq(new ItemStack(itemStack.getType, itemStack.getAmount).tap(_.setItemMeta(itemMeta))), Nil)
     } else {
-      ConversionResultSet(Nil, Seq(itemStack))
+      ConversionResultSet.Plane(Nil, Seq(itemStack))
     }
   }
 
-  override def postEffect(conversionResultSet: ConversionResultSet): TargetedEffect[Player] = {
+  override def postEffect(conversionResultSet: ResultSet): TargetedEffect[Player] = {
     val convertedCount = conversionResultSet.convertedCount
 
     if (convertedCount == 0)
@@ -59,4 +61,6 @@ object OwnerErasureSystem extends ItemConversionStorage {
     else
       MessageEffect(s"$GREEN${convertedCount}個のアイテムを認識し、所有者表記を「なし」に変更しました")
   }
+
+  override protected implicit def summonMonoid: Monoid[ConversionResultSet.Plane] = implicitly
 }

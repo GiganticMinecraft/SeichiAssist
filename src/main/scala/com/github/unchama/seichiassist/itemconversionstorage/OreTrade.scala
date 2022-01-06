@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.itemconversionstorage
 
 import cats.effect.IO
+import cats.kernel.Monoid
 import com.github.unchama.itemconversionstorage.{ConversionResultSet, ItemConversionStorage}
 import com.github.unchama.menuinventory.MenuFrame
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
@@ -17,6 +18,7 @@ import scala.util.chaining._
  */
 object OreTrade extends ItemConversionStorage {
   override type Environment = ()
+  override type ResultSet = ConversionResultSet.Plane
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください")
 
   val requiredAmountPerTicket = Map(
@@ -33,7 +35,7 @@ object OreTrade extends ItemConversionStorage {
   /**
    * @inheritdoc
    */
-  override def doMap(player: Player, itemStack: ItemStack): IO[ConversionResultSet] = IO {
+  override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ResultSet] = IO {
     val material = itemStack.getType
     val create = (amount: Int) => new ItemStack(Material.PAPER, amount).tap {
       _.setItemMeta {
@@ -46,7 +48,7 @@ object OreTrade extends ItemConversionStorage {
       }
     }
     requiredAmountPerTicket.get(material).map(requiredAmount => {
-      ConversionResultSet(
+      ConversionResultSet.Plane(
         Seq(
           create(itemStack.getAmount / requiredAmount),
           itemStack.clone().tap(_.setAmount(itemStack.getAmount % requiredAmount))
@@ -54,10 +56,12 @@ object OreTrade extends ItemConversionStorage {
         Nil
       )
     }).getOrElse(
-      ConversionResultSet(
+      ConversionResultSet.Plane(
         Nil,
-        itemStack
+        Seq(itemStack)
       )
     )
   }
+
+  override protected implicit def summonMonoid: Monoid[ConversionResultSet.Plane] = implicitly
 }
