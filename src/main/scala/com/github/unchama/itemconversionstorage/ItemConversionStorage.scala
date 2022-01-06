@@ -1,10 +1,12 @@
 package com.github.unchama.itemconversionstorage
 
 import cats.data
+import cats.implicits._
 import cats.effect.IO
 import com.github.unchama.menuinventory.{LayoutPreparationContext, MenuFrame, MenuSession}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.util.bukkit.ItemStackUtil
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -23,14 +25,15 @@ trait ItemConversionStorage {
    * インベントリを閉じたときに発火される作用。
    * @return `inventory`から変換されたアイテムのリストを計算する[[IO]]
    */
-  def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ConversionResultSet]
+  def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ConversionResultSet] = {
+    ItemStackUtil.amalgamate(inventory.values.toList).traverse(doMap(player, _)).map(_.combineAll)
+  }
 
   /**
    *
    * @param itemStack 変換する前のアイテム
-   * @return 返す対象である場合変換後の[[ItemStack]]を包んだ[[Some]]、返さない場合[[None]]を返す[[IO]]。
    */
-  def doMap(player: Player, itemStack: ItemStack): IO[ConversionResult]
+  def doMap(player: Player, itemStack: ItemStack): IO[ConversionResultSet]
 
   /**
    * @return 全ての変換が終わり、アイテム付与が終わったあとに発火されるプレイヤーに対するエフェクト。
