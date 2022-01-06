@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.itemconversion
 
 import cats.effect.IO
 import cats.kernel.Monoid
-import com.github.unchama.itemconversion.{ConversionResultSet, ItemConversionSystem, ResultSet}
+import com.github.unchama.itemconversion.{ConversionResultSet, ItemConversionSystem}
 import com.github.unchama.menuinventory.MenuFrame
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.seichiassist.util.Util
