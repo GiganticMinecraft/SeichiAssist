@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.itemconversionstorage
+package com.github.unchama.seichiassist.itemconversion
 
 import cats.effect.{IO, Sync}
 import cats.kernel.Monoid
-import com.github.unchama.itemconversionstorage.{ConversionResultSet, ItemConversionStorage}
+import com.github.unchama.itemconversion.{ConversionResultSet, ItemConversionSystem}
 import com.github.unchama.menuinventory.MenuFrame
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.seichiassist.SeichiAssist
@@ -19,7 +19,7 @@ import scala.util.chaining._
 /**
  * GT --> 椎名林檎
  */
-object GiganticTrade extends ItemConversionStorage {
+object GiganticTrade extends ItemConversionSystem {
   override type ResultSet = ConversionResultSet.Plane
   trait GiganticTradeRatioConfig[F[_]] {
     def getRaito: F[Int]
@@ -33,7 +33,7 @@ object GiganticTrade extends ItemConversionStorage {
     }
   }
 
-  case class Environment(implicit val giganticTradeRaitoConfig: GiganticTradeRatioConfig[IO])
+  case class Environment()(implicit val giganticTradeRaitoConfig: GiganticTradeRatioConfig[IO])
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"${GOLD.toString}${BOLD}椎名林檎と交換したい景品を入れてネ")
 
   override def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ResultSet] = {

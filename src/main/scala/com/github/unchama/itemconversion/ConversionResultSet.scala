@@ -1,4 +1,4 @@
-package com.github.unchama.itemconversionstorage
+package com.github.unchama.itemconversion
 
 import cats.effect.IO
 import cats.kernel.Monoid

@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.itemconversionstorage
+package com.github.unchama.seichiassist.itemconversion
 
 import cats.effect.IO
 import cats.kernel.Monoid
-import com.github.unchama.itemconversionstorage.{ConversionResultSet, ItemConversionStorage}
+import com.github.unchama.itemconversion.{ConversionResultSet, ItemConversionSystem}
 import com.github.unchama.menuinventory.MenuFrame
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import org.bukkit.ChatColor._
@@ -16,8 +16,8 @@ import scala.util.chaining._
 /**
  * 鉱石 --> 交換券
  */
-object OreTrade extends ItemConversionStorage {
-  override type Environment = ()
+object OreTrade extends ItemConversionSystem {
+  override type Environment = Unit
   override type ResultSet = ConversionResultSet.Plane
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください")
 

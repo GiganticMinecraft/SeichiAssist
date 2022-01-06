@@ -1,15 +1,15 @@
-package com.github.unchama.seichiassist.itemconversionstorage
+package com.github.unchama.seichiassist.itemconversion
 
 import cats.effect.IO
 import cats.kernel.Monoid
-import com.github.unchama.itemconversionstorage.{ConversionResultSet, ItemConversionStorage}
+import com.github.unchama.itemconversion.{ConversionResultSet, ItemConversionSystem}
 import com.github.unchama.menuinventory.MenuFrame
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import org.bukkit.ChatColor.{GREEN, RED, YELLOW}
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -18,10 +18,10 @@ import scala.util.chaining._
 /**
  * 非GT --> ガチャ券
  */
-object GachaTrade extends ItemConversionStorage {
+object GachaTrade extends ItemConversionSystem {
   override type ResultSet = ConversionResultSet.AdditionalAggregate[(Int, Int)]
-  override type Environment = ()
-  override val frame: MenuFrame = MenuFrame(4.chestRows, "")
+  override type Environment = Unit
+  override val frame: MenuFrame = MenuFrame(4.chestRows, s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください")
 
   override def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ResultSet] = {
     if (SeichiAssist.gachamente) {
@@ -30,10 +30,7 @@ object GachaTrade extends ItemConversionStorage {
       super.doOperation(player, inventory)
     }
   }
-  /**
-   *
-   * @param itemStack 変換する前のアイテム
-   */
+
   override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ResultSet] = IO {
     val gachaDataList = SeichiAssist.gachadatalist
     val name = player.getName.toLowerCase

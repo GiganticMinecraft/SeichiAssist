@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.itemconversionstorage
+package com.github.unchama.seichiassist.itemconversion
 
 import cats.effect.IO
 import cats.kernel.Monoid
-import com.github.unchama.itemconversionstorage.{ConversionResultSet, ItemConversionStorage, ResultSet}
+import com.github.unchama.itemconversion.{ConversionResultSet, ItemConversionSystem, ResultSet}
 import com.github.unchama.menuinventory.MenuFrame
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.seichiassist.util.Util
@@ -16,8 +16,8 @@ import org.bukkit.inventory.ItemStack
 /**
  * 名義除去システム
  */
-object OwnerErasureSystem extends ItemConversionStorage {
-  override type Environment = ()
+object OwnerErasureSystem extends ItemConversionSystem {
+  override type Environment = Unit
   override type ResultSet = ConversionResultSet.Plane
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$GOLD${BOLD}所有者表記をなくしたいアイテムを投入してネ")
 

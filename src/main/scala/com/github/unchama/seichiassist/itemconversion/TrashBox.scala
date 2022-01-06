@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.itemconversionstorage
+package com.github.unchama.seichiassist.itemconversion
 
 import cats.effect.IO
 import cats.kernel.Monoid
-import com.github.unchama.itemconversionstorage.{ConversionResultSet, ItemConversionStorage}
+import com.github.unchama.itemconversion.{ConversionResultSet, ItemConversionSystem}
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{MenuFrame, MenuSlotLayout}
 import org.bukkit.entity.Player
@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack
 /**
  * ゴミ箱
  */
-object TrashBox extends ItemConversionStorage {
-  override type Environment = ()
+object TrashBox extends ItemConversionSystem {
+  override type Environment = Unit
   override type ResultSet = ConversionResultSet.Plane
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, "ゴミ箱")

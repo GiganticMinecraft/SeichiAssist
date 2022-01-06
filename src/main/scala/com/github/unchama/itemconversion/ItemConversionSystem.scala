@@ -1,4 +1,4 @@
-package com.github.unchama.itemconversionstorage
+package com.github.unchama.itemconversion
 
 import cats.data
 import cats.implicits._
@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack
  *  [[postEffect]]
  * </pre>
  */
-trait ItemConversionStorage {
+trait ItemConversionSystem {
   /**
    * 実装者はこの関連型をConversionResultSetのままにしてはいけない。
    */
