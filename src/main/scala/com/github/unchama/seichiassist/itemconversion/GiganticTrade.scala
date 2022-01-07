@@ -20,7 +20,8 @@ import scala.util.chaining._
  * GT --> 椎名林檎
  */
 object GiganticTrade extends ItemConversionSystem {
-  override type ResultSet = ConversionResultSet.Plane
+  override type AggregationResultType = Int
+
   trait GiganticTradeRatioConfig[F[_]] {
     def getRaito: F[Int]
   }
@@ -36,10 +37,10 @@ object GiganticTrade extends ItemConversionSystem {
   case class Environment()(implicit val giganticTradeRaitoConfig: GiganticTradeRatioConfig[IO])
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"${GOLD.toString}${BOLD}椎名林檎と交換したい景品を入れてネ")
 
-  override def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ResultSet] = {
+  override def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ConversionResultSet[AggregationResultType]] = {
     if (SeichiAssist.gachamente) {
       // early-return
-      IO.pure(ConversionResultSet.Plane(Nil, inventory.values.toSeq))
+      IO.pure(ConversionResultSet(Nil, inventory.values.toSeq))
     } else {
       super.doOperation(player, inventory)
     }
@@ -48,11 +49,11 @@ object GiganticTrade extends ItemConversionSystem {
   /**
    * @inheritdoc
    */
-  override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ResultSet] = {
+  override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ConversionResultSet[AggregationResultType]] = {
     if (!itemStack.hasItemMeta ||
       !itemStack.getItemMeta.hasLore ||
       itemStack.getType == Material.SKULL_ITEM) {
-      return IO.pure(ConversionResultSet.Plane(Nil, Seq(itemStack)))
+      return IO.pure(ConversionResultSet(Nil, Seq(itemStack)))
     }
     val gachaDataList = SeichiAssist.gachadatalist
     val name = player.getName.toLowerCase
@@ -68,26 +69,24 @@ object GiganticTrade extends ItemConversionSystem {
           if (gachaPrize.probability < 0.001) {
             //ギガンティック大当たりの部分
             //1個につき椎名林檎n個と交換する
-            ConversionResultSet.Plane(Seq(StaticGachaPrizeFactory.getMaxRingo(player.getName).tap(_.setAmount(amount * appleRatio))), Nil)
+            ConversionResultSet[AggregationResultType](Seq(StaticGachaPrizeFactory.getMaxRingo(player.getName).tap(_.setAmount(amount * appleRatio))), Nil)
           } else {
             //それ以外アイテム返却
-            ConversionResultSet.Plane(Nil, Seq(itemStack))
+            ConversionResultSet[AggregationResultType](Nil, Seq(itemStack))
           }
         })
-        val m = summonMonoid
-        m.combine(m.combineAll(found2), ConversionResultSet.Plane(Nil, notFound.toSeq.map(_.itemStack)))
+        val m = Monoid[ConversionResultSet[AggregationResultType]]
+        m.combine(m.combineAll(found2), ConversionResultSet(Nil, notFound.toSeq.map(_.itemStack)))
       }
     } yield crs
 
   }
 
-  override def postEffect(conversionResultSet: ResultSet): TargetedEffect[Player] = if (SeichiAssist.gachamente) {
+  override def postEffect(conversionResultSet: ConversionResultSet[AggregationResultType]): TargetedEffect[Player] = if (SeichiAssist.gachamente) {
     MessageEffect(s"${RED}ガチャシステムメンテナンス中の為全てのアイテムを返却します")
-  } else if (conversionResultSet.convertedCount <= 0) {
+  } else if (conversionResultSet.aggregationResult <= 0) {
     MessageEffect(s"${YELLOW}ギガンティック大当り景品を認識しませんでした。全てのアイテムを返却します")
   } else {
     MessageEffect(s"${GREEN}ギガンティック大当り景品を${conversionResultSet.convertedItems}個認識しました")
   }
-
-  override protected implicit def summonMonoid: Monoid[ResultSet] = implicitly
 }

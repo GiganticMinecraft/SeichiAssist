@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack
  */
 object TrashBox extends ItemConversionSystem {
   override type Environment = Unit
-  override type ResultSet = ConversionResultSet.Plane
 
   override val frame: MenuFrame = MenuFrame(4.chestRows, "ゴミ箱")
 
@@ -21,9 +20,7 @@ object TrashBox extends ItemConversionSystem {
    * ゴミ箱であるため、変換不要、及び返却不要。そのままアドレスの彼方へと葬り去る。
    * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ResultSet] = IO.pure(summonMonoid.empty)
+  override def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ConversionResultSet[AggregationResultType]] = IO.pure(summonMonoid.empty)
 
-  override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ResultSet] = IO.pure(summonMonoid.empty)
-
-  override protected implicit def summonMonoid: Monoid[ResultSet] = implicitly
+  override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ConversionResultSet[AggregationResultType]] = IO.pure(summonMonoid.empty)
 }

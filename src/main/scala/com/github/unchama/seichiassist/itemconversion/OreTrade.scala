@@ -18,7 +18,7 @@ import scala.util.chaining._
  */
 object OreTrade extends ItemConversionSystem {
   override type Environment = Unit
-  override type ResultSet = ConversionResultSet.Plane
+  override type AggregationResultType = Unit
   override val frame: MenuFrame = MenuFrame(4.chestRows, s"$LIGHT_PURPLE${BOLD}交換したい鉱石を入れてください")
 
   val requiredAmountPerTicket = Map(
@@ -35,7 +35,7 @@ object OreTrade extends ItemConversionSystem {
   /**
    * @inheritdoc
    */
-  override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ResultSet] = IO {
+  override def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ConversionResultSet[AggregationResultType]] = IO {
     val material = itemStack.getType
     val create = (amount: Int) => new ItemStack(Material.PAPER, amount).tap {
       _.setItemMeta {
@@ -47,21 +47,22 @@ object OreTrade extends ItemConversionSystem {
         }
       }
     }
-    requiredAmountPerTicket.get(material).map(requiredAmount => {
-      ConversionResultSet.Plane(
-        Seq(
-          create(itemStack.getAmount / requiredAmount),
-          itemStack.clone().tap(_.setAmount(itemStack.getAmount % requiredAmount))
-        ),
-        Nil
-      )
-    }).getOrElse(
-      ConversionResultSet.Plane(
-        Nil,
-        Seq(itemStack)
-      )
-    )
-  }
 
-  override protected implicit def summonMonoid: Monoid[ConversionResultSet.Plane] = implicitly
+    requiredAmountPerTicket.get(material)
+      .fold(
+        // NOTE: this type-parameter is needed
+        ConversionResultSet[AggregationResultType](
+          Nil,
+          Seq(itemStack)
+        )
+      ) { requiredAmount =>
+        ConversionResultSet(
+          Seq(
+            create(itemStack.getAmount / requiredAmount),
+            itemStack.clone().tap(_.setAmount(itemStack.getAmount % requiredAmount))
+          ),
+          Nil
+        )
+      }
+  }
 }

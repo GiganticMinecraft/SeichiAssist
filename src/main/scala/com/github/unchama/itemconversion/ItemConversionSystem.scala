@@ -34,10 +34,7 @@ import org.bukkit.inventory.ItemStack
  * </pre>
  */
 trait ItemConversionSystem {
-  /**
-   * 実装者はこの関連型をConversionResultSetのままにしてはいけない。
-   */
-  type ResultSet <: ConversionResultSet
+  type AggregationResultType
   type Environment
 
   val frame: MenuFrame
@@ -47,23 +44,23 @@ trait ItemConversionSystem {
    * インベントリを閉じたときに発火される作用。
    * @return `inventory`から変換されたアイテムのリストを計算する[[IO]]
    */
-  def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ResultSet] = {
+  def doOperation(player: Player, inventory: Map[Int, ItemStack])(implicit environment: Environment): IO[ConversionResultSet[AggregationResultType]] = {
     ItemStackUtil.amalgamate(inventory.values.toList).traverse(doMap(player, _)).map(_.combineAll(summonMonoid))
   }
 
-  protected implicit def summonMonoid: Monoid[ResultSet]
+  final protected implicit def summonMonoid: Monoid[ConversionResultSet[AggregationResultType]] = implicitly
 
   /**
    *
    * @param itemStack 変換する前のアイテム
    */
-  def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ResultSet]
+  def doMap(player: Player, itemStack: ItemStack)(implicit environment: Environment): IO[ConversionResultSet[AggregationResultType]]
 
   /**
    * @return 全ての変換が終わり、アイテム付与が終わったあとに発火されるプレイヤーに対するエフェクト。
    */
   //noinspection ScalaUnusedSymbol
-  def postEffect(conversionResultSet: ResultSet): TargetedEffect[Player] = TargetedEffect.emptyEffect
+  def postEffect(conversionResultSet: ConversionResultSet[AggregationResultType]): TargetedEffect[Player] = TargetedEffect.emptyEffect
 
   /**
    * メニューを[Player]に開かせる[TargetedEffect].

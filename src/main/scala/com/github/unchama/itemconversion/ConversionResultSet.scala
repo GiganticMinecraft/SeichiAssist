@@ -8,33 +8,22 @@ import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-sealed trait ConversionResultSet {
-  def convertedItems: Seq[ItemStack]
-  def unmodifiedItems: Seq[ItemStack]
-  final def giveEffect: TargetedEffect[Player] = {
+final case class ConversionResultSet[A](convertedItems: Seq[ItemStack], unmodifiedItems: Seq[ItemStack], aggregationResult: A) {
+  def giveEffect: TargetedEffect[Player] = {
     Util.grantItemStacksEffect[IO](convertedItems ++ unmodifiedItems: _*)
   }
 }
 
 object ConversionResultSet {
-  // TODO: もしかしてこれってAdditionalAggregate[Int]では？
-  case class Plane(convertedItems: Seq[ItemStack], unmodifiedItems: Seq[ItemStack]) {
-    def convertedCount: Int = convertedItems.size
-  }
-  
-  object Plane {
-    implicit val monoid: Monoid[Plane] = Monoid.instance(Plane(Nil, Nil), {
-      case (Plane(convertedItemsA, unmodifiedItemsA), Plane(convertedItemsB, unmodifiedItemsB)) =>
-        Plane(convertedItemsA ++ convertedItemsB, unmodifiedItemsA ++ unmodifiedItemsB)
-    })
-  }
-  
-  case class AdditionalAggregate[A](convertedItems: Seq[ItemStack], unmodifiedItems: Seq[ItemStack], aggregationResult: A)
-  
-  object AdditionalAggregate {
-    implicit def monoid[A: Monoid]: Monoid[AdditionalAggregate[A]] = Monoid.instance(AdditionalAggregate(Nil, Nil, Monoid[A].empty), {
-      case (AdditionalAggregate(convertedItemsA, unmodifiedItemsA, aggregationResultA: A), AdditionalAggregate(convertedItemsB, unmodifiedItemsB, aggregationResultB: A)) =>
-        AdditionalAggregate[A](convertedItemsA ++ convertedItemsB, unmodifiedItemsA ++ unmodifiedItemsB, Monoid[A].combine(aggregationResultA, aggregationResultB))
-    }) 
-  }
+  implicit def monoid[A: Monoid]: Monoid[ConversionResultSet[A]] = Monoid.instance(ConversionResultSet(Nil, Nil, Monoid[A].empty), {
+    // NOTE: DON'T annotate aggregationResult* with `A`; Doing it will emit "unchecked" warning by scalac
+    case (ConversionResultSet(convertedItemsA, unmodifiedItemsA, aggregationResultA), ConversionResultSet(convertedItemsB, unmodifiedItemsB, aggregationResultB)) =>
+      ConversionResultSet[A](convertedItemsA ++ convertedItemsB, unmodifiedItemsA ++ unmodifiedItemsB, Monoid[A].combine(aggregationResultA, aggregationResultB))
+  })
+
+  def apply[A: Monoid](convertedItems: Seq[ItemStack], unmodifiedItems: Seq[ItemStack]): ConversionResultSet[A] =
+    ConversionResultSet(convertedItems, unmodifiedItems, Monoid[A].empty)
+
+  def fromConvertedItemCount(convertedItems: Seq[ItemStack], unmodifiedItems: Seq[ItemStack]): ConversionResultSet[Int] =
+    ConversionResultSet(convertedItems, unmodifiedItems, convertedItems.size)
 }
