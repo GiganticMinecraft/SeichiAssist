@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.listener
 import cats.effect.{Fiber, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
@@ -58,7 +59,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
       return
     }
 
-    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
+    if (!player.getWorld.isSeichiSkillAllowed) return
 
     //破壊不可能ブロックの時処理を終了
     if (!BreakUtil.canBreak(player, block)) {
@@ -86,7 +87,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
       .unsafeRunSync()
       .levelCorrespondingToExp.level
 
-    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
+    if (!player.getWorld.isSeichiSkillAllowed) return
 
     //クールダウンタイム中は処理を終了
     if (!activeSkillAvailability(player).get.unsafeRunSync()) {
@@ -115,7 +116,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
       val isMultiTypeBreakingSkillEnabled = {
         import com.github.unchama.seichiassist.ManagedWorld._
         playerLevel >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-          (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
+          (player.getWorld.isSeichiSkillAllowed || playerData.settings.multipleidbreakflag)
       }
 
       val totalBreakRangeVolume = {
@@ -177,7 +178,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
 
       if (multiBreakList.headOption.forall(_.size == 1)) {
         // 破壊するブロックがプレーヤーが最初に破壊を試みたブロックだけの場合
-        BreakUtil.breakBlock(player, block, centerOfBlock, tool, shouldPlayBreakSound = true)
+        event.setCancelled(false)
         reservedMana.toList.traverse(manaApi.manaAmount(player).restoreAbsolute).unsafeRunSync()
       } else {
         // スキルの処理
@@ -284,7 +285,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
     if (b.getType ne Material.STEP) return
     if (b.getY != 5) return
     if (b.getData != 0) return
-    if (!world.getName.toLowerCase.startsWith(SeichiAssist.SEICHIWORLDNAME)) return
+    if (!world.isSeichi) return
     if (data.canBreakHalfBlock) return
     event.setCancelled(true)
     p.sendMessage(s"${RED}Y5に敷かれたハーフブロックは破壊不可能です。")

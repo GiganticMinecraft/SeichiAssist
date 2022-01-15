@@ -166,7 +166,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val LastLong = LastDate.getTime
 
       val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-      val shouldIncrementChainVote = dateDiff <= 2L
+      val shouldIncrementChainVote = dateDiff <= 60L
 
       val newCount = if (shouldIncrementChainVote) {
         sql"""select chainvote from playerdata where name = $name"""
@@ -414,7 +414,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
 
         val messages = List(
           s"${RED}最終ログアウト日時の照会に失敗しました。",
-          s"${RED}プレイヤー名やプレイヤー名が変更されていないか確認してください。",
+          s"${RED}プレイヤー名が変更されていないか確認してください。",
           s"${RED}プレイヤー名が正しいのにこのエラーが出る場合、最終ログイン時間が古い可能性があります。"
         )
 

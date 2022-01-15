@@ -6,7 +6,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.1"
 // ThisBuild / version はGitHub Actionsによって自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "19"
+ThisBuild / version := "21"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -78,7 +78,7 @@ val dependenciesToEmbed = Seq(
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 )
 
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
 
 // localDependenciesはprovidedとして扱い、jarに埋め込まない
 assembly / assemblyExcludedJars := {

@@ -30,14 +30,17 @@ case object ManagedWorld extends Enum[ManagedWorld] {
   case object WORLD_DOT extends ManagedWorld("world_dot", "ドット絵ワールド")
 
   implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
+    /**
+     * 整地ワールドであるかどうか
+     * これらのワールドは整地スキルが利用可能であり、整地量をカウントするワールドである。
+     */
     def isSeichi: Boolean = managedWorld match {
       case WORLD_SW
            | WORLD_SW_2
            | WORLD_SW_3
            | WORLD_SW_4
            | WORLD_SW_NETHER
-           | WORLD_SW_END
-           | WORLD_BUILD => true
+           | WORLD_SW_END => true
       case _ => false
     }
 
@@ -52,7 +55,8 @@ case object ManagedWorld extends Enum[ManagedWorld] {
     }
 
     /**
-     * ブロックがカウントされるワールドかどうか
+     * 建築量をカウントするワールドかどうか
+     * 建築スキルが使えるかどうかと等しい
      */
     def shouldTrackBuildBlock: Boolean = managedWorld match {
       case WORLD_2
@@ -65,6 +69,16 @@ case object ManagedWorld extends Enum[ManagedWorld] {
         | WORLD_DOT
         | WORLD_BUILD => true
       case _ => false
+    }
+
+    /**
+     * 整地スキルを使えるワールドかどうか
+     */
+    def isSeichiSkillAllowed: Boolean = isSeichi || {
+      managedWorld match {
+        case WORLD_2 | WORLD_BUILD => true
+        case _ => false
+      }
     }
 
     /**
@@ -81,6 +95,8 @@ case object ManagedWorld extends Enum[ManagedWorld] {
     def isSeichi: Boolean = asManagedWorld().exists(_.isSeichi)
 
     def shouldTrackBuildBlock: Boolean = asManagedWorld().exists(_.shouldTrackBuildBlock)
+
+    def isSeichiSkillAllowed: Boolean = asManagedWorld().exists(_.isSeichiSkillAllowed)
 
     def isBlockLineUpSkillEnabled: Boolean = asManagedWorld().exists(_.isBlockLineUpSkillEnabled)
   }

@@ -728,8 +728,6 @@ object SeichiAssist {
   var seichiAssistConfig: Config = _
   //(minestackに格納する)Gachadataに依存するデータリスト
   val msgachadatalist: mutable.ArrayBuffer[MineStackGachaData] = mutable.ArrayBuffer()
-  //総採掘量表示用
-  var allplayerbreakblockint = 0L
   var allplayergiveapplelong = 0L
 
   object Scopes {

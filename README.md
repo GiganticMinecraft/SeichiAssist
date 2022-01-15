@@ -6,7 +6,7 @@
 - [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
 - [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 - [Scala 2.13](https://www.scala-lang.org/download/)
-- [sbt 1.5.5](https://www.scala-sbt.org/1.x/docs/Setup.html)
+- [sbt 1.5.7](https://www.scala-sbt.org/1.x/docs/Setup.html)
 - Spigot 1.12.2
 
 ## 前提プラグイン
@@ -20,7 +20,7 @@
 - [worldguard-bukkit-6.2.2](https://dev.bukkit.org/projects/worldguard/files/2610618/download)
 
 ## 前提プラグイン(整地鯖内製)
-- RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://red.minecraftserver.jp/attachments/download/890/RegenWorld-1.0.jar)
+- RegenWorld [リポジトリ](https://github.com/GiganticMinecraft/RegenWorld) | [jar](https://redmine.seichi.click/attachments/download/890/RegenWorld-1.0.jar)
 
 ## ビルド
 

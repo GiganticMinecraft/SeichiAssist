@@ -91,7 +91,6 @@ object FirstPage extends Menu {
         ChestSlotRef(1, 7) -> gachaPrizeExchangeButton,
         ChestSlotRef(1, 8) -> oreExchangeButton,
         ChestSlotRef(2, 0) -> homePointMenuButton,
-        ChestSlotRef(2, 1) -> randomTeleportButton,
         ChestSlotRef(2, 5) -> fastCraftButton,
         ChestSlotRef(3, 3) -> votePointMenuButton,
         ChestSlotRef(3, 4) -> mapCommandButton,
@@ -564,8 +563,9 @@ object FirstPage extends Menu {
 
     val spawnCommandButton: Button = {
       val buttonLore = List(
-        s"$GRAY・整地ワールド",
-        s"${GRAY}間を移動するときに使います",
+        s"$GRAY・整地ワールド間を移動するとき",
+        s"$GRAY・拠点を建築するとき",
+        s"に使います",
         s"$DARK_RED${UNDERLINE}クリックするとワープします",
         s"${DARK_GRAY}command=>[/spawn]"
       )
@@ -654,27 +654,6 @@ object FirstPage extends Menu {
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
           ioCanOpenHomeMenu.open(HomeMenu)
-        )
-      )
-    }
-
-    val randomTeleportButton: Button = {
-      val iconItemStack =
-        new IconItemStackBuilder(Material.COMPASS)
-          .title(s"$YELLOW$UNDERLINE${BOLD}ランダムテレポート(β)")
-          .lore(List(
-            s"$RESET${GRAY}整地ワールドで使うと、良さげな土地にワープします",
-            s"$RESET${GRAY}βテスト中のため、謎挙動にご注意ください",
-            s"$RESET$DARK_RED${UNDERLINE}クリックで発動",
-            s"$RESET${DARK_GRAY}command=>[/rtp]"
-          ))
-          .build()
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-          CommandEffect("rtp")
         )
       )
     }

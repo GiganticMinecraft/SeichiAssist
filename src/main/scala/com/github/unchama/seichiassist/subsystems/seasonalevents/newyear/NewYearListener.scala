@@ -45,7 +45,7 @@ class NewYearListener[
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(
-        player.sendMessage(_)
+        player.sendMessage
       )
     }
   }
@@ -101,9 +101,9 @@ class NewYearListener[
     if (!isInEvent) return
 
     val player = event.getPlayer
-    val block = event.getBlock
     if (!player.getWorld.isSeichi) return
-    if (!MaterialSets.materials.contains(block.getType)) return
+    // 整地スキルに対応していないブロックなら処理を終了
+    if (!MaterialSets.materialsToCountBlockBreak.contains(event.getBlock.getType)) return
 
     val rand = new Random().nextDouble()
     if (rand < itemDropRate) {

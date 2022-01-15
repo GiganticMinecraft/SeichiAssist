@@ -19,7 +19,7 @@ case class FilteredButtonEffect(private val clickEventFilter: ClickEventFilter)
   /**
    * [ButtonEffectScope]に依存しない[TargetedEffect]を実行する[FilteredButtonEffect]を構築する.
    */
-  def this(clickEventFilter: ClickEventFilter, effects: TargetedEffect[Player]*) {
+  def this(clickEventFilter: ClickEventFilter, effects: TargetedEffect[Player]*) = {
     this(clickEventFilter) { _ => SequentialEffect(effects: _*) }
   }
 

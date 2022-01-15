@@ -5,6 +5,7 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -54,7 +55,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
     }
 
     //スキル発動条件がそろってなければ終了
-    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
+    if (!player.getWorld.isSeichiSkillAllowed) return
 
     //破壊不可能な場合は処理を終了
     if (!BreakUtil.canBreakWithSkill(player, block)) return
@@ -97,7 +98,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
       import ManagedWorld._
 
       level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-        (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
+        (player.getWorld.isSeichiSkillAllowed || playerData.settings.multipleidbreakflag)
     }
 
     import com.github.unchama.seichiassist.data.syntax._
@@ -190,13 +191,14 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
     implicit val ioCE: ConcurrentEffect[IO] = IO.ioConcurrentEffect
     /*GiganticBerserk用*/
     //死んだMOBがGiganticBerserkの対象MOBでなければ終了
-    if (!Util.isEnemy(event.getEntity.getType)) return
-    val player = event.getEntity.getKiller
+    val entity = event.getEntity
+    if (!Util.isEnemy(entity.getType)) return
+    val player = entity.getKiller
     //MOBを倒したプレイヤーがいなければ終了
     if (player == null) return
     //プレイヤーが整地ワールドに居ない場合終了
-    if (!Util.isSeichiWorld(player)) return
+    if (!player.getWorld.isSeichi) return
     val GBTR = new GiganticBerserkTask
-    GBTR.PlayerKillEnemy(player)
+    GBTR.PlayerKillEnemy(player, entity)
   }
 }
