@@ -6,7 +6,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.1"
 // ThisBuild / version はGitHub Actionsによって自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "20"
+ThisBuild / version := "23"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -50,7 +50,7 @@ val dependenciesToEmbed = Seq(
 
   // DB
   "org.flywaydb" % "flyway-core" % "5.2.4",
-  "org.scalikejdbc" %% "scalikejdbc" % "3.4.2",
+  "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
 
   // redis
   "com.github.etaty" %% "rediscala" % "1.9.0",

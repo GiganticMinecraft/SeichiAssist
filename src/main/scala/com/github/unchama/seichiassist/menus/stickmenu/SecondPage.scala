@@ -478,7 +478,7 @@ object SecondPage extends Menu {
     }
 
     val removeItemOwnerNameButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_BARDING, durability = 1)
+      val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_BARDING)
         .title(s"$YELLOW$UNDERLINE${BOLD}所有者表記削除システム")
         .lore(
           s"$RESET${GREEN}所有者表記のあるアイテムの所有者を",

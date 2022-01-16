@@ -118,17 +118,18 @@ services:
     volumes:
       - redis-data:/data
   db:
-    image: mariadb:10.1.38-bionic
+    image: mariadb:10.6.5
     environment:
       - TZ=Asia/Tokyo
       - MYSQL_ROOT_PASSWORD=unchamaisgod
     command: [
         '--wait_timeout=86400',
-        '--character-set-server=utf8',
     ]
     networks:
       - seichi
+    restart: always
     volumes:
       - db-data:/var/lib/mysql
+      - ./docker/config/mysql:/etc/mysql/conf.d
     ports:
       - "3306:3306"
