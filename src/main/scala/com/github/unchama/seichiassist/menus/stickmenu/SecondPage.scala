@@ -445,37 +445,6 @@ object SecondPage extends Menu {
       )
     }
 
-    val titanConversionButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_AXE, durability = 1)
-        .title(s"$YELLOW$UNDERLINE${BOLD}限定タイタン修繕システム")
-        .lore(List(
-          s"$RESET${GREEN}不具合によりテクスチャが反映されなくなってしまった",
-          s"$RESET${GOLD}ホワイトデーイベント限定タイタン$RESET${GREEN}を修繕できます",
-          s"$RESET${GREEN}出てきたインベントリに",
-          s"$RESET${GREEN}修繕したいタイタンを入れて",
-          s"$RESET${GREEN}escキーを押してください",
-          s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
-          s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
-          s"$RESET${DARK_GRAY}神に祈りながら交換しよう",
-          s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
-        ))
-        .unbreakable()
-        .build()
-
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          SequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            // TODO メニューインベントリに差し替える
-            openInventoryEffect(
-              createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}修繕したい限定タイタンを入れてネ"))
-            )
-          )
-        }
-      )
-    }
-
     val recycleBinButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.BUCKET)
         .title(s"$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
