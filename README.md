@@ -65,6 +65,18 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 - [gachadata.sql](https://redmine.seichi.click/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
 - [msgachadata.sql](https://redmine.seichi.click/attachments/download/894/msgachadata.sql) -> import to "msgachadata" table.
 
+### どうしてもローカルにJavaとかsbtを入れたくない人のための救済策
+
+VSCode + WSLで開発している場合や、純粋にビルドして立ち上げたいだけの場合はランタイムの導入のコストが高いので、以下の方法を使うと便利です。
+
+```bash
+$ rm -rf target/build # 再ビルドしたいなら既存のターゲットは削除
+$ docker run --rm -it -v `pwd`:/app ghcr.io/giganticminecraft/seichiassist-builder:1a64049 sh -c "cd /app && sbt assembly"
+$ sudo chown -R `whoami` target/build # docker上でsbtを実行するとrootになってしまうため権限を変える
+$ cp -n docker/spigot/eula.txt docker/spigot/serverfiles/eula.txt || true
+$ docker-compose up --build -d
+```
+
 ## protocolディレクトリ以下のクローン
 protocol以下のファイルは`git clone`では入手することができません。以下のどちらかのコマンドを実行してください:
 * `git clone --recursive`
