@@ -57,7 +57,6 @@ object SecondPage extends Menu {
       ChestSlotRef(0, 8) -> hubCommandButton,
       ChestSlotRef(3, 0) -> CommonButtons.openStickMenu,
       ChestSlotRef(3, 3) -> recycleBinButton,
-      ChestSlotRef(3, 6) -> removeItemOwnerNameButton,
       ChestSlotRef(3, 8) -> appleConversionButton
     )
 
@@ -440,35 +439,6 @@ object SecondPage extends Menu {
             // TODO メニューインベントリに差し替える
             openInventoryEffect(
               createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
-            )
-          )
-        }
-      )
-    }
-
-    val removeItemOwnerNameButton: Button = {
-      val iconItemStack = new IconItemStackBuilder(Material.DIAMOND_BARDING)
-        .title(s"$YELLOW$UNDERLINE${BOLD}所有者表記削除システム")
-        .lore(
-          s"$RESET${GREEN}所有者表記のあるアイテムの所有者を",
-          s"$RESET${GOLD}「所有者:なし」$RESET${GREEN}に変更します",
-          s"$RESET${GREEN}出てきたインベントリに",
-          s"$RESET${GREEN}表記を削除したいアイテムを入れて",
-          s"$RESET${GREEN}escキーを押してください",
-          s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
-          s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
-          s"$RESET${DARK_GRAY}神に祈りながら交換しよう",
-          s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
-        )
-        .unbreakable()
-        .build()
-      Button(
-        iconItemStack,
-        action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-          SequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
-            openInventoryEffect(
-              createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}所有者表記をなくしたいアイテムを投入してネ"))
             )
           )
         }
