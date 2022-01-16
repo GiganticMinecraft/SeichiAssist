@@ -223,9 +223,18 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     ItemStackBlobProxy.blobToItemStack(rs.string("itemstack"))
   }
 
+  /**
+   * @param knownState データベース上にあるエントリ
+   * @param validGlobalId データベース上で物理削除されていないPresentID
+   * @return それぞれのエントリ間で重複しないPresentIDを持ったPresentIDとPresentClaimingStateの組;
+   *         すなわち、Seq(1 -> PresentClaimingState.Available, 1 -> PresentClaimingState.Unavailable)となるような値は返されず、
+   *         toMapしたあとでも内容の喪失が起こらないことが保証される。
+   */
   private def filledEntries(knownState: List[(PresentID, PresentClaimingState)], validGlobalId: Iterable[PresentID]): Iterable[(PresentID, PresentClaimingState)] = {
-    val globalEntries = validGlobalId.map(id => (id, PresentClaimingState.Unavailable))
-    (globalEntries ++ knownState)
+    val knownId = knownState.map(_._1)
+    val outOfTarget = validGlobalId.toSeq.diff(knownId)
+    val defaultEntry = outOfTarget.map(id => (id, PresentClaimingState.Unavailable))
+    (defaultEntry ++ knownState)
   }
 
   private def computeValidPresentCount: F[Long] = Sync[F].delay {
