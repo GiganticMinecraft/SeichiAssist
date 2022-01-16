@@ -50,7 +50,7 @@ val dependenciesToEmbed = Seq(
 
   // DB
   "org.flywaydb" % "flyway-core" % "5.2.4",
-  "org.scalikejdbc" %% "scalikejdbc" % "3.4.2",
+  "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
 
   // redis
   "com.github.etaty" %% "rediscala" % "1.9.0",
