@@ -577,61 +577,6 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
     }
 
   }
-
-  /**
-   * 名義除去システム
-   */
-  @EventHandler
-  def onItemOwnerNameRemoveEvent(event: InventoryCloseEvent): Unit = {
-    val player = event.getPlayer match {
-      case p: Player => p
-      case _ => return
-    }
-    val inventory = event.getInventory
-
-    //インベントリサイズが36、あるいはインベントリのタイトルが予期したものでなければ処理を終了させる
-    if (inventory.row != 4 || inventory.getTitle != s"$GOLD${BOLD}所有者表記をなくしたいアイテムを投入してネ") return
-
-    val items: List[ItemStack] = inventory.getContents.toList
-    val shouldConvert = (item: ItemStack) => {
-      (item ne null) &&
-        item.hasItemMeta &&
-        item.getItemMeta.hasLore &&
-        Util.itemStackContainsOwnerName(item, player.getName)
-    }
-    val doConvert = (item: ItemStack) => {
-      val itemLore = item.getItemMeta.getLore.asScala.toList
-      //itemLoreのListの中から、"所有者"で始まるものを弾き、新しく「所有者:なし」を付け加えたLoreをアイテムにつける
-      val newItemLore = itemLore.map(lore =>
-        if (lore.startsWith("所有者")) "所有者:なし"
-        else lore
-      ).asJava
-      val itemMeta = Bukkit.getItemFactory.getItemMeta(item.getType).tap { meta =>
-        import meta._
-        //所有者表記をなしにしたLoreを付与する
-        setLore(newItemLore)
-      }
-      new ItemStack(item.getType, item.getAmount).tap(_.setItemMeta(itemMeta))
-    }
-
-    val conversionResult = items.map { item =>
-      if (shouldConvert(item)) {
-        (doConvert(item), true)
-      } else {
-        (item, false)
-      }
-    }
-    val convertedCount = conversionResult.count(_._2)
-    val convertedItems = conversionResult.map(_._1)
-
-    SequentialEffect(
-      Util.grantItemStacksEffect(convertedItems: _*),
-      if (convertedCount == 0)
-        MessageEffect(s"${GREEN}所有者表記のされたアイテムが認識されませんでした。すべてのアイテムを返却します。")
-      else
-        MessageEffect(s"$GREEN${convertedCount}個のアイテムを認識し、所有者表記を「なし」に変更しました")
-    ).run(player).unsafeRunSync()
-  }
 }
 
 
