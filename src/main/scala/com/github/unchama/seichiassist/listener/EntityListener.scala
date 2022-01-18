@@ -98,7 +98,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
       import ManagedWorld._
 
       level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-        (player.getWorld.isSeichiSkillAllowed || playerData.settings.multipleidbreakflag)
+        (player.getWorld.isSeichiSkillAllowed && playerData.settings.multipleidbreakflag)
     }
 
     import com.github.unchama.seichiassist.data.syntax._

@@ -116,7 +116,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
       val isMultiTypeBreakingSkillEnabled = {
         import com.github.unchama.seichiassist.ManagedWorld._
         playerLevel >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-          (player.getWorld.isSeichiSkillAllowed || playerData.settings.multipleidbreakflag)
+          (player.getWorld.isSeichiSkillAllowed && playerData.settings.multipleidbreakflag)
       }
 
       val totalBreakRangeVolume = {
