@@ -168,7 +168,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
             .apply()
         }
 
-        Right(MapExtra.fillOnBaseSet(associatedEntries.toMap, idSliceWithPagination.toSet, PresentClaimingState.Unavailable).toList)
+        Right(MapExtra.fillOnBaseSet(associatedEntries.toMap, idSliceWithPagination, PresentClaimingState.Unavailable).toList)
       }
     }
   }
@@ -186,7 +186,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
           .apply()
       }
 
-      MapExtra.fillOnBaseSet(associatedEntries.toMap, validPresentIDs.toSet, PresentClaimingState.Unavailable).toMap
+      MapExtra.fillOnBaseSet(associatedEntries.toMap, validPresentIDs.toSet, PresentClaimingState.Unavailable)
     }
   }
 
