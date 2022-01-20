@@ -29,4 +29,19 @@ object MapExtra {
         }
       }
       .toMap
+
+  /**
+   *
+   * @param map 元となるMap
+   * @param base キーの集合
+   * @param default 埋める値
+   * @tparam K キー
+   * @tparam V 値
+   * @return
+   */
+  def fillOnBaseSet[K, V](map: Map[K, V], base: Set[K], default: V): Map[K, V] = {
+    val keys = map.keys.toSet
+    require(keys.subsetOf(base))
+    map ++ (base -- keys).map(a => a -> default)
+  }
 }

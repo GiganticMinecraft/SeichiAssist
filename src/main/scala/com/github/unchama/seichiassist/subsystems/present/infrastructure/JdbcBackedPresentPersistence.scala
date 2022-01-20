@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.present.infrastructure
 
 import cats.Applicative
 import cats.effect.Sync
+import com.github.unchama.generic.MapExtra
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
 import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence, RevokeWarning}
 import eu.timepit.refined.api.Refined
@@ -167,7 +168,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
             .apply()
         }
 
-        Right(filledEntries(associatedEntries, idSliceWithPagination).toList)
+        Right(MapExtra.fillOnBaseSet(associatedEntries.toMap, idSliceWithPagination, PresentClaimingState.Unavailable).toList)
       }
     }
   }
@@ -185,7 +186,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
           .apply()
       }
 
-      filledEntries(associatedEntries, validPresentIDs).toMap
+      MapExtra.fillOnBaseSet(associatedEntries.toMap, validPresentIDs.toSet, PresentClaimingState.Unavailable)
     }
   }
 
@@ -221,11 +222,6 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
 
   private def unwrapItemStack(rs: WrappedResultSet): ItemStack = {
     ItemStackBlobProxy.blobToItemStack(rs.string("itemstack"))
-  }
-
-  private def filledEntries(knownState: List[(PresentID, PresentClaimingState)], validGlobalId: Iterable[PresentID]): Iterable[(PresentID, PresentClaimingState)] = {
-    val globalEntries = validGlobalId.map(id => (id, PresentClaimingState.Unavailable))
-    (globalEntries ++ knownState)
   }
 
   private def computeValidPresentCount: F[Long] = Sync[F].delay {
