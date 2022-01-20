@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{dateRange
 import java.time.LocalDate
 
 object Valentine {
-  val EVENT_YEAR: Int = 2018
+  val EVENT_YEAR: Int = 2022
   val START_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 2, 13)
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 2, 27)
   val itemDropRate: Double = validateItemDropRate(0.3)
