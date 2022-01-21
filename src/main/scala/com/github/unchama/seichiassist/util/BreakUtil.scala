@@ -651,7 +651,7 @@ object BreakUtil {
     true
   }
 
-  def willMultipleBreak(player: Player): SyncIO[Boolean] = for {
+  def multiplyBreakValidlyEnabled(player: Player): SyncIO[Boolean] = for {
     sad <-
       SeichiAssist.instance
         .breakCountSystem.api
@@ -660,6 +660,6 @@ object BreakUtil {
     import ManagedWorld._
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     sad.levelCorrespondingToExp.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-      (playerData.settings.multipleidbreakflag || player.getWorld.isSeichiSkillAllowed)
+      playerData.settings.multipleidbreakflag
   }
 }
