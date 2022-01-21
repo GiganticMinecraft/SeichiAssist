@@ -113,11 +113,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
       val skillArea = BreakArea(selectedSkill, skillState.usageMode)
       val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
 
-      val isMultiTypeBreakingSkillEnabled = {
-        import com.github.unchama.seichiassist.ManagedWorld._
-        playerLevel >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-          (player.getWorld.isSeichiSkillAllowed && playerData.settings.multipleidbreakflag)
-      }
+      val isMultiTypeBreakingSkillEnabled = BreakUtil.doMultipleBreak(player).unsafeRunSync()
 
       val totalBreakRangeVolume = {
         val breakLength = skillArea.breakLength
