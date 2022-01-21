@@ -651,7 +651,7 @@ object BreakUtil {
     true
   }
 
-  def doMultipleBreak(player: Player): SyncIO[Boolean] = for {
+  def willMultipleBreak(player: Player): SyncIO[Boolean] = for {
     sad <-
       SeichiAssist.instance
         .breakCountSystem.api

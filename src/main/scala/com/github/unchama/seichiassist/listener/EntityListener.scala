@@ -87,7 +87,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
       breakLength.x * breakLength.y * breakLength.z
     }
 
-    val isMultiTypeBreakingSkillEnabled = BreakUtil.doMultipleBreak(player).unsafeRunSync()
+    val isMultiTypeBreakingSkillEnabled = BreakUtil.willMultipleBreak(player).unsafeRunSync()
 
     import com.github.unchama.seichiassist.data.syntax._
     val BlockSearching.Result(breakBlocks, _, lavaBlocks) =
