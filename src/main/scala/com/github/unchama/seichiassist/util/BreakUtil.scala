@@ -659,11 +659,12 @@ object BreakUtil {
 
   /**
    * 複数種類ブロック同時破壊を行うかどうかを返す関数。
+   * 単純に`PlayerData.settings.multipleidbreakflag`（以下「フラグ」）を返すだけではないので注意。
    * <ol>
    *   <li>整地レベルが`SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel`以上でであるかどうか</li>
    *   <li>整地ワールドであるかどうか</li>
    *   <ul>
-   *   <li>整地ワールドでは、`PlayerData.settings.multipleidbreakflag`（以下「フラグ」）を無視し、常に`true`</li>
+   *   <li>整地ワールドでは、フラグを無視し、常に`true`</li>
    *   <ul>
    *   <li>つまり、フラグの設定に関わらず、複数種類ブロック破壊をする</li>
    *   </ul>
