@@ -672,7 +672,7 @@ object BreakUtil {
    *   <li>例えば、メインワールドではフラグが`true`のときのみ複数種類ブロック破壊をする</li>
    *   </ul>
    * </ol>
-   * @return 複数種類ブロック同時破壊フラグが有効になっているかどうか
+   * @return 複数種類ブロック同時破壊を行うかどうか
    */
   def multiplyBreakValidlyEnabled(player: Player): SyncIO[Boolean] = for {
     sad <-
