@@ -660,22 +660,14 @@ object BreakUtil {
   /**
    * 複数種類ブロック同時破壊を行うかどうかを返す関数。
    * 単純に`PlayerData.settings.multipleidbreakflag`（以下「フラグ」）を返すだけではないので注意。
-   * <ol>
-   *   <li>
-   *     整地レベルが`SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel`以上でであるかどうか
-   *     （すなわち、複数種類ブロック同時破壊スキルを使えるかどうか）
-   *   </li>
-   *   <li>整地ワールドであるかどうか</li>
-   *   <ul>
-   *   <li>整地ワールドでは、フラグを無視し、常に`true`</li>
-   *   <ul>
-   *   <li>つまり、フラグの設定に関わらず、複数種類ブロック破壊をする</li>
-   *   </ul>
-   *   <li>整地ワールド以外では、フラグを参照する</li>
-   *   <ul>
-   *   <li>例えば、メインワールドではフラグが`true`のときのみ複数種類ブロック破壊をする</li>
-   *   </ul>
-   * </ol>
+   *
+   *   1. 整地レベルが`SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel`以上でであるかどうか
+   *   （すなわち、複数種類ブロック同時破壊スキルを使えるかどうか）
+   *   1. 整地ワールドであるかどうか
+   *     - 整地ワールドでは、フラグを無視し、常に`true`
+   *       - つまり、フラグの設定に関わらず、複数種類ブロック破壊をする
+   *     - 整地ワールド以外では、フラグを参照する
+   *       - 例えば、メインワールドではフラグが`true`のときのみ複数種類ブロック破壊をする
    * @return 複数種類ブロック同時破壊を行うかどうか
    */
   def multiplyBreakValidlyEnabled(player: Player): SyncIO[Boolean] = for {
