@@ -658,7 +658,7 @@ object BreakUtil {
   }
 
   /**
-   * 複数種類ブロック同時破壊フラグが有効になっているかどうかを返す関数。
+   * 複数種類ブロック同時破壊を行うかどうかを返す関数。
    * <ol>
    *   <li>整地レベルが`SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel`以上でであるかどうか</li>
    *   <li>整地ワールドであるかどうか</li>
