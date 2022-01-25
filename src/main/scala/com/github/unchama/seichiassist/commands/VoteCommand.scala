@@ -26,7 +26,7 @@ object VoteCommand {
           case "record" => Some(Record)
           case _ => None
         }, usageEchoEcexutor),
-        Parsers.identity[String]
+        Parsers.identity
       )
     )
     .execution(context => {
