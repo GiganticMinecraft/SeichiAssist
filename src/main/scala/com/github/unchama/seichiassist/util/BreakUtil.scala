@@ -537,11 +537,11 @@ object BreakUtil {
               skill.range match {
                 case MultiArea(effectChunkSize, _) =>
                   val playerDirection = BreakUtil.getCardinalDirection(player)
-                  if (playerDirection.contains(CardinalDirection.Down)) {
+                  if (playerDirection == CardinalDirection.Down) {
                     // 下向きによる発動
                     // block＝破壊範囲の最上層ブロックにつき、startは0
                     0
-                  } else if (playerDirection.contains(CardinalDirection.Up)) {
+                  } else if (playerDirection == CardinalDirection.Up) {
                     // 上向きによる発動
                     // block＝破壊範囲の最下層ブロックにつき、startは破壊範囲の高さ
                     effectChunkSize.y
@@ -611,9 +611,9 @@ object BreakUtil {
   /**
    * エンティティが向いている方向を計算して取得する
    * @param entity 対象とするエンティティ
-   * @return エンティティが向いている方向が座標軸方向に近似できる場合はSome[CardinalDirection]、そうでない場合はNone
+   * @return エンティティが向いている方向が座標軸方向に近似できた場合はnon-nullな[[CardinalDirection]]、そうでない場合は`null`
    */
-  def getCardinalDirection(entity: Entity): Option[CardinalDirection] = {
+  def getCardinalDirection(entity: Entity): CardinalDirection = {
     var rotation = ((entity.getLocation.getYaw + 180) % 360).toDouble
     val loc = entity.getLocation
     val pitch = loc.getPitch
@@ -622,21 +622,21 @@ object BreakUtil {
     }
 
     if (pitch <= -30) {
-      Some(CardinalDirection.Up)
+      CardinalDirection.Up
     } else if (pitch >= 25) {
-      Some(CardinalDirection.Down)
+      CardinalDirection.Down
     } else if (0 <= rotation && rotation < 45.0) {
-      Some(CardinalDirection.North)
+      CardinalDirection.North
     } else if (45.0 <= rotation && rotation < 135.0) {
-      Some(CardinalDirection.East)
+      CardinalDirection.East
     } else if (135.0 <= rotation && rotation < 225.0) {
-      Some(CardinalDirection.South)
+      CardinalDirection.South
     } else if (225.0 <= rotation && rotation < 315.0) {
-      Some(CardinalDirection.West)
+      CardinalDirection.West
     } else if (315.0 <= rotation && rotation < 360.0) {
-      Some(CardinalDirection.North)
+      CardinalDirection.North
     } else {
-      None
+      null
     }
   }
 

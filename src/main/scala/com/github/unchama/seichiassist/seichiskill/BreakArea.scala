@@ -24,7 +24,7 @@ class BreakArea private (skill: SeichiSkill, usageIntention: SeichiSkillUsageMod
 
   val isAssaultSkill: Boolean = skill.range.isInstanceOf[AssaultSkillRange]
 
-  private val breakAreaListFromDirection: Option[CardinalDirection] => List[AxisAlignedCuboid] = CachedFunction { dir =>
+  private val breakAreaListFromDirection: CardinalDirection => List[AxisAlignedCuboid] = CachedFunction { dir =>
     import BreakArea.CoordinateManipulation._
     import syntax._
 
@@ -35,7 +35,7 @@ class BreakArea private (skill: SeichiSkill, usageIntention: SeichiSkillUsageMod
         } else {
           identity
         }
-      } else if (dir.contains(CardinalDirection.Up) || dir.contains(CardinalDirection.Down)) {
+      } else if (dir == CardinalDirection.Up || dir == CardinalDirection.Down) {
         //上向きまたは下向きの時
         if (Seq(DualBreak, TrialBreak).contains(skill)) {
           identity
@@ -61,26 +61,22 @@ class BreakArea private (skill: SeichiSkill, usageIntention: SeichiSkillUsageMod
 
     val directionalShift: AxisAlignedCuboid => AxisAlignedCuboid =
       dir match {
-        case Some(value) => value match {
-          case CardinalDirection.North | CardinalDirection.South | CardinalDirection.East | CardinalDirection.West =>
-            areaShift(XYZTuple(0, 0, breakLength.z))
-          case CardinalDirection.Up | CardinalDirection.Down =>
-            areaShift(XYZTuple(0, breakLength.y, 0))
-        }
-        case None => identity
+        case CardinalDirection.North | CardinalDirection.East | CardinalDirection.South | CardinalDirection.West =>
+          areaShift(XYZTuple(0, 0, breakLength.z))
+        case CardinalDirection.Up | CardinalDirection.Down if !Seq(DualBreak, TrialBreak).contains(skill) =>
+          areaShift(XYZTuple(0, breakLength.y, 0))
+        case _ => identity
       }
 
     val rotation: AxisAlignedCuboid => AxisAlignedCuboid =
       dir match {
-        case Some(value) => value match {
-          case CardinalDirection.North => rotateXZ(180)
-          case CardinalDirection.East => rotateXZ(270)
-          case CardinalDirection.West => rotateXZ(90)
-          case CardinalDirection.Down if !isAssaultSkill => invertY
-          case CardinalDirection.South => identity
-          case CardinalDirection.Up => identity
-        }
-        case None => identity
+        case CardinalDirection.North => rotateXZ(180)
+        case CardinalDirection.East => rotateXZ(270)
+        case CardinalDirection.West => rotateXZ(90)
+        case CardinalDirection.Down if !isAssaultSkill => invertY
+        // 横向きのスキル発動の場合Sが基準となり、
+        // 縦向きの場合Uが基準となっているため回転しないで良い
+        case CardinalDirection.South | CardinalDirection.Up | _ => identity
       }
 
     val firstArea = {
@@ -109,7 +105,7 @@ class BreakArea private (skill: SeichiSkill, usageIntention: SeichiSkillUsageMod
 }
 
 object BreakArea {
-  private val getCardinalDirection: Player => IO[Option[CardinalDirection]] = { player => IO { BreakUtil.getCardinalDirection(player) } }
+  private val getCardinalDirection: Player => IO[CardinalDirection] = { player => IO { BreakUtil.getCardinalDirection(player) } }
 
   object CoordinateManipulation {
     import syntax._
