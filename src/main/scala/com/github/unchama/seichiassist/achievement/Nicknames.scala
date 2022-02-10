@@ -53,7 +53,7 @@ object Nicknames {
     3018 -> HeadTail(s"蹂躙者", s"蹂躙者"),
     3019 -> HeadTail(s"真破壊神", s"真破壊神"),
     // ログイン時間実績
-    4001 -> HeadTail(s"社蓄", s"極み"),
+    4001 -> HeadTail(s"社畜", s"極み"),
     4002 -> HeadTail(s"休日", s"爆撃機"),
     4003 -> HeadTail(s"企業", s"戦士"),
     4004 -> HeadTail(s"目覚め", s"夜"),
