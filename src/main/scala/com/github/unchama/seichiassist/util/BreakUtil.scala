@@ -677,9 +677,9 @@ object BreakUtil {
         .seichiAmountDataRepository(player).read
   } yield {
     import ManagedWorld._
-    val isFlagEnabledSeichiLv =
+    val isLevelAboveThreshold =
       sad.levelCorrespondingToExp.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel
     val playerData = SeichiAssist.playermap(player.getUniqueId)
-    isFlagEnabledSeichiLv && (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
+    isLevelAboveThreshold && (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
   }
 }
