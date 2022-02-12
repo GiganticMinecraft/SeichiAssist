@@ -464,7 +464,7 @@ object FirstPage extends Menu {
             val iconItemStack = {
               val lore = List(
                 s"$RESET$GREEN$UNDERLINE${BOLD}現在のスターレベル：☆${starLevel.level}",
-                s"$RESET${AQUA}次の☆まで：あと${seichiAmountData.levelProgress.expAmountToNextLevel.amount}",
+                s"$RESET${AQUA}次の☆まで：あと${seichiAmountData.levelProgress.expAmountToNextLevel.formatted}",
               )
 
               new IconItemStackBuilder(Material.GOLD_INGOT)
