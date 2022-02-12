@@ -87,19 +87,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
       breakLength.x * breakLength.y * breakLength.z
     }
 
-    val level =
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-        .unsafeRunSync()
-        .levelCorrespondingToExp.level
-
-    val isMultiTypeBreakingSkillEnabled = {
-      import ManagedWorld._
-
-      level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-        (player.getWorld.isSeichiSkillAllowed && playerData.settings.multipleidbreakflag)
-    }
+    val isMultiTypeBreakingSkillEnabled = BreakUtil.multiplyBreakValidlyEnabled(player).unsafeRunSync()
 
     import com.github.unchama.seichiassist.data.syntax._
     val BlockSearching.Result(breakBlocks, _, lavaBlocks) =

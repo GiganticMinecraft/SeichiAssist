@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
@@ -536,11 +537,11 @@ object BreakUtil {
               skill.range match {
                 case MultiArea(effectChunkSize, _) =>
                   val playerDirection = BreakUtil.getCardinalDirection(player)
-                  if (playerDirection == "D") {
+                  if (playerDirection == CardinalDirection.Down) {
                     // 下向きによる発動
                     // block＝破壊範囲の最上層ブロックにつき、startは0
                     0
-                  } else if (playerDirection == "U") {
+                  } else if (playerDirection == CardinalDirection.Up) {
                     // 上向きによる発動
                     // block＝破壊範囲の最下層ブロックにつき、startは破壊範囲の高さ
                     effectChunkSize.y
@@ -607,7 +608,12 @@ object BreakUtil {
     gravity
   }
 
-  def getCardinalDirection(entity: Entity): String = {
+  /**
+   * エンティティが向いている方向を計算して取得する
+   * @param entity 対象とするエンティティ
+   * @return エンティティが向いている方向が座標軸方向に近似できた場合はnon-nullな[[CardinalDirection]]、そうでない場合は`null`
+   */
+  def getCardinalDirection(entity: Entity): CardinalDirection = {
     var rotation = ((entity.getLocation.getYaw + 180) % 360).toDouble
     val loc = entity.getLocation
     val pitch = loc.getPitch
@@ -616,19 +622,19 @@ object BreakUtil {
     }
 
     if (pitch <= -30) {
-      "U"
+      CardinalDirection.Up
     } else if (pitch >= 25) {
-      "D"
+      CardinalDirection.Down
     } else if (0 <= rotation && rotation < 45.0) {
-      "N"
+      CardinalDirection.North
     } else if (45.0 <= rotation && rotation < 135.0) {
-      "E"
+      CardinalDirection.East
     } else if (135.0 <= rotation && rotation < 225.0) {
-      "S"
+      CardinalDirection.South
     } else if (225.0 <= rotation && rotation < 315.0) {
-      "W"
+      CardinalDirection.West
     } else if (315.0 <= rotation && rotation < 360.0) {
-      "N"
+      CardinalDirection.North
     } else {
       null
     }
@@ -651,4 +657,15 @@ object BreakUtil {
     true
   }
 
+  def multiplyBreakValidlyEnabled(player: Player): SyncIO[Boolean] = for {
+    sad <-
+      SeichiAssist.instance
+        .breakCountSystem.api
+        .seichiAmountDataRepository(player).read
+  } yield {
+    import ManagedWorld._
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
+    sad.levelCorrespondingToExp.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
+      playerData.settings.multipleidbreakflag
+  }
 }

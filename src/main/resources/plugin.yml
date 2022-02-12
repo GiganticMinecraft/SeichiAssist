@@ -117,6 +117,11 @@ commands:
     usage: /<command>
     permission-message: *denied
     permission: seichiassist.hat
+  minestack:
+    description: Toggle whether minestack collects applicable item automatically
+    usage: /minestack <on | off>
+    permission-message: *denied
+    permission: seichiassist.minestack
 permissions:
   seichiassist.*:
     default: false
@@ -143,6 +148,7 @@ permissions:
       - seichiassist.fd
       - seichiassist.present.*
       - seichiassist.hat
+      - seichiassist.minestack
   seichiassist.event:
     default: op
   seichiassist.shareinv:

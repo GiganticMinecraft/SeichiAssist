@@ -90,7 +90,6 @@ object FirstPage extends Menu {
         ChestSlotRef(1, 2) -> passiveSkillBookButton,
         ChestSlotRef(1, 7) -> gachaPrizeExchangeButton,
         ChestSlotRef(1, 8) -> oreExchangeButton,
-        ChestSlotRef(2, 0) -> homePointMenuButton,
         ChestSlotRef(2, 5) -> fastCraftButton,
         ChestSlotRef(3, 3) -> votePointMenuButton,
         ChestSlotRef(3, 4) -> mapCommandButton,
@@ -464,7 +463,7 @@ object FirstPage extends Menu {
             val iconItemStack = {
               val lore = List(
                 s"$RESET$GREEN$UNDERLINE${BOLD}現在のスターレベル：☆${starLevel.level}",
-                s"$RESET${AQUA}次の☆まで：あと${seichiAmountData.levelProgress.expAmountToNextLevel.amount}",
+                s"$RESET${AQUA}次の☆まで：あと${seichiAmountData.levelProgress.expAmountToNextLevel.formatted}",
               )
 
               new IconItemStackBuilder(Material.GOLD_INGOT)
@@ -635,25 +634,6 @@ object FirstPage extends Menu {
               title = Some(s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください")
             )
           ),
-        )
-      )
-    }
-
-    def homePointMenuButton(implicit ioCanOpenHomeMenu: IO CanOpen HomeMenu.type): Button = {
-      val iconItemStack =
-        new IconItemStackBuilder(Material.BED)
-          .title(s"$YELLOW$UNDERLINE${BOLD}ホームメニューを開く")
-          .lore(List(
-            s"$RESET${GRAY}ホームポイントに関するメニュー",
-            s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
-          ))
-          .build()
-
-      Button(
-        iconItemStack,
-        LeftClickButtonEffect(
-          FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 1.5f),
-          ioCanOpenHomeMenu.open(HomeMenu)
         )
       )
     }
