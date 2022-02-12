@@ -17,7 +17,7 @@ object VoteCommand {
 
   val usageEchoEcexutor: TargetedEffect[CommandSender] = MessageEffect(List(
     s"$RED/vote record <プレイヤー名>",
-    "投票特典配布用コマンドです(マルチ鯖対応済)"
+    "投票特典配布用コマンドです"
   ))
   val executor: TabExecutor = playerCommandBuilder
     .argumentsParsers(
