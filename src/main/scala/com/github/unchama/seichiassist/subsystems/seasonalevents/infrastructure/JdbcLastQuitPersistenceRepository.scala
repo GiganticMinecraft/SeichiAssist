@@ -1,12 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.infrastructure
 
-import java.time.LocalDateTime
-import java.util.UUID
-
-import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import cats.effect.Sync
 import com.github.unchama.seichiassist.database.DatabaseConstants
+import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F]) extends LastQuitPersistenceRepository[F, UUID] {
   override def loadPlayerLastQuit(key: UUID): F[Option[LocalDateTime]] = {
