@@ -17,6 +17,7 @@ import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
+import org.bukkit.Bukkit
 import org.bukkit.entity.{EntityType, Monster, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
@@ -89,7 +90,9 @@ class ValentineListener[
       _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
       _ <- LiftIO[F].liftIO(IO{
+        Bukkit.getLogger.info(lastQuit.toString)
         val hasNotJoinedInEventYet = lastQuit.forall(_.isBefore(START_DATE.atStartOfDay()))
+        Bukkit.getLogger.info(hasNotJoinedInEventYet.toString)
 
         val effects =
           if (hasNotJoinedInEventYet) List(
