@@ -23,6 +23,8 @@ import org.bukkit.{Material, Sound}
  */
 object HomeMenu extends Menu {
 
+  // TODO: SubHome -> Homeに名前を変更する
+
   import com.github.unchama.menuinventory.syntax._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
   import eu.timepit.refined.auto._
@@ -45,11 +47,6 @@ object HomeMenu extends Menu {
 
     val buttonComputations = ButtonComputations(player)
     import buttonComputations._
-
-    val homePointPart = Map(
-      ChestSlotRef(0, 0) -> ConstantButtons.warpToHomePointButton,
-      ChestSlotRef(2, 0) -> ConstantButtons.setHomeButtonButton
-    )
 
     val subHomePointPart = for {
       subHomeNumber <- 1 to SeichiAssist.seichiAssistConfig.getSubHomeMax
@@ -81,43 +78,10 @@ object HomeMenu extends Menu {
 
     for {
       dynamicPart <- dynamicPartComputation
-    } yield MenuSlotLayout(homePointPart ++ subHomePointPart.flatten ++ dynamicPart.toMap)
+    } yield MenuSlotLayout(subHomePointPart.flatten ++ dynamicPart.toMap:_*)
   }
 
   private object ConstantButtons {
-    val warpToHomePointButton: Button = {
-      Button(
-        new IconItemStackBuilder(Material.COMPASS)
-          .title(s"$YELLOW$UNDERLINE${BOLD}ホームポイントにワープ")
-          .lore(List(
-            s"${GRAY}あらかじめ設定した", s"${GRAY}ホームポイントにワープします",
-            s"${DARK_GRAY}うまく機能しないときは", s"${DARK_GRAY}再接続してみてください",
-            s"$DARK_RED${UNDERLINE}クリックでワープ", s"${DARK_GRAY}command->[/home]"
-          ))
-          .build(),
-        LeftClickButtonEffect {
-          CommandEffect("home")
-        }
-      )
-    }
-
-    def setHomeButtonButton(implicit environment: Environment): Button = {
-      Button(
-        new IconItemStackBuilder(Material.BED)
-          .title(s"$YELLOW$UNDERLINE${BOLD}ホームポイントを設定")
-          .lore(List(
-            s"${GRAY}現在位置をホームポイント", s"${GRAY}として設定します",
-            s"$DARK_GRAY※確認メニューが開きます", s"$DARK_RED${UNDERLINE}クリックで設定",
-            s"${DARK_GRAY}command->[/sethome]"
-          ))
-          .build(),
-        LeftClickButtonEffect {
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-          environment.ioCanOpenConfirmationMenu.open(ConfirmationMenu(None))
-        }
-      )
-    }
-
     def warpToSubHomePointButton(subHomeNumber: Int): Button =
       Button(
         new IconItemStackBuilder(Material.COMPASS)
