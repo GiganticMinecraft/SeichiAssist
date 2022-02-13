@@ -89,10 +89,7 @@ class ValentineListener[
       _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
       _ <- LiftIO[F].liftIO(IO{
-        val hasNotJoinedInEventYet = lastQuit match {
-          case Some(dateTime) => dateTime.isBefore(START_DATE.atStartOfDay())
-          case None => true
-        }
+        val hasNotJoinedInEventYet = lastQuit.forall(_.isBefore(START_DATE.atStartOfDay()))
 
         val effects =
           if (hasNotJoinedInEventYet) List(
