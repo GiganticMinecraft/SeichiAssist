@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.database.DatabaseConstants
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
