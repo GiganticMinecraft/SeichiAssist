@@ -458,4 +458,11 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
         PlayerDataLoading.loadExistingPlayerData(playerUUID, playerName)
     }
   }
+
+  def updateLastQuit(playerUuid: UUID): Unit = {
+    DB.localTx { implicit session =>
+      sql"update playerdata set lastquit = cast(now() as datetime) where uuid = {uuid}"
+        .bindByName(Symbol("uuid") -> playerUuid).update().apply()
+    }
+  }
 }
