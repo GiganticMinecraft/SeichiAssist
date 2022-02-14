@@ -13,7 +13,7 @@ class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F]) ext
   override def loadPlayerLastQuit(key: UUID): F[Option[LocalDateTime]] = {
     SyncContext.delay {
       DB.localTx { implicit session =>
-        sql"select lastquit from playerdata where uuid = '${key.toString}'"
+        sql"select lastquit from playerdata where uuid = '{uuid}'".bindByName(Symbol("uuid") -> key.toString)
           .map { rs =>
             LocalDateTime.parse(rs.string("lastquit"), DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))
           }.first().apply()
