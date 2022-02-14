@@ -90,9 +90,7 @@ class ValentineListener[
       _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
       _ <- LiftIO[F].liftIO(IO{
-        Bukkit.getLogger.info(lastQuit.toString)
         val hasNotJoinedInEventYet = lastQuit.forall(_.isBefore(START_DATE.atStartOfDay()))
-        Bukkit.getLogger.info(hasNotJoinedInEventYet.toString)
 
         val effects =
           if (hasNotJoinedInEventYet) List(
