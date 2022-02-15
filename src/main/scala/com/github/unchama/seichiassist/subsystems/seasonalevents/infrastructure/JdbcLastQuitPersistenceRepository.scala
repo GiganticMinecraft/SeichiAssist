@@ -15,7 +15,7 @@ class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F]) ext
         sql"select lastquit from playerdata where uuid = {uuid}".bindByName(Symbol("uuid") -> key.toString)
           .map { rs =>
             LocalDateTime.parse(rs.string("lastquit"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"))
-          }.first().apply()
+          }.single().apply()
       }
     }
   }
