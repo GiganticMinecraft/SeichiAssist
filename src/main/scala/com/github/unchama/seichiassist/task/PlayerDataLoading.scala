@@ -45,7 +45,6 @@ object PlayerDataLoading {
       val loginInfoUpdateCommand = ("update "
         + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME + " "
         + "set loginflag = true, "
-        + "lastquit = cast(now() as datetime) "
         + "where uuid = '" + stringUuid + "'")
 
       stmt.executeUpdate(loginInfoUpdateCommand)

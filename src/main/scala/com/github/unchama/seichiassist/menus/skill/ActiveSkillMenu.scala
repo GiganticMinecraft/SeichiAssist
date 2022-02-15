@@ -353,7 +353,8 @@ object ActiveSkillMenu extends Menu {
                             unlockedState.obtained(SeichiSkill.AssaultArmor),
                             SequentialEffect(
                               MessageEffect(s"$YELLOW${BOLD}全てのスキルを習得し、アサルト・アーマーを解除しました"),
-                              Kleisli.liftF(DiscordNotificationAPI[F].send(notificationMessage).toIO),
+                              // アンダーバーがマークダウンの斜体と解釈されることを防ぐ
+                              Kleisli.liftF(DiscordNotificationAPI[F].send(notificationMessage.replaceAllLiterally("_", "\\_")).toIO),
                               Kleisli.liftF(IO {
                                 Util.sendMessageToEveryoneIgnoringPreference(s"$GOLD$BOLD$notificationMessage")
                               }),
