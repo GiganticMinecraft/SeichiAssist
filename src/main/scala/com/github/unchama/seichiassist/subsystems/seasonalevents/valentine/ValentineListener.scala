@@ -10,14 +10,13 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valen
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendMessageToEveryoneIgnoringPreference}
-import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
-import org.bukkit.Bukkit
 import org.bukkit.entity.{EntityType, Monster, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityExplodeEvent}
@@ -89,18 +88,18 @@ class ValentineListener[
     val program = for {
       _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
-      _ <- LiftIO[F].liftIO(IO{
+      _ <- LiftIO[F].liftIO {
         val hasNotJoinedInEventYet = lastQuit.forall(_.isBefore(START_DATE.atStartOfDay()))
 
         val effects =
-          if (hasNotJoinedInEventYet) List(
+          if (hasNotJoinedInEventYet) SequentialEffect(
             grantItemStacksEffect(cookieOf(player)),
             MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
-          else List(emptyEffect)
+          else TargetedEffect.emptyEffect
 
-        effects.traverse(_.run(player))
-      })
+        effects.run(player)
+      }
     } yield ()
 
     effectEnvironment.unsafeRunEffectAsync("チョコチップクッキーを付与するかどうかを判定する", program)
