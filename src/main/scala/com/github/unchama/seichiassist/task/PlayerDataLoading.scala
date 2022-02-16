@@ -44,7 +44,7 @@ object PlayerDataLoading {
     def updateLoginInfo(stmt: Statement): Unit = {
       val loginInfoUpdateCommand = ("update "
         + db + "." + DatabaseConstants.PLAYERDATA_TABLENAME + " "
-        + "set loginflag = true, "
+        + "set loginflag = true "
         + "where uuid = '" + stringUuid + "'")
 
       stmt.executeUpdate(loginInfoUpdateCommand)
