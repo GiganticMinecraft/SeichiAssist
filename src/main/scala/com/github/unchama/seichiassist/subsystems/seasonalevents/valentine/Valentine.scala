@@ -16,6 +16,15 @@ object Valentine {
   val START_DATETIME: LocalDateTime = duration.from
   val END_DATETIME: LocalDateTime = duration.to
 
+  /**
+   * 2022バレンタインイベントにおいて
+   *
+   *  - 0時で区切ってイベント日時を設定していたため、0時を超えてログインし続けていたプレイヤー
+   *    - 配布処理はログイン時に行われ、最終ログアウト日時を参照しているため、0時を超えた時点でそこで一度ログアウトしていなければ配布済みと判断されてしまう
+   *  - lastquitがnullableなのにそれを考慮しなかったために配布されなかった初見プレイヤー
+   *
+   * に正常に配布されなかったので、そのプレイヤーたちのリスト
+   */
   val cookieUnGivenPlayers: Set[UUID] = Set(
     "4328d5fb-e4ed-461f-8349-d7df34910547", "57370d2e-0c1a-4a70-9e23-8e539f5daee2", "36402334-e319-4dc5-806a-2d61fd376351",
     "59adc18e-e498-46fb-879f-058522cf1252", "54bcb3eb-a393-41c5-b87b-649c164f2bf7", "6632887b-fa8e-48c8-8510-1fc2b5e2a949",
