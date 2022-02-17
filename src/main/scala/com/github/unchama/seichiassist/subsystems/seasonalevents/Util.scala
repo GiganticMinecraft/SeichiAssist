@@ -4,10 +4,13 @@ import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Random
 
 object Util {
+  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+
   /**
    * 指定されたEntityがいるLocationに、指定されたitemをドロップする
    *
