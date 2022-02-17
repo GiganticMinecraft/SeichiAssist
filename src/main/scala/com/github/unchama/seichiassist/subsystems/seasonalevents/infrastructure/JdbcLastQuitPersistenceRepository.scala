@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuit
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F]) extends LastQuitPersistenceRepository[F, UUID] {
@@ -13,9 +12,8 @@ class JdbcLastQuitPersistenceRepository[F[_]](implicit SyncContext: Sync[F]) ext
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"select lastquit from playerdata where uuid = {uuid}".bindByName(Symbol("uuid") -> key.toString)
-          .map { rs =>
-            LocalDateTime.parse(rs.string("lastquit"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"))
-          }.single().apply()
+          .map(_.timestampOpt("lastquit").map(_.toLocalDateTime))
+          .single().apply().flatten
       }
     }
   }

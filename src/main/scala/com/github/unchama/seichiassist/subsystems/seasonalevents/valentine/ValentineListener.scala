@@ -10,9 +10,9 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valen
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
 import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendMessageToEveryoneIgnoringPreference}
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
@@ -25,6 +25,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import java.time.LocalDateTime
 import java.util.{Random, UUID}
 import scala.util.chaining._
 
@@ -83,16 +84,24 @@ class ValentineListener[
     if (!isInEvent) return
 
     val player = event.getPlayer
+    val playerUuid = player.getUniqueId
 
     import cats.implicits._
     val program = for {
       _ <- NonServerThreadContextShift[F].shift
-      lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
+      lastQuit <- repository.loadPlayerLastQuit(playerUuid)
       _ <- LiftIO[F].liftIO {
-        val hasNotJoinedInEventYet = lastQuit.forall(_.isBefore(START_DATE.atStartOfDay()))
+        val baseDateTime =
+        /**
+         * 2022: 0時を超えてログインし続けていた人と初見さんに対応するための条件分岐
+         * 詳細は[[cookieUnGivenPlayers]]
+         */
+          if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 18, 4, 0)
+          else EVENT_DURATION.from
+        val hasNotJoinedBeforeYet = lastQuit.forall { quit => quit.isBefore(baseDateTime) || quit.isEqual(baseDateTime) }
 
         val effects =
-          if (hasNotJoinedInEventYet) SequentialEffect(
+          if (hasNotJoinedBeforeYet) SequentialEffect(
             grantItemStacksEffect(cookieOf(player)),
             MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
