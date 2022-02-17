@@ -96,7 +96,7 @@ class ValentineListener[
          * 2022: 0時を超えてログインし続けていた人と初見さんに対応するための条件分岐
          * 詳細は[[cookieUnGivenPlayers]]
          */
-          if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 17, 20, 0)
+          if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 18, 4, 0)
           else EVENT_DURATION.from
         val hasNotJoinedBeforeYet = lastQuit.forall { quit => quit.isBefore(baseDateTime) || quit.isEqual(baseDateTime) }
 
