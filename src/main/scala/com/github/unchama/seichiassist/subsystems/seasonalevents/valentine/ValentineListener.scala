@@ -25,6 +25,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
+import java.time.{LocalDate, LocalDateTime}
 import java.util.{Random, UUID}
 import scala.util.chaining._
 
@@ -85,17 +86,21 @@ class ValentineListener[
     if (!isInEvent) return
 
     val player = event.getPlayer
+    val playerUuid = player.getUniqueId
 
     import cats.implicits._
     val program = for {
       _ <- NonServerThreadContextShift[F].shift
-      lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
+      lastQuit <- repository.loadPlayerLastQuit(playerUuid)
       _ <- LiftIO[F].liftIO {
-        val hasNotJoinedInEventYet =
-          lastQuit.forall { quit => quit.isBefore(START_DATETIME) || quit.isEqual(START_DATETIME) }
+        val baseDateTime =
+          // 2022: 0時を超えてログインし続けていた人と初見さんに対応するための条件分岐
+          if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 18, 4, 10)
+          else START_DATETIME
+        val hasNotJoinedBeforeYet = lastQuit.forall { quit => quit.isBefore(baseDateTime) || quit.isEqual(baseDateTime) }
 
         val effects =
-          if (hasNotJoinedInEventYet) SequentialEffect(
+          if (hasNotJoinedBeforeYet) SequentialEffect(
             grantItemStacksEffect(cookieOf(player)),
             MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
