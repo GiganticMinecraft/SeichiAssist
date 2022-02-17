@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.domain
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 case class DateTimeDuration(from: LocalDateTime, to: LocalDateTime) {
-  require(from.isBefore(to) || from.isEqual(to), "適切ではない期間が指定されました。")
+  require(from.isBefore(to) || from.isEqual(to), "期間の開始日が終了日よりも後に指定されています。")
 
   private val REBOOT_TIME = LocalTime.of(4, 10)
 
