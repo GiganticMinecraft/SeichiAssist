@@ -97,7 +97,7 @@ class ValentineListener[
          * 詳細は[[cookieUnGivenPlayers]]
          */
           if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 17, 20, 0)
-          else START_DATETIME
+          else EVENT_DURATION.from
         val hasNotJoinedBeforeYet = lastQuit.forall { quit => quit.isBefore(baseDateTime) || quit.isEqual(baseDateTime) }
 
         val effects =
