@@ -11,7 +11,7 @@ object Valentine {
 
   private val START_DATE = LocalDate.of(EVENT_YEAR, 2, 17)
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 2, 27)
-  val EVENT_DURATION = new DateTimeDuration(START_DATE, END_DATE)
+  val EVENT_DURATION: DateTimeDuration = DateTimeDuration.fromLocalDate(START_DATE, END_DATE)
 
   /**
    * 2022バレンタインイベントにおいて
