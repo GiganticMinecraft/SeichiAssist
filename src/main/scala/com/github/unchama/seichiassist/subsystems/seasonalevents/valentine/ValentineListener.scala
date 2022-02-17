@@ -93,7 +93,7 @@ class ValentineListener[
       _ <- LiftIO[F].liftIO {
         val baseDateTime =
           // 2022: 0時を超えてログインし続けていた人と初見さんに対応するための条件分岐
-          if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 18, 4, 10)
+          if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 17, 20, 0)
           else START_DATETIME
         val hasNotJoinedBeforeYet = lastQuit.forall { quit => quit.isBefore(baseDateTime) || quit.isEqual(baseDateTime) }
 
