@@ -4,7 +4,7 @@ import cats.effect.{ConcurrentEffect, IO, LiftIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{dateTimeFormatter, randomlyDropItemAt}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDropItemAt
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
@@ -25,7 +25,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDateTime
 import java.util.{Random, UUID}
 import scala.util.chaining._
 
@@ -69,10 +69,8 @@ class ValentineListener[
   @EventHandler
   def onPlayerJoinEvent(event: PlayerJoinEvent): Unit = {
     if (isInEvent) {
-      val endDate = END_DATETIME.format(dateTimeFormatter)
-
       Seq(
-        s"$LIGHT_PURPLE${endDate}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
+        s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
       ).foreach(
