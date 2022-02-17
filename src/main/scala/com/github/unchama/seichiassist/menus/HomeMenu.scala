@@ -51,7 +51,7 @@ object HomeMenu extends Menu {
     val subHomePointPart = for {
       subHomeNumber <- 1 to SeichiAssist.seichiAssistConfig.getSubHomeMax
     } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber + 1)
+      val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber - 1)
       column match {
         case Right(value) => Map(
           ChestSlotRef(0, value) -> ConstantButtons.warpToSubHomePointButton(subHomeNumber),
@@ -66,7 +66,7 @@ object HomeMenu extends Menu {
     val dynamicPartComputation = (for {
       subHomeNumber <- 1 to SeichiAssist.seichiAssistConfig.getSubHomeMax
     } yield {
-      val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber + 1)
+      val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber - 1)
       implicit val ioCanReadSubHome: SubHomeReadAPI[IO] = environment.ioCanReadSubHome
       column match {
         case Right(value) => ChestSlotRef(1, value) -> setSubHomeNameButton[IO](subHomeNumber)
