@@ -92,7 +92,6 @@ class ValentineListener[
       lastQuit <- repository.loadPlayerLastQuit(playerUuid)
       _ <- LiftIO[F].liftIO {
         val baseDateTime =
-
         /**
          * 2022: 0時を超えてログインし続けていた人と初見さんに対応するための条件分岐
          * 詳細は[[cookieUnGivenPlayers]]
