@@ -107,6 +107,9 @@ class ValentineListener[
         if (isUnGivenPlayer) Bukkit.getServer.getLogger.info(
           s"${playerUuid}がサーバーに参加し、lastquitが${lastQuit}だったので、クッキー配布判定は$hasNotJoinedBeforeYet"
         )
+        if (hasNotJoinedBeforeYet) Bukkit.getServer.getLogger.info(
+          s"${playerUuid}にチョコチップクッキーを配布しました"
+        )
 
         val effects =
           if (hasNotJoinedBeforeYet) SequentialEffect(
