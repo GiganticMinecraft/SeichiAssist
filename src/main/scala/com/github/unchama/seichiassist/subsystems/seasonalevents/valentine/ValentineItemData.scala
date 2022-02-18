@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{END_DATE, EVENT_YEAR}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Bukkit, Material}
@@ -66,8 +65,7 @@ object ValentineItemData {
 
   //region GiftedCookie -> 棒メニューでもらえるやつ
 
-  def cookieOf(player: Player): ItemStack = {
-    val playerName = player.getName
+  def cookieOf(playerName: String, playerUuid: UUID): ItemStack = {
     val loreList = {
       val header = List(
         "",
@@ -90,7 +88,7 @@ object ValentineItemData {
       import item._
       setByte(NBTTagConstants.typeIdTag, 2.toByte)
       setObject(NBTTagConstants.expiryDateTag, END_DATE)
-      setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
+      setObject(NBTTagConstants.producerUuidTag, playerUuid)
       setString(NBTTagConstants.producerNameTag, playerName)
     }
       .pipe(_.getItem)
