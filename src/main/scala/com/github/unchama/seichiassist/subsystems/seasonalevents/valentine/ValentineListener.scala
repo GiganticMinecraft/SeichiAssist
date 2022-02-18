@@ -15,7 +15,6 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
-import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.{EntityType, Monster, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
@@ -24,6 +23,7 @@ import org.bukkit.event.player.{PlayerItemConsumeEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
+import org.bukkit.{Bukkit, Sound}
 
 import java.time.LocalDateTime
 import java.util.{Random, UUID}
@@ -85,6 +85,7 @@ class ValentineListener[
 
     val player = event.getPlayer
     val playerUuid = player.getUniqueId
+    val isUnGivenPlayer = playerUuid == cookieUnGivenPlayer
 
     import cats.implicits._
     val program = for {
@@ -92,13 +93,20 @@ class ValentineListener[
       lastQuit <- repository.loadPlayerLastQuit(playerUuid)
       _ <- LiftIO[F].liftIO {
         val baseDateTime =
+
         /**
          * 2022: 0時を超えてログインし続けていた人と初見さんに対応するための条件分岐
-         * 詳細は[[cookieUnGivenPlayers]]
+         * 詳細は[[cookieUnGivenPlayers]], [[cookieUnGivenPlayer]]
          */
           if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 18, 4, 0)
+          else if (playerUuid == cookieUnGivenPlayer) LocalDateTime.of(2022, 2, 19, 4, 0)
           else EVENT_DURATION.from
         val hasNotJoinedBeforeYet = lastQuit.forall { quit => quit.isBefore(baseDateTime) || quit.isEqual(baseDateTime) }
+
+        // デバッグメッセージ
+        if (isUnGivenPlayer) Bukkit.getServer.getLogger.info(
+          s"${playerUuid}がサーバーに参加し、lastquitが${lastQuit}だったので、クッキー配布判定は$hasNotJoinedBeforeYet"
+        )
 
         val effects =
           if (hasNotJoinedBeforeYet) SequentialEffect(
