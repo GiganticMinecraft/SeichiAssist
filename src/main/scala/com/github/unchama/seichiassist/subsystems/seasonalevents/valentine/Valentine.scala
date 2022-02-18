@@ -36,7 +36,7 @@ object Valentine {
     "57da9e7b-6390-45f5-92e3-2b93596facb2", "c36e3251-e498-4558-ad5c-6099c0cc9707", "7ce8c94e-0dcc-46c9-9913-142b84fb325e",
     "ab757137-3b3c-45ce-9dc2-49572833db89", "e55e5441-8d8b-4fb2-9573-d32c8a11cc46"
   ).map(UUID.fromString)
-  // このUUIDのプレイヤーにエラーなくクッキーが配布されなかったらしい
+  // 2022バレンタインイベントにおいて、このUUIDのプレイヤーにエラーなくクッキーが配布されなかったらしい
   val cookieUnGivenPlayer: UUID = UUID.fromString("85dd5867-db09-4a2f-bae7-8d38d5a9c547")
 
   val itemDropRate: Double = validateItemDropRate(0.3)
