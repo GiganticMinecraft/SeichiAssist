@@ -6,13 +6,12 @@ import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefi
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.generic.ratelimiting.{FixedWindowRateLimiter, RateLimiter}
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountPermission
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountRateLimitPersistence
-import scalikejdbc._
 
 object RateLimiterRepositoryDefinitions {
 
@@ -25,15 +24,17 @@ object RateLimiterRepositoryDefinitions {
      implicit config: Configuration,
      persistence: BuildAmountRateLimitPersistence[G]
    ): SinglePhasedRepositoryInitialization[G, RateLimiter[G, BuildAmountPermission]] = {
+    val max = config.oneMinuteBuildExpLimit
     val rateLimiter = FixedWindowRateLimiter.in[F, G, BuildAmountPermission](
-      BuildAmountPermission(config.oneMinuteBuildExpLimit),
+      BuildAmountPermission(max),
       1.minute
     )
 
     RefDictBackedRepositoryDefinition.usingUuidRefDict(persistence)(BuildAmountPermission.orderedMonus.empty)
       .initialization
-      .extendPreparation { (_, _) => usedPermission =>
-        rateLimiter.flatTap(rateLimiter => rateLimiter.requestPermission(usedPermission))
+      .extendPreparation { (_, _) => availablePermission =>
+        val consumedPermission = OrderedMonus[BuildAmountPermission].|-|(BuildAmountPermission(max), availablePermission)
+        rateLimiter.flatTap(rateLimiter => rateLimiter.requestPermission(consumedPermission).void)
       }
   }
 
