@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.buildcount.infrastructure
 import cats.effect.{ConcurrentEffect, Sync, Timer}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountPersistenceRecord
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountRateLimiterSnapshot
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountRateLimitPersistence
 import scalikejdbc._
@@ -16,7 +16,7 @@ class JdbcBuildAmountRateLimitPersistence[
 ](implicit F: Sync[SyncContext], config: Configuration)
   extends BuildAmountRateLimitPersistence[SyncContext] {
 
-  override def read(key: UUID): SyncContext[Option[BuildAmountPersistenceRecord]] =
+  override def read(key: UUID): SyncContext[Option[BuildAmountRateLimiterSnapshot]] =
     F.delay {
       DB.localTx { implicit session =>
         sql"select available_permission from build_count_rate_limit where uuid = ${key.toString}"
@@ -25,13 +25,13 @@ class JdbcBuildAmountRateLimitPersistence[
             val exp = BuildExpAmount(rs.bigDecimal("available_permission"))
             val ldt = rs.localDateTime("record_date")
 
-            BuildAmountPersistenceRecord(exp, ldt)
+            BuildAmountRateLimiterSnapshot(exp, ldt)
           }
           .first().apply()
       }
     }
 
-  override def write(key: UUID, value: BuildAmountPersistenceRecord): SyncContext[Unit] = F.delay {
+  override def write(key: UUID, value: BuildAmountRateLimiterSnapshot): SyncContext[Unit] = F.delay {
     DB.localTx { implicit session =>
       sql"""
           |update build_count_rate_limit set available_permission = ${value.raw.toPlainString}, record_date = ${value.recordTime}

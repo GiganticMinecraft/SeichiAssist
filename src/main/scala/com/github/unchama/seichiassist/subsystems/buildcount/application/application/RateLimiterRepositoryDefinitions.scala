@@ -12,7 +12,7 @@ import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.generic.ratelimiting.{FixedWindowRateLimiter, RateLimiter}
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountPersistenceRecord
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountRateLimiterSnapshot
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountRateLimitPersistence
 import io.chrisdavenport.cats.effect.time.JavaTime
@@ -32,14 +32,14 @@ object RateLimiterRepositoryDefinitions {
    ): SinglePhasedRepositoryInitialization[G, RateLimiter[G, BuildExpAmount]] = {
     val max = config.oneMinuteBuildExpLimit
     val span = 1.minute
-    val rateLimiter = BuildAmountPersistenceRecord.now(max).flatMap { bapr =>
+    val rateLimiter = BuildAmountRateLimiterSnapshot.now(max).flatMap { bapr =>
       FixedWindowRateLimiter.in[F, G, BuildExpAmount](
         bapr.raw,
         span
       )
     }
 
-    val maxValueWithCurrentTimeG = BuildAmountPersistenceRecord.now[G](max)
+    val maxValueWithCurrentTimeG = BuildAmountRateLimiterSnapshot.now[G](max)
     RefDictBackedRepositoryDefinition.usingUuidRefDictWithEffectfulDefault(persistence)(maxValueWithCurrentTimeG)
       .initialization
       .extendPreparation { (_, _) =>
@@ -80,7 +80,7 @@ object RateLimiterRepositoryDefinitions {
     RepositoryFinalization.withoutAnyFinalization { case (p, rateLimiter) =>
       for {
         currentRecord <- rateLimiter.peekAvailablePermission
-        persistenceRecord <- BuildAmountPersistenceRecord.now(currentRecord)
+        persistenceRecord <- BuildAmountRateLimiterSnapshot.now(currentRecord)
         _ <- persistence.write(HasUuid[Player].of(p), persistenceRecord)
       } yield ()
     }
