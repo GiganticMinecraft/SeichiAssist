@@ -34,6 +34,12 @@ trait RateLimiter[F[_], A] {
    */
   def requestPermission(a: A): F[A]
 
+  /**
+   * 次にリセットされるまで送っても良いリクエスト量を取得する作用を返す。
+   * この作用が発火したあとでも、送って良いリクエスト量は変化しない。
+   * @return [[A]] によって記述される、次にリセットされるまで送っても良いリクエスト量を取得する作用
+   */
+  def peekAvailablePermission: F[A]
 }
 
 object RateLimiter {
@@ -53,6 +59,8 @@ object RateLimiter {
           val newCount = (count |+| a) min maxCount
           (newCount, newCount |-| count)
         }
+
+      override def peekAvailablePermission: F[A] = countRef.get
     }
 
 }

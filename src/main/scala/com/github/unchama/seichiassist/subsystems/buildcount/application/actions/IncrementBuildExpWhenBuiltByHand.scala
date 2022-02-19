@@ -7,6 +7,7 @@ import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.generic.{Diff, RefExtra}
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountPermission
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 
@@ -35,7 +36,7 @@ object IncrementBuildExpWhenBuiltByHand {
     : ClassifyPlayerWorld[*[_], Player]
     : SendMinecraftMessage[*[_], Player],
     Player
-  ](rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
+  ](rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildAmountPermission]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]])
    (implicit multiplier: BuildExpMultiplier): IncrementBuildExpWhenBuiltByHand[F, Player] =
     (player: Player, by: BuildExpAmount) => {
@@ -51,8 +52,8 @@ object IncrementBuildExpWhenBuiltByHand {
             F.pure(BuildExpAmount(0))
           )
         amountToIncrement <-
-          rateLimiterRepository(player).requestPermission(amountToRequestIncrement)
-        dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(_.modifyExpAmount(_.add(amountToIncrement)))
+          rateLimiterRepository(player).requestPermission(BuildAmountPermission(amountToRequestIncrement))
+        dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(_.modifyExpAmount(_.add(amountToIncrement.raw)))
         _ <- Diff
           .ofPairBy(dataPair)(_.levelCorrespondingToExp)
           .traverse(LevelUpNotifier[F, Player].notifyTo(player))

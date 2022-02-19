@@ -7,14 +7,16 @@ import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
+import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{ClassifyPlayerWorld, IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.application.{BuildAmountDataRepositoryDefinition, RateLimiterRepositoryDefinitions}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration}
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.actions.ClassifyBukkitPlayerWorld
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners.BuildExpIncrementer
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountPermission
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.JdbcBuildAmountDataPersistence
+import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{JdbcBuildAmountDataPersistence, JdbcBuildAmountRateLimitPersistence}
 import com.github.unchama.util.logging.log4cats.PrefixedLogger
 import io.chrisdavenport.log4cats.Logger
 import org.bukkit.entity.Player
@@ -41,12 +43,13 @@ object System {
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] = new JdbcBuildAmountDataPersistence[G]()
+    implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G, F] = new JdbcBuildAmountRateLimitPersistence[G, F]()
     implicit val logger: Logger[F] = PrefixedLogger[F]("BuildAssist-BuildAmount")(rootLogger)
 
     for {
       rateLimiterRepositoryControls <-
         BukkitRepositoryControls.createHandles(
-          RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(
+          RepositoryDefinition.Phased.SinglePhased.withoutTappingAction[G, Player, RateLimiter[G, BuildAmountPermission]](
             RateLimiterRepositoryDefinitions.initialization[F, G],
             RateLimiterRepositoryDefinitions.finalization[G, UUID]
           )
