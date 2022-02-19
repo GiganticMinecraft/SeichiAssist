@@ -22,10 +22,10 @@ class JdbcBuildAmountRateLimitPersistence[
   override def read(key: UUID): SyncContext[Option[BuildAmountPermission]] =
     F.delay {
       DB.localTx { implicit session =>
-        sql"select build_count from rate_limit where uuid = ${key.toString} and rate_limit_name = 'build'"
+        sql"select available_permission from build_count_rate_limit where uuid = ${key.toString}"
           .stripMargin
           .map { rs =>
-            val exp = BuildExpAmount(BigDecimal(rs.string("current_value")))
+            val exp = BuildExpAmount(rs.bigDecimal("available_permission"))
 
             BuildAmountPermission(exp)
           }
@@ -35,7 +35,7 @@ class JdbcBuildAmountRateLimitPersistence[
 
   override def write(key: UUID, value: BuildAmountPermission): SyncContext[Unit] = F.delay {
     DB.localTx { implicit session =>
-      sql"update playerdata set build_count = $value where uuid = ${key.toString} and rate_limit_name = 'build'"
+      sql"update build_count_rate_limit set available_permission = ${value.raw.toPlainString} where uuid = ${key.toString}"
         .stripMargin
         .update().apply()
     }
