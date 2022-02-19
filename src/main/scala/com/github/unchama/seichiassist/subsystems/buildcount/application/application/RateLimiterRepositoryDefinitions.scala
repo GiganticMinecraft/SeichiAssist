@@ -39,36 +39,37 @@ object RateLimiterRepositoryDefinitions {
       )
     }
 
-    import cats.effect.implicits._
-    // QUESTION: Gを露出させたくないのでこうしたがこれはセマンティクス的に合っているのか？
-    val maxValueWithCurrentTime = BuildAmountPersistenceRecord.now[G](max).coerceTo[F].toIO.unsafeRunSync()
-    RefDictBackedRepositoryDefinition.usingUuidRefDict(persistence)(maxValueWithCurrentTime)
+    val maxValueWithCurrentTimeG = BuildAmountPersistenceRecord.now[G](max)
+    RefDictBackedRepositoryDefinition.usingUuidRefDictWithEffectfulDefault(persistence)(maxValueWithCurrentTimeG)
       .initialization
-      .extendPreparation { (_, _) => loadedRecord =>
-        // NOTE: これはファイナライゼーションされたときのレートリミッターと
-        // イニシャライゼーションで作成されるレートリミッターの 時刻起点が
-        // スパンの倍数になっているとは限らないので多少の誤差を発生させるが、
-        // 趣旨を達成するためにとりあえずこの実装を使う。
-        // 必要であれば再度編集して同期を取るようにすること。
-        val duration = FiniteDuration(
-          java.time.Duration
-            .between(loadedRecord.recordTime, maxValueWithCurrentTime.recordTime)
-            .toNanos,
-          TimeUnit.NANOSECONDS
-        )
-        // 記録した日時が十分に新しければ更新
-        val postInitialization: RateLimiter[G, BuildExpAmount] => G[Unit] = rateLimiter => {
-          if (scalaDuration >= span) {
-            // it's expired, do nothing.
-            Monad[G].pure(())
-          } else {
-            // it's still active
-            val consumedPermission = OrderedMonus[BuildExpAmount].|-|(max, loadedRecord.raw)
-            rateLimiter.requestPermission(consumedPermission).void
-          }
-        }
-
-        rateLimiter.flatTap(postInitialization)
+      .extendPreparation { (_, _) =>
+        loadedRecord =>
+          // NOTE: これはファイナライゼーションされたときのレートリミッターと
+          // イニシャライゼーションで作成されるレートリミッターの 時刻起点が
+          // スパンの倍数になっているとは限らないので多少の誤差を発生させるが、
+          // 趣旨を達成するためにとりあえずこの実装を使う。
+          // 必要であれば再度編集して同期を取るようにすること。
+          for {
+            maxValueWithCurrentTime <- maxValueWithCurrentTimeG
+            duration = FiniteDuration(
+              java.time.Duration
+                .between(loadedRecord.recordTime, maxValueWithCurrentTime.recordTime)
+                .toNanos,
+              TimeUnit.NANOSECONDS
+            )
+            // 記録した日時が十分に新しければ更新
+            postInitialization = (rateLimiter: RateLimiter[G, BuildExpAmount]) => {
+              if (duration >= span) {
+                // it's expired, do nothing.
+                Monad[G].pure(())
+              } else {
+                // it's still active
+                val consumedPermission = OrderedMonus[BuildExpAmount].|-|(max, loadedRecord.raw)
+                rateLimiter.requestPermission(consumedPermission).void
+              }
+            }
+            rateLimiter <- rateLimiter.flatTap(postInitialization)
+          } yield rateLimiter
       }
   }
 
