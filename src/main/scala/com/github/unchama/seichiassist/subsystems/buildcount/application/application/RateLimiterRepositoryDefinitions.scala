@@ -50,8 +50,12 @@ object RateLimiterRepositoryDefinitions {
         // スパンの倍数になっているとは限らないので多少の誤差を発生させるが、
         // 趣旨を達成するためにとりあえずこの実装を使う。
         // 必要であれば再度編集して同期を取るようにすること。
-        val duration = java.time.Duration.between(loadedRecord.recordTime, maxValueWithCurrentTime.recordTime)
-        val scalaDuration = FiniteDuration.apply(duration.toNanos, TimeUnit.NANOSECONDS)
+        val duration = FiniteDuration(
+          java.time.Duration
+            .between(loadedRecord.recordTime, maxValueWithCurrentTime.recordTime)
+            .toNanos,
+          TimeUnit.NANOSECONDS
+        )
         // 記録した日時が十分に新しければ更新
         val postInitialization: RateLimiter[G, BuildExpAmount] => G[Unit] = rateLimiter => {
           if (scalaDuration >= span) {
