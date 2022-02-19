@@ -34,7 +34,7 @@ class JdbcBuildAmountRateLimitPersistence[
   override def write(key: UUID, value: BuildAmountRateLimiterSnapshot): SyncContext[Unit] = F.delay {
     DB.localTx { implicit session =>
       sql"""
-          |update build_count_rate_limit set available_permission = ${value.raw.toPlainString}, record_date = ${value.recordTime}
+          |update build_count_rate_limit set available_permission = ${value.amount.toPlainString}, record_date = ${value.recordTime}
           |where uuid = ${key.toString}"""
         .stripMargin
         .update().apply()

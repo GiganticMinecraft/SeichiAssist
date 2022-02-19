@@ -34,7 +34,7 @@ object RateLimiterRepositoryDefinitions {
     val span = 1.minute
     val rateLimiter = BuildAmountRateLimiterSnapshot.now(max).flatMap { bapr =>
       FixedWindowRateLimiter.in[F, G, BuildExpAmount](
-        bapr.raw,
+        bapr.amount,
         span
       )
     }
@@ -64,7 +64,7 @@ object RateLimiterRepositoryDefinitions {
                 Monad[G].pure(())
               } else {
                 // it's still active
-                val consumedPermission = OrderedMonus[BuildExpAmount].|-|(max, loadedRecord.raw)
+                val consumedPermission = OrderedMonus[BuildExpAmount].|-|(max, loadedRecord.amount)
                 rateLimiter.requestPermission(consumedPermission).void
               }
             }
