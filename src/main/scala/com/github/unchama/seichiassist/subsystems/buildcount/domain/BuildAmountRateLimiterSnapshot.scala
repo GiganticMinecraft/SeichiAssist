@@ -7,10 +7,16 @@ import io.chrisdavenport.cats.effect.time.JavaTime
 
 import java.time.{LocalDateTime, ZoneId}
 
+/**
+ * `RateLimiter[F, BuildExpAmount]`がどの程度のリクエストをタイムスライスの中で受け付けたかについて日時付きで保存するクラス
+ * @param raw タイムスライスの中で受け付けられた建築量
+ * @param recordTime 取得した時間
+ */
 case class BuildAmountRateLimiterSnapshot(raw: BuildExpAmount, recordTime: LocalDateTime)
 
 object BuildAmountRateLimiterSnapshot {
   def now[F[_]: JavaTime: Functor](buildExpAmount: BuildExpAmount): F[BuildAmountRateLimiterSnapshot] = {
-    JavaTime[F].getLocalDateTime(ZoneId.systemDefault()).map(ldt => BuildAmountRateLimiterSnapshot(buildExpAmount, ldt))
+    JavaTime[F].getLocalDateTime(ZoneId.systemDefault())
+      .map(ldt => BuildAmountRateLimiterSnapshot(buildExpAmount, ldt))
   }
 }
