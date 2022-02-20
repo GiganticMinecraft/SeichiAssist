@@ -44,9 +44,9 @@ object RateLimiterRepositoryDefinitions {
           for {
             currentLocalTime <- JavaTime[G].getLocalDateTime(ZoneId.systemDefault())
             // NOTE: これはファイナライゼーションされたときのレートリミッターと
-            // イニシャライゼーションで作成されるレートリミッターの 時刻起点が
-            // スパンの倍数になっているとは限らないので多少の誤差を発生させるが、
-            // 趣旨を達成するためにとりあえずこの実装を使う。
+            // イニシャライゼーションで作成されるレートリミッターが起動した時刻の差が
+            // 規定時間の整数倍になっているとは限らないので多少の誤差を発生させることがある。
+            // しかし、とりあえず趣旨を達成するためにこの実装を使う。
             // 必要であれば再度編集して同期を取るようにすること。
             postInitialization = (rateLimiter: RateLimiter[G, BuildExpAmount]) =>
               loadedRecordOpt.fold(Monad[G].pure(())) { loadedRecord =>
