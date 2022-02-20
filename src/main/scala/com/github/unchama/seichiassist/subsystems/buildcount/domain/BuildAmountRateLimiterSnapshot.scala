@@ -8,8 +8,8 @@ import io.chrisdavenport.cats.effect.time.JavaTime
 import java.time.{LocalDateTime, ZoneId}
 
 /**
- * `RateLimiter[F, BuildExpAmount]`がどの程度のリクエストをタイムスライスの中で受け付けたかについて日時付きで保存するクラス
- * @param amount タイムスライスの中で受け付けられた建築量
+ * `RateLimiter[F, BuildExpAmount]`によって保持された残量について日時付きで保存するクラス
+ * @param amount そのタイムスライスにおけるリクエスト量の上限
  * @param recordTime 取得した時間
  */
 case class BuildAmountRateLimiterSnapshot(amount: BuildExpAmount, recordTime: LocalDateTime)
