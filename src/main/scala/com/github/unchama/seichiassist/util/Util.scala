@@ -568,4 +568,15 @@ object Util {
 
     case object WEST extends Direction
   }
+
+  /**
+   * 死亡したエンティティの死因が棘の鎧かどうか
+   */
+  def isEntityKilledByThornsEnchant(entity: LivingEntity): Boolean = {
+    if (entity == null) return false
+    val event = entity.getLastDamageCause
+    if (event == null) return false
+
+    event.getCause == DamageCause.THORNS
+  }
 }
