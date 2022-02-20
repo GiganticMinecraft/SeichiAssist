@@ -39,7 +39,7 @@ trait RateLimiter[F[_], A] {
    * この作用の発火が、送って良いリクエスト量に影響することはない。
    * @return [[A]] によって記述される、次にリセットされるまで送っても良いリクエスト量を取得する作用
    */
-  def peekAvailablePermission: F[A]
+  def peekAvailablePermissions: F[A]
 }
 
 object RateLimiter {
@@ -60,7 +60,7 @@ object RateLimiter {
           (newCount, newCount |-| count)
         }
 
-      override def peekAvailablePermission: F[A] = countRef.get
+      override def peekAvailablePermissions: F[A] = countRef.get
     }
 
 }

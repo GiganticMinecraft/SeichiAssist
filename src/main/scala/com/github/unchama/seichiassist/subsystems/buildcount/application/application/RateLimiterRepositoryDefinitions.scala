@@ -77,7 +77,7 @@ object RateLimiterRepositoryDefinitions {
   ](implicit config: Configuration, persistence: BuildAmountRateLimitPersistence[F]): RepositoryFinalization[F, Player, RateLimiter[F, BuildExpAmount]] =
     RepositoryFinalization.withoutAnyFinalization { case (p, rateLimiter) =>
       for {
-        currentRecord <- rateLimiter.peekAvailablePermission
+        currentRecord <- rateLimiter.peekAvailablePermissions
         persistenceRecord <- BuildAmountRateLimiterSnapshot.now(currentRecord)
         _ <- persistence.write(HasUuid[Player].of(p), persistenceRecord)
       } yield ()
