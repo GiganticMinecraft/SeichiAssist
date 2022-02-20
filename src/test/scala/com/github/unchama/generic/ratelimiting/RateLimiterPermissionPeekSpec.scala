@@ -51,7 +51,7 @@ class RateLimiterPermissionPeekSpec extends AnyWordSpec
       val maxPermits: Natural = 100
       val period = 10.seconds
       val program = for {
-        rateLimiterA <- FixedWindowRateLimiter.in[Task, SyncIO, Natural](maxPermits, period).coerceTo[Task]
+        rateLimiterA <- FixedWindowRateLimiter.in[Task, Task, Natural](maxPermits, period)
         peek1 <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
         _ <- monixTimer.sleep(2.seconds)
         peek2 <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
@@ -67,8 +67,8 @@ class RateLimiterPermissionPeekSpec extends AnyWordSpec
       val maxPermits: Natural = 100
       val period = 10.seconds
       val program = for {
-        rateLimiterA <- FixedWindowRateLimiter.in[Task, SyncIO, Natural](maxPermits, period).coerceTo[Task]
-        rateLimiterB <- FixedWindowRateLimiter.in[Task, SyncIO, Natural](maxPermits, period).coerceTo[Task]
+        rateLimiterA <- FixedWindowRateLimiter.in[Task, Task, Natural](maxPermits, period)
+        rateLimiterB <- FixedWindowRateLimiter.in[Task, Task, Natural](maxPermits, period)
         _ <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
         _ <- monixTimer.sleep(5.seconds)
         peekA <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
