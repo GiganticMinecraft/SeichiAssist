@@ -17,6 +17,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.Bui
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountRateLimitPersistence
 import io.chrisdavenport.cats.effect.time.JavaTime
 
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 object RateLimiterRepositoryDefinitions {
@@ -35,34 +36,36 @@ object RateLimiterRepositoryDefinitions {
     val rateLimiter = FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span)
 
     val maxValueWithCurrentTimeG = BuildAmountRateLimiterSnapshot.now[G](max)
-    RefDictBackedRepositoryDefinition.usingUuidRefDictWithEffectfulDefault(persistence)(maxValueWithCurrentTimeG)
+    RefDictBackedRepositoryDefinition
+      .usingUuidRefDictWithoutDefault(persistence)
       .initialization
       .extendPreparation { (_, _) =>
-        loadedRecord =>
-          // NOTE: これはファイナライゼーションされたときのレートリミッターと
-          // イニシャライゼーションで作成されるレートリミッターの 時刻起点が
-          // スパンの倍数になっているとは限らないので多少の誤差を発生させるが、
-          // 趣旨を達成するためにとりあえずこの実装を使う。
-          // 必要であれば再度編集して同期を取るようにすること。
+        loadedRecordOpt =>
           for {
-            maxValueWithCurrentTime <- maxValueWithCurrentTimeG
-            duration = FiniteDuration(
-              java.time.Duration
-                .between(loadedRecord.recordTime, maxValueWithCurrentTime.recordTime)
-                .toNanos,
-              TimeUnit.NANOSECONDS
-            )
-            // 記録した日時が十分に新しければ更新
-            postInitialization = (rateLimiter: RateLimiter[G, BuildExpAmount]) => {
-              if (duration >= span) {
-                // it's expired, do nothing.
-                Monad[G].pure(())
-              } else {
-                // it's still active
-                val consumedPermission = OrderedMonus[BuildExpAmount].|-|(max, loadedRecord.amount)
-                rateLimiter.requestPermission(consumedPermission).void
+            currentLocalTime <- JavaTime[G].getLocalDateTime(ZoneId.systemDefault())
+            // NOTE: これはファイナライゼーションされたときのレートリミッターと
+            // イニシャライゼーションで作成されるレートリミッターの 時刻起点が
+            // スパンの倍数になっているとは限らないので多少の誤差を発生させるが、
+            // 趣旨を達成するためにとりあえずこの実装を使う。
+            // 必要であれば再度編集して同期を取るようにすること。
+            postInitialization = (rateLimiter: RateLimiter[G, BuildExpAmount]) =>
+              loadedRecordOpt.fold(Monad[G].pure(())) { loadedRecord =>
+                val duration = FiniteDuration(
+                  java.time.Duration
+                    .between(loadedRecord.recordTime, currentLocalTime)
+                    .toNanos,
+                  TimeUnit.NANOSECONDS
+                )
+
+                if (duration >= span) {
+                  // it's expired, do nothing.
+                  Monad[G].pure(())
+                } else {
+                  // it's still active
+                  val consumedPermission = OrderedMonus[BuildExpAmount].|-|(max, loadedRecord.amount)
+                  rateLimiter.requestPermission(consumedPermission).void
+                }
               }
-            }
             rateLimiter <- rateLimiter.flatTap(postInitialization)
           } yield rateLimiter
       }
