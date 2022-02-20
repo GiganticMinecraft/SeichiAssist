@@ -53,11 +53,14 @@ class RateLimiterPermissionPeekSpec extends AnyWordSpec
       val program = for {
         rateLimiterA <- FixedWindowRateLimiter.in[Task, SyncIO, Natural](maxPermits, period).coerceTo[Task]
         peek1 <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
-        _ <- monixTimer.sleep(5.seconds)
+        _ <- monixTimer.sleep(2.seconds)
         peek2 <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
-      } yield peek1 == peek2
+      } yield {
+        assert(peek1 == peek2)
+        ()
+      }
 
-      assert(awaitForProgram(runConcurrent(program)(100), 1.second).forall(a => a))
+      awaitForProgram(runConcurrent(program)(100), 2.seconds)
     }
 
     "keep equality of permits with another RateLimiter which has not been peeked" in {
@@ -70,9 +73,12 @@ class RateLimiterPermissionPeekSpec extends AnyWordSpec
         _ <- monixTimer.sleep(5.seconds)
         peekA <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
         peekB <- rateLimiterB.peekAvailablePermissions.coerceTo[Task]
-      } yield peekA == peekB
+      } yield {
+        assert(peekA == peekB)
+        ()
+      }
 
-      assert(awaitForProgram(runConcurrent(program)(100), 1.second).forall(a => a))
+      awaitForProgram(runConcurrent(program)(100), 5.seconds)
     }
   }
 }
