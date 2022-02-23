@@ -48,9 +48,7 @@ object RateLimiterRepositoryDefinitions {
             // 規定時間の整数倍になっているとは限らないので多少の誤差を発生させることがある。
             // しかし、とりあえず趣旨を達成するためにこの実装を使う。
             // 必要であれば再度編集して同期を取るようにすること。
-            rateLimiter <- loadedRecordOpt.fold(
-              FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span)
-            ) { loadedRecord =>
+            initialPermitCount = loadedRecordOpt.fold(max) { loadedRecord =>
               val duration = FiniteDuration(
                 java.time.Duration
                   .between(loadedRecord.recordTime, currentLocalTime)
@@ -59,11 +57,12 @@ object RateLimiterRepositoryDefinitions {
               )
               if (duration >= span) {
                 // expired
-                FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span)
+                max
               } else {
-                FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span, Some(loadedRecord.amount))
+                loadedRecord.amount
               }
             }
+            rateLimiter <- FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span, Some(initialPermitCount))
           } yield rateLimiter
         }
       }
