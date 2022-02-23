@@ -40,7 +40,7 @@ object RateLimiterRepositoryDefinitions {
       .usingUuidRefDictWithoutDefault(persistence)
       .initialization
       .extendPreparation { (_, _) =>
-        loadedRecordOpt =>
+        loadedRecordOpt => {
           for {
             currentLocalTime <- JavaTime[G].getLocalDateTime(ZoneId.systemDefault())
             // NOTE: これはファイナライゼーションされたときのレートリミッターと
@@ -48,26 +48,24 @@ object RateLimiterRepositoryDefinitions {
             // 規定時間の整数倍になっているとは限らないので多少の誤差を発生させることがある。
             // しかし、とりあえず趣旨を達成するためにこの実装を使う。
             // 必要であれば再度編集して同期を取るようにすること。
-            postInitialization = (rateLimiter: RateLimiter[G, BuildExpAmount]) =>
-              loadedRecordOpt.fold(Monad[G].pure(())) { loadedRecord =>
-                val duration = FiniteDuration(
-                  java.time.Duration
-                    .between(loadedRecord.recordTime, currentLocalTime)
-                    .toNanos,
-                  TimeUnit.NANOSECONDS
-                )
-
-                if (duration >= span) {
-                  // it's expired, do nothing.
-                  Monad[G].pure(())
-                } else {
-                  // it's still active
-                  val consumedPermission = OrderedMonus[BuildExpAmount].|-|(max, loadedRecord.amount)
-                  rateLimiter.requestPermission(consumedPermission).void
-                }
+            rateLimiter <- loadedRecordOpt.fold(
+              FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span)
+            ) { loadedRecord =>
+              val duration = FiniteDuration(
+                java.time.Duration
+                  .between(loadedRecord.recordTime, currentLocalTime)
+                  .toNanos,
+                TimeUnit.NANOSECONDS
+              )
+              if (duration >= span) {
+                // expired
+                FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span)
+              } else {
+                FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span, Some(loadedRecord.amount))
               }
-            rateLimiter <- rateLimiter.flatTap(postInitialization)
+            }
           } yield rateLimiter
+        }
       }
   }
 
