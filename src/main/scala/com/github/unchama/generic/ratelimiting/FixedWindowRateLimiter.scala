@@ -5,6 +5,7 @@ import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ConcurrentEffect, IO, Sync, Timer}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
+import com.github.unchama.generic.algebra.typeclasses.OrderedMonus._
 
 import scala.concurrent.duration.FiniteDuration
 import scala.ref.WeakReference
