@@ -5,6 +5,7 @@ import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ConcurrentEffect, IO, Sync, Timer}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
+import com.github.unchama.generic.algebra.typeclasses.OrderedMonus._
 
 import scala.concurrent.duration.FiniteDuration
 import scala.ref.WeakReference
@@ -19,11 +20,12 @@ object FixedWindowRateLimiter {
     F[_] : ConcurrentEffect : Timer,
     G[_] : Sync : ContextCoercion[*[_], F],
     A: OrderedMonus
-  ](maxPermits: A, resetDuration: FiniteDuration): G[RateLimiter[G, A]] = {
+  ](maxPermits: A, resetDuration: FiniteDuration, firstPermits: Option[A] = None): G[RateLimiter[G, A]] = {
     val zero = OrderedMonus[A].empty
+    val initialCount = maxPermits |-| firstPermits.getOrElse(maxPermits)
 
     for {
-      countRef <- Ref.of[G, A](zero)
+      countRef <- Ref.of[G, A](initialCount)
 
       rateLimiter = RateLimiter.fromCountRef(countRef)(maxPermits)
       refreshPermits = countRef.set(zero).coerceTo[F]

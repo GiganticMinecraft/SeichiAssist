@@ -208,6 +208,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
 
+    implicit val syncIoClock: Clock[SyncIO] = Clock.create
+
     subsystems.buildcount.System.wired[IO, SyncIO](loggerF).unsafeRunSync()
   }
 
