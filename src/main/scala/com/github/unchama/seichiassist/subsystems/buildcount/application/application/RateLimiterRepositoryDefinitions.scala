@@ -43,11 +43,6 @@ object RateLimiterRepositoryDefinitions {
         loadedRecordOpt => {
           for {
             currentLocalTime <- JavaTime[G].getLocalDateTime(ZoneId.systemDefault())
-            // NOTE: これはファイナライゼーションされたときのレートリミッターと
-            // イニシャライゼーションで作成されるレートリミッターが起動した時刻の差が
-            // 規定時間の整数倍になっているとは限らないので多少の誤差を発生させることがある。
-            // しかし、とりあえず趣旨を達成するためにこの実装を使う。
-            // 必要であれば再度編集して同期を取るようにすること。
             initialPermitCount = loadedRecordOpt.fold(max) { loadedRecord =>
               val duration = FiniteDuration(
                 java.time.Duration
@@ -55,6 +50,11 @@ object RateLimiterRepositoryDefinitions {
                   .toNanos,
                 TimeUnit.NANOSECONDS
               )
+              // NOTE: これはファイナライゼーションされたときのレートリミッターと
+              // イニシャライゼーションで作成されるレートリミッターが起動した時刻の差が
+              // 規定時間の整数倍になっているとは限らないので多少の誤差を発生させることがある。
+              // しかし、とりあえず趣旨を達成するためにこの実装を使う。
+              // 必要であれば再度編集して同期を取るようにすること。
               if (duration >= span) {
                 // expired
                 max
