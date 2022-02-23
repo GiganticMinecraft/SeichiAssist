@@ -21,14 +21,12 @@ object FixedWindowRateLimiter {
     A: OrderedMonus
   ](maxPermits: A, resetDuration: FiniteDuration, firstPermits: Option[A] = None): G[RateLimiter[G, A]] = {
     val zero = OrderedMonus[A].empty
+    val initialCount = maxPermits |-| firstPermits.getOrElse(maxPermits)
 
     for {
-      countRef <- Ref.of[G, A](zero)
+      countRef <- Ref.of[G, A](initialCount)
 
       rateLimiter = RateLimiter.fromCountRef(countRef)(maxPermits)
-      _ <- firstPermits.fold(Monad[G].pure(())) { first =>
-        rateLimiter.requestPermission(first).void
-      }
       refreshPermits = countRef.set(zero).coerceTo[F]
 
       rateLimiterRef = new WeakReference(rateLimiter)
