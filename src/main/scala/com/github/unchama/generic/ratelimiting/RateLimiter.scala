@@ -60,7 +60,7 @@ object RateLimiter {
           (newCount, newCount |-| count)
         }
 
-      override def peekAvailablePermissions: F[A] = countRef.get
+      override def peekAvailablePermissions: F[A] = countRef.get.map(maxCount |-| _)
     }
 
 }

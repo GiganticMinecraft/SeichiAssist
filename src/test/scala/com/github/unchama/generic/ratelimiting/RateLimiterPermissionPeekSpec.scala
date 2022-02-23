@@ -48,25 +48,6 @@ class RateLimiterPermissionPeekSpec extends AnyWordSpec
   }
 
   "RateLimiter" should {
-    "not decrease permits after peek" in {
-      val maxPermits: Natural = 100
-      val sleepPeriod = 2.seconds
-      // any2stringadd!!! :rage:
-      val period: Span = sleepPeriod plus 5.seconds
-
-      val program = for {
-        rateLimiterA <- FixedWindowRateLimiter.in[Task, Task, Natural](maxPermits, period)
-        peek1 <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
-        _ <- monixTimer.sleep(sleepPeriod)
-        peek2 <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
-      } yield {
-        assert(peek1 == peek2)
-        ()
-      }
-
-      awaitForProgram(runConcurrent(program)(100), sleepPeriod)
-    }
-
     "keep equality of permits with another RateLimiter which has not been peeked" in {
       val maxPermits: Natural = 100
       val sleepPeriod = 5.seconds
@@ -75,10 +56,10 @@ class RateLimiterPermissionPeekSpec extends AnyWordSpec
       val program = for {
         rateLimiterA <- FixedWindowRateLimiter.in[Task, Task, Natural](maxPermits, period)
         rateLimiterB <- FixedWindowRateLimiter.in[Task, Task, Natural](maxPermits, period)
-        _ <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
+        _ <- rateLimiterA.peekAvailablePermissions
         _ <- monixTimer.sleep(sleepPeriod)
-        peekA <- rateLimiterA.peekAvailablePermissions.coerceTo[Task]
-        peekB <- rateLimiterB.peekAvailablePermissions.coerceTo[Task]
+        peekA <- rateLimiterA.peekAvailablePermissions
+        peekB <- rateLimiterB.peekAvailablePermissions
       } yield {
         assert(peekA == peekB)
         ()
