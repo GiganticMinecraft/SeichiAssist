@@ -19,13 +19,16 @@ object FixedWindowRateLimiter {
     F[_] : ConcurrentEffect : Timer,
     G[_] : Sync : ContextCoercion[*[_], F],
     A: OrderedMonus
-  ](maxPermits: A, resetDuration: FiniteDuration): G[RateLimiter[G, A]] = {
+  ](maxPermits: A, resetDuration: FiniteDuration, firstPermits: Option[A] = None): G[RateLimiter[G, A]] = {
     val zero = OrderedMonus[A].empty
 
     for {
       countRef <- Ref.of[G, A](zero)
 
       rateLimiter = RateLimiter.fromCountRef(countRef)(maxPermits)
+      _ <- firstPermits.fold(Monad[G].pure(())) { first =>
+        rateLimiter.requestPermission(first).void
+      }
       refreshPermits = countRef.set(zero).coerceTo[F]
 
       rateLimiterRef = new WeakReference(rateLimiter)
