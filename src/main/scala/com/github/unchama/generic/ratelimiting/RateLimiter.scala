@@ -1,5 +1,6 @@
 package com.github.unchama.generic.ratelimiting
 
+import cats.Functor
 import cats.effect.concurrent.Ref
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 
@@ -50,7 +51,7 @@ object RateLimiter {
   /**
    * 送信したリクエスト数を保持する参照セルの情報を見る [[RateLimiter]] を作成する。
    */
-  def fromCountRef[F[_], A: OrderedMonus](countRef: Ref[F, A])(maxCount: A): RateLimiter[F, A] =
+  def fromCountRef[F[_]: Functor, A: OrderedMonus](countRef: Ref[F, A])(maxCount: A): RateLimiter[F, A] =
     new RateLimiter[F, A] {
       override protected val A: OrderedMonus[A] = implicitly
 
