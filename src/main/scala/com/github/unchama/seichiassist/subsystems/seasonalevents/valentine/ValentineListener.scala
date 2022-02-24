@@ -102,7 +102,7 @@ class ValentineListener[
 
         val effects =
           if (hasNotJoinedBeforeYet) SequentialEffect(
-            grantItemStacksEffect(cookieOf(player)),
+            grantItemStacksEffect(cookieOf(player.getName, playerUuid)),
             MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
           else TargetedEffect.emptyEffect
