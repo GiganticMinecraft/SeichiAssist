@@ -28,9 +28,7 @@ object RateLimiterRepositoryDefinitions {
    ): SinglePhasedRepositoryInitialization[G, RateLimiter[G, BuildExpAmount]] = {
     val max = config.oneMinuteBuildExpLimit
     val span = 1.minute
-    val rateLimiter = FixedWindowRateLimiter.in[G, BuildExpAmount](max, span)
 
-    val maxValueWithCurrentTimeG = BuildAmountRateLimiterSnapshot.now[G](max)
     RefDictBackedRepositoryDefinition
       .usingUuidRefDictWithoutDefault(persistence)
       .initialization
