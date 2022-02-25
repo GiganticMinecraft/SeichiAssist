@@ -15,7 +15,7 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](implicit SyncContext: 
   override def read(key: UUID): SyncContext[Option[BuildAmountRateLimiterSnapshot]] =
     SyncContext.delay {
       DB.localTx { implicit session =>
-        sql"select available_permission from build_count_rate_limit where uuid = ${key.toString}"
+        sql"select available_permission, record_date from build_count_rate_limit where uuid = ${key.toString}"
           .stripMargin
           .map { rs =>
             val exp = BuildExpAmount(rs.bigDecimal("available_permission"))
