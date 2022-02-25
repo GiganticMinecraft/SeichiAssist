@@ -1,14 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.application
 
-import cats.Monad
-import cats.effect.{ConcurrentEffect, Sync, Timer}
+import cats.effect.{Clock, Sync}
 import cats.implicits._
 import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefinition
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.SinglePhasedRepositoryInitialization
-import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.ContextCoercion._
-import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 import com.github.unchama.generic.ratelimiting.{FixedWindowRateLimiter, RateLimiter}
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.buildcount.application.Configuration
@@ -25,15 +21,14 @@ object RateLimiterRepositoryDefinitions {
   import scala.concurrent.duration._
 
   def initialization[
-    F[_] : ConcurrentEffect : Timer,
-    G[_] : Sync: ContextCoercion[*[_], F] : JavaTime
+    G[_] : Sync: JavaTime : Clock
   ](
      implicit config: Configuration,
      persistence: BuildAmountRateLimitPersistence[G]
    ): SinglePhasedRepositoryInitialization[G, RateLimiter[G, BuildExpAmount]] = {
     val max = config.oneMinuteBuildExpLimit
     val span = 1.minute
-    val rateLimiter = FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span)
+    val rateLimiter = FixedWindowRateLimiter.in[G, BuildExpAmount](max, span)
 
     val maxValueWithCurrentTimeG = BuildAmountRateLimiterSnapshot.now[G](max)
     RefDictBackedRepositoryDefinition
@@ -62,7 +57,7 @@ object RateLimiterRepositoryDefinitions {
                 loadedRecord.amount
               }
             }
-            rateLimiter <- FixedWindowRateLimiter.in[F, G, BuildExpAmount](max, span, Some(initialPermitCount))
+            rateLimiter <- FixedWindowRateLimiter.in[G, BuildExpAmount](max, span, Some(initialPermitCount))
           } yield rateLimiter
         }
       }
