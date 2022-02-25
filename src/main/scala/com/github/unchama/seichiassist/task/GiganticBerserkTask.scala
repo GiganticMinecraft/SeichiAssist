@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
-import org.bukkit.entity.Player
+import org.bukkit.entity.{LivingEntity, Player}
 
 import scala.util.Random
 
@@ -20,7 +20,7 @@ class GiganticBerserkTask {
     : ConcurrentEffect
     : NonServerThreadContextShift
     : DiscordNotificationAPI
-  ](p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
+  ](p: Player, e: LivingEntity)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val player = p
     val uuid = p.getUniqueId
     val playerdata = SeichiAssist.playermap(uuid)
@@ -53,6 +53,9 @@ class GiganticBerserkTask {
 
     //進化待機状態の場合終了
     if (playerdata.giganticBerserk.canEvolve) return
+
+    // 棘の鎧で倒した場合終了
+    if (Util.isEntityKilledByThornsEnchant(e)) return
 
     // stage * level
     val level = playerdata.giganticBerserk.level

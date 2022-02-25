@@ -1,24 +1,21 @@
 package com.github.unchama.seichiassist.subsystems.buildcount
 
-import cats.effect.{Clock, ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{ClassifyPlayerWorld, IncrementBuildExpWhenBuiltByHand, IncrementBuildExpWhenBuiltWithSkill}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.application.{BuildAmountDataRepositoryDefinition, RateLimiterRepositoryDefinitions}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration}
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.actions.ClassifyBukkitPlayerWorld
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners.BuildExpIncrementer
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{JdbcBuildAmountDataPersistence, JdbcBuildAmountRateLimitPersistence}
+import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.JdbcBuildAmountDataPersistence
 import com.github.unchama.util.logging.log4cats.PrefixedLogger
-import io.chrisdavenport.cats.effect.time.JavaTime
 import io.chrisdavenport.log4cats.Logger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -37,21 +34,19 @@ object System {
 
   def wired[
     F[_] : ConcurrentEffect : NonServerThreadContextShift : Timer,
-    G[_] : SyncEffect : ContextCoercion[*[_], F] : Clock
+    G[_] : SyncEffect : ContextCoercion[*[_], F]
   ](rootLogger: Logger[F])
    (implicit configuration: Configuration): G[System[F, G]] = {
     import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage._
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] = new JdbcBuildAmountDataPersistence[G]()
-    implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G, F] = new JdbcBuildAmountRateLimitPersistence[G, F]()
     implicit val logger: Logger[F] = PrefixedLogger[F]("BuildAssist-BuildAmount")(rootLogger)
-    implicit val javaTimeG: JavaTime[G] = JavaTime.fromClock
 
     for {
       rateLimiterRepositoryControls <-
         BukkitRepositoryControls.createHandles(
-          RepositoryDefinition.Phased.SinglePhased.withoutTappingAction[G, Player, RateLimiter[G, BuildExpAmount]](
+          RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(
             RateLimiterRepositoryDefinitions.initialization[F, G],
             RateLimiterRepositoryDefinitions.finalization[G, UUID]
           )
