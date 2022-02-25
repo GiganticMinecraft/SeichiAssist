@@ -187,6 +187,6 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
     //プレイヤーが整地ワールドに居ない場合終了
     if (!player.getWorld.isSeichi) return
     val GBTR = new GiganticBerserkTask
-    GBTR.PlayerKillEnemy(player, entity)
+    GBTR.PlayerKillEnemy(player)
   }
 }

@@ -473,6 +473,7 @@ class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
       } else if (itemstackcurrent.getType == Material.BOOK_AND_QUILL) {
         // 投票リンク表示
         player.sendMessage(RED.toString + "" + UNDERLINE + "https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote")
+        player.sendMessage(RED.toString + "" + UNDERLINE + "https://monocraft.net/servers/Cf3BffNIRMERDNbAfWQm")
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
         player.closeInventory()
       } else if (isSkull && itemstackcurrent.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft") {
