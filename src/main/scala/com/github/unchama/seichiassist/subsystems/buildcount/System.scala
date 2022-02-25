@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount
 
-import cats.effect.{Clock, ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{Clock, ConcurrentEffect, SyncEffect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
@@ -36,7 +36,7 @@ object System {
   import cats.implicits._
 
   def wired[
-    F[_] : ConcurrentEffect : NonServerThreadContextShift : Timer,
+    F[_] : ConcurrentEffect : NonServerThreadContextShift,
     G[_] : SyncEffect : ContextCoercion[*[_], F] : Clock
   ](rootLogger: Logger[F])
    (implicit configuration: Configuration): G[System[F, G]] = {
@@ -44,7 +44,7 @@ object System {
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] = new JdbcBuildAmountDataPersistence[G]()
-    implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G, F] = new JdbcBuildAmountRateLimitPersistence[G, F]()
+    implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G] = new JdbcBuildAmountRateLimitPersistence[G]()
     implicit val logger: Logger[F] = PrefixedLogger[F]("BuildAssist-BuildAmount")(rootLogger)
     implicit val javaTimeG: JavaTime[G] = JavaTime.fromClock
 
@@ -52,7 +52,7 @@ object System {
       rateLimiterRepositoryControls <-
         BukkitRepositoryControls.createHandles(
           RepositoryDefinition.Phased.SinglePhased.withoutTappingAction[G, Player, RateLimiter[G, BuildExpAmount]](
-            RateLimiterRepositoryDefinitions.initialization[F, G],
+            RateLimiterRepositoryDefinitions.initialization[G],
             RateLimiterRepositoryDefinitions.finalization[G, UUID]
           )
         )
