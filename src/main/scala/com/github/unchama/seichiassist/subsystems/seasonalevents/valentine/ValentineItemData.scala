@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{END_DATE, EVENT_YEAR}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Bukkit, Material}
@@ -66,8 +65,7 @@ object ValentineItemData {
 
   //region GiftedCookie -> 棒メニューでもらえるやつ
 
-  def cookieOf(player: Player): ItemStack = {
-    val playerName = player.getName
+  def cookieOf(playerName: String, playerUuid: UUID): ItemStack = {
     val loreList = {
       val header = List(
         "",
@@ -90,7 +88,7 @@ object ValentineItemData {
       import item._
       setByte(NBTTagConstants.typeIdTag, 2.toByte)
       setObject(NBTTagConstants.expiryDateTag, END_DATE)
-      setObject(NBTTagConstants.producerUuidTag, player.getUniqueId)
+      setObject(NBTTagConstants.producerUuidTag, playerUuid)
       setString(NBTTagConstants.producerNameTag, playerName)
     }
       .pipe(_.getItem)
@@ -105,19 +103,19 @@ object ValentineItemData {
     Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
 
   def deathMessages(playerName: String, cookieProducerName: String): Seq[String] = Seq(
-    s"${playerName}は${cookieProducerName}のチョコレートを食べた！猟奇的な味だった。",
-    s"$playerName！${cookieProducerName}からのチョコだと思ったかい？ざぁんねんっ！",
+    s"${playerName}は${cookieProducerName}のチョコチップクッキーを食べた！猟奇的な味だった。",
+    s"$playerName！${cookieProducerName}からのチョコチップクッキーだと思ったかい？ざぁんねんっ！",
     s"${playerName}は${cookieProducerName}のプレゼントで鼻血が止まらない！（計画通り）",
-    s"${playerName}は${cookieProducerName}のチョコレートを頬張ったまま息絶えた！",
-    s"${playerName}は${cookieProducerName}のチョコにアレが入っているとはを知らずに食べた…",
-    s"${playerName}は${cookieProducerName}のチョコなんか食ってないであくしろはたらけ",
+    s"${playerName}は${cookieProducerName}のチョコチップクッキーを頬張ったまま息絶えた！",
+    s"${playerName}は${cookieProducerName}のチョコチップクッキーにアレが入っているとはを知らずに食べた…",
+    s"${playerName}は${cookieProducerName}のチョコチップクッキーなんか食ってないであくしろはたらけ",
     s"${cookieProducerName}は${playerName}に日頃の恨みを晴らした！スッキリ！",
     s"${cookieProducerName}による${playerName}への痛恨の一撃！ハッピーバレンタインッ！",
     s"${cookieProducerName}は${playerName}が食べる姿を、満面の笑みで見つめている！",
     s"${cookieProducerName}は悪くない！${playerName}が悪いんだっ！",
     s"${cookieProducerName}は${playerName}を討伐した！",
     s"こうして${cookieProducerName}のイタズラでまた1人${playerName}が社畜となった。",
-    s"おい聞いたか！${cookieProducerName}が${playerName}にチョコ送ったらしいぞー！"
+    s"おい聞いたか！${cookieProducerName}が${playerName}にチョコチップクッキー送ったらしいぞー！"
   )
 
   //endregion
