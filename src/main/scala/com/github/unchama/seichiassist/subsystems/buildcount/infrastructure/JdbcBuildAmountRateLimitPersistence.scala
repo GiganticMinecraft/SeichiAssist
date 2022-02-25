@@ -31,8 +31,11 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](implicit SyncContext: 
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"""
-            |update build_count_rate_limit set available_permission = ${value.amount.toPlainString}, record_date = ${value.recordTime}
-            |where uuid = ${key.toString}"""
+            |insert into build_count_rate_limit values (${key.toString}, ${value.amount.toPlainString}, ${value.recordTime})
+            |  on duplicate key update
+            |    available_permission = ${value.amount.toPlainString},
+            |    record_date = ${value.recordTime}
+            |"""
           .stripMargin
           .update().apply()
       }
