@@ -18,7 +18,6 @@ class FixedWindowRateLimiterSpec
     with TaskDiscreteEventually {
 
   import cats.implicits._
-  import com.github.unchama.generic.ContextCoercion._
   import eu.timepit.refined.auto._
 
   import scala.concurrent.duration._
@@ -28,7 +27,7 @@ class FixedWindowRateLimiterSpec
     val maxPermit = refineV[NonNegative].unsafeFrom(random.nextInt(1000))
     val sleepTime = random.nextInt(60000).millis
 
-    FixedWindowRateLimiter.in[Task, Task, Natural](maxPermit, sleepTime)
+    FixedWindowRateLimiter.in[Task, Natural](maxPermit, sleepTime)
   }
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
@@ -45,7 +44,7 @@ class FixedWindowRateLimiterSpec
       val requestCount: Natural = 100
 
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, Task, Natural](maxCount, 1.minute)
+        rateLimiter <- FixedWindowRateLimiter.in[Task, Natural](maxCount, 1.minute)
         allowances <- (1 to requestCount).toList.traverse(_ => rateLimiter.requestPermission(1))
       } yield {
         assert(allowances.take(maxCount).forall(_ == (1: Natural)))
@@ -60,7 +59,7 @@ class FixedWindowRateLimiterSpec
       val maxCount: Natural = 10
 
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, Task, Natural](maxCount, 1.minute)
+        rateLimiter <- FixedWindowRateLimiter.in[Task, Natural](maxCount, 1.minute)
         _ <- (1 to maxCount).toList.traverse(_ => rateLimiter.requestPermission(1))
         _ <- monixTimer.sleep(1.minute + 1.second)
         allowed <- rateLimiter.requestPermission(1).map(_ == (1: Natural))
@@ -76,7 +75,7 @@ class FixedWindowRateLimiterSpec
       val windowCount = 5
 
       val program = for {
-        rateLimiter <- FixedWindowRateLimiter.in[Task, Task, Natural](maxCount, 1.minute)
+        rateLimiter <- FixedWindowRateLimiter.in[Task, Natural](maxCount, 1.minute)
         allowances <- (1 to windowCount).toList.traverse(_ =>
           (1 to maxCount)
             .toList
