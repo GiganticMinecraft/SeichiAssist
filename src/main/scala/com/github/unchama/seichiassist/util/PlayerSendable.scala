@@ -10,8 +10,7 @@ trait PlayerSendable[-T, +F[_]] {
   def send(player: Player, content: T): F[Unit]
 }
 
-object PlayerSendable {
-  import scala.language.implicitConversions
+object PlayerSendable {
 
   implicit def forString[F[_]: OnMinecraftServerThread]: PlayerSendable[String, F] = {
     (player, content) =>

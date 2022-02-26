@@ -55,5 +55,5 @@ object BuildExpAmount extends BuildExpAmountInstances {
 
   def ofNonNegative(amount: Int): BuildExpAmount = ofNonNegative(BigDecimal(amount))
 
-  private def apply(amount: Int): BuildExpAmount = BuildExpAmount(BigDecimal(amount))
+  
 }

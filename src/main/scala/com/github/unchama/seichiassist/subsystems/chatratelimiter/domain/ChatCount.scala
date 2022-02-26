@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.chatratelimiter.domain
-
-import cats.Order
+
 import com.github.unchama.generic.algebra.typeclasses.OrderedMonus
 
 sealed trait ChatCount

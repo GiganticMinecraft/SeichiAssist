@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.MaterialSets.BreakTool
 import com.github.unchama.seichiassist.seichiskill.{AssaultSkill, AssaultSkillRange, BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, MaterialSets, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment

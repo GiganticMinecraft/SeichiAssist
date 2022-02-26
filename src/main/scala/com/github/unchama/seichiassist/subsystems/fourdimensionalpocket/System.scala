@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket
 
 import cats.data.Kleisli
-import cats.effect.IO
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
@@ -12,10 +11,9 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.OpenPocketCommand
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.{FourDimensionalPocketCommand, OpenPocketCommand}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.FourDimensionalPocketCommand
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
