@@ -204,7 +204,6 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.timer
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
@@ -323,7 +322,7 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.present.System.wired
   }
 
-  lazy val everywhereEnderChestSystem: subsystems.anywhereender.System[IO] = {
+  private lazy val anywhereEnderSystem: subsystems.anywhereender.System[IO] = {
     import PluginExecutionContexts.onMainThread
 
     implicit val seichiAmountReadApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
@@ -349,7 +348,7 @@ class SeichiAssist extends JavaPlugin() {
     discordNotificationSystem,
     subhomeSystem,
     presentSystem,
-    everywhereEnderChestSystem,
+    anywhereEnderSystem,
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -493,7 +492,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val globalNotification: DiscordNotificationAPI[IO] = discordNotificationSystem.globalNotification
     implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
-    implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] = everywhereEnderChestSystem.accessApi
+    implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] = anywhereEnderSystem.accessApi
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
