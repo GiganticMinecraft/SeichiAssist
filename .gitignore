@@ -6,6 +6,7 @@
 /project/target
 /project/project
 /target
+.bsp/
 
 # Local files
 deployLocal.sh
