@@ -15,12 +15,13 @@ import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
 import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
+import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
+import com.github.unchama.seichiassist.subsystems.anywhereender.domain.AccessDenialReason
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
-import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
@@ -36,7 +37,7 @@ import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffe
 import com.github.unchama.util.InventoryUtil
 import com.github.unchama.util.external.{ExternalPlugins, WorldGuardWrapper}
 import io.chrisdavenport.cats.effect.time.JavaTime
-import org.bukkit.ChatColor.{DARK_RED, RESET, _}
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Material, Sound}
@@ -361,42 +362,38 @@ object FirstPage extends Menu {
     }
 
     val computeEnderChestButton: IO[Button] = for {
-      breakAmountData <- environment
-        .breakCountAPI
-        .seichiAmountDataRepository(player)
-        .read.toIO
+      canAccess <- environment
+        .enderChestAccessApi
+        .canAccessEverywhereEnderChest(player)
     } yield {
-      import cats.implicits._
-      val minimumRequiredLevel = environment.enderChestAccessApi.minimumLevel
-      val level = breakAmountData.levelCorrespondingToExp
-      val hasEnoughLevel = level >= minimumRequiredLevel
-      val enderChest = player.getEnderChest
-
-      val iconItemStack = {
-        val loreHeading = {
-          if (hasEnoughLevel) {
-            s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
-          } else {
-            s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumRequiredLevel}以上必要です"
-          }
-        }
-
+      val iconItemStack =
         new IconItemStackBuilder(Material.ENDER_CHEST)
           .title(s"$DARK_PURPLE$UNDERLINE${BOLD}どこでもエンダーチェスト")
-          .lore(List(loreHeading))
+          .lore(List(
+            canAccess.fold(
+              {
+                case AccessDenialReason.NotEnoughLevel(current, required) =>
+                  s"$RESET$DARK_RED${UNDERLINE}整地Lvが${required.level}以上必要です(現在${current.level})"
+              },
+              _ => s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+            )
+          ))
           .build()
-      }
 
       Button(
         iconItemStack,
         LeftClickButtonEffect(
-          if (hasEnoughLevel)
-            SequentialEffect(
-              FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f),
-              openInventoryEffect(enderChest)
-            )
-          else
-            FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+          environment
+            .enderChestAccessApi
+            .openEnderChestOrNotifyInsufficientLevel
+            .flatMap {
+              case Right(_) =>
+                // 開くのに成功した場合の音
+                FocusedSoundEffect(Sound.BLOCK_GRASS_PLACE, 1.0f, 0.1f)
+              case Left(_) =>
+                // 開くのに失敗した場合の音
+                FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_OPEN, 1.0f, 1.0f)
+            }
         )
       )
     }

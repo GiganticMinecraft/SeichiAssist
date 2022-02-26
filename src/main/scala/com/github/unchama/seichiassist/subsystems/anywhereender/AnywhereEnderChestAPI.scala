@@ -1,24 +1,23 @@
 package com.github.unchama.seichiassist.subsystems.anywhereender
 
 import cats.data.Kleisli
-import cats.effect.IO
+import com.github.unchama.seichiassist.subsystems.anywhereender.domain.CanAccessEverywhereEnderChest
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import org.bukkit.entity.Player
 
 trait AnywhereEnderChestAPI[F[_]] {
   /**
-   * どこでもエンダーチェストにアクセスできるかどうかを計算する作用を返す。
-   * @return どこでもエンダーチェストにアクセスできるかどうかを計算する作用
+   * 与えられたプレーヤーがどこでもエンダーチェストにアクセスできるかどうかを確認する作用。
    */
-  def canAccessEverywhereEnderChest(player: Player): F[Boolean]
+  def canAccessEverywhereEnderChest(player: Player): F[CanAccessEverywhereEnderChest]
 
   /**
    * [[canAccessEverywhereEnderChest]]が
-   *   - `false`を返す場合はエラーメッセージを表示する。
+   *   - `Left` を返す場合はエラーメッセージを表示し。
    *   - `true`を返す場合はどこでもエンダーチェストを開ける。
    * @return 上記したような作用を記述する[[Kleisli]]
    */
-  def openEnderChestOrNotifyInsufficientLevel: Kleisli[F, Player, Unit]
+  def openEnderChestOrNotifyInsufficientLevel: Kleisli[F, Player, CanAccessEverywhereEnderChest]
 
   /**
    * 開くのに必要な最小レベル
