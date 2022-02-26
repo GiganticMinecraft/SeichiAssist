@@ -25,9 +25,7 @@ import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
 
-import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters._
-import scala.util.chaining._
+import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener(implicit effectEnvironment: EffectEnvironment,
                               manaApi: ManaApi[IO, SyncIO, Player],

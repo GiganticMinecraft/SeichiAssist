@@ -12,7 +12,6 @@ import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.BuildMainMenu.EMPHASIZE
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildLevel}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -379,7 +378,6 @@ object BuildMainMenu extends Menu {
     )
 
     import cats.implicits._
-    import environment._
 
     val dynamicPartComputation: IO[List[(Int, Button)]] =
       List(

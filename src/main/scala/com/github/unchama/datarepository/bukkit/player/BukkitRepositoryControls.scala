@@ -12,7 +12,6 @@ import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import java.util.UUID
-import scala.annotation.tailrec
 import scala.collection.concurrent.TrieMap
 
 case class BukkitRepositoryControls[F[_], R](repository: PlayerDataRepository[R],

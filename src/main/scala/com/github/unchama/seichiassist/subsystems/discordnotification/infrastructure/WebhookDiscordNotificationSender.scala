@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.discordnotification.infrastru
 import cats.effect.{ContextShift, Sync}
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import io.chrisdavenport.log4cats.Logger
-import org.bukkit.Bukkit
 
 import java.io.IOException
 import java.net.{HttpURLConnection, MalformedURLException, URL}

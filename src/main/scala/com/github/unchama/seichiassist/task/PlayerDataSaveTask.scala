@@ -9,8 +9,7 @@ import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
-import java.sql.{SQLException, Statement}
-import scala.util.Using
+import java.sql.{SQLException, Statement}
 
 object PlayerDataSaveTask {
   /**

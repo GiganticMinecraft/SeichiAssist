@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect.stream
 
 import com.github.unchama.generic.Token
-import fs2.{Chunk, Pipe, Stream}
+import fs2.{Chunk, Pipe}
 
 import scala.annotation.tailrec
 

@@ -4,7 +4,7 @@ import cats.data
 import cats.effect.{ContextShift, IO}
 import com.github.unchama.menuinventory.slot.Slot
 import com.github.unchama.menuinventory.slot.button.action.ButtonEffect
-import com.github.unchama.targetedeffect.{TargetedEffect, UnfocusedEffect, _}
+import com.github.unchama.targetedeffect._
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 case class Button(override val itemStack: ItemStack,
                   private val effects: List[ButtonEffect]) extends Slot {
   override def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): TargetedEffect[Player] = {
-    import cats.implicits._
+
     import com.github.unchama.generic.syntax._
 
     UnfocusedEffect {

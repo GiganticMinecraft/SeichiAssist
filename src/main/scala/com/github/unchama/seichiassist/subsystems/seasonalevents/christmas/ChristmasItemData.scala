@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.{END_DATE, EVENT_YEAR}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.EVENT_YEAR
 import com.github.unchama.seichiassist.util.Util
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._

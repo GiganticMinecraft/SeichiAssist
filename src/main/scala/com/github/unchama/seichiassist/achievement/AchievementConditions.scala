@@ -4,7 +4,6 @@ import cats.effect.IO
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.achievement.NamedHoliday._
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -14,7 +13,7 @@ import org.bukkit.inventory.meta.SkullMeta
 import java.time.temporal.TemporalAdjusters
 import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 import scala.concurrent.duration.FiniteDuration
-import scala.math.floor
+
 
 object AchievementConditions {
   def playerDataPredicate(predicate: PlayerData => IO[Boolean]): PlayerPredicate = { player =>

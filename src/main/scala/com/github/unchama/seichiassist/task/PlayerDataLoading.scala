@@ -10,8 +10,8 @@ import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillNormalEffe
 import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, AssaultSkill, SeichiSkill, SeichiSkillUsageMode}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.MillisecondTimer
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
-import org.bukkit.{Bukkit, Location}
 
 import java.sql.{ResultSet, Statement}
 import java.text.{ParseException, SimpleDateFormat}
@@ -31,7 +31,6 @@ object PlayerDataLoading {
    */
   @Deprecated()
   def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData = {
-    val config = SeichiAssist.seichiAssistConfig
     val databaseGateway = SeichiAssist.databaseGateway
 
     val uuid: UUID = playerUUID
