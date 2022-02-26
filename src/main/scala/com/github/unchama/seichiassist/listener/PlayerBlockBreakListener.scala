@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
@@ -81,11 +81,6 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val skillState = playerData.skillState.get.unsafeRunSync()
-    val playerLevel = SeichiAssist.instance
-      .breakCountSystem.api
-      .seichiAmountDataRepository(player).read
-      .unsafeRunSync()
-      .levelCorrespondingToExp.level
 
     if (!player.getWorld.isSeichiSkillAllowed) return
 
@@ -108,7 +103,6 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
     {
       //プレイヤーの足のy座標を取得
       val playerLocY = player.getLocation.getBlockY - 1
-      val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
 
       val skillArea = BreakArea(selectedSkill, skillState.usageMode)
       val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()

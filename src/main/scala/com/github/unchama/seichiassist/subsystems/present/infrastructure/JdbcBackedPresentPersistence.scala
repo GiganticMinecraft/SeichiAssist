@@ -4,7 +4,7 @@ import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.generic.MapExtra
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence, RevokeWarning}
+import com.github.unchama.seichiassist.subsystems.present.domain._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
@@ -62,13 +62,6 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     } yield {
       if (exists) {
         Sync[F].delay {
-          val alreadyAddedPlayers = DB.readOnly { implicit session =>
-            sql"""SELECT uuid FROM present_state WHERE present_id = $presentID"""
-              .map(x => UUID.fromString(x.string("uuid")))
-              .list()
-              .apply()
-          }
-
           import scala.collection.Seq.iterableFactory
 
           val initialValues = players
