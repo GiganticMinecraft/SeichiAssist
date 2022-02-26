@@ -1,15 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.anywhereender
 
+import cats.Functor
 import cats.data.Kleisli
 import cats.effect.{Effect, IO, LiftIO}
-import cats.{Functor, Semigroupal}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.anywhereender.bukkit.command.EnderChestCommand
 import com.github.unchama.seichiassist.subsystems.anywhereender.domain.{AccessDenialReason, CanAccessEverywhereEnderChest}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import com.github.unchama.targetedeffect.player.PlayerEffects
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -23,9 +23,9 @@ object System {
   import cats.implicits._
 
   def wired[
-    F[_]: BreakCountReadAPI[IO, *[_], Player] : Functor : Semigroupal : ContextCoercion[*[_], G],
+    F[_]: BreakCountReadAPI[IO, *[_], Player] : Functor : ContextCoercion[*[_], G],
     G[_]: Effect
-  ](minimumRequiredLevel: Int)(
+  ](configuration: SystemConfiguration)(
     implicit onMainThread: OnMinecraftServerThread[IO]
   ): System[G] = new System[G] {
 
@@ -37,8 +37,13 @@ object System {
           .map { seichiAmountData =>
             val currentLevel = seichiAmountData.levelCorrespondingToExp
 
-            if (currentLevel < minimumLevel) {
-              Left(AccessDenialReason.NotEnoughLevel(currentLevel, minimumLevel))
+            if (currentLevel < configuration.requiredMinimumLevel) {
+              Left(
+                AccessDenialReason.NotEnoughLevel(
+                  currentLevel,
+                  configuration.requiredMinimumLevel
+                )
+              )
             } else {
               Right(())
             }
@@ -49,9 +54,9 @@ object System {
         Kleisli(canAccessEverywhereEnderChest)
           .flatTap {
             case Left(AccessDenialReason.NotEnoughLevel(_, minimumLevel)) =>
-              MessageEffect(
+              MessageEffectF[G](
                 s"どこでもエンダーチェストを開くには整地レベルがLv${minimumLevel}以上である必要があります。"
-              ).mapK(LiftIO.liftK)
+              )
             case Right(_) =>
               Kleisli((player: Player) =>
                 PlayerEffects.openInventoryEffect(player.getEnderChest).run(player)

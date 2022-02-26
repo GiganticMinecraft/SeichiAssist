@@ -2,11 +2,13 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.bungeesemaphoreresponder.{RedisConnectionSettings, Configuration => BungeeSemaphoreResponderConfiguration}
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
+import com.github.unchama.seichiassist.subsystems.anywhereender.{SystemConfiguration => AnywhereEnderConfiguration}
 import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemConfiguration => AutoSaveConfiguration}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
 import com.github.unchama.seichiassist.subsystems.discordnotification.{SystemConfiguration => DiscordNotificationConfiguration}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -46,8 +48,6 @@ final class Config private(val config: FileConfiguration) {
   def getDropExplevel(i: Int): Double = getDoubleFailFast("dropexplevel" + i)
 
   def getPassivePortalInventorylevel: Int = getIntFailFast("passiveportalinventorylevel")
-
-  def getDokodemoEnderlevel: Int = getIntFailFast("dokodemoenderlevel")
 
   def getMineStacklevel(i: Int): Int = getIntFailFast("minestacklevel" + i)
 
@@ -184,6 +184,10 @@ final class Config private(val config: FileConfiguration) {
       override val redis: RedisConnectionSettings = _redis
       override val saveTimeoutDuration: Duration = _saveTimeoutDuration
     }
+  }
+
+  def getAnywhereEnderConfiguration: AnywhereEnderConfiguration = new AnywhereEnderConfiguration {
+    override val requiredMinimumLevel: SeichiLevel = SeichiLevel(getIntFailFast("dokodemoenderlevel"))
   }
 
   def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
