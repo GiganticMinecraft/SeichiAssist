@@ -176,7 +176,7 @@ minestack_BlockCraft:
   level3: '45'
 
 #ブロック設置カウントの1分上限
-BuildNum1minLimit: '256'
+BuildNum1minLimit: '100'
 
 # オートセーブの設定
 AutoSave:
