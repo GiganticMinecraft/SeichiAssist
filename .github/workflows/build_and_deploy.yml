@@ -79,6 +79,9 @@ jobs:
             touch -t "$timestamp" $proto
           done
 
+      - name: Lint with Scalafix
+        run: sbt "scalafix --check"
+
       - name: Test and build artifact
         run: sbt assembly
 
