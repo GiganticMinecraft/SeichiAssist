@@ -364,7 +364,7 @@ object FirstPage extends Menu {
     val computeEnderChestButton: IO[Button] = for {
       canAccess <- environment
         .enderChestAccessApi
-        .canAccessEverywhereEnderChest(player)
+        .canAccessEnywhereEnderChest(player)
     } yield {
       val iconItemStack =
         new IconItemStackBuilder(Material.ENDER_CHEST)

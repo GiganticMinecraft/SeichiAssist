@@ -7,7 +7,7 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.anywhereender.bukkit.command.EnderChestCommand
-import com.github.unchama.seichiassist.subsystems.anywhereender.domain.{AccessDenialReason, CanAccessEverywhereEnderChest}
+import com.github.unchama.seichiassist.subsystems.anywhereender.domain.{AccessDenialReason, AnywhereEnderAccessPermitted}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import com.github.unchama.targetedeffect.player.PlayerEffects
@@ -30,13 +30,12 @@ object System {
   ): System[G] = new System[G] {
 
     override implicit val accessApi: AnywhereEnderChestAPI[G] = new AnywhereEnderChestAPI[G] {
-      override def canAccessEverywhereEnderChest(player: Player): G[CanAccessEverywhereEnderChest] = {
+      override def canAccessEnywhereEnderChest(player: Player): G[AnywhereEnderAccessPermitted] = {
         implicitly[BreakCountReadAPI[IO, F, Player]]
           .seichiAmountDataRepository(player).read
           .coerceTo[G]
-          .map { seichiAmountData =>
-            val currentLevel = seichiAmountData.levelCorrespondingToExp
-
+          .map { _.levelCorrespondingToExp }
+          .map { currentLevel =>
             if (currentLevel < configuration.requiredMinimumLevel) {
               Left(
                 AccessDenialReason.NotEnoughLevel(
@@ -50,8 +49,8 @@ object System {
           }
       }
 
-      override def openEnderChestOrNotifyInsufficientLevel: Kleisli[G, Player, CanAccessEverywhereEnderChest] =
-        Kleisli(canAccessEverywhereEnderChest)
+      override def openEnderChestOrNotifyInsufficientLevel: Kleisli[G, Player, AnywhereEnderAccessPermitted] =
+        Kleisli(canAccessEnywhereEnderChest)
           .flatTap {
             case Left(AccessDenialReason.NotEnoughLevel(_, minimumLevel)) =>
               MessageEffectF[G](
