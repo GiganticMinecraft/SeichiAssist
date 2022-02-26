@@ -10,6 +10,9 @@ ThisBuild / version := "34"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
+// Scalafixが要求するため、semanticdbは有効化する
+ThisBuild / semanticdbEnabled := true
+
 resolvers ++= Seq(
   "jitpack.io" at "https://jitpack.io",
   "maven.sk89q.com" at "https://maven.sk89q.com/repo/",
