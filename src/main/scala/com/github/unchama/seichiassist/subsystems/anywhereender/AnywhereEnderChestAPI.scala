@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.subsystems.anywhereender
 
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.anywhereender.domain.CanAccessEverywhereEnderChest
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import org.bukkit.entity.Player
 
 trait AnywhereEnderChestAPI[F[_]] {
@@ -18,9 +17,4 @@ trait AnywhereEnderChestAPI[F[_]] {
    * @return 上記したような作用を記述する[[Kleisli]]
    */
   def openEnderChestOrNotifyInsufficientLevel: Kleisli[F, Player, CanAccessEverywhereEnderChest]
-
-  /**
-   * 開くのに必要な最小レベル
-   */
-  def minimumLevel: SeichiLevel
 }

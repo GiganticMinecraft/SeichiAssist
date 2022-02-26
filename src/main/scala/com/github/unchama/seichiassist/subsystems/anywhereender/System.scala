@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.anywhereender.bukkit.command.EnderChestCommand
 import com.github.unchama.seichiassist.subsystems.anywhereender.domain.{AccessDenialReason, CanAccessEverywhereEnderChest}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects
 import org.bukkit.command.TabExecutor
@@ -58,8 +57,6 @@ object System {
                 PlayerEffects.openInventoryEffect(player.getEnderChest).run(player)
               ).mapK(LiftIO.liftK)
           }
-
-      override def minimumLevel: SeichiLevel = SeichiLevel(minimumRequiredLevel)
     }
 
     override val commands: Map[String, TabExecutor] = Map(
