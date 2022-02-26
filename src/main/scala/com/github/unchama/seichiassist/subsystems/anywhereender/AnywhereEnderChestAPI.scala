@@ -9,10 +9,10 @@ trait AnywhereEnderChestAPI[F[_]] {
   /**
    * 与えられたプレーヤーがどこでもエンダーチェストにアクセスできるかどうかを確認する作用。
    */
-  def canAccessEnywhereEnderChest(player: Player): F[AnywhereEnderAccessPermitted]
+  def canAccessAnywhereEnderChest(player: Player): F[AnywhereEnderAccessPermitted]
 
   /**
-   * [[canAccessEnywhereEnderChest]]が
+   * [[canAccessAnywhereEnderChest]]が
    *   - `Left` を返す場合はエラーメッセージを表示し。
    *   - `true`を返す場合はどこでもエンダーチェストを開ける。
    *

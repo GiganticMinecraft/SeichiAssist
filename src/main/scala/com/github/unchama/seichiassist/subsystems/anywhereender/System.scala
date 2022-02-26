@@ -30,7 +30,7 @@ object System {
   ): System[G] = new System[G] {
 
     override implicit val accessApi: AnywhereEnderChestAPI[G] = new AnywhereEnderChestAPI[G] {
-      override def canAccessEnywhereEnderChest(player: Player): G[AnywhereEnderAccessPermitted] = {
+      override def canAccessAnywhereEnderChest(player: Player): G[AnywhereEnderAccessPermitted] = {
         implicitly[BreakCountReadAPI[IO, F, Player]]
           .seichiAmountDataRepository(player).read
           .coerceTo[G]
@@ -50,7 +50,7 @@ object System {
       }
 
       override def openEnderChestOrNotifyInsufficientLevel: Kleisli[G, Player, AnywhereEnderAccessPermitted] =
-        Kleisli(canAccessEnywhereEnderChest)
+        Kleisli(canAccessAnywhereEnderChest)
           .flatTap {
             case Left(AccessDenialReason.NotEnoughLevel(_, minimumLevel)) =>
               MessageEffectF[G](
