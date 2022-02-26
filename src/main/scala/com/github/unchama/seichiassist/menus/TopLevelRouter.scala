@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmount
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
+import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
@@ -49,7 +50,8 @@ object TopLevelRouter {
             fastDiggingSettingsApi: FastDiggingSettingsApi[IO, Player],
             fourDimensionalPocketApi: FourDimensionalPocketApi[IO, Player],
             globalNotification: DiscordNotificationAPI[IO],
-            subHomeReadApi: SubHomeReadAPI[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
+            subHomeReadApi: SubHomeReadAPI[IO],
+            enderChestAccessApi: AnywhereEnderChestAPI[IO]): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
     implicit lazy val secondPageEnv: SecondPage.Environment = new SecondPage.Environment

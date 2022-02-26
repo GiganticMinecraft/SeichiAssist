@@ -45,6 +45,7 @@ import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
+import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.buildcount.BuildCountAPI
@@ -203,7 +204,6 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.timer
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
@@ -322,6 +322,13 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.present.System.wired
   }
 
+  private lazy val anywhereEnderSystem: subsystems.anywhereender.System[IO] = {
+    import PluginExecutionContexts.onMainThread
+
+    implicit val seichiAmountReadApi: BreakCountAPI[IO, SyncIO, Player] = breakCountSystem.api
+    subsystems.anywhereender.System.wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -340,7 +347,8 @@ class SeichiAssist extends JavaPlugin() {
     gachaPointSystem,
     discordNotificationSystem,
     subhomeSystem,
-    presentSystem
+    presentSystem,
+    anywhereEnderSystem,
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -484,6 +492,7 @@ class SeichiAssist extends JavaPlugin() {
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
     implicit val globalNotification: DiscordNotificationAPI[IO] = discordNotificationSystem.globalNotification
     implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
+    implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] = anywhereEnderSystem.accessApi
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
@@ -524,7 +533,7 @@ class SeichiAssist extends JavaPlugin() {
       "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
       "stickmenu" -> StickMenuCommand.executor,
-      "hat" -> HatCommand.executor
+      "hat" -> HatCommand.executor,
     )
       .concat(wiredSubsystems.flatMap(_.commands))
       .foreach {
