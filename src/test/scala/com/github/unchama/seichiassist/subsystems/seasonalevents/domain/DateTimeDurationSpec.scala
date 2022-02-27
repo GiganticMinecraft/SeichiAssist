@@ -53,7 +53,7 @@ class DateTimeDurationSpec extends AnyWordSpec {
         assert(duration.contains(to))
       }
     }
-    "after from and before to" should {
+    "shortly after from" should {
       "be true" in assert(duration.contains(from.plusMinutes(1)))
     }
 
