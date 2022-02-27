@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
-import com.github.unchama.seichiassist.subsystems.ranking.domain.{Ranking, RankingRecord}
+import com.github.unchama.seichiassist.subsystems.ranking.domain.{Ranking, RankingRecord, RankingRecordWithPosition}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
@@ -164,7 +164,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
       .take(cutoff)
       .slice(pageIndex * perPage, pageIndex * perPage +perPage)
       .zipWithIndex
-      .map { case ((position, record), index) =>
+      .map { case (RankingRecordWithPosition(record, position), index) =>
         index -> entry(position, record)
       }
   }
@@ -189,8 +189,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
     for {
       ranking <- environment.rankingApi.ranking.read
     } yield {
-      val records = ranking.recordsWithPositions
-      val recordsToInclude = records.size min cutoff
+      val recordsToInclude = ranking.recordCount min cutoff
       val totalNumberOfPages = Math.ceil(recordsToInclude / 45.0).toInt
 
       val combinedLayout =
