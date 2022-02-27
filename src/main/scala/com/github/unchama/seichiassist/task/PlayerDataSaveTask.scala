@@ -9,7 +9,8 @@ import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 
-import java.sql.{SQLException, Statement}
+import java.sql.{SQLException, Statement}
+
 
 object PlayerDataSaveTask {
   /**
@@ -121,7 +122,7 @@ object PlayerDataSaveTask {
           + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages
           + ",worldguardlogflag = " + playerdata.settings.shouldDisplayWorldGuardLogs
 
-          + ",multipleidbreakflag = " + playerdata.settings.multipleidbreakflag
+          + ",multipleidbreakflag = " + playerdata.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld
 
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.effectPoint

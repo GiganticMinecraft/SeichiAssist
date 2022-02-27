@@ -43,7 +43,7 @@ final class Config private(val config: FileConfiguration) {
 
   def getDualBreaklevel: Int = getIntFailFast("dualbreaklevel")
 
-  def getMultipleIDBlockBreaklevel: Int = getIntFailFast("multipleidblockbreaklevel")
+  def getMultipleIDBlockBreakLevel: Int = getIntFailFast("multipleidblockbreaklevel")
 
   def getDropExplevel(i: Int): Double = getDoubleFailFast("dropexplevel" + i)
 

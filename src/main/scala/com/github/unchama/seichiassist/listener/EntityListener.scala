@@ -3,9 +3,9 @@ package com.github.unchama.seichiassist.listener
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -87,7 +87,7 @@ class EntityListener(implicit effectEnvironment: EffectEnvironment,
       breakLength.x * breakLength.y * breakLength.z
     }
 
-    val isMultiTypeBreakingSkillEnabled = BreakUtil.multiplyBreakValidlyEnabled(player).unsafeRunSync()
+    val isMultiTypeBreakingSkillEnabled = BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
 
     import com.github.unchama.seichiassist.data.syntax._
     val BlockSearching.Result(breakBlocks, _, lavaBlocks) =

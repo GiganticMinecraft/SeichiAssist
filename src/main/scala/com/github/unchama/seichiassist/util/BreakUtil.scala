@@ -657,14 +657,38 @@ object BreakUtil {
     true
   }
 
-  def multiplyBreakValidlyEnabled(player: Player): SyncIO[Boolean] = for {
-    sad <-
+  /**
+   * プレーヤーがスキルを使うときに複数種類ブロック同時破壊を行うかどうかを返す関数。
+   *
+   *  - プレーヤーの整地レベルが
+   *    `SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreakLevel` 以上である、かつ、
+   *  - 以下二条件のうちどちらかが満たされている
+   *    - プレーヤーが「整地ワールド」に居る、または
+   *    - `PlayerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld`（以下「フラグ」）が
+   *      `true` になっている
+   *
+   * 「整地スキルを使えるワールド」と「整地ワールド」の概念が一致していない事から、
+   * 単純にフラグを返すだけではないので注意。
+   * 例えば、メインワールドでは、整地レベルが十分かつフラグが `true` のときのみ複数種類ブロック破壊をする。
+   */
+  def performsMultipleIDBlockBreakWhenUsingSkills(player: Player): SyncIO[Boolean] = for {
+    seichiAmountData <-
       SeichiAssist.instance
         .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
-  } yield {
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-    sad.levelCorrespondingToExp.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel &&
-      playerData.settings.multipleidbreakflag
+        .seichiAmountDataRepository(player)
+        .read
+    currentWorld <- SyncIO(player.getWorld)
+    flag <- SyncIO(
+      SeichiAssist
+        .playermap(player.getUniqueId).settings
+        .performMultipleIDBlockBreakWhenOutsideSeichiWorld
+    )
+  } yield {
+    import ManagedWorld._
+
+    val isLevelAboveThreshold =
+      seichiAmountData.levelCorrespondingToExp.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreakLevel
+
+    isLevelAboveThreshold && (currentWorld.isSeichi || flag)
   }
 }

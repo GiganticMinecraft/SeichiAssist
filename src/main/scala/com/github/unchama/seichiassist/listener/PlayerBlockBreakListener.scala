@@ -107,7 +107,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
       val skillArea = BreakArea(selectedSkill, skillState.usageMode)
       val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
 
-      val isMultiTypeBreakingSkillEnabled = BreakUtil.multiplyBreakValidlyEnabled(player).unsafeRunSync()
+      val isMultiTypeBreakingSkillEnabled = BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
 
       val totalBreakRangeVolume = {
         val breakLength = skillArea.breakLength
