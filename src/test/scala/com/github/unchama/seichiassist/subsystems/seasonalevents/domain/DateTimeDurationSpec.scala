@@ -53,18 +53,30 @@ class DateTimeDurationSpec extends AnyWordSpec {
         assert(duration.contains(to))
       }
     }
-    "after from and before to" should assert(duration.contains(from.plusMinutes(1)))
+    "after from and before to" should {
+      "be true" in assert(duration.contains(from.plusMinutes(1)))
+    }
 
-    "before from" should assert(!duration.contains(from.minusYears(1)))
-    "after to" should assert(!duration.contains(to.plusYears(1)))
+    "before from" should {
+      "be false" in assert(!duration.contains(from.minusYears(1)))
+    }
+    "after to" should {
+      "be false" in assert(!duration.contains(to.plusYears(1)))
+    }
   }
 
   "DateTimeDuration#isEntirelyAfter" when {
     val duration = DateTimeDuration(from, to)
 
-    "the same as from" should assert(duration.isEntirelyAfter(duration.from))
-    "before from" should assert(duration.isEntirelyAfter(duration.from.minusYears(1)))
+    "the same as from" should {
+      "be true" in assert(duration.isEntirelyAfter(duration.from))
+    }
+    "before from" should {
+      "be true" in assert(duration.isEntirelyAfter(duration.from.minusYears(1)))
+    }
 
-    "after from" should assert(!duration.isEntirelyAfter(duration.from.plusYears(1)))
+    "after from" should {
+      "be false" in assert(!duration.isEntirelyAfter(duration.from.plusYears(1)))
+    }
   }
 }
