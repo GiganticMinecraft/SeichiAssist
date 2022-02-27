@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.util
 
 import cats.Functor
-import cats.effect.{IO, Sync, SyncIO}
+import cats.effect.{IO, SyncIO}
 import cats.implicits._
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
@@ -24,7 +24,7 @@ import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Dye
 
-import java.time.{LocalDate, ZoneId}
+import java.time.ZoneId
 import java.util.Random
 import java.util.stream.IntStream
 
