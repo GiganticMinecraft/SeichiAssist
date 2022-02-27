@@ -164,7 +164,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
       .take(cutoff)
       .slice(pageIndex * perPage, pageIndex * perPage +perPage)
       .zipWithIndex
-      .map { case ((position, record), index) =>
+      .map { case ((record, position), index) =>
         index -> entry(position, record)
       }
   }
@@ -189,8 +189,7 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
     for {
       ranking <- environment.rankingApi.ranking.read
     } yield {
-      val records = ranking.recordsWithPositions
-      val recordsToInclude = records.size min cutoff
+      val recordsToInclude = ranking.recordCount min cutoff
       val totalNumberOfPages = Math.ceil(recordsToInclude / 45.0).toInt
 
       val combinedLayout =

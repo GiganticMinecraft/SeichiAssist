@@ -112,10 +112,10 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
   private def rankingDiffDescription(): Option[String] =
     seichiRanking
       .positionAndRecordOf(targetPlayer.getName)
-      .flatMap { case (position, record) =>
+      .flatMap { case (record, position) =>
         val above = if (position > 1) {
           val positionOneAbove = position - 1
-          val recordOneAbove = seichiRanking.recordsWithPositions(positionOneAbove - 1)._2
+          val recordOneAbove = seichiRanking.recordsWithPositions(positionOneAbove - 1)._1
           val difference =
             SeichiExpAmount.orderedMonus.subtractTruncate(
               recordOneAbove.value.expAmount,
@@ -129,7 +129,7 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
 
         val below = if (position < seichiRanking.recordCount) {
           val positionOneBelow = position + 1
-          val recordOneBelow = seichiRanking.recordsWithPositions(positionOneBelow - 1)._2
+          val recordOneBelow = seichiRanking.recordsWithPositions(positionOneBelow - 1)._1
           val difference = {
             SeichiExpAmount.orderedMonus.subtractTruncate(
               record.value.expAmount,

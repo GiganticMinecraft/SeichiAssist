@@ -15,13 +15,32 @@ class Ranking[R: Order: Monoid](records: Vector[RankingRecord[R]]) {
 
   val total: R = Monoid[R].combineAll(records.map(_.value))
 
-  val recordsWithPositions: Vector[(Int, RankingRecord[R])] =
-    sortedRecords.zipWithIndex.map { case (record, i) => (i + 1, record) }
+  /**
+   * ランキングのレコードと、そのレコードの順位の組の集まり。
+   *
+   * この順位はタイを考慮する。
+   * つまり、二つのレコード `r1` と `r2` があり、 `r1.value` と `r2.value` が[[Order]]により等しければ、
+   * `r1` と `r2` の順位は同じになる。
+   */
+  val recordsWithPositions: Vector[(RankingRecord[R], Int)] = Vector.from {
+    var positionOfPreviousRecord = 0
 
-  def positionAndRecordOf(playerName: String): Option[(Int, RankingRecord[R])] =
+    for {
+      index <- sortedRecords.indices
+    } yield {
+      // より小さな値に出くわしたら、記録する順位をindex + 1に戻す
+      if (index == 0 || (sortedRecords(index).value < sortedRecords(index - 1).value)) {
+        positionOfPreviousRecord = index + 1
+      }
+
+      (sortedRecords(index), positionOfPreviousRecord)
+    }
+  }
+
+  def positionAndRecordOf(playerName: String): Option[(RankingRecord[R], Int)] =
     recordsWithPositions
-      .find { case (_, record) => record.playerName == playerName }
+      .find { case (record, _) => record.playerName == playerName }
 
   def positionOf(playerName: String): Option[Int] =
-    positionAndRecordOf(playerName).map(_._1)
+    positionAndRecordOf(playerName).map(_._2)
 }
