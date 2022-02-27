@@ -61,7 +61,7 @@ class NewYearListener[
       _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
       _ <- LiftIO[F].liftIO {
-        val hasNotJoinedInEventYet = lastQuit.forall(NEW_YEAR_EVE.isBeforeDuration)
+        val hasNotJoinedInEventYet = lastQuit.forall(NEW_YEAR_EVE.isEntirelyAfter)
 
         val effects =
           if (hasNotJoinedInEventYet) SequentialEffect(

@@ -34,7 +34,7 @@ case class DateTimeDuration(from: LocalDateTime, to: LocalDateTime) {
    * @param base 比較する[[LocalDateTime]]
    * @return 指定した[[LocalDateTime]]が、`DateTimeDuration.from`より前にあるもしくは等しければ`true`
    */
-  def isBeforeDuration(base: LocalDateTime): Boolean = base.isBefore(from) || base.isEqual(from)
+  def isEntirelyAfter(base: LocalDateTime): Boolean = base.isBefore(from) || base.isEqual(from)
 }
 
 object DateTimeDuration {

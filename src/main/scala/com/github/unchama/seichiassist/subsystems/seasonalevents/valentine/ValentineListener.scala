@@ -90,7 +90,7 @@ class ValentineListener[
       _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(playerUuid)
       _ <- LiftIO[F].liftIO {
-        val hasNotJoinedBeforeYet = lastQuit.forall(EVENT_DURATION.isBeforeDuration)
+        val hasNotJoinedBeforeYet = lastQuit.forall(EVENT_DURATION.isEntirelyAfter)
 
         val effects =
           if (hasNotJoinedBeforeYet) SequentialEffect(
