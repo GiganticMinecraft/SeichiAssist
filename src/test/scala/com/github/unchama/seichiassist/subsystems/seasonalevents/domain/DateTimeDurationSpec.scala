@@ -18,9 +18,10 @@ class DateTimeDurationSpec extends AnyWordSpec {
     }
 
     "be generated successfully with the same LocalDateTime" in {
-      val duration = DateTimeDuration(from, to.minusYears(1))
-      assert(duration.from.isEqual(from))
-      assert(duration.to.isEqual(to.minusYears(1)))
+      val localDateTime = from
+      val duration = DateTimeDuration(localDateTime, localDateTime)
+      assert(duration.from.isEqual(localDateTime))
+      assert(duration.to.isEqual(localDateTime))
     }
 
     "not be generated successfully with illegal LocalDateTime" in {
