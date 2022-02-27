@@ -15,7 +15,7 @@ object NewYear {
   val itemDropRate: Double = validateItemDropRate(0.002)
   val blogArticleUrl: String = validateUrl(s"https://www.seichi.network/post/newyear$EVENT_YEAR")
 
-  def sobaWillBeDistributed: Boolean = NEW_YEAR_EVE.isInDuration(LocalDateTime.now())
+  def sobaWillBeDistributed: Boolean = NEW_YEAR_EVE.contains(LocalDateTime.now())
 
   def isInEvent: Boolean = dateRangeAsSequence(START_DATE, END_DATE).contains(LocalDate.now())
 }

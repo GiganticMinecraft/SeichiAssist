@@ -21,7 +21,7 @@ case class DateTimeDuration(from: LocalDateTime, to: LocalDateTime) {
    *         - 指定した[[LocalDateTime]]が、`DateTimeDuration.from`より前にあるもしくは等しい
    *         - 指定した[[LocalDateTime]]が、`DateTimeDuration.from`より後にあるもしくは等しい
    */
-  def isInDuration(base: LocalDateTime): Boolean = {
+  def contains(base: LocalDateTime): Boolean = {
     val isAfterFrom = base.isEqual(from) || base.isAfter(from)
     val isBeforeTo = base.isEqual(to) || base.isBefore(to)
 

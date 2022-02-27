@@ -14,5 +14,5 @@ object Valentine {
   val itemDropRate: Double = validateItemDropRate(0.3)
   val blogArticleUrl: String = validateUrl(s"https://www.seichi.network/post/valentine$EVENT_YEAR")
 
-  def isInEvent: Boolean = EVENT_DURATION.isInDuration(LocalDateTime.now())
+  def isInEvent: Boolean = EVENT_DURATION.contains(LocalDateTime.now())
 }
