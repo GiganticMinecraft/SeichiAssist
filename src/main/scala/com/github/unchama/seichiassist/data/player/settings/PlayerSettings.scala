@@ -18,8 +18,10 @@ class PlayerSettings {
 
   //region accessors and modifiers
   var broadcastMutingSettings: BroadcastMutingSettings = BroadcastMutingSettings.MuteMessageAndSound
+
   //複数種類破壊トグル
-  var multipleidbreakflag = false
+  var performMultipleIDBlockBreakWhenOutsideSeichiWorld: Boolean = false
+
   //PvPトグル
   var pvpflag = false
   var nickname: PlayerNickname = PlayerNickname(NicknameStyle.Level)
@@ -62,6 +64,6 @@ class PlayerSettings {
    * 複数ブロック同時破壊のON/OFFを切り替える[UnforcedEffect]
    */
   val toggleMultipleIdBreakFlag: TargetedEffect[Player] = UnfocusedEffect {
-    multipleidbreakflag = !multipleidbreakflag
+    performMultipleIDBlockBreakWhenOutsideSeichiWorld = !performMultipleIDBlockBreakWhenOutsideSeichiWorld
   }
 }

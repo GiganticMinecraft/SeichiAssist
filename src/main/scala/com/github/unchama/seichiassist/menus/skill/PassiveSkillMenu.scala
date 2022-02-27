@@ -85,7 +85,7 @@ object PassiveSkillMenu extends Menu {
             s"${GRAY}ブロックに対応するツールを無視してスキルで",
             s"${GRAY}破壊可能な全種類のブロックを同時に破壊します",
             s"${DARK_RED}整地ワールドではON/OFFに関わらず同時破壊されます")
-          val statusLore = if (openerData.settings.multipleidbreakflag) {
+          val statusLore = if (openerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld) {
             List(s"${GREEN}ON", s"${DARK_RED}クリックでOFF")
           } else {
             List(s"${RED}OFF", s"${DARK_GREEN}クリックでON")
@@ -93,16 +93,16 @@ object PassiveSkillMenu extends Menu {
 
           Button(
             new IconItemStackBuilder(Material.DIAMOND_PICKAXE)
-              .tap { builder => if (openerData.settings.multipleidbreakflag) builder.enchanted() }
+              .tap { builder => if (openerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld) builder.enchanted() }
               .title(s"$YELLOW$UNDERLINE${BOLD}複数種類同時破壊スキル切替")
               .lore(baseLore ++ statusLore)
               .build(),
             LeftClickButtonEffect {
-              if (level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel) {
+              if (level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreakLevel) {
                 SequentialEffect(
                   openerData.settings.toggleMultipleIdBreakFlag,
                   DeferredEffect(IO {
-                    if (openerData.settings.multipleidbreakflag) {
+                    if (openerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld) {
                       SequentialEffect(
                         MessageEffect(s"${GREEN}複数種類同時破壊:ON"),
                         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)

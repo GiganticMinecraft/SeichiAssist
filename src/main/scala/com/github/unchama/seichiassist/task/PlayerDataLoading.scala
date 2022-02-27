@@ -155,7 +155,7 @@ object PlayerDataLoading {
         playerData.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
         playerData.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
-        playerData.settings.multipleidbreakflag = rs.getBoolean("multipleidbreakflag")
+        playerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld = rs.getBoolean("multipleidbreakflag")
 
         playerData.settings.pvpflag = rs.getBoolean("pvpflag")
         playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))

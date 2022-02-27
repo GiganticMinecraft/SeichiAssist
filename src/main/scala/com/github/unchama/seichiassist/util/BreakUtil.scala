@@ -658,28 +658,37 @@ object BreakUtil {
   }
 
   /**
-   * 複数種類ブロック同時破壊を行うかどうかを返す関数。
-   * 単純に`PlayerData.settings.multipleidbreakflag`（以下「フラグ」）を返すだけではないので注意。
+   * プレーヤーがスキルを使うときに複数種類ブロック同時破壊を行うかどうかを返す関数。
    *
-   *   1. 整地レベルが`SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel`以上でであるかどうか
-   *   （すなわち、複数種類ブロック同時破壊スキルを使えるかどうか）
-   *   1. 整地ワールドであるかどうか
-   *     - 整地ワールドでは、フラグを無視し、常に`true`
-   *       - つまり、フラグの設定に関わらず、複数種類ブロック破壊をする
-   *     - 整地ワールド以外では、フラグを参照する
-   *       - 例えば、メインワールドではフラグが`true`のときのみ複数種類ブロック破壊をする
-   * @return 複数種類ブロック同時破壊を行うかどうか
+   *  - プレーヤーの整地レベルが
+   *    `SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreakLevel` 以上である、かつ、
+   *  - 以下二条件のうちどちらかが満たされている
+   *    - プレーヤーが「整地ワールド」に居る、または
+   *    - `PlayerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld`（以下「フラグ」）が
+   *      `true` になっている
+   *
+   * 「整地スキルを使えるワールド」と「整地ワールド」の概念が一致していない事から、
+   * 単純にフラグを返すだけではないので注意。
+   * 例えば、メインワールドでは、整地レベルが十分かつフラグが `true` のときのみ複数種類ブロック破壊をする。
    */
-  def multiplyBreakValidlyEnabled(player: Player): SyncIO[Boolean] = for {
-    sad <-
+  def performsMultipleIDBlockBreakWhenUsingSkills(player: Player): SyncIO[Boolean] = for {
+    seichiAmountData <-
       SeichiAssist.instance
         .breakCountSystem.api
-        .seichiAmountDataRepository(player).read
+        .seichiAmountDataRepository(player)
+        .read
+    currentWorld <- SyncIO(player.getWorld)
+    flag <- SyncIO(
+      SeichiAssist
+        .playermap(player.getUniqueId).settings
+        .performMultipleIDBlockBreakWhenOutsideSeichiWorld
+    )
   } yield {
     import ManagedWorld._
+
     val isLevelAboveThreshold =
-      sad.levelCorrespondingToExp.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreaklevel
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-    isLevelAboveThreshold && (player.getWorld.isSeichi || playerData.settings.multipleidbreakflag)
+      seichiAmountData.levelCorrespondingToExp.level >= SeichiAssist.seichiAssistConfig.getMultipleIDBlockBreakLevel
+
+    isLevelAboveThreshold && (currentWorld.isSeichi || flag)
   }
 }
