@@ -17,13 +17,13 @@ class DateTimeDurationSpec extends AnyWordSpec {
       assert(duration.to.isEqual(to))
     }
 
-    "be generated successfully with same DateTime" in {
+    "be generated successfully with the same LocalDateTime" in {
       val duration = DateTimeDuration(from, to.minusYears(1))
       assert(duration.from.isEqual(from))
       assert(duration.to.isEqual(to.minusYears(1)))
     }
 
-    "be failed to generate with illegal LocalDateTime" in {
+    "be generated unsuccessfully with illegal LocalDateTime" in {
       assertThrows[IllegalArgumentException](DateTimeDuration(from, to.minusYears(2)))
     }
 
@@ -33,13 +33,13 @@ class DateTimeDurationSpec extends AnyWordSpec {
       assert(duration.to.isEqual(to))
     }
 
-    "be generated successfully from same LocalDate" in {
+    "be generated successfully from the same LocalDate" in {
       val duration = DateTimeDuration.fromLocalDate(dateFrom, dateTo.minusYears(1))
       assert(duration.from.isEqual(from))
       assert(duration.to.isEqual(to.minusYears(1)))
     }
 
-    "be failed to generate with illegal LocalDate" in {
+    "be generated unsuccessfully with illegal LocalDate" in {
       assertThrows[IllegalArgumentException](DateTimeDuration.fromLocalDate(dateFrom, dateTo.minusYears(2)))
     }
   }
