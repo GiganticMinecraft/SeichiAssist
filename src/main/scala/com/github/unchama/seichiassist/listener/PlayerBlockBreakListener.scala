@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.{Fiber, IO, Sync, SyncIO}
+import cats.effect.{Fiber, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
