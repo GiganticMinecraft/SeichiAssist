@@ -23,7 +23,7 @@ class DateTimeDurationSpec extends AnyWordSpec {
       assert(duration.to.isEqual(to.minusYears(1)))
     }
 
-    "be failed to generate with illegal arg" in {
+    "be failed to generate with illegal LocalDateTime" in {
       assertThrows[IllegalArgumentException](DateTimeDuration(from, to.minusYears(2)))
     }
 
@@ -39,7 +39,7 @@ class DateTimeDurationSpec extends AnyWordSpec {
       assert(duration.to.isEqual(to.minusYears(1)))
     }
 
-    "be failed to generate with illegal arg" in {
+    "be failed to generate with illegal LocalDate" in {
       assertThrows[IllegalArgumentException](DateTimeDuration.fromLocalDate(dateFrom, dateTo.minusYears(2)))
     }
   }
