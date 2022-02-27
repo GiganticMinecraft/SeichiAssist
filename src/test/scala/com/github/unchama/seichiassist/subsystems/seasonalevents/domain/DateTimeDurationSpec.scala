@@ -5,39 +5,39 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.time.LocalDateTime
 
 class DateTimeDurationSpec extends AnyWordSpec {
-  private val from = LocalDateTime.of(2022, 1, 1, 4, 10)
-  private val to = LocalDateTime.of(2023, 1, 1, 4, 10)
-  private val dateFrom = from.toLocalDate
-  private val dateTo = to.toLocalDate
+  private val t = LocalDateTime.of(2022, 1, 1, 4, 10)
+  private val tPlusOneYear = t.plusYears(1)
+  private val dateFrom = t.toLocalDate
+  private val dateTo = tPlusOneYear.toLocalDate
 
   "DateTimeDuration" should {
     "be generated successfully" in {
-      val duration = DateTimeDuration(from, to)
-      assert(duration.from.isEqual(from))
-      assert(duration.to.isEqual(to))
+      val duration = DateTimeDuration(t, tPlusOneYear)
+      assert(duration.from.isEqual(t))
+      assert(duration.to.isEqual(tPlusOneYear))
     }
 
     "be generated successfully with the same LocalDateTime" in {
-      val localDateTime = from
+      val localDateTime = t
       val duration = DateTimeDuration(localDateTime, localDateTime)
       assert(duration.from.isEqual(localDateTime))
       assert(duration.to.isEqual(localDateTime))
     }
 
     "not be generated successfully with illegal LocalDateTime" in {
-      assertThrows[IllegalArgumentException](DateTimeDuration(from, to.minusYears(2)))
+      assertThrows[IllegalArgumentException](DateTimeDuration(t, tPlusOneYear.minusYears(2)))
     }
 
     "be generated successfully from LocalDate" in {
       val duration = DateTimeDuration.fromLocalDate(dateFrom, dateTo)
-      assert(duration.from.isEqual(from))
-      assert(duration.to.isEqual(to))
+      assert(duration.from.isEqual(t))
+      assert(duration.to.isEqual(tPlusOneYear))
     }
 
     "be generated successfully from the same LocalDate" in {
       val duration = DateTimeDuration.fromLocalDate(dateFrom, dateTo.minusYears(1))
-      assert(duration.from.isEqual(from))
-      assert(duration.to.isEqual(to.minusYears(1)))
+      assert(duration.from.isEqual(t))
+      assert(duration.to.isEqual(tPlusOneYear.minusYears(1)))
     }
 
     "not be generated successfully with illegal LocalDate" in {
@@ -46,28 +46,28 @@ class DateTimeDurationSpec extends AnyWordSpec {
   }
 
   "DateTimeDuration#contains" when {
-    val duration = DateTimeDuration(from, to)
+    val duration = DateTimeDuration(t, tPlusOneYear)
 
     "the same as from and to" should {
       "be true" in {
-        assert(duration.contains(from))
-        assert(duration.contains(to))
+        assert(duration.contains(t))
+        assert(duration.contains(tPlusOneYear))
       }
     }
     "shortly after from" should {
-      "be true" in assert(duration.contains(from.plusMinutes(1)))
+      "be true" in assert(duration.contains(t.plusMinutes(1)))
     }
 
     "before from" should {
-      "be false" in assert(!duration.contains(from.minusYears(1)))
+      "be false" in assert(!duration.contains(t.minusYears(1)))
     }
     "after to" should {
-      "be false" in assert(!duration.contains(to.plusYears(1)))
+      "be false" in assert(!duration.contains(tPlusOneYear.plusYears(1)))
     }
   }
 
   "DateTimeDuration#isEntirelyAfter" when {
-    val duration = DateTimeDuration(from, to)
+    val duration = DateTimeDuration(t, tPlusOneYear)
 
     "the same as from" should {
       "be true" in assert(duration.isEntirelyAfter(duration.from))
