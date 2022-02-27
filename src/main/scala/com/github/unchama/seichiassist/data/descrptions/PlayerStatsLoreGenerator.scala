@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiStarLevel}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
-import com.github.unchama.seichiassist.subsystems.ranking.domain.Ranking
+import com.github.unchama.seichiassist.subsystems.ranking.domain.{Ranking, RankingRecordWithPosition}
 import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
@@ -36,7 +36,7 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
       passiveSkillDescription(),
       List(totalBreakAmountDescription()),
       rankingDescription().toList,
-      rankingDiffDescription().toList,
+      rankingDiffDescription(),
       List(
         totalLoginTimeDescrpition(),
         totalLoginDaysDescrption(),
@@ -109,42 +109,35 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
   /**
    * 一つ前のランキングのプレイヤーとの整地量の差を表す説明文を返します.
    */
-  private def rankingDiffDescription(): Option[String] =
+  private def rankingDiffDescription(): List[String] =
     seichiRanking
       .positionAndRecordOf(targetPlayer.getName)
-      .flatMap { case (record, position) =>
-        val above = if (position > 1) {
-          val positionOneAbove = position - 1
-          val recordOneAbove = seichiRanking.recordsWithPositions(positionOneAbove - 1)._1
-          val difference =
-            SeichiExpAmount.orderedMonus.subtractTruncate(
-              recordOneAbove.value.expAmount,
-              record.value.expAmount
-            )
-          Some(
-            s"$AQUA${positionOneAbove}位(${recordOneAbove.playerName})との差：${difference.formatted}"
-          )
-        } else
-          None
+      .toList
+      .flatMap { case RankingRecordWithPosition(record, _) =>
+        import SeichiExpAmount._
+        import com.github.unchama.generic.algebra.typeclasses.OrderedMonus._
 
-        val below = if (position < seichiRanking.recordCount) {
-          val positionOneBelow = position + 1
-          val recordOneBelow = seichiRanking.recordsWithPositions(positionOneBelow - 1)._1
-          val difference = {
-            SeichiExpAmount.orderedMonus.subtractTruncate(
-              record.value.expAmount,
-              recordOneBelow.value.expAmount,
-            )
-          }
-          Some(
-            s"$AQUA${positionOneBelow}位(${recordOneBelow.playerName})との差：${difference.formatted}"
-          )
-        } else
-          None
+        val above = seichiRanking.worstRecordAbove(targetPlayer.getName).map { worstRecordAbovePlayer =>
+          val difference = worstRecordAbovePlayer.record.value.expAmount |-| record.value.expAmount
 
-        // FIXME: うまいやり方がありそう
-        val computed = Seq(above, below).foldLeft("")((s, o) => s + o.getOrElse(""))
-        Option.when(computed.nonEmpty)(computed)
+          //noinspection DuplicatedCode
+          val aboveRecordPosition = worstRecordAbovePlayer.positionInRanking
+          val aboveRecordPlayerName = worstRecordAbovePlayer.record.playerName
+
+          s"$AQUA${aboveRecordPosition}位($aboveRecordPlayerName)との差：${difference.formatted}"
+        }
+
+        val below = seichiRanking.bestRecordBelow(targetPlayer.getName).map { bestRecordBelowPlayer =>
+          val difference = record.value.expAmount |-| bestRecordBelowPlayer.record.value.expAmount
+
+          //noinspection DuplicatedCode
+          val belowRecordPosition = bestRecordBelowPlayer.positionInRanking
+          val belowRecordPlayerName = bestRecordBelowPlayer.record.playerName
+
+          s"$AQUA${belowRecordPosition}位($belowRecordPlayerName)との差：${difference.formatted}"
+        }
+
+        above.toList ++ below.toList
       }
 
   /**

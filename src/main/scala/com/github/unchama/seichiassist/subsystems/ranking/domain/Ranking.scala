@@ -22,7 +22,7 @@ class Ranking[R: Order: Monoid](records: Vector[RankingRecord[R]]) {
    * つまり、二つのレコード `r1` と `r2` があり、 `r1.value` と `r2.value` が[[Order]]により等しければ、
    * `r1` と `r2` の順位は同じになる。
    */
-  val recordsWithPositions: Vector[(RankingRecord[R], Int)] = Vector.from {
+  val recordsWithPositions: Vector[RankingRecordWithPosition[R]] = Vector.from {
     var positionOfPreviousRecord = 0
 
     for {
@@ -33,14 +33,41 @@ class Ranking[R: Order: Monoid](records: Vector[RankingRecord[R]]) {
         positionOfPreviousRecord = index + 1
       }
 
-      (sortedRecords(index), positionOfPreviousRecord)
+      RankingRecordWithPosition(sortedRecords(index), positionOfPreviousRecord)
     }
   }
 
-  def positionAndRecordOf(playerName: String): Option[(RankingRecord[R], Int)] =
-    recordsWithPositions
-      .find { case (record, _) => record.playerName == playerName }
+  /**
+   * `recordsWithPositions` のインデックスで、 `playerName` のレコードが格納されたもの。
+   * もしそのようなレコードが存在しなければ `None` が返される。
+   */
+  private def indexOfRecordOf(playerName: String): Option[Int] = {
+    val index = recordsWithPositions.indexWhere(_.record.playerName == playerName)
+
+    if (index == -1) None else Some(index)
+  }
+
+  def positionAndRecordOf(playerName: String): Option[RankingRecordWithPosition[R]] =
+    indexOfRecordOf(playerName).map(recordsWithPositions)
+
+  def bestRecordBelow(playerName: String): Option[RankingRecordWithPosition[R]] =
+    indexOfRecordOf(playerName).flatMap { recordIndex =>
+      // recordsWithPositionは降順ソートされているので、該当レコードよりも奥を切り出し、
+      // レコード値が異なるような一番手前のレコードを持ってくればよい
+      recordsWithPositions
+        .drop(recordIndex + 1)
+        .find(_.record.value neqv recordsWithPositions(recordIndex).record.value)
+    }
+
+  def worstRecordAbove(playerName: String): Option[RankingRecordWithPosition[R]] =
+    indexOfRecordOf(playerName).flatMap { recordIndex =>
+      // recordsWithPositionは降順ソートされているので、該当レコードよりも手前を切り出し、
+      // レコード値が異なるような一番奥のレコードを持ってくればよい
+      recordsWithPositions
+        .take(recordIndex)
+        .findLast(_.record.value neqv recordsWithPositions(recordIndex).record.value)
+    }
 
   def positionOf(playerName: String): Option[Int] =
-    positionAndRecordOf(playerName).map(_._2)
+    positionAndRecordOf(playerName).map(_.positionInRanking)
 }
