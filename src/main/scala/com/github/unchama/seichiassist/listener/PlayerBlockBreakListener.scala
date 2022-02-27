@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.effect.{Fiber, IO, SyncIO}
+import cats.effect.{Fiber, IO, Sync, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
@@ -238,10 +238,12 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
   def onPlayerBreakBlockFinally(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
     val block = event.getBlock
-    val amount =
-      SeichiExpAmount.ofNonNegative {
-        BreakUtil.blockCountWeight(event.getPlayer.getWorld) * BreakUtil.totalBreakCount(Seq(block.getType))
-      }
+    import PluginExecutionContexts.timer
+    val amount = SeichiExpAmount.ofNonNegative {
+      BreakUtil.blockCountWeight[IO](event.getPlayer.getWorld)
+        .map(multiplier => BreakUtil.totalBreakCount(Seq(block.getType)) * multiplier)
+        .unsafeRunSync()
+    }
 
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",

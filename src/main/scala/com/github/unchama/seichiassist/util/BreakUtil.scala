@@ -1,6 +1,8 @@
 package com.github.unchama.seichiassist.util
 
-import cats.effect.{IO, SyncIO}
+import cats.Functor
+import cats.effect.{IO, Sync, SyncIO}
+import cats.implicits._
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
@@ -13,6 +15,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
+import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.Block
@@ -21,6 +24,7 @@ import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Dye
 
+import java.time.{LocalDate, ZoneId}
 import java.util.Random
 import java.util.stream.IntStream
 
@@ -274,16 +278,20 @@ object BreakUtil {
   }
 
   /**
-   * world 内での整地量倍率を計算する。
    * TODO: これはビジネスロジックである。breakcountシステムによって管理されるべき。
+   * @param world 対象ワールド
+   * @return ワールドに対応する整地量の倍率を計算する作用
    */
-  def blockCountWeight(world: World): Double = {
-    val managedWorld = ManagedWorld.fromBukkitWorld(world)
-    val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-    val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
+  def blockCountWeight[F[_]: JavaTime: Functor](world: World): F[Double] =
+    JavaTime[F].getLocalDate(ZoneId.of("Asia/Tokyo" /* JST */)).map { date =>
+      val managedWorld = ManagedWorld.fromBukkitWorld(world)
+      val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
+      val isMonthlyPrizeDay = date.getDayOfMonth == 21
+      val monthlyPrize = if (isMonthlyPrizeDay) 1.75 else 1.0
+      val sw01Penalty = if (managedWorld.contains(ManagedWorld.WORLD_SW) && !isMonthlyPrizeDay) 0.8 else 1.0
 
-    seichiWorldFactor * sw01Penalty
-  }
+      seichiWorldFactor * sw01Penalty * monthlyPrize
+    }
 
   /**
    * マテリアルごとに倍率を掛けた整地量を計算する。
@@ -313,6 +321,7 @@ object BreakUtil {
                      shouldPlayBreakSound: Boolean,
                      toMaterial: Material = Material.AIR): IO[Unit] = {
 
+    import PluginExecutionContexts.timer
     for {
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
@@ -374,7 +383,7 @@ object BreakUtil {
 
       //プレイヤーの統計を増やす
       totalCount = totalBreakCount(targetBlocksInformation.map { case (_, m, _) => m })
-      blockCountWeight <- IO(blockCountWeight(player.getWorld))
+      blockCountWeight <- blockCountWeight[IO](player.getWorld)
       expIncrease = SeichiExpAmount.ofNonNegative(totalCount * blockCountWeight)
 
       _ <- SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, expIncrease).toIO
