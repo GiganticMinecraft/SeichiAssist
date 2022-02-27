@@ -43,8 +43,8 @@ object DateTimeDuration {
   /**
    * [[LocalDate]]から[[DateTimeDuration]]を生成する
    *
-   * @param from 期間の開始日を表す[[LocalDate]]
-   * @param to   期間の終了日を表す[[LocalDate]]
+   * @param from 期間の開始日
+   * @param to   期間の終了日
    * @return 受け取った`from`と`to`に[[REBOOT_TIME]]の時刻をつけた2つの[[LocalDateTime]]を持つ[[DateTimeDuration]]
    */
   def fromLocalDate(from: LocalDate, to: LocalDate): DateTimeDuration =
