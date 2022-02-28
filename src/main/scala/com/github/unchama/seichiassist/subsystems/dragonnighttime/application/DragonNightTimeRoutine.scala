@@ -4,7 +4,11 @@ import cats.effect.{Concurrent, Timer}
 import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingAmplifier, FastDiggingEffect, FastDiggingEffectCause}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{
+  FastDiggingAmplifier,
+  FastDiggingEffect,
+  FastDiggingEffectCause
+}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaMultiplier
 import com.github.unchama.util.time.LocalTimeUtil

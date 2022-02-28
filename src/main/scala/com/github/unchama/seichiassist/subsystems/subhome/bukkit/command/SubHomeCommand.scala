@@ -14,7 +14,11 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.{LocationCodec, TeleportEffect}
 import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
-import com.github.unchama.seichiassist.subsystems.subhome.{SubHomeAPI, SubHomeReadAPI, SubHomeWriteAPI}
+import com.github.unchama.seichiassist.subsystems.subhome.{
+  SubHomeAPI,
+  SubHomeReadAPI,
+  SubHomeWriteAPI
+}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._

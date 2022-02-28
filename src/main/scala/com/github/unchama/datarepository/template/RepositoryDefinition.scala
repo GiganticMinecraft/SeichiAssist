@@ -4,7 +4,10 @@ import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.{Applicative, Apply, Monad}
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
-import com.github.unchama.datarepository.template.initialization.{SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.initialization.{
+  SinglePhasedRepositoryInitialization,
+  TwoPhasedRepositoryInitialization
+}
 import com.github.unchama.minecraft.algebra.HasUuid
 
 import java.util.UUID

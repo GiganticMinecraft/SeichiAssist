@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application
 
 import cats.effect.ConcurrentEffect
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{
+  EffectListDiff,
+  FastDiggingEffectStatsSettings
+}
 import org.bukkit.ChatColor.{RED, RESET, WHITE, YELLOW}
 
 object EffectStatsNotification {

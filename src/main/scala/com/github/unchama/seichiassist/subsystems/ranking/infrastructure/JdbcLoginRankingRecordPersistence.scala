@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.ranking.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.LoginTime
-import com.github.unchama.seichiassist.subsystems.ranking.domain.{RankingRecord, RankingRecordPersistence}
+import com.github.unchama.seichiassist.subsystems.ranking.domain.{
+  RankingRecord,
+  RankingRecordPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 class JdbcLoginRankingRecordPersistence[F[_]: Sync]

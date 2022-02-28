@@ -1,7 +1,12 @@
 package com.github.unchama.itemmigration.service
 
 import cats.effect.Bracket
-import com.github.unchama.itemmigration.domain.{ItemMigrationLogger, ItemMigrationTarget, ItemMigrationVersionRepository, ItemMigrations}
+import com.github.unchama.itemmigration.domain.{
+  ItemMigrationLogger,
+  ItemMigrationTarget,
+  ItemMigrationVersionRepository,
+  ItemMigrations
+}
 
 case class ItemMigrationService[F[_], -T <: ItemMigrationTarget[F]](
   persistence: ItemMigrationVersionRepository[F, T],

@@ -1,6 +1,11 @@
 package com.github.unchama.seichiassist.infrastructure.scalikejdbc
 
-import scalikejdbc.{ConnectionPool, ConnectionPoolSettings, GlobalSettings, LoggingSQLAndTimeSettings}
+import scalikejdbc.{
+  ConnectionPool,
+  ConnectionPoolSettings,
+  GlobalSettings,
+  LoggingSQLAndTimeSettings
+}
 
 object ScalikeJDBCConfiguration {
 

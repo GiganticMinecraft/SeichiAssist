@@ -6,7 +6,10 @@ import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefi
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.effect.EffectExtra
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmountData, SeichiAmountDataPersistence}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.{
+  SeichiAmountData,
+  SeichiAmountDataPersistence
+}
 
 object BreakCountRepositoryDefinition {
 

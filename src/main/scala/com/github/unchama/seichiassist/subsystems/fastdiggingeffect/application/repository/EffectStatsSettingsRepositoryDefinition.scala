@@ -2,14 +2,21 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application
 
 import cats.effect.concurrent.{Deferred, Ref}
 import cats.effect.{ConcurrentEffect, Fiber, Sync}
-import com.github.unchama.datarepository.definitions.{FiberAdjoinedRepositoryDefinition, RefDictBackedRepositoryDefinition}
+import com.github.unchama.datarepository.definitions.{
+  FiberAdjoinedRepositoryDefinition,
+  RefDictBackedRepositoryDefinition
+}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.FastDiggingEffectList
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{
+  EffectListDiff,
+  FastDiggingEffectStatsSettings,
+  FastDiggingEffectStatsSettingsPersistence
+}
 import fs2.Pipe
 import io.chrisdavenport.cats.effect.time.JavaTime
 import io.chrisdavenport.log4cats.ErrorLogger

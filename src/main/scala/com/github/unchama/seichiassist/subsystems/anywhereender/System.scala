@@ -7,7 +7,10 @@ import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.anywhereender.bukkit.command.EnderChestCommand
-import com.github.unchama.seichiassist.subsystems.anywhereender.domain.{AccessDenialReason, AnywhereEnderAccessPermitted}
+import com.github.unchama.seichiassist.subsystems.anywhereender.domain.{
+  AccessDenialReason,
+  AnywhereEnderAccessPermitted
+}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import com.github.unchama.targetedeffect.player.PlayerEffects

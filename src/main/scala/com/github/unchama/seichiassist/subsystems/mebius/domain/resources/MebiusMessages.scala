@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.mebius.domain.resources
 
 import cats.data.NonEmptyList
-import com.github.unchama.seichiassist.subsystems.mebius.domain.message.{MebiusCombatMessage, MebiusPlayerMessage}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.message.{
+  MebiusCombatMessage,
+  MebiusPlayerMessage
+}
 import com.github.unchama.util.collection.RandomizedCollection
 
 object MebiusMessages {

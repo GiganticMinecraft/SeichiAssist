@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.discordnotification
 
 import cats.effect.{ContextShift, LiftIO, Sync}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.discordnotification.infrastructure.{DefaultDiscordNotificationSender, WebhookDiscordNotificationSender}
+import com.github.unchama.seichiassist.subsystems.discordnotification.infrastructure.{
+  DefaultDiscordNotificationSender,
+  WebhookDiscordNotificationSender
+}
 import io.chrisdavenport.log4cats.Logger
 
 trait System[F[_]] extends Subsystem[F] {

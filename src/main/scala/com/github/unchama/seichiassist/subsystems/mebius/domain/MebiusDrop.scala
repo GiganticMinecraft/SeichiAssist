@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.mebius.domain
 
 import cats.Apply
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{ChristmasMebius, MebiusProperty, NormalMebius}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
+  ChristmasMebius,
+  MebiusProperty,
+  NormalMebius
+}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.ChristmasEventsAPI
 import com.github.unchama.util.RandomEffect
 

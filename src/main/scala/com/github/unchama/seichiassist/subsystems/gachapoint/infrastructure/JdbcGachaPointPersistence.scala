@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.gachapoint.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{GachaPoint, GachaPointPersistence}
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{
+  GachaPoint,
+  GachaPointPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

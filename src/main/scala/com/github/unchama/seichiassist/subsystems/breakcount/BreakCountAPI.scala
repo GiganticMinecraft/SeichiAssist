@@ -6,8 +6,15 @@ import com.github.unchama.generic.Diff
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.IncrementSeichiExp
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiLevel, SeichiStarLevel}
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.{BatchedSeichiExpMap, SeichiAmountData}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiExpAmount,
+  SeichiLevel,
+  SeichiStarLevel
+}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.{
+  BatchedSeichiExpMap,
+  SeichiAmountData
+}
 
 import java.util.UUID
 import scala.concurrent.duration.FiniteDuration

@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.buildcount.application.action
 import cats.{Applicative, ~>}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildLevel}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
+  BuildAssistExpTable,
+  BuildLevel
+}
 import org.bukkit.ChatColor.GOLD
 
 /**

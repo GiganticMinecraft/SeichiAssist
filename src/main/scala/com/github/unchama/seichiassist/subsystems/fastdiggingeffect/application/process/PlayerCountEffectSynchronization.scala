@@ -6,7 +6,11 @@ import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingAmplifier, FastDiggingEffect, FastDiggingEffectCause}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{
+  FastDiggingAmplifier,
+  FastDiggingEffect,
+  FastDiggingEffectCause
+}
 
 object PlayerCountEffectSynchronization {
 

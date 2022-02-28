@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.manabar.application
 
 import cats.Applicative
 import com.github.unchama.minecraft.objects.MinecraftBossBar
-import com.github.unchama.seichiassist.subsystems.mana.domain.{LevelCappedManaAmount, ManaAmount}
+import com.github.unchama.seichiassist.subsystems.mana.domain.{
+  LevelCappedManaAmount,
+  ManaAmount
+}
 import org.bukkit.ChatColor.{AQUA, BOLD}
 
 import java.text.DecimalFormat

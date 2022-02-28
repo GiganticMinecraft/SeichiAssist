@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.menus
 import cats.effect.IO
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect}
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, action}
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.SeichiAssist

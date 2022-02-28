@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.database.manipulators
 
 import cats.effect.IO
 import com.github.unchama.generic.effect.SyncExtra
-import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulator.{Obtained, PremiumPointTransaction, Used}
+import com.github.unchama.seichiassist.database.manipulators.DonateDataManipulator.{
+  Obtained,
+  PremiumPointTransaction,
+  Used
+}
 import com.github.unchama.seichiassist.database.{DatabaseConstants, DatabaseGateway}
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillPremiumEffect
 import com.github.unchama.util.ActionStatus

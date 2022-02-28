@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement.service
 
 import cats.FlatMap
-import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{AchievementOperation, BookedAchievementPersistenceRepository}
+import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{
+  AchievementOperation,
+  BookedAchievementPersistenceRepository
+}
 
 import java.util.UUID
 

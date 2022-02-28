@@ -9,8 +9,14 @@ import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider.Messages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusForcedMaterial, MebiusProperty}
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
+  MebiusForcedMaterial,
+  MebiusProperty
+}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeech,
+  MebiusSpeechStrength
+}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}

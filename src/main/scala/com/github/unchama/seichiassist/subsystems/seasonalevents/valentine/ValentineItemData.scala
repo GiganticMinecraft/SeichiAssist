@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{END_DATE, EVENT_YEAR}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{
+  END_DATE,
+  EVENT_YEAR
+}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack

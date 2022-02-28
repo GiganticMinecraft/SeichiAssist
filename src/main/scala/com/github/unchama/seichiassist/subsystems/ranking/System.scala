@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.ranking
 import cats.effect.{Concurrent, Timer}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import com.github.unchama.seichiassist.subsystems.ranking.api.{AssortedRankingApi, RankingProvider}
+import com.github.unchama.seichiassist.subsystems.ranking.api.{
+  AssortedRankingApi,
+  RankingProvider
+}
 import com.github.unchama.seichiassist.subsystems.ranking.application.GenericRefreshingRankingCache
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.ranking.infrastructure._

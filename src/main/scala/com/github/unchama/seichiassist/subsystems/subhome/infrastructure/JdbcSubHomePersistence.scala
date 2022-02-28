@@ -3,7 +3,12 @@ package com.github.unchama.seichiassist.subsystems.subhome.infrastructure
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId, SubHomeLocation, SubHomePersistence}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{
+  SubHome,
+  SubHomeId,
+  SubHomeLocation,
+  SubHomePersistence
+}
 import scalikejdbc._
 
 import java.util.UUID

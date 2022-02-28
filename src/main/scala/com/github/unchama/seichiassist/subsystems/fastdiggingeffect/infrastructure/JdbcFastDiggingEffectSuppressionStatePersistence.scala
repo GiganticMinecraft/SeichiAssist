@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastruct
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState.EnabledWithLimit
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectSuppressionState, FastDiggingEffectSuppressionStatePersistence}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{
+  FastDiggingEffectSuppressionState,
+  FastDiggingEffectSuppressionStatePersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

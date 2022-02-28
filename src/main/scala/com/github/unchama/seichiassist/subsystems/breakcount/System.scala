@@ -10,9 +10,15 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.application.BreakCountRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.{ClassifyPlayerWorld, IncrementSeichiExp}
+import com.github.unchama.seichiassist.subsystems.breakcount.application.actions.{
+  ClassifyPlayerWorld,
+  IncrementSeichiExp
+}
 import com.github.unchama.seichiassist.subsystems.breakcount.bukkit.actions.SyncClassifyBukkitPlayerWorld
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmountData, SeichiAmountDataPersistence}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.{
+  SeichiAmountData,
+  SeichiAmountDataPersistence
+}
 import com.github.unchama.seichiassist.subsystems.breakcount.infrastructure.JdbcSeichiAmountDataPersistence
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player

@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.mana.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.mana.domain.{ManaAmount, ManaAmountPersistence}
+import com.github.unchama.seichiassist.subsystems.mana.domain.{
+  ManaAmount,
+  ManaAmountPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

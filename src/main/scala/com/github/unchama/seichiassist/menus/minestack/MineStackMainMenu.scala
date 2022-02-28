@@ -11,7 +11,14 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
-import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{AGRICULTURAL, BUILDING, GACHA_PRIZES, MOB_DROP, ORES, REDSTONE_AND_TRANSPORTATION}
+import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{
+  AGRICULTURAL,
+  BUILDING,
+  GACHA_PRIZES,
+  MOB_DROP,
+  ORES,
+  REDSTONE_AND_TRANSPORTATION
+}
 import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.entity.Player

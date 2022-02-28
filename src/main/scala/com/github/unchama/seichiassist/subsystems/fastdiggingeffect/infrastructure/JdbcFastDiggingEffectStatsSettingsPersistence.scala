@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{
+  FastDiggingEffectStatsSettings,
+  FastDiggingEffectStatsSettingsPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

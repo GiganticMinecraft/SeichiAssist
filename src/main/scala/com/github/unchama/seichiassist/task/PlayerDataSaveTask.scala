@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.task
 import cats.Monad
 import cats.effect.Sync
 import com.github.unchama.seichiassist.data.player.{NicknameStyle, PlayerData}
-import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, UnlockableActiveSkillEffect}
+import com.github.unchama.seichiassist.seichiskill.effect.{
+  ActiveSkillEffect,
+  UnlockableActiveSkillEffect
+}
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._

@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{AchievementOperation, BookedAchievementPersistenceRepository}
+import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{
+  AchievementOperation,
+  BookedAchievementPersistenceRepository
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

@@ -7,7 +7,10 @@ import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.MebiusDrop
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeech,
+  MebiusSpeechStrength
+}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.ChristmasEventsAPI
 import com.github.unchama.seichiassist.util.Util

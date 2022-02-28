@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
+import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{
+  BreakCountBarVisibility,
+  BreakCountBarVisibilityPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

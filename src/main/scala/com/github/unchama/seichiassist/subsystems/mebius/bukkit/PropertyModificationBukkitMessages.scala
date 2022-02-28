@@ -1,8 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.mebius.bukkit
 
-import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.{BukkitMebiusAppearanceMaterialCodec, BukkitMebiusItemStackCodec}
+import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.{
+  BukkitMebiusAppearanceMaterialCodec,
+  BukkitMebiusItemStackCodec
+}
 import com.github.unchama.seichiassist.subsystems.mebius.domain.message.PropertyModificationMessages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusEnchantment, MebiusProperty}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
+  MebiusEnchantment,
+  MebiusProperty
+}
 import org.bukkit.ChatColor._
 
 object PropertyModificationBukkitMessages extends PropertyModificationMessages {

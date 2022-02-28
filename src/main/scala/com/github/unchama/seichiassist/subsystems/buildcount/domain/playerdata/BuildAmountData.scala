@@ -2,7 +2,12 @@ package com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata
 
 import cats.Order
 import cats.kernel.Monoid
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{BuildAssistExpTable, BuildExpAmount, BuildLevel, BuildLevelProgress}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
+  BuildAssistExpTable,
+  BuildExpAmount,
+  BuildLevel,
+  BuildLevelProgress
+}
 
 /**
  * BuildAssistが管理する建築量データ。

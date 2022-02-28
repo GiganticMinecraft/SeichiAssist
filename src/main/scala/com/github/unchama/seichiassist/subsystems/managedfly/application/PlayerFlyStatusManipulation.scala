@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{IdleStatus, PlayerFlyStatus, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
+  IdleStatus,
+  PlayerFlyStatus,
+  RemainingFlyDuration
+}
 
 /**
  * プレーヤーの飛行状態に`F`の文脈で干渉する手段を与える型クラスインスタンスのtrait。

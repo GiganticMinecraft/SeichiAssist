@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.applica
 
 import cats.effect.concurrent.Deferred
 import cats.effect.{ConcurrentEffect, Fiber, Sync}
-import com.github.unchama.datarepository.definitions.{FiberAdjoinedRepositoryDefinition, MutexRepositoryDefinition, RefDictBackedRepositoryDefinition}
+import com.github.unchama.datarepository.definitions.{
+  FiberAdjoinedRepositoryDefinition,
+  MutexRepositoryDefinition,
+  RefDictBackedRepositoryDefinition
+}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.generic.effect.concurrent.Mutex
@@ -10,8 +14,14 @@ import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.generic.{ContextCoercion, Diff}
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSizeTable}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{
+  CreateInventory,
+  InteractInventory
+}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{
+  PocketInventoryPersistence,
+  PocketSizeTable
+}
 import io.chrisdavenport.log4cats.ErrorLogger
 
 object PocketInventoryRepositoryDefinition {

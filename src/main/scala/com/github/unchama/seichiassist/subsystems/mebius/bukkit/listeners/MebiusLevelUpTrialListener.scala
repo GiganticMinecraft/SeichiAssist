@@ -7,7 +7,10 @@ import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeech,
+  MebiusSpeechStrength
+}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.event.block.BlockBreakEvent

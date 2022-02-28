@@ -1,7 +1,14 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.Halloween.{END_DATE, blogArticleUrl, isInEvent}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData.{isHalloweenHoe, isHalloweenPotion}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.Halloween.{
+  END_DATE,
+  blogArticleUrl,
+  isInEvent
+}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData.{
+  isHalloweenHoe,
+  isHalloweenPotion
+}
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionMember
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Material

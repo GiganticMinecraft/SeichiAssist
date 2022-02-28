@@ -7,7 +7,10 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.GiftItemInterpreter
-import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{Gift, GiftInterpreter}
+import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
+  Gift,
+  GiftInterpreter
+}
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 

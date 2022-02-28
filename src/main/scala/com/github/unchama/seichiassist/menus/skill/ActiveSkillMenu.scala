@@ -5,7 +5,12 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.generic.effect.concurrent.TryableFiber
-import com.github.unchama.itemstackbuilder.{AbstractItemStackBuilder, IconItemStackBuilder, SkullItemStackBuilder, TippedArrowItemStackBuilder}
+import com.github.unchama.itemstackbuilder.{
+  AbstractItemStackBuilder,
+  IconItemStackBuilder,
+  SkullItemStackBuilder,
+  TippedArrowItemStackBuilder
+}
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, ReloadingButton}
@@ -44,7 +49,10 @@ object ActiveSkillMenu extends Menu {
   private case object Selected extends SkillSelectionState
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, layoutPreparationContext}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+    asyncShift,
+    layoutPreparationContext
+  }
 
   class Environment(
     implicit val breakCountApi: BreakCountAPI[IO, SyncIO, Player],

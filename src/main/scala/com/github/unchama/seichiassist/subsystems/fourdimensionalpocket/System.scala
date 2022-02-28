@@ -11,11 +11,23 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.{FourDimensionalPocketCommand, OpenPocketCommand}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.{
+  FourDimensionalPocketCommand,
+  OpenPocketCommand
+}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{
+  CreateBukkitInventory,
+  InteractBukkitInventory
+}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{
+  CreateInventory,
+  InteractInventory
+}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{
+  PocketInventoryPersistence,
+  PocketSize
+}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.Sound

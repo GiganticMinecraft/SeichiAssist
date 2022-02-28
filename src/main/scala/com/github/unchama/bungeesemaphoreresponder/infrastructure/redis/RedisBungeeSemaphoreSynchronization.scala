@@ -5,7 +5,11 @@ import cats.effect.{ContextShift, Effect, IO}
 import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerName
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
-import com.github.unchama.bungeesemaphoreresponder.infrastructure.redis.SignalFormat.{BungeeSemaphoreMessage, DataSaveFailed, ReleaseDataLock}
+import com.github.unchama.bungeesemaphoreresponder.infrastructure.redis.SignalFormat.{
+  BungeeSemaphoreMessage,
+  DataSaveFailed,
+  ReleaseDataLock
+}
 
 class RedisBungeeSemaphoreSynchronization[F[_]: Effect](
   implicit publishingContext: ContextShift[IO],

@@ -11,7 +11,12 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, TargetedEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{
+  DeferredEffect,
+  SequentialEffect,
+  TargetedEffect,
+  UnfocusedEffect
+}
 import com.github.unchama.{menuinventory, targetedeffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -19,7 +24,10 @@ import org.bukkit.{Material, Sound}
 
 object BlockPlacementSkillMenu extends Menu {
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, onMainThread}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+    asyncShift,
+    onMainThread
+  }
   import menuinventory.syntax._
 
   class Environment(implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])

@@ -7,7 +7,11 @@ import com.github.unchama.seichiassist.SeichiAssist.Scopes.globalChatInterceptio
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.command.SubHomeCommand
 import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
-import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId, SubHomeLocation}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{
+  SubHome,
+  SubHomeId,
+  SubHomeLocation
+}
 import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.JdbcSubHomePersistence
 import org.bukkit.command.TabExecutor
 

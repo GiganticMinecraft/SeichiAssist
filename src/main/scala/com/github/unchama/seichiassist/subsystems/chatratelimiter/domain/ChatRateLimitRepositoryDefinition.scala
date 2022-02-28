@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.chatratelimiter.domain
 import cats.effect.concurrent.Ref
 import cats.effect.{Sync, Timer}
 import cats.implicits._
-import com.github.unchama.datarepository.template.RepositoryDefinition.Phased.{SinglePhased, TwoPhased}
+import com.github.unchama.datarepository.template.RepositoryDefinition.Phased.{
+  SinglePhased,
+  TwoPhased
+}
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
 import com.github.unchama.datarepository.template.initialization.TwoPhasedRepositoryInitialization
 import com.github.unchama.generic.ratelimiting.{FixedWindowRateLimiter, RateLimiter}

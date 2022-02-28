@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.mana.domain
 
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiLevel, SeichiLevelTable}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiLevel,
+  SeichiLevelTable
+}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks

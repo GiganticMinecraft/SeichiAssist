@@ -1,14 +1,28 @@
 package com.github.unchama.seichiassist
 
-import com.github.unchama.bungeesemaphoreresponder.{RedisConnectionSettings, Configuration => BungeeSemaphoreResponderConfiguration}
+import com.github.unchama.bungeesemaphoreresponder.{
+  RedisConnectionSettings,
+  Configuration => BungeeSemaphoreResponderConfiguration
+}
 import com.github.unchama.seichiassist.domain.configuration.RedisBungeeRedisConfiguration
-import com.github.unchama.seichiassist.subsystems.anywhereender.{SystemConfiguration => AnywhereEnderConfiguration}
-import com.github.unchama.seichiassist.subsystems.autosave.application.{SystemConfiguration => AutoSaveConfiguration}
+import com.github.unchama.seichiassist.subsystems.anywhereender.{
+  SystemConfiguration => AnywhereEnderConfiguration
+}
+import com.github.unchama.seichiassist.subsystems.autosave.application.{
+  SystemConfiguration => AutoSaveConfiguration
+}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
-import com.github.unchama.seichiassist.subsystems.buildcount.application.{BuildExpMultiplier, Configuration => BuildCountConfiguration}
+import com.github.unchama.seichiassist.subsystems.buildcount.application.{
+  BuildExpMultiplier,
+  Configuration => BuildCountConfiguration
+}
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
-import com.github.unchama.seichiassist.subsystems.discordnotification.{SystemConfiguration => DiscordNotificationConfiguration}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{Configuration => FastDiggingEffectConfiguration}
+import com.github.unchama.seichiassist.subsystems.discordnotification.{
+  SystemConfiguration => DiscordNotificationConfiguration
+}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.{
+  Configuration => FastDiggingEffectConfiguration
+}
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.java.JavaPlugin

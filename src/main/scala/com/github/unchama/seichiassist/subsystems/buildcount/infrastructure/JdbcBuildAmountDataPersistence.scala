@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.buildcount.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
-import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.{BuildAmountData, BuildAmountDataPersistence}
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.{
+  BuildAmountData,
+  BuildAmountDataPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

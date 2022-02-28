@@ -5,7 +5,11 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect,
+  LeftClickButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
 import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
@@ -14,7 +18,12 @@ import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
 import com.github.unchama.seichiassist.menus.ranking.RankingRootMenu
 import com.github.unchama.seichiassist.menus.skill.{ActiveSkillMenu, PassiveSkillMenu}
-import com.github.unchama.seichiassist.menus.{CommonButtons, HomeMenu, RegionMenu, ServerSwitchMenu}
+import com.github.unchama.seichiassist.menus.{
+  CommonButtons,
+  HomeMenu,
+  RegionMenu,
+  ServerSwitchMenu
+}
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.anywhereender.domain.AccessDenialReason
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
@@ -23,7 +32,10 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 import com.github.unchama.seichiassist.subsystems.breakcountbar.BreakCountBarAPI
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.FastDiggingEffectSuppressionState
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{FastDiggingEffectApi, FastDiggingSettingsApi}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
+  FastDiggingEffectApi,
+  FastDiggingSettingsApi
+}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
@@ -51,7 +63,10 @@ import org.bukkit.{Material, Sound}
 object FirstPage extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+    layoutPreparationContext,
+    onMainThread
+  }
   import com.github.unchama.targetedeffect.player.PlayerEffects._
   import eu.timepit.refined.auto._
 

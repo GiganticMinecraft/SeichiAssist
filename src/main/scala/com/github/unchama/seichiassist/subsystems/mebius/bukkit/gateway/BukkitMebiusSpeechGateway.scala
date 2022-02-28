@@ -2,10 +2,18 @@ package com.github.unchama.seichiassist.subsystems.mebius.bukkit.gateway
 
 import cats.effect.{IO, SyncIO, Timer}
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusProperty
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeechGateway, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeechGateway,
+  MebiusSpeechStrength
+}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.targetedeffect.{DelayEffect, RepeatedEffect, SequentialEffect, TargetedEffect}
+import com.github.unchama.targetedeffect.{
+  DelayEffect,
+  RepeatedEffect,
+  SequentialEffect,
+  TargetedEffect
+}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player

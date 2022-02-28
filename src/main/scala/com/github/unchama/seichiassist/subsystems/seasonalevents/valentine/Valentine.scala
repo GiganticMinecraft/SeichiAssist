@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{validateItemDropRate, validateUrl}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{
+  validateItemDropRate,
+  validateUrl
+}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.DateTimeDuration
 
 import java.time.{LocalDate, LocalDateTime}

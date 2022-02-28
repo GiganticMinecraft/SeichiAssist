@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.ranking.infrastructure
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
-import com.github.unchama.seichiassist.subsystems.ranking.domain.{RankingRecord, RankingRecordPersistence}
+import com.github.unchama.seichiassist.subsystems.ranking.domain.{
+  RankingRecord,
+  RankingRecordPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 class JdbcBuildRankingRecordPersistence[F[_]: Sync]

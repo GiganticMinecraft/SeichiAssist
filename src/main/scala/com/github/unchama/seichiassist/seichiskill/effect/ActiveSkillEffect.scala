@@ -7,7 +7,11 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.data.{AxisAlignedCuboid, XYZTuple}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{DualBreak, TrialBreak}
-import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{Blizzard, Explosion, Meteor}
+import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillNormalEffect.{
+  Blizzard,
+  Explosion,
+  Meteor
+}
 import com.github.unchama.seichiassist.seichiskill.effect.arrow.ArrowEffects
 import com.github.unchama.seichiassist.seichiskill.{ActiveSkill, ActiveSkillRange}
 import com.github.unchama.seichiassist.util.BreakUtil

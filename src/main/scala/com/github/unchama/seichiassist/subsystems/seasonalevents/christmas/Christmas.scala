@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{dateRangeAsSequence, validateItemDropRate, validateUrl}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{
+  dateRangeAsSequence,
+  validateItemDropRate,
+  validateUrl
+}
 
 import java.time.LocalDate
 

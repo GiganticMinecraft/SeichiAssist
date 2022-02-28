@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.repositories
 
 import cats.effect.{ExitCase, Resource, Sync}
-import com.github.unchama.itemmigration.domain.{ItemMigrationVersionNumber, ItemMigrationVersionRepository}
+import com.github.unchama.itemmigration.domain.{
+  ItemMigrationVersionNumber,
+  ItemMigrationVersionRepository
+}
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets.SeichiAssistPersistedItems
 import scalikejdbc._
 

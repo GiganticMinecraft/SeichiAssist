@@ -10,7 +10,10 @@ import com.github.unchama.itemmigration.bukkit.controllers.player.PlayerItemMigr
 import com.github.unchama.itemmigration.service.ItemMigrationService
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.itemmigration.controllers.{DatabaseMigrationController, WorldMigrationController}
+import com.github.unchama.seichiassist.subsystems.itemmigration.controllers.{
+  DatabaseMigrationController,
+  WorldMigrationController
+}
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.loggers.PlayerItemsMigrationSlf4jLogger
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository

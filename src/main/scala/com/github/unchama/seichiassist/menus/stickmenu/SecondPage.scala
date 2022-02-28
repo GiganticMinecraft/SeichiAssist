@@ -5,10 +5,18 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect,
+  LeftClickButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{
+  MuteMessageAndSound,
+  ReceiveMessageAndSound,
+  ReceiveMessageOnly
+}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.anniversaryPlayerHead
@@ -20,7 +28,11 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect, PlayerEffects}
+import com.github.unchama.targetedeffect.player.{
+  CommandEffect,
+  FocusedSoundEffect,
+  PlayerEffects
+}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta

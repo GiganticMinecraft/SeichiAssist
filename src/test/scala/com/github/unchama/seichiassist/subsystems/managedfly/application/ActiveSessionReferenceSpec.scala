@@ -1,8 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.effect.{SyncIO, Timer}
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
-import com.github.unchama.testutil.concurrent.tests.{ConcurrentEffectTest, TaskDiscreteEventually}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
+  Flying,
+  NotFlying,
+  RemainingFlyDuration
+}
+import com.github.unchama.testutil.concurrent.tests.{
+  ConcurrentEffectTest,
+  TaskDiscreteEventually
+}
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.catnap.SchedulerEffect
 import monix.eval.Task

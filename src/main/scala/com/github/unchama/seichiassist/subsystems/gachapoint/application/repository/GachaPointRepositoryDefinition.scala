@@ -7,8 +7,14 @@ import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefi
 import com.github.unchama.datarepository.template._
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.algebra.HasUuid
-import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{GachaPoint, GachaPointPersistence}
-import com.github.unchama.seichiassist.subsystems.gachapoint.domain.{BatchUsageSemaphore, GrantGachaTicketToAPlayer}
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.gachapoint.{
+  GachaPoint,
+  GachaPointPersistence
+}
+import com.github.unchama.seichiassist.subsystems.gachapoint.domain.{
+  BatchUsageSemaphore,
+  GrantGachaTicketToAPlayer
+}
 
 object GachaPointRepositoryDefinition {
 

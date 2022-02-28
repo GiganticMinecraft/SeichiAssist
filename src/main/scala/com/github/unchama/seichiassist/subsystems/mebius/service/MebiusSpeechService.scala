@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.subsystems.mebius.service
 
 import cats.Monad
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.MebiusProperty
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechBlockageState, MebiusSpeechGateway}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeech,
+  MebiusSpeechBlockageState,
+  MebiusSpeechGateway
+}
 
 class MebiusSpeechService[F[_]: Monad](
   gateway: MebiusSpeechGateway[F],

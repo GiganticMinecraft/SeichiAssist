@@ -3,7 +3,10 @@ package com.github.unchama.seichiassist.subsystems.breakcountbar.application
 import cats.Applicative
 import com.github.unchama.minecraft.objects.MinecraftBossBar
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiStarLevel}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiExpAmount,
+  SeichiStarLevel
+}
 import org.bukkit.ChatColor.{BOLD, GOLD}
 
 import java.text.DecimalFormat

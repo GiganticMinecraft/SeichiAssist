@@ -9,7 +9,12 @@ import com.github.unchama.itemmigration.service.ItemMigrationService
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
-import org.bukkit.event.player.{PlayerDropItemEvent, PlayerEvent, PlayerItemConsumeEvent, PlayerJoinEvent}
+import org.bukkit.event.player.{
+  PlayerDropItemEvent,
+  PlayerEvent,
+  PlayerItemConsumeEvent,
+  PlayerJoinEvent
+}
 import org.bukkit.event.{Cancellable, EventHandler, EventPriority, Listener}
 
 /**

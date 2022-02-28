@@ -9,20 +9,46 @@ import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.effect.stream.StreamExtra
-import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread, SendMinecraftMessage}
+import com.github.unchama.minecraft.actions.{
+  GetConnectedPlayers,
+  OnMinecraftServerThread,
+  SendMinecraftMessage
+}
 import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage
 import com.github.unchama.seichiassist.domain.actions.GetNetworkConnectionCount
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.Configuration
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process.{BreakCountEffectSynchronization, EffectStatsNotification, PlayerCountEffectSynchronization, SynchronizationProcess}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{EffectListRepositoryDefinitions, EffectStatsSettingsRepositoryDefinition, SuppressionSettingsRepositoryDefinition}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.process.{
+  BreakCountEffectSynchronization,
+  EffectStatsNotification,
+  PlayerCountEffectSynchronization,
+  SynchronizationProcess
+}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.application.repository.{
+  EffectListRepositoryDefinitions,
+  EffectStatsSettingsRepositoryDefinition,
+  SuppressionSettingsRepositoryDefinition
+}
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.bukkit.actions.GrantBukkitFastDiggingEffect
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actions.GrantFastDiggingEffect
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingEffect, FastDiggingEffectList}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{FastDiggingEffectSuppressionState, FastDiggingEffectSuppressionStatePersistence}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{EffectListDiff, FastDiggingEffectStatsSettings, FastDiggingEffectStatsSettingsPersistence}
-import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{JdbcFastDiggingEffectStatsSettingsPersistence, JdbcFastDiggingEffectSuppressionStatePersistence}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{
+  FastDiggingEffect,
+  FastDiggingEffectList
+}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.settings.{
+  FastDiggingEffectSuppressionState,
+  FastDiggingEffectSuppressionStatePersistence
+}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stats.{
+  EffectListDiff,
+  FastDiggingEffectStatsSettings,
+  FastDiggingEffectStatsSettingsPersistence
+}
+import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.infrastructure.{
+  JdbcFastDiggingEffectStatsSettingsPersistence,
+  JdbcFastDiggingEffectSuppressionStatePersistence
+}
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

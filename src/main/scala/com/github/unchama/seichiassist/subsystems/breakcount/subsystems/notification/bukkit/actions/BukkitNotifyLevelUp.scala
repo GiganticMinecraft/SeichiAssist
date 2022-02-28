@@ -4,7 +4,10 @@ import cats.Applicative
 import cats.effect.{Sync, SyncIO}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiLevel, SeichiStarLevel}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiLevel,
+  SeichiStarLevel
+}
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.util.Util
 import org.bukkit.ChatColor.GOLD

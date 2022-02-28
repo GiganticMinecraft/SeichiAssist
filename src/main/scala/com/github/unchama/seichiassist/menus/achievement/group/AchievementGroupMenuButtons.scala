@@ -8,8 +8,17 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.achievement.NicknameMapping.NicknameCombination
-import com.github.unchama.seichiassist.achievement.SeichiAchievement.{AutoUnlocked, Hidden, ManuallyUnlocked, Normal}
-import com.github.unchama.seichiassist.achievement.{AchievementConditions, NicknameMapping, SeichiAchievement}
+import com.github.unchama.seichiassist.achievement.SeichiAchievement.{
+  AutoUnlocked,
+  Hidden,
+  ManuallyUnlocked,
+  Normal
+}
+import com.github.unchama.seichiassist.achievement.{
+  AchievementConditions,
+  NicknameMapping,
+  SeichiAchievement
+}
 import com.github.unchama.seichiassist.menus.ColorScheme
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -152,7 +161,10 @@ object AchievementGroupMenuButtons {
     )
   )
 
-  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{layoutPreparationContext, onMainThread}
+  import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+    layoutPreparationContext,
+    onMainThread
+  }
 
   def entryComputationFor(viewer: Player): GroupMenuEntry => IO[Button] = {
     case AchievementEntry(achievement) =>

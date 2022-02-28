@@ -7,7 +7,11 @@ import cats.implicits._
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.Parsers
-import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor, TraverseExecutor}
+import com.github.unchama.contextualexecutor.executors.{
+  BranchedExecutor,
+  EchoExecutor,
+  TraverseExecutor
+}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName

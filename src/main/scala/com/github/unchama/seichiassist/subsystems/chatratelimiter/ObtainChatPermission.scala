@@ -4,7 +4,10 @@ import cats.Monad
 import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
 import com.github.unchama.generic.ratelimiting.RateLimiter
-import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.{ChatCount, ChatPermissionRequestResult}
+import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.{
+  ChatCount,
+  ChatPermissionRequestResult
+}
 import org.bukkit.entity.Player
 
 trait ObtainChatPermission[F[_], Player] {

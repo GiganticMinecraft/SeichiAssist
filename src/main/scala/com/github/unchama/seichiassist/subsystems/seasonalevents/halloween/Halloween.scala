@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{dateRangeAsSequence, validateUrl}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.{
+  dateRangeAsSequence,
+  validateUrl
+}
 
 import java.time.LocalDate
 

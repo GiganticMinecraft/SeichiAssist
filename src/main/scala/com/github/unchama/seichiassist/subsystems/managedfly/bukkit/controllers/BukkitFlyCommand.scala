@@ -6,8 +6,15 @@ import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference}
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, NotFlying, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{
+  ActiveSessionFactory,
+  ActiveSessionReference
+}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
+  Flying,
+  NotFlying,
+  RemainingFlyDuration
+}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._

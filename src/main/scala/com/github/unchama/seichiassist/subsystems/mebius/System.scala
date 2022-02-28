@@ -2,18 +2,27 @@ package com.github.unchama.seichiassist.subsystems.mebius
 
 import cats.effect.{ContextShift, IO, Sync, SyncEffect, SyncIO, Timer}
 import com.github.unchama.concurrent.RepeatingTaskContext
-import com.github.unchama.datarepository.bukkit.player.{BukkitRepositoryControls, PlayerDataRepository}
+import com.github.unchama.datarepository.bukkit.player.{
+  BukkitRepositoryControls,
+  PlayerDataRepository
+}
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.mebius.application.repository.{MebiusSpeechRoutineFiberRepositoryDefinitions, SpeechServiceRepositoryDefinitions}
+import com.github.unchama.seichiassist.subsystems.mebius.application.repository.{
+  MebiusSpeechRoutineFiberRepositoryDefinitions,
+  SpeechServiceRepositoryDefinitions
+}
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.PropertyModificationBukkitMessages
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.command.MebiusCommandExecutorProvider
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.gateway.BukkitMebiusSpeechGateway
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.listeners._
 import com.github.unchama.seichiassist.subsystems.mebius.domain.message.PropertyModificationMessages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeechBlockageState, MebiusSpeechGateway}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeechBlockageState,
+  MebiusSpeechGateway
+}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
 import com.github.unchama.util.RandomEffect

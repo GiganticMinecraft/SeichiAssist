@@ -5,8 +5,15 @@ import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefi
 import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.minecraft.algebra.HasUuid
-import com.github.unchama.seichiassist.subsystems.managedfly.application.{ActiveSessionFactory, ActiveSessionReference, FlyDurationPersistenceRepository}
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{PlayerFlyStatus, RemainingFlyDuration}
+import com.github.unchama.seichiassist.subsystems.managedfly.application.{
+  ActiveSessionFactory,
+  ActiveSessionReference,
+  FlyDurationPersistenceRepository
+}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
+  PlayerFlyStatus,
+  RemainingFlyDuration
+}
 
 object ActiveSessionReferenceRepositoryDefinition {
 

@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.mana.domain
 
 import com.github.unchama.generic.CachedFunction
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiLevel, SeichiLevelTable}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiLevel,
+  SeichiLevelTable
+}
 
 object ManaAmountCap {
 

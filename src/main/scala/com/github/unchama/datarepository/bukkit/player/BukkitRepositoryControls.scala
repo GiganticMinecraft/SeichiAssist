@@ -5,7 +5,11 @@ import cats.{Monad, ~>}
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
 import com.github.unchama.datarepository.template._
 import com.github.unchama.datarepository.template.finalization.RepositoryFinalization
-import com.github.unchama.datarepository.template.initialization.{PrefetchResult, SinglePhasedRepositoryInitialization, TwoPhasedRepositoryInitialization}
+import com.github.unchama.datarepository.template.initialization.{
+  PrefetchResult,
+  SinglePhasedRepositoryInitialization,
+  TwoPhasedRepositoryInitialization
+}
 import com.github.unchama.generic.ContextCoercion
 import org.bukkit.entity.Player
 import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerJoinEvent}

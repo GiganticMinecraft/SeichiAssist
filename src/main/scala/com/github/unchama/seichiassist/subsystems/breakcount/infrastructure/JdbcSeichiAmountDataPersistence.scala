@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.breakcount.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.{SeichiAmountData, SeichiAmountDataPersistence}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.{
+  SeichiAmountData,
+  SeichiAmountDataPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
