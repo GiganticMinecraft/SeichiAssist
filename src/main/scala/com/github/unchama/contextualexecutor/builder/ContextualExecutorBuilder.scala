@@ -1,7 +1,7 @@
 package com.github.unchama.contextualexecutor.builder
 
 import cats.data.{Kleisli, OptionT}
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{Effect, IO}
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{
   ContextualExecutor,
@@ -98,12 +98,23 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
    */
-  def executionF[F[_]: ConcurrentEffect, U](
+  def executionF[F[_]: Effect, U](
     execution: ExecutionF[F, CS, U]
   ): ContextualExecutorBuilder[CS] =
     this.copy(contextualExecution = context => {
-      ConcurrentEffect[F].toIO(execution(context)).as(TargetedEffect.emptyEffect)
+      Effect[F].toIO(execution(context)).as(TargetedEffect.emptyEffect)
     })
+
+  /**
+   * [contextualExecution]に[execution]に相当する関数が入った新しい[ContextualExecutorBuilder]を作成する.
+   * ここで、`execution` はコンテキストを受け取って、 コマンド実行者に対する作用(`Kleisli[F, CS, U]`) を起こすようなプログラムである.
+   *
+   * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
+   */
+  def executionCSEffect[F[_]: Effect, U](
+    execution: ExecutionCSEffect[F, CS, U]
+  ): ContextualExecutorBuilder[CS] =
+    executionF[F, U](context => execution(context).run(context.sender))
 
   /**
    * [[contextualExecution]]に、コンテキストを利用せずに走る `effect` が入った

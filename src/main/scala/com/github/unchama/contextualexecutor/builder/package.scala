@@ -1,5 +1,6 @@
 package com.github.unchama.contextualexecutor
 
+import cats.data.Kleisli
 import cats.effect.IO
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.CommandSender
@@ -19,4 +20,8 @@ package object builder {
     ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
 
   type ExecutionF[F[_], CS <: CommandSender, U] = ParsedArgCommandContext[CS] => F[U]
+
+  // コンテキストから、 CS に対して実行できる作用への関数
+  type ExecutionCSEffect[F[_], CS <: CommandSender, U] =
+    ParsedArgCommandContext[CS] => Kleisli[F, CS, U]
 }
