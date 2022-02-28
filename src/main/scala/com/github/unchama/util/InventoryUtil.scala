@@ -7,7 +7,7 @@ import org.bukkit.inventory.{Inventory, InventoryHolder}
 
 object InventoryUtil {
 
-  implicit class InventoryOps(val inventory: Inventory) extends AnyVal {
+  implicit class InventoryOps(private val inventory: Inventory) extends AnyVal {
     def row: Int = inventory.getSize / 9
   }
 

@@ -54,7 +54,7 @@ object WorldLevelData {
 
   import cats.implicits._
 
-  private implicit class ListHasAtEvery[F[_]](val list: List[F[Unit]]) extends AnyVal {
+  private implicit class ListHasAtEvery[F[_]](private val list: List[F[Unit]]) extends AnyVal {
     def atEvery(
       interval: Int
     )(actionAt: Int => F[Unit])(implicit F: Monad[F]): List[F[Unit]] = {
