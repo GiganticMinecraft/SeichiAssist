@@ -2,10 +2,11 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.domain
 
 import org.scalatest.wordspec.AnyWordSpec
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 class DateTimeDurationSpec extends AnyWordSpec {
-  private val t = LocalDateTime.of(2022, 1, 1, 4, 10)
+  private val rebootTime = LocalTime.of(4, 10)
+  private val t = LocalDateTime.of(LocalDate.of(2022, 1, 1), rebootTime)
   private val tPlusOneYear = t.plusYears(1)
   private val dateFrom = t.toLocalDate
   private val dateTo = tPlusOneYear.toLocalDate
@@ -29,15 +30,20 @@ class DateTimeDurationSpec extends AnyWordSpec {
     }
 
     "be generated successfully from LocalDate" in {
+      require(t.toLocalTime.equals(rebootTime))
+      require(tPlusOneYear.toLocalTime.equals(rebootTime))
       val duration = DateTimeDuration.fromLocalDate(dateFrom, dateTo)
       assert(duration.from.isEqual(t))
       assert(duration.to.isEqual(tPlusOneYear))
     }
 
     "be generated successfully from the same LocalDate" in {
-      val duration = DateTimeDuration.fromLocalDate(dateFrom, dateTo.minusYears(1))
-      assert(duration.from.isEqual(t))
-      assert(duration.to.isEqual(tPlusOneYear.minusYears(1)))
+      val localDateTime = t
+      val localDate = dateFrom
+      require(localDateTime.toLocalTime.equals(rebootTime))
+      val duration = DateTimeDuration.fromLocalDate(localDate, localDate)
+      assert(duration.from.isEqual(localDateTime))
+      assert(duration.to.isEqual(localDateTime))
     }
 
     "not be generated successfully with illegal LocalDate" in {
