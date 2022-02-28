@@ -26,9 +26,14 @@ addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVers
 // Scalafixがsemanticdbを必要とするため
 ThisBuild / semanticdbEnabled := true
 
-// CIビルドでの詳細なログを確認するため
-// TODO: ローカル環境ではこれはDebugではなくていいのでは？
-logLevel := Level.Debug
+// CIビルドで詳細なログを確認するため
+ThisBuild / logLevel := {
+  if (scala.sys.env.get("BUILD_ENVIRONMENT_IS_CI_OR_LOCAL").contains("CI")) {
+    Level.Debug
+  } else {
+    Level.Info
+  }
+}
 
 // テストが落ちた時にスタックとレースを表示するため。
 // ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
@@ -103,7 +108,7 @@ val dependenciesToEmbed = Seq(
   "com.beachape" %% "enumeratum" % "1.5.13",
 
   // protobuf
-  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
 )
 
 // endregion
@@ -112,25 +117,22 @@ val dependenciesToEmbed = Seq(
 
 // localDependenciesはprovidedとして扱い、jarに埋め込まない
 assembly / assemblyExcludedJars := {
-  (assembly / fullClasspath).value
-    .filter { a =>
-      def directoryContainsFile(directory: File, file: File) =
-        file.absolutePath.startsWith(directory.absolutePath)
+  (assembly / fullClasspath).value.filter { a =>
+    def directoryContainsFile(directory: File, file: File) =
+      file.absolutePath.startsWith(directory.absolutePath)
 
-      directoryContainsFile(baseDirectory.value / "localDependencies", a.data)
-    }
+    directoryContainsFile(baseDirectory.value / "localDependencies", a.data)
+  }
 }
 
 // endregion
 
 // region プラグインJarに埋め込むリソースの処理
 
-val tokenReplacementMap = settingKey[Map[String, String]]("Map specifying what tokens should be replaced to")
+val tokenReplacementMap =
+  settingKey[Map[String, String]]("Map specifying what tokens should be replaced to")
 
-tokenReplacementMap := Map(
-  "name" -> name.value,
-  "version" -> version.value
-)
+tokenReplacementMap := Map("name" -> name.value, "version" -> version.value)
 
 val filesToBeReplacedInResourceFolder = Seq("plugin.yml")
 
@@ -140,7 +142,8 @@ Compile / filteredResourceGenerator :=
   filterResources(
     filesToBeReplacedInResourceFolder,
     tokenReplacementMap.value,
-    (Compile / resourceManaged).value, (Compile / resourceDirectory).value
+    (Compile / resourceManaged).value,
+    (Compile / resourceDirectory).value
   )
 
 Compile / resourceGenerators += (Compile / filteredResourceGenerator)
@@ -149,7 +152,9 @@ Compile / unmanagedResources += baseDirectory.value / "LICENSE"
 
 // トークン置換を行ったファイルをunmanagedResourcesのコピーから除外する
 unmanagedResources / excludeFilter :=
-  filesToBeReplacedInResourceFolder.foldLeft((unmanagedResources / excludeFilter).value)(_.||(_))
+  filesToBeReplacedInResourceFolder.foldLeft((unmanagedResources / excludeFilter).value)(
+    _.||(_)
+  )
 
 // endregion
 
@@ -162,24 +167,23 @@ Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "
 
 // region 各プロジェクトの設定
 
-lazy val root = (project in file("."))
-  .settings(
-    assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
-    libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
-    excludeDependencies := Seq(
-      ExclusionRule(organization = "org.bukkit", name = "bukkit")
-    ),
-    unmanagedBase := baseDirectory.value / "localDependencies",
-    scalacOptions ++= Seq(
-      "-encoding", "utf8",
-      "-unchecked",
-      "-language:higherKinds",
-      "-deprecation",
-      "-Ypatmat-exhaust-depth", "320",
-      "-Ymacro-annotations",
-      "-Ywarn-unused",
-    ),
-    javacOptions ++= Seq("-encoding", "utf8")
-  )
+lazy val root = (project in file(".")).settings(
+  assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
+  libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
+  excludeDependencies := Seq(ExclusionRule(organization = "org.bukkit", name = "bukkit")),
+  unmanagedBase := baseDirectory.value / "localDependencies",
+  scalacOptions ++= Seq(
+    "-encoding",
+    "utf8",
+    "-unchecked",
+    "-language:higherKinds",
+    "-deprecation",
+    "-Ypatmat-exhaust-depth",
+    "320",
+    "-Ymacro-annotations",
+    "-Ywarn-unused"
+  ),
+  javacOptions ++= Seq("-encoding", "utf8")
+)
 
 // endregion
