@@ -139,7 +139,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     gateway.executeUpdate(command)
   }
 
-  def addChainVote(name: String): Boolean =
+  def addChainVote(name: String): Unit =
     DB.localTx { implicit session =>
       val calendar = Calendar.getInstance()
       val dateFormat = new SimpleDateFormat("yyyy/MM/dd")
@@ -150,7 +150,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
             .map(_.string("lastvote"))
             .headOption()
             .apply()
-            .getOrElse(return false)
+            .get
 
         if (readLastVote == null || readLastVote == "")
           dateFormat.format(calendar.getTime)
@@ -179,7 +179,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       } else 1
 
       sql"""update playerdata set chainvote = $newCount where name = $name"""
-      true
     }
 
   // anniversary変更
