@@ -106,6 +106,17 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
     })
 
   /**
+   * [contextualExecution]に[execution]に相当する関数が入った新しい[ContextualExecutorBuilder]を作成する.
+   * ここで、`execution` はコンテキストを受け取って、 コマンド実行者に対する作用(`Kleisli[F, CS, U]`) を起こすようなプログラムである.
+   *
+   * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
+   */
+  def executionCSEffect[F[_]: Effect, U](
+    execution: ExecutionCSEffect[F, CS, U]
+  ): ContextualExecutorBuilder[CS] =
+    executionF[F, U](context => execution(context).run(context.sender))
+
+  /**
    * [[contextualExecution]]に、コンテキストを利用せずに走る `effect` が入った
    * 新しい[[ContextualExecutorBuilder]]を作成する.
    *
