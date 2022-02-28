@@ -29,7 +29,7 @@ case object ManagedWorld extends Enum[ManagedWorld] {
 
   case object WORLD_DOT extends ManagedWorld("world_dot", "ドット絵ワールド")
 
-  implicit class ManagedWorldOps(val managedWorld: ManagedWorld) extends AnyVal {
+  implicit class ManagedWorldOps(private val managedWorld: ManagedWorld) extends AnyVal {
 
     /**
      * 整地ワールドであるかどうか これらのワールドは整地スキルが利用可能であり、整地量をカウントするワールドである。

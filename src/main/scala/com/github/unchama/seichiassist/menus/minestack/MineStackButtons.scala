@@ -22,11 +22,11 @@ private object MineStackButtons {
   import scala.jdk.CollectionConverters._
   import scala.util.chaining._
 
-  implicit class ItemStackOps(val itemStack: ItemStack) extends AnyVal {
+  implicit class ItemStackOps(private val itemStack: ItemStack) extends AnyVal {
     def withAmount(amount: Int): ItemStack = itemStack.clone().tap(_.setAmount(amount))
   }
 
-  implicit class MineStackObjectOps(val mineStackObj: MineStackObj) extends AnyVal {
+  implicit class MineStackObjectOps(private val mineStackObj: MineStackObj) extends AnyVal {
     def parameterizedWith(player: Player): ItemStack = {
       // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
       if (

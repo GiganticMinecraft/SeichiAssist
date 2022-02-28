@@ -11,7 +11,7 @@ trait NullabilitySyntax {
 
 object Nullability {
 
-  implicit class NullabilityExtensionReceiver[T](val receiver: T) extends AnyVal {
+  implicit class NullabilityExtensionReceiver[T](private val receiver: T) extends AnyVal {
     def ifNull(f: => T): T = if (receiver == null) f else receiver
 
     def ifNotNull[R](f: T => R): R = if (receiver != null) f(receiver) else null.asInstanceOf[R]
