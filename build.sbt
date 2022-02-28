@@ -3,15 +3,40 @@ import sbt.Keys.baseDirectory
 
 import java.io._
 
+// region 全プロジェクト共通のメタデータ
+
 ThisBuild / scalaVersion := "2.13.1"
-// ThisBuild / version はGitHub Actionsによって自動更新される。
+// ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
 ThisBuild / version := "34"
+ThisBuild / name := "SeichiAssist"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
 // Scalafixが要求するため、semanticdbは有効化する
 ThisBuild / semanticdbEnabled := true
+
+// endregion
+
+// region 雑多な設定
+
+// kind-projector 構文を使いたいため
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
+
+// Scalafixがsemanticdbを必要とするため
+ThisBuild / semanticdbEnabled := true
+
+// CIビルドでの詳細なログを確認するため
+// TODO: ローカル環境ではこれはDebugではなくていいのでは？
+logLevel := Level.Debug
+
+// テストが落ちた時にスタックとレースを表示するため。
+// ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
+Compile / testOptions += Tests.Argument("-oS")
+
+// endregion
+
+// region 依存関係
 
 resolvers ++= Seq(
   "jitpack.io" at "https://jitpack.io",
@@ -81,7 +106,9 @@ val dependenciesToEmbed = Seq(
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
 )
 
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
+// endregion
+
+// region assemblyで含む依存関係の処理
 
 // localDependenciesはprovidedとして扱い、jarに埋め込まない
 assembly / assemblyExcludedJars := {
@@ -93,6 +120,10 @@ assembly / assemblyExcludedJars := {
       directoryContainsFile(baseDirectory.value / "localDependencies", a.data)
     }
 }
+
+// endregion
+
+// region プラグインJarに埋め込むリソースの処理
 
 val tokenReplacementMap = settingKey[Map[String, String]]("Map specifying what tokens should be replaced to")
 
@@ -120,17 +151,19 @@ Compile / unmanagedResources += baseDirectory.value / "LICENSE"
 unmanagedResources / excludeFilter :=
   filesToBeReplacedInResourceFolder.foldLeft((unmanagedResources / excludeFilter).value)(_.||(_))
 
-logLevel := Level.Debug
+// endregion
 
-// ScalaPBの設定
+// region ScalaPBの設定
+
 Compile / PB.protoSources := Seq(baseDirectory.value / "protocol")
 Compile / PB.targets := Seq(scalapb.gen() -> (Compile / sourceManaged).value / "scalapb")
 
-Compile / testOptions += Tests.Argument("-oS")
+// endregion
+
+// region 各プロジェクトの設定
 
 lazy val root = (project in file("."))
   .settings(
-    name := "SeichiAssist",
     assembly / assemblyOutputPath := baseDirectory.value / "target" / "build" / s"SeichiAssist.jar",
     libraryDependencies := providedDependencies ++ testDependencies ++ dependenciesToEmbed,
     excludeDependencies := Seq(
@@ -148,3 +181,5 @@ lazy val root = (project in file("."))
     ),
     javacOptions ++= Seq("-encoding", "utf8")
   )
+
+// endregion
