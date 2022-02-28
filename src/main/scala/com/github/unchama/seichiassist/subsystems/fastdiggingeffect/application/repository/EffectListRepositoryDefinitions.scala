@@ -25,10 +25,8 @@ object EffectListRepositoryDefinitions {
    */
   type RepositoryValue[F[_], G[_]] = Mutex[F, G, FastDiggingEffectList] FiberAdjoined F
 
-  def initialization[
-    F[_] : Concurrent,
-    G[_] : Sync : ContextCoercion[*[_], F]
-  ]: SinglePhasedRepositoryInitialization[G, RepositoryValue[F, G]] =
+  def initialization[F[_]: Concurrent, G[_]: Sync: ContextCoercion[*[_], F]]
+    : SinglePhasedRepositoryInitialization[G, RepositoryValue[F, G]] =
     (_, _) => {
       for {
         ref <- Mutex.of[F, G, FastDiggingEffectList](FastDiggingEffectList.empty)
@@ -36,39 +34,37 @@ object EffectListRepositoryDefinitions {
       } yield PrefetchResult.Success(ref, deferred)
     }
 
-  def tappingAction[
-    F[_] : ConcurrentEffect : Timer : ErrorLogger,
-    G[_] : SyncEffect : ContextCoercion[*[_], F],
-    Player
-  ](effectTopic: Fs3Topic[F, Option[(Player, FastDiggingEffectList)]]): (Player, RepositoryValue[F, G]) => G[Unit] = {
+  def tappingAction[F[_]: ConcurrentEffect: Timer: ErrorLogger, G[
+    _
+  ]: SyncEffect: ContextCoercion[*[_], F], Player](
+    effectTopic: Fs3Topic[F, Option[(Player, FastDiggingEffectList)]]
+  ): (Player, RepositoryValue[F, G]) => G[Unit] = {
     case (player, (mutexRef, fiberPromise)) =>
       val programToRun: F[Unit] =
-        StreamExtra.compileToRestartingStream("[EffectListRepositoryDefinitions]") {
-          fs2.Stream
-            .fixedRate[F](1.second)
-            .evalMap { _ =>
+        StreamExtra
+          .compileToRestartingStream("[EffectListRepositoryDefinitions]") {
+            fs2.Stream.fixedRate[F](1.second).evalMap { _ =>
               ContextCoercion(mutexRef.readLatest).flatMap { latestEffectList =>
                 effectTopic.publish1(Some(player, latestEffectList))
               }
             }
-        }.start >>= fiberPromise.complete
+          }
+          .start >>= fiberPromise.complete
 
       EffectExtra.runAsyncAndForget[F, G, Unit](programToRun)
   }
 
-  def finalization[
-    F[_] : Effect,
-    G[_] : SyncEffect,
-    Player
-  ]: RepositoryFinalization[G, Player, RepositoryValue[F, G]] =
-    RepositoryFinalization.withoutAnyPersistence[G, Player, RepositoryValue[F, G]] { (_, value) =>
-      val (_, fiberPromise) = value
+  def finalization[F[_]: Effect, G[_]: SyncEffect, Player]
+    : RepositoryFinalization[G, Player, RepositoryValue[F, G]] =
+    RepositoryFinalization.withoutAnyPersistence[G, Player, RepositoryValue[F, G]] {
+      (_, value) =>
+        val (_, fiberPromise) = value
 
-      EffectExtra.runAsyncAndForget[F, G, Unit] {
-        for {
-          fiber <- fiberPromise.get
-          _ <- fiber.cancel
-        } yield ()
-      }
+        EffectExtra.runAsyncAndForget[F, G, Unit] {
+          for {
+            fiber <- fiberPromise.get
+            _ <- fiber.cancel
+          } yield ()
+        }
     }
 }

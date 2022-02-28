@@ -26,8 +26,10 @@ object PlayerDataLoading {
   /**
    * プレイヤーデータロードを実施する処理(非同期で実行すること)
    *
-   * @deprecated Should be inlined.
-   * @author unchama
+   * @deprecated
+   *   Should be inlined.
+   * @author
+   *   unchama
    */
   @Deprecated()
   def loadExistingPlayerData(playerUUID: UUID, playerName: String): PlayerData = {
@@ -55,10 +57,8 @@ object PlayerDataLoading {
         + "player_uuid = '" + stringUuid + "'")
 
       /**
-       * TODO:これはここにあるべきではない
-       * 格納可能なアイテムのリストはプラグインインスタンスの中に動的に持たれるべきで、
-       * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、
-       * ロードされるたびに再計算されるべきではない
+       * TODO:これはここにあるべきではない 格納可能なアイテムのリストはプラグインインスタンスの中に動的に持たれるべきで、
+       * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、 ロードされるたびに再計算されるべきではない
        */
       val nameObjectMappings: Map[String, MineStackObj] =
         MineStackObjectList.minestacklist.map(obj => obj.mineStackObjName -> obj).toMap
@@ -113,33 +113,42 @@ object PlayerDataLoading {
       val unlockedSkillEffectQuery =
         s"select effect_name from $db.${DatabaseConstants.SKILL_EFFECT_TABLENAME} where player_uuid = '$stringUuid'"
 
-      stmt.executeQuery(unlockedSkillEffectQuery).recordIteration { resultSet: ResultSet =>
-        val effectName = resultSet.getString("effect_name")
-        val effect =
-          ActiveSkillNormalEffect.withNameOption(effectName)
-            .orElse(ActiveSkillPremiumEffect.withNameOption(effectName))
+      stmt
+        .executeQuery(unlockedSkillEffectQuery)
+        .recordIteration { resultSet: ResultSet =>
+          val effectName = resultSet.getString("effect_name")
+          val effect =
+            ActiveSkillNormalEffect
+              .withNameOption(effectName)
+              .orElse(ActiveSkillPremiumEffect.withNameOption(effectName))
 
-        if (effect.isEmpty) {
-          Bukkit.getLogger.warning(s"${stringUuid}所有のスキルエフェクト${effectName}は未定義です")
+          if (effect.isEmpty) {
+            Bukkit.getLogger.warning(s"${stringUuid}所有のスキルエフェクト${effectName}は未定義です")
+          }
+
+          effect
         }
-
-        effect
-      }.flatten.toSet
+        .flatten
+        .toSet
     }
 
     def loadSeichiSkillUnlockState(statement: Statement): Set[SeichiSkill] = {
       val unlockedSkillQuery =
         s"select skill_name from seichiassist.unlocked_seichi_skill where player_uuid = '$stringUuid'"
 
-      statement.executeQuery(unlockedSkillQuery).recordIteration { resultSet: ResultSet =>
-        val skillName = resultSet.getString("skill_name")
-        val skill = SeichiSkill.withNameOption(skillName)
-        if (skill.isEmpty) {
-          Bukkit.getLogger.warning(s"${stringUuid}所有のスキル${skillName}は未定義です")
-        }
+      statement
+        .executeQuery(unlockedSkillQuery)
+        .recordIteration { resultSet: ResultSet =>
+          val skillName = resultSet.getString("skill_name")
+          val skill = SeichiSkill.withNameOption(skillName)
+          if (skill.isEmpty) {
+            Bukkit.getLogger.warning(s"${stringUuid}所有のスキル${skillName}は未定義です")
+          }
 
-        skill
-      }.flatten.toSet
+          skill
+        }
+        .flatten
+        .toSet
     }
 
     // playerDataをDBから得られた値で更新する
@@ -155,10 +164,12 @@ object PlayerDataLoading {
         playerData.settings.shouldDisplayDeathMessages = rs.getBoolean("killlogflag")
         playerData.settings.shouldDisplayWorldGuardLogs = rs.getBoolean("worldguardlogflag")
 
-        playerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld = rs.getBoolean("multipleidbreakflag")
+        playerData.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld =
+          rs.getBoolean("multipleidbreakflag")
 
         playerData.settings.pvpflag = rs.getBoolean("pvpflag")
-        playerData.settings.broadcastMutingSettings = BroadcastMutingSettings.fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
+        playerData.settings.broadcastMutingSettings = BroadcastMutingSettings
+          .fromBooleanSettings(rs.getBoolean("everymessage"), rs.getBoolean("everysound"))
         playerData.settings.nickname = PlayerNickname(
           NicknameStyle.marshal(rs.getBoolean("displayTypeLv")),
           rs.getInt("displayTitle1No"),
@@ -176,20 +187,23 @@ object PlayerDataLoading {
 
           PlayerSkillEffectState(obtainedEffects, selectedEffect.getOrElse(NoEffect))
         }
-        playerData.skillState.set(
-          PlayerSkillState.fromUnsafeConfiguration(
-            obtainedSkills,
-            SeichiSkillUsageMode.withValue(rs.getInt("serialized_usage_mode")),
-            SeichiSkill.withNameOption(rs.getString("selected_active_skill")).flatMap {
-              case a: ActiveSkill => Some(a)
-              case _ => None
-            },
-            SeichiSkill.withNameOption(rs.getString("selected_assault_skill")).flatMap {
-              case a: AssaultSkill => Some(a)
-              case _ => None
-            }
+        playerData
+          .skillState
+          .set(
+            PlayerSkillState.fromUnsafeConfiguration(
+              obtainedSkills,
+              SeichiSkillUsageMode.withValue(rs.getInt("serialized_usage_mode")),
+              SeichiSkill.withNameOption(rs.getString("selected_active_skill")).flatMap {
+                case a: ActiveSkill => Some(a)
+                case _              => None
+              },
+              SeichiSkill.withNameOption(rs.getString("selected_assault_skill")).flatMap {
+                case a: AssaultSkill => Some(a)
+                case _               => None
+              }
+            )
           )
-        ).unsafeRunSync()
+          .unsafeRunSync()
 
         playerData.unclaimedApologyItems = rs.getInt("numofsorryforbug")
         playerData.regionCount = rs.getInt("rgnum")
@@ -204,7 +218,7 @@ object PlayerDataLoading {
           serializedInventory != null && serializedInventory != ""
         }
 
-        //実績、二つ名の情報
+        // 実績、二つ名の情報
         playerData.p_vote_forT = rs.getInt("p_vote")
         playerData.giveachvNo = rs.getInt("giveachvNo")
         playerData.achievePoint = AchievementPoint(
@@ -213,10 +227,10 @@ object PlayerDataLoading {
           rs.getInt("achvChangenum")
         )
 
-        //期間限定ログインイベント専用の累計ログイン日数
+        // 期間限定ログインイベント専用の累計ログイン日数
         playerData.LimitedLoginCount = rs.getInt("LimitedLoginCount")
 
-        //連続・通算ログインの情報、およびその更新
+        // 連続・通算ログインの情報、およびその更新
         val cal = Calendar.getInstance()
         val sdf = new SimpleDateFormat("yyyy/MM/dd")
         val lastIn = rs.getString("lastcheckdate")
@@ -226,18 +240,22 @@ object PlayerDataLoading {
           lastIn
         }
         val chain = rs.getInt("ChainJoin")
-        playerData.loginStatus = playerData.loginStatus.copy(consecutiveLoginDays = if (chain == 0) {
-          1
-        } else {
-          chain
-        })
+        playerData.loginStatus = playerData
+          .loginStatus
+          .copy(consecutiveLoginDays = if (chain == 0) {
+            1
+          } else {
+            chain
+          })
         val total = rs.getInt("TotalJoin")
 
-        playerData.loginStatus = playerData.loginStatus.copy(totalLoginDay = if (total == 0) {
-          1
-        } else {
-          total
-        })
+        playerData.loginStatus = playerData
+          .loginStatus
+          .copy(totalLoginDay = if (total == 0) {
+            1
+          } else {
+            total
+          })
 
         try {
           val TodayDate = sdf.parse(sdf.format(cal.getTime))
@@ -254,8 +272,12 @@ object PlayerDataLoading {
               else
                 1
 
-            playerData.loginStatus =
-              playerData.loginStatus.copy(totalLoginDay = newTotalLoginDay, consecutiveLoginDays = newConsecutiveLoginDays)
+            playerData.loginStatus = playerData
+              .loginStatus
+              .copy(
+                totalLoginDay = newTotalLoginDay,
+                consecutiveLoginDays = newConsecutiveLoginDays
+              )
           }
         } catch {
           case e: ParseException => e.printStackTrace()
@@ -265,12 +287,15 @@ object PlayerDataLoading {
 
         playerData.ChainVote = rs.getInt("chainvote")
 
-        //実績解除フラグのBitSet型への復元処理
-        //初回nullエラー回避のための分岐
+        // 実績解除フラグのBitSet型への復元処理
+        // 初回nullエラー回避のための分岐
         try {
-          val Titlenums = rs.getString("TitleFlags").split(",").reverse.dropWhile(_.isEmpty).reverse
+          val Titlenums =
+            rs.getString("TitleFlags").split(",").reverse.dropWhile(_.isEmpty).reverse
 
-          val Titlearray = Titlenums.map { x: String => java.lang.Long.parseUnsignedLong(x, 16) }
+          val Titlearray = Titlenums.map { x: String =>
+            java.lang.Long.parseUnsignedLong(x, 16)
+          }
           val TitleFlags = mutable.BitSet.fromBitMask(Titlearray)
           playerData.TitleFlags = TitleFlags
         } catch {
@@ -279,7 +304,7 @@ object PlayerDataLoading {
             playerData.TitleFlags.addOne(1)
         }
 
-        //マナ妖精
+        // マナ妖精
         playerData.usingVotingFairy = rs.getBoolean("canVotingFairyUse")
         playerData.VotingFairyRecoveryValue = rs.getInt("VotingFairyRecoveryValue")
         playerData.hasVotingFairyMana = rs.getInt("hasVotingFairyMana")
@@ -287,7 +312,6 @@ object PlayerDataLoading {
         playerData.toggleVotingFairy = rs.getInt("toggleVotingFairy")
         playerData.setVotingFairyTime(rs.getString("newVotingFairyTime"))
         playerData.p_apple = rs.getLong("p_apple")
-
 
         playerData.giganticBerserk = GiganticBerserk(
           rs.getInt("GBlevel"),
@@ -298,10 +322,10 @@ object PlayerDataLoading {
         playerData.anniversary = rs.getBoolean("anniversary")
       }
     }
-    //sqlコネクションチェック
+    // sqlコネクションチェック
     databaseGateway.ensureConnection()
 
-    //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+    // 同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
     Using(databaseGateway.con.createStatement()) { newStmt =>
       loadPlayerData(newStmt)
       updateLoginInfo(newStmt)

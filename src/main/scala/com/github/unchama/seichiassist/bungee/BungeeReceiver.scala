@@ -10,7 +10,11 @@ import java.util.UUID
 
 class BungeeReceiver(private val plugin: SeichiAssist) extends PluginMessageListener {
 
-  override def onPluginMessageReceived(channel: String, player: Player, message: Array[Byte]): Unit = synchronized {
+  override def onPluginMessageReceived(
+    channel: String,
+    player: Player,
+    message: Array[Byte]
+  ): Unit = synchronized {
     // ストリームの準備
     val stream = new ByteArrayInputStream(message)
     val in = new DataInputStream(stream)
@@ -26,7 +30,8 @@ class BungeeReceiver(private val plugin: SeichiAssist) extends PluginMessageList
   private def getLocation(servername: String, uuid: String, wanter: String): Unit = {
     val player = Bukkit.getServer.getPlayer(UUID.fromString(uuid))
 
-    val seichiAmountData = plugin.breakCountSystem.api.seichiAmountDataRepository(player).read.unsafeRunSync()
+    val seichiAmountData =
+      plugin.breakCountSystem.api.seichiAmountDataRepository(player).read.unsafeRunSync()
     val level = seichiAmountData.levelCorrespondingToExp.level
     val totalBreakAmount = seichiAmountData.expAmount.amount
 

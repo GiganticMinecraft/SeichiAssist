@@ -12,7 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 class ActiveSessionReferenceSpec
-  extends AnyWordSpec
+    extends AnyWordSpec
     with ScalaCheckPropertyChecks
     with Matchers
     with TaskDiscreteEventually
@@ -23,8 +23,10 @@ class ActiveSessionReferenceSpec
 
   import scala.concurrent.duration._
 
-  implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig = DiscreteEventuallyConfig(1000000)
+  implicit override val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = 5.seconds, interval = 10.millis)
+  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig =
+    DiscreteEventuallyConfig(1000000)
 
   implicit val monixScheduler: TestScheduler = TestScheduler()
   implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
@@ -48,15 +50,15 @@ class ActiveSessionReferenceSpec
     "correctly expose the fly status of a started session" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val sessionLengthInMinutes = 10
-      val sessionDuration = RemainingFlyDuration.PositiveMinutes.fromPositive(sessionLengthInMinutes)
+      val sessionDuration =
+        RemainingFlyDuration.PositiveMinutes.fromPositive(sessionLengthInMinutes)
 
       val program = for {
         // given
@@ -96,11 +98,10 @@ class ActiveSessionReferenceSpec
     "be able to stop a running session" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -118,7 +119,9 @@ class ActiveSessionReferenceSpec
         _ <- sessionRef.replaceSession(createSession.run(playerRef))
         _ <- discreteEventually {
           Task {
-            sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(RemainingFlyDuration.Infinity)
+            sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(
+              RemainingFlyDuration.Infinity
+            )
           }
         }
         _ <- sessionRef.stopAnyRunningSession
@@ -137,15 +140,15 @@ class ActiveSessionReferenceSpec
     "be able to replace a session" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val targetSessionLength = 10
-      val targetSessionDuration = RemainingFlyDuration.PositiveMinutes.fromPositive(targetSessionLength)
+      val targetSessionDuration =
+        RemainingFlyDuration.PositiveMinutes.fromPositive(targetSessionLength)
 
       val program = for {
         // given
@@ -157,13 +160,19 @@ class ActiveSessionReferenceSpec
         sessionRef <- ActiveSessionReference.createNew[Task, SyncIO].coerceTo[Task]
 
         // when
-        _ <- sessionRef.replaceSession(factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef))
+        _ <- sessionRef.replaceSession(
+          factory.start[SyncIO](RemainingFlyDuration.Infinity).run(playerRef)
+        )
         _ <- discreteEventually {
           Task {
-            sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(RemainingFlyDuration.Infinity)
+            sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(
+              RemainingFlyDuration.Infinity
+            )
           }
         }
-        _ <- sessionRef.replaceSession(factory.start[SyncIO](targetSessionDuration).run(playerRef))
+        _ <- sessionRef.replaceSession(
+          factory.start[SyncIO](targetSessionDuration).run(playerRef)
+        )
 
         // then
         _ <- discreteEventually {
@@ -179,18 +188,19 @@ class ActiveSessionReferenceSpec
     "not allow more than one session to be present" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val firstSessionLength = 10
-      val firstSessionDuration = RemainingFlyDuration.PositiveMinutes.fromPositive(firstSessionLength)
+      val firstSessionDuration =
+        RemainingFlyDuration.PositiveMinutes.fromPositive(firstSessionLength)
 
       val secondSessionLength = 20
-      val secondSessionDuration = RemainingFlyDuration.PositiveMinutes.fromPositive(secondSessionLength)
+      val secondSessionDuration =
+        RemainingFlyDuration.PositiveMinutes.fromPositive(secondSessionLength)
 
       assert(firstSessionLength < secondSessionLength)
 
@@ -204,13 +214,17 @@ class ActiveSessionReferenceSpec
         sessionRef <- ActiveSessionReference.createNew[Task, SyncIO].coerceTo[Task]
 
         // when
-        _ <- sessionRef.replaceSession(factory.start[SyncIO](firstSessionDuration).run(playerRef))
+        _ <- sessionRef.replaceSession(
+          factory.start[SyncIO](firstSessionDuration).run(playerRef)
+        )
         _ <- discreteEventually {
           Task {
             sessionRef.getLatestFlyStatus.unsafeRunSync() shouldBe Flying(firstSessionDuration)
           }
         }
-        _ <- sessionRef.replaceSession(factory.start[SyncIO](secondSessionDuration).run(playerRef))
+        _ <- sessionRef.replaceSession(
+          factory.start[SyncIO](secondSessionDuration).run(playerRef)
+        )
         _ <- monixTimer.sleep(firstSessionLength.minutes)
 
         // then

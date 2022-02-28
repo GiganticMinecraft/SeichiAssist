@@ -7,10 +7,9 @@ import com.github.unchama.seichiassist.subsystems.autosave.application.{CanNotif
 import com.github.unchama.seichiassist.subsystems.autosave.bukkit.instances.{SyncCanNotifyBukkitSaves, SyncCanSaveBukkitWorlds}
 
 object System {
-  def backgroundProcess[
-    F[_] : Sync : Timer : OnMinecraftServerThread,
-    G[_]
-  ](configuration: SystemConfiguration): F[Nothing] = {
+  def backgroundProcess[F[_]: Sync: Timer: OnMinecraftServerThread, G[_]](
+    configuration: SystemConfiguration
+  ): F[Nothing] = {
     import PluginExecutionContexts._
 
     implicit val _configuration: SystemConfiguration = configuration

@@ -11,22 +11,25 @@ import com.github.unchama.seichiassist.subsystems.managedfly.domain._
 /**
  * プレーヤーに紐づいたFlyセッションを作成できるオブジェクト。
  */
-class ActiveSessionFactory[
-  AsyncContext[_] : Timer : Concurrent,
-  Player
-](implicit KleisliAsyncContext: PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]]) {
+class ActiveSessionFactory[AsyncContext[_]: Timer: Concurrent, Player](
+  implicit KleisliAsyncContext: PlayerFlyStatusManipulation[Kleisli[AsyncContext, Player, *]]
+) {
 
   type KleisliAsyncContext[A] = Kleisli[AsyncContext, Player, A]
 
-  private def tickDuration[F[_]](duration: RemainingFlyDuration)(implicit F: Sync[F]): F[RemainingFlyDuration] =
+  private def tickDuration[F[_]](
+    duration: RemainingFlyDuration
+  )(implicit F: Sync[F]): F[RemainingFlyDuration] =
     duration.tickOneMinute match {
       case Some(tickedDuration) => F.pure(tickedDuration)
-      case None => F.raiseError(FlyDurationExpired)
+      case None                 => F.raiseError(FlyDurationExpired)
     }
 
   import KleisliAsyncContext._
 
-  private def doOneMinuteCycle(duration: RemainingFlyDuration): KleisliAsyncContext[RemainingFlyDuration] = {
+  private def doOneMinuteCycle(
+    duration: RemainingFlyDuration
+  ): KleisliAsyncContext[RemainingFlyDuration] = {
     import cats.implicits.catsSyntaxFlatMapOps
 
     import scala.concurrent.duration._
@@ -44,9 +47,9 @@ class ActiveSessionFactory[
     } yield newDuration
   }
 
-  def start[
-    SyncContext[_] : Sync : ContextCoercion[*[_], AsyncContext]
-  ](totalDuration: RemainingFlyDuration): KleisliAsyncContext[ActiveSession[AsyncContext, SyncContext]] = {
+  def start[SyncContext[_]: Sync: ContextCoercion[*[_], AsyncContext]](
+    totalDuration: RemainingFlyDuration
+  ): KleisliAsyncContext[ActiveSession[AsyncContext, SyncContext]] = {
     import cats.effect.implicits._
     import cats.implicits._
     import com.github.unchama.generic.ContextCoercion._
@@ -71,7 +74,7 @@ class ActiveSessionFactory[
               }
           }.guaranteeCase {
             case ExitCase.Error(e: InternalInterruption) => sendNotificationsOnInterruption(e)
-            case _ => Monad[KleisliAsyncContext].unit
+            case _                                       => Monad[KleisliAsyncContext].unit
           }.guarantee {
             synchronizeFlyStatus(NotFlying)
           }.run(player)

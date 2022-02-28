@@ -6,7 +6,7 @@ object EffectExtra {
 
   import cats.effect.implicits._
 
-  def runAsyncAndForget[F[_] : Effect, G[_] : Sync, A](fa: F[A]): G[Unit] =
+  def runAsyncAndForget[F[_]: Effect, G[_]: Sync, A](fa: F[A]): G[Unit] =
     fa.runAsync(_ => IO.unit).runSync[G]
 
 }

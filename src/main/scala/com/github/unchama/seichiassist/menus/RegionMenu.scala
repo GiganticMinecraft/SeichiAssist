@@ -20,13 +20,15 @@ object RegionMenu extends Menu {
 
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.targetedeffect.player.PlayerEffects.{closeInventoryEffect, _}
+  import com.github.unchama.targetedeffect.player.PlayerEffects._
 
   override type Environment = Unit
 
   override val frame: MenuFrame = MenuFrame(Right(InventoryType.HOPPER), s"${BLACK}保護メニュー")
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -65,24 +67,13 @@ object RegionMenu extends Menu {
 
         val lore = {
           if (!playerHasPermission)
-            Seq(
-              s"${RED}このワールドでは",
-              s"${RED}保護を作成できません"
-            )
+            Seq(s"${RED}このワールドでは", s"${RED}保護を作成できません")
           else if (isSelectionNull)
-            Seq(
-              s"${RED}範囲指定されていません",
-              s"${RED}先に木の斧で2か所クリックしてネ"
-            )
+            Seq(s"${RED}範囲指定されていません", s"${RED}先に木の斧で2か所クリックしてネ")
           else if (!selectionHasEnoughSpace)
-            Seq(
-              s"${RED}選択された範囲が狭すぎます",
-              s"${RED}一辺当たり最低10ブロック以上にしてネ"
-            )
-          else Seq(
-            s"$DARK_GREEN${UNDERLINE}範囲指定されています",
-            s"$DARK_GREEN${UNDERLINE}クリックすると保護を作成します"
-          )
+            Seq(s"${RED}選択された範囲が狭すぎます", s"${RED}一辺当たり最低10ブロック以上にしてネ")
+          else
+            Seq(s"$DARK_GREEN${UNDERLINE}範囲指定されています", s"$DARK_GREEN${UNDERLINE}クリックすると保護を作成します")
         } ++ {
           if (playerHasPermission)
             Seq(
@@ -95,7 +86,8 @@ object RegionMenu extends Menu {
               s"$GRAY・別の保護と被っていないか",
               s"$GRAY・保護数上限に達していないか",
               s"${GRAY}確認してください"
-            ) else Seq()
+            )
+          else Seq()
         }
 
         import scala.util.chaining._
@@ -152,7 +144,8 @@ object RegionMenu extends Menu {
             s"$DARK_GREEN$UNDERLINE※インベントリを空けておこう",
             s"${DARK_GRAY}command=>[//wand]"
           )
-        ).build()
+        )
+        .build()
 
       Button(
         iconItemStack,
@@ -184,7 +177,8 @@ object RegionMenu extends Menu {
           s"$RED$UNDERLINE/rg removemember 保護名 プレイヤー名",
           s"${GRAY}該当保護の指定メンバーを削除",
           s"${DARK_GRAY}その他のコマンドはwikiを参照",
-          s"${DARK_GRAY}command=>[/rg list]")
+          s"${DARK_GRAY}command=>[/rg list]"
+        )
         .build()
 
       Button(
@@ -207,7 +201,8 @@ object RegionMenu extends Menu {
           s"${RED}保護の管理が超簡単に！",
           s"${YELLOW}自分の所有する保護内でクリックすると",
           s"${YELLOW}保護の各種設定や削除が行えます",
-          s"${DARK_GRAY}command=>[/land]")
+          s"${DARK_GRAY}command=>[/land]"
+        )
         .build()
 
       Button(
@@ -225,7 +220,8 @@ object RegionMenu extends Menu {
           s"${YELLOW}グリッド式保護とは...",
           s"${GRAY}保護をユニット単位で管理するシステムのこと",
           s"${AQUA}15ブロック=1ユニットとして",
-          s"${AQUA}保護が作成されます。")
+          s"${AQUA}保護が作成されます。"
+        )
         .build()
 
       Button(

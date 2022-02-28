@@ -18,10 +18,8 @@ import org.bukkit.event.{EventHandler, Listener}
 import java.time.LocalDate
 import java.util.Random
 
-class SeizonsikiListener[
-  F[_],
-  G[_] : SyncEffect
-](implicit manaApi: ManaWriteApi[G, Player]) extends Listener {
+class SeizonsikiListener[F[_], G[_]: SyncEffect](implicit manaApi: ManaWriteApi[G, Player])
+    extends Listener {
 
   import cats.effect.implicits._
 
@@ -33,7 +31,8 @@ class SeizonsikiListener[
     if (entity.getType != EntityType.ZOMBIE || killer == null) return
 
     killer match {
-      case _: Player if isEntityKilledByThornsEnchant(entity) => randomlyDropItemAt(entity, seizonsikiZongo, itemDropRate)
+      case _: Player if isEntityKilledByThornsEnchant(entity) =>
+        randomlyDropItemAt(entity, seizonsikiZongo, itemDropRate)
       case _ =>
     }
   }
@@ -45,9 +44,7 @@ class SeizonsikiListener[
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『チャラゾンビたちの成ゾン式！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
-      ).foreach(
-        event.getPlayer.sendMessage(_)
-      )
+      ).foreach(event.getPlayer.sendMessage(_))
     }
   }
 
@@ -62,7 +59,7 @@ class SeizonsikiListener[
     if (today.isBefore(exp)) {
       // マナを10%回復する
       manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
-      player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+      player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
     } else {
       // END_DATEと同じ日かその翌日以降なら
       // 死ぬ

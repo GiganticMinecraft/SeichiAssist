@@ -26,11 +26,12 @@ object ActiveSkillEffectMenu extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
 
-  class Environment(implicit
-                    val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-                    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
-                    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
-                    val ioOnMainThread: OnMinecraftServerThread[IO])
+  class Environment(
+    implicit val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
+    val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type,
+    val ioCanOpenTransactionHistoryMenu: IO CanOpen PremiumPointTransactionHistoryMenu,
+    val ioOnMainThread: OnMinecraftServerThread[IO]
+  )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}整地スキルエフェクト選択")
 
@@ -58,9 +59,12 @@ object ActiveSkillEffectMenu extends Menu {
             IO {
               playerData.effectPoint -= effect.usePoint
               val state = playerData.skillEffectState
-              playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
+              playerData.skillEffectState =
+                state.copy(obtainedEffects = state.obtainedEffects + effect)
             } >> SequentialEffect(
-              MessageEffect(s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"),
+              MessageEffect(
+                s"${LIGHT_PURPLE}エフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
+              ),
               FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
             ).apply(player)
           }
@@ -68,7 +72,10 @@ object ActiveSkillEffectMenu extends Menu {
 
     def unlockPremiumEffect(effect: ActiveSkillPremiumEffect): IO[Unit] =
       for {
-        premiumEffectPoint <- SeichiAssist.databaseGateway.donateDataManipulator.currentPremiumPointFor(player)
+        premiumEffectPoint <- SeichiAssist
+          .databaseGateway
+          .donateDataManipulator
+          .currentPremiumPointFor(player)
         _ <-
           if (premiumEffectPoint < effect.usePoint) {
             SequentialEffect(
@@ -77,14 +84,20 @@ object ActiveSkillEffectMenu extends Menu {
             ).apply(player)
           } else {
             for {
-              transactionResult <- SeichiAssist.databaseGateway.donateDataManipulator.recordPremiumEffectPurchase(player, effect)
+              transactionResult <- SeichiAssist
+                .databaseGateway
+                .donateDataManipulator
+                .recordPremiumEffectPurchase(player, effect)
               _ <- transactionResult match {
                 case ActionStatus.Ok =>
                   IO {
                     val state = playerData.skillEffectState
-                    playerData.skillEffectState = state.copy(obtainedEffects = state.obtainedEffects + effect)
+                    playerData.skillEffectState =
+                      state.copy(obtainedEffects = state.obtainedEffects + effect)
                   } >> SequentialEffect(
-                    MessageEffect(s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"),
+                    MessageEffect(
+                      s"${LIGHT_PURPLE}プレミアムエフェクト：${effect.nameOnUI}$RESET$LIGHT_PURPLE${BOLD}を解除しました"
+                    ),
                     FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.2f)
                   ).apply(player)
                 case ActionStatus.Fail =>
@@ -102,11 +115,12 @@ object ActiveSkillEffectMenu extends Menu {
           _ <-
             if (unlocked)
               setEffectSelectionTo(effect)(player)
-            else effect match {
-              // 所持していないため、開放しなければならない
-              case effect: ActiveSkillNormalEffect => unlockNormalEffect(effect)
-              case effect: ActiveSkillPremiumEffect => unlockPremiumEffect(effect)
-            }
+            else
+              effect match {
+                // 所持していないため、開放しなければならない
+                case effect: ActiveSkillNormalEffect  => unlockNormalEffect(effect)
+                case effect: ActiveSkillPremiumEffect => unlockPremiumEffect(effect)
+              }
         } yield ()
     }
   }
@@ -119,7 +133,7 @@ object ActiveSkillEffectMenu extends Menu {
     def effectButton(effect: UnlockableActiveSkillEffect): IO[Button] = {
       val itemStackComputation = IO {
         val kindOfPointToUse = effect match {
-          case _: ActiveSkillNormalEffect => "エフェクトポイント"
+          case _: ActiveSkillNormalEffect  => "エフェクトポイント"
           case _: ActiveSkillPremiumEffect => "プレミアムエフェクトポイント"
         }
 
@@ -127,10 +141,9 @@ object ActiveSkillEffectMenu extends Menu {
         if (playerData.skillEffectState.obtainedEffects.contains(effect)) {
           val partialBuilder = new IconItemStackBuilder(effect.materialOnUI)
             .title(effect.nameOnUI)
-            .lore(List(
-              s"$RESET$GREEN${effect.explanation}",
-              s"$RESET$DARK_RED${UNDERLINE}クリックでセット"
-            ))
+            .lore(
+              List(s"$RESET$GREEN${effect.explanation}", s"$RESET$DARK_RED${UNDERLINE}クリックでセット")
+            )
 
           if (playerData.skillEffectState.selection == effect) {
             partialBuilder.enchanted()
@@ -140,28 +153,30 @@ object ActiveSkillEffectMenu extends Menu {
         } else {
           new IconItemStackBuilder(Material.BEDROCK)
             .title(effect.nameOnUI)
-            .lore(List(
-              s"$RESET$GREEN${effect.explanation}",
-              s"$RESET${YELLOW}必要$kindOfPointToUse：${effect.usePoint}",
-              s"$RESET$AQUA${UNDERLINE}クリックで解除"
-            ))
+            .lore(
+              List(
+                s"$RESET$GREEN${effect.explanation}",
+                s"$RESET${YELLOW}必要$kindOfPointToUse：${effect.usePoint}",
+                s"$RESET$AQUA${UNDERLINE}クリックで解除"
+              )
+            )
             .build()
         }
       }
 
       itemStackComputation.map(itemStack =>
         ReloadingButton(ActiveSkillEffectMenu)(
-          Button(
-            itemStack,
-            LeftClickButtonEffect(unlockOrSet(effect))
-          )
+          Button(itemStack, LeftClickButtonEffect(unlockOrSet(effect)))
         )
       )
     }
 
     val effectDataButton: IO[Button] =
       for {
-        premiumEffectPoint <- SeichiAssist.databaseGateway.donateDataManipulator.currentPremiumPointFor(player)
+        premiumEffectPoint <- SeichiAssist
+          .databaseGateway
+          .donateDataManipulator
+          .currentPremiumPointFor(player)
         button <-
           IO {
             val playerData = SeichiAssist.playermap(getUniqueId)
@@ -170,13 +185,15 @@ object ActiveSkillEffectMenu extends Menu {
               Button(
                 new SkullItemStackBuilder(getUniqueId)
                   .title(s"$UNDERLINE$BOLD$YELLOW${getName}のスキルエフェクトデータ")
-                  .lore(List(
-                    s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
-                    s"$RESET${YELLOW}使えるエフェクトポイント：${playerData.effectPoint}",
-                    s"$RESET$DARK_GRAY※投票すると獲得できます",
-                    s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント$premiumEffectPoint",
-                    s"$RESET$DARK_GRAY※寄付をすると獲得できます"
-                  ))
+                  .lore(
+                    List(
+                      s"$RESET${GREEN}現在選択しているエフェクト：${playerData.skillEffectState.selection.nameOnUI}",
+                      s"$RESET${YELLOW}使えるエフェクトポイント：${playerData.effectPoint}",
+                      s"$RESET$DARK_GRAY※投票すると獲得できます",
+                      s"$RESET${LIGHT_PURPLE}使えるプレミアムポイント$premiumEffectPoint",
+                      s"$RESET$DARK_GRAY※寄付をすると獲得できます"
+                    )
+                  )
                   .build(),
                 Nil
               )
@@ -196,19 +213,19 @@ object ActiveSkillEffectMenu extends Menu {
             .build(),
           LeftClickButtonEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 0.1f),
-            Kleisli(setEffectSelectionTo(NoEffect)),
+            Kleisli(setEffectSelectionTo(NoEffect))
           )
         )
       }
     }
 
-    def effectPurchaseHistoryMenuButton(implicit ioCanOpenPremiumPointMenu: IO CanOpen PremiumPointTransactionHistoryMenu): Button =
+    def effectPurchaseHistoryMenuButton(
+      implicit ioCanOpenPremiumPointMenu: IO CanOpen PremiumPointTransactionHistoryMenu
+    ): Button =
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)
           .title(s"$UNDERLINE$BOLD${BLUE}プレミアムエフェクト購入履歴")
-          .lore(
-            s"$RESET$DARK_RED${UNDERLINE}クリックで閲覧",
-          )
+          .lore(s"$RESET$DARK_RED${UNDERLINE}クリックで閲覧")
           .build(),
         LeftClickButtonEffect(
           FocusedSoundEffect(Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.1f),
@@ -216,7 +233,9 @@ object ActiveSkillEffectMenu extends Menu {
         )
       )
 
-    def goBackToSkillMenuButton(implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type): Button =
+    def goBackToSkillMenuButton(
+      implicit ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type
+    ): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
         "スキルメニューへ",
@@ -225,9 +244,12 @@ object ActiveSkillEffectMenu extends Menu {
   }
 
   /**
-   * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+   * @return
+   *   `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     val c = ButtonComputations(player)
 
     import ConstantButtons._
@@ -237,12 +259,15 @@ object ActiveSkillEffectMenu extends Menu {
     import eu.timepit.refined.auto._
 
     val computeDynamicPart = {
-      List(
-        ChestSlotRef(0, 0) -> effectDataButton
-      ) ++ ActiveSkillNormalEffect.values.zipWithIndex.map { case (effect, index) =>
-        ChestSlotRef(1, 0) + index -> effectButton(effect)
-      } ++ ActiveSkillPremiumEffect.values.zipWithIndex.map { case (effect, index) =>
-        ChestSlotRef(3, 0) + index -> effectButton(effect)
+      List(ChestSlotRef(0, 0) -> effectDataButton) ++ ActiveSkillNormalEffect
+        .values
+        .zipWithIndex
+        .map {
+          case (effect, index) =>
+            ChestSlotRef(1, 0) + index -> effectButton(effect)
+        } ++ ActiveSkillPremiumEffect.values.zipWithIndex.map {
+        case (effect, index) =>
+          ChestSlotRef(3, 0) + index -> effectButton(effect)
       }
     }.traverse(_.sequence)
 

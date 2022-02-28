@@ -12,7 +12,8 @@ class JdbcManaAmountPersistence[F[_]](implicit F: Sync[F]) extends ManaAmountPer
       DB.localTx { implicit session =>
         sql"select mana from playerdata where uuid = ${key.toString}"
           .map { rs => ManaAmount(rs.double("mana")) }
-          .first().apply()
+          .first()
+          .apply()
       }
     }
 
@@ -20,7 +21,8 @@ class JdbcManaAmountPersistence[F[_]](implicit F: Sync[F]) extends ManaAmountPer
     F.delay {
       DB.localTx { implicit session =>
         sql"update playerdata set mana = ${value.value} where uuid = ${key.toString}"
-          .update().apply()
+          .update()
+          .apply()
       }
     }
 

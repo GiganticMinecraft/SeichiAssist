@@ -16,7 +16,8 @@ trait AnywhereEnderChestAPI[F[_]] {
    *   - `Left` を返す場合はエラーメッセージを表示し。
    *   - `true`を返す場合はどこでもエンダーチェストを開ける。
    *
-   * @return 上記したような作用を記述する[[Kleisli]]
+   * @return
+   *   上記したような作用を記述する[[Kleisli]]
    */
   def openEnderChestOrNotifyInsufficientLevel: Kleisli[F, Player, AnywhereEnderAccessPermitted]
 

@@ -26,13 +26,12 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import java.time.LocalDate
 import java.util.{Random, UUID}
 
-class NewYearListener[
-  F[_] : ConcurrentEffect : NonServerThreadContextShift,
-  G[_] : SyncEffect
-](implicit effectEnvironment: EffectEnvironment,
+class NewYearListener[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]: SyncEffect](
+  implicit effectEnvironment: EffectEnvironment,
   repository: LastQuitPersistenceRepository[F, UUID],
   manaApi: ManaWriteApi[G, Player],
-  ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
+  ioOnMainThread: OnMinecraftServerThread[IO]
+) extends Listener {
 
   import cats.implicits._
 
@@ -45,9 +44,7 @@ class NewYearListener[
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、新年イベントを開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
-      ).foreach(
-        player.sendMessage
-      )
+      ).foreach(player.sendMessage)
     }
   }
 
@@ -64,10 +61,12 @@ class NewYearListener[
         val hasNotJoinedInEventYet = lastQuit.forall(NEW_YEAR_EVE.isEntirelyAfter)
 
         val effects =
-          if (hasNotJoinedInEventYet) SequentialEffect(
-            grantItemStacksEffect(sobaHead),
-            MessageEffect(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。"),
-            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
+          if (hasNotJoinedInEventYet)
+            SequentialEffect(
+              grantItemStacksEffect(sobaHead),
+              MessageEffect(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。"),
+              FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+            )
           else emptyEffect
 
         effects.run(player)
@@ -86,11 +85,12 @@ class NewYearListener[
 
     val player = event.getPlayer
     val today = LocalDate.now()
-    val expiryDate = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
+    val expiryDate =
+      new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
     if (today.isBefore(expiryDate) || today.isEqual(expiryDate)) {
       // マナを10%回復する
       manaApi.manaAmount(player).restoreFraction(0.1).runSync[SyncIO].unsafeRunSync()
-      player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+      player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
     }
   }
 

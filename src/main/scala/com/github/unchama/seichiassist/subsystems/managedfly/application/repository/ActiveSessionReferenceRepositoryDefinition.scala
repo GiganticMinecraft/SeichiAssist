@@ -12,30 +12,26 @@ object ActiveSessionReferenceRepositoryDefinition {
 
   import cats.implicits._
 
-  def withContext[
-    F[_] : ConcurrentEffect,
-    G[_] : SyncEffect,
-    Player: HasUuid
-  ](factory: ActiveSessionFactory[F, Player],
-    persistence: FlyDurationPersistenceRepository[G]): RepositoryDefinition[G, Player, ActiveSessionReference[F, G]] =
+  def withContext[F[_]: ConcurrentEffect, G[_]: SyncEffect, Player: HasUuid](
+    factory: ActiveSessionFactory[F, Player],
+    persistence: FlyDurationPersistenceRepository[G]
+  ): RepositoryDefinition[G, Player, ActiveSessionReference[F, G]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[G, Player, Option[RemainingFlyDuration]](persistence)(None)
       .toTwoPhased
-      .flatXmapWithPlayerAndIntermediateEffects(player => data =>
-        ActiveSessionReference
-          .createNew[F, G]
-          .flatTap { reference =>
+      .flatXmapWithPlayerAndIntermediateEffects(player =>
+        data =>
+          ActiveSessionReference.createNew[F, G].flatTap { reference =>
             EffectExtra.runAsyncAndForget[F, G, Option[Unit]] {
               data.traverse { duration =>
                 reference.replaceSession(factory.start[G](duration).run(player))
               }
             }
           }
-      )(sessionRef =>
-        sessionRef.getLatestFlyStatus.map(PlayerFlyStatus.toDurationOption)
-      )(sessionRef =>
-        EffectExtra.runAsyncAndForget[F, G, Unit] {
-          sessionRef.stopAnyRunningSession.as(())
-        } >> sessionRef.getLatestFlyStatus.map(PlayerFlyStatus.toDurationOption)
+      )(sessionRef => sessionRef.getLatestFlyStatus.map(PlayerFlyStatus.toDurationOption))(
+        sessionRef =>
+          EffectExtra.runAsyncAndForget[F, G, Unit] {
+            sessionRef.stopAnyRunningSession.as(())
+          } >> sessionRef.getLatestFlyStatus.map(PlayerFlyStatus.toDurationOption)
       )
 }

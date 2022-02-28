@@ -25,7 +25,7 @@ object Config {
   }
 }
 
-final class Config private(val config: FileConfiguration) {
+final class Config private (val config: FileConfiguration) {
   def getFlyExp: Int = config.getString("flyexp").toInt
 
   // NOTE:
@@ -69,14 +69,14 @@ final class Config private(val config: FileConfiguration) {
     s"jdbc:mysql://$hostComponent$portComponent"
   }
 
-  //サーバー番号取得
+  // サーバー番号取得
   def getServerNum: Int = getIntFailFast("servernum")
 
   def getServerId: String = config.getString("server-id")
 
   def chunkSearchCommandBase: String = config.getString("chunk-search-command-base")
 
-  //サブホーム最大数取得
+  // サブホーム最大数取得
   def getSubHomeMax: Int = getIntFailFast("subhomemax")
 
   def getDebugMode: Int = getIntFailFast("debugmode")
@@ -88,10 +88,15 @@ final class Config private(val config: FileConfiguration) {
   /**
    * 木の棒メニュー内のグリッド式保護メニューによる保護が許可されたワールドか
    *
-   * @param world 対象のワールド
-   * @return 許可されているならtrue、許可されていないならfalse
+   * @param world
+   *   対象のワールド
+   * @return
+   *   許可されているならtrue、許可されていないならfalse
    */
-  def isGridProtectionEnabled(world: World): Boolean = config.getStringList("GridProtectEnableWorld").parallelStream.anyMatch((name: String) => world.getName.equalsIgnoreCase(name))
+  def isGridProtectionEnabled(world: World): Boolean = config
+    .getStringList("GridProtectEnableWorld")
+    .parallelStream
+    .anyMatch((name: String) => world.getName.equalsIgnoreCase(name))
 
   /**
    * ワールドごとのグリッド保護上限値を返却。該当の設定値がなければデフォ値を返却
@@ -99,7 +104,8 @@ final class Config private(val config: FileConfiguration) {
    * @param world
    * @return
    */
-  def getGridLimitPerWorld(world: String): Int = config.getString("GridLimitPerWorld." + world, config.getString("GridLimitDefault")).toInt
+  def getGridLimitPerWorld(world: String): Int =
+    config.getString("GridLimitPerWorld." + world, config.getString("GridLimitDefault")).toInt
 
   def getTemplateKeepAmount: Int = getIntFailFast("GridTemplateKeepAmount")
 
@@ -127,15 +133,19 @@ final class Config private(val config: FileConfiguration) {
   /**
    * 各種URLを返します.
    *
-   * @param typeName Url以下の項目名
-   * @return 該当URL.ただし, typeNameが誤っていた場合は""を返します.
+   * @param typeName
+   *   Url以下の項目名
+   * @return
+   *   該当URL.ただし, typeNameが誤っていた場合は""を返します.
    */
   def getUrl(typeName: String): String = config.getString("Url." + typeName, "")
 
   def getFastDiggingEffectSystemConfiguration: FastDiggingEffectConfiguration = {
     new FastDiggingEffectConfiguration {
       override val amplifierPerBlockMined: Double = getDoubleFailFast("minutespeedamount")
-      override val amplifierPerPlayerConnection: Double = getDoubleFailFast("onlineplayersamount")
+      override val amplifierPerPlayerConnection: Double = getDoubleFailFast(
+        "onlineplayersamount"
+      )
     }
   }
 
@@ -186,17 +196,21 @@ final class Config private(val config: FileConfiguration) {
     }
   }
 
-  def getAnywhereEnderConfiguration: AnywhereEnderConfiguration = new AnywhereEnderConfiguration {
-    override val requiredMinimumLevel: SeichiLevel = SeichiLevel(getIntFailFast("dokodemoenderlevel"))
-  }
+  def getAnywhereEnderConfiguration: AnywhereEnderConfiguration =
+    new AnywhereEnderConfiguration {
+      override val requiredMinimumLevel: SeichiLevel = SeichiLevel(
+        getIntFailFast("dokodemoenderlevel")
+      )
+    }
 
   def getAutoSaveSystemConfiguration: AutoSaveConfiguration = new AutoSaveConfiguration {
     override val autoSaveEnabled: Boolean = config.getBoolean("AutoSave.Enable")
   }
 
-  def discordNotificationConfiguration: DiscordNotificationConfiguration = new DiscordNotificationConfiguration {
-    override val webhookUrl: String = config.getString("Url.webhook.notification")
-  }
+  def discordNotificationConfiguration: DiscordNotificationConfiguration =
+    new DiscordNotificationConfiguration {
+      override val webhookUrl: String = config.getString("Url.webhook.notification")
+    }
 
   def buildCountConfiguration: BuildCountConfiguration = new BuildCountConfiguration {
     override val multipliers: BuildExpMultiplier = new BuildExpMultiplier {

@@ -19,49 +19,61 @@ object EffectStatsSettingsRepositoryDefinition {
   /**
    * [[FastDiggingEffectStatsSettings]] と、それをトピックに60秒に一度通知するプロセスの組
    */
-  type RepositoryValue[F[_], G[_]] = (Ref[G, FastDiggingEffectStatsSettings], Deferred[F, Fiber[F, Nothing]])
+  type RepositoryValue[F[_], G[_]] =
+    (Ref[G, FastDiggingEffectStatsSettings], Deferred[F, Fiber[F, Nothing]])
 
   import cats.effect.implicits._
   import cats.implicits._
 
-  def withContext[
-    F[_] : ConcurrentEffect : JavaTime : ErrorLogger,
-    G[_] : Sync : ContextCoercion[*[_], F],
-    Player: HasUuid
-  ](persistence: FastDiggingEffectStatsSettingsPersistence[G],
-    publishEffectDiff: Pipe[F, (Player, (EffectListDiff, FastDiggingEffectStatsSettings)), Unit],
-    effectClock: fs2.Stream[F, (Player, FastDiggingEffectList)]): RepositoryDefinition[G, Player, RepositoryValue[F, G]] = {
-    FiberAdjoinedRepositoryDefinition.extending {
-      RefDictBackedRepositoryDefinition
-        .usingUuidRefDict[G, Player, FastDiggingEffectStatsSettings](persistence)(FastDiggingEffectStatsSettings.AlwaysReceiveDetails)
-        .toRefRepository
-    }.withAnotherTappingAction { case (player, pair) =>
-      val (ref, fiberPromise) = pair
+  def withContext[F[_]: ConcurrentEffect: JavaTime: ErrorLogger, G[_]: Sync: ContextCoercion[*[
+    _
+  ], F], Player: HasUuid](
+    persistence: FastDiggingEffectStatsSettingsPersistence[G],
+    publishEffectDiff: Pipe[
+      F,
+      (Player, (EffectListDiff, FastDiggingEffectStatsSettings)),
+      Unit
+    ],
+    effectClock: fs2.Stream[F, (Player, FastDiggingEffectList)]
+  ): RepositoryDefinition[G, Player, RepositoryValue[F, G]] = {
+    FiberAdjoinedRepositoryDefinition
+      .extending {
+        RefDictBackedRepositoryDefinition
+          .usingUuidRefDict[G, Player, FastDiggingEffectStatsSettings](persistence)(
+            FastDiggingEffectStatsSettings.AlwaysReceiveDetails
+          )
+          .toRefRepository
+      }
+      .withAnotherTappingAction {
+        case (player, pair) =>
+          val (ref, fiberPromise) = pair
 
-      val processStream: fs2.Stream[F, Unit] = {
-        effectClock
-          .through(StreamExtra.valuesWithKeyOfSameUuidAs(player))
-          .through(StreamExtra.takeEvery(60))
-          .evalMap { list => list.filteredList }
-          .map(_.map(_.effect))
-          .sliding(2)
-          .mapFilter { queue =>
-            queue.lastOption.map { latest =>
-              val previous = queue.dropRight(1).lastOption
+          val processStream: fs2.Stream[F, Unit] = {
+            effectClock
+              .through(StreamExtra.valuesWithKeyOfSameUuidAs(player))
+              .through(StreamExtra.takeEvery(60))
+              .evalMap { list => list.filteredList }
+              .map(_.map(_.effect))
+              .sliding(2)
+              .mapFilter { queue =>
+                queue.lastOption.map { latest =>
+                  val previous = queue.dropRight(1).lastOption
 
-              EffectListDiff(previous, latest)
-            }
+                  EffectListDiff(previous, latest)
+                }
+              }
+              .evalMap { diff => ContextCoercion(ref.get.map(diff -> _)) }
+              .map(player -> _)
+              .through(publishEffectDiff)
           }
-          .evalMap { diff => ContextCoercion(ref.get.map(diff -> _)) }
-          .map(player -> _)
-          .through(publishEffectDiff)
-      }
 
-      EffectExtra.runAsyncAndForget[F, G, Unit] {
-        StreamExtra.compileToRestartingStream("[EffectStatsSettingsRepository]") {
-          processStream
-        }.start >>= fiberPromise.complete
+          EffectExtra.runAsyncAndForget[F, G, Unit] {
+            StreamExtra
+              .compileToRestartingStream("[EffectStatsSettingsRepository]") {
+                processStream
+              }
+              .start >>= fiberPromise.complete
+          }
       }
-    }
   }
 }

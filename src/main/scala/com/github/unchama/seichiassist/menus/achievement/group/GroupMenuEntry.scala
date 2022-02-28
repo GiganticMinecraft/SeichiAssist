@@ -7,7 +7,8 @@ sealed trait GroupMenuEntry
 case class AchievementEntry(achievement: SeichiAchievement) extends GroupMenuEntry
 object AchievementEntry {
   def within(range: Seq[Int]): List[AchievementEntry] =
-    SeichiAchievement.values
+    SeichiAchievement
+      .values
       .toList
       .filter(achievement => range.contains(achievement.id))
       .map(AchievementEntry.apply)

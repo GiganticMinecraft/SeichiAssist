@@ -7,8 +7,6 @@ import org.bukkit.event.Listener
 object System {
   def wired[F[_]]: Subsystem[F] =
     new Subsystem[F] {
-      override val listeners: Seq[Listener] = Seq(
-        new RescuePlayerListener()
-      )
+      override val listeners: Seq[Listener] = Seq(new RescuePlayerListener())
     }
 }

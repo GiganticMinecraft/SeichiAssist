@@ -22,9 +22,7 @@ object GachaSkullData {
           import meta._
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます"
-            ).asJava
+            List(s"$RESET${GREEN}右クリックで使えます").asJava
           }
           setOwner("unchama")
         }
@@ -43,10 +41,7 @@ object GachaSkullData {
           import meta._
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます",
-              s"$RESET${LIGHT_PURPLE}投票ありがとナス♡"
-            ).asJava
+            List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${LIGHT_PURPLE}投票ありがとナス♡").asJava
           }
           setOwner("unchama")
         }
@@ -65,10 +60,7 @@ object GachaSkullData {
           import meta._
           setDisplayName(s"$YELLOW${BOLD}ガチャ券")
           setLore {
-            List(
-              s"$RESET${GREEN}右クリックで使えます",
-              s"$RESET${GRAY}ガチャ景品と交換しました。"
-            ).asJava
+            List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${GRAY}ガチャ景品と交換しました。").asJava
           }
           setOwner("unchama")
         }

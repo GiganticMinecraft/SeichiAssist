@@ -14,9 +14,7 @@ object ItemStackBlobProxy {
   type Base64 = String
   def itemStackToBlob(stack: ItemStack): Base64 = {
     Using.resource(new ByteArrayOutputStream()) { baos =>
-      Using.resource(new BukkitObjectOutputStream(baos)) { bos =>
-        bos.writeObject(stack)
-      }
+      Using.resource(new BukkitObjectOutputStream(baos)) { bos => bos.writeObject(stack) }
       Base64Coder.encodeLines(baos.toByteArray)
     }
   }
@@ -29,4 +27,3 @@ object ItemStackBlobProxy {
     }
   }
 }
-

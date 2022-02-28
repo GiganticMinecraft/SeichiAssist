@@ -11,9 +11,12 @@ object NewYear {
   val START_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 1, 1)
   val END_DATE: LocalDate = LocalDate.of(EVENT_YEAR, 1, 31)
   // 年越しそばが配布されるのは、大晦日の4:10から元旦の4:10まで
-  val NEW_YEAR_EVE: DateTimeDuration = DateTimeDuration.fromLocalDate(START_DATE.minusDays(1), START_DATE)
+  val NEW_YEAR_EVE: DateTimeDuration =
+    DateTimeDuration.fromLocalDate(START_DATE.minusDays(1), START_DATE)
   val itemDropRate: Double = validateItemDropRate(0.002)
-  val blogArticleUrl: String = validateUrl(s"https://www.seichi.network/post/newyear$EVENT_YEAR")
+  val blogArticleUrl: String = validateUrl(
+    s"https://www.seichi.network/post/newyear$EVENT_YEAR"
+  )
 
   def sobaWillBeDistributed: Boolean = NEW_YEAR_EVE.contains(LocalDateTime.now())
 

@@ -22,9 +22,9 @@ object PeriodicMebiusSpeechRoutine {
     1.minute
   }
 
-  def unblockAndSpeakTipsOrMessageRandomly(player: Player)
-                                          (implicit
-                                           serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]]): SyncIO[Unit] = {
+  def unblockAndSpeakTipsOrMessageRandomly(player: Player)(
+    implicit serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]]
+  ): SyncIO[Unit] = {
     val service = serviceRepository(player)
 
     for {
@@ -36,24 +36,23 @@ object PeriodicMebiusSpeechRoutine {
         .decodePropertyOfOwnedMebius(player)(helmet)
         .map { property =>
           val messageCandidates = new RandomizedCollection[String](
-            NonEmptyList(
-              MebiusTalks.at(property.level).mebiusMessage,
-              MebiusMessages.tips
-            )
+            NonEmptyList(MebiusTalks.at(property.level).mebiusMessage, MebiusMessages.tips)
           )
 
           messageCandidates.pickOne[SyncIO].flatMap { message =>
-            service.tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
+            service
+              .tryMakingSpeech(property, MebiusSpeech(message, MebiusSpeechStrength.Medium))
           }
         }
         .getOrElse(SyncIO.unit)
     } yield ()
   }
 
-  def start(player: Player)(implicit
-                            serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
-                            context: RepeatingTaskContext,
-                            onMainThread: OnMinecraftServerThread[IO]): IO[Nothing] = {
+  def start(player: Player)(
+    implicit serviceRepository: KeyedDataRepository[Player, MebiusSpeechService[SyncIO]],
+    context: RepeatingTaskContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): IO[Nothing] = {
 
     implicit val timer: Timer[IO] = IO.timer(context)
 

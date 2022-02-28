@@ -18,17 +18,15 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-  def wired[
-    F[_]
-    : OnMinecraftServerThread
-    : ConcurrentEffect
-    : NonServerThreadContextShift
-  ]: System[F] = {
+  def wired[F[_]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift]
+    : System[F] = {
     val persistence = new JdbcSubHomePersistence[F]()
 
     new System[F] {
       override implicit val api: SubHomeAPI[F] = new SubHomeAPI[F] {
-        override def upsertLocation(ownerUuid: UUID, id: SubHomeId)(location: SubHomeLocation): F[Unit] =
+        override def upsertLocation(ownerUuid: UUID, id: SubHomeId)(
+          location: SubHomeLocation
+        ): F[Unit] =
           persistence.upsertLocation(ownerUuid, id)(location)
         override def rename(ownerUuid: UUID, id: SubHomeId)(name: String): F[RenameResult] =
           persistence.rename(ownerUuid, id)(name)
@@ -38,9 +36,7 @@ object System {
           persistence.list(ownerUuid)
       }
       override val commands: Map[String, TabExecutor] =
-        Map(
-          "subhome" -> SubHomeCommand.executor
-        )
+        Map("subhome" -> SubHomeCommand.executor)
     }
   }
 }

@@ -25,19 +25,17 @@ object IncrementBuildExpWhenBuiltByHand {
 
   import cats.implicits._
 
-  def apply[
-    F[_], Player
-  ](implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
+  def apply[F[_], Player](
+    implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]
+  ): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
 
-  def using[
-    F[_]
-    : Monad
-    : ClassifyPlayerWorld[*[_], Player]
-    : SendMinecraftMessage[*[_], Player],
+  def using[F[_]: Monad: ClassifyPlayerWorld[*[_], Player]: SendMinecraftMessage[
+    *[_],
     Player
-  ](rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
-    dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]])
-   (implicit multiplier: BuildExpMultiplier): IncrementBuildExpWhenBuiltByHand[F, Player] =
+  ], Player](
+    rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
+    dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]]
+  )(implicit multiplier: BuildExpMultiplier): IncrementBuildExpWhenBuiltByHand[F, Player] =
     (player: Player, by: BuildExpAmount) => {
       val F: Monad[F] = Monad[F]
 
@@ -52,7 +50,9 @@ object IncrementBuildExpWhenBuiltByHand {
           )
         amountToIncrement <-
           rateLimiterRepository(player).requestPermission(amountToRequestIncrement)
-        dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(_.modifyExpAmount(_.add(amountToIncrement)))
+        dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(
+          _.modifyExpAmount(_.add(amountToIncrement))
+        )
         _ <- Diff
           .ofPairBy(dataPair)(_.levelCorrespondingToExp)
           .traverse(LevelUpNotifier[F, Player].notifyTo(player))

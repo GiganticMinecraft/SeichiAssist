@@ -22,26 +22,26 @@ object System {
   import ContextCoercion._
   import cats.implicits._
 
-  def wired[
-    F[_]: BreakCountReadAPI[IO, *[_], Player] : Functor : ContextCoercion[*[_], G],
-    G[_]: Effect
-  ](configuration: SystemConfiguration)(
-    implicit onMainThread: OnMinecraftServerThread[IO]
-  ): System[G] = new System[G] {
+  def wired[F[_]: BreakCountReadAPI[IO, *[_], Player]: Functor: ContextCoercion[*[_], G], G[
+    _
+  ]: Effect](
+    configuration: SystemConfiguration
+  )(implicit onMainThread: OnMinecraftServerThread[IO]): System[G] = new System[G] {
 
     override implicit val accessApi: AnywhereEnderChestAPI[G] = new AnywhereEnderChestAPI[G] {
-      override def canAccessAnywhereEnderChest(player: Player): G[AnywhereEnderAccessPermitted] = {
+      override def canAccessAnywhereEnderChest(
+        player: Player
+      ): G[AnywhereEnderAccessPermitted] = {
         implicitly[BreakCountReadAPI[IO, F, Player]]
-          .seichiAmountDataRepository(player).read
+          .seichiAmountDataRepository(player)
+          .read
           .coerceTo[G]
           .map { _.levelCorrespondingToExp }
           .map { currentLevel =>
             if (currentLevel < configuration.requiredMinimumLevel) {
               Left(
-                AccessDenialReason.NotEnoughLevel(
-                  currentLevel,
-                  configuration.requiredMinimumLevel
-                )
+                AccessDenialReason
+                  .NotEnoughLevel(currentLevel, configuration.requiredMinimumLevel)
               )
             } else {
               Right(())
@@ -49,22 +49,18 @@ object System {
           }
       }
 
-      override def openEnderChestOrNotifyInsufficientLevel: Kleisli[G, Player, AnywhereEnderAccessPermitted] =
-        Kleisli(canAccessAnywhereEnderChest)
-          .flatTap {
-            case Left(AccessDenialReason.NotEnoughLevel(_, minimumLevel)) =>
-              MessageEffectF[G](
-                s"どこでもエンダーチェストを開くには整地レベルがLv${minimumLevel}以上である必要があります。"
-              )
-            case Right(_) =>
-              Kleisli((player: Player) =>
-                PlayerEffects.openInventoryEffect(player.getEnderChest).run(player)
-              ).mapK(LiftIO.liftK)
-          }
+      override def openEnderChestOrNotifyInsufficientLevel
+        : Kleisli[G, Player, AnywhereEnderAccessPermitted] =
+        Kleisli(canAccessAnywhereEnderChest).flatTap {
+          case Left(AccessDenialReason.NotEnoughLevel(_, minimumLevel)) =>
+            MessageEffectF[G](s"どこでもエンダーチェストを開くには整地レベルがLv${minimumLevel}以上である必要があります。")
+          case Right(_) =>
+            Kleisli((player: Player) =>
+              PlayerEffects.openInventoryEffect(player.getEnderChest).run(player)
+            ).mapK(LiftIO.liftK)
+        }
     }
 
-    override val commands: Map[String, TabExecutor] = Map(
-      "ec" -> EnderChestCommand.executor[G]
-    )
+    override val commands: Map[String, TabExecutor] = Map("ec" -> EnderChestCommand.executor[G])
   }
 }

@@ -5,17 +5,15 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.values.VoteCoun
 import com.github.unchama.seichiassist.subsystems.ranking.domain.{RankingRecord, RankingRecordPersistence}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-class JdbcVoteRankingRecordPersistence[F[_] : Sync] extends RankingRecordPersistence[F, VoteCount] {
+class JdbcVoteRankingRecordPersistence[F[_]: Sync]
+    extends RankingRecordPersistence[F, VoteCount] {
   override def getAllRankingRecords: F[Vector[RankingRecord[VoteCount]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"SELECT name,p_vote from playerdata"
-        .map { rs =>
-          RankingRecord(
-            rs.string("name"),
-            VoteCount(rs.int("p_vote"))
-          )
-        }
-        .list().apply().toVector
+        .map { rs => RankingRecord(rs.string("name"), VoteCount(rs.int("p_vote"))) }
+        .list()
+        .apply()
+        .toVector
     }
   }
 }

@@ -47,7 +47,9 @@ class DateTimeDurationSpec extends AnyWordSpec {
     }
 
     "not be generated successfully with illegal LocalDate" in {
-      assertThrows[IllegalArgumentException](DateTimeDuration.fromLocalDate(dateFrom, dateTo.minusYears(2)))
+      assertThrows[IllegalArgumentException](
+        DateTimeDuration.fromLocalDate(dateFrom, dateTo.minusYears(2))
+      )
     }
   }
 

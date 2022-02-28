@@ -28,10 +28,9 @@ object System {
 
   private final val topicSubscriptionSize = 10
 
-  def wired[
-    G[_] : SyncEffect,
-    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]] : ErrorLogger,
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
+  def wired[G[_]: SyncEffect, F[_]: ConcurrentEffect: ContextCoercion[G, *[_]]: ErrorLogger](
+    breakCountReadAPI: BreakCountReadAPI[F, G, Player]
+  ): F[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val persistence: BreakCountBarVisibilityPersistence[G] =
@@ -56,23 +55,29 @@ object System {
       expBarSynchronizationRepositoryHandles <- {
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            RepositoryDefinition.Phased.TwoPhased(
-              ExpBarSynchronizationRepositoryTemplate
-                .initialization[G, F, Player](breakCountReadAPI, visibilityValues)(CreateFreshBossBar.in[G, F]),
-              ExpBarSynchronizationRepositoryTemplate.finalization[G, F, Player]
-            )
+            RepositoryDefinition
+              .Phased
+              .TwoPhased(
+                ExpBarSynchronizationRepositoryTemplate.initialization[G, F, Player](
+                  breakCountReadAPI,
+                  visibilityValues
+                )(CreateFreshBossBar.in[G, F]),
+                ExpBarSynchronizationRepositoryTemplate.finalization[G, F, Player]
+              )
           )
         }
       }
     } yield {
       new System[F, G, Player] {
         override val api: BreakCountBarAPI[G, Player] = new BreakCountBarAPI[G, Player] {
-          override val breakCountBarVisibility: KeyedDataRepository[Player, Ref[G, BreakCountBarVisibility]] =
+          override val breakCountBarVisibility
+            : KeyedDataRepository[Player, Ref[G, BreakCountBarVisibility]] =
             visibilityRepositoryHandles.repository
         }
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
-          visibilityRepositoryHandles, expBarSynchronizationRepositoryHandles
-        ).map(_.coerceFinalizationContextTo[F])
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+          Seq(visibilityRepositoryHandles, expBarSynchronizationRepositoryHandles).map(
+            _.coerceFinalizationContextTo[F]
+          )
       }
     }
   }

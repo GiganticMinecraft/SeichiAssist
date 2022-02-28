@@ -16,7 +16,8 @@ import org.bukkit.inventory.ItemStack
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
+class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[IO])
+    extends Listener {
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
     if (!isInEvent) return
@@ -45,13 +46,13 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
   }
 
   private def giveLoginBonus(day: LoginBonusDay)(implicit player: Player): Unit = {
-    val loginBonusSet = bonusAt(day)
-      .getOrElse(throw new NoSuchElementException("存在しないアイテムデータが指定されました。"))
+    val loginBonusSet =
+      bonusAt(day).getOrElse(throw new NoSuchElementException("存在しないアイテムデータが指定されました。"))
 
     loginBonusSet.foreach { loginBonus =>
       val messageOfDay = day match {
         case TotalDay(count) => s"${count}日目"
-        case Everyday => "毎日"
+        case Everyday        => "毎日"
       }
 
       loginBonus.itemId match {
@@ -64,14 +65,14 @@ class LimitedLoginBonusGifter(implicit ioOnMainThread: OnMinecraftServerThread[I
     }
   }
 
-  private def giveItem(itemName: String, amount: Int, item: ItemStack)(implicit player: Player): Unit = {
+  private def giveItem(itemName: String, amount: Int, item: ItemStack)(
+    implicit player: Player
+  ): Unit = {
     import cats.implicits._
 
     DefaultEffectEnvironment.unsafeRunEffectAsync(
       s"${itemName}を付与する",
-      List.fill(amount)(
-        grantItemStacksEffect(item)
-      ).sequence.run(player)
+      List.fill(amount)(grantItemStacksEffect(item)).sequence.run(player)
     )
   }
 }

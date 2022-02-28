@@ -9,8 +9,14 @@ trait BuildCountAPI[F[_], Player] {
 
   implicit val incrementBuildExpWhenBuiltByHand: IncrementBuildExpWhenBuiltByHand[F, Player]
 
-  implicit val incrementBuildExpWhenBuiltWithSkill: IncrementBuildExpWhenBuiltWithSkill[F, Player]
+  implicit val incrementBuildExpWhenBuiltWithSkill: IncrementBuildExpWhenBuiltWithSkill[
+    F,
+    Player
+  ]
 
-  implicit val playerBuildAmountRepository: KeyedDataRepository[Player, ReadOnlyRef[F, BuildAmountData]]
+  implicit val playerBuildAmountRepository: KeyedDataRepository[
+    Player,
+    ReadOnlyRef[F, BuildAmountData]
+  ]
 
 }

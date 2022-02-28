@@ -14,30 +14,31 @@ object PlayerCountEffectSynchronization {
 
   import scala.concurrent.duration._
 
-  def using[
-    F[_] : ConcurrentEffect : Timer : GetConnectedPlayers[*[_], Player] : GetNetworkConnectionCount,
-    Player: HasUuid
-  ](implicit
-    configuration: Configuration,
-    api: FastDiggingEffectApi[F, Player]): fs2.Stream[F, Unit] = {
+  def using[F[_]: ConcurrentEffect: Timer: GetConnectedPlayers[
+    *[_],
+    Player
+  ]: GetNetworkConnectionCount, Player: HasUuid](
+    implicit configuration: Configuration,
+    api: FastDiggingEffectApi[F, Player]
+  ): fs2.Stream[F, Unit] = {
 
-    fs2.Stream
-      .awakeEvery[F](1.minute)
-      .evalMap { _ =>
-        for {
-          count <- GetNetworkConnectionCount[F].now
-          players <- GetConnectedPlayers[F, Player].now
-          _ <- players.traverse { player =>
-            api.addEffect(
+    fs2.Stream.awakeEvery[F](1.minute).evalMap { _ =>
+      for {
+        count <- GetNetworkConnectionCount[F].now
+        players <- GetConnectedPlayers[F, Player].now
+        _ <- players.traverse { player =>
+          api
+            .addEffect(
               FastDiggingEffect(
                 FastDiggingAmplifier(configuration.amplifierPerPlayerConnection * count),
                 FastDiggingEffectCause.FromConnectionNumber(count)
               ),
               1.minute
-            ).run(player)
-          }
-        } yield ()
-      }
+            )
+            .run(player)
+        }
+      } yield ()
+    }
   }
 
 }

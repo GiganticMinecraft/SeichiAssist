@@ -35,26 +35,31 @@ object System {
 
   import cats.implicits._
 
-  def wired[
-    F[_] : ConcurrentEffect : NonServerThreadContextShift,
-    G[_] : SyncEffect : ContextCoercion[*[_], F] : Clock
-  ](rootLogger: Logger[F])
-   (implicit configuration: Configuration): G[System[F, G]] = {
+  def wired[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[
+    _
+  ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
+    rootLogger: Logger[F]
+  )(implicit configuration: Configuration): G[System[F, G]] = {
     import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage._
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
-    implicit val persistence: JdbcBuildAmountDataPersistence[G] = new JdbcBuildAmountDataPersistence[G]()
-    implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G] = new JdbcBuildAmountRateLimitPersistence[G]()
+    implicit val persistence: JdbcBuildAmountDataPersistence[G] =
+      new JdbcBuildAmountDataPersistence[G]()
+    implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G] =
+      new JdbcBuildAmountRateLimitPersistence[G]()
     implicit val logger: Logger[F] = PrefixedLogger[F]("BuildAssist-BuildAmount")(rootLogger)
     implicit val javaTimeG: JavaTime[G] = JavaTime.fromClock
 
     for {
       rateLimiterRepositoryControls <-
         BukkitRepositoryControls.createHandles(
-          RepositoryDefinition.Phased.SinglePhased.withoutTappingAction[G, Player, RateLimiter[G, BuildExpAmount]](
-            RateLimiterRepositoryDefinitions.initialization[G],
-            RateLimiterRepositoryDefinitions.finalization[G, UUID]
-          )
+          RepositoryDefinition
+            .Phased
+            .SinglePhased
+            .withoutTappingAction[G, Player, RateLimiter[G, BuildExpAmount]](
+              RateLimiterRepositoryDefinitions.initialization[G],
+              RateLimiterRepositoryDefinitions.finalization[G, UUID]
+            )
         )
 
       buildAmountDataRepositoryControls <-
@@ -69,27 +74,29 @@ object System {
           rateLimiterRepositoryControls.repository,
           buildAmountDataRepositoryControls.repository
         )
-      implicit val incrementBuildExpWhenBuiltBySkills: IncrementBuildExpWhenBuiltWithSkill[G, Player] =
+      implicit val incrementBuildExpWhenBuiltBySkills
+        : IncrementBuildExpWhenBuiltWithSkill[G, Player] =
         IncrementBuildExpWhenBuiltWithSkill.withConfig(expMultiplier)
 
       new System[F, G] {
         override val api: BuildCountAPI[G, Player] = new BuildCountAPI[G, Player] {
-          override val incrementBuildExpWhenBuiltByHand: IncrementBuildExpWhenBuiltByHand[G, Player] =
+          override val incrementBuildExpWhenBuiltByHand
+            : IncrementBuildExpWhenBuiltByHand[G, Player] =
             incrementBuildExp
-          override val incrementBuildExpWhenBuiltWithSkill: IncrementBuildExpWhenBuiltWithSkill[G, Player] =
+          override val incrementBuildExpWhenBuiltWithSkill
+            : IncrementBuildExpWhenBuiltWithSkill[G, Player] =
             incrementBuildExpWhenBuiltBySkills
-          override val playerBuildAmountRepository: KeyedDataRepository[Player, ReadOnlyRef[G, BuildAmountData]] =
+          override val playerBuildAmountRepository
+            : KeyedDataRepository[Player, ReadOnlyRef[G, BuildAmountData]] =
             buildAmountDataRepositoryControls.repository.map(ref => ReadOnlyRef.fromRef(ref))
         }
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = List(
-          rateLimiterRepositoryControls,
-          buildAmountDataRepositoryControls
-        ).map(_.coerceFinalizationContextTo[F])
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+          List(rateLimiterRepositoryControls, buildAmountDataRepositoryControls).map(
+            _.coerceFinalizationContextTo[F]
+          )
 
-        override val listeners: Seq[Listener] = List(
-          new BuildExpIncrementer[G],
-        )
+        override val listeners: Seq[Listener] = List(new BuildExpIncrementer[G])
       }
     }
   }

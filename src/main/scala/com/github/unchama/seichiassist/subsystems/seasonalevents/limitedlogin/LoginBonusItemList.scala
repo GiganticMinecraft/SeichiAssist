@@ -12,6 +12,6 @@ object LoginBonusItemList {
 
   def bonusAt(day: LoginBonusDay): Option[Set[LoginBonus]] = day match {
     case TotalDay(count) => map.get(TotalDay(count))
-    case Everyday => Some(dailyItem)
+    case Everyday        => Some(dailyItem)
   }
 }

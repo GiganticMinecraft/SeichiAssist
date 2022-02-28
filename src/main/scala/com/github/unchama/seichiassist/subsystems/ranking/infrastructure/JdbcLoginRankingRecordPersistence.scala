@@ -5,17 +5,15 @@ import com.github.unchama.seichiassist.subsystems.ranking.domain.values.LoginTim
 import com.github.unchama.seichiassist.subsystems.ranking.domain.{RankingRecord, RankingRecordPersistence}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-class JdbcLoginRankingRecordPersistence[F[_] : Sync] extends RankingRecordPersistence[F, LoginTime] {
+class JdbcLoginRankingRecordPersistence[F[_]: Sync]
+    extends RankingRecordPersistence[F, LoginTime] {
   override def getAllRankingRecords: F[Vector[RankingRecord[LoginTime]]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"SELECT name,playtick from playerdata"
-        .map { rs =>
-          RankingRecord(
-            rs.string("name"),
-            LoginTime(rs.int("playtick"))
-          )
-        }
-        .list().apply().toVector
+        .map { rs => RankingRecord(rs.string("name"), LoginTime(rs.int("playtick"))) }
+        .list()
+        .apply()
+        .toVector
     }
   }
 }

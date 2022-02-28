@@ -15,7 +15,8 @@ package object builder {
 
   type CommandArgumentsParser[-CS] = (CS, RawCommandContext) => IO[Option[PartiallyParsedArgs]]
 
-  type ScopedContextualExecution[-CS <: CommandSender] = ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
+  type ScopedContextualExecution[-CS <: CommandSender] =
+    ParsedArgCommandContext[CS] => IO[TargetedEffect[CS]]
 
   type ExecutionF[F[_], CS <: CommandSender, U] = ParsedArgCommandContext[CS] => F[U]
 }

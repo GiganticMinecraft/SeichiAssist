@@ -22,8 +22,7 @@ object BlockPlacementSkillMenu extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, onMainThread}
   import menuinventory.syntax._
 
-  class Environment(implicit
-                    val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
+  class Environment(implicit val canOpenMainMenu: CanOpen[IO, BuildMainMenu.type])
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"$DARK_PURPLE$BOLD「範囲設置スキル」設定画面")
@@ -134,9 +133,7 @@ object BlockPlacementSkillMenu extends Menu {
         .lore {
           List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
             if (playerData.AREAint == 5) {
-              Seq(
-                s"$RESET${RED}これ以上範囲設定を大きくできません。"
-              )
+              Seq(s"$RESET${RED}これ以上範囲設定を大きくできません。")
             } else {
               Seq(
                 s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
@@ -150,22 +147,18 @@ object BlockPlacementSkillMenu extends Menu {
 
       Button(
         iconItemStack,
-        LeftClickButtonEffect(
-          DeferredEffect(
-            IO {
-              if (playerData.AREAint < 5)
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                  UnfocusedEffect {
-                    playerData.AREAint += 1
-                  },
-                  MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
-                  open
-                )
-              else TargetedEffect.emptyEffect
-            }
-          )
-        )
+        LeftClickButtonEffect(DeferredEffect(IO {
+          if (playerData.AREAint < 5)
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              UnfocusedEffect {
+                playerData.AREAint += 1
+              },
+              MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
+              open
+            )
+          else TargetedEffect.emptyEffect
+        }))
       )
     }
 
@@ -203,40 +196,33 @@ object BlockPlacementSkillMenu extends Menu {
       val iconItemStack = new SkullItemStackBuilder("MHF_ArrowDown")
         .title(s"$YELLOW$UNDERLINE${BOLD}範囲設定を一段階小さくする")
         .lore(
-          List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange").concat(
-            if (playerData.AREAint == 1) {
-              List(
-                s"${RED}これ以上範囲設定を小さくできません。"
-              )
+          List(s"$RESET${AQUA}現在の範囲設定： $currentRange×$currentRange")
+            .concat(if (playerData.AREAint == 1) {
+              List(s"${RED}これ以上範囲設定を小さくできません。")
             } else {
               List(
                 s"$RESET$AQUA${UNDERLINE}変更後の範囲設定： $changedRange×$changedRange",
                 s"$RESET$RED※範囲設定の最小値は3×3※"
               )
-            }
-          )
+            })
         )
         .amount(3)
         .build()
 
       Button(
         iconItemStack,
-        LeftClickButtonEffect(
-          DeferredEffect(
-            IO {
-              if (playerData.AREAint > 1)
-                SequentialEffect(
-                  FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-                  UnfocusedEffect {
-                    playerData.AREAint -= 1
-                  },
-                  MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
-                  open
-                )
-              else TargetedEffect.emptyEffect
-            }
-          )
-        )
+        LeftClickButtonEffect(DeferredEffect(IO {
+          if (playerData.AREAint > 1)
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+              UnfocusedEffect {
+                playerData.AREAint -= 1
+              },
+              MessageEffect(s"${RED}現在の範囲設定は $changedRange×$changedRange です"),
+              open
+            )
+          else TargetedEffect.emptyEffect
+        }))
       )
     }
 
@@ -274,7 +260,9 @@ object BlockPlacementSkillMenu extends Menu {
           val currentStatus = playerData.zs_minestack_flag
 
           val iconItemStackBuilder = new IconItemStackBuilder(Material.CHEST)
-            .title(s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}")
+            .title(
+              s"$YELLOW$UNDERLINE${BOLD}MineStack優先設定: ${if (currentStatus) "ON" else "OFF"}"
+            )
             .lore(
               s"$RESET${GRAY}スキルでブロックを並べるとき",
               s"$RESET${GRAY}MineStackの在庫を優先して消費します。",
@@ -289,7 +277,11 @@ object BlockPlacementSkillMenu extends Menu {
               FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
               DeferredEffect {
                 IO {
-                  if (amountData.levelCorrespondingToExp.level < BuildAssist.config.getZoneskillMinestacklevel)
+                  if (
+                    amountData
+                      .levelCorrespondingToExp
+                      .level < BuildAssist.config.getZoneskillMinestacklevel
+                  )
                     MessageEffect(s"${RED}建築Lvが足りません")
                   else
                     SequentialEffect(
@@ -308,13 +300,13 @@ object BlockPlacementSkillMenu extends Menu {
     }
   }
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     val computations = ButtonComputations(player)
     import computations._
 
-    val constantPart = Map(
-      0 -> buttonToOpenPreviousPage
-    )
+    val constantPart = Map(0 -> buttonToOpenPreviousPage)
 
     import cats.implicits._
 
@@ -328,9 +320,7 @@ object BlockPlacementSkillMenu extends Menu {
         24 -> computeButtonToDecreaseRange(),
         25 -> computeButtonToMinimizeRange(),
         35 -> computeButtonToToggleConsumingMineStack()
-      )
-        .map(_.sequence)
-        .sequence
+      ).map(_.sequence).sequence
 
     for {
       dynamicPart <- dynamicPartComputation

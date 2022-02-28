@@ -12,14 +12,17 @@ import io.chrisdavenport.log4cats.ErrorLogger
 
 object BreakCountBarVisibilityRepositoryDefinition {
 
-  def withContext[
-    G[_] : Sync,
-    F[_] : ConcurrentEffect : ContextCoercion[G, *[_]] : ErrorLogger,
-    Player: HasUuid,
-  ](persistence: BreakCountBarVisibilityPersistence[G],
-    publishChanges: Pipe[F, (Player, BreakCountBarVisibility), Unit]): RepositoryDefinition[G, Player, Ref[G, BreakCountBarVisibility]] =
+  def withContext[G[_]: Sync, F[_]: ConcurrentEffect: ContextCoercion[
+    G,
+    *[_]
+  ]: ErrorLogger, Player: HasUuid](
+    persistence: BreakCountBarVisibilityPersistence[G],
+    publishChanges: Pipe[F, (Player, BreakCountBarVisibility), Unit]
+  ): RepositoryDefinition[G, Player, Ref[G, BreakCountBarVisibility]] =
     SignallingRepositoryDefinition.withPublishSinkHidden(publishChanges) {
-      RefDictBackedRepositoryDefinition.usingUuidRefDict(persistence)(BreakCountBarVisibility.Shown)
+      RefDictBackedRepositoryDefinition.usingUuidRefDict(persistence)(
+        BreakCountBarVisibility.Shown
+      )
     }
 
 }

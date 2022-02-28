@@ -5,18 +5,22 @@ import com.github.unchama.seichiassist.seichiskill._
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 import com.github.unchama.seichiassist.seichiskill.effect.{ActiveSkillEffect, UnlockableActiveSkillEffect}
 
-case class PlayerSkillEffectState(obtainedEffects: Set[UnlockableActiveSkillEffect],
-                                  selection: ActiveSkillEffect)
+case class PlayerSkillEffectState(
+  obtainedEffects: Set[UnlockableActiveSkillEffect],
+  selection: ActiveSkillEffect
+)
 
 object PlayerSkillEffectState {
   val initial: PlayerSkillEffectState =
     PlayerSkillEffectState(Set(), NoEffect)
 }
 
-case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
-                            usageMode: SeichiSkillUsageMode,
-                            activeSkill: Option[ActiveSkill],
-                            assaultSkill: Option[AssaultSkill]) {
+case class PlayerSkillState(
+  obtainedSkills: Set[SeichiSkill],
+  usageMode: SeichiSkillUsageMode,
+  activeSkill: Option[ActiveSkill],
+  assaultSkill: Option[AssaultSkill]
+) {
   lazy val consumedActiveSkillPoint: Int =
     obtainedSkills.toList.map(_.requiredActiveSkillPoint).sum
 
@@ -46,8 +50,7 @@ case class PlayerSkillState(obtainedSkills: Set[SeichiSkill],
     SkillDependency.prerequisites(skill).find(p => !obtainedSkills.contains(p))
 
   /**
-   * `skill`が選択されていた場合、その選択を解除した状態を、
-   * そうでなければこの状態を返す。
+   * `skill`が選択されていた場合、その選択を解除した状態を、 そうでなければこの状態を返す。
    */
   def deselect(skill: SeichiSkill): PlayerSkillState =
     skill match {
@@ -75,10 +78,12 @@ object PlayerSkillState {
       assaultSkill = None
     )
 
-  def fromUnsafeConfiguration(obtainedSkills: Set[SeichiSkill],
-                              usageMode: SeichiSkillUsageMode,
-                              activeSkill: Option[ActiveSkill],
-                              assaultSkill: Option[AssaultSkill]): PlayerSkillState = {
+  def fromUnsafeConfiguration(
+    obtainedSkills: Set[SeichiSkill],
+    usageMode: SeichiSkillUsageMode,
+    activeSkill: Option[ActiveSkill],
+    assaultSkill: Option[AssaultSkill]
+  ): PlayerSkillState = {
     def notObtained(skill: SeichiSkill): Boolean = !obtainedSkills.contains(skill)
 
     val selections = Seq(activeSkill, assaultSkill).flatten

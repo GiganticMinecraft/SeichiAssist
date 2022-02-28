@@ -7,9 +7,9 @@ import com.github.unchama.generic.effect.concurrent.Mutex
 
 object MutexRepositoryDefinition {
 
-  def over[
-    F[_] : Concurrent, G[_] : Sync : ContextCoercion[*[_], F], Player, R
-  ](underlying: RepositoryDefinition.Phased[G, Player, R]): underlying.Self[Mutex[F, G, R]] =
+  def over[F[_]: Concurrent, G[_]: Sync: ContextCoercion[*[_], F], Player, R](
+    underlying: RepositoryDefinition.Phased[G, Player, R]
+  ): underlying.Self[Mutex[F, G, R]] =
     underlying.flatXmap(r => Mutex.of[F, G, R](r))(_.readLatest)
 
 }

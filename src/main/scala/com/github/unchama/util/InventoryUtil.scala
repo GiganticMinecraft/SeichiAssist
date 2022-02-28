@@ -11,11 +11,13 @@ object InventoryUtil {
     def row: Int = inventory.getSize / 9
   }
 
-  def createInventory(holder: Option[InventoryHolder] = None,
-                      size: InventorySize = 4.chestRows,
-                      title: Option[String] = None): Inventory =
+  def createInventory(
+    holder: Option[InventoryHolder] = None,
+    size: InventorySize = 4.chestRows,
+    title: Option[String] = None
+  ): Inventory =
     size match {
-      case Left(size) => Bukkit.createInventory(holder.orNull, size.rows * 9, title.orNull)
+      case Left(size)  => Bukkit.createInventory(holder.orNull, size.rows * 9, title.orNull)
       case Right(size) => Bukkit.createInventory(holder.orNull, size, title.orNull)
     }
 }

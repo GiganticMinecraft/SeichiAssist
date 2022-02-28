@@ -27,33 +27,22 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
     )
 
   val newYearGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
-      newYearApple,
-      newYearBag
-    )
+    Util.grantItemStacksEffect(newYearApple, newYearBag)
 
   val halloweenGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
-      halloweenPotion,
-      halloweenHoe
-    )
+    Util.grantItemStacksEffect(halloweenPotion, halloweenHoe)
 
   val anniversaryGrantEffect: TargetedEffect[Player] =
-    Util.grantItemStacksEffect(
-      mineHead,
-      strangeSapling,
-      mendingBook,
-      anniversaryShovel
-    )
+    Util.grantItemStacksEffect(mineHead, strangeSapling, mendingBook, anniversaryShovel)
 
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val effect = context.args.yetToBeParsed match {
         case "anniversary" :: _ => anniversaryGrantEffect
-        case "christmas" :: _ => christsmasGrantEffect
-        case "newyear" :: _ => newYearGrantEffect
-        case "halloween" :: _ => halloweenGrantEffect
-        case _ => emptyEffect
+        case "christmas" :: _   => christsmasGrantEffect
+        case "newyear" :: _     => newYearGrantEffect
+        case "halloween" :: _   => halloweenGrantEffect
+        case _                  => emptyEffect
       }
 
       IO.pure(effect)

@@ -13,29 +13,29 @@ object BreakCountEffectSynchronization {
 
   import cats.implicits._
 
-  def using[
-    F[_] : ConcurrentEffect : Timer,
-    G[_],
-    Player: HasUuid
-  ](implicit
-    configuration: Configuration,
+  def using[F[_]: ConcurrentEffect: Timer, G[_], Player: HasUuid](
+    implicit configuration: Configuration,
     api: FastDiggingEffectWriteApi[F, Player],
-    breakCountReadAPI: BreakCountReadAPI[F, G, Player]): fs2.Stream[F, Unit] = {
+    breakCountReadAPI: BreakCountReadAPI[F, G, Player]
+  ): fs2.Stream[F, Unit] = {
 
     breakCountReadAPI
       .batchedIncreases(1.minute)
       .evalTap(batch =>
-        batch
-          .toUuidCollatedList
-          .traverse { case (player, amount) =>
-            api.addEffect(
-              FastDiggingEffect(
-                FastDiggingAmplifier((amount.amount * configuration.amplifierPerBlockMined).toDouble),
-                FastDiggingEffectCause.FromMinuteBreakCount(amount)
-              ),
-              1.minute
-            ).run(player)
-          }
+        batch.toUuidCollatedList.traverse {
+          case (player, amount) =>
+            api
+              .addEffect(
+                FastDiggingEffect(
+                  FastDiggingAmplifier(
+                    (amount.amount * configuration.amplifierPerBlockMined).toDouble
+                  ),
+                  FastDiggingEffectCause.FromMinuteBreakCount(amount)
+                ),
+                1.minute
+              )
+              .run(player)
+        }
       )
       .as(())
   }

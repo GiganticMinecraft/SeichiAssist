@@ -1,14 +1,14 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.IO
+import com.github.unchama.seichiassist.ManagedWorld._
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusProperty, NormalMebius}
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
@@ -83,14 +83,18 @@ class PlayerJoinListener extends Listener {
       }
     }
 
-    //join時とonenable時、プレイヤーデータを最新の状態に更新
+    // join時とonenable時、プレイヤーデータを最新の状態に更新
     playerMap(player.getUniqueId).updateOnJoin()
 
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {
-      //初見さんであることを全体告知
-      Util.sendMessageToEveryoneIgnoringPreference(s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！")
-      Util.sendMessageToEveryoneIgnoringPreference(s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic")
+      // 初見さんであることを全体告知
+      Util.sendMessageToEveryoneIgnoringPreference(
+        s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！"
+      )
+      Util.sendMessageToEveryoneIgnoringPreference(
+        s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic"
+      )
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
 
       // ルール熟読をタイトル・メッセージ で迫る//
@@ -100,7 +104,7 @@ class PlayerJoinListener extends Listener {
       player.sendTitle(s"${YELLOW}ルールは確認されましたか？", s"${LIGHT_PURPLE}公式サイトで確認できます。", 10, 10, 10)
       player.sendMessage(s"${YELLOW}ルール→ $YELLOW${UNDERLINE}https://www.seichi.network/rule")
 
-      //初見プレイヤーに木の棒、エリトラ、ピッケルを配布
+      // 初見プレイヤーに木の棒、エリトラ、ピッケルを配布
       val inv = player.getInventory
       inv.addItem(new ItemStack(Material.STICK))
       inv.addItem(new ItemStack(Material.ELYTRA))
@@ -112,10 +116,12 @@ class PlayerJoinListener extends Listener {
       inv.addItem(pickaxe)
       inv.addItem(new ItemStack(Material.DIAMOND_SPADE))
 
-      inv.addItem(new ItemStack(Material.LOG, 64, 0.toShort),
+      inv.addItem(
+        new ItemStack(Material.LOG, 64, 0.toShort),
         new ItemStack(Material.LOG, 64, 0.toShort),
         new ItemStack(Material.LOG, 64, 2.toShort),
-        new ItemStack(Material.LOG_2, 64, 1.toShort))
+        new ItemStack(Material.LOG_2, 64, 1.toShort)
+      )
 
       inv.addItem(new ItemStack(Material.BAKED_POTATO, 64))
 
@@ -146,7 +152,7 @@ class PlayerJoinListener extends Listener {
           """この他細かなルールや処罰の具体的な内容はHPをご確認ください。
             |ルールはサーバー内の情勢に応じて予告なく更新されることがあります。
             |その際プレイヤーに個別通知することは致しませんので、ご利用の際にはお手数ですが随時最新のルールをご確認ください。
-            |""".stripMargin.linesIterator.mkString("\n"),
+            |""".stripMargin.linesIterator.mkString("\n")
         )
         contents.foreach(meta.addPage(_))
         meta.setTitle("サーバーに初参加された方にお読みいただきたい本(v1)")
@@ -155,19 +161,22 @@ class PlayerJoinListener extends Listener {
         is.setItemMeta(meta)
       })
 
-      //メビウスおひとつどうぞ
-      inv.setHelmet(BukkitMebiusItemStackCodec.materialize(
-        // **getDisplayNameは二つ名も含むのでMCIDにはgetNameが適切**
-        MebiusProperty.initialProperty(NormalMebius, player.getName, player.getUniqueId.toString),
-        damageValue = 0.toShort
-      ))
+      // メビウスおひとつどうぞ
+      inv.setHelmet(
+        BukkitMebiusItemStackCodec.materialize(
+          // **getDisplayNameは二つ名も含むのでMCIDにはgetNameが適切**
+          MebiusProperty
+            .initialProperty(NormalMebius, player.getName, player.getUniqueId.toString),
+          damageValue = 0.toShort
+        )
+      )
 
       /* 期間限定ダイヤ配布.期間終了したので64→32に変更して恒久継続 */
       inv.addItem(new ItemStack(Material.DIAMOND, 32))
 
       player.sendMessage("初期装備を配布しました。Eキーで確認してネ")
 
-      //初見さんにメッセージを送信
+      // 初見さんにメッセージを送信
       player.sendMessage {
         "整地鯖では整地をするとレベルが上がり、様々な恩恵が受けられます。\n初めての方は整地ワールドで掘ってレベルを上げてみましょう！\n木の棒を右クリックしてメニューを開き右上のビーコンボタンをクリック！"
       }
@@ -177,7 +186,11 @@ class PlayerJoinListener extends Listener {
     if (SeichiAssist.seichiAssistConfig.getServerNum == 5)
       player.sendTitle(
         s"${WHITE}ここは$BLUE${UNDERLINE}上級者向けのサーバー${WHITE}",
-        s"${WHITE}始めたては他がおすすめ", 10, 70, 20)
+        s"${WHITE}始めたては他がおすすめ",
+        10,
+        70,
+        20
+      )
   }
 
   // プレイヤーがワールドを移動したとき
@@ -200,12 +213,17 @@ class PlayerJoinListener extends Listener {
     // アサルトスキルを切る
     val skillState = pd.skillState.get.unsafeRunSync()
     if (skillState.usageMode != Disabled) {
-      SeichiAssist.instance.assaultSkillRoutines(p).stopAnyFiber.flatMap(stopped =>
-        if (stopped)
-          FocusedSoundEffect(Sound.BLOCK_LEVER_CLICK, 1f, 1f).run(p)
-        else
-          IO.unit
-      ).unsafeRunSync()
+      SeichiAssist
+        .instance
+        .assaultSkillRoutines(p)
+        .stopAnyFiber
+        .flatMap(stopped =>
+          if (stopped)
+            FocusedSoundEffect(Sound.BLOCK_LEVER_CLICK, 1f, 1f).run(p)
+          else
+            IO.unit
+        )
+        .unsafeRunSync()
     }
   }
 }

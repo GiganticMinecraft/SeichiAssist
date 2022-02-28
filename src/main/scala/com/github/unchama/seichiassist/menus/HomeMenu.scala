@@ -29,8 +29,10 @@ object HomeMenu extends Menu {
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
   import eu.timepit.refined.auto._
 
-  class Environment(implicit val ioCanOpenConfirmationMenu: IO CanOpen ConfirmationMenu,
-                    val ioCanReadSubHome: SubHomeReadAPI[IO])
+  class Environment(
+    implicit val ioCanOpenConfirmationMenu: IO CanOpen ConfirmationMenu,
+    val ioCanReadSubHome: SubHomeReadAPI[IO]
+  )
 
   /**
    * メニューのサイズとタイトルに関する情報
@@ -38,9 +40,12 @@ object HomeMenu extends Menu {
   override val frame: MenuFrame = MenuFrame(3.chestRows, s"$DARK_PURPLE${BOLD}ホームメニュー")
 
   /**
-   * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+   * @return
+   *   `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import eu.timepit.refined._
     import eu.timepit.refined.auto._
     import eu.timepit.refined.numeric._
@@ -53,10 +58,11 @@ object HomeMenu extends Menu {
     } yield {
       val column = refineV[Interval.ClosedOpen[0, 9]](subHomeNumber - 1)
       column match {
-        case Right(value) => Map(
-          ChestSlotRef(0, value) -> ConstantButtons.warpToSubHomePointButton(subHomeNumber),
-          ChestSlotRef(2, value) -> ConstantButtons.setSubHomeButton(subHomeNumber)
-        )
+        case Right(value) =>
+          Map(
+            ChestSlotRef(0, value) -> ConstantButtons.warpToSubHomePointButton(subHomeNumber),
+            ChestSlotRef(2, value) -> ConstantButtons.setSubHomeButton(subHomeNumber)
+          )
         case Left(_) => throw new RuntimeException("This branch should not be reached.")
       }
     }
@@ -70,15 +76,13 @@ object HomeMenu extends Menu {
       implicit val ioCanReadSubHome: SubHomeReadAPI[IO] = environment.ioCanReadSubHome
       column match {
         case Right(value) => ChestSlotRef(1, value) -> setSubHomeNameButton[IO](subHomeNumber)
-        case Left(_) => throw new RuntimeException("This branch should not be reached.")
+        case Left(_)      => throw new RuntimeException("This branch should not be reached.")
       }
-    }.sequence)
-      .toList
-      .sequence
+    }.sequence).toList.sequence
 
     for {
       dynamicPart <- dynamicPartComputation
-    } yield MenuSlotLayout(subHomePointPart.flatten ++ dynamicPart.toMap:_*)
+    } yield MenuSlotLayout(subHomePointPart.flatten ++ dynamicPart.toMap: _*)
   }
 
   private object ConstantButtons {
@@ -86,11 +90,16 @@ object HomeMenu extends Menu {
       Button(
         new IconItemStackBuilder(Material.COMPASS)
           .title(s"$YELLOW$UNDERLINE${BOLD}サブホームポイント${subHomeNumber}にワープ")
-          .lore(List(
-            s"${GRAY}あらかじめ設定した", s"${GRAY}サブホームポイント${subHomeNumber}にワープします",
-            s"${DARK_GRAY}うまく機能しない時は", s"${DARK_GRAY}再接続してみてください",
-            s"$DARK_RED${UNDERLINE}クリックでワープ", s"${DARK_GRAY}command->[/subhome warp $subHomeNumber]"
-          ))
+          .lore(
+            List(
+              s"${GRAY}あらかじめ設定した",
+              s"${GRAY}サブホームポイント${subHomeNumber}にワープします",
+              s"${DARK_GRAY}うまく機能しない時は",
+              s"${DARK_GRAY}再接続してみてください",
+              s"$DARK_RED${UNDERLINE}クリックでワープ",
+              s"${DARK_GRAY}command->[/subhome warp $subHomeNumber]"
+            )
+          )
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
@@ -104,13 +113,15 @@ object HomeMenu extends Menu {
       Button(
         new IconItemStackBuilder(Material.BED)
           .title(s"$YELLOW$UNDERLINE${BOLD}サブホームポイント${subHomeNumber}を設定")
-          .lore(List(
-            s"${GRAY}現在位置をサブホームポイント$subHomeNumber",
-            s"${GRAY}として設定します",
-            s"$DARK_GRAY※確認メニューが開きます",
-            s"$DARK_RED${UNDERLINE}クリックで設定",
-            s"${DARK_GRAY}command->[/subhome set $subHomeNumber]"
-          ))
+          .lore(
+            List(
+              s"${GRAY}現在位置をサブホームポイント$subHomeNumber",
+              s"${GRAY}として設定します",
+              s"$DARK_GRAY※確認メニューが開きます",
+              s"$DARK_RED${UNDERLINE}クリックで設定",
+              s"${DARK_GRAY}command->[/subhome set $subHomeNumber]"
+            )
+          )
           .build(),
         LeftClickButtonEffect {
           SequentialEffect(
@@ -122,7 +133,9 @@ object HomeMenu extends Menu {
   }
 
   private case class ButtonComputations(player: Player) {
-    def setSubHomeNameButton[F[_] : SubHomeReadAPI : ConcurrentEffect](subHomeNumber: Int): IO[Button] = {
+    def setSubHomeNameButton[F[_]: SubHomeReadAPI: ConcurrentEffect](
+      subHomeNumber: Int
+    ): IO[Button] = {
       import cats.implicits._
 
       val subHomeId = SubHomeId(subHomeNumber)
@@ -135,25 +148,20 @@ object HomeMenu extends Menu {
           case Some(SubHome(optionName, location)) =>
             val worldName = {
               ManagedWorld
-                .fromName(location.worldName).map(_.japaneseName)
+                .fromName(location.worldName)
+                .map(_.japaneseName)
                 .getOrElse(location.worldName)
             }
 
             val nameStatus = optionName match {
-              case Some(name) => List(
-                s"${GRAY}サブホームポイント${subHomeId}は",
-                s"$GRAY$name",
-                s"${GRAY}と名付けられています",
-              )
-              case None => List(
-                s"${GRAY}サブホームポイント${subHomeId}は",
-                s"${GRAY}名前が未設定です",
-              )
+              case Some(name) =>
+                List(s"${GRAY}サブホームポイント${subHomeId}は", s"$GRAY$name", s"${GRAY}と名付けられています")
+              case None => List(s"${GRAY}サブホームポイント${subHomeId}は", s"${GRAY}名前が未設定です")
             }
 
             val commandInfo = List(
               s"$DARK_RED${UNDERLINE}クリックで名称変更",
-              s"${DARK_GRAY}command->[/subhome name $subHomeId]",
+              s"${DARK_GRAY}command->[/subhome name $subHomeId]"
             )
 
             val coordinates = List(
@@ -184,7 +192,8 @@ object HomeMenu extends Menu {
     }
   }
 
-  case class ConfirmationMenu(changeSubHomeNumber: Option[Int], subHomeName: String = "") extends Menu {
+  case class ConfirmationMenu(changeSubHomeNumber: Option[Int], subHomeName: String = "")
+      extends Menu {
     override type Environment = ConfirmationMenu.Environment
 
     /**
@@ -193,30 +202,29 @@ object HomeMenu extends Menu {
     override val frame: MenuFrame = MenuFrame(3.chestRows, s"$RED${BOLD}ホームポイントを変更しますか")
 
     /**
-     * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+     * @return
+     *   `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
      */
-    override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
-      val baseSlotMap = Map(
-        ChestSlotRef(1, 2) -> changeButton,
-        ChestSlotRef(1, 6) -> cancelButton
-      )
+    override def computeMenuLayout(
+      player: Player
+    )(implicit environment: Environment): IO[MenuSlotLayout] = {
+      val baseSlotMap =
+        Map(ChestSlotRef(1, 2) -> changeButton, ChestSlotRef(1, 6) -> cancelButton)
       val slotMap = changeSubHomeNumber match {
         case None => baseSlotMap
-        case _ => baseSlotMap ++ Map(ChestSlotRef(0, 4) -> informationButton)
+        case _    => baseSlotMap ++ Map(ChestSlotRef(0, 4) -> informationButton)
       }
       IO.pure(MenuSlotLayout(slotMap))
     }
 
     val changeButton: Button =
       Button(
-        new IconItemStackBuilder(Material.WOOL, durability = 5)
-          .title(s"${GREEN}変更する")
-          .build(),
+        new IconItemStackBuilder(Material.WOOL, durability = 5).title(s"${GREEN}変更する").build(),
         LeftClickButtonEffect {
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             changeSubHomeNumber match {
-              case None => CommandEffect("sethome")
+              case None             => CommandEffect("sethome")
               case Some(homeNumber) => CommandEffect(s"subhome set $homeNumber")
             },
             closeInventoryEffect
@@ -226,9 +234,7 @@ object HomeMenu extends Menu {
 
     def cancelButton(implicit environment: Environment): Button =
       Button(
-        new IconItemStackBuilder(Material.WOOL, durability = 14)
-          .title(s"${RED}変更しない")
-          .build(),
+        new IconItemStackBuilder(Material.WOOL, durability = 14).title(s"${RED}変更しない").build(),
         LeftClickButtonEffect {
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           environment.ioCanOpenHomeMenu.open(HomeMenu)
@@ -239,10 +245,9 @@ object HomeMenu extends Menu {
       Button(
         new IconItemStackBuilder(Material.PAPER)
           .title(s"${GREEN}設定するサブホームポイントの情報")
-          .lore(List(
-            s"${GRAY}No.${changeSubHomeNumber.getOrElse(0)}",
-            s"${GRAY}名称：$subHomeName"
-          ))
+          .lore(
+            List(s"${GRAY}No.${changeSubHomeNumber.getOrElse(0)}", s"${GRAY}名称：$subHomeName")
+          )
           .build()
       )
   }

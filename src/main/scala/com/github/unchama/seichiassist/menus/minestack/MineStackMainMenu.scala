@@ -21,43 +21,53 @@ object MineStackMainMenu extends Menu {
   import com.github.unchama.menuinventory.syntax._
   import eu.timepit.refined.auto._
 
-  class Environment(implicit
-                    val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
-                    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
-                    val ioOnMainThread: OnMinecraftServerThread[IO])
+  class Environment(
+    implicit val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu,
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val ioOnMainThread: OnMinecraftServerThread[IO]
+  )
 
   override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE${BOLD}MineStackメインメニュー")
 
-  def categoryButtonLayout(implicit ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu): MenuSlotLayout = {
+  def categoryButtonLayout(
+    implicit ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+  ): MenuSlotLayout = {
     def iconMaterialFor(category: MineStackObjectCategory): Material = category match {
-      case ORES => Material.DIAMOND_ORE
-      case MOB_DROP => Material.ENDER_PEARL
-      case AGRICULTURAL => Material.SEEDS
-      case BUILDING => Material.SMOOTH_BRICK
+      case ORES                        => Material.DIAMOND_ORE
+      case MOB_DROP                    => Material.ENDER_PEARL
+      case AGRICULTURAL                => Material.SEEDS
+      case BUILDING                    => Material.SMOOTH_BRICK
       case REDSTONE_AND_TRANSPORTATION => Material.REDSTONE
-      case GACHA_PRIZES => Material.GOLDEN_APPLE
+      case GACHA_PRIZES                => Material.GOLDEN_APPLE
     }
 
-    val layoutMap = MineStackObjectCategory.values.zipWithIndex.map { case (category, index) =>
-      val slotIndex = index + 1 // 0には自動スタック機能トグルが入るので、1から入れ始める
-      val iconItemStack = new IconItemStackBuilder(iconMaterialFor(category))
-        .title(s"$BLUE$UNDERLINE$BOLD${category.uiLabel}")
-        .build()
+    val layoutMap = MineStackObjectCategory
+      .values
+      .zipWithIndex
+      .map {
+        case (category, index) =>
+          val slotIndex = index + 1 // 0には自動スタック機能トグルが入るので、1から入れ始める
+          val iconItemStack = new IconItemStackBuilder(iconMaterialFor(category))
+            .title(s"$BLUE$UNDERLINE$BOLD${category.uiLabel}")
+            .build()
 
-      val button = Button(
-        iconItemStack,
-        action.LeftClickButtonEffect(
-          CommonSoundEffects.menuTransitionFenceSound,
-          ioCanOpenCategorizedMineStackMenu.open(CategorizedMineStackMenu(category))
-        )
-      )
-      slotIndex -> button
-    }.toMap
+          val button = Button(
+            iconItemStack,
+            action.LeftClickButtonEffect(
+              CommonSoundEffects.menuTransitionFenceSound,
+              ioCanOpenCategorizedMineStackMenu.open(CategorizedMineStackMenu(category))
+            )
+          )
+          slotIndex -> button
+      }
+      .toMap
 
     MenuSlotLayout(layoutMap)
   }
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import environment._
 
     for {
@@ -67,9 +77,7 @@ object MineStackMainMenu extends Menu {
       MenuSlotLayout(
         ChestSlotRef(0, 0) -> autoMineStackToggleButton,
         ChestSlotRef(5, 0) -> CommonButtons.openStickMenu
-      )
-        .merge(categoryButtonLayout)
-        .merge(historicalMineStackSection)
+      ).merge(categoryButtonLayout).merge(historicalMineStackSection)
     }
   }
 
@@ -83,19 +91,24 @@ object MineStackMainMenu extends Menu {
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
-    def computeHistoricalMineStackLayout(implicit ioOnMainThread: OnMinecraftServerThread[IO]): IO[MenuSlotLayout] = {
+    def computeHistoricalMineStackLayout(
+      implicit ioOnMainThread: OnMinecraftServerThread[IO]
+    ): IO[MenuSlotLayout] = {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
       for {
         usageHistory <- IO {
           playerData.hisotryData.usageHistory
         }
-        buttonMapping <- usageHistory.asScala.zipWithIndex
-          .map { case (mineStackObject, index) =>
-            val slotIndex = 18 + index // 3行目から入れだす
-            val button = MineStackButtons(player).getMineStackItemButtonOf(mineStackObject)
+        buttonMapping <- usageHistory
+          .asScala
+          .zipWithIndex
+          .map {
+            case (mineStackObject, index) =>
+              val slotIndex = 18 + index // 3行目から入れだす
+              val button = MineStackButtons(player).getMineStackItemButtonOf(mineStackObject)
 
-            slotIndex -> button
+              slotIndex -> button
           }
           .toList
           .map(_.sequence)

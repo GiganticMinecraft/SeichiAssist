@@ -19,5 +19,5 @@ class CoreProtectWrapper(val backbone: CoreProtectAPI) {
   def queueBlockRemoval(who: Player, where: Location, data: BlockData): Boolean = {
     return backbone.logRemoval(who.getName, where, where.getBlock.getType, data)
   }
-  */
+   */
 }

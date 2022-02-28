@@ -10,21 +10,18 @@ object SpeechServiceRepositoryDefinitions {
 
   import cats.implicits._
 
-  def initialization[
-    F[_] : Monad,
-    Player
-  ](implicit
-    getFreshBlockageState: F[MebiusSpeechBlockageState[F]],
-    gatewayProvider: Player => MebiusSpeechGateway[F]): TwoPhasedRepositoryInitialization[F, Player, MebiusSpeechService[F]] =
-    TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, MebiusSpeechService[F]] { player =>
-      getFreshBlockageState.map { blockageState =>
-        new MebiusSpeechService[F](gatewayProvider(player), blockageState)
-      }
+  def initialization[F[_]: Monad, Player](
+    implicit getFreshBlockageState: F[MebiusSpeechBlockageState[F]],
+    gatewayProvider: Player => MebiusSpeechGateway[F]
+  ): TwoPhasedRepositoryInitialization[F, Player, MebiusSpeechService[F]] =
+    TwoPhasedRepositoryInitialization.withoutPrefetching[F, Player, MebiusSpeechService[F]] {
+      player =>
+        getFreshBlockageState.map { blockageState =>
+          new MebiusSpeechService[F](gatewayProvider(player), blockageState)
+        }
     }
 
-  def finalization[
-    F[_] : Applicative,
-    Player
-  ]: RepositoryFinalization[F, Player, MebiusSpeechService[F]] = RepositoryFinalization.trivial
+  def finalization[F[_]: Applicative, Player]
+    : RepositoryFinalization[F, Player, MebiusSpeechService[F]] = RepositoryFinalization.trivial
 
 }

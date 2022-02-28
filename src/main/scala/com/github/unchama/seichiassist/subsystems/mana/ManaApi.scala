@@ -24,6 +24,6 @@ trait ManaMultiplierApi[F[_]] {
 }
 
 trait ManaApi[F[_], G[_], Player]
-  extends ManaReadApi[F, G, Player]
+    extends ManaReadApi[F, G, Player]
     with ManaWriteApi[G, Player]
     with ManaMultiplierApi[G]

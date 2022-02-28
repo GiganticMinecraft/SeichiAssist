@@ -18,14 +18,16 @@ import org.bukkit.entity.Player
 
 object RankingMenu {
 
-  class Environment[R](implicit
-                       val rankingApi: RankingProvider[IO, R],
-                       val ioCanOpenRankingMenuItself: IO CanOpen RankingMenu[R],
-                       val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type)
+  class Environment[R](
+    implicit val rankingApi: RankingProvider[IO, R],
+    val ioCanOpenRankingMenuItself: IO CanOpen RankingMenu[R],
+    val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type
+  )
 
 }
 
 trait RankingMenuTemplate[R] {
+
   /**
    * ランキングの名前。
    *
@@ -50,28 +52,26 @@ trait RankingMenuTemplate[R] {
 
 object RankingMenuTemplates {
 
-  val seichi: RankingMenuTemplate[SeichiAmountData] = new RankingMenuTemplate[SeichiAmountData] {
-    override val rankingName: String = "整地神ランキング"
-    override def recordDataLore(data: SeichiAmountData): List[String] = {
-      val levelLine = {
-        val starLevel = data.starLevelCorrespondingToExp.level
-        val level = data.levelCorrespondingToExp.level
+  val seichi: RankingMenuTemplate[SeichiAmountData] =
+    new RankingMenuTemplate[SeichiAmountData] {
+      override val rankingName: String = "整地神ランキング"
+      override def recordDataLore(data: SeichiAmountData): List[String] = {
+        val levelLine = {
+          val starLevel = data.starLevelCorrespondingToExp.level
+          val level = data.levelCorrespondingToExp.level
 
-        if (starLevel > 0)
-          s"整地Lv:$level☆$starLevel"
-        else
-          s"整地Lv:$level"
+          if (starLevel > 0)
+            s"整地Lv:$level☆$starLevel"
+          else
+            s"整地Lv:$level"
+        }
+
+        List(s"$RESET$GREEN$levelLine", s"$RESET${GREEN}総整地量:${data.expAmount.formatted}")
       }
-
-      List(
-        s"$RESET$GREEN$levelLine",
-        s"$RESET${GREEN}総整地量:${data.expAmount.formatted}"
+      override def combinedDataLore(data: SeichiAmountData): List[String] = List(
+        s"$RESET${AQUA}全プレイヤー総整地量: ${data.expAmount.formatted}"
       )
     }
-    override def combinedDataLore(data: SeichiAmountData): List[String] = List(
-      s"$RESET${AQUA}全プレイヤー総整地量: ${data.expAmount.formatted}"
-    )
-  }
 
   val build: RankingMenuTemplate[BuildAmountData] = new RankingMenuTemplate[BuildAmountData] {
     override val rankingName: String = "建築神ランキング"
@@ -114,10 +114,12 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
   final private val cutoff = 150
 
   override type Environment = RankingMenu.Environment[R]
-  override val frame: MenuFrame = MenuFrame(6.chestRows, s"$DARK_PURPLE$BOLD${template.rankingName}")
+  override val frame: MenuFrame =
+    MenuFrame(6.chestRows, s"$DARK_PURPLE$BOLD${template.rankingName}")
 
-  private def uiOperationSection(totalNumberOfPages: Int)
-                                (implicit environment: Environment): Seq[(Int, Button)] = {
+  private def uiOperationSection(
+    totalNumberOfPages: Int
+  )(implicit environment: Environment): Seq[(Int, Button)] = {
     import environment._
 
     def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
@@ -128,11 +130,13 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
       )
 
     val goBackToStickMenuSection =
-      Seq(ChestSlotRef(5, 0) -> CommonButtons.transferButton(
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
-        "ランキングメニューへ戻る",
-        RankingRootMenu
-      ))
+      Seq(
+        ChestSlotRef(5, 0) -> CommonButtons.transferButton(
+          new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
+          "ランキングメニューへ戻る",
+          RankingRootMenu
+        )
+      )
 
     val previousPageButtonSection =
       if (pageIndex > 0)
@@ -162,10 +166,11 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
     ranking
       .recordsWithPositions
       .take(cutoff)
-      .slice(pageIndex * perPage, pageIndex * perPage +perPage)
+      .slice(pageIndex * perPage, pageIndex * perPage + perPage)
       .zipWithIndex
-      .map { case (RankingRecordWithPosition(record, position), index) =>
-        index -> entry(position, record)
+      .map {
+        case (RankingRecordWithPosition(record, position), index) =>
+          index -> entry(position, record)
       }
   }
 
@@ -182,10 +187,12 @@ case class RankingMenu[R](template: RankingMenuTemplate[R], pageIndex: Int = 0) 
   }
 
   /**
-   * @return `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+   * @return
+   *   `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player)
-                                (implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     for {
       ranking <- environment.rankingApi.ranking.read
     } yield {

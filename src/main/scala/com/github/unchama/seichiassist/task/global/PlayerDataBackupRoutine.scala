@@ -35,7 +35,8 @@ object PlayerDataBackupRoutine {
             Bukkit.getOnlinePlayers.asScala.toList
           }
           _ <- players.traverse { player =>
-            PlayerDataSaveTask.savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
+            PlayerDataSaveTask
+              .savePlayerData[IO](player, SeichiAssist.playermap(player.getUniqueId))
           }
           _ <- IO {
             Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}プレイヤーデータセーブ完了")
@@ -45,7 +46,7 @@ object PlayerDataBackupRoutine {
       }
 
       val updateRankingData = IO {
-        //ランキングリストを最新情報に更新する
+        // ランキングリストを最新情報に更新する
         if (!SeichiAssist.databaseGateway.playerDataManipulator.successRankingUpdate()) {
           SeichiAssist.instance.getLogger.info("ランキングデータの作成に失敗しました")
         }

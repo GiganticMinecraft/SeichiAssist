@@ -29,15 +29,13 @@ object System {
 
   import cats.implicits._
 
-  def wired[
-    F[_] : ConcurrentEffect : ContextShift,
-    G[_] : SyncEffect : ContextCoercion[*[_], F]
-  ](implicit effectEnvironment: EffectEnvironment, logger: Logger): G[System[F]] = for {
+  def wired[F[_]: ConcurrentEffect: ContextShift, G[_]: SyncEffect: ContextCoercion[*[_], F]](
+    implicit effectEnvironment: EffectEnvironment,
+    logger: Logger
+  ): G[System[F]] = for {
     migrations <- Sync[G].delay {
-      implicit val syncIOUuidRepository: UuidRepository[SyncIO] = JdbcBackedUuidRepository
-        .initializeStaticInstance[SyncIO]
-        .unsafeRunSync()
-        .apply[SyncIO]
+      implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
+        JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
       SeichiAssistItemMigrations.seq
     }
@@ -49,19 +47,24 @@ object System {
 
     repositoryControls <-
       BukkitRepositoryControls.createHandles(
-        RepositoryDefinition.Phased.SinglePhased.withoutTappingAction(
-          ItemMigrationStateRepositoryDefinitions.initialization[G],
-          ItemMigrationStateRepositoryDefinitions.finalization[G, UUID]
-        )
+        RepositoryDefinition
+          .Phased
+          .SinglePhased
+          .withoutTappingAction(
+            ItemMigrationStateRepositoryDefinitions.initialization[G],
+            ItemMigrationStateRepositoryDefinitions.finalization[G, UUID]
+          )
       )
   } yield {
     val playerItemMigrationController = new PlayerItemMigrationController[F, G](
-      repositoryControls.repository, migrations, service
+      repositoryControls.repository,
+      migrations,
+      service
     )
 
     new System[F] {
       override val entryPoints: EntryPoints = new EntryPoints {
-        override def runDatabaseMigration[I[_] : SyncEffect]: I[Unit] = {
+        override def runDatabaseMigration[I[_]: SyncEffect]: I[Unit] = {
           DatabaseMigrationController[I](migrations).runDatabaseMigration
         }
 

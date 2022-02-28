@@ -27,10 +27,9 @@ object System {
   import cats.effect.implicits._
   import cats.implicits._
 
-  def wired[
-    F[_] : ConcurrentEffect : ErrorLogger,
-    G[_] : SyncEffect : ContextCoercion[*[_], F]
-  ](implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): F[System[F, G, Player]] = {
+  def wired[F[_]: ConcurrentEffect: ErrorLogger, G[_]: SyncEffect: ContextCoercion[*[_], F]](
+    implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]
+  ): F[System[F, G, Player]] = {
     import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 
     val manaPersistence: ManaAmountPersistence[G] = new JdbcManaAmountPersistence[G]
@@ -59,7 +58,9 @@ object System {
           topic.subscribe(1).mapFilter(identity)
 
         override val manaAmount: KeyedDataRepository[Player, ManaManipulation[G]] =
-          handles.repository.map(ManaManipulation.fromLevelCappedAmountRef[G](globalMultiplierRef))
+          handles
+            .repository
+            .map(ManaManipulation.fromLevelCappedAmountRef[G](globalMultiplierRef))
 
         override def setGlobalManaMultiplier(manaMultiplier: ManaMultiplier): G[Unit] =
           globalMultiplierRef.set(manaMultiplier)

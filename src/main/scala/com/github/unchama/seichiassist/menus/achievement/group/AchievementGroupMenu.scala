@@ -18,8 +18,10 @@ import org.bukkit.entity.Player
 
 object AchievementGroupMenu {
 
-  class Environment(implicit val ioCanOpenGroupMenu: IO CanOpen AchievementGroupMenu,
-                    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu)
+  class Environment(
+    implicit val ioCanOpenGroupMenu: IO CanOpen AchievementGroupMenu,
+    val ioCanOpenCategoryMenu: IO CanOpen AchievementCategoryMenu
+  )
 
   val sequentialEntriesIn: AchievementGroup => List[GroupMenuEntry] = CachedFunction {
 
@@ -68,7 +70,8 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
   import com.github.unchama.menuinventory.syntax._
 
   override type Environment = AchievementGroupMenu.Environment
-  override val frame: MenuFrame = MenuFrame(4.chestRows, ColorScheme.purpleBold(s"実績「${group.name}」"))
+  override val frame: MenuFrame =
+    MenuFrame(4.chestRows, ColorScheme.purpleBold(s"実績「${group.name}」"))
 
   private val groupEntries = sequentialEntriesIn(group)
   private val entriesToDisplay = {
@@ -84,10 +87,11 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
   private val groupAchievementsCount = groupEntries.size
   private val maxPageNumber = Math.ceil(groupAchievementsCount / 27.0).toInt
 
-  override def open(implicit
-                    environment: AchievementGroupMenu.Environment,
-                    ctx: LayoutPreparationContext,
-                    onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+  override def open(
+    implicit environment: AchievementGroupMenu.Environment,
+    ctx: LayoutPreparationContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] = {
     // redirect
     if (entriesToDisplay.isEmpty) {
       if (groupAchievementsCount == 0) {
@@ -98,12 +102,17 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
     } else super.open
   }
 
-  override def computeMenuLayout(player: Player)(implicit environment: AchievementGroupMenu.Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: AchievementGroupMenu.Environment): IO[MenuSlotLayout] = {
     import cats.implicits._
     import environment._
     import eu.timepit.refined.auto._
 
-    def buttonToTransferTo(newPageNumber: Int, skullOwnerReference: SkullOwnerReference): Button =
+    def buttonToTransferTo(
+      newPageNumber: Int,
+      skullOwnerReference: SkullOwnerReference
+    ): Button =
       CommonButtons.transferButton(
         new SkullItemStackBuilder(skullOwnerReference),
         s"${newPageNumber}ページ目へ",
@@ -111,13 +120,9 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
       )
 
     /**
-     * 上位メニューはこのメニューを参照していて、
-     * このセクションのボタンは上位メニューを参照するので、
-     * 貪欲に計算すると計算が再帰する。
+     * 上位メニューはこのメニューを参照していて、 このセクションのボタンは上位メニューを参照するので、 貪欲に計算すると計算が再帰する。
      *
-     * `computeMenuLayout`にて初めて参照されるため、
-     * lazyにすることで実際にプレーヤーがこのメニューを開くまで評価されず、
-     * 再帰自体は回避される。
+     * `computeMenuLayout`にて初めて参照されるため、 lazyにすることで実際にプレーヤーがこのメニューを開くまで評価されず、 再帰自体は回避される。
      */
     lazy val toCategoryMenuButtonSection = Map(
       ChestSlotRef(3, 0) -> CommonButtons.transferButton(
@@ -137,7 +142,9 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
 
     lazy val nextPageButtonSection =
       if (pageNumber < maxPageNumber) {
-        Map(ChestSlotRef(3, 8) -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowRight))
+        Map(
+          ChestSlotRef(3, 8) -> buttonToTransferTo(pageNumber + 1, SkullOwners.MHF_ArrowRight)
+        )
       } else {
         Map()
       }
@@ -150,10 +157,10 @@ case class AchievementGroupMenu(group: AchievementGroup, pageNumber: Int = 1) ex
     for {
       dynamicPart <- dynamicPartComputation
       combinedLayout =
-      toCategoryMenuButtonSection ++
-        previousPageButtonSection ++
-        nextPageButtonSection ++
-        dynamicPart
+        toCategoryMenuButtonSection ++
+          previousPageButtonSection ++
+          nextPageButtonSection ++
+          dynamicPart
     } yield MenuSlotLayout(combinedLayout)
   }
 }

@@ -16,7 +16,9 @@ class OptionTExtraSpec extends AnyWordSpec {
     }
 
     "produce succeeding OptionT[Id, *] on false" in {
-      assert(OptionTExtra.failIf[Id](failCondition = false) == OptionT.some(())(Applicative[Id]))
+      assert(
+        OptionTExtra.failIf[Id](failCondition = false) == OptionT.some(())(Applicative[Id])
+      )
     }
 
     "produce succeeding OptionT[IO, *] on false" in {

@@ -8,9 +8,9 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.{
 
 object BuildAmountDataRepositoryDefinition {
 
-  def withPersistence[
-    F[_] : Sync, Player
-  ](persistence: BuildAmountDataPersistence[F]): RepositoryDefinition[F, Player, Ref[F, BuildAmountData]] =
+  def withPersistence[F[_]: Sync, Player](
+    persistence: BuildAmountDataPersistence[F]
+  ): RepositoryDefinition[F, Player, Ref[F, BuildAmountData]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict(persistence)(BuildAmountData.initial)
       .toRefRepository

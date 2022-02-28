@@ -11,16 +11,17 @@ import org.bukkit.entity.Player
 
 import java.sql.{SQLException, Statement}
 
-
 object PlayerDataSaveTask {
+
   /**
-   * プレイヤーデータをDBに同期的に保存する処理
-   * DBにセーブしたい値が増えた/減った場合は更新すること
+   * プレイヤーデータをDBに同期的に保存する処理 DBにセーブしたい値が増えた/減った場合は更新すること
    *
-   * @param playerdata 保存するプレーヤーデータ
-   * @author unchama
+   * @param playerdata
+   *   保存するプレーヤーデータ
+   * @author
+   *   unchama
    */
-  def savePlayerData[F[_] : Sync](player: Player, playerdata: PlayerData): F[Unit] = {
+  def savePlayerData[F[_]: Sync](player: Player, playerdata: PlayerData): F[Unit] = {
     val databaseGateway = SeichiAssist.databaseGateway
 
     def updatePlayerMineStack(stmt: Statement): Unit = {
@@ -42,19 +43,22 @@ object PlayerDataSaveTask {
       val playerUuid = playerdata.uuid.toString
 
       // 既存データをすべてクリアする
-      stmt.executeUpdate(s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'")
+      stmt.executeUpdate(
+        s"delete from seichiassist.grid_template where designer_uuid = '$playerUuid'"
+      )
 
       // 各グリッドテンプレートについてデータを保存する
-      playerdata.templateMap.toList.map { case (gridTemplateId, gridTemplate) =>
-        val updateCommand = "insert into seichiassist.grid_template set " +
-          "id = " + gridTemplateId + ", " +
-          "designer_uuid = '" + playerUuid + "', " +
-          "ahead_length = " + gridTemplate.getAheadAmount + ", " +
-          "behind_length = " + gridTemplate.getBehindAmount + ", " +
-          "right_length = " + gridTemplate.getRightAmount + ", " +
-          "left_length = " + gridTemplate.getLeftAmount
+      playerdata.templateMap.toList.map {
+        case (gridTemplateId, gridTemplate) =>
+          val updateCommand = "insert into seichiassist.grid_template set " +
+            "id = " + gridTemplateId + ", " +
+            "designer_uuid = '" + playerUuid + "', " +
+            "ahead_length = " + gridTemplate.getAheadAmount + ", " +
+            "behind_length = " + gridTemplate.getBehindAmount + ", " +
+            "right_length = " + gridTemplate.getRightAmount + ", " +
+            "left_length = " + gridTemplate.getLeftAmount
 
-        stmt.executeUpdate(updateCommand)
+          stmt.executeUpdate(updateCommand)
       }
     }
 
@@ -68,7 +72,8 @@ object PlayerDataSaveTask {
 
       if (effectsObtained.nonEmpty) {
         stmt.executeUpdate {
-          val data = effectsObtained.map(e => s"('$playerUuid', '${e.entryName}')").mkString(",")
+          val data =
+            effectsObtained.map(e => s"('$playerUuid', '${e.entryName}')").mkString(",")
 
           s"insert into seichiassist.unlocked_active_skill_effect(player_uuid, effect_name) values $data"
         }
@@ -95,7 +100,7 @@ object PlayerDataSaveTask {
     def updatePlayerDataColumns(stmt: Statement): Unit = {
       val playerUuid = playerdata.uuid.toString
 
-      //実績のフラグ(BitSet)保存用変換処理
+      // 実績のフラグ(BitSet)保存用変換処理
       val flagString = playerdata.TitleFlags.toBitMask.map(_.toHexString).mkString(",")
 
       val skillState = playerdata.skillState.get.unsafeRunSync()
@@ -110,11 +115,17 @@ object PlayerDataSaveTask {
           + ",selected_effect = " + {
             playerdata.skillEffectState.selection match {
               case effect: UnlockableActiveSkillEffect => s"'${effect.entryName}'"
-              case ActiveSkillEffect.NoEffect => "null"
+              case ActiveSkillEffect.NoEffect          => "null"
             }
           }
-          + ",selected_active_skill = " + skillState.activeSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
-          + ",selected_assault_skill = " + skillState.assaultSkill.map(skill => s"'${skill.entryName}'").getOrElse("null")
+          + ",selected_active_skill = " + skillState
+            .activeSkill
+            .map(skill => s"'${skill.entryName}'")
+            .getOrElse("null")
+          + ",selected_assault_skill = " + skillState
+            .assaultSkill
+            .map(skill => s"'${skill.entryName}'")
+            .getOrElse("null")
 
           + ",rgnum = " + playerdata.regionCount
           + ",playtick = " + playerdata.playTick
@@ -122,13 +133,23 @@ object PlayerDataSaveTask {
           + ",killlogflag = " + playerdata.settings.shouldDisplayDeathMessages
           + ",worldguardlogflag = " + playerdata.settings.shouldDisplayWorldGuardLogs
 
-          + ",multipleidbreakflag = " + playerdata.settings.performMultipleIDBlockBreakWhenOutsideSeichiWorld
+          + ",multipleidbreakflag = " + playerdata
+            .settings
+            .performMultipleIDBlockBreakWhenOutsideSeichiWorld
 
           + ",pvpflag = " + playerdata.settings.pvpflag
           + ",effectpoint = " + playerdata.effectPoint
           + ",totalexp = " + playerdata.totalexp
-          + ",everysound = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteSounds
-          + ",everymessage = " + playerdata.settings.getBroadcastMutingSettings.unsafeRunSync().shouldMuteMessages
+          + ",everysound = " + playerdata
+            .settings
+            .getBroadcastMutingSettings
+            .unsafeRunSync()
+            .shouldMuteSounds
+          + ",everymessage = " + playerdata
+            .settings
+            .getBroadcastMutingSettings
+            .unsafeRunSync()
+            .shouldMuteMessages
 
           + ",displayTypeLv = " + (playerdata.settings.nickname.style == NicknameStyle.Level)
           + ",displayTitle1No = " + playerdata.settings.nickname.id1
@@ -144,7 +165,7 @@ object PlayerDataSaveTask {
           + ",TotalJoin = " + playerdata.loginStatus.totalLoginDay
           + ",LimitedLoginCount = " + playerdata.LimitedLoginCount
 
-          //投票
+          // 投票
           + ",canVotingFairyUse = " + playerdata.usingVotingFairy
           + ",newVotingFairyTime = '" + playerdata.getVotingFairyStartTimeAsString + "'"
           + ",VotingFairyRecoveryValue = " + playerdata.VotingFairyRecoveryValue
@@ -167,10 +188,10 @@ object PlayerDataSaveTask {
 
     def executeUpdate(): ActionStatus = {
       try {
-        //sqlコネクションチェック
+        // sqlコネクションチェック
         databaseGateway.ensureConnection()
 
-        //同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
+        // 同ステートメントだとmysqlの処理がバッティングした時に止まってしまうので別ステートメントを作成する
         val localStatement = databaseGateway.con.createStatement()
         updateActiveSkillEffectUnlockState(localStatement)
         updateSeichiSkillUnlockState(localStatement)
@@ -186,25 +207,29 @@ object PlayerDataSaveTask {
       }
     }
 
-
     val commitUpdate: F[ActionStatus] = Sync[F].delay(executeUpdate())
 
     import cats.implicits._
 
     Monad[F].tailRecM(3) { remaining =>
       if (remaining == 0) {
-        Sync[F].delay {
-          println(s"$RED${playerdata.name}のプレイヤーデータ保存失敗")
-        }.as(Right(ActionStatus.Fail))
-      } else commitUpdate.flatMap { result =>
-        if (result == ActionStatus.Ok) {
-          Sync[F].delay {
-            println(s"$GREEN${player.getName}のプレイヤーデータ保存完了")
-          }.as(Right(ActionStatus.Ok))
-        } else {
-          Monad[F].pure(Left(remaining - 1))
+        Sync[F]
+          .delay {
+            println(s"$RED${playerdata.name}のプレイヤーデータ保存失敗")
+          }
+          .as(Right(ActionStatus.Fail))
+      } else
+        commitUpdate.flatMap { result =>
+          if (result == ActionStatus.Ok) {
+            Sync[F]
+              .delay {
+                println(s"$GREEN${player.getName}のプレイヤーデータ保存完了")
+              }
+              .as(Right(ActionStatus.Ok))
+          } else {
+            Monad[F].pure(Left(remaining - 1))
+          }
         }
-      }
     }
   }
 }

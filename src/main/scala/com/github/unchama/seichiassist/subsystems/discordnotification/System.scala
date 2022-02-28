@@ -10,9 +10,13 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-  def wired[F[_] : Sync : ContextShift : Logger : LiftIO](configuration: SystemConfiguration): System[F] = new System[F] {
+  def wired[F[_]: Sync: ContextShift: Logger: LiftIO](
+    configuration: SystemConfiguration
+  ): System[F] = new System[F] {
     implicit override val globalNotification: DiscordNotificationAPI[F] = {
-      WebhookDiscordNotificationSender.tryCreate(configuration.webhookUrl).getOrElse(new DefaultDiscordNotificationSender)
+      WebhookDiscordNotificationSender
+        .tryCreate(configuration.webhookUrl)
+        .getOrElse(new DefaultDiscordNotificationSender)
     }
   }
 }

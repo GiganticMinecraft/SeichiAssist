@@ -7,7 +7,8 @@ object AccessDenialReason {
   import SeichiLevel._
   import cats.implicits._
 
-  case class NotEnoughLevel(current: SeichiLevel, required: SeichiLevel) extends AccessDenialReason {
+  case class NotEnoughLevel(current: SeichiLevel, required: SeichiLevel)
+      extends AccessDenialReason {
     require(current < required)
   }
 }

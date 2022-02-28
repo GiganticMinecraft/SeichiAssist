@@ -13,21 +13,33 @@ object System {
 
   import cats.implicits._
 
-  def wired[
-    F[_] : Timer : Concurrent : ErrorLogger,
-    H[_]
-  ]: F[AssortedRankingApi[F]] =
+  def wired[F[_]: Timer: Concurrent: ErrorLogger, H[_]]: F[AssortedRankingApi[F]] =
     for {
-      seichiRanking <- GenericRefreshingRankingCache.withPersistence(new JdbcSeichiRankingRecordPersistence[F])
-      buildRanking <- GenericRefreshingRankingCache.withPersistence(new JdbcBuildRankingRecordPersistence[F])
-      loginRanking <- GenericRefreshingRankingCache.withPersistence(new JdbcLoginRankingRecordPersistence[F])
-      voteRanking <- GenericRefreshingRankingCache.withPersistence(new JdbcVoteRankingRecordPersistence[F])
+      seichiRanking <- GenericRefreshingRankingCache.withPersistence(
+        new JdbcSeichiRankingRecordPersistence[F]
+      )
+      buildRanking <- GenericRefreshingRankingCache.withPersistence(
+        new JdbcBuildRankingRecordPersistence[F]
+      )
+      loginRanking <- GenericRefreshingRankingCache.withPersistence(
+        new JdbcLoginRankingRecordPersistence[F]
+      )
+      voteRanking <- GenericRefreshingRankingCache.withPersistence(
+        new JdbcVoteRankingRecordPersistence[F]
+      )
     } yield {
       new AssortedRankingApi[F] {
-        override val seichiAmountRanking: RankingProvider[F, SeichiAmountData] = RankingProvider(seichiRanking)
-        override val buildAmountRanking: RankingProvider[F, BuildAmountData] = RankingProvider(buildRanking)
-        override val loginTimeRanking: RankingProvider[F, LoginTime] = RankingProvider(loginRanking)
-        override val voteCountRanking: RankingProvider[F, VoteCount] = RankingProvider(voteRanking)
+        override val seichiAmountRanking: RankingProvider[F, SeichiAmountData] =
+          RankingProvider(seichiRanking)
+        override val buildAmountRanking: RankingProvider[F, BuildAmountData] = RankingProvider(
+          buildRanking
+        )
+        override val loginTimeRanking: RankingProvider[F, LoginTime] = RankingProvider(
+          loginRanking
+        )
+        override val voteCountRanking: RankingProvider[F, VoteCount] = RankingProvider(
+          voteRanking
+        )
       }
     }
 }

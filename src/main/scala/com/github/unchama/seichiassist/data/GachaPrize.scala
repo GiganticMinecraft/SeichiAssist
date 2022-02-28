@@ -6,7 +6,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
 class GachaPrize(_itemStack: ItemStack, var probability: Double) {
-  //アイテムデータ格納
+  // アイテムデータ格納
   val itemStack: ItemStack = _itemStack.clone()
 
   @Deprecated
@@ -15,29 +15,36 @@ class GachaPrize(_itemStack: ItemStack, var probability: Double) {
   import scala.jdk.CollectionConverters._
 
   /**
-   * @deprecated ここをなんのデータクラスだと思っているんだ
+   * @deprecated
+   *   ここをなんのデータクラスだと思っているんだ
    */
   @Deprecated()
   def compare(m: ItemStack, name: String): Boolean = {
     val mlore: List[String] = m.getItemMeta.getLore.asScala.toList
     val lore: List[String] = this.itemStack.getItemMeta.getLore.asScala.toList
 
-    if (lore.forall(line => mlore.contains(line)) && this.itemStack.getItemMeta.getDisplayName == m.getItemMeta.getDisplayName) {
+    if (
+      lore
+        .forall(line => mlore.contains(line)) && this.itemStack.getItemMeta.getDisplayName == m
+        .getItemMeta
+        .getDisplayName
+    ) {
       val index = Util.loreIndexOf(mlore, "所有者")
 
       if (index >= 0) {
-        //保有者であれば交換
-        //保有者でなければ交換できない
+        // 保有者であれば交換
+        // 保有者でなければ交換できない
         mlore(index).toLowerCase().contains(name)
       } else {
-        //所有者の記載がなければ交換できる。
+        // 所有者の記載がなければ交換できる。
         true
       }
     } else false
   }
 
   /**
-   * @deprecated ここをなんのデータクラスだと思っているんだ
+   * @deprecated
+   *   ここをなんのデータクラスだと思っているんだ
    */
   @Deprecated()
   def appendOwnerLore(name: String): Unit = {
@@ -55,7 +62,7 @@ object GachaPrize {
     var sum = 1.0
     val rand = Math.random()
 
-    for {gachadata <- SeichiAssist.gachadatalist} {
+    for { gachadata <- SeichiAssist.gachadatalist } {
       sum -= gachadata.probability
       if (sum <= rand) {
         return gachadata.copy()

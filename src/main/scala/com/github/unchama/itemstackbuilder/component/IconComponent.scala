@@ -9,8 +9,7 @@ import org.bukkit.{Bukkit, Material}
 import scala.jdk.javaapi.CollectionConverters.asJava
 
 /**
- * ビルダー内で保持されるアイテムスタックの情報をまとめて持つデータ型.
- * ミュータブルな設計になっている.
+ * ビルダー内で保持されるアイテムスタックの情報をまとめて持つデータ型. ミュータブルな設計になっている.
  *
  * Created by karayuu on 2019/04/09
  */

@@ -9,14 +9,19 @@ import java.time.{LocalDateTime, ZoneId}
 
 /**
  * `RateLimiter[F, BuildExpAmount]`によって保持された残量について日時付きで保存するクラス
- * @param amount そのタイムスライスにおけるリクエスト量の上限
- * @param recordTime 取得した時間
+ * @param amount
+ *   そのタイムスライスにおけるリクエスト量の上限
+ * @param recordTime
+ *   取得した時間
  */
 case class BuildAmountRateLimiterSnapshot(amount: BuildExpAmount, recordTime: LocalDateTime)
 
 object BuildAmountRateLimiterSnapshot {
-  def now[F[_]: JavaTime: Functor](buildExpAmount: BuildExpAmount): F[BuildAmountRateLimiterSnapshot] = {
-    JavaTime[F].getLocalDateTime(ZoneId.systemDefault())
+  def now[F[_]: JavaTime: Functor](
+    buildExpAmount: BuildExpAmount
+  ): F[BuildAmountRateLimiterSnapshot] = {
+    JavaTime[F]
+      .getLocalDateTime(ZoneId.systemDefault())
       .map(ldt => BuildAmountRateLimiterSnapshot(buildExpAmount, ldt))
   }
 }

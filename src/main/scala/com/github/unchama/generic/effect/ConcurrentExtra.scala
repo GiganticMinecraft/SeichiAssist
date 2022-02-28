@@ -9,8 +9,7 @@ object ConcurrentExtra {
   /**
    * `f` を並行的に開始し、 `f` の計算をキャンセルする計算を`f`に渡してから結果をawaitする計算を返す。
    *
-   * `f` 内で渡された `CancelToken[F]` を実行した際の動作は未定義となる。
-   * 実際、`f` 内のキャンセルはそれ自身の終了をブロックしながらawaitするため、
+   * `f` 内で渡された `CancelToken[F]` を実行した際の動作は未定義となる。 実際、`f` 内のキャンセルはそれ自身の終了をブロックしながらawaitするため、
    * ハングすることが予想される。
    */
   def withSelfCancellation[F[_]: Concurrent, A](f: CancelToken[F] => F[A]): F[A] =

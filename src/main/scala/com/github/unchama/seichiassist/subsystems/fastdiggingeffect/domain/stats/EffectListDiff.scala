@@ -2,7 +2,10 @@ package com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.stat
 
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{FastDiggingAmplifier, FastDiggingEffect}
 
-case class EffectListDiff(oldList: Option[List[FastDiggingEffect]], newList: List[FastDiggingEffect]) {
+case class EffectListDiff(
+  oldList: Option[List[FastDiggingEffect]],
+  newList: List[FastDiggingEffect]
+) {
 
   import cats.implicits._
 

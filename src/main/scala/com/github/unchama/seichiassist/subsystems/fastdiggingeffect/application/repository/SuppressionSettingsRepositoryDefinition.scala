@@ -8,9 +8,9 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.setti
 
 object SuppressionSettingsRepositoryDefinition {
 
-  def withContext[
-    G[_] : Sync, Player
-  ](persistence: FastDiggingEffectSuppressionStatePersistence[G]): RepositoryDefinition[G, Player, Ref[G, FastDiggingEffectSuppressionState]] =
+  def withContext[G[_]: Sync, Player](
+    persistence: FastDiggingEffectSuppressionStatePersistence[G]
+  ): RepositoryDefinition[G, Player, Ref[G, FastDiggingEffectSuppressionState]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict(persistence)(FastDiggingEffectSuppressionState.EnabledWithoutLimit)
       .toRefRepository

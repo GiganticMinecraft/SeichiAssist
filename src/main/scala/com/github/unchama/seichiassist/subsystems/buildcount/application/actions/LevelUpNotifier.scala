@@ -11,7 +11,10 @@ import org.bukkit.ChatColor.GOLD
  *
  * TODO Tagless algebraにするべきぽい
  */
-case class LevelUpNotifier[F[_], Player]()(implicit F: Applicative[F], send: SendMinecraftMessage[F, Player]) {
+case class LevelUpNotifier[F[_], Player]()(
+  implicit F: Applicative[F],
+  send: SendMinecraftMessage[F, Player]
+) {
 
   def notifyTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
     import cats.implicits._
@@ -28,7 +31,7 @@ case class LevelUpNotifier[F[_], Player]()(implicit F: Applicative[F], send: Sen
       Applicative[F].unit
   }
 
-  def mapK[G[_] : Applicative](fg: F ~> G): LevelUpNotifier[G, Player] = {
+  def mapK[G[_]: Applicative](fg: F ~> G): LevelUpNotifier[G, Player] = {
     implicit val e: SendMinecraftMessage[G, Player] = send.mapK(fg)
 
     new LevelUpNotifier[G, Player]()

@@ -18,7 +18,9 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 
-class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]]) {
+class MebiusCommandExecutorProvider(
+  implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]]
+) {
 
   import ChildExecutors._
 
@@ -29,14 +31,18 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
         "nickname" -> ChildExecutors.NicknameCommand.executor,
         "naming" -> namingExecutor,
         "convert" -> convertExecutor
-      ), whenArgInsufficient = Some(printDescriptionExecutor), whenBranchNotFound = Some(printDescriptionExecutor)
+      ),
+      whenArgInsufficient = Some(printDescriptionExecutor),
+      whenBranchNotFound = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
   }
 
   object ChildExecutors {
-    private case class MebiusInteractionTemplate(effectIfMebiusIsNotWorn: TargetedEffect[Player],
-                                                 propertyModifier: MebiusProperty => MebiusProperty,
-                                                 additionalEffectsOnModification: MebiusProperty => TargetedEffect[Player]) {
+    private case class MebiusInteractionTemplate(
+      effectIfMebiusIsNotWorn: TargetedEffect[Player],
+      propertyModifier: MebiusProperty => MebiusProperty,
+      additionalEffectsOnModification: MebiusProperty => TargetedEffect[Player]
+    ) {
 
       def effectOn(player: Player): IO[TargetedEffect[Player]] =
         for {
@@ -44,12 +50,15 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
             player.getInventory.getHelmet
           }
           effect <- IO.pure {
-            BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(helmet).map(propertyModifier) match {
+            BukkitMebiusItemStackCodec
+              .decodePropertyOfOwnedMebius(player)(helmet)
+              .map(propertyModifier) match {
               case Some(newProperty) =>
                 SequentialEffect(
                   UnfocusedEffect {
                     player.getInventory.setHelmet {
-                      BukkitMebiusItemStackCodec.materialize(newProperty, damageValue = helmet.getDurability)
+                      BukkitMebiusItemStackCodec
+                        .materialize(newProperty, damageValue = helmet.getDurability)
                     }
                   },
                   additionalEffectsOnModification(newProperty)
@@ -60,7 +69,8 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
         } yield effect
     }
 
-    val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder.beginConfiguration()
+    val printDescriptionExecutor: ContextualExecutor = ContextualExecutorBuilder
+      .beginConfiguration()
       .execution { _ => IO(Messages.commandDescription) }
       .build()
 
@@ -74,17 +84,20 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
           MessageEffect(s"${RED}命名はMEBIUSを装着して行ってください."),
           _.copy(mebiusName = newName),
           newProperty => {
-            val newDisplayName = BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(newProperty)
+            val newDisplayName =
+              BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(newProperty)
             SequentialEffect(
               MessageEffect(s"$newDisplayName${RESET}に命名しました。"),
               Kleisli.liftF {
-                serviceRepository(player).makeSpeechIgnoringBlockage(
-                  newProperty,
-                  MebiusSpeech(
-                    s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
-                    MebiusSpeechStrength.Loud
+                serviceRepository(player)
+                  .makeSpeechIgnoringBlockage(
+                    newProperty,
+                    MebiusSpeech(
+                      s"わーい、ありがとう！今日から僕は$newDisplayName${RESET}だ！",
+                      MebiusSpeechStrength.Loud
+                    )
                   )
-                ).toIO
+                  .toIO
               }
             )
           }
@@ -101,10 +114,11 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
           case Some(property) =>
             if (property.level.isMaximum) {
               val newProperty = property.toggleForcedMaterial
-              val newItem = BukkitMebiusItemStackCodec.materialize(newProperty, mainHand.getDurability)
+              val newItem =
+                BukkitMebiusItemStackCodec.materialize(newProperty, mainHand.getDurability)
 
               val newMaterialName = newProperty.forcedMaterial match {
-                case MebiusForcedMaterial.None => "ダイヤモンド"
+                case MebiusForcedMaterial.None    => "ダイヤモンド"
                 case MebiusForcedMaterial.Leather => "革"
               }
 
@@ -154,47 +168,54 @@ class MebiusCommandExecutorProvider(implicit serviceRepository: PlayerDataReposi
         }
         .build()
 
-      private def setNicknameOverrideOnMebiusOn(player: Player,
-                                                name: String,
-                                                successMessage: String => String,
-                                                errorMessage: String): IO[TargetedEffect[Player]] = {
+      private def setNicknameOverrideOnMebiusOn(
+        player: Player,
+        name: String,
+        successMessage: String => String,
+        errorMessage: String
+      ): IO[TargetedEffect[Player]] = {
 
         MebiusInteractionTemplate(
           MessageEffect(errorMessage),
           _.copy(ownerNicknameOverride = Some(name)),
-          newProperty => SequentialEffect(
-            MessageEffect(successMessage(name)),
-            Kleisli.liftF {
-              serviceRepository(player).makeSpeechIgnoringBlockage(
-                newProperty,
-                MebiusSpeech(
-                  s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",
-                  MebiusSpeechStrength.Loud
-                )
-              ).toIO
-            }
-          )
+          newProperty =>
+            SequentialEffect(
+              MessageEffect(successMessage(name)),
+              Kleisli.liftF {
+                serviceRepository(player)
+                  .makeSpeechIgnoringBlockage(
+                    newProperty,
+                    MebiusSpeech(
+                      s"わーい、ありがとう！今日から君のこと$GREEN$name${RESET}って呼ぶね！",
+                      MebiusSpeechStrength.Loud
+                    )
+                  )
+                  .toIO
+              }
+            )
         ).effectOn(player)
       }
 
       private val checkNicknameExecutor = playerCommandBuilder
         .execution { context =>
           IO(MessageEffect {
-            BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(context.sender)(context.sender.getInventory.getHelmet)
+            BukkitMebiusItemStackCodec
+              .decodePropertyOfOwnedMebius(context.sender)(
+                context.sender.getInventory.getHelmet
+              )
               .map(_.ownerNickname)
               .fold {
                 s"${RED}呼び名の確認はMEBIUSを装着して行ってください."
-              } { name =>
-                s"${GREEN}現在のメビウスからの呼び名 : $name"
-              }
+              } { name => s"${GREEN}現在のメビウスからの呼び名 : $name" }
           })
         }
         .build()
 
-      val executor: BranchedExecutor = BranchedExecutor(Map(
-        "reset" -> resetNicknameExecutor,
-        "set" -> setNicknameExecutor
-      ), whenArgInsufficient = Some(checkNicknameExecutor), whenBranchNotFound = Some(checkNicknameExecutor))
+      val executor: BranchedExecutor = BranchedExecutor(
+        Map("reset" -> resetNicknameExecutor, "set" -> setNicknameExecutor),
+        whenArgInsufficient = Some(checkNicknameExecutor),
+        whenBranchNotFound = Some(checkNicknameExecutor)
+      )
     }
 
   }
@@ -221,7 +242,7 @@ object MebiusCommandExecutorProvider {
           s"$RED  MEBIUSからの呼び名をプレイヤー名(初期設定)に戻します",
           "",
           s"$RED/mebius convert",
-          s"$RED  MEBIUSの材質を変換します",
+          s"$RED  MEBIUSの材質を変換します"
         )
       }
   }

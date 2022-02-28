@@ -12,10 +12,10 @@ object BreakCountRepositoryDefinition {
 
   import cats.implicits._
 
-  def withContext[
-    F[_] : Effect, G[_] : Sync, Player
-  ](topic: Fs3Topic[F, Option[(Player, SeichiAmountData)]],
-    persistence: SeichiAmountDataPersistence[G]): RepositoryDefinition[G, Player, Ref[G, SeichiAmountData]] =
+  def withContext[F[_]: Effect, G[_]: Sync, Player](
+    topic: Fs3Topic[F, Option[(Player, SeichiAmountData)]],
+    persistence: SeichiAmountDataPersistence[G]
+  ): RepositoryDefinition[G, Player, Ref[G, SeichiAmountData]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[G, Player, SeichiAmountData](persistence)(SeichiAmountData.initial)
       .withAnotherTappingAction { (player, data) =>

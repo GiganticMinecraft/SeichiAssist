@@ -18,16 +18,23 @@ object PluginExecutionContexts {
 
   implicit val pluginInstance: JavaPlugin = SeichiAssist.instance
 
-  val cachedThreadPool: ExecutionContext = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
+  val cachedThreadPool: ExecutionContext =
+    ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
 
   implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
   implicit val asyncShift: NonServerThreadContextShift[IO] = {
-    tag.apply[NonServerThreadContextShiftTag][ContextShift[IO]](IO.contextShift(cachedThreadPool))
+    tag.apply[NonServerThreadContextShiftTag][ContextShift[IO]](
+      IO.contextShift(cachedThreadPool)
+    )
   }
 
   implicit val onMainThread: OnMinecraftServerThread[IO] = {
-    new OnBukkitServerThread[IO]()(pluginInstance, asyncShift, IO.ioConcurrentEffect(asyncShift))
+    new OnBukkitServerThread[IO]()(
+      pluginInstance,
+      asyncShift,
+      IO.ioConcurrentEffect(asyncShift)
+    )
   }
 
   implicit val layoutPreparationContext: LayoutPreparationContext =

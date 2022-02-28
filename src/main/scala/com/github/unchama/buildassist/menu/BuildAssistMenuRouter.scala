@@ -13,16 +13,22 @@ trait BuildAssistMenuRouter[F[_]] {
 }
 
 object BuildAssistMenuRouter {
-  def apply(implicit
-            flyApi: ManagedFlyApi[SyncIO, Player],
-            layoutPreparationContext: LayoutPreparationContext,
-            onMainThread: OnMinecraftServerThread[IO]): BuildAssistMenuRouter[IO] = new BuildAssistMenuRouter[IO] {
-    implicit lazy val blockPlacementSkillMenuEnvironment: BlockPlacementSkillMenu.Environment = new BlockPlacementSkillMenu.Environment
-    implicit lazy val buildMainMenuEnvironment: BuildMainMenu.Environment = new BuildMainMenu.Environment
-    implicit lazy val mineStackMassCraftMenuEnvironment: MineStackMassCraftMenu.Environment = new MineStackMassCraftMenu.Environment
+  def apply(
+    implicit flyApi: ManagedFlyApi[SyncIO, Player],
+    layoutPreparationContext: LayoutPreparationContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): BuildAssistMenuRouter[IO] = new BuildAssistMenuRouter[IO] {
+    implicit lazy val blockPlacementSkillMenuEnvironment: BlockPlacementSkillMenu.Environment =
+      new BlockPlacementSkillMenu.Environment
+    implicit lazy val buildMainMenuEnvironment: BuildMainMenu.Environment =
+      new BuildMainMenu.Environment
+    implicit lazy val mineStackMassCraftMenuEnvironment: MineStackMassCraftMenu.Environment =
+      new MineStackMassCraftMenu.Environment
 
-    implicit lazy val canOpenBlockPlacementSkillMenu: CanOpen[IO, BlockPlacementSkillMenu.type] = _.open
-    implicit lazy val canOpenMineStackMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu] = _.open
+    implicit lazy val canOpenBlockPlacementSkillMenu
+      : CanOpen[IO, BlockPlacementSkillMenu.type] = _.open
+    implicit lazy val canOpenMineStackMassCraftMenu: CanOpen[IO, MineStackMassCraftMenu] =
+      _.open
 
     override implicit lazy val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] = _.open
   }

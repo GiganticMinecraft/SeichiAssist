@@ -15,7 +15,7 @@ import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
-import com.github.unchama.seichiassist.{SeichiAssist, _}
+import com.github.unchama.seichiassist._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -32,10 +32,12 @@ import org.bukkit.{GameMode, Material, Sound}
 
 import scala.collection.mutable
 
-class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
-                          manaApi: ManaApi[IO, SyncIO, Player],
-                          ioCanOpenStickMenu: IO CanOpen FirstPage.type,
-                          ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
+class PlayerClickListener(
+  implicit effectEnvironment: EffectEnvironment,
+  manaApi: ManaApi[IO, SyncIO, Player],
+  ioCanOpenStickMenu: IO CanOpen FirstPage.type,
+  ioOnMainThread: OnMinecraftServerThread[IO]
+) extends Listener {
 
   import com.github.unchama.generic.ContextCoercion._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
@@ -51,7 +53,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
   private val playerMap = SeichiAssist.playermap
   private val gachaDataList = SeichiAssist.gachadatalist
 
-  //アクティブスキル処理
+  // アクティブスキル処理
   @EventHandler
   def onPlayerActiveSkillEvent(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
@@ -77,9 +79,9 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
       case Action.PHYSICAL => return
     }
 
-    //クールダウンタイム中は処理を終了
+    // クールダウンタイム中は処理を終了
     if (!activeSkillAvailability(player).get.unsafeRunSync()) {
-      //SEを再生
+      // SEを再生
       player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1f)
       return
     }
@@ -90,7 +92,7 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
           import cats.implicits._
           import com.github.unchama.concurrent.syntax._
 
-          //クールダウン処理
+          // クールダウン処理
           val coolDownTicks = coolDownOption.getOrElse(0)
           val soundEffectAfterCoolDown =
             if (coolDownTicks > 5)
@@ -107,46 +109,49 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
           val arrowEffect = playerData.skillEffectState.selection.arrowEffect
 
           effectEnvironment.unsafeRunEffectAsync("スキルのクールダウンの状態を戻す", controlSkillAvailability)
-          effectEnvironment.unsafeRunEffectAsync("ArrowEffectを非同期で実行する", arrowEffect.run(player))
+          effectEnvironment.unsafeRunEffectAsync(
+            "ArrowEffectを非同期で実行する",
+            arrowEffect.run(player)
+          )
         case _ =>
       }
     }
   }
 
-  //プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
+  // プレイヤーが右クリックした時に実行(ガチャを引く部分の処理)
   @EventHandler
   def onPlayerRightClickGachaEvent(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
     val playerData = playerMap(player.getUniqueId)
 
-    //もしサバイバルでなければ処理を終了
+    // もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return
 
     val clickedItemStack = event.getItem.ifNull {
       return
     }
 
-    //ガチャ用の頭でなければ終了
+    // ガチャ用の頭でなければ終了
     if (!Util.isGachaTicket(clickedItemStack)) return
 
     event.setCancelled(true)
 
-    //連打防止クールダウン処理
+    // 連打防止クールダウン処理
     if (!playerData.gachacooldownflag) return
 
-    //連打による負荷防止の為クールダウン処理
+    // 連打による負荷防止の為クールダウン処理
     new CoolDownTask(player, false, true).runTaskLater(plugin, 4)
 
-    //オフハンドから実行された時処理を終了
+    // オフハンドから実行された時処理を終了
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
-    //ガチャシステムメンテナンス中は処理を終了
+    // ガチャシステムメンテナンス中は処理を終了
     if (SeichiAssist.gachamente) {
       player.sendMessage("現在ガチャシステムはメンテナンス中です。\nしばらく経ってからもう一度お試しください")
       return
     }
 
-    //ガチャデータが設定されていない場合
+    // ガチャデータが設定されていない場合
     if (gachaDataList.isEmpty) {
       player.sendMessage("ガチャが設定されていません")
       return
@@ -162,32 +167,39 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     参照：https://github.com/GiganticMinecraft/SeichiAssist/issues/770
      */
     if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return
-    if (action == Action.RIGHT_CLICK_BLOCK && (clickedBlock.getType == Material.CHEST || clickedBlock.getType == Material.TRAPPED_CHEST)) return
+    if (
+      action == Action.RIGHT_CLICK_BLOCK && (clickedBlock.getType == Material.CHEST || clickedBlock.getType == Material.TRAPPED_CHEST)
+    ) return
 
     val count =
       if (player.isSneaking) {
         val amount = clickedItemStack.getAmount
         player.sendMessage(s"$AQUA${amount}回ガチャを回しました。")
         amount
-      }
-      else 1
+      } else 1
 
     if (!Util.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)) {
       player.sendMessage(RED.toString + "ガチャ券の数が不正です。")
       return
     }
 
-    //各自当たった個数を記録するための変数
+    // 各自当たった個数を記録するための変数
     var gachaBigWin = 0
     var gachaWin = 0
     var gachaGTWin = 0
 
-    val playerLevel = SeichiAssist.instance
-      .breakCountSystem.api.seichiAmountDataRepository(player)
-      .read.unsafeRunSync().levelCorrespondingToExp.level
+    val playerLevel = SeichiAssist
+      .instance
+      .breakCountSystem
+      .api
+      .seichiAmountDataRepository(player)
+      .read
+      .unsafeRunSync()
+      .levelCorrespondingToExp
+      .level
 
     (1 to count).foreach { _ =>
-      //プレゼント用ガチャデータ作成
+      // プレゼント用ガチャデータ作成
       val present = GachaPrize.runGacha()
 
       val probabilityOfItem = present.probability
@@ -198,14 +210,19 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
         else base
       }
 
-      //メッセージ設定
+      // メッセージ設定
       val additionalMessage =
         if (!Util.isPlayerInventoryFull(player)) {
           Util.addItem(player, givenItem)
           ""
         } else {
-          //アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
-          if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack) && playerLevel >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)) {
+          // アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
+          if (
+            BreakUtil.tryAddItemIntoMineStack(
+              player,
+              present.itemStack
+            ) && playerLevel >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
+          ) {
             // ...格納した！
             s"${AQUA}景品をマインスタックに収納しました。"
           } else {
@@ -216,12 +233,14 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
           }
         }
 
-      //確率に応じてメッセージを送信
+      // 確率に応じてメッセージを送信
       if (probabilityOfItem < 0.001) {
         Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
 
         {
-          playerData.settings.getBroadcastMutingSettings
+          playerData
+            .settings
+            .getBroadcastMutingSettings
             .flatMap(settings =>
               IO {
                 if (!settings.shouldMuteMessages) {
@@ -231,15 +250,14 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
             )
         }.unsafeRunSync()
 
-        val loreWithoutOwnerName = givenItem.getItemMeta.getLore.asScala.toList
-          .filterNot {
-            _ == s"§r§2所有者：${player.getName}"
-          }
+        val loreWithoutOwnerName = givenItem.getItemMeta.getLore.asScala.toList.filterNot {
+          _ == s"§r§2所有者：${player.getName}"
+        }
 
-        val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq
-          .map { case (enchantment, level) =>
+        val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq.map {
+          case (enchantment, level) =>
             s"$GRAY${Util.getEnchantName(enchantment.getName, level)}"
-          }
+        }
 
         import scala.util.chaining._
         val message =
@@ -287,19 +305,17 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     if (gachaBigWin > 0) rewardDetailTexts += s"${GOLD}大当たりが${gachaBigWin}個"
     if (gachaGTWin > 0) rewardDetailTexts += s"${RED}Gigantic☆大当たりが${gachaGTWin}個"
     if (count != 1) {
-      player.sendMessage(
-        if (rewardDetailTexts.isEmpty) {
-          s"${WHITE}はずれ！また遊んでね！"
-        } else {
-          s"${rewardDetailTexts.mkString(s"$GRAY,")}${GOLD}出ました！"
-        }
-      )
+      player.sendMessage(if (rewardDetailTexts.isEmpty) {
+        s"${WHITE}はずれ！また遊んでね！"
+      } else {
+        s"${rewardDetailTexts.mkString(s"$GRAY,")}${GOLD}出ました！"
+      })
     }
 
     player.playSound(player.getLocation, Sound.ENTITY_ARROW_HIT_PLAYER, 1f, 0.1f)
   }
 
-  //スキル切り替えのイベント
+  // スキル切り替えのイベント
   @EventHandler
   def onPlayerActiveSkillToggleEvent(event: PlayerInteractEvent): Unit = {
     val player = event.getPlayer
@@ -311,9 +327,15 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     if (currentItem == Material.STICK || currentItem == Material.SKULL_ITEM) return
 
     val playerData = playerMap(player.getUniqueId)
-    val playerLevel = SeichiAssist.instance
-      .breakCountSystem.api.seichiAmountDataRepository(player)
-      .read.unsafeRunSync().levelCorrespondingToExp.level
+    val playerLevel = SeichiAssist
+      .instance
+      .breakCountSystem
+      .api
+      .seichiAmountDataRepository(player)
+      .read
+      .unsafeRunSync()
+      .levelCorrespondingToExp
+      .level
 
     if (playerLevel < SeichiAssist.seichiAssistConfig.getDualBreaklevel) return
     if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
@@ -322,17 +344,19 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
       val hasToolInMainHand = MaterialSets.breakToolMaterials.contains(currentItem)
 
-      if (action == Action.RIGHT_CLICK_BLOCK &&
-        MaterialSets.cancelledMaterials.contains(event.getClickedBlock.getType)) return
+      if (
+        action == Action.RIGHT_CLICK_BLOCK &&
+        MaterialSets.cancelledMaterials.contains(event.getClickedBlock.getType)
+      ) return
 
       val skillState = playerData.skillState.get.unsafeRunSync()
 
       if (equipmentSlot == EquipmentSlot.HAND && hasToolInMainHand) {
-        //メインハンドで指定ツールを持っていた時の処理
-        //スニークしていないかつアサルトタイプが選択されていない時処理を終了
+        // メインハンドで指定ツールを持っていた時の処理
+        // スニークしていないかつアサルトタイプが選択されていない時処理を終了
         if (!player.isSneaking && skillState.assaultSkill.isEmpty) return
 
-        //設置をキャンセル
+        // 設置をキャンセル
         event.setCancelled(true)
 
         skillState.activeSkill match {
@@ -347,13 +371,14 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
       } else if (equipmentSlot == EquipmentSlot.OFF_HAND) {
         skillState.assaultSkill match {
           case Some(skill) =>
-            //オフハンドで指定ツールを持っていた時の処理
+            // オフハンドで指定ツールを持っていた時の処理
 
             event.setCancelled(true)
 
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
 
-            SeichiAssist.instance
+            SeichiAssist
+              .instance
               .assaultSkillRoutines(player)
               .flipState(TryableFiber.start(AssaultRoutine.tryStart(player, skill)))
               .as(())
@@ -374,16 +399,20 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
 
     if (!(action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) return
 
-    if (inventory.getItemInMainHand.getType == Material.STICK && inventory.getItemInOffHand != null)
+    if (
+      inventory
+        .getItemInMainHand
+        .getType == Material.STICK && inventory.getItemInOffHand != null
+    )
       event.setCancelled(true)
   }
 
-  //棒メニューを開くイベント
+  // 棒メニューを開くイベント
   @EventHandler
   def onPlayerMenuEvent(event: PlayerInteractEvent): Unit = {
-    //プレイヤーを取得
+    // プレイヤーを取得
     val player = event.getPlayer
-    //プレイヤーが起こしたアクションを取得
+    // プレイヤーが起こしたアクションを取得
     val action = event.getAction
 
     if (player.getInventory.getItemInMainHand.getType != Material.STICK) return
@@ -402,51 +431,56 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     )
   }
 
-  //頭の即時回収
+  // 頭の即時回収
   @EventHandler
   def onPlayerRightClickMineHeadEvent(e: PlayerInteractEvent): Unit = {
 
     val p = e.getPlayer
     val useItem = p.getInventory.getItemInMainHand
-    //専用アイテムを持っていない場合無視
+    // 専用アイテムを持っていない場合無視
     if (!Util.isMineHeadItem(useItem)) {
       return
     }
 
     val action = e.getAction
-    //ブロックの左クリックじゃない場合無視
+    // ブロックの左クリックじゃない場合無視
     if (action != Action.LEFT_CLICK_BLOCK) {
       return
     }
 
     val targetBlock = e.getClickedBlock
-    //頭じゃない場合無視
+    // 頭じゃない場合無視
     if (targetBlock.getType != Material.SKULL) {
       return
     }
 
-    //壊せない場合無視
+    // 壊せない場合無視
     if (!BreakUtil.canBreak(p, targetBlock)) {
       return
     }
 
-    //インベントリに空がない場合無視
+    // インベントリに空がない場合無視
     if (Util.isPlayerInventoryFull(p)) {
       p.sendMessage(RED.toString + "インベントリがいっぱいです")
       return
     }
 
-    //頭を付与
+    // 頭を付与
     Util.getSkullDataFromBlock(targetBlock) match {
       case Some(itemStack) => p.getInventory.addItem(itemStack)
-      case None =>
+      case None            =>
     }
     if (!ExternalPlugins.getCoreProtectWrapper.queueBlockRemoval(p, targetBlock)) {
-      SeichiAssist.instance.getLogger.warning(s"Logging in skull break: Failed Location: ${targetBlock.getLocation}, Player:$p")
+      SeichiAssist
+        .instance
+        .getLogger
+        .warning(
+          s"Logging in skull break: Failed Location: ${targetBlock.getLocation}, Player:$p"
+        )
     }
-    //ブロックを空気で置き換える
+    // ブロックを空気で置き換える
     targetBlock.setType(Material.AIR)
-    //音を鳴らしておく
+    // 音を鳴らしておく
     p.playSound(p.getLocation, Sound.ENTITY_ITEM_PICKUP, 2.0f, 1.0f)
   }
 
@@ -460,7 +494,9 @@ class PlayerClickListener(implicit effectEnvironment: EffectEnvironment,
     if (!isRegionOwner(event.getPlayer, clickedBlock.getLocation)) return
 
     if (event.getHand == EquipmentSlot.OFF_HAND) return
-    if (event.getAction != Action.RIGHT_CLICK_BLOCK || clickedBlock.getType != Material.IRON_TRAPDOOR) return
+    if (
+      event.getAction != Action.RIGHT_CLICK_BLOCK || clickedBlock.getType != Material.IRON_TRAPDOOR
+    ) return
 
     // TODO: 手に何も持っていない場合は機能するが、ブロックなどを持っている場合は機能しない（手に持っているものが設置できるもののときや弓矢は反応する）
     val blockState = clickedBlock.getState

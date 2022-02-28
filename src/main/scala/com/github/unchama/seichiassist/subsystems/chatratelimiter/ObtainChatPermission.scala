@@ -14,17 +14,21 @@ trait ObtainChatPermission[F[_], Player] {
 object ObtainChatPermission {
   import cats.implicits._
 
-  def from[G[_] : Monad](
-                          repository: PlayerDataRepository[Ref[G, Option[RateLimiter[G, ChatCount]]]]
-                        ): ObtainChatPermission[G, Player] =
-    player => for {
-      rateLimiterOpt <- repository.apply(player).get
-      folded <- rateLimiterOpt.fold(
-        Monad[G].pure[ChatPermissionRequestResult](ChatPermissionRequestResult.Success)
-      ) { rateLimiter =>
-        rateLimiter.requestPermission(ChatCount.One).map(count =>
-          if (count == ChatCount.One) ChatPermissionRequestResult.Success
-          else ChatPermissionRequestResult.Failed)
-      }
-    } yield folded
+  def from[G[_]: Monad](
+    repository: PlayerDataRepository[Ref[G, Option[RateLimiter[G, ChatCount]]]]
+  ): ObtainChatPermission[G, Player] =
+    player =>
+      for {
+        rateLimiterOpt <- repository.apply(player).get
+        folded <- rateLimiterOpt.fold(
+          Monad[G].pure[ChatPermissionRequestResult](ChatPermissionRequestResult.Success)
+        ) { rateLimiter =>
+          rateLimiter
+            .requestPermission(ChatCount.One)
+            .map(count =>
+              if (count == ChatCount.One) ChatPermissionRequestResult.Success
+              else ChatPermissionRequestResult.Failed
+            )
+        }
+      } yield folded
 }

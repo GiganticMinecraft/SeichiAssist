@@ -13,7 +13,7 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import scala.util.Random
 
 class FixedWindowRateLimiterSpec
-  extends GenericRateLimiterSpec
+    extends GenericRateLimiterSpec
     with ScalaCheckPropertyChecks
     with TaskDiscreteEventually {
 
@@ -22,7 +22,9 @@ class FixedWindowRateLimiterSpec
 
   import scala.concurrent.duration._
 
-  override def newRandomRateLimiter(seed: Int)(implicit monixTimer: Timer[Task]): Task[RateLimiter[Task, Natural]] = {
+  override def newRandomRateLimiter(
+    seed: Int
+  )(implicit monixTimer: Timer[Task]): Task[RateLimiter[Task, Natural]] = {
     val random = new Random(seed)
     val maxPermit = refineV[NonNegative].unsafeFrom(random.nextInt(1000))
     val sleepTime = random.nextInt(60000).millis
@@ -30,10 +32,14 @@ class FixedWindowRateLimiterSpec
     FixedWindowRateLimiter.in[Task, Natural](maxPermit, sleepTime)
   }
 
-  implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig = DiscreteEventuallyConfig(10000)
+  implicit override val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = 5.seconds, interval = 10.millis)
+  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig =
+    DiscreteEventuallyConfig(10000)
 
-  implicit val monixScheduler: TestScheduler = TestScheduler(ExecutionModel.SynchronousExecution)
+  implicit val monixScheduler: TestScheduler = TestScheduler(
+    ExecutionModel.SynchronousExecution
+  )
   implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
 
   "Fixed window limiter" should {
@@ -76,12 +82,14 @@ class FixedWindowRateLimiterSpec
 
       val program = for {
         rateLimiter <- FixedWindowRateLimiter.in[Task, Natural](maxCount, 1.minute)
-        allowances <- (1 to windowCount).toList.traverse(_ =>
-          (1 to maxCount)
-            .toList
-            .traverse(_ => rateLimiter.requestPermission(1))
-            .flatTap(_ => monixTimer.sleep(1.minute + 1.second))
-        )
+        allowances <- (1 to windowCount)
+          .toList
+          .traverse(_ =>
+            (1 to maxCount)
+              .toList
+              .traverse(_ => rateLimiter.requestPermission(1))
+              .flatTap(_ => monixTimer.sleep(1.minute + 1.second))
+          )
       } yield {
         val expected = List.fill(windowCount * maxCount)(1: Natural)
         assert(allowances.flatten == expected)

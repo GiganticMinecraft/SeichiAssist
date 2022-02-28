@@ -1,13 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.bookedachivement.service
 
-import java.util.UUID
-
 import cats.FlatMap
 import com.github.unchama.seichiassist.subsystems.bookedachivement.domain.{AchievementOperation, BookedAchievementPersistenceRepository}
 
-class AchievementBookingService[
-  F[_] : FlatMap
-](implicit persistenceRepository: BookedAchievementPersistenceRepository[F, UUID]) {
+import java.util.UUID
+
+class AchievementBookingService[F[_]: FlatMap](
+  implicit persistenceRepository: BookedAchievementPersistenceRepository[F, UUID]
+) {
 
   import cats.implicits._
   import persistenceRepository._
@@ -19,7 +19,11 @@ class AchievementBookingService[
     } yield result
   }
 
-  def writeAchivementId(playerName: String, achievementId: Int, operation: AchievementOperation): F[Unit] = {
+  def writeAchivementId(
+    playerName: String,
+    achievementId: Int,
+    operation: AchievementOperation
+  ): F[Unit] = {
     for {
       uuid <- findPlayerUuid(playerName)
       _ <- bookAchievement(uuid, achievementId, operation)

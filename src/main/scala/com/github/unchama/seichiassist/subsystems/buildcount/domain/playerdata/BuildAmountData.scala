@@ -23,7 +23,10 @@ case class BuildAmountData(expAmount: BuildExpAmount) {
       val (nextThreshold, previousThreshold) = {
         val nextLevel = levelCorrespondingToExp.incremented
 
-        (BuildAssistExpTable.expAt(nextLevel), BuildAssistExpTable.expAt(levelCorrespondingToExp))
+        (
+          BuildAssistExpTable.expAt(nextLevel),
+          BuildAssistExpTable.expAt(levelCorrespondingToExp)
+        )
       }
 
       val required = nextThreshold |-| previousThreshold
@@ -33,7 +36,8 @@ case class BuildAmountData(expAmount: BuildExpAmount) {
     }
   }
 
-  def modifyExpAmount(f: BuildExpAmount => BuildExpAmount): BuildAmountData = copy(expAmount = f(expAmount))
+  def modifyExpAmount(f: BuildExpAmount => BuildExpAmount): BuildAmountData =
+    copy(expAmount = f(expAmount))
 
 }
 

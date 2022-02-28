@@ -5,16 +5,20 @@ import enumeratum._
 /**
  * マインスタックに収納するアイテムのカテゴリを表すオブジェクト.
  *
- * @param serializedValue この列挙体を永続化する際の識別子となる整数.
- * @param uiLabel         UI上で表示する際のカテゴリの名前
+ * @param serializedValue
+ *   この列挙体を永続化する際の識別子となる整数.
+ * @param uiLabel
+ *   UI上で表示する際のカテゴリの名前
  */
-sealed abstract class MineStackObjectCategory(val serializedValue: Int, val uiLabel: String) extends EnumEntry
+sealed abstract class MineStackObjectCategory(val serializedValue: Int, val uiLabel: String)
+    extends EnumEntry
 
 case object MineStackObjectCategory extends Enum[MineStackObjectCategory] {
 
   val values: IndexedSeq[MineStackObjectCategory] = findValues
 
-  def fromSerializedValue(value: Int): Option[MineStackObjectCategory] = values.find(_.serializedValue == value)
+  def fromSerializedValue(value: Int): Option[MineStackObjectCategory] =
+    values.find(_.serializedValue == value)
 
   case object ORES extends MineStackObjectCategory(0, "鉱石系アイテム")
 

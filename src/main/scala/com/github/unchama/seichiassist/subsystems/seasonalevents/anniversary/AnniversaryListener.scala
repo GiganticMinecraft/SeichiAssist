@@ -24,8 +24,10 @@ import org.bukkit.{Material, Sound, TreeType}
 import scala.jdk.CollectionConverters._
 import scala.util.Random
 
-class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
-                          ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
+class AnniversaryListener(
+  implicit effectEnvironment: EffectEnvironment,
+  ioOnMainThread: OnMinecraftServerThread[IO]
+) extends Listener {
 
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
@@ -56,7 +58,10 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
         MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
         UnfocusedEffect {
-          SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(false, Some(playerUuid))
+          SeichiAssist
+            .databaseGateway
+            .playerDataManipulator
+            .setAnniversary(false, Some(playerUuid))
         }
       ),
       s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する"
@@ -104,10 +109,14 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
     val player = event.getPlayer
     if (!isAnniversaryShovel(player.getInventory.getItemInMainHand)) return
 
-    player.getNearbyEntities(20.0, 20.0, 20.0).asScala.filter(mob => isEnemy(mob.getType)).foreach {
-      case enemy: LivingEntity => enemy.damage(10.0)
-      case _ =>
-    }
+    player
+      .getNearbyEntities(20.0, 20.0, 20.0)
+      .asScala
+      .filter(mob => isEnemy(mob.getType))
+      .foreach {
+        case enemy: LivingEntity => enemy.damage(10.0)
+        case _                   =>
+      }
   }
 
   /**

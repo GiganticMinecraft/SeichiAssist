@@ -9,7 +9,9 @@ import org.bukkit.command.TabExecutor
  * エンダーチェストを開くコマンド
  */
 object EnderChestCommand {
-  def executor[F[_]: Effect](implicit enderChestAccessApi: AnywhereEnderChestAPI[F]): TabExecutor =
+  def executor[F[_]: Effect](
+    implicit enderChestAccessApi: AnywhereEnderChestAPI[F]
+  ): TabExecutor =
     playerCommandBuilder
       .argumentsParsers(List())
       .withEffectAsExecution {

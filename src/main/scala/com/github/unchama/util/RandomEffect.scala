@@ -36,7 +36,7 @@ trait RandomEffect[F[_]] {
 
 object RandomEffect {
 
-  def createFromRandom[F[_] : Sync](random: Random): RandomEffect[F] = new RandomEffect[F] {
+  def createFromRandom[F[_]: Sync](random: Random): RandomEffect[F] = new RandomEffect[F] {
     override def getNaturalLessThan(n: Int): F[Int] = Sync[F].delay {
       random.nextInt(n)
     }
@@ -50,6 +50,6 @@ object RandomEffect {
     }
   }
 
-  def apply[F[_] : RandomEffect]: RandomEffect[F] = implicitly
+  def apply[F[_]: RandomEffect]: RandomEffect[F] = implicitly
 
 }
