@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuit
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
 import com.github.unchama.seichiassist.util.Util.{addItem, dropItem, grantItemStacksEffect, isPlayerInventoryFull}
+import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -59,21 +60,18 @@ class NewYearListener[
     val program = for {
       _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(player.getUniqueId)
-      _ <- LiftIO[F].liftIO(IO{
-        val hasNotJoinedInEventYet = lastQuit match {
-          case Some(dateTime) => dateTime.isBefore(START_DATE.atStartOfDay())
-          case None => true
-        }
+      _ <- LiftIO[F].liftIO {
+        val hasNotJoinedInEventYet = lastQuit.forall(NEW_YEAR_EVE.isEntirelyAfter)
 
         val effects =
-          if (hasNotJoinedInEventYet) List(
+          if (hasNotJoinedInEventYet) SequentialEffect(
             grantItemStacksEffect(sobaHead),
             MessageEffect(s"${BLUE}大晦日ログインボーナスとして記念品を入手しました。"),
             FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
-          else List(emptyEffect)
+          else emptyEffect
 
-        effects.traverse(_.run(player))
-      })
+        effects.run(player)
+      }
     } yield ()
 
     effectEnvironment.unsafeRunEffectAsync("大晦日ログインボーナスヘッドを付与するかどうかを判定する", program)

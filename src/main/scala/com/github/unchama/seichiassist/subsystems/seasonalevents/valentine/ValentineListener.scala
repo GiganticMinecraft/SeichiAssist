@@ -25,7 +25,6 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
-import java.time.LocalDateTime
 import java.util.{Random, UUID}
 import scala.util.chaining._
 
@@ -91,14 +90,7 @@ class ValentineListener[
       _ <- NonServerThreadContextShift[F].shift
       lastQuit <- repository.loadPlayerLastQuit(playerUuid)
       _ <- LiftIO[F].liftIO {
-        val baseDateTime =
-        /**
-         * 2022: 0時を超えてログインし続けていた人と初見さんに対応するための条件分岐
-         * 詳細は[[cookieUnGivenPlayers]]
-         */
-          if (cookieUnGivenPlayers.contains(playerUuid)) LocalDateTime.of(2022, 2, 18, 4, 0)
-          else EVENT_DURATION.from
-        val hasNotJoinedBeforeYet = lastQuit.forall { quit => quit.isBefore(baseDateTime) || quit.isEqual(baseDateTime) }
+        val hasNotJoinedBeforeYet = lastQuit.forall(EVENT_DURATION.isEntirelyAfter)
 
         val effects =
           if (hasNotJoinedBeforeYet) SequentialEffect(

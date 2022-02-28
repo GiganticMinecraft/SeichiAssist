@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE, EVENT_YEAR}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{END_DATE, EVENT_YEAR, NEW_YEAR_EVE}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -77,7 +77,7 @@ object NewYearItemData {
   private val soba = SkullOwnerTextureValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ==")
 
   val sobaHead: ItemStack = new SkullItemStackBuilder(soba)
-    .title(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)")
+    .title(s"年越し蕎麦(${NEW_YEAR_EVE.from.getYear}年)")
     .lore(List(
       "",
       s"${YELLOW}大晦日記念アイテムだよ!"
