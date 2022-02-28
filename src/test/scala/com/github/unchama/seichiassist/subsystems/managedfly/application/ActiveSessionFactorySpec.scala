@@ -2,8 +2,16 @@ package com.github.unchama.seichiassist.subsystems.managedfly.application
 
 import cats.Monad
 import cats.effect.{SyncIO, Timer}
-import com.github.unchama.seichiassist.subsystems.managedfly.domain.{Flying, HasMovedRecently, Idle, RemainingFlyDuration}
-import com.github.unchama.testutil.concurrent.tests.{ConcurrentEffectTest, TaskDiscreteEventually}
+import com.github.unchama.seichiassist.subsystems.managedfly.domain.{
+  Flying,
+  HasMovedRecently,
+  Idle,
+  RemainingFlyDuration
+}
+import com.github.unchama.testutil.concurrent.tests.{
+  ConcurrentEffectTest,
+  TaskDiscreteEventually
+}
 import com.github.unchama.testutil.execution.MonixTestSchedulerTests
 import monix.catnap.SchedulerEffect
 import monix.eval.Task
@@ -13,7 +21,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 class ActiveSessionFactorySpec
-  extends AnyWordSpec
+    extends AnyWordSpec
     with ScalaCheckPropertyChecks
     with Matchers
     with TaskDiscreteEventually
@@ -24,8 +32,10 @@ class ActiveSessionFactorySpec
 
   import scala.concurrent.duration._
 
-  implicit override val patienceConfig: PatienceConfig = PatienceConfig(timeout = 5.seconds, interval = 10.millis)
-  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig = DiscreteEventuallyConfig(10000)
+  implicit override val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = 5.seconds, interval = 10.millis)
+  implicit override val discreteEventuallyConfig: DiscreteEventuallyConfig =
+    DiscreteEventuallyConfig(10000)
 
   implicit val monixScheduler: TestScheduler = TestScheduler()
   implicit val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
@@ -38,11 +48,10 @@ class ActiveSessionFactorySpec
     "be able to tell if it is active or not" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -78,11 +87,10 @@ class ActiveSessionFactorySpec
     "synchronize player's fly status once started" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -113,11 +121,10 @@ class ActiveSessionFactorySpec
     "synchronize player's fly status when cancelled or complete" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -146,11 +153,10 @@ class ActiveSessionFactorySpec
     "terminate immediately if the player does not have enough experience" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 100
-        )
+        SystemConfiguration(expConsumptionAmount = 100)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -180,11 +186,10 @@ class ActiveSessionFactorySpec
 
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 100
-        )
+        SystemConfiguration(expConsumptionAmount = 100)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -222,11 +227,10 @@ class ActiveSessionFactorySpec
 
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 100
-        )
+        SystemConfiguration(expConsumptionAmount = 100)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -274,11 +278,10 @@ class ActiveSessionFactorySpec
 
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 100
-        )
+        SystemConfiguration(expConsumptionAmount = 100)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -314,7 +317,8 @@ class ActiveSessionFactorySpec
         }(_ < minutesToWait)
         _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(true))
         _ <- Monad[Task].iterateWhileM(0) { sleptMinute =>
-          val expectedExperience = FiniteNonNegativeExperience(originalExp - minutesToWait * 100)
+          val expectedExperience =
+            FiniteNonNegativeExperience(originalExp - minutesToWait * 100)
 
           for {
             _ <- discreteEventually {
@@ -327,7 +331,8 @@ class ActiveSessionFactorySpec
         }(_ < minutesToWait)
         _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(false))
         _ <- Monad[Task].iterateWhileM(0) { sleptMinute =>
-          val expectedExperience = FiniteNonNegativeExperience(originalExp - (minutesToWait + sleptMinute) * 100)
+          val expectedExperience =
+            FiniteNonNegativeExperience(originalExp - (minutesToWait + sleptMinute) * 100)
 
           for {
             _ <- discreteEventually {
@@ -346,15 +351,13 @@ class ActiveSessionFactorySpec
       awaitForProgram(runConcurrent(program)(100), (minutesToWait * 3).minutes + 30.seconds)
     }
 
-
     "not tick whenever player is idle" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -364,7 +367,9 @@ class ActiveSessionFactorySpec
           InfiniteExperience,
           initiallyIdle = false
         ).coerceTo[Task]
-        session <- factory.start[SyncIO](RemainingFlyDuration.PositiveMinutes.fromPositive(100)).run(playerRef)
+        session <- factory
+          .start[SyncIO](RemainingFlyDuration.PositiveMinutes.fromPositive(100))
+          .run(playerRef)
 
         // セッションが有効になるまで待つ
         _ <- discreteEventually {
@@ -379,7 +384,9 @@ class ActiveSessionFactorySpec
         // then
         _ <- discreteEventually {
           Task {
-            session.latestFlyStatus.unsafeRunSync() shouldBe Flying(RemainingFlyDuration.PositiveMinutes.fromPositive(50))
+            session.latestFlyStatus.unsafeRunSync() shouldBe Flying(
+              RemainingFlyDuration.PositiveMinutes.fromPositive(50)
+            )
           }
         }
 
@@ -390,7 +397,9 @@ class ActiveSessionFactorySpec
         // then
         _ <- discreteEventually {
           Task {
-            session.latestFlyStatus.unsafeRunSync() shouldBe Flying(RemainingFlyDuration.PositiveMinutes.fromPositive(50))
+            session.latestFlyStatus.unsafeRunSync() shouldBe Flying(
+              RemainingFlyDuration.PositiveMinutes.fromPositive(50)
+            )
           }
         }
 
@@ -414,14 +423,13 @@ class ActiveSessionFactorySpec
 
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 1000
-        )
+        SystemConfiguration(expConsumptionAmount = 1000)
 
       // 消費は丁度10回でき、11回目の経験値チェックで飛行セッションが閉じるべきなので、
       // 11分の経過を期待する。
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -459,11 +467,10 @@ class ActiveSessionFactorySpec
     "send appropriate notification when player does not have enough experience" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 100
-        )
+        SystemConfiguration(expConsumptionAmount = 100)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -481,7 +488,11 @@ class ActiveSessionFactorySpec
         // then
         _ <- discreteEventually {
           Task {
-            playerRef.messageLog.readLatest.unsafeRunSync().last shouldBe InterruptionMessageMock(PlayerExpNotEnough)
+            playerRef
+              .messageLog
+              .readLatest
+              .unsafeRunSync()
+              .last shouldBe InterruptionMessageMock(PlayerExpNotEnough)
           }
         }
       } yield ()
@@ -492,11 +503,10 @@ class ActiveSessionFactorySpec
     "send appropriate notification of remaining fly time every minute" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 0
-        )
+        SystemConfiguration(expConsumptionAmount = 0)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -508,7 +518,9 @@ class ActiveSessionFactorySpec
         ).coerceTo[Task]
 
         // when
-        _ <- factory.start[SyncIO](RemainingFlyDuration.PositiveMinutes.fromPositive(10)).run(playerRef)
+        _ <- factory
+          .start[SyncIO](RemainingFlyDuration.PositiveMinutes.fromPositive(10))
+          .run(playerRef)
         _ <- monixTimer.sleep(4.minutes + 30.seconds)
         _ <- playerRef.isIdleMutex.lockAndUpdate(_ => Task.pure(true))
         _ <- monixTimer.sleep(2.minutes)
@@ -519,18 +531,48 @@ class ActiveSessionFactorySpec
         _ <- discreteEventually {
           Task {
             playerRef.messageLog.readLatest.unsafeRunSync() shouldBe Vector(
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(10)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(9)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(8)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(7)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(6)),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(10)
+              ),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(9)
+              ),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(8)
+              ),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(7)
+              ),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(6)
+              ),
               StatusMessageMock(Idle, RemainingFlyDuration.PositiveMinutes.fromPositive(6)),
               StatusMessageMock(Idle, RemainingFlyDuration.PositiveMinutes.fromPositive(6)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(5)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(4)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(3)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(2)),
-              StatusMessageMock(HasMovedRecently, RemainingFlyDuration.PositiveMinutes.fromPositive(1)),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(5)
+              ),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(4)
+              ),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(3)
+              ),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(2)
+              ),
+              StatusMessageMock(
+                HasMovedRecently,
+                RemainingFlyDuration.PositiveMinutes.fromPositive(1)
+              ),
               InterruptionMessageMock(FlyDurationExpired)
             )
           }
@@ -545,14 +587,14 @@ class ActiveSessionFactorySpec
     "terminate exactly when the minute specified has passed if the player has enough experience" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 100
-        )
+        SystemConfiguration(expConsumptionAmount = 100)
 
       val sessionLengthInMinutes = 10
-      val originalSessionLength = RemainingFlyDuration.PositiveMinutes.fromPositive(sessionLengthInMinutes)
+      val originalSessionLength =
+        RemainingFlyDuration.PositiveMinutes.fromPositive(sessionLengthInMinutes)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -582,14 +624,14 @@ class ActiveSessionFactorySpec
     "send appropriate notification when a session expires" in {
       // given
       implicit val configuration: SystemConfiguration =
-        SystemConfiguration(
-          expConsumptionAmount = 100
-        )
+        SystemConfiguration(expConsumptionAmount = 100)
 
       val sessionLengthInMinutes = 10
-      val originalSessionLength = RemainingFlyDuration.PositiveMinutes.fromPositive(sessionLengthInMinutes)
+      val originalSessionLength =
+        RemainingFlyDuration.PositiveMinutes.fromPositive(sessionLengthInMinutes)
 
-      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] = playerMockFlyStatusManipulation
+      implicit val manipulationMock: PlayerFlyStatusManipulation[PlayerAsyncKleisli] =
+        playerMockFlyStatusManipulation
       val factory = new ActiveSessionFactory[Task, PlayerMockReference]()
 
       val program = for {
@@ -608,7 +650,11 @@ class ActiveSessionFactorySpec
         // then
         _ <- discreteEventually {
           Task {
-            playerRef.messageLog.readLatest.unsafeRunSync().last shouldBe InterruptionMessageMock(FlyDurationExpired)
+            playerRef
+              .messageLog
+              .readLatest
+              .unsafeRunSync()
+              .last shouldBe InterruptionMessageMock(FlyDurationExpired)
           }
         }
       } yield ()

@@ -29,7 +29,9 @@ private object MineStackButtons {
   implicit class MineStackObjectOps(val mineStackObj: MineStackObj) extends AnyVal {
     def parameterizedWith(player: Player): ItemStack = {
       // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
-      if (mineStackObj.stackType == MineStackObjectCategory.GACHA_PRIZES && mineStackObj.gachaType >= 0) {
+      if (
+        mineStackObj.stackType == MineStackObjectCategory.GACHA_PRIZES && mineStackObj.gachaType >= 0
+      ) {
         val gachaData = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
         if (gachaData.probability < 0.1) {
           return mineStackObj.itemStack.clone().tap { cloned =>
@@ -58,37 +60,45 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(mineStackObj: MineStackObj)
-                              (implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton(IO {
+  def getMineStackItemButtonOf(
+    mineStackObj: MineStackObj
+  )(implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
     import scala.util.chaining._
 
-    val itemStack = mineStackObj.itemStack.clone().tap { itemStack =>
-      import itemStack._
-      setItemMeta {
-        getItemMeta.tap { itemMeta =>
-          import itemMeta._
-          setDisplayName {
-            val name = mineStackObj.uiName.getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
+    val itemStack =
+      mineStackObj
+        .itemStack
+        .clone()
+        .tap {
+          itemStack =>
+            import itemStack._
+            setItemMeta {
+              getItemMeta.tap { itemMeta =>
+                import itemMeta._
+                setDisplayName {
+                  val name = mineStackObj
+                    .uiName
+                    .getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
 
-            s"$YELLOW$UNDERLINE$BOLD$name"
-          }
+                  s"$YELLOW$UNDERLINE$BOLD$name"
+                }
 
-          setLore {
-            val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
+                setLore {
+                  val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
 
-            List(
-              s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
-              s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
-              s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
-              s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
-            ).asJava
-          }
+                  List(
+                    s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
+                    s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
+                    s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
+                    s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
+                  ).asJava
+                }
+              }
+            }
         }
-      }
-    }
 
     Button(
       itemStack,
@@ -115,28 +125,31 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)
-                                (implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
+    implicit onMainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] = {
     for {
-      pair <- Kleisli((player: Player) => onMainThread.runAction {
-        for {
-          playerData <- SyncIO {
-            SeichiAssist.playermap(player.getUniqueId)
-          }
-          currentAmount <- SyncIO {
-            playerData.minestack.getStackedAmountOf(mineStackObj)
-          }
+      pair <- Kleisli((player: Player) =>
+        onMainThread.runAction {
+          for {
+            playerData <- SyncIO {
+              SeichiAssist.playermap(player.getUniqueId)
+            }
+            currentAmount <- SyncIO {
+              playerData.minestack.getStackedAmountOf(mineStackObj)
+            }
 
-          grantAmount = Math.min(amount, currentAmount).toInt
+            grantAmount = Math.min(amount, currentAmount).toInt
 
-          soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
-          itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
+            soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
+            itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
 
-          _ <- SyncIO {
-            playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
-          }
-        } yield (soundEffectPitch, itemStackToGrant)
-      })
+            _ <- SyncIO {
+              playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
+            }
+          } yield (soundEffectPitch, itemStackToGrant)
+        }
+      )
       _ <- SequentialEffect(
         FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, pair._1),
         Util.grantItemStacksEffect(pair._2)
@@ -144,7 +157,9 @@ private[minestack] case class MineStackButtons(player: Player) {
     } yield ()
   }
 
-  def computeAutoMineStackToggleButton(implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] =
+  def computeAutoMineStackToggleButton(
+    implicit onMainThread: OnMinecraftServerThread[IO]
+  ): IO[Button] =
     RecomputedButton(IO {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
@@ -156,16 +171,11 @@ private[minestack] case class MineStackButtons(player: Player) {
         if (playerData.settings.autoMineStack) {
           baseBuilder
             .enchanted()
-            .lore(List(
-              s"$RESET${GREEN}現在ONです",
-              s"$RESET$DARK_RED${UNDERLINE}クリックでOFF"
-            ))
+            .lore(List(s"$RESET${GREEN}現在ONです", s"$RESET$DARK_RED${UNDERLINE}クリックでOFF"))
         } else {
-          baseBuilder
-            .lore(List(
-              s"$RESET${RED}現在OFFです",
-              s"$RESET$DARK_GREEN${UNDERLINE}クリックでON"
-            ))
+          baseBuilder.lore(
+            List(s"$RESET${RED}現在OFFです", s"$RESET$DARK_GREEN${UNDERLINE}クリックでON")
+          )
         }
       }.build()
 

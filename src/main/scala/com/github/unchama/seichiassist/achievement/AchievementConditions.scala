@@ -14,7 +14,6 @@ import java.time.temporal.TemporalAdjusters
 import java.time.{DayOfWeek, LocalDate, LocalTime, Month}
 import scala.concurrent.duration.FiniteDuration
 
-
 object AchievementConditions {
   def playerDataPredicate(predicate: PlayerData => IO[Boolean]): PlayerPredicate = { player =>
     IO {
@@ -22,20 +21,27 @@ object AchievementConditions {
     }.flatMap(predicate)
   }
 
-  def hasUnlocked(id: Int): PlayerPredicate = playerDataPredicate(d => IO {
-    d.TitleFlags.contains(id)
-  })
+  def hasUnlocked(id: Int): PlayerPredicate = playerDataPredicate(d =>
+    IO {
+      d.TitleFlags.contains(id)
+    }
+  )
 
-  def dependsOn[A: WithPlaceholder](id: Int, condition: AchievementCondition[A]): HiddenAchievementCondition[A] = {
+  def dependsOn[A: WithPlaceholder](
+    id: Int,
+    condition: AchievementCondition[A]
+  ): HiddenAchievementCondition[A] = {
     HiddenAchievementCondition(hasUnlocked(id), condition)
   }
 
   def brokenBlockRankingPosition_<=(n: Int): AchievementCondition[Int] = {
     val predicate: PlayerPredicate = { player: Player =>
-      SeichiAssist.instance
+      SeichiAssist
+        .instance
         .rankingSystemApi
         .seichiAmountRanking
-        .ranking.read
+        .ranking
+        .read
         .map(_.positionOf(player.getName))
         .map(_.exists(_ <= n))
     }
@@ -43,10 +49,15 @@ object AchievementConditions {
     AchievementCondition(predicate, "「整地神ランキング」" + _ + "位達成", n)
   }
 
-  def placedBlockAmount_>=(amount: BigDecimal, localizedAmount: String): AchievementCondition[String] = {
+  def placedBlockAmount_>=(
+    amount: BigDecimal,
+    localizedAmount: String
+  ): AchievementCondition[String] = {
     val predicate: PlayerPredicate = { player: Player =>
-      BuildAssist.instance
-        .buildAmountDataRepository(player).read
+      BuildAssist
+        .instance
+        .buildAmountDataRepository(player)
+        .read
         .map(_.expAmount.amount >= amount)
         .toIO
     }
@@ -55,24 +66,34 @@ object AchievementConditions {
   }
 
   def brokenBlockAmountPredicate(f: SeichiExpAmount => Boolean): PlayerPredicate = { player =>
-    SeichiAssist.instance
-      .breakCountSystem.api
+    SeichiAssist
+      .instance
+      .breakCountSystem
+      .api
       .seichiAmountDataRepository(player)
-      .read.map(amount => f(amount.expAmount))
+      .read
+      .map(amount => f(amount.expAmount))
       .toIO
   }
 
-  def brokenBlockAmount_>=(amount: Long, localizedAmount: String): AchievementCondition[String] = {
+  def brokenBlockAmount_>=(
+    amount: Long,
+    localizedAmount: String
+  ): AchievementCondition[String] = {
     import cats.implicits._
     val predicate = brokenBlockAmountPredicate(_ >= SeichiExpAmount.ofNonNegative(amount))
 
     AchievementCondition(predicate, "整地量が " + _ + "を超える", localizedAmount)
   }
 
-  def totalPlayTime_>=(duration: FiniteDuration, localizedDuration: String): AchievementCondition[String] = {
+  def totalPlayTime_>=(
+    duration: FiniteDuration,
+    localizedDuration: String
+  ): AchievementCondition[String] = {
     import com.github.unchama.concurrent.syntax._
 
-    val predicate = playerDataPredicate(d => IO { d.playTick.ticks.toMillis >= duration.toMillis })
+    val predicate =
+      playerDataPredicate(d => IO { d.playTick.ticks.toMillis >= duration.toMillis })
 
     AchievementCondition(predicate, "参加時間が " + _ + " を超える", localizedDuration)
   }
@@ -101,23 +122,33 @@ object AchievementConditions {
     AchievementCondition(predicate, _ + "月にプレイ", month.getValue.toString)
   }
 
-  def playedOn(month: Month, dayOfMonth: Int, dateSpecification: String): AchievementCondition[String] = {
+  def playedOn(
+    month: Month,
+    dayOfMonth: Int,
+    dateSpecification: String
+  ): AchievementCondition[String] = {
     val predicate: PlayerPredicate = _ =>
       IO {
         LocalDate.now().getMonth == month &&
-          LocalDate.now().getDayOfMonth == dayOfMonth
+        LocalDate.now().getDayOfMonth == dayOfMonth
       }
 
     AchievementCondition(predicate, _ + "にプレイ", dateSpecification)
   }
 
-  def playedOn(month: Month, weekOfMonth: Int, dayOfWeek: DayOfWeek, dateSpecification: String): AchievementCondition[String] = {
+  def playedOn(
+    month: Month,
+    weekOfMonth: Int,
+    dayOfWeek: DayOfWeek,
+    dateSpecification: String
+  ): AchievementCondition[String] = {
     val predicate: PlayerPredicate = _ =>
       IO {
         val now = LocalDate.now()
 
         // 現在の月の第[[weekOfMonth]][[dayOfWeek]]曜日
-        val dayOfWeekOnWeekOfTheMonth = now.`with`(TemporalAdjusters.dayOfWeekInMonth(weekOfMonth, dayOfWeek))
+        val dayOfWeekOnWeekOfTheMonth =
+          now.`with`(TemporalAdjusters.dayOfWeekInMonth(weekOfMonth, dayOfWeek))
 
         now.getMonth == month && now == dayOfWeekOnWeekOfTheMonth
       }
@@ -127,7 +158,7 @@ object AchievementConditions {
 
   def playedOn(holiday: NamedHoliday): AchievementCondition[String] = {
     val predicate: PlayerPredicate = _ =>
-      IO{
+      IO {
         val now = LocalDate.now()
         val target = holiday.dateOn(now.getYear)
 
@@ -151,10 +182,11 @@ object AchievementConditions {
             import scala.util.chaining._
 
             stack != null &&
-              stack.getType == Material.SKULL_ITEM &&
-              stack.getItemMeta.asInstanceOf[SkullMeta].pipe(meta =>
-                meta.hasOwner && meta.getOwningPlayer.getName == "unchama"
-              )
+            stack.getType == Material.SKULL_ITEM &&
+            stack
+              .getItemMeta
+              .asInstanceOf[SkullMeta]
+              .pipe(meta => meta.hasOwner && meta.getOwningPlayer.getName == "unchama")
           }
 
           import com.github.unchama.menuinventory.syntax._
@@ -164,35 +196,50 @@ object AchievementConditions {
         }
       }
 
-      HiddenAchievementCondition(shouldDisplay, AchievementCondition(shouldUnlock, _ => "器を満たす奇跡の少女", ()))
+      HiddenAchievementCondition(
+        shouldDisplay,
+        AchievementCondition(shouldUnlock, _ => "器を満たす奇跡の少女", ())
+      )
     }
 
     val conditionFor8002: HiddenAchievementCondition[Unit] = {
       val shouldDisplay: PlayerPredicate =
-        brokenBlockAmountPredicate { case SeichiExpAmount(amount) =>
-          amount % 1000000L == 0L && amount != 0L
+        brokenBlockAmountPredicate {
+          case SeichiExpAmount(amount) =>
+            amount % 1000000L == 0L && amount != 0L
         }
 
       val unlockCondition: PlayerPredicate =
-        brokenBlockAmountPredicate { case SeichiExpAmount(amount) =>
-          amount % 1000000L == 777777L
+        brokenBlockAmountPredicate {
+          case SeichiExpAmount(amount) =>
+            amount % 1000000L == 777777L
         }
 
-      HiddenAchievementCondition(shouldDisplay, AchievementCondition(unlockCondition, _ => "[[[[[[LuckyNumber]]]]]]", ()))
+      HiddenAchievementCondition(
+        shouldDisplay,
+        AchievementCondition(unlockCondition, _ => "[[[[[[LuckyNumber]]]]]]", ())
+      )
     }
 
     val unlockConditionFor8003: PlayerPredicate =
-      playerDataPredicate(p => IO {
-        p.playTick % (20 * 60 * 60 * 8) <= (20 * 60)
-      })
+      playerDataPredicate(p =>
+        IO {
+          p.playTick % (20 * 60 * 60 * 8) <= (20 * 60)
+        }
+      )
 
     val conditionFor8003: HiddenAchievementCondition[Unit] = {
       val shouldDisplay: PlayerPredicate =
-        playerDataPredicate(p => IO {
-          p.playTick % (20 * 60 * 60) >= 0 && p.playTick % (20 * 60 * 60) <= (20 * 60)
-        })
+        playerDataPredicate(p =>
+          IO {
+            p.playTick % (20 * 60 * 60) >= 0 && p.playTick % (20 * 60 * 60) <= (20 * 60)
+          }
+        )
 
-      HiddenAchievementCondition(shouldDisplay, AchievementCondition(_ => IO.pure(false), _ => "定時分働いたら記録を確認！", ()))
+      HiddenAchievementCondition(
+        shouldDisplay,
+        AchievementCondition(_ => IO.pure(false), _ => "定時分働いたら記録を確認！", ())
+      )
     }
   }
 }

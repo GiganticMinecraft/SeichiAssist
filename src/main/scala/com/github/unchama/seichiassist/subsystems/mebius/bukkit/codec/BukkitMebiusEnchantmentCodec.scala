@@ -10,7 +10,9 @@ object BukkitMebiusEnchantmentCodec {
   /**
    * アイテムスタックに対して破壊的にエンチャントを付与する
    */
-  def applyEnchantment(enchantment: MebiusEnchantment, level: Int)(itemStack: ItemStack): ItemStack = {
+  def applyEnchantment(enchantment: MebiusEnchantment, level: Int)(
+    itemStack: ItemStack
+  ): ItemStack = {
     import scala.util.chaining._
 
     def unsafeEnchantmentAdded(bukkitEnchantment: Enchantment): ItemStack =
@@ -19,20 +21,18 @@ object BukkitMebiusEnchantmentCodec {
       }
 
     enchantment match {
-      case Protection => unsafeEnchantmentAdded(Enchantment.PROTECTION_ENVIRONMENTAL)
-      case Durability => unsafeEnchantmentAdded(Enchantment.DURABILITY)
-      case Mending => unsafeEnchantmentAdded(Enchantment.MENDING)
-      case FireProtection => unsafeEnchantmentAdded(Enchantment.PROTECTION_FIRE)
+      case Protection           => unsafeEnchantmentAdded(Enchantment.PROTECTION_ENVIRONMENTAL)
+      case Durability           => unsafeEnchantmentAdded(Enchantment.DURABILITY)
+      case Mending              => unsafeEnchantmentAdded(Enchantment.MENDING)
+      case FireProtection       => unsafeEnchantmentAdded(Enchantment.PROTECTION_FIRE)
       case ProjectileProtection => unsafeEnchantmentAdded(Enchantment.PROTECTION_PROJECTILE)
-      case ExplosionProtection => unsafeEnchantmentAdded(Enchantment.PROTECTION_EXPLOSIONS)
-      case Respiration => unsafeEnchantmentAdded(Enchantment.OXYGEN)
-      case WaterAffinity => unsafeEnchantmentAdded(Enchantment.WATER_WORKER)
+      case ExplosionProtection  => unsafeEnchantmentAdded(Enchantment.PROTECTION_EXPLOSIONS)
+      case Respiration          => unsafeEnchantmentAdded(Enchantment.OXYGEN)
+      case WaterAffinity        => unsafeEnchantmentAdded(Enchantment.WATER_WORKER)
       case Unbreakable =>
         itemStack.tap { _ =>
           itemStack.setItemMeta {
-            itemStack.getItemMeta.tap { meta =>
-              meta.setUnbreakable(true)
-            }
+            itemStack.getItemMeta.tap { meta => meta.setUnbreakable(true) }
           }
         }
     }
@@ -40,15 +40,17 @@ object BukkitMebiusEnchantmentCodec {
 
   def getLevelOf(enchantment: MebiusEnchantment)(itemStack: ItemStack): Int = {
     enchantment match {
-      case Protection => itemStack.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL)
-      case Durability => itemStack.getEnchantmentLevel(Enchantment.DURABILITY)
-      case Mending => itemStack.getEnchantmentLevel(Enchantment.MENDING)
+      case Protection     => itemStack.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL)
+      case Durability     => itemStack.getEnchantmentLevel(Enchantment.DURABILITY)
+      case Mending        => itemStack.getEnchantmentLevel(Enchantment.MENDING)
       case FireProtection => itemStack.getEnchantmentLevel(Enchantment.PROTECTION_FIRE)
-      case ProjectileProtection => itemStack.getEnchantmentLevel(Enchantment.PROTECTION_PROJECTILE)
-      case ExplosionProtection => itemStack.getEnchantmentLevel(Enchantment.PROTECTION_EXPLOSIONS)
-      case Respiration => itemStack.getEnchantmentLevel(Enchantment.OXYGEN)
+      case ProjectileProtection =>
+        itemStack.getEnchantmentLevel(Enchantment.PROTECTION_PROJECTILE)
+      case ExplosionProtection =>
+        itemStack.getEnchantmentLevel(Enchantment.PROTECTION_EXPLOSIONS)
+      case Respiration   => itemStack.getEnchantmentLevel(Enchantment.OXYGEN)
       case WaterAffinity => itemStack.getEnchantmentLevel(Enchantment.WATER_WORKER)
-      case Unbreakable => if (itemStack.getItemMeta.isUnbreakable) 1 else 0
+      case Unbreakable   => if (itemStack.getItemMeta.isUnbreakable) 1 else 0
     }
   }
 

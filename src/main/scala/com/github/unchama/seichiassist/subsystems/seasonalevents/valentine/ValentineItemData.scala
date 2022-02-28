@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{END_DATE, EVENT_YEAR}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{
+  END_DATE,
+  EVENT_YEAR
+}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
@@ -29,14 +32,11 @@ object ValentineItemData {
     today.isBefore(exp)
   }
 
-  //region DroppedCookie -> 爆発したmobからドロップするやつ
+  // region DroppedCookie -> 爆発したmobからドロップするやつ
 
   val droppedCookie: ItemStack = {
     val loreList = {
-      List(
-        "",
-        s"$RESET${GRAY}リア充を爆発させて奪い取った。"
-      ) ++ baseLore
+      List("", s"$RESET${GRAY}リア充を爆発させて奪い取った。") ++ baseLore
     }.asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.COOKIE).tap { meta =>
@@ -48,11 +48,12 @@ object ValentineItemData {
     val itemStack = new ItemStack(Material.COOKIE, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
-      setByte(NBTTagConstants.typeIdTag, 1.toByte)
-      setObject(NBTTagConstants.expiryDateTag, END_DATE)
-    }
+    new NBTItem(itemStack)
+      .tap { item =>
+        import item._
+        setByte(NBTTagConstants.typeIdTag, 1.toByte)
+        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+      }
       .pipe(_.getItem)
   }
 
@@ -61,15 +62,13 @@ object ValentineItemData {
       new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
     }
 
-  //endregion
+  // endregion
 
-  //region GiftedCookie -> 棒メニューでもらえるやつ
+  // region GiftedCookie -> 棒メニューでもらえるやつ
 
   def cookieOf(playerName: String, playerUuid: UUID): ItemStack = {
     val loreList = {
-      val header = List(
-        "",
-        s"$RESET${GRAY}手作りのチョコチップクッキー。")
+      val header = List("", s"$RESET${GRAY}手作りのチョコチップクッキー。")
       val producer = List(s"$RESET${DARK_GREEN}製作者：$playerName")
 
       header ++ baseLore ++ producer
@@ -84,13 +83,14 @@ object ValentineItemData {
     val itemStack = new ItemStack(Material.COOKIE, 64)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
-      setByte(NBTTagConstants.typeIdTag, 2.toByte)
-      setObject(NBTTagConstants.expiryDateTag, END_DATE)
-      setObject(NBTTagConstants.producerUuidTag, playerUuid)
-      setString(NBTTagConstants.producerNameTag, playerName)
-    }
+    new NBTItem(itemStack)
+      .tap { item =>
+        import item._
+        setByte(NBTTagConstants.typeIdTag, 2.toByte)
+        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+        setObject(NBTTagConstants.producerUuidTag, playerUuid)
+        setString(NBTTagConstants.producerNameTag, playerName)
+      }
       .pipe(_.getItem)
   }
 
@@ -118,7 +118,7 @@ object ValentineItemData {
     s"おい聞いたか！${cookieProducerName}が${playerName}にチョコチップクッキー送ったらしいぞー！"
   )
 
-  //endregion
+  // endregion
 
   // SeichiAssistで呼ばれてるだけ
   def valentinePlayerHead(head: SkullMeta): SkullMeta = {
@@ -126,8 +126,7 @@ object ValentineItemData {
       "",
       s"$GREEN${ITALIC}大切なあなたへ。",
       s"$YELLOW$UNDERLINE${ITALIC}Happy Valentine $EVENT_YEAR"
-    ).map(str => s"$RESET$str")
-      .asJava
+    ).map(str => s"$RESET$str").asJava
     head.setLore(lore)
     head
   }

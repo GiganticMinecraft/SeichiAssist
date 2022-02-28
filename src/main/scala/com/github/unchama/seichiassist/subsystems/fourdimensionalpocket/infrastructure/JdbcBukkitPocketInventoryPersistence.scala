@@ -8,7 +8,8 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcBukkitPocketInventoryPersistence[F[_] : Sync] extends PocketInventoryPersistence[F, Inventory] {
+class JdbcBukkitPocketInventoryPersistence[F[_]: Sync]
+    extends PocketInventoryPersistence[F, Inventory] {
 
   // TODO BukkitSerializationのロジックをこっちに持ってくる
 
@@ -21,12 +22,13 @@ class JdbcBukkitPocketInventoryPersistence[F[_] : Sync] extends PocketInventoryP
     }
   }
 
-
   override def write(key: UUID, value: Inventory): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       val encoded = BukkitSerialization.toBase64(value)
 
-      sql"update playerdata set inventory = $encoded where uuid = ${key.toString}".update().apply()
+      sql"update playerdata set inventory = $encoded where uuid = ${key.toString}"
+        .update()
+        .apply()
     }
   }
 

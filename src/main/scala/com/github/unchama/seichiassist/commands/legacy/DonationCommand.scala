@@ -8,12 +8,16 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
 
 class DonationCommand extends CommandExecutor {
-  override def onCommand(sender: CommandSender, command: Command, label: String, args: Array[String]): Boolean = {
+  override def onCommand(
+    sender: CommandSender,
+    command: Command,
+    label: String,
+    args: Array[String]
+  ): Boolean = {
     def printRecordCommandUsage(): Unit = {
-      sender.sendMessage(Array(
-        s"$RED/donation record <プレイヤー名> <ポイント数>",
-        "寄付者用プレミアムエフェクトポイント配布コマンドです(マルチ鯖対応済)"
-      ))
+      sender.sendMessage(
+        Array(s"$RED/donation record <プレイヤー名> <ポイント数>", "寄付者用プレミアムエフェクトポイント配布コマンドです(マルチ鯖対応済)")
+      )
     }
 
     def printHelp(): Unit = {
@@ -26,14 +30,14 @@ class DonationCommand extends CommandExecutor {
       printHelp()
     } else if (args(0).equalsIgnoreCase("record")) {
       if (args.length != 3) {
-        //引数が3でない時の処理
+        // 引数が3でない時の処理
         printRecordCommandUsage()
       } else {
-        //引数が3の時の処理
+        // 引数が3の時の処理
 
-        //プレイヤー名を取得(小文字にする)
+        // プレイヤー名を取得(小文字にする)
         val name = Util.getName(args(1))
-        //配布ポイント数取得
+        // 配布ポイント数取得
         val num = args(2).toInt
 
         if (databaseGateway.donateDataManipulator.addDonate(name, num) eq Fail)

@@ -1,13 +1,16 @@
 package com.github.unchama.seichiassist.subsystems.breakcountbar.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{BreakCountBarVisibility, BreakCountBarVisibilityPersistence}
+import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.{
+  BreakCountBarVisibility,
+  BreakCountBarVisibilityPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
 class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
-  extends BreakCountBarVisibilityPersistence[F] {
+    extends BreakCountBarVisibilityPersistence[F] {
 
   override def read(key: UUID): F[Option[BreakCountBarVisibility]] =
     F.delay {
@@ -20,7 +23,8 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
               BreakCountBarVisibility.Hidden
             }
           }
-          .first().apply()
+          .first()
+          .apply()
       }
     }
 
@@ -28,7 +32,8 @@ class JdbcBreakCountBarVisibilityPersistence[F[_]](implicit F: Sync[F])
     F.delay {
       DB.localTx { implicit session =>
         sql"update playerdata set expvisible = ${value == BreakCountBarVisibility.Shown} where uuid = ${key.toString}"
-          .update().apply()
+          .update()
+          .apply()
       }
     }
 

@@ -6,13 +6,10 @@ import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
 import org.bukkit.ChatColor.AQUA
 
 object WorldSaveRoutine {
-  def apply[
-    F[_]
-    : Sync
-    : CanSaveWorlds
-    : CanNotifySaves
-    : Timer
-  ]()(implicit configuration: SystemConfiguration, context: RepeatingTaskContext): F[Nothing] = {
+  def apply[F[_]: Sync: CanSaveWorlds: CanNotifySaves: Timer]()(
+    implicit configuration: SystemConfiguration,
+    context: RepeatingTaskContext
+  ): F[Nothing] = {
     import cats.implicits._
 
     import scala.concurrent.duration._

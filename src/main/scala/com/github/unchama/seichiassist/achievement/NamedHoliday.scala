@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist.achievement
 
-import java.time.{LocalDate, Month}
-
 import enumeratum._
 
+import java.time.{LocalDate, Month}
 import scala.math.floor
 
 /**

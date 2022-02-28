@@ -8,6 +8,7 @@ import cats.{Applicative, FlatMap}
 import scala.concurrent.duration.FiniteDuration
 
 object TargetedEffect {
+
   /**
    * 何も作用を及ぼさないような[TargetedEffect].
    */
@@ -16,10 +17,12 @@ object TargetedEffect {
   /**
    * 同期的な副作用`f`を`TargetedEffect`内に持ち回すようにする.
    */
-  def delay[F[_] : Sync, T](f: T => Unit): Kleisli[F, T, Unit] = Kleisli(t => Sync[F].delay(f(t)))
+  def delay[F[_]: Sync, T](f: T => Unit): Kleisli[F, T, Unit] =
+    Kleisli(t => Sync[F].delay(f(t)))
 }
 
 object DeferredEffect {
+
   /**
    * `F`計算の結果の作用を`F`内で実行するような計算を返す.
    *
@@ -39,23 +42,22 @@ object DeferredEffect {
 }
 
 object SequentialEffect {
-  def apply[F[_] : Applicative, T](effects: Kleisli[F, T, Unit]*): Kleisli[F, T, Unit] = {
+  def apply[F[_]: Applicative, T](effects: Kleisli[F, T, Unit]*): Kleisli[F, T, Unit] = {
     SequentialEffect(effects.toList)
   }
 
-  def apply[F[_] : Applicative, T](effects: List[Kleisli[F, T, Unit]]): Kleisli[F, T, Unit] = {
+  def apply[F[_]: Applicative, T](effects: List[Kleisli[F, T, Unit]]): Kleisli[F, T, Unit] = {
     import cats.implicits._
 
     // NOTE: [G[_] : Applicative, A]のときG[A]についていつもMonoid[G[A]]が提供されるわけではない
 
     implicit val ev: Monoid[F[Unit]] = Applicative.monoid[F, Unit]
-    Monoid[Kleisli[F, T, Unit]].combineAll(
-      effects
-    )
+    Monoid[Kleisli[F, T, Unit]].combineAll(effects)
   }
 }
 
 object ComputedEffect {
+
   /**
    * `f`により実行対象の[T]から[TargetedEffect]を純粋に計算して、それをすぐに実行するような作用を作成する.
    */
@@ -67,7 +69,8 @@ object UnfocusedEffect {
 }
 
 object DelayEffect {
-  def apply(duration: FiniteDuration)(implicit timer: Timer[IO]): TargetedEffect[Any] = Kleisli.liftF(IO.sleep(duration))
+  def apply(duration: FiniteDuration)(implicit timer: Timer[IO]): TargetedEffect[Any] =
+    Kleisli.liftF(IO.sleep(duration))
 }
 
 object RepeatedEffect {

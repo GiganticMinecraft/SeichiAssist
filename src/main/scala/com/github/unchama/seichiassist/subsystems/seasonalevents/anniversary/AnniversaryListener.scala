@@ -4,10 +4,18 @@ import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{ANNIVERSARY_COUNT, blogArticleUrl, isInEvent}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{
+  ANNIVERSARY_COUNT,
+  blogArticleUrl,
+  isInEvent
+}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
-import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, isEnemy, removeItemfromPlayerInventory}
+import com.github.unchama.seichiassist.util.Util.{
+  grantItemStacksEffect,
+  isEnemy,
+  removeItemfromPlayerInventory
+}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
@@ -24,8 +32,10 @@ import org.bukkit.{Material, Sound, TreeType}
 import scala.jdk.CollectionConverters._
 import scala.util.Random
 
-class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
-                          ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
+class AnniversaryListener(
+  implicit effectEnvironment: EffectEnvironment,
+  ioOnMainThread: OnMinecraftServerThread[IO]
+) extends Listener {
 
   @EventHandler
   def onPlayerJoin(event: PlayerJoinEvent): Unit = {
@@ -56,7 +66,10 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
         MessageEffect(s"${BLUE}ギガンティック☆整地鯖${ANNIVERSARY_COUNT}周年の記念品を入手しました。"),
         FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f),
         UnfocusedEffect {
-          SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(false, Some(playerUuid))
+          SeichiAssist
+            .databaseGateway
+            .playerDataManipulator
+            .setAnniversary(false, Some(playerUuid))
         }
       ),
       s"${ANNIVERSARY_COUNT}周年記念ヘッドを付与する"
@@ -104,10 +117,14 @@ class AnniversaryListener(implicit effectEnvironment: EffectEnvironment,
     val player = event.getPlayer
     if (!isAnniversaryShovel(player.getInventory.getItemInMainHand)) return
 
-    player.getNearbyEntities(20.0, 20.0, 20.0).asScala.filter(mob => isEnemy(mob.getType)).foreach {
-      case enemy: LivingEntity => enemy.damage(10.0)
-      case _ =>
-    }
+    player
+      .getNearbyEntities(20.0, 20.0, 20.0)
+      .asScala
+      .filter(mob => isEnemy(mob.getType))
+      .foreach {
+        case enemy: LivingEntity => enemy.damage(10.0)
+        case _                   =>
+      }
   }
 
   /**

@@ -18,4 +18,3 @@ object PresentClaimingState {
    */
   case object Unavailable extends PresentClaimingState
 }
-

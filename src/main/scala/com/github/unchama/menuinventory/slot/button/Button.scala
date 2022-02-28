@@ -17,12 +17,16 @@ import org.bukkit.inventory.ItemStack
  *
  * [effectOn]は常に与えられた[InventoryClickEvent]をキャンセルする副作用を含みます.
  *
- * @param itemStack [Inventory] へセットする [ItemStack]
- * @author karayuu
+ * @param itemStack
+ *   [Inventory] へセットする [ItemStack]
+ * @author
+ *   karayuu
  */
-case class Button(override val itemStack: ItemStack,
-                  private val effects: List[ButtonEffect]) extends Slot {
-  override def effectOn(event: InventoryClickEvent)(implicit cs: ContextShift[IO]): TargetedEffect[Player] = {
+case class Button(override val itemStack: ItemStack, private val effects: List[ButtonEffect])
+    extends Slot {
+  override def effectOn(
+    event: InventoryClickEvent
+  )(implicit cs: ContextShift[IO]): TargetedEffect[Player] = {
 
     import com.github.unchama.generic.syntax._
 
@@ -33,14 +37,17 @@ case class Button(override val itemStack: ItemStack,
     })
   }
 
-  def withAnotherEffect(effect: ButtonEffect): Button = this.copy(effects = effects.appended(effect))
+  def withAnotherEffect(effect: ButtonEffect): Button =
+    this.copy(effects = effects.appended(effect))
 }
 
 case object Button {
+
   /**
    * [effects]をひとつずつ作用として発生させる [Slot] を構築します.
    */
-  def apply(itemStack: ItemStack, effects: ButtonEffect*): Button = Button(itemStack, effects.toList)
+  def apply(itemStack: ItemStack, effects: ButtonEffect*): Button =
+    Button(itemStack, effects.toList)
 
   val empty: Button = apply(new ItemStack(Material.AIR))
 }

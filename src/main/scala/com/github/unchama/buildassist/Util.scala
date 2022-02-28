@@ -5,7 +5,7 @@ import org.bukkit.Bukkit
 
 object Util {
 
-  //ワールドガードAPIを返す
+  // ワールドガードAPIを返す
   def getWorldGuard: WorldGuardPlugin = {
     Bukkit.getServer.getPluginManager.getPlugin("WorldGuard") match {
       case plugin: WorldGuardPlugin => plugin

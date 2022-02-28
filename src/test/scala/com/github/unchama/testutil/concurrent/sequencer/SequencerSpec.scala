@@ -1,10 +1,9 @@
 package com.github.unchama.testutil.concurrent.sequencer
 
-import java.util.concurrent.ConcurrentLinkedQueue
-
 import cats.effect.{ContextShift, IO}
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.util.concurrent.ConcurrentLinkedQueue
 import scala.concurrent.ExecutionContext
 import scala.util.Random
 
@@ -12,9 +11,7 @@ class SequencerSpec extends AnyWordSpec {
   implicit val ec: ExecutionContext = ExecutionContext.global
   implicit val shift: ContextShift[IO] = IO.contextShift(ec)
 
-  val sequencerImplementations: List[Sequencer[IO]] = List(
-    LinkedSequencer[IO]
-  )
+  val sequencerImplementations: List[Sequencer[IO]] = List(LinkedSequencer[IO])
 
   val randomizedProgramListSize = 20000
 
@@ -23,24 +20,21 @@ class SequencerSpec extends AnyWordSpec {
       sequencerImplementations.foreach { sequencer =>
         info(sequencer.toString)
 
-        import scala.jdk.CollectionConverters._
         import cats.implicits._
+
+        import scala.jdk.CollectionConverters._
 
         val queue = new ConcurrentLinkedQueue[Int]()
 
         val program = for {
           blockerList <- sequencer.newBlockerList
           indexedPrograms = {
-            blockerList
-              .take(randomizedProgramListSize * 2)
-              .toList
-              .grouped(2)
-              .zipWithIndex
-              .map { case (adjacentBlockers, index) =>
+            blockerList.take(randomizedProgramListSize * 2).toList.grouped(2).zipWithIndex.map {
+              case (adjacentBlockers, index) =>
                 val List(pre, post) = adjacentBlockers
 
                 pre.await() >> IO(queue.add(index)) >> post.await()
-              }
+            }
           }
           scrambledPrograms = Random.shuffle(indexedPrograms).toList
           startedFibers <- scrambledPrograms.traverse(_.start)

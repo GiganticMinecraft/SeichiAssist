@@ -19,8 +19,6 @@ class MineHeadCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
       MessageEffect(s"${GREEN}専用アイテムを付与しました。")
     )
 
-  val executor: TabExecutor = playerCommandBuilder
-    .execution { _ => IO.pure(effect) }
-    .build()
-    .asNonBlockingTabExecutor()
+  val executor: TabExecutor =
+    playerCommandBuilder.execution { _ => IO.pure(effect) }.build().asNonBlockingTabExecutor()
 }

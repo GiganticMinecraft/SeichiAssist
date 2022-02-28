@@ -10,18 +10,22 @@ import org.bukkit.entity.Player
 import org.bukkit.{Bukkit, Sound}
 
 object VotingFairyTask {
-  //MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
+  // MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
   def run(p: Player)(implicit manaApi: ManaApi[IO, SyncIO, Player]): Unit = {
     val playermap = SeichiAssist.playermap
     val uuid = p.getUniqueId
     val playerdata = playermap.apply(uuid)
-    //マナ回復
+    // マナ回復
     VotingFairyListener.regeneMana(p)
-    //効果時間中か
-    if (!Util.isVotingFairyPeriod(playerdata.votingFairyStartTime, playerdata.votingFairyEndTime)) {
+    // 効果時間中か
+    if (
+      !Util.isVotingFairyPeriod(playerdata.votingFairyStartTime, playerdata.votingFairyEndTime)
+    ) {
       speak(p, "あっ、もうこんな時間だ！", b = false)
       speak(p, s"じゃーねー！${p.getName}", b = true)
-      p.sendMessage(ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった")
+      p.sendMessage(
+        ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった"
+      )
       playerdata.usingVotingFairy_$eq(false)
     }
   }
@@ -31,21 +35,27 @@ object VotingFairyTask {
     p.sendMessage(s"${ChatColor.AQUA}${ChatColor.BOLD}<マナ妖精>${ChatColor.RESET}$msg")
   }
 
-  //妖精効果音
+  // 妖精効果音
   private def playSe(p: Player): Unit = {
     p.playSound(p.getLocation, Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f)
-    Bukkit.getServer.getScheduler.runTaskLater(
-      SeichiAssist.instance,
-      (() => {
-        p.playSound(p.getLocation, Sound.BLOCK_NOTE_PLING, 2.0f, 1.5f)
-        Bukkit.getServer.getScheduler.runTaskLater(
-          SeichiAssist.instance,
-          (() => p.playSound(p.getLocation, Sound.BLOCK_NOTE_PLING, 2.0f, 2.0f)): Runnable,
-          2
-        )
-      }): Runnable,
-      2
-    )
+    Bukkit
+      .getServer
+      .getScheduler
+      .runTaskLater(
+        SeichiAssist.instance,
+        (() => {
+          p.playSound(p.getLocation, Sound.BLOCK_NOTE_PLING, 2.0f, 1.5f)
+          Bukkit
+            .getServer
+            .getScheduler
+            .runTaskLater(
+              SeichiAssist.instance,
+              (() => p.playSound(p.getLocation, Sound.BLOCK_NOTE_PLING, 2.0f, 2.0f)): Runnable,
+              2
+            )
+        }): Runnable,
+        2
+      )
   }
 
   def dispToggleVFTime(toggle: Int): String = {

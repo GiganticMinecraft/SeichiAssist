@@ -9,7 +9,10 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuit
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineCookieEffectsHandler._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData._
-import com.github.unchama.seichiassist.util.Util.{grantItemStacksEffect, sendMessageToEveryoneIgnoringPreference}
+import com.github.unchama.seichiassist.util.Util.{
+  grantItemStacksEffect,
+  sendMessageToEveryoneIgnoringPreference
+}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
@@ -28,12 +31,11 @@ import org.bukkit.potion.{PotionEffect, PotionEffectType}
 import java.util.{Random, UUID}
 import scala.util.chaining._
 
-class ValentineListener[
-  F[_] : ConcurrentEffect : NonServerThreadContextShift
-](implicit
-  effectEnvironment: EffectEnvironment,
+class ValentineListener[F[_]: ConcurrentEffect: NonServerThreadContextShift](
+  implicit effectEnvironment: EffectEnvironment,
   repository: LastQuitPersistenceRepository[F, UUID],
-  ioOnMainThread: OnMinecraftServerThread[IO]) extends Listener {
+  ioOnMainThread: OnMinecraftServerThread[IO]
+) extends Listener {
 
   @EventHandler
   def onEntityExplode(event: EntityExplodeEvent): Unit = {
@@ -53,7 +55,8 @@ class ValentineListener[
     val damager = event.getDamager
     if (damager == null) return
 
-    if (event.getCause != DamageCause.ENTITY_EXPLOSION || damager.getType != EntityType.CREEPER) return
+    if (event.getCause != DamageCause.ENTITY_EXPLOSION || damager.getType != EntityType.CREEPER)
+      return
 
     event.getEntity match {
       case monster: Monster =>
@@ -72,9 +75,7 @@ class ValentineListener[
         s"$LIGHT_PURPLE${END_DATE}までの期間限定で、イベント『＜ブラックバレンタイン＞リア充 vs 整地民！』を開催しています。",
         "詳しくは下記URLのサイトをご覧ください。",
         s"$DARK_GREEN$UNDERLINE$blogArticleUrl"
-      ).foreach(
-        event.getPlayer.sendMessage(_)
-      )
+      ).foreach(event.getPlayer.sendMessage(_))
     }
   }
 
@@ -93,10 +94,12 @@ class ValentineListener[
         val hasNotJoinedBeforeYet = lastQuit.forall(EVENT_DURATION.isEntirelyAfter)
 
         val effects =
-          if (hasNotJoinedBeforeYet) SequentialEffect(
-            grantItemStacksEffect(cookieOf(player.getName, playerUuid)),
-            MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
-            FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f))
+          if (hasNotJoinedBeforeYet)
+            SequentialEffect(
+              grantItemStacksEffect(cookieOf(player.getName, playerUuid)),
+              MessageEffect(s"${AQUA}チョコチップクッキーを付与しました。"),
+              FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
+            )
           else TargetedEffect.emptyEffect
 
         effects.run(player)
@@ -120,7 +123,7 @@ class ValentineListener[
       import player._
       sendMessage(getMessage(effect))
       addPotionEffect(getEffect(effect)._2)
-      playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+      playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
     }
   }
 
@@ -132,9 +135,12 @@ class ValentineListener[
       // 死ぬ
       player.setHealth(0)
 
-      val messages = deathMessages(player.getName, new NBTItem(item).getString(NBTTagConstants.producerNameTag))
+      val messages = deathMessages(
+        player.getName,
+        new NBTItem(item).getString(NBTTagConstants.producerNameTag)
+      )
       sendMessageToEveryoneIgnoringPreference(messages(new Random().nextInt(messages.size)))
     }
-    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0F, 1.2F)
+    player.playSound(player.getLocation, Sound.ENTITY_WITCH_DRINK, 1.0f, 1.2f)
   }
 }

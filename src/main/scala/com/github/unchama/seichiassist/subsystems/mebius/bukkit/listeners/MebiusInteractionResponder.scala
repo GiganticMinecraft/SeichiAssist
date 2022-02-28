@@ -6,7 +6,10 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusMessages
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeech,
+  MebiusSpeechStrength
+}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -19,16 +22,21 @@ import org.bukkit.event.entity.{EntityDamageByEntityEvent, EntityDeathEvent}
 import org.bukkit.event.player.PlayerItemBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
-class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-                                 effectEnvironment: EffectEnvironment)
-  extends Listener {
+class MebiusInteractionResponder(
+  implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
+  effectEnvironment: EffectEnvironment
+) extends Listener {
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def onDamage(event: EntityDamageByEntityEvent): Unit = {
     // プレイヤーがダメージを受けた場合
     event.getEntity match {
       case player: Player =>
         val helmet = player.getInventory.getHelmet
-        val mebiusProperty = BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(helmet).getOrElse(return)
+        val mebiusProperty = BukkitMebiusItemStackCodec
+          .decodePropertyOfOwnedMebius(player)(helmet)
+          .getOrElse(
+            return
+          )
 
         val speechService = serviceRepository(player)
 
@@ -37,22 +45,27 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
             // 耐久閾値を超えていたら破損警告
             speechService.tryMakingSpeech(
               mebiusProperty,
-              MebiusSpeech(message.interpolate(mebiusProperty.ownerNickname), MebiusSpeechStrength.Medium)
+              MebiusSpeech(
+                message.interpolate(mebiusProperty.ownerNickname),
+                MebiusSpeechStrength.Medium
+              )
             )
           }
-        } else event.getDamager match {
-          case monster: Monster =>
-            // モンスターからダメージを受けた場合の対モンスターメッセージ
-            MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
-              speechService.tryMakingSpeech(
-                mebiusProperty,
-                MebiusSpeech(
-                  message.interpolate(mebiusProperty.ownerNickname, monster.getName), MebiusSpeechStrength.Medium
+        } else
+          event.getDamager match {
+            case monster: Monster =>
+              // モンスターからダメージを受けた場合の対モンスターメッセージ
+              MebiusMessages.onDamageWarnEnemy.pickOne[SyncIO].flatMap { message =>
+                speechService.tryMakingSpeech(
+                  mebiusProperty,
+                  MebiusSpeech(
+                    message.interpolate(mebiusProperty.ownerNickname, monster.getName),
+                    MebiusSpeechStrength.Medium
+                  )
                 )
-              )
-            }
-          case _ => SyncIO.unit
-        }
+              }
+            case _ => SyncIO.unit
+          }
 
         messageProgram.unsafeRunSync()
       case _ =>
@@ -63,7 +76,8 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
   def onBreak(event: PlayerItemBreakEvent): Unit = {
     val player = event.getPlayer
 
-    BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(event.getBrokenItem)
+    BukkitMebiusItemStackCodec
+      .decodePropertyOfOwnedMebius(player)(event.getBrokenItem)
       .foreach { property =>
         val speechService = serviceRepository(player)
 
@@ -72,11 +86,18 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
         effectEnvironment.unsafeRunEffectAsync(
           "Mebius破壊時のエフェクトを再生する",
           MebiusMessages.onMebiusBreak.pickOne[SyncIO].toIO.flatMap { message =>
-            speechService.makeSpeechIgnoringBlockage(
-              property,
-              MebiusSpeech(message.interpolate(property.ownerNickname), MebiusSpeechStrength.Medium)
-            ).toIO >> SequentialEffect(
-              MessageEffect(s"${BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(property)}${RESET}が旅立ちました。"),
+            speechService
+              .makeSpeechIgnoringBlockage(
+                property,
+                MebiusSpeech(
+                  message.interpolate(property.ownerNickname),
+                  MebiusSpeechStrength.Medium
+                )
+              )
+              .toIO >> SequentialEffect(
+              MessageEffect(
+                s"${BukkitMebiusItemStackCodec.displayNameOfMaterializedItem(property)}${RESET}が旅立ちました。"
+              ),
               FocusedSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 0.1f)
             ).run(player)
           }
@@ -91,23 +112,32 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
     val player = killedMonster.getKiller
     if (killedMonster == null || player == null) return
 
-    //もしモンスター名が取れなければ除外
+    // もしモンスター名が取れなければ除外
     val killedMonsterName = killedMonster.getName
     if (killedMonsterName == "") return
 
     val mebiusProperty =
-      BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet).getOrElse(return)
+      BukkitMebiusItemStackCodec
+        .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
+        .getOrElse(
+          return
+        )
 
     val speechService = serviceRepository(player)
 
-    MebiusMessages.onMonsterKill.pickOne[SyncIO].flatMap { message =>
-      speechService.tryMakingSpeech(
-        mebiusProperty,
-        MebiusSpeech(
-          message.interpolate(mebiusProperty.ownerNickname, killedMonsterName), MebiusSpeechStrength.Medium
+    MebiusMessages
+      .onMonsterKill
+      .pickOne[SyncIO]
+      .flatMap { message =>
+        speechService.tryMakingSpeech(
+          mebiusProperty,
+          MebiusSpeech(
+            message.interpolate(mebiusProperty.ownerNickname, killedMonsterName),
+            MebiusSpeechStrength.Medium
+          )
         )
-      )
-    }.unsafeRunSync()
+      }
+      .unsafeRunSync()
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
@@ -117,15 +147,26 @@ class MebiusInteractionResponder(implicit serviceRepository: PlayerDataRepositor
     val player = event.getPlayer
 
     val mebiusProperty =
-      BukkitMebiusItemStackCodec.decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet).getOrElse(return)
+      BukkitMebiusItemStackCodec
+        .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
+        .getOrElse(
+          return
+        )
 
     val speechService = serviceRepository(player)
 
-    MebiusMessages.onBlockBreak.pickOne[SyncIO].flatMap { message =>
-      speechService.tryMakingSpeech(
-        mebiusProperty,
-        MebiusSpeech(message.interpolate(mebiusProperty.ownerNickname), MebiusSpeechStrength.Medium)
-      )
-    }.unsafeRunSync()
+    MebiusMessages
+      .onBlockBreak
+      .pickOne[SyncIO]
+      .flatMap { message =>
+        speechService.tryMakingSpeech(
+          mebiusProperty,
+          MebiusSpeech(
+            message.interpolate(mebiusProperty.ownerNickname),
+            MebiusSpeechStrength.Medium
+          )
+        )
+      }
+      .unsafeRunSync()
   }
 }

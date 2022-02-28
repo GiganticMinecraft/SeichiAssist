@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions
 
 import com.github.unchama.generic.Diff
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiLevel, SeichiStarLevel}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiLevel,
+  SeichiStarLevel
+}
 
 trait NotifyLevelUp[F[_], Player] {
 

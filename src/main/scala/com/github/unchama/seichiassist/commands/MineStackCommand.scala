@@ -12,11 +12,14 @@ object MineStackCommand {
   val executor: TabExecutor = playerCommandBuilder
     .argumentsParsers(
       List(
-        Parsers.fromOptionParser({
-          case "on" => Some(true)
-          case "off" => Some(false)
-          case _ => None
-        }, MessageEffect("/minestack <on | off> … MineStackの対象アイテムを自動収集するか切り替えます"))
+        Parsers.fromOptionParser(
+          {
+            case "on"  => Some(true)
+            case "off" => Some(false)
+            case _     => None
+          },
+          MessageEffect("/minestack <on | off> … MineStackの対象アイテムを自動収集するか切り替えます")
+        )
       )
     )
     .execution { context =>

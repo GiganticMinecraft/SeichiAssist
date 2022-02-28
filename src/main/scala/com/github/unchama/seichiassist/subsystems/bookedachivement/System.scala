@@ -15,10 +15,9 @@ import org.bukkit.event.Listener
 import java.util.UUID
 
 object System {
-  def wired[
-    F[_] : ConcurrentEffect : NonServerThreadContextShift,
-    G[_]
-  ](implicit effectEnvironment: EffectEnvironment): Subsystem[G] = {
+  def wired[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]](
+    implicit effectEnvironment: EffectEnvironment
+  ): Subsystem[G] = {
 
     implicit val repository: BookedAchievementPersistenceRepository[F, UUID] =
       new JdbcBookedAchievementPersistenceRepository[F]
@@ -27,9 +26,7 @@ object System {
       new AchievementBookingService[F]
 
     new Subsystem[G] {
-      override val listeners: Seq[Listener] = Seq(
-        new GrantBookedAchievementListener()
-      )
+      override val listeners: Seq[Listener] = Seq(new GrantBookedAchievementListener())
       override val commands: Map[String, TabExecutor] = Map(
         "achievement" -> AchievementCommand.executor
       )

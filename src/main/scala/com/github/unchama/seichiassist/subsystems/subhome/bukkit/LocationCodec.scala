@@ -12,7 +12,12 @@ import org.bukkit.{Bukkit, Location}
 object LocationCodec {
 
   def fromBukkitLocation(location: Location): SubHomeLocation = {
-    SubHomeLocation(location.getWorld.getName, location.getBlockX, location.getBlockY, location.getBlockZ)
+    SubHomeLocation(
+      location.getWorld.getName,
+      location.getBlockX,
+      location.getBlockY,
+      location.getBlockZ
+    )
   }
 
   def toBukkitLocation(location: SubHomeLocation): Option[Location] = {

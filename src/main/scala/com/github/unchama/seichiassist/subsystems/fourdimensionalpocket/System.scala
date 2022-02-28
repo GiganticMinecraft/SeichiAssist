@@ -11,11 +11,23 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.application.PocketInventoryRepositoryDefinition
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.{FourDimensionalPocketCommand, OpenPocketCommand}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.commands.{
+  FourDimensionalPocketCommand,
+  OpenPocketCommand
+}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.listeners.OpenPocketInventoryOnPlacingEnderPortalFrame
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{CreateBukkitInventory, InteractBukkitInventory}
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{CreateInventory, InteractInventory}
-import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{PocketInventoryPersistence, PocketSize}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.bukkit.{
+  CreateBukkitInventory,
+  InteractBukkitInventory
+}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.actions.{
+  CreateInventory,
+  InteractInventory
+}
+import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{
+  PocketInventoryPersistence,
+  PocketSize
+}
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.Sound
@@ -35,11 +47,11 @@ object System {
   import cats.implicits._
   import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid._
 
-  def wired[
-    F[_] : ConcurrentEffect : OnMinecraftServerThread : ErrorLogger,
-    G[_] : SyncEffect : ContextCoercion[*[_], F]
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player])
-   (implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
+  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger, G[
+    _
+  ]: SyncEffect: ContextCoercion[*[_], F]](
+    breakCountReadAPI: BreakCountReadAPI[F, G, Player]
+  )(implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
     val persistence: PocketInventoryPersistence[G, Inventory] =
       new JdbcBukkitPocketInventoryPersistence[G]
 
@@ -53,27 +65,25 @@ object System {
       pocketInventoryRepositoryHandles <-
         ContextCoercion {
           BukkitRepositoryControls.createHandles(
-            PocketInventoryRepositoryDefinition.withContext(persistence, breakCountReadAPI.seichiLevelUpdates)
+            PocketInventoryRepositoryDefinition
+              .withContext(persistence, breakCountReadAPI.seichiLevelUpdates)
           )
         }
     } yield {
       implicit val systemApi = new FourDimensionalPocketApi[F, Player] {
         override val openPocketInventory: Kleisli[F, Player, Unit] = Kleisli { player =>
           Sync[F].delay {
-            //開く音を再生
+            // 開く音を再生
             player.playSound(player.getLocation, Sound.BLOCK_ENDERCHEST_OPEN, 1f, 0.1f)
           } >> ContextCoercion {
-            pocketInventoryRepositoryHandles
-              .repository(player)._1
-              .readLatest
+            pocketInventoryRepositoryHandles.repository(player)._1.readLatest
           }.flatMap(inventory => interactInventory.open(inventory)(player))
         }
-        override val currentPocketSize: KeyedDataRepository[Player, ReadOnlyRef[F, PocketSize]] = {
+        override val currentPocketSize
+          : KeyedDataRepository[Player, ReadOnlyRef[F, PocketSize]] = {
           KeyedDataRepository.unlift { player =>
-            pocketInventoryRepositoryHandles
-              .repository
-              .lift(player)
-              .map { case (mutex, _) =>
+            pocketInventoryRepositoryHandles.repository.lift(player).map {
+              case (mutex, _) =>
                 ReadOnlyRef.fromAnySource {
                   ContextCoercion {
                     mutex
@@ -81,7 +91,7 @@ object System {
                       .map(inventory => PocketSize.fromTotalStackCount(inventory.getSize))
                   }
                 }
-              }
+            }
           }
         }
       }
@@ -91,11 +101,9 @@ object System {
 
       val openPocketCommand =
         new OpenPocketCommand[F](
-          pocketInventoryRepositoryHandles
-            .repository
-            .map {
-              case (mutex, _) => ReadOnlyRef.fromAnySource(ContextCoercion(mutex.readLatest))
-            },
+          pocketInventoryRepositoryHandles.repository.map {
+            case (mutex, _) => ReadOnlyRef.fromAnySource(ContextCoercion(mutex.readLatest))
+          },
           persistence.coerceContextTo[F]
         )
       new System[F, Player] {

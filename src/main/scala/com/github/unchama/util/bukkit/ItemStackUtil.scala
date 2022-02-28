@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
 object ItemStackUtil {
+
   /**
    * `stacks` に含まれるアイテムスタックをできるだけマージしたような新たな `Seq` を返す
    */
@@ -48,7 +49,8 @@ object ItemStackUtil {
   def appendOwnerInformation(owner: Player)(itemStack: ItemStack): ItemStack = {
     import scala.jdk.CollectionConverters._
 
-    modifyMeta { m => import m._
+    modifyMeta { m =>
+      import m._
       setLore {
         val originalLore = if (itemStack.getItemMeta.hasLore) getLore.asScala else Nil
         val appended = originalLore ++ List(s"$RESET${DARK_GREEN}所有者：${owner.getName}")

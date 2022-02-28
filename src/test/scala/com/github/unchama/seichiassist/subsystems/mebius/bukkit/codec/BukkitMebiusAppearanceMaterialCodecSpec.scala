@@ -10,11 +10,9 @@ class BukkitMebiusAppearanceMaterialCodecSpec extends AnyWordSpec {
 
   "Appearance Codec" should {
     "return some non-air material for all levels" in {
-      (1 until MebiusLevel.max.value)
-        .map(MebiusLevel.apply)
-        .foreach { mebiusLevel =>
-          assert(appearanceMaterialAt(mebiusLevel) != Material.AIR)
-        }
+      (1 until MebiusLevel.max.value).map(MebiusLevel.apply).foreach { mebiusLevel =>
+        assert(appearanceMaterialAt(mebiusLevel) != Material.AIR)
+      }
     }
 
     "assign leather helmet to level 1 mebius" in {

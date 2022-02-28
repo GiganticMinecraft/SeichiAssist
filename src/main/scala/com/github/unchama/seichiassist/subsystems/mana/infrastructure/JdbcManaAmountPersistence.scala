@@ -1,7 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.mana.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.mana.domain.{ManaAmount, ManaAmountPersistence}
+import com.github.unchama.seichiassist.subsystems.mana.domain.{
+  ManaAmount,
+  ManaAmountPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
@@ -12,7 +15,8 @@ class JdbcManaAmountPersistence[F[_]](implicit F: Sync[F]) extends ManaAmountPer
       DB.localTx { implicit session =>
         sql"select mana from playerdata where uuid = ${key.toString}"
           .map { rs => ManaAmount(rs.double("mana")) }
-          .first().apply()
+          .first()
+          .apply()
       }
     }
 
@@ -20,7 +24,8 @@ class JdbcManaAmountPersistence[F[_]](implicit F: Sync[F]) extends ManaAmountPer
     F.delay {
       DB.localTx { implicit session =>
         sql"update playerdata set mana = ${value.value} where uuid = ${key.toString}"
-          .update().apply()
+          .update()
+          .apply()
       }
     }
 

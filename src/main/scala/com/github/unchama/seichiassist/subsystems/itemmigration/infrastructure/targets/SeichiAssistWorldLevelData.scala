@@ -8,21 +8,23 @@ import org.bukkit.World
 import org.slf4j.Logger
 
 private object DelegatedImpls {
-  def getWorlds[F[_] : Sync]: F[IndexedSeq[World]] = {
+  def getWorlds[F[_]: Sync]: F[IndexedSeq[World]] = {
     val multiverseCore = ExternalPlugins.getMultiverseCore
 
     import scala.jdk.CollectionConverters._
 
     Sync[F].delay {
-      multiverseCore.getMVWorldManager
-        .getMVWorlds.asScala
-        .map(_.getCBWorld).toIndexedSeq
+      multiverseCore.getMVWorldManager.getMVWorlds.asScala.map(_.getCBWorld).toIndexedSeq
     }
   }
 
-  def getWorldChunkCoordinates[F[_] : Sync](implicit logger: Logger): World => F[Seq[(Int, Int)]] =
-    ExternalServices.getChunkCoordinates[F](SeichiAssist.seichiAssistConfig.chunkSearchCommandBase)
+  def getWorldChunkCoordinates[F[_]: Sync](
+    implicit logger: Logger
+  ): World => F[Seq[(Int, Int)]] =
+    ExternalServices.getChunkCoordinates[F](
+      SeichiAssist.seichiAssistConfig.chunkSearchCommandBase
+    )
 }
 
 class SeichiAssistWorldLevelData[F[_]](implicit metricsLogger: Logger, F: Concurrent[F])
-  extends WorldLevelData[F](DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates)
+    extends WorldLevelData[F](DelegatedImpls.getWorlds, DelegatedImpls.getWorldChunkCoordinates)

@@ -39,9 +39,7 @@ object MessageTable {
   )
 
   def messageOnReaching(seichiLevel: SeichiLevel): Option[String] =
-    messages
-      .get(seichiLevel.level)
-      .map(ChatColor.AQUA + _)
+    messages.get(seichiLevel.level).map(ChatColor.AQUA + _)
 
   def messagesOnDiff(levelDiff: Diff[SeichiLevel]): List[String] =
     HasSuccessor[SeichiLevel]

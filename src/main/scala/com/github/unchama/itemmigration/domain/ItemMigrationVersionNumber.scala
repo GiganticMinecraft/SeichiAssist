@@ -14,8 +14,10 @@ object ItemMigrationVersionNumber {
   import eu.timepit.refined._
   import eu.timepit.refined.numeric.NonNegative
 
-  def apply(versionHead: ItemMigrationVersionComponent,
-            versionRest: ItemMigrationVersionComponent*): ItemMigrationVersionNumber = {
+  def apply(
+    versionHead: ItemMigrationVersionComponent,
+    versionRest: ItemMigrationVersionComponent*
+  ): ItemMigrationVersionNumber = {
     ItemMigrationVersionNumber(NonEmptyList.of(versionHead, versionRest: _*))
   }
 
@@ -26,14 +28,10 @@ object ItemMigrationVersionNumber {
       .map(_.toIntOption)
       .sequence
       .flatMap { components =>
-        components
-          .map(component => refineV[NonNegative](component))
-          .sequence
-          .toOption
-      }.flatMap { componentList =>
-      NonEmptyList
-        .fromList(componentList)
-        .map(ItemMigrationVersionNumber(_))
-    }
+        components.map(component => refineV[NonNegative](component)).sequence.toOption
+      }
+      .flatMap { componentList =>
+        NonEmptyList.fromList(componentList).map(ItemMigrationVersionNumber(_))
+      }
 
 }

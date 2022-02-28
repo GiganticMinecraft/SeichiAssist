@@ -11,16 +11,22 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.r
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.targets.SeichiAssistWorldLevelData
 import org.slf4j.Logger
 
-case class WorldMigrationController(migrations: ItemMigrations)
-                                   (implicit effectEnvironment: EffectEnvironment, logger: Logger) {
+case class WorldMigrationController(migrations: ItemMigrations)(
+  implicit effectEnvironment: EffectEnvironment,
+  logger: Logger
+) {
 
   lazy val runWorldMigration: IO[Unit] = {
     // ワールド内アイテムのマイグレーション
     // TODO IOを剥がす
-    service.ItemMigrationService.inContextOf[IO](
-      new WorldLevelItemsMigrationVersionRepository(SeichiAssist.seichiAssistConfig.getServerId),
-      new WorldLevelMigrationSlf4jLogger(logger)
-    )
+    service
+      .ItemMigrationService
+      .inContextOf[IO](
+        new WorldLevelItemsMigrationVersionRepository(
+          SeichiAssist.seichiAssistConfig.getServerId
+        ),
+        new WorldLevelMigrationSlf4jLogger(logger)
+      )
       .runMigration(migrations) {
         import PluginExecutionContexts.asyncShift
         new SeichiAssistWorldLevelData()

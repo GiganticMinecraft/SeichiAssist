@@ -17,9 +17,7 @@ import scala.util.chaining._
 import scala.util.control.Breaks
 
 class TilingSkillTriggerListener[
-  F[_]
-  : IncrementBuildExpWhenBuiltWithSkill[*[_], Player]
-  : SyncEffect
+  F[_]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect
 ] extends Listener {
 
   // 範囲設置スキルの発動を担うハンドラメソッド
@@ -38,24 +36,28 @@ class TilingSkillTriggerListener[
 
     event.getAction match {
       case Action.LEFT_CLICK_BLOCK =>
-      case _ => return
+      case _                       => return
     }
 
-    if (!(player.isSneaking &&
-      BuildAssist.materiallist.contains(offHandItem.getType) &&
-      buildAssistPlayerData.ZoneSetSkillFlag)) return
+    if (
+      !(player.isSneaking &&
+        BuildAssist.materiallist.contains(offHandItem.getType) &&
+        buildAssistPlayerData.ZoneSetSkillFlag)
+    ) return
 
     val clickedBlock = event.getClickedBlock
     val offHandItemSelector = offHandItem.getData.getData
-    if (!(offHandItem.getType == clickedBlock.getType && offHandItemSelector == clickedBlock.getData)) {
+    if (
+      !(offHandItem.getType == clickedBlock.getType && offHandItemSelector == clickedBlock.getData)
+    ) {
       player.sendMessage(s"$RED「オフハンドと同じブロック」をクリックしてください。(基準になります)")
       return
     }
 
-    //スキルの範囲設定
+    // スキルの範囲設定
     val areaInt = buildAssistPlayerData.AREAint
 
-    //設置範囲の基準となる座標
+    // 設置範囲の基準となる座標
     val centerX = clickedBlock.getX
     val surfaceY = clickedBlock.getY
     val centerZ = clickedBlock.getZ
@@ -65,7 +67,8 @@ class TilingSkillTriggerListener[
     var placementCount = 0
 
     val minestackObjectToUse =
-      MineStackObjectList.minestacklist
+      MineStackObjectList
+        .minestacklist
         .find { obj =>
           offHandItem.getType == obj.material && offHandItemSelector.toInt == obj.durability
         }
@@ -111,14 +114,15 @@ class TilingSkillTriggerListener[
 
             def fillBelowSurfaceWithDirt(): Unit = {
               (1 to 5).foreach { setBlockYOffsetBelow =>
-                val fillLocation = new Location(playerWorld, targetX, surfaceY - setBlockYOffsetBelow, targetZ)
+                val fillLocation =
+                  new Location(playerWorld, targetX, surfaceY - setBlockYOffsetBelow, targetZ)
                 val blockToBeReplaced = fillLocation.getBlock
 
                 if (fillTargetMaterials.contains(blockToBeReplaced.getType)) {
                   if (Util.getWorldGuard.canBuild(player, fillLocation)) {
                     blockToBeReplaced.setType(Material.DIRT)
                   } else {
-                    //他人の保護がかかっている場合は通知を行う
+                    // 他人の保護がかかっている場合は通知を行う
                     player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
                   }
                 }
@@ -137,7 +141,8 @@ class TilingSkillTriggerListener[
             }
 
             def consumeOnePlacementItemFromInventory(): Option[Unit] = {
-              @scala.annotation.tailrec def forever(block: => Unit): Nothing = {
+              @scala.annotation.tailrec
+              def forever(block: => Unit): Nothing = {
                 block; forever(block)
               }
 
@@ -149,7 +154,7 @@ class TilingSkillTriggerListener[
                 if (consumptionSource != null && consumptionSource.isSimilar(offHandItem)) {
                   val sourceStackAmount = consumptionSource.getAmount
 
-                  //取得したインベントリデータから数量を1ひき、インベントリに反映する
+                  // 取得したインベントリデータから数量を1ひき、インベントリに反映する
                   val updatedItem =
                     if (sourceStackAmount == 1)
                       new ItemStack(Material.AIR)
@@ -171,7 +176,7 @@ class TilingSkillTriggerListener[
             }
 
             if (replaceableMaterials.contains(targetSurfaceBlock.getType)) {
-              //他人の保護がかかっている場合は処理を終了
+              // 他人の保護がかかっている場合は処理を終了
               if (!Util.getWorldGuard.canBuild(player, targetSurfaceLocation)) {
                 player.sendMessage(s"${RED}付近に誰かの保護がかかっているようです")
                 b1.break()
@@ -179,7 +184,9 @@ class TilingSkillTriggerListener[
 
               minestackObjectToUse match {
                 case Some(mineStackObject) =>
-                  if (seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObject) > 0) {
+                  if (
+                    seichiAssistPlayerData.minestack.getStackedAmountOf(mineStackObject) > 0
+                  ) {
                     seichiAssistPlayerData.minestack.subtractStackedAmountOf(mineStackObject, 1)
 
                     commitPlacement()
