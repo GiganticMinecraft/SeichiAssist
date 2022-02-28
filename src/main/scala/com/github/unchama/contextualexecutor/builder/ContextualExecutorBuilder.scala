@@ -1,7 +1,7 @@
 package com.github.unchama.contextualexecutor.builder
 
 import cats.data.{Kleisli, OptionT}
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{Effect, IO}
 import com.github.unchama.contextualexecutor.executors.PrintUsageExecutor
 import com.github.unchama.contextualexecutor.{
   ContextualExecutor,
@@ -98,11 +98,11 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    *
    * [ContextualExecutor]の制約にあるとおり, [execution]は任意スレッドでの実行に対応しなければならない.
    */
-  def executionF[F[_]: ConcurrentEffect, U](
+  def executionF[F[_]: Effect, U](
     execution: ExecutionF[F, CS, U]
   ): ContextualExecutorBuilder[CS] =
     this.copy(contextualExecution = context => {
-      ConcurrentEffect[F].toIO(execution(context)).as(TargetedEffect.emptyEffect)
+      Effect[F].toIO(execution(context)).as(TargetedEffect.emptyEffect)
     })
 
   /**
