@@ -4,7 +4,7 @@ import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.generic.MapExtra
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
-import com.github.unchama.seichiassist.subsystems.present.domain.{GrantRejectReason, PaginationRejectReason, PresentClaimingState, PresentPersistence, RevokeWarning}
+import com.github.unchama.seichiassist.subsystems.present.domain._
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.numeric.Positive
@@ -16,7 +16,7 @@ import java.util.UUID
 /**
  * [[PresentPersistence]]のJDBC実装。この実装は[[PresentPersistence]]の制約を引き継ぐ。
  */
-class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, ItemStack] {
+class JdbcBackedPresentPersistence[F[_]: Sync] extends PresentPersistence[F, ItemStack] {
   override def define(itemstack: ItemStack): F[PresentID] = Sync[F].delay {
     val stackAsBlob = ItemStackBlobProxy.itemStackToBlob(itemstack)
     DB.localTx { implicit session =>
@@ -30,19 +30,16 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
   /**
    * 指定したPresentIDに対応するプレゼントを物理消去する。
    *
-   * @param presentId プレゼントID
+   * @param presentId
+   *   プレゼントID
    */
   override def delete(presentId: PresentID): F[DeleteResult] = Sync[F].delay {
     DB.localTx { implicit session =>
       // 制約をかけているのでpresent_stateの方から先に消さないと整合性エラーを吐く
-      sql"""DELETE FROM present_state WHERE present_id = $presentId"""
-        .execute()
-        .apply()
+      sql"""DELETE FROM present_state WHERE present_id = $presentId""".execute().apply()
 
       val deletedRows =
-        sql"""DELETE FROM present WHERE present_id = $presentId"""
-          .update()
-          .apply()
+        sql"""DELETE FROM present WHERE present_id = $presentId""".update().apply()
 
       if (deletedRows == 1) DeleteResult.Done else DeleteResult.NotFound
     }
@@ -53,36 +50,22 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     val program = for {
       exists <- Sync[F].delay {
         DB.readOnly { implicit session =>
-          sql"""SELECT present_id FROM present"""
-            .map(x => x.long("present_id"))
-            .list()
-            .apply()
+          sql"""SELECT present_id FROM present""".map(x => x.long("present_id")).list().apply()
         }.contains(presentID)
       }
     } yield {
       if (exists) {
         Sync[F].delay {
-          val alreadyAddedPlayers = DB.readOnly { implicit session =>
-            sql"""SELECT uuid FROM present_state WHERE present_id = $presentID"""
-              .map(x => UUID.fromString(x.string("uuid")))
-              .list()
-              .apply()
-          }
-
           import scala.collection.Seq.iterableFactory
 
-          val initialValues = players
-            .map { uuid => Seq(presentID, uuid.toString, false) }
-            .toSeq
+          val initialValues = players.map { uuid => Seq(presentID, uuid.toString, false) }.toSeq
 
           DB.localTx { implicit session =>
             // upsert - これによってfilterなしで整合性違反を起こすことはなくなる
             sql"""
                   INSERT INTO present_state VALUES (?, ?, ?)
                   ON DUPLICATE KEY UPDATE present_id=present_id, uuid=uuid
-                 """
-              .batch(initialValues: _*)
-              .apply()
+                 """.batch(initialValues: _*).apply()
           }
 
           // 型推論
@@ -90,7 +73,9 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
         }
       } else {
         // 型推論
-        Applicative[F].pure(Some(GrantRejectReason.NoSuchPresentID: GrantRejectReason): Option[GrantRejectReason])
+        Applicative[F].pure(
+          Some(GrantRejectReason.NoSuchPresentID: GrantRejectReason): Option[GrantRejectReason]
+        )
       }
     }
 
@@ -127,12 +112,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
   override def mapping: F[Map[PresentID, ItemStack]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       sql"""SELECT present_id, itemstack FROM present"""
-        .map { rs =>
-          (
-            rs.long("present_id"),
-            unwrapItemStack(rs)
-          )
-        }
+        .map { rs => (rs.long("present_id"), unwrapItemStack(rs)) }
         .list()
         .apply()
         .toMap
@@ -140,10 +120,10 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
   }
 
   override def fetchStateWithPagination(
-                                         player: UUID,
-                                         perPage: Int Refined Positive,
-                                         page: Int Refined Positive
-                                       ): F[Either[PaginationRejectReason, List[(PresentID, PresentClaimingState)]]] = {
+    player: UUID,
+    perPage: Int Refined Positive,
+    page: Int Refined Positive
+  ): F[Either[PaginationRejectReason, List[(PresentID, PresentClaimingState)]]] = {
     import cats.implicits._
     for {
       idSliceWithPagination <- idSliceWithPagination(perPage, page)
@@ -161,14 +141,18 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
                |FROM present_state
                |WHERE uuid = ${player.toString} AND present_id IN ($idSliceWithPagination)
                |ORDER BY present_id
-        """
-            .stripMargin
-            .map(wrapResultForState)
-            .toList()
-            .apply()
+        """.stripMargin.map(wrapResultForState).toList().apply()
         }
 
-        Right(MapExtra.fillOnBaseSet(associatedEntries.toMap, idSliceWithPagination, PresentClaimingState.Unavailable).toList)
+        Right(
+          MapExtra
+            .fillOnBaseSet(
+              associatedEntries.toMap,
+              idSliceWithPagination,
+              PresentClaimingState.Unavailable
+            )
+            .toList
+        )
       }
     }
   }
@@ -186,7 +170,11 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
           .apply()
       }
 
-      MapExtra.fillOnBaseSet(associatedEntries.toMap, validPresentIDs.toSet, PresentClaimingState.Unavailable)
+      MapExtra.fillOnBaseSet(
+        associatedEntries.toMap,
+        validPresentIDs.toSet,
+        PresentClaimingState.Unavailable
+      )
     }
   }
 
@@ -199,7 +187,10 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     }
   }
 
-  private def idSliceWithPagination(perPage: Int Refined Positive, page: Int Refined Positive): F[Set[PresentID]] =
+  private def idSliceWithPagination(
+    perPage: Int Refined Positive,
+    page: Int Refined Positive
+  ): F[Set[PresentID]] =
     Sync[F].delay {
       val offset = (page - 1) * perPage
       DB.readOnly { implicit session =>
@@ -212,10 +203,11 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
     }
 
   private def wrapResultForState(rs: WrappedResultSet): (Long, PresentClaimingState) = {
-    val claimState = if (rs.boolean("claimed"))
-      PresentClaimingState.Claimed
-    else
-      PresentClaimingState.NotClaimed
+    val claimState =
+      if (rs.boolean("claimed"))
+        PresentClaimingState.Claimed
+      else
+        PresentClaimingState.NotClaimed
 
     (rs.long("present_id"), claimState)
   }
@@ -226,11 +218,7 @@ class JdbcBackedPresentPersistence[F[_] : Sync] extends PresentPersistence[F, It
 
   private def computeValidPresentCount: F[Long] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      sql"""SELECT COUNT(*) AS c FROM present"""
-        .map(_.long("c"))
-        .first()
-        .apply()
-        .get // safe
+      sql"""SELECT COUNT(*) AS c FROM present""".map(_.long("c")).first().apply().get // safe
     }
   }
 }

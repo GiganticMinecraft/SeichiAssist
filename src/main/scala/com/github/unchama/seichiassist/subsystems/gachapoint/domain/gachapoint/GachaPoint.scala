@@ -12,7 +12,8 @@ case class GachaPoint(exp: SeichiExpAmount) {
   /**
    * このガチャポイント量をすべて消費して得られるチケット数。
    */
-  lazy val availableTickets: BigInt = (exp.amount /% GachaPoint.perGachaTicket.exp.amount)._1.toBigInt
+  lazy val availableTickets: BigInt =
+    (exp.amount /% GachaPoint.perGachaTicket.exp.amount)._1.toBigInt
 
   /**
    * ガチャポイントをバッチでガチャ券に変換した際のポイントの変化を計算する。
@@ -45,11 +46,12 @@ object GachaPoint {
 
   /**
    * ガチャポイントを使用してガチャ券へと変換した結果。
-   * @param remainingGachaPoint 変換後に残っているガチャポイント
-   * @param gachaTicketCount 変換にて得られるガチャ券の総数
+   * @param remainingGachaPoint
+   *   変換後に残っているガチャポイント
+   * @param gachaTicketCount
+   *   変換にて得られるガチャ券の総数
    */
-  case class Usage(remainingGachaPoint: GachaPoint,
-                   gachaTicketCount: Int) {
+  case class Usage(remainingGachaPoint: GachaPoint, gachaTicketCount: Int) {
     require(gachaTicketCount <= GachaPoint.batchSize, "usage must not exceed batch size")
 
     def asTuple: (GachaPoint, Int) = (remainingGachaPoint, gachaTicketCount)

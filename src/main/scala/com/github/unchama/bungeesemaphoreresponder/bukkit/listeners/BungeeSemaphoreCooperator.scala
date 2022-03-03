@@ -12,11 +12,12 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
-class BungeeSemaphoreCooperator[
-  F[_] : ConcurrentEffect : Timer
-](finalizer: PlayerDataFinalizer[F, Player])
- (implicit synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName],
-  configuration: Configuration) extends Listener {
+class BungeeSemaphoreCooperator[F[_]: ConcurrentEffect: Timer](
+  finalizer: PlayerDataFinalizer[F, Player]
+)(
+  implicit synchronization: BungeeSemaphoreSynchronization[F[Unit], PlayerName],
+  configuration: Configuration
+) extends Listener {
 
   import cats.effect.implicits._
   import cats.implicits._
@@ -27,7 +28,7 @@ class BungeeSemaphoreCooperator[
     val name = PlayerName(player.getName)
     val timeout = configuration.saveTimeoutDuration match {
       case duration: FiniteDuration => Timer[F].sleep(duration)
-      case _: Duration.Infinite => Async[F].never
+      case _: Duration.Infinite     => Async[F].never
     }
 
     val program = for {

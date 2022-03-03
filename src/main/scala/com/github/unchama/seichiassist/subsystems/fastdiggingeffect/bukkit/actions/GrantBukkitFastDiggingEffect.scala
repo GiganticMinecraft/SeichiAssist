@@ -6,9 +6,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.actio
 import org.bukkit.entity.Player
 import org.bukkit.potion.{PotionEffect, PotionEffectType}
 
-class GrantBukkitFastDiggingEffect[
-  F[_] : Sync : OnMinecraftServerThread
-] extends GrantFastDiggingEffect[F, Player] {
+class GrantBukkitFastDiggingEffect[F[_]: Sync: OnMinecraftServerThread]
+    extends GrantFastDiggingEffect[F, Player] {
 
   override def forTwoSeconds(player: Player)(amount: Int): F[Unit] = {
     val potionEffect = new PotionEffect(PotionEffectType.FAST_DIGGING, 40, amount, false, false)

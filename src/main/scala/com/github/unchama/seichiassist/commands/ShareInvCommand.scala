@@ -16,7 +16,7 @@ import org.bukkit.{Bukkit, Material}
 
 object ShareInvCommand {
 
-import scala.jdk.CollectionConverters._
+  import scala.jdk.CollectionConverters._
 
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
@@ -38,31 +38,37 @@ import scala.jdk.CollectionConverters._
     {
       for {
         serial <- EitherT(databaseGateway.playerDataManipulator.loadShareInv(player))
-        _ <- EitherT.cond[IO](serial != "", (), MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。"))
+        _ <- EitherT
+          .cond[IO](serial != "", (), MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。"))
         _ <- EitherT(databaseGateway.playerDataManipulator.clearShareInv(player, playerData))
         playerInventory = player.getInventory
         _ <- EitherT.right {
           IO {
             // アイテムを取り出す. 手持ちはドロップさせる
-            playerInventory.getContents
+            playerInventory
+              .getContents
               .filterNot(_ == null)
               .filterNot(_.getType == Material.AIR)
               .foreach(stack => dropIfNotEmpty(Some(stack), player))
-            playerInventory.setContents(ItemListSerialization.deserializeFromBase64(serial).asScala.toArray)
+            playerInventory.setContents(
+              ItemListSerialization.deserializeFromBase64(serial).asScala.toArray
+            )
 
             playerData.contentsPresentInSharedInventory = false
             Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB書き換え成功)")
           }
         }
-        successful <- EitherT.rightT[IO, TargetedEffect[Player]](MessageEffect(s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。"))
+        successful <- EitherT.rightT[IO, TargetedEffect[Player]](
+          MessageEffect(s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。")
+        )
       } yield successful
-      }.merge
+    }.merge
   }
 
   def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): Unit = {
     itemStackOption match {
       case Some(itemStack) => Util.dropItem(to, itemStack)
-      case None =>
+      case None            =>
     }
   }
 
@@ -72,18 +78,22 @@ import scala.jdk.CollectionConverters._
 
     val playerInventory = player.getInventory
 
-    def takeIfNotNull[App[_] : Applicative, E, A](a: A, fail: E): EitherT[App, E, A] =
+    def takeIfNotNull[App[_]: Applicative, E, A](a: A, fail: E): EitherT[App, E, A] =
       EitherT.cond[App](a != null, a, fail)
 
     {
       for {
-        inventory <- EitherT.rightT[IO, TargetedEffect[Player]](playerInventory.getContents.toList.asJava)
+        inventory <- EitherT.rightT[IO, TargetedEffect[Player]](
+          playerInventory.getContents.toList.asJava
+        )
         serializedInventory <-
           takeIfNotNull[IO, TargetedEffect[Player], String](
             ItemListSerialization.serializeToBase64(inventory),
             MessageEffect(s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。")
           )
-        _ <- EitherT(databaseGateway.playerDataManipulator.saveSharedInventory(player, serializedInventory))
+        _ <- EitherT(
+          databaseGateway.playerDataManipulator.saveSharedInventory(player, serializedInventory)
+        )
         successEffect <- EitherT.right[TargetedEffect[Player]] {
           IO {
             // 現所持アイテムを全て削除
@@ -98,6 +108,6 @@ import scala.jdk.CollectionConverters._
           }
         }
       } yield successEffect
-      }.merge
+    }.merge
   }
 }

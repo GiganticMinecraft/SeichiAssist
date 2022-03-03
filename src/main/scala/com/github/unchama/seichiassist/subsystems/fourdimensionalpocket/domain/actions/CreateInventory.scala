@@ -13,6 +13,8 @@ trait CreateInventory[F[_], Inventory] {
 
 object CreateInventory {
 
-  def apply[F[_], Inventory](implicit ev: CreateInventory[F, Inventory]): CreateInventory[F, Inventory] = ev
+  def apply[F[_], Inventory](
+    implicit ev: CreateInventory[F, Inventory]
+  ): CreateInventory[F, Inventory] = ev
 
 }

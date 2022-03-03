@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 /**
  * 整地スターレベル。
  */
-case class SeichiStarLevel private(level: BigInt) extends AnyVal {
+case class SeichiStarLevel private (level: BigInt) extends AnyVal {
   def increment: SeichiStarLevel = ofNonNegative(level + 1)
 }
 

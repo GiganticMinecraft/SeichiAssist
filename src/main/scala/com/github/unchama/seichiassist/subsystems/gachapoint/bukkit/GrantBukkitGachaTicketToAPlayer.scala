@@ -13,10 +13,9 @@ import org.bukkit.ChatColor.{GOLD, WHITE}
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
-case class GrantBukkitGachaTicketToAPlayer[
-  F[_] : LiftIO
-](player: Player)
- (implicit ioOnMainThread: OnMinecraftServerThread[IO]) extends GrantGachaTicketToAPlayer[F] {
+case class GrantBukkitGachaTicketToAPlayer[F[_]: LiftIO](player: Player)(
+  implicit ioOnMainThread: OnMinecraftServerThread[IO]
+) extends GrantGachaTicketToAPlayer[F] {
 
   override def give(count: Int): F[Unit] = {
     val effect =

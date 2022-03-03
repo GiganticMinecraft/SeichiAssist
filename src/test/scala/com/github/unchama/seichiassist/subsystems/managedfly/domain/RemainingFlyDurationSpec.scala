@@ -9,7 +9,10 @@ class RemainingFlyDurationSpec extends AnyWordSpec with ScalaCheckPropertyChecks
     "decrement remaining minute if greater than 1" in {
       forAll { minute: Int =>
         whenever(minute > 1) {
-          RemainingFlyDuration.PositiveMinutes.fromPositive(minute).tickOneMinute shouldBe Some {
+          RemainingFlyDuration
+            .PositiveMinutes
+            .fromPositive(minute)
+            .tickOneMinute shouldBe Some {
             RemainingFlyDuration.PositiveMinutes.fromPositive(minute - 1)
           }
         }

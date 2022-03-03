@@ -59,17 +59,25 @@ object V1_4_0_AddEnchantsTo2_1billionRewardItems {
   }
 
   def is21billionRewardItems(itemStack: ItemStack): Boolean = {
-    if (itemStack == null || !itemStack.hasItemMeta || !itemStack.getItemMeta.hasDisplayName || !itemStack.getItemMeta.hasLore) return false
+    if (
+      itemStack == null || !itemStack.hasItemMeta || !itemStack
+        .getItemMeta
+        .hasDisplayName || !itemStack.getItemMeta.hasLore
+    ) return false
     isRewardedGaeaReplica(itemStack) || isRewardedTitanReplica(itemStack)
   }
 
   def isRewardedTitanReplica(item: ItemStack): Boolean = {
     val lores = item.getItemMeta.getLore.asScala
-    item.getItemMeta.getDisplayName == titanReplicaName && lores.contains(titanReplicaLore) && lores.contains(commonLore)
+    item.getItemMeta.getDisplayName == titanReplicaName && lores.contains(
+      titanReplicaLore
+    ) && lores.contains(commonLore)
   }
 
   def isRewardedGaeaReplica(item: ItemStack): Boolean = {
     val lores = item.getItemMeta.getLore.asScala
-    item.getItemMeta.getDisplayName == gaeaReplicaName && lores.contains(gaeaReplicaLore) && lores.contains(commonLore)
+    item.getItemMeta.getDisplayName == gaeaReplicaName && lores.contains(
+      gaeaReplicaLore
+    ) && lores.contains(commonLore)
   }
 }

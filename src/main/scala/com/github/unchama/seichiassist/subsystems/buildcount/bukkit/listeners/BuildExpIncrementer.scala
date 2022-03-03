@@ -9,11 +9,8 @@ import org.bukkit.event.{EventHandler, Listener}
 /**
  * Created by karayuu on 2020/10/07
  */
-class BuildExpIncrementer[
-  F[_]
-  : IncrementBuildExpWhenBuiltByHand[*[_], Player]
-  : SyncEffect
-] extends Listener {
+class BuildExpIncrementer[F[_]: IncrementBuildExpWhenBuiltByHand[*[_], Player]: SyncEffect]
+    extends Listener {
 
   import cats.effect.implicits._
 
@@ -22,7 +19,8 @@ class BuildExpIncrementer[
     if (event.getBlockPlaced.getType.isSolid) {
       IncrementBuildExpWhenBuiltByHand[F, Player]
         .of(event.getPlayer)
-        .runSync[SyncIO].unsafeRunSync()
+        .runSync[SyncIO]
+        .unsafeRunSync()
     }
   }
 }

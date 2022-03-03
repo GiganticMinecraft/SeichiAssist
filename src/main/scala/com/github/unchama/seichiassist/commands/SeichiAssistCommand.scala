@@ -9,18 +9,23 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.{ConsoleCommandSender, TabExecutor}
 
 object SeichiAssistCommand {
-  private val descriptionExecutor = new EchoExecutor(MessageEffect(List(
-    s"$YELLOW$BOLD[コマンドリファレンス]",
-    s"$RED/seichiassist reload-config",
-    "config.ymlの設定値を再読み込みします",
-    s"$RED/seichiassist toggle-debug",
-    "デバッグモードのON,OFFを切り替えます",
-    "config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能",
-    s"$RED/seichiassist set-anniversary-flag",
-    "n周年記念フラグを立てる（コンソール限定コマンド）"
-  )))
+  private val descriptionExecutor = new EchoExecutor(
+    MessageEffect(
+      List(
+        s"$YELLOW$BOLD[コマンドリファレンス]",
+        s"$RED/seichiassist reload-config",
+        "config.ymlの設定値を再読み込みします",
+        s"$RED/seichiassist toggle-debug",
+        "デバッグモードのON,OFFを切り替えます",
+        "config.ymlのdebugmodeの値が1の場合のみ、コンソールから使用可能",
+        s"$RED/seichiassist set-anniversary-flag",
+        "n周年記念フラグを立てる（コンソール限定コマンド）"
+      )
+    )
+  )
 
-  private val reloadConfigExecutor = ContextualExecutorBuilder.beginConfiguration()
+  private val reloadConfigExecutor = ContextualExecutorBuilder
+    .beginConfiguration()
     .execution { _ =>
       IO {
         SeichiAssist.seichiAssistConfig = Config.loadFrom(SeichiAssist.instance)
@@ -29,12 +34,13 @@ object SeichiAssistCommand {
     }
     .build()
 
-  private val toggleDebugExecutor = ContextualExecutorBuilder.beginConfiguration()
+  private val toggleDebugExecutor = ContextualExecutorBuilder
+    .beginConfiguration()
     .execution { _ =>
       IO {
-        //debugフラグ反転処理
+        // debugフラグ反転処理
         if (SeichiAssist.seichiAssistConfig.getDebugMode == 1) {
-          //メッセージフラグを反転
+          // メッセージフラグを反転
           SeichiAssist.DEBUG = !SeichiAssist.DEBUG
           SeichiAssist.instance.restartRepeatedJobs()
 
@@ -57,11 +63,15 @@ object SeichiAssistCommand {
     }
     .build()
 
-  private val setAnniversaryFlagExecutor = ContextualExecutorBuilder.beginConfiguration()
+  private val setAnniversaryFlagExecutor = ContextualExecutorBuilder
+    .beginConfiguration()
     .refineSenderWithError[ConsoleCommandSender]("コンソール専用コマンドです")
     .execution { _ =>
       IO {
-        SeichiAssist.databaseGateway.playerDataManipulator.setAnniversary(anniversary = true, null)
+        SeichiAssist
+          .databaseGateway
+          .playerDataManipulator
+          .setAnniversary(anniversary = true, null)
 
         MessageEffect("Anniversaryアイテムの配布を開始しました。")
       }
@@ -74,6 +84,7 @@ object SeichiAssistCommand {
       "toggle-debug" -> toggleDebugExecutor,
       "set-anniversary-flag" -> setAnniversaryFlagExecutor
     ),
-    whenArgInsufficient = Some(descriptionExecutor), whenBranchNotFound = Some(descriptionExecutor)
+    whenArgInsufficient = Some(descriptionExecutor),
+    whenBranchNotFound = Some(descriptionExecutor)
   ).asNonBlockingTabExecutor()
 }

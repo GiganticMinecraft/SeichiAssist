@@ -8,7 +8,7 @@ import scala.util.Random
 /**
  * Mebiusの発話を阻止するかどうかを決定するオブジェクトのクラス。
  */
-final class MebiusSpeechBlockageState[F[_] : Sync] {
+final class MebiusSpeechBlockageState[F[_]: Sync] {
 
   private val willBlockSpeech: Ref[F, Boolean] = Ref.unsafe[F, Boolean](false)
 
@@ -35,6 +35,7 @@ final class MebiusSpeechBlockageState[F[_] : Sync] {
 }
 
 object MebiusSpeechBlockageState {
+
   /**
    * [[MebiusSpeechBlockageState.shouldBlock()]]が、内部状態がfalseの時にも発話を不許可とする確率
    */

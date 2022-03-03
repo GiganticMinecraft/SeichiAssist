@@ -15,17 +15,19 @@ import org.bukkit.entity.Player
 
 object CategorizedMineStackMenu {
 
-  class Environment(implicit
-                    val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
-                    val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
-                    val onMainThread: OnMinecraftServerThread[IO])
+  class Environment(
+    implicit val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
+    val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+    val onMainThread: OnMinecraftServerThread[IO]
+  )
 
 }
 
 /**
  * カテゴリ別マインスタックメニューで [pageIndex] + 1 ページ目の[Menu]
  */
-case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex: Int = 0) extends Menu {
+case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex: Int = 0)
+    extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
   import eu.timepit.refined.auto._
@@ -37,9 +39,14 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
   override type Environment = CategorizedMineStackMenu.Environment
 
-  override val frame: MenuFrame = MenuFrame((objectSectionRows + 1).chestRows, s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})")
+  override val frame: MenuFrame = MenuFrame(
+    (objectSectionRows + 1).chestRows,
+    s"$DARK_BLUE${BOLD}MineStack(${category.uiLabel})"
+  )
 
-  def mineStackMainMenuButtonSection(implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type): Seq[(Int, Button)] =
+  def mineStackMainMenuButtonSection(
+    implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type
+  ): Seq[(Int, Button)] =
     Seq(
       ChestSlotRef(5, 0) -> CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowLeft),
@@ -49,9 +56,9 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     )
 
   // ページ操作等のボタンを含むレイアウトセクション
-  def uiOperationSection(totalNumberOfPages: Int)
-                        (category: MineStackObjectCategory, page: Int)
-                        (implicit environment: Environment): Seq[(Int, Button)] = {
+  def uiOperationSection(totalNumberOfPages: Int)(category: MineStackObjectCategory, page: Int)(
+    implicit environment: Environment
+  ): Seq[(Int, Button)] = {
     import environment._
 
     def buttonToTransferTo(pageIndex: Int, skullOwnerReference: SkullOwnerReference): Button =
@@ -76,9 +83,11 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     mineStackMainMenuButtonSection ++ previousPageButtonSection ++ nextPageButtonSection
   }
 
-  override def open(implicit environment: CategorizedMineStackMenu.Environment,
-                    ctx: LayoutPreparationContext,
-                    onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = DeferredEffect {
+  override def open(
+    implicit environment: CategorizedMineStackMenu.Environment,
+    ctx: LayoutPreparationContext,
+    onMainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] = DeferredEffect {
     import MineStackObjectCategory._
 
     for {
@@ -96,8 +105,9 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     }
   }
 
-  override def computeMenuLayout(player: Player)
-                                (implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import MineStackObjectCategory._
     import cats.implicits._
     import environment._
@@ -114,15 +124,17 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
     val categorizedItemSectionComputation =
       categoryItemList
-        .slice(mineStackObjectPerPage * pageIndex, mineStackObjectPerPage * pageIndex + mineStackObjectPerPage).toList
+        .slice(
+          mineStackObjectPerPage * pageIndex,
+          mineStackObjectPerPage * pageIndex + mineStackObjectPerPage
+        )
+        .toList
         .traverse(getMineStackItemButtonOf(_))
         .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算
     val autoMineStackToggleButtonSectionComputation =
-      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton)
-        .map(_.sequence)
-        .sequence
+      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton).map(_.sequence).sequence
 
     for {
       categorizedItemSection <- categorizedItemSectionComputation

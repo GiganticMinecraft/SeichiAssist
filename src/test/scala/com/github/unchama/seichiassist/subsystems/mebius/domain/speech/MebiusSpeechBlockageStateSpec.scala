@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.mebius.domain.speech
 
 import cats.effect.IO
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.MebiusSpeechBlockageState
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.util.Random

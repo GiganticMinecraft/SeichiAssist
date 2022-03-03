@@ -5,10 +5,18 @@ import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStack
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.menuinventory.slot.button.action.{ClickEventFilter, FilteredButtonEffect, LeftClickButtonEffect}
+import com.github.unchama.menuinventory.slot.button.action.{
+  ClickEventFilter,
+  FilteredButtonEffect,
+  LeftClickButtonEffect
+}
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{MuteMessageAndSound, ReceiveMessageAndSound, ReceiveMessageOnly}
+import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings.{
+  MuteMessageAndSound,
+  ReceiveMessageAndSound,
+  ReceiveMessageOnly
+}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData.anniversaryPlayerHead
@@ -20,7 +28,11 @@ import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect, PlayerEffects}
+import com.github.unchama.targetedeffect.player.{
+  CommandEffect,
+  FocusedSoundEffect,
+  PlayerEffects
+}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.inventory.meta.SkullMeta
@@ -43,7 +55,9 @@ object SecondPage extends Menu {
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
 
-  override def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout] = {
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
     val computations = ButtonComputations(player)
     import computations._
@@ -160,11 +174,13 @@ object SecondPage extends Menu {
 
           new IconItemStackBuilder(Material.JUKEBOX)
             .title(s"$YELLOW$UNDERLINE${BOLD}全体通知切替")
-            .lore(List(
-              soundConfigurationState,
-              messageConfigurationState,
-              s"$RESET$DARK_RED${UNDERLINE}クリックで変更"
-            ))
+            .lore(
+              List(
+                soundConfigurationState,
+                messageConfigurationState,
+                s"$RESET$DARK_RED${UNDERLINE}クリックで変更"
+              )
+            )
             .build()
         }
       } yield Button(
@@ -174,11 +190,15 @@ object SecondPage extends Menu {
             playerData.settings.toggleBroadcastMutingSettings,
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f),
             DeferredEffect {
-              playerData.settings.getBroadcastMutingSettings.map {
-                case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
-                case ReceiveMessageOnly => s"${RED}消音可能な全体通知音を消音します"
-                case MuteMessageAndSound => s"${RED}非表示可能な全体メッセージを非表示にします"
-              }.map(MessageEffect(_))
+              playerData
+                .settings
+                .getBroadcastMutingSettings
+                .map {
+                  case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
+                  case ReceiveMessageOnly     => s"${RED}消音可能な全体通知音を消音します"
+                  case MuteMessageAndSound    => s"${RED}非表示可能な全体メッセージを非表示にします"
+                }
+                .map(MessageEffect(_))
             }
           )
         }
@@ -196,16 +216,9 @@ object SecondPage extends Menu {
         if (playerData.settings.shouldDisplayDeathMessages) {
           baseBuilder
             .enchanted()
-            .lore(List(
-              s"$RESET${GREEN}表示する",
-              s"$RESET$DARK_RED${UNDERLINE}クリックで隠す"
-            ))
+            .lore(List(s"$RESET${GREEN}表示する", s"$RESET$DARK_RED${UNDERLINE}クリックで隠す"))
         } else {
-          baseBuilder
-            .lore(List(
-              s"$RESET${RED}隠す",
-              s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
-            ))
+          baseBuilder.lore(List(s"$RESET${RED}隠す", s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"))
         }
       }.build()
 
@@ -243,18 +256,13 @@ object SecondPage extends Menu {
         if (playerData.settings.shouldDisplayWorldGuardLogs) {
           baseBuilder
             .enchanted()
-            .lore(List(
-              loreHeading,
-              s"$RESET${GREEN}表示する",
-              s"$RESET$DARK_RED${UNDERLINE}クリックで隠す"
-            ))
+            .lore(
+              List(loreHeading, s"$RESET${GREEN}表示する", s"$RESET$DARK_RED${UNDERLINE}クリックで隠す")
+            )
         } else {
-          baseBuilder
-            .lore(List(
-              loreHeading,
-              s"$RESET${RED}隠す",
-              s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する"
-            ))
+          baseBuilder.lore(
+            List(loreHeading, s"$RESET${RED}隠す", s"$RESET$DARK_GREEN${UNDERLINE}クリックで表示する")
+          )
         }
       }.build()
 
@@ -285,11 +293,8 @@ object SecondPage extends Menu {
         val lore = {
           val playerData = SeichiAssist.playermap(getUniqueId)
 
-          val base = List(
-            s"$RESET${GREEN}現在の装備・アイテムを移動します。",
-            s"${RESET}サーバー間のアイテム移動にご利用ください。",
-            ""
-          )
+          val base =
+            List(s"$RESET${GREEN}現在の装備・アイテムを移動します。", s"${RESET}サーバー間のアイテム移動にご利用ください。", "")
 
           val statusDisplay = if (playerData.contentsPresentInSharedInventory) {
             List(
@@ -298,10 +303,7 @@ object SecondPage extends Menu {
               s"$RESET${RED}現在の装備・アイテムが空であることを確認してください。"
             )
           } else {
-            List(
-              s"$RESET${GREEN}非収納中",
-              s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを収納します。"
-            )
+            List(s"$RESET${GREEN}非収納中", s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを収納します。")
           }
 
           base ++ statusDisplay
@@ -321,13 +323,15 @@ object SecondPage extends Menu {
     val officialWikiNavigationButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.BOOK)
         .title(s"$YELLOW$UNDERLINE${BOLD}公式サイトにアクセス")
-        .lore(List(
-          s"$RESET${GREEN}鯖内の「困った」は公式サイトで解決！",
-          s"$RESET${DARK_GRAY}クリックするとチャット欄に",
-          s"$RESET${DARK_GRAY}URLが表示されますので",
-          s"$RESET${DARK_GRAY}Tキーを押してから",
-          s"$RESET${DARK_GRAY}そのURLをクリックしてください"
-        ))
+        .lore(
+          List(
+            s"$RESET${GREEN}鯖内の「困った」は公式サイトで解決！",
+            s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+            s"$RESET${DARK_GRAY}URLが表示されますので",
+            s"$RESET${DARK_GRAY}Tキーを押してから",
+            s"$RESET${DARK_GRAY}そのURLをクリックしてください"
+          )
+        )
         .build()
 
       Button(
@@ -335,7 +339,9 @@ object SecondPage extends Menu {
         action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
           SequentialEffect(
             closeInventoryEffect,
-            MessageEffect(s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}"),
+            MessageEffect(
+              s"$RED$UNDERLINE${SeichiAssist.seichiAssistConfig.getUrl("official")}"
+            ),
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, 1.0f)
           )
         }
@@ -345,13 +351,15 @@ object SecondPage extends Menu {
     val rulesPageNavigationButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.PAPER)
         .title(s"$YELLOW$UNDERLINE${BOLD}運営方針とルールを確認")
-        .lore(List(
-          s"$RESET${GREEN}当鯖で遊ぶ前に確認してネ！",
-          s"$RESET${DARK_GRAY}クリックするとチャット欄に",
-          s"$RESET${DARK_GRAY}URLが表示されますので",
-          s"$RESET${DARK_GRAY}Tキーを押してから",
-          s"$RESET${DARK_GRAY}そのURLをクリックしてください"
-        ))
+        .lore(
+          List(
+            s"$RESET${GREEN}当鯖で遊ぶ前に確認してネ！",
+            s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+            s"$RESET${DARK_GRAY}URLが表示されますので",
+            s"$RESET${DARK_GRAY}Tキーを押してから",
+            s"$RESET${DARK_GRAY}そのURLをクリックしてください"
+          )
+        )
         .build()
 
       Button(
@@ -369,14 +377,16 @@ object SecondPage extends Menu {
     val serverMapNavigationButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.MAP)
         .title(s"$YELLOW$UNDERLINE${BOLD}鯖Mapを見る")
-        .lore(List(
-          s"$RESET${GREEN}webブラウザから鯖Mapを閲覧出来ます",
-          s"$RESET${GREEN}他人の居場所や保護の場所を確認出来ます",
-          s"$RESET${DARK_GRAY}クリックするとチャット欄に",
-          s"$RESET${DARK_GRAY}URLが表示されますので",
-          s"$RESET${DARK_GRAY}Tキーを押してから",
-          s"$RESET${DARK_GRAY}そのURLをクリックしてください"
-        ))
+        .lore(
+          List(
+            s"$RESET${GREEN}webブラウザから鯖Mapを閲覧出来ます",
+            s"$RESET${GREEN}他人の居場所や保護の場所を確認出来ます",
+            s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+            s"$RESET${DARK_GRAY}URLが表示されますので",
+            s"$RESET${DARK_GRAY}Tキーを押してから",
+            s"$RESET${DARK_GRAY}そのURLをクリックしてください"
+          )
+        )
         .build()
 
       Button(
@@ -394,12 +404,14 @@ object SecondPage extends Menu {
     val JMSNavigationButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.SIGN)
         .title(s"$YELLOW$UNDERLINE${BOLD}JapanMinecraftServerリンク")
-        .lore(List(
-          s"$RESET${DARK_GRAY}クリックするとチャット欄に",
-          s"$RESET${DARK_GRAY}URLが表示されますので",
-          s"$RESET${DARK_GRAY}Tキーを押してから",
-          s"$RESET${DARK_GRAY}そのURLをクリックしてください"
-        ))
+        .lore(
+          List(
+            s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+            s"$RESET${DARK_GRAY}URLが表示されますので",
+            s"$RESET${DARK_GRAY}Tキーを押してから",
+            s"$RESET${DARK_GRAY}そのURLをクリックしてください"
+          )
+        )
         .build()
 
       Button(
@@ -417,18 +429,20 @@ object SecondPage extends Menu {
     val appleConversionButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.GOLDEN_APPLE, durability = 1)
         .title(s"$YELLOW$UNDERLINE${BOLD}GT景品→椎名林檎変換システム")
-        .lore(List(
-          s"$RESET${GREEN}不必要なGT大当り景品を",
-          s"$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
-          s"$RESET${GREEN}出てきたインベントリに",
-          s"$RESET${GREEN}交換したい景品を入れて",
-          s"$RESET${GREEN}escキーを押してください",
-          s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
-          s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
-          s"$RESET${DARK_GRAY}神に祈りながら交換しよう",
-          s"${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo}個",
-          s"$RESET$DARK_GRAY$DARK_RED${UNDERLINE}クリックで開く"
-        ))
+        .lore(
+          List(
+            s"$RESET${GREEN}不必要なGT大当り景品を",
+            s"$RESET${GOLD}椎名林檎$RESET${GREEN}と交換できます",
+            s"$RESET${GREEN}出てきたインベントリに",
+            s"$RESET${GREEN}交換したい景品を入れて",
+            s"$RESET${GREEN}escキーを押してください",
+            s"$RESET${DARK_GRAY}たまにアイテムが消失しますが",
+            s"$RESET${DARK_GRAY}補償はしていません(ごめんなさい)",
+            s"$RESET${DARK_GRAY}神に祈りながら交換しよう",
+            s"${RESET}現在の交換レート:GT景品1つにつき${SeichiAssist.seichiAssistConfig.rateGiganticToRingo}個",
+            s"$RESET$DARK_GRAY$DARK_RED${UNDERLINE}クリックで開く"
+          )
+        )
         .build()
 
       Button(
@@ -438,7 +452,10 @@ object SecondPage extends Menu {
             FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
             // TODO メニューインベントリに差し替える
             openInventoryEffect(
-              createInventory(size = 4.chestRows, title = Some(s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ"))
+              createInventory(
+                size = 4.chestRows,
+                title = Some(s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ")
+              )
             )
           )
         }
@@ -448,11 +465,13 @@ object SecondPage extends Menu {
     val recycleBinButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.BUCKET)
         .title(s"$YELLOW$UNDERLINE${BOLD}ゴミ箱を開く")
-        .lore(List(
-          s"$RESET${GREEN}不用品の大量処分にドウゾ！",
-          s"$RESET${RED}復活しないので取扱注意",
-          s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
-        ))
+        .lore(
+          List(
+            s"$RESET${GREEN}不用品の大量処分にドウゾ！",
+            s"$RESET${RED}復活しないので取扱注意",
+            s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
+          )
+        )
         .build()
 
       Button(
@@ -472,10 +491,9 @@ object SecondPage extends Menu {
     val hubCommandButton: Button = {
       val iconItemStack = new IconItemStackBuilder(Material.NETHER_STAR)
         .title(s"$YELLOW$UNDERLINE${BOLD}ロビーサーバーへ移動")
-        .lore(List(
-          s"$RESET$DARK_RED${UNDERLINE}クリックすると移動します",
-          s"$RESET${DARK_GRAY}command=>[/hub]"
-        ))
+        .lore(
+          List(s"$RESET$DARK_RED${UNDERLINE}クリックすると移動します", s"$RESET${DARK_GRAY}command=>[/hub]")
+        )
         .build()
 
       Button(

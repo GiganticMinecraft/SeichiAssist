@@ -21,8 +21,7 @@ object SeizonsikiItemData {
       "",
       s"${DARK_GREEN}消費期限：$END_DATE",
       s"${AQUA}マナ回復（10％）$GRAY （期限内）"
-    ).map(str => s"$RESET$str")
-      .asJava
+    ).map(str => s"$RESET$str").asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE).tap { meta =>
       import meta._
@@ -33,11 +32,12 @@ object SeizonsikiItemData {
     val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
-      setByte(NBTTagConstants.typeIdTag, 1.toByte)
-      setObject(NBTTagConstants.expiryDateTag, END_DATE)
-    }
+    new NBTItem(itemStack)
+      .tap { item =>
+        import item._
+        setByte(NBTTagConstants.typeIdTag, 1.toByte)
+        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+      }
       .pipe(_.getItem)
   }
 

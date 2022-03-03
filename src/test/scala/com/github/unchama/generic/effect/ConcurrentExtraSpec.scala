@@ -35,17 +35,19 @@ class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
       val program = for {
         blockerList <- LinkedSequencer[IO].newBlockerList
         promise <- Deferred[IO, CancelToken[IO]]
-        _ <- ConcurrentExtra.withSelfCancellation[IO, Unit] { cancelToken =>
-          for {
-            _ <- promise.complete(cancelToken)
-            //noinspection ZeroIndexToHead
-            _ <- {
-              blockerList(0).await() >> IO.never
-            }.guarantee {
-              runSubProcessFinalizer
-            }
-          } yield ()
-        }.start
+        _ <- ConcurrentExtra
+          .withSelfCancellation[IO, Unit] { cancelToken =>
+            for {
+              _ <- promise.complete(cancelToken)
+              // noinspection ZeroIndexToHead
+              _ <- {
+                blockerList(0).await() >> IO.never
+              }.guarantee {
+                runSubProcessFinalizer
+              }
+            } yield ()
+          }
+          .start
         returnedCancelToken <- promise.get
         _ <- blockerList(1).await() // let started fiber reach IO.never
         _ <- returnedCancelToken // subProcessFinalizer should be called

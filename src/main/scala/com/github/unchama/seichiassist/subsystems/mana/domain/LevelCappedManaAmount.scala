@@ -2,16 +2,13 @@ package com.github.unchama.seichiassist.subsystems.mana.domain
 
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 
-case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLevel) {
+case class LevelCappedManaAmount private (manaAmount: ManaAmount, level: SeichiLevel) {
 
   import cats.implicits._
 
   val cap: ManaAmount = ManaAmountCap.at(level)
 
-  assert(
-    manaAmount <= cap,
-    "LevelCappedManaAmountはマナのキャップ制約を満たす必要があります"
-  )
+  assert(manaAmount <= cap, "LevelCappedManaAmountはマナのキャップ制約を満たす必要があります")
 
   val isFull: Boolean = manaAmount == cap
 
@@ -19,7 +16,9 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
     LevelCappedManaAmount.capping(manaAmount.add(amount), level)
   }
 
-  def tryUse(amount: ManaAmount)(manaMultiplier: ManaMultiplier): Option[LevelCappedManaAmount] = {
+  def tryUse(
+    amount: ManaAmount
+  )(manaMultiplier: ManaMultiplier): Option[LevelCappedManaAmount] = {
     manaAmount.tryUse(amount)(manaMultiplier).map(LevelCappedManaAmount(_, level))
   }
 
@@ -32,8 +31,7 @@ case class LevelCappedManaAmount private(manaAmount: ManaAmount, level: SeichiLe
   lazy val fillToCap: LevelCappedManaAmount = LevelCappedManaAmount(cap, level)
 
   /**
-   * マナ最大値に対する `manaAmount` の割合を示す0以上1未満の数値。
-   * マナ最大値が0だった場合には `None` となる。
+   * マナ最大値に対する `manaAmount` の割合を示す0以上1未満の数値。 マナ最大値が0だった場合には `None` となる。
    */
   lazy val ratioToCap: Option[Double] =
     Option.when(cap.value != 0.0)(manaAmount.value / cap.value)
@@ -47,5 +45,6 @@ object LevelCappedManaAmount {
     LevelCappedManaAmount(manaAmount min ManaAmountCap.at(level), level)
   }
 
-  val initialValue: LevelCappedManaAmount = LevelCappedManaAmount(ManaAmount(0), SeichiLevel.ofPositive(1))
+  val initialValue: LevelCappedManaAmount =
+    LevelCappedManaAmount(ManaAmount(0), SeichiLevel.ofPositive(1))
 }

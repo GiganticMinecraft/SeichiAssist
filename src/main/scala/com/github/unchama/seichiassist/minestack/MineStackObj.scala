@@ -3,13 +3,15 @@ package com.github.unchama.seichiassist.minestack
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-class MineStackObj(val mineStackObjName: String,
-                   val uiName: Option[String],
-                   val level: Int,
-                   private val _itemStack: ItemStack,
-                   val hasNameLore: Boolean,
-                   val gachaType: Int,
-                   val stackType: MineStackObjectCategory) {
+class MineStackObj(
+  val mineStackObjName: String,
+  val uiName: Option[String],
+  val level: Int,
+  private val _itemStack: ItemStack,
+  val hasNameLore: Boolean,
+  val gachaType: Int,
+  val stackType: MineStackObjectCategory
+) {
 
   val itemStack: ItemStack = {
     val cloned = _itemStack.clone()
@@ -17,12 +19,14 @@ class MineStackObj(val mineStackObjName: String,
     cloned
   }
 
-  def this(category: MineStackObjectCategory,
-           objname: String,
-           japanesename: String,
-           level: Int,
-           material: Material,
-           durability: Short) =
+  def this(
+    category: MineStackObjectCategory,
+    objname: String,
+    japanesename: String,
+    level: Int,
+    material: Material,
+    durability: Short
+  ) =
     this(
       objname,
       Some(japanesename),
@@ -33,11 +37,24 @@ class MineStackObj(val mineStackObjName: String,
       category
     )
 
-  def this(objName: String, uiName: Option[String],
-           level: Int, material: Material, durability: Int,
-           nameLoreFlag: Boolean, gachaType: Int, stackType: MineStackObjectCategory) =
+  def this(
+    objName: String,
+    uiName: Option[String],
+    level: Int,
+    material: Material,
+    durability: Int,
+    nameLoreFlag: Boolean,
+    gachaType: Int,
+    stackType: MineStackObjectCategory
+  ) =
     this(
-      objName, uiName, level, new ItemStack(material, 1, durability.toShort), nameLoreFlag, gachaType, stackType
+      objName,
+      uiName,
+      level,
+      new ItemStack(material, 1, durability.toShort),
+      nameLoreFlag,
+      gachaType,
+      stackType
     )
 
   def material: Material = itemStack.getType
@@ -47,7 +64,7 @@ class MineStackObj(val mineStackObjName: String,
   override def equals(other: Any): Boolean = other match {
     case that: MineStackObj =>
       (that canEqual this) &&
-        mineStackObjName == that.mineStackObjName
+      mineStackObjName == that.mineStackObjName
     case _ => false
   }
 

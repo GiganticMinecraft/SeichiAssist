@@ -5,8 +5,8 @@ package com.github.unchama.seichiassist.domain.explevel
  *
  * `succ` をレベルをインクリメントする操作、 `l: Level`、 `e: ExpAmount` を任意に取るとき、
  *
- *  - `levelAt(expAt(l)) = l`
- *  - `expAt(levelAt(e)) <= e < expAt(succ(levelAt(e)))`
+ *   - `levelAt(expAt(l)) = l`
+ *   - `expAt(levelAt(e)) <= e < expAt(succ(levelAt(e)))`
  *
  * を満たす。
  */
