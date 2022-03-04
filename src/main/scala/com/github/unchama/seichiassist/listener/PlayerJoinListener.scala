@@ -7,14 +7,21 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
-import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{MebiusProperty, NormalMebius}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
+  MebiusProperty,
+  NormalMebius
+}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.event.player.{AsyncPlayerPreLoginEvent, PlayerChangedWorldEvent, PlayerJoinEvent}
+import org.bukkit.event.player.{
+  AsyncPlayerPreLoginEvent,
+  PlayerChangedWorldEvent,
+  PlayerJoinEvent
+}
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
@@ -98,11 +105,15 @@ class PlayerJoinListener extends Listener {
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
 
       /**
-       * ルール熟読をタイトルとチャットで迫る
-       * タイトルの表示時間は10秒
-       * サブタイトルと分ける理由はGUIサイズによって見切れる可能性があるため
+       * ルール熟読をタイトルとチャットで迫る タイトルの表示時間は10秒 サブタイトルと分ける理由はGUIサイズによって見切れる可能性があるため
        */
-      player.sendTitle(s"${YELLOW}ルールは確認されましたか？", s"${LIGHT_PURPLE}公式サイトで確認してください", 10, 20 * 10, 10)
+      player.sendTitle(
+        s"${YELLOW}ルールは確認されましたか？",
+        s"${LIGHT_PURPLE}公式サイトで確認してください",
+        10,
+        20 * 10,
+        10
+      )
       player.sendMessage(s"${YELLOW}ルール→ $YELLOW${UNDERLINE}https://www.seichi.network/rule")
 
       // 初見プレイヤーに木の棒、エリトラ、ピッケルを配布
