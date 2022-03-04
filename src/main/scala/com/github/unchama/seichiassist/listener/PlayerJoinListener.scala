@@ -104,14 +104,13 @@ class PlayerJoinListener extends Listener {
       )
       Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
 
-      /**
-       * ルール熟読をタイトルとチャットで迫る タイトルの表示時間は10秒 サブタイトルと分ける理由はGUIサイズによって見切れる可能性があるため
-       */
+      // ルール熟読をタイトルとチャットで迫る
+      // サブタイトルと分ける理由はGUIサイズによって見切れる可能性があるため
       player.sendTitle(
         s"${YELLOW}ルールは確認されましたか？",
         s"${LIGHT_PURPLE}公式サイトで確認してください",
         10,
-        20 * 10,
+        20 * 10, // タイトルの表示時間は10秒
         10
       )
       player.sendMessage(s"${YELLOW}ルール→ $YELLOW${UNDERLINE}https://www.seichi.network/rule")
