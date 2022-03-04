@@ -92,9 +92,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val command = s"select numofsorryforbug from $tableReference where uuid = '$uuid'"
       val rawMaximum =
         try {
-          gateway.executeQuery(command).recordIteration {
-            _.getInt("numofsorryforbug")
-          }.head
+          gateway
+            .executeQuery(command)
+            .recordIteration {
+              _.getInt("numofsorryforbug")
+            }
+            .head
         } catch {
           case e: Exception =>
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
