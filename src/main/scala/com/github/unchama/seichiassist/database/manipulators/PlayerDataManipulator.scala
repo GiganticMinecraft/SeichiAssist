@@ -402,9 +402,9 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   private def catchingDatabaseErrors[R](
-                                         targetName: String,
-                                         program: IO[Either[TargetedEffect[CommandSender], R]]
-                                       ): IO[Either[TargetedEffect[CommandSender], R]] = {
+    targetName: String,
+    program: IO[Either[TargetedEffect[CommandSender], R]]
+  ): IO[Either[TargetedEffect[CommandSender], R]] = {
     program.attempt.flatMap {
       case Left(error) =>
         IO {
