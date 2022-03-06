@@ -20,27 +20,23 @@ object RateLimiterRepositoryDefinitions {
 
   import scala.concurrent.duration._
 
-  def initialization[
-    G[_] : Sync: JavaTime : Clock
-  ](
-     implicit config: Configuration,
-     persistence: BuildAmountRateLimitPersistence[G]
-   ): SinglePhasedRepositoryInitialization[G, RateLimiter[G, BuildExpAmount]] = {
+  def initialization[G[_]: Sync: JavaTime: Clock](
+    implicit config: Configuration,
+    persistence: BuildAmountRateLimitPersistence[G]
+  ): SinglePhasedRepositoryInitialization[G, RateLimiter[G, BuildExpAmount]] = {
     val max = config.oneMinuteBuildExpLimit
     val span = 1.minute
 
     RefDictBackedRepositoryDefinition
       .usingUuidRefDictWithoutDefault(persistence)
       .initialization
-      .extendPreparation { (_, _) =>
-        loadedRecordOpt => {
+      .extendPreparation { (_, _) => loadedRecordOpt =>
+        {
           for {
             currentLocalTime <- JavaTime[G].getLocalDateTime(ZoneId.systemDefault())
             initialPermitCount = loadedRecordOpt.fold(max) { loadedRecord =>
               val duration = FiniteDuration(
-                java.time.Duration
-                  .between(loadedRecord.recordTime, currentLocalTime)
-                  .toNanos,
+                java.time.Duration.between(loadedRecord.recordTime, currentLocalTime).toNanos,
                 TimeUnit.NANOSECONDS
               )
               // NOTE: これはファイナライゼーションされたときのレートリミッターと
@@ -55,21 +51,23 @@ object RateLimiterRepositoryDefinitions {
                 loadedRecord.amount
               }
             }
-            rateLimiter <- FixedWindowRateLimiter.in[G, BuildExpAmount](max, span, Some(initialPermitCount))
+            rateLimiter <- FixedWindowRateLimiter
+              .in[G, BuildExpAmount](max, span, Some(initialPermitCount))
           } yield rateLimiter
         }
       }
   }
 
-  def finalization[
-    F[_] : Sync : JavaTime,
-    Player: HasUuid
-  ](implicit config: Configuration, persistence: BuildAmountRateLimitPersistence[F]): RepositoryFinalization[F, Player, RateLimiter[F, BuildExpAmount]] =
-    RepositoryFinalization.withoutAnyFinalization { case (p, rateLimiter) =>
-      for {
-        currentRecord <- rateLimiter.peekAvailablePermissions
-        persistenceRecord <- BuildAmountRateLimiterSnapshot.now(currentRecord)
-        _ <- persistence.write(HasUuid[Player].of(p), persistenceRecord)
-      } yield ()
+  def finalization[F[_]: Sync: JavaTime, Player: HasUuid](
+    implicit config: Configuration,
+    persistence: BuildAmountRateLimitPersistence[F]
+  ): RepositoryFinalization[F, Player, RateLimiter[F, BuildExpAmount]] =
+    RepositoryFinalization.withoutAnyFinalization {
+      case (p, rateLimiter) =>
+        for {
+          currentRecord <- rateLimiter.peekAvailablePermissions
+          persistenceRecord <- BuildAmountRateLimiterSnapshot.now(currentRecord)
+          _ <- persistence.write(HasUuid[Player].of(p), persistenceRecord)
+        } yield ()
     }
 }

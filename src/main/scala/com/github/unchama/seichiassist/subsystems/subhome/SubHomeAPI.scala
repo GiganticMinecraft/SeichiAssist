@@ -1,7 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.subhome
 
 import cats.Functor
-import com.github.unchama.seichiassist.subsystems.subhome.domain.{OperationResult, SubHome, SubHomeId, SubHomeLocation}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{
+  OperationResult,
+  SubHome,
+  SubHomeId,
+  SubHomeLocation
+}
 
 import java.util.UUID
 

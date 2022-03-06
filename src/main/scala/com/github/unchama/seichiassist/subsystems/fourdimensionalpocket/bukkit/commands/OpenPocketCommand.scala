@@ -19,19 +19,13 @@ import org.bukkit.inventory.Inventory
 
 import java.util.UUID
 
-class OpenPocketCommand[
-  F[_]
-  : Effect
-  : InteractInventory[*[_], Player, Inventory]
-](repository: KeyedDataRepository[Player, ReadOnlyRef[F, Inventory]],
-  persistence: RefDict[F, UUID, Inventory]) {
+class OpenPocketCommand[F[_]: Effect: InteractInventory[*[_], Player, Inventory]](
+  repository: KeyedDataRepository[Player, ReadOnlyRef[F, Inventory]],
+  persistence: RefDict[F, UUID, Inventory]
+) {
   private val descriptionPrintExecutor =
     new EchoExecutor(MessageEffect {
-      List(
-        s"$RED/openpocket [プレイヤー名]",
-        "対象プレイヤーの四次元ポケットを開きます。",
-        "編集結果はオンラインのプレイヤーにのみ反映されます。"
-      )
+      List(s"$RED/openpocket [プレイヤー名]", "対象プレイヤーの四次元ポケットを開きます。", "編集結果はオンラインのプレイヤーにのみ反映されます。")
     })
 
   import cats.effect.implicits._

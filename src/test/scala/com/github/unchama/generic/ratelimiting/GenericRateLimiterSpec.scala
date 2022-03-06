@@ -23,12 +23,14 @@ import scala.util.Random
  * Mix-inし、`newRandomRateLimiter` を各[[RateLimiter]]の実装でoverrideして利用されることを想定している。
  */
 trait GenericRateLimiterSpec
-  extends AnyWordSpecLike
-  with Matchers
-  with ConcurrentEffectTest
-  with MonixTestSchedulerTests {
+    extends AnyWordSpecLike
+    with Matchers
+    with ConcurrentEffectTest
+    with MonixTestSchedulerTests {
 
-  implicit private val monixScheduler: TestScheduler = TestScheduler(ExecutionModel.SynchronousExecution)
+  implicit private val monixScheduler: TestScheduler = TestScheduler(
+    ExecutionModel.SynchronousExecution
+  )
   implicit private val monixTimer: Timer[Task] = SchedulerEffect.timer(monixScheduler)
 
   type Natural = Int Refined NonNegative
@@ -48,20 +50,22 @@ trait GenericRateLimiterSpec
 
   /**
    * 新しい [[RateLimiter]] を
-   *  - `seed` をパラメータ生成のシード
-   *  - `monixTimer` をスケジューラ
+   *   - `seed` をパラメータ生成のシード
+   *   - `monixTimer` をスケジューラ
    *
    * として作成する。
    */
-  def newRandomRateLimiter(seed: Int)(implicit monixTimer: Timer[Task]): Task[RateLimiter[Task, Natural]]
+  def newRandomRateLimiter(seed: Int)(
+    implicit monixTimer: Timer[Task]
+  ): Task[RateLimiter[Task, Natural]]
 
   /**
    * [[RateLimiter.peekAvailablePermissions]] の呼び出し自体が、[[RateLimiter]]の動作に干渉しないことをテストする。
    *
    * このテスト項目は、より具体的には以下のような手続きを取る：
-   *  - レートリミッターを二つ作成し、片方で [[RateLimiter.peekAvailablePermissions]] を呼ぶ
-   *  - ランダムな秒数 (60秒以下) 時計の針を進める
-   *  - 二つのレートリミッターの [[RateLimiter]] を呼び、結果が等しいことを確認する
+   *   - レートリミッターを二つ作成し、片方で [[RateLimiter.peekAvailablePermissions]] を呼ぶ
+   *   - ランダムな秒数 (60秒以下) 時計の針を進める
+   *   - 二つのレートリミッターの [[RateLimiter]] を呼び、結果が等しいことを確認する
    */
   def keepPermitsEqual(): Unit = {
     import scala.concurrent.duration._

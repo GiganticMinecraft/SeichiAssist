@@ -4,15 +4,16 @@ import cats.effect.Sync
 
 import scala.util.Random
 
-class MebiusEnchantmentLevels private(val mapping: Map[MebiusEnchantment, Int]) {
+class MebiusEnchantmentLevels private (val mapping: Map[MebiusEnchantment, Int]) {
 
   import cats.implicits._
 
-  mapping.foreach { case m@(MebiusEnchantment(_, maxLevel, _), enchantmentLevel) =>
-    require(
-      1 <= enchantmentLevel && enchantmentLevel <= maxLevel,
-      s"$enchantmentLevel is in [1, $maxLevel] for $m"
-    )
+  mapping.foreach {
+    case m @ (MebiusEnchantment(_, maxLevel, _), enchantmentLevel) =>
+      require(
+        1 <= enchantmentLevel && enchantmentLevel <= maxLevel,
+        s"$enchantmentLevel is in [1, $maxLevel] for $m"
+      )
   }
 
   def of(enchantment: MebiusEnchantment): Int = mapping.getOrElse(enchantment, 0)
@@ -46,8 +47,9 @@ class MebiusEnchantmentLevels private(val mapping: Map[MebiusEnchantment, Int]) 
       .toSet
   }
 
-  def randomlyUpgradeAt[F[_]](mebiusLevel: MebiusLevel)
-                             (implicit F: Sync[F]): F[MebiusEnchantmentLevels] = {
+  def randomlyUpgradeAt[F[_]](
+    mebiusLevel: MebiusLevel
+  )(implicit F: Sync[F]): F[MebiusEnchantmentLevels] = {
     val upgradableEnchantments = upgradableEnchantmentsAt(mebiusLevel).toSeq
 
     F.delay {
@@ -58,19 +60,22 @@ class MebiusEnchantmentLevels private(val mapping: Map[MebiusEnchantment, Int]) 
   }
 
   def differenceFrom(another: MebiusEnchantmentLevels): Set[MebiusEnchantment] = {
-    this.mapping.keySet
-      .union(another.mapping.keySet)
-      .filter { e => this.of(e) != another.of(e) }
+    this.mapping.keySet.union(another.mapping.keySet).filter { e =>
+      this.of(e) != another.of(e)
+    }
   }
 }
 
 object MebiusEnchantmentLevels {
 
-  def apply(levelMapping: (MebiusEnchantment, Int)*) = new MebiusEnchantmentLevels(Map(levelMapping: _*))
+  def apply(levelMapping: (MebiusEnchantment, Int)*) = new MebiusEnchantmentLevels(
+    Map(levelMapping: _*)
+  )
 
   def fromUnsafeCounts(counter: MebiusEnchantment => Int): MebiusEnchantmentLevels = {
     new MebiusEnchantmentLevels(
-      MebiusEnchantment.values
+      MebiusEnchantment
+        .values
         .map { e => e -> counter(e) }
         .filter { case (e, l) => 1 <= l && l <= e.maxLevel }
         .toMap

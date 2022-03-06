@@ -9,9 +9,13 @@ trait TaskDiscreteEventually {
 
   case class DiscreteEventuallyConfig(trialCount: Int)
 
-  implicit val discreteEventuallyConfig: DiscreteEventuallyConfig = DiscreteEventuallyConfig(1000)
+  implicit val discreteEventuallyConfig: DiscreteEventuallyConfig = DiscreteEventuallyConfig(
+    1000
+  )
 
-  def discreteEventually[T](task: Task[T])(implicit config: DiscreteEventuallyConfig, pos: Position): Task[T] = {
+  def discreteEventually[T](
+    task: Task[T]
+  )(implicit config: DiscreteEventuallyConfig, pos: Position): Task[T] = {
     for {
       taskResult <- Monad[Task].tailRecM[Int, T](1) { attemptCount =>
         for {

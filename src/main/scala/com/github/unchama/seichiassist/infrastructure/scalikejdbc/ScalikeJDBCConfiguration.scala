@@ -1,14 +1,16 @@
 package com.github.unchama.seichiassist.infrastructure.scalikejdbc
 
-import scalikejdbc.{ConnectionPool, ConnectionPoolSettings, GlobalSettings, LoggingSQLAndTimeSettings}
+import scalikejdbc.{
+  ConnectionPool,
+  ConnectionPoolSettings,
+  GlobalSettings,
+  LoggingSQLAndTimeSettings
+}
 
 object ScalikeJDBCConfiguration {
 
-  val connectionPoolSettings: ConnectionPoolSettings = ConnectionPoolSettings(
-    initialSize = 5,
-    maxSize = 20,
-    connectionTimeoutMillis = 100000L
-  )
+  val connectionPoolSettings: ConnectionPoolSettings =
+    ConnectionPoolSettings(initialSize = 5, maxSize = 20, connectionTimeoutMillis = 100000L)
 
   val loggingSettings: LoggingSQLAndTimeSettings = LoggingSQLAndTimeSettings(
     enabled = true,

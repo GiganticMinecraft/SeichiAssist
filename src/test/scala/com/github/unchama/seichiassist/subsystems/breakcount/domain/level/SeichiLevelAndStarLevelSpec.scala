@@ -5,7 +5,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 class SeichiLevelAndStarLevelSpec
-  extends AnyWordSpec
+    extends AnyWordSpec
     with ScalaCheckPropertyChecks
     with Matchers {
 
@@ -18,7 +18,9 @@ class SeichiLevelAndStarLevelSpec
         starLevelTable.levelAt(levelTable.expAt(levelTable.maxLevel)) != SeichiStarLevel.zero
       }
       assert {
-        levelTable.expAt(levelTable.maxLevel) == starLevelTable.expAt(SeichiStarLevel.ofNonNegative(1))
+        levelTable.expAt(levelTable.maxLevel) == starLevelTable.expAt(
+          SeichiStarLevel.ofNonNegative(1)
+        )
       }
     }
   }

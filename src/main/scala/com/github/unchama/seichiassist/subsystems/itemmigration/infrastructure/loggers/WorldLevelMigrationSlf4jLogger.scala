@@ -6,10 +6,12 @@ import com.github.unchama.itemmigration.domain.{ItemMigrationLogger, ItemMigrati
 import org.slf4j.Logger
 
 class WorldLevelMigrationSlf4jLogger[F[_]](logger: Logger)(implicit val F: Sync[F])
-  extends ItemMigrationLogger[F, WorldLevelData[F]] {
+    extends ItemMigrationLogger[F, WorldLevelData[F]] {
 
-  override def logMigrationVersionsToBeApplied(versions: IndexedSeq[ItemMigrationVersionNumber],
-                                               target: WorldLevelData[F]): F[Unit] = {
+  override def logMigrationVersionsToBeApplied(
+    versions: IndexedSeq[ItemMigrationVersionNumber],
+    target: WorldLevelData[F]
+  ): F[Unit] = {
     val concatenatedVersionString = versions.map(_.versionString).mkString(", ")
 
     F.delay {

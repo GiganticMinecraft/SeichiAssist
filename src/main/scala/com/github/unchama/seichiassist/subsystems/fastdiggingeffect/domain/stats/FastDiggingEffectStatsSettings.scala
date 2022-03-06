@@ -4,8 +4,10 @@ sealed trait FastDiggingEffectStatsSettings {
 
   final lazy val nextValue: FastDiggingEffectStatsSettings =
     this match {
-      case FastDiggingEffectStatsSettings.AlwaysReceiveDetails => FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate
-      case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate => FastDiggingEffectStatsSettings.AlwaysReceiveDetails
+      case FastDiggingEffectStatsSettings.AlwaysReceiveDetails =>
+        FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate
+      case FastDiggingEffectStatsSettings.ReceiveTotalAmplifierOnUpdate =>
+        FastDiggingEffectStatsSettings.AlwaysReceiveDetails
     }
 
 }

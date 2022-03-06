@@ -7,10 +7,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class HasSuccessorSpec
-  extends AnyWordSpec
-    with ScalaCheckPropertyChecks
-    with Matchers {
+class HasSuccessorSpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers {
 
   import cats.implicits._
 
@@ -42,7 +39,7 @@ class HasSuccessorSpec
           assert {
             range.sliding(2).forall {
               case Seq(a, b) => a + 1 == b
-              case _ => true
+              case _         => true
             }
           }
         }
@@ -52,9 +49,7 @@ class HasSuccessorSpec
     "be sequence of elements between lower and upper inclusively" in {
       forAll { (lower: T, upper: T) =>
         assert {
-          testTInstance.closedRange(lower, upper).forall { a =>
-            lower <= a && a <= upper
-          }
+          testTInstance.closedRange(lower, upper).forall { a => lower <= a && a <= upper }
         }
       }
     }

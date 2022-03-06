@@ -7,8 +7,9 @@ import com.github.unchama.seichiassist.util.Util
 import org.bukkit.Bukkit
 
 object SyncNotifiable {
-  def apply[F[_] : Sync]: Notifiable[F] = (message: String) => Sync[F].delay {
-    Util.sendMessageToEveryoneIgnoringPreference(message)
-    Bukkit.getLogger.info(message)
-  }
+  def apply[F[_]: Sync]: Notifiable[F] = (message: String) =>
+    Sync[F].delay {
+      Util.sendMessageToEveryoneIgnoringPreference(message)
+      Bukkit.getLogger.info(message)
+    }
 }

@@ -18,10 +18,18 @@ class PlayerPickupItemListener extends Listener {
 
     if (player.getGameMode != GameMode.SURVIVAL) return
 
-    val playerData = playerMap(player.getUniqueId).ifNull(return)
-    val playerLevel = SeichiAssist.instance
-      .breakCountSystem.api.seichiAmountDataRepository(player)
-      .read.unsafeRunSync().levelCorrespondingToExp.level
+    val playerData = playerMap(player.getUniqueId).ifNull(
+      return
+    )
+    val playerLevel = SeichiAssist
+      .instance
+      .breakCountSystem
+      .api
+      .seichiAmountDataRepository(player)
+      .read
+      .unsafeRunSync()
+      .levelCorrespondingToExp
+      .level
 
     if (playerLevel < config.getMineStacklevel(1)) return
 

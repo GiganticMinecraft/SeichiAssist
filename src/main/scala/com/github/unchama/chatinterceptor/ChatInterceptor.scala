@@ -14,7 +14,7 @@ class ChatInterceptor(val scopes: List[ChatInterceptionScope]) extends Listener 
       .unsafeRunSync()
   }
 
-  @EventHandler(priority=EventPriority.LOWEST)
+  @EventHandler(priority = EventPriority.LOWEST)
   def onPlayerChat(event: AsyncPlayerChatEvent): Unit = {
     import cats.implicits._
 
@@ -24,7 +24,7 @@ class ChatInterceptor(val scopes: List[ChatInterceptionScope]) extends Listener 
       .unsafeRunSync()
       .find(_ == InterceptorResponse.Intercepted) match {
       case Some(_) => event.setCancelled(true)
-      case None =>
+      case None    =>
     }
   }
 }

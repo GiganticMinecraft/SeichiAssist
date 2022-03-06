@@ -6,17 +6,23 @@ import com.github.unchama.minecraft.objects.MinecraftBossBar
 import org.bukkit.Bukkit
 import org.bukkit.boss.{BarColor, BarFlag, BarStyle, BossBar}
 
-class BukkitBossBar[F[_]] private(instance: BossBar)(implicit F: Sync[F]) extends MinecraftBossBar[F] {
+class BukkitBossBar[F[_]] private (instance: BossBar)(implicit F: Sync[F])
+    extends MinecraftBossBar[F] {
   override type Player = org.bukkit.entity.Player
   override type Style = BarStyle
   override type Color = BarColor
   override type Flag = BarFlag
 
-  override val title: ReadWrite[F, String] = ReadWrite.liftUnsafe(instance.getTitle, instance.setTitle)
-  override val color: ReadWrite[F, BarColor] = ReadWrite.liftUnsafe(instance.getColor, instance.setColor)
-  override val style: ReadWrite[F, BarStyle] = ReadWrite.liftUnsafe(instance.getStyle, instance.setStyle)
-  override val progress: ReadWrite[F, Double] = ReadWrite.liftUnsafe(instance.getProgress, instance.setProgress)
-  override val visibility: ReadWrite[F, Boolean] = ReadWrite.liftUnsafe(instance.isVisible, instance.setVisible)
+  override val title: ReadWrite[F, String] =
+    ReadWrite.liftUnsafe(instance.getTitle, instance.setTitle)
+  override val color: ReadWrite[F, BarColor] =
+    ReadWrite.liftUnsafe(instance.getColor, instance.setColor)
+  override val style: ReadWrite[F, BarStyle] =
+    ReadWrite.liftUnsafe(instance.getStyle, instance.setStyle)
+  override val progress: ReadWrite[F, Double] =
+    ReadWrite.liftUnsafe(instance.getProgress, instance.setProgress)
+  override val visibility: ReadWrite[F, Boolean] =
+    ReadWrite.liftUnsafe(instance.isVisible, instance.setVisible)
 
   override val flags: FlagOperations = new FlagOperations {
     override def add(flag: BarFlag): F[Unit] = F.delay(instance.addFlag(flag))
@@ -40,9 +46,13 @@ class BukkitBossBar[F[_]] private(instance: BossBar)(implicit F: Sync[F]) extend
 
 object BukkitBossBar {
 
-  def apply[F[_] : Sync](title: String, color: BarColor, style: BarStyle): F[BukkitBossBar[F]] =
+  def apply[F[_]: Sync](title: String, color: BarColor, style: BarStyle): F[BukkitBossBar[F]] =
     in[F, F](title, color, style)
 
-  def in[G[_] : Sync, F[_] : Sync](title: String, color: BarColor, style: BarStyle): G[BukkitBossBar[F]] =
+  def in[G[_]: Sync, F[_]: Sync](
+    title: String,
+    color: BarColor,
+    style: BarStyle
+  ): G[BukkitBossBar[F]] =
     Sync[G].delay(new BukkitBossBar(Bukkit.getServer.createBossBar(title, color, style)))
 }

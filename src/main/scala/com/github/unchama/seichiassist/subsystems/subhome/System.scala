@@ -7,7 +7,11 @@ import com.github.unchama.seichiassist.SeichiAssist.Scopes.globalChatInterceptio
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.command.SubHomeCommand
 import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
-import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId, SubHomeLocation}
+import com.github.unchama.seichiassist.subsystems.subhome.domain.{
+  SubHome,
+  SubHomeId,
+  SubHomeLocation
+}
 import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.JdbcSubHomePersistence
 import org.bukkit.command.TabExecutor
 
@@ -18,17 +22,15 @@ trait System[F[_]] extends Subsystem[F] {
 }
 
 object System {
-  def wired[
-    F[_]
-    : OnMinecraftServerThread
-    : ConcurrentEffect
-    : NonServerThreadContextShift
-  ]: System[F] = {
+  def wired[F[_]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift]
+    : System[F] = {
     val persistence = new JdbcSubHomePersistence[F]()
 
     new System[F] {
       override implicit val api: SubHomeAPI[F] = new SubHomeAPI[F] {
-        override def upsertLocation(ownerUuid: UUID, id: SubHomeId)(location: SubHomeLocation): F[Unit] =
+        override def upsertLocation(ownerUuid: UUID, id: SubHomeId)(
+          location: SubHomeLocation
+        ): F[Unit] =
           persistence.upsertLocation(ownerUuid, id)(location)
         override def rename(ownerUuid: UUID, id: SubHomeId)(name: String): F[RenameResult] =
           persistence.rename(ownerUuid, id)(name)
@@ -38,9 +40,7 @@ object System {
           persistence.list(ownerUuid)
       }
       override val commands: Map[String, TabExecutor] =
-        Map(
-          "subhome" -> SubHomeCommand.executor
-        )
+        Map("subhome" -> SubHomeCommand.executor)
     }
   }
 }

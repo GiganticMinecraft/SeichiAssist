@@ -9,6 +9,6 @@ case object NotFlying extends PlayerFlyStatus
 object PlayerFlyStatus {
   def toDurationOption(status: PlayerFlyStatus): Option[RemainingFlyDuration] = status match {
     case Flying(remainingDuration) => Some(remainingDuration)
-    case NotFlying => None
+    case NotFlying                 => None
   }
 }

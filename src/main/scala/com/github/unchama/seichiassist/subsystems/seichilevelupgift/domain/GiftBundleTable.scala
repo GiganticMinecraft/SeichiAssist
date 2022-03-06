@@ -22,7 +22,8 @@ object GiftBundleTable {
       case 70 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 25)
       case 80 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 24)
       case 90 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 20)
-      case 100 => GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 21).combinePair(Gift.Item.Elsa, 1)
+      case 100 =>
+        GiftBundle.ofSinglePair(Gift.AutomaticGachaRun, 21).combinePair(Gift.Item.Elsa, 1)
       case _ => GiftBundle.empty
     }
 

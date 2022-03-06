@@ -5,9 +5,11 @@ import com.github.unchama.seichiassist.achievement.SeichiAchievement._
 
 object NicknameMapping {
 
-  case class NicknameCombination(first: Option[AchievementId],
-                                 second: Option[AchievementId] = None,
-                                 third: Option[AchievementId] = None)
+  case class NicknameCombination(
+    first: Option[AchievementId],
+    second: Option[AchievementId] = None,
+    third: Option[AchievementId] = None
+  )
 
   val getNicknameCombinationFor: SeichiAchievement => NicknameCombination = CachedFunction {
     case No_1001 => NicknameCombination(Some(1001))
@@ -37,7 +39,6 @@ object NicknameMapping {
     case No_2012 => NicknameCombination(Some(2012), Some(9905), Some(2012))
     case No_2013 => NicknameCombination(Some(2013), Some(9905), Some(2013))
     case No_2014 => NicknameCombination(Some(2014), None, Some(2014))
-
 
     case No_3001 => NicknameCombination(Some(3001))
     case No_3002 => NicknameCombination(Some(3002), Some(9905), Some(3002))

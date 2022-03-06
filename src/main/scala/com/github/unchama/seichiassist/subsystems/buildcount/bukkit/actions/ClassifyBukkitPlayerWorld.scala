@@ -4,7 +4,7 @@ import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.ClassifyPlayerWorld
 import org.bukkit.entity.Player
 
-class ClassifyBukkitPlayerWorld[F[_] : Sync] extends ClassifyPlayerWorld[F, Player] {
+class ClassifyBukkitPlayerWorld[F[_]: Sync] extends ClassifyPlayerWorld[F, Player] {
 
   import com.github.unchama.seichiassist.ManagedWorld._
 

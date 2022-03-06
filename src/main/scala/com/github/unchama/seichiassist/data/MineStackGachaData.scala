@@ -6,22 +6,26 @@ import org.bukkit.block.Banner
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BlockStateMeta
 
-class MineStackGachaData(val objName: String,
-                         _itemStack: ItemStack,
-                         val probability: Double,
-                         val level: Int) extends Cloneable {
+class MineStackGachaData(
+  val objName: String,
+  _itemStack: ItemStack,
+  val probability: Double,
+  val level: Int
+) extends Cloneable {
   val itemStack: ItemStack = _itemStack.clone()
 
   import scala.jdk.CollectionConverters._
 
   /**
-   * @deprecated use itemStack.amount
+   * @deprecated
+   *   use itemStack.amount
    */
   @Deprecated()
   val amount: Int = itemStack.getAmount
 
   /**
-   * @deprecated ここをなんのデータクラスだと思っているんだ
+   * @deprecated
+   *   ここをなんのデータクラスだと思っているんだ
    */
   @Deprecated()
   def itemStackEquals(another: ItemStack): Boolean = {
@@ -30,11 +34,21 @@ class MineStackGachaData(val objName: String,
     val lore = crt.getLore
     val anotherLore = ant.getLore
 
-    if (anotherLore.containsAll(lore) && (crt.getDisplayName.contains(another.getItemMeta.getDisplayName) || ant.getDisplayName.contains(this.itemStack.getItemMeta.getDisplayName))) {
-      //この時点で名前と内容が一致
-      //盾、バナー用の模様判定
+    if (
+      anotherLore.containsAll(lore) && (crt
+        .getDisplayName
+        .contains(another.getItemMeta.getDisplayName) || ant
+        .getDisplayName
+        .contains(this.itemStack.getItemMeta.getDisplayName))
+    ) {
+      // この時点で名前と内容が一致
+      // 盾、バナー用の模様判定
       val otherType = another.getType
-      if ((otherType == Material.SHIELD || otherType == Material.BANNER) && this.itemStack.getType == otherType) {
+      if (
+        (otherType == Material.SHIELD || otherType == Material.BANNER) && this
+          .itemStack
+          .getType == otherType
+      ) {
         val bs0 = ant.asInstanceOf[BlockStateMeta]
         val b0 = bs0.getBlockState.asInstanceOf[Banner]
         val p0 = b0.getPatterns
@@ -51,7 +65,8 @@ class MineStackGachaData(val objName: String,
   }
 
   /**
-   * @deprecated ここをなんのデータクラスだと思っているんだ
+   * @deprecated
+   *   ここをなんのデータクラスだと思っているんだ
    */
   @Deprecated()
   def appendOwnerLore(name: String): Unit = {
@@ -60,5 +75,6 @@ class MineStackGachaData(val objName: String,
     itemStack.getItemMeta.setLore(lore.:+(s"$RESET${DARK_GREEN}所有者：$name").asJava)
   }
 
-  def copy(): MineStackGachaData = new MineStackGachaData(objName, itemStack.clone(), probability, level)
+  def copy(): MineStackGachaData =
+    new MineStackGachaData(objName, itemStack.clone(), probability, level)
 }

@@ -8,10 +8,7 @@ case class ConfiguredActorSystemProvider(configurationPath: String) {
   lazy val classLoader: ClassLoader = getClass.getClassLoader
 
   def provide(): ActorSystem = {
-    akka.actor.ActorSystem(
-      name = "default",
-      classLoader = Some(classLoader)
-    )
+    akka.actor.ActorSystem(name = "default", classLoader = Some(classLoader))
   }
 
 }

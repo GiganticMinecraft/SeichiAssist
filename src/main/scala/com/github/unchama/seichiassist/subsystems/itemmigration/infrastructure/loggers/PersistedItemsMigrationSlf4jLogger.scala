@@ -6,10 +6,12 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.t
 import org.slf4j.Logger
 
 class PersistedItemsMigrationSlf4jLogger[F[_]](logger: Logger)(implicit F: Sync[F])
-  extends ItemMigrationLogger[F, SeichiAssistPersistedItems[F]] {
+    extends ItemMigrationLogger[F, SeichiAssistPersistedItems[F]] {
 
-  override def logMigrationVersionsToBeApplied(versions: IndexedSeq[ItemMigrationVersionNumber],
-                                               target: SeichiAssistPersistedItems[F]): F[Unit] = {
+  override def logMigrationVersionsToBeApplied(
+    versions: IndexedSeq[ItemMigrationVersionNumber],
+    target: SeichiAssistPersistedItems[F]
+  ): F[Unit] = {
     val concatenatedVersionString = versions.map(_.versionString).mkString(", ")
 
     F.delay {

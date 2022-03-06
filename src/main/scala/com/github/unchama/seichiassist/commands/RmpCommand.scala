@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.Parsers._
-import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, ParserResponse, ResponseEffectOrResult}
+import com.github.unchama.contextualexecutor.builder.{
+  ContextualExecutorBuilder,
+  ParserResponse,
+  ResponseEffectOrResult
+}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect
@@ -19,31 +23,33 @@ import scala.jdk.CollectionConverters._
 object RmpCommand {
   import ParserResponse._
 
-  private val printDescriptionExecutor = new EchoExecutor(
-    MessageEffect {
-      List(
-        s"$RED/rmp remove [world名] [日数]",
-        "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
-        "",
-        s"$RED/rmp removeAll [world名]",
-        "原則全てのRegionを削除します(整地ワールドのみ)",
-        "",
-        s"$RED/rmp list [world名] [日数]",
-        "全Ownerが[日数]間ログインしていないRegionを表示します"
-      )
-    }
-  )
-  private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder.beginConfiguration()
+  private val printDescriptionExecutor = new EchoExecutor(MessageEffect {
+    List(
+      s"$RED/rmp remove [world名] [日数]",
+      "全Ownerが[日数]間ログインしていないRegionを削除します(整地ワールドのみ)",
+      "",
+      s"$RED/rmp removeAll [world名]",
+      "原則全てのRegionを削除します(整地ワールドのみ)",
+      "",
+      s"$RED/rmp list [world名] [日数]",
+      "全Ownerが[日数]間ログインしていないRegionを表示します"
+    )
+  })
+  private val argsAndSenderConfiguredBuilder = ContextualExecutorBuilder
+    .beginConfiguration()
     .refineSenderWithError[ConsoleCommandSender](s"${GREEN}このコマンドはコンソールから実行してください")
-    .argumentsParsers(List(
-      arg => {
-        Bukkit.getWorld(arg) match {
-          case world: World => succeedWith(world)
-          case _ => failWith(s"存在しないワールドです: $arg")
-        }
-      },
-      nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください"))
-    ), onMissingArguments = printDescriptionExecutor)
+    .argumentsParsers(
+      List(
+        arg => {
+          Bukkit.getWorld(arg) match {
+            case world: World => succeedWith(world)
+            case _            => failWith(s"存在しないワールドです: $arg")
+          }
+        },
+        nonNegativeInteger(MessageEffect(s"$RED[日数]には非負整数を入力してください"))
+      ),
+      onMissingArguments = printDescriptionExecutor
+    )
   private val removeExecutor = argsAndSenderConfiguredBuilder
     .execution { context =>
       val world = context.args.parsed.head.asInstanceOf[World]
@@ -73,11 +79,9 @@ object RmpCommand {
           if (removalTargets.isEmpty) {
             MessageEffect(s"${GREEN}該当Regionは存在しません")
           } else {
-            targetedeffect.SequentialEffect(
-              removalTargets.map { target =>
-                MessageEffect(s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}")
-              }
-            )
+            targetedeffect.SequentialEffect(removalTargets.map { target =>
+              MessageEffect(s"$GREEN[rmp] List Region => ${world.getName}.${target.getId}")
+            })
           }
         }.merge
       }
@@ -85,7 +89,8 @@ object RmpCommand {
     .build()
 
   private def removeRegions(world: World, days: Int): IO[TargetedEffect[CommandSender]] = IO {
-    val isSeichiWorldWithWGRegionsOption = ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
+    val isSeichiWorldWithWGRegionsOption =
+      ManagedWorld.fromBukkitWorld(world).map(_.isSeichiWorldWithWGRegions)
 
     val commandName = if (days == -1) "removeAll" else "remove"
 
@@ -94,24 +99,29 @@ object RmpCommand {
       case Some(true) =>
         getOldRegionsIn(world, days).map { removalTargets =>
           removalTargets.foreach { target =>
-            ExternalPlugins.getWorldGuard.getRegionContainer.get(world).removeRegion(target.getId)
+            ExternalPlugins
+              .getWorldGuard
+              .getRegionContainer
+              .get(world)
+              .removeRegion(target.getId)
           }
 
           // メッセージ生成
           if (removalTargets.isEmpty) {
             MessageEffect(s"${GREEN}該当Regionは存在しません")
           } else {
-            targetedeffect.SequentialEffect(
-              removalTargets.map { target =>
-                MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
-              }
-            )
+            targetedeffect.SequentialEffect(removalTargets.map { target =>
+              MessageEffect(s"$YELLOW[rmp] Deleted Region => ${world.getName}.${target.getId}")
+            })
           }
         }.merge
     }
   }
 
-  private def getOldRegionsIn(world: World, daysThreshold: Int): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] = {
+  private def getOldRegionsIn(
+    world: World,
+    daysThreshold: Int
+  ): ResponseEffectOrResult[CommandSender, List[ProtectedRegion]] = {
     val databaseGateway = SeichiAssist.databaseGateway
 
     val leavers = databaseGateway.playerDataManipulator.selectLeaversUUIDs(daysThreshold)
@@ -121,21 +131,20 @@ object RmpCommand {
 
     val regions = ExternalPlugins.getWorldGuard.getRegionContainer.get(world).getRegions.asScala
 
-    val oldRegions = regions.values.filter { region =>
-      region.getId != "__global__" && region.getId != "spawn" &&
+    val oldRegions = regions
+      .values
+      .filter { region =>
+        region.getId != "__global__" && region.getId != "spawn" &&
         region.getOwners.getUniqueIds.asScala.forall(leavers.contains(_))
-    }.toList
+      }
+      .toList
 
     Right(oldRegions)
   }
 
   val executor: TabExecutor =
     BranchedExecutor(
-      Map(
-        "remove" -> removeExecutor,
-        "removeAll" -> removeAllExecutor,
-        "list" -> listExecutor
-      ),
+      Map("remove" -> removeExecutor, "removeAll" -> removeAllExecutor, "list" -> listExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor),
       whenBranchNotFound = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()

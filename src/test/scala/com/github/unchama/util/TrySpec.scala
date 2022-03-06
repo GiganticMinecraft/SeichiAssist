@@ -1,9 +1,9 @@
 package com.github.unchama.util
 
-import java.util.Optional
-
 import com.github.unchama.util.failable.{FailableAction, Try}
 import org.scalatest.wordspec.AnyWordSpec
+
+import java.util.Optional
 
 class TrySpec extends AnyWordSpec {
   "successful try" should {
