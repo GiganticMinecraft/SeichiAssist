@@ -146,9 +146,9 @@ object SecondPage extends Menu {
         iconItemStack = {
           val soundConfigurationState =
             if (currentSettings.shouldMuteSounds) {
-              s"$RESET${RED}全体通知音:消音する"
+              s"$RESET${RED}大当たり音:消音する"
             } else {
-              s"$RESET${GREEN}全体通知音:消音しない"
+              s"$RESET${GREEN}大当たり音:消音しない"
             }
 
           val messageConfigurationState =
@@ -159,7 +159,7 @@ object SecondPage extends Menu {
             }
 
           new IconItemStackBuilder(Material.JUKEBOX)
-            .title(s"$YELLOW$UNDERLINE${BOLD}全体通知切替")
+            .title(s"$YELLOW$UNDERLINE${BOLD}大当たり音切替")
             .lore(List(
               soundConfigurationState,
               messageConfigurationState,
@@ -176,7 +176,7 @@ object SecondPage extends Menu {
             DeferredEffect {
               playerData.settings.getBroadcastMutingSettings.map {
                 case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
-                case ReceiveMessageOnly => s"${RED}消音可能な全体通知音を消音します"
+                case ReceiveMessageOnly => s"${RED}消音可能な大当たり音を消音します"
                 case MuteMessageAndSound => s"${RED}非表示可能な全体メッセージを非表示にします"
               }.map(MessageEffect(_))
             }
