@@ -16,11 +16,9 @@ trait System[F[_], G[_], H[_]] extends Subsystem[H] {
 }
 
 object System {
-  def wired[
-    F[_] : ConcurrentEffect,
-    G[_] : SyncEffect : ContextCoercion[*[_], F],
-    H[_]
-  ](implicit effectEnvironment: EffectEnvironment): F[System[F, G, H]] = {
+  def wired[F[_]: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[*[_], F], H[_]](
+    implicit effectEnvironment: EffectEnvironment
+  ): F[System[F, G, H]] = {
     import cats.implicits._
 
     for {
@@ -29,9 +27,7 @@ object System {
       implicit val scope: ResourceScope[F, G, ThrownExpBottle] = managedExpBottleScope
 
       new System[F, G, H] {
-        override val listeners: Seq[Listener] = Seq(
-          new ExpBottleStackUsageController[F, G]()
-        )
+        override val listeners: Seq[Listener] = Seq(new ExpBottleStackUsageController[F, G]())
         override val managedBottleScope: ResourceScope[F, G, ThrownExpBottle] = scope
       }
     }

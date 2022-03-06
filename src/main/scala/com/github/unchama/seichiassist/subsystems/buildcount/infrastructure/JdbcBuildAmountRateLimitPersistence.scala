@@ -9,8 +9,10 @@ import scalikejdbc._
 
 import java.util.UUID
 
-class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](implicit SyncContext: Sync[SyncContext], config: Configuration)
-  extends BuildAmountRateLimitPersistence[SyncContext] {
+class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](
+  implicit SyncContext: Sync[SyncContext],
+  config: Configuration
+) extends BuildAmountRateLimitPersistence[SyncContext] {
 
   override def read(key: UUID): SyncContext[Option[BuildAmountRateLimiterSnapshot]] =
     SyncContext.delay {
@@ -23,7 +25,8 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](implicit SyncContext: 
 
             BuildAmountRateLimiterSnapshot(exp, ldt)
           }
-          .first().apply()
+          .first()
+          .apply()
       }
     }
 
@@ -31,13 +34,13 @@ class JdbcBuildAmountRateLimitPersistence[SyncContext[_]](implicit SyncContext: 
     SyncContext.delay {
       DB.localTx { implicit session =>
         sql"""
-            |insert into build_count_rate_limit values (${key.toString}, ${value.amount.toPlainString}, ${value.recordTime})
-            |  on duplicate key update
-            |    available_permission = ${value.amount.toPlainString},
-            |    record_date = ${value.recordTime}
-            |"""
-          .stripMargin
-          .update().apply()
+             |insert into build_count_rate_limit values (${key.toString}, ${value
+              .amount
+              .toPlainString}, ${value.recordTime})
+             |  on duplicate key update
+             |    available_permission = ${value.amount.toPlainString},
+             |    record_date = ${value.recordTime}
+             |""".stripMargin.update().apply()
       }
     }
 }

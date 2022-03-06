@@ -20,39 +20,39 @@ object VotingFairyListener {
     val uuid = p.getUniqueId
     val playerdata = playermap.apply(uuid)
 
-    //召喚した時間を取り出す
-    playerdata.votingFairyStartTime =
-      new GregorianCalendar(
-        Calendar.getInstance.get(Calendar.YEAR),
-        Calendar.getInstance.get(Calendar.MONTH),
-        Calendar.getInstance.get(Calendar.DATE),
-        Calendar.getInstance.get(Calendar.HOUR_OF_DAY),
-        Calendar.getInstance.get(Calendar.MINUTE)
-      )
+    // 召喚した時間を取り出す
+    playerdata.votingFairyStartTime = new GregorianCalendar(
+      Calendar.getInstance.get(Calendar.YEAR),
+      Calendar.getInstance.get(Calendar.MONTH),
+      Calendar.getInstance.get(Calendar.DATE),
+      Calendar.getInstance.get(Calendar.HOUR_OF_DAY),
+      Calendar.getInstance.get(Calendar.MINUTE)
+    )
 
     var min = Calendar.getInstance.get(Calendar.MINUTE) + 1
     var hour = Calendar.getInstance.get(Calendar.HOUR_OF_DAY)
     min = if ((playerdata.toggleVotingFairy % 2) != 0) min + 30 else min
-    hour = if (playerdata.toggleVotingFairy == 2) hour + 1
-    else if (playerdata.toggleVotingFairy == 3) hour + 1
-    else if (playerdata.toggleVotingFairy == 4) hour + 2
-    else hour
+    hour =
+      if (playerdata.toggleVotingFairy == 2) hour + 1
+      else if (playerdata.toggleVotingFairy == 3) hour + 1
+      else if (playerdata.toggleVotingFairy == 4) hour + 2
+      else hour
 
-    playerdata.votingFairyEndTime =
-      new GregorianCalendar(
-        Calendar.getInstance.get(Calendar.YEAR),
-        Calendar.getInstance.get(Calendar.MONTH),
-        Calendar.getInstance.get(Calendar.DATE),
-        hour, min
-      )
+    playerdata.votingFairyEndTime = new GregorianCalendar(
+      Calendar.getInstance.get(Calendar.YEAR),
+      Calendar.getInstance.get(Calendar.MONTH),
+      Calendar.getInstance.get(Calendar.DATE),
+      hour,
+      min
+    )
 
-    //投票ptを減らす
+    // 投票ptを減らす
     playerdata.effectPoint_$eq(playerdata.effectPoint - playerdata.toggleVotingFairy * 2)
 
-    //フラグ
+    // フラグ
     playerdata.usingVotingFairy = true
 
-    //マナ回復量最大値の決定
+    // マナ回復量最大値の決定
     val n = manaApi.readManaAmount(p).unsafeRunSync().cap.value
     playerdata.VotingFairyRecoveryValue =
       ((n / 10 - n / 30 + new Random().nextInt((n / 20).toInt)) / 2.9).toInt + 200
@@ -61,19 +61,28 @@ object VotingFairyListener {
     p.sendMessage(s"$RESET$YELLOW${BOLD}この子は1分間に約${playerdata.VotingFairyRecoveryValue}マナ")
     p.sendMessage(s"$RESET$YELLOW${BOLD}回復させる力を持っているようです。")
 
-    //メッセージ
+    // メッセージ
 
     val morning = List(
-      "おはよ！[str1]", "ヤッホー[str1]！", "ふわぁ。。。[str1]の朝は早いね。",
-      "うーん、今日も一日頑張ろ！", "今日は整地日和だね！[str1]！"
+      "おはよ！[str1]",
+      "ヤッホー[str1]！",
+      "ふわぁ。。。[str1]の朝は早いね。",
+      "うーん、今日も一日頑張ろ！",
+      "今日は整地日和だね！[str1]！"
     )
     val day = List(
-      "やあ！[str1]", "ヤッホー[str1]！", "あっ、[str1]じゃん。丁度お腹空いてたんだ！",
-      "この匂い…[str1]ってがちゃりんごいっぱい持ってる…?", "今日のおやつはがちゃりんごいっぱいだ！"
+      "やあ！[str1]",
+      "ヤッホー[str1]！",
+      "あっ、[str1]じゃん。丁度お腹空いてたんだ！",
+      "この匂い…[str1]ってがちゃりんごいっぱい持ってる…?",
+      "今日のおやつはがちゃりんごいっぱいだ！"
     )
     val night = List(
-      "やあ！[str1]", "ヤッホー[str1]！", "ふわぁ。。。[str1]は夜も元気だね。",
-      "もう寝ようと思ってたのにー。[str1]はしょうがないなぁ", "こんな時間に呼ぶなんて…りんごははずんでもらうよ？"
+      "やあ！[str1]",
+      "ヤッホー[str1]！",
+      "ふわぁ。。。[str1]は夜も元気だね。",
+      "もう寝ようと思ってたのにー。[str1]はしょうがないなぁ",
+      "こんな時間に呼ぶなんて…りんごははずんでもらうよ？"
     )
 
     if (Util.getTimeZone(playerdata.votingFairyStartTime) == "morning") {
@@ -97,31 +106,36 @@ object VotingFairyListener {
     val oldManaAmount = manaApi.readManaAmount(player).unsafeRunSync()
 
     if (oldManaAmount.isFull) {
-      //マナが最大だった場合はメッセージを送信して終わり
+      // マナが最大だった場合はメッセージを送信して終わり
       val msg = List(
-        "整地しないのー？", "たくさん働いて、たくさんりんごを食べようね！",
-        "僕はいつか大きながちゃりんごを食べ尽して見せるっ！", "ちょっと食べ疲れちゃった",
+        "整地しないのー？",
+        "たくさん働いて、たくさんりんごを食べようね！",
+        "僕はいつか大きながちゃりんごを食べ尽して見せるっ！",
+        "ちょっと食べ疲れちゃった",
         "[str1]はどのりんごが好き？僕はがちゃりんご！",
         "動いてお腹を空かしていっぱい食べるぞー！"
       )
       VotingFairyTask.speak(player, getMessage(msg, player.getName), playerdata.toggleVFSound)
     } else {
       val playerLevel =
-        SeichiAssist.instance
-          .breakCountSystem.api
+        SeichiAssist
+          .instance
+          .breakCountSystem
+          .api
           .seichiAmountDataRepository(player)
-          .read.unsafeRunSync()
+          .read
+          .unsafeRunSync()
           .levelCorrespondingToExp
 
-      var n = playerdata.VotingFairyRecoveryValue //実際のマナ回復量
-      var m = getGiveAppleValue(playerLevel) //りんご消費量
+      var n = playerdata.VotingFairyRecoveryValue // 実際のマナ回復量
+      var m = getGiveAppleValue(playerLevel) // りんご消費量
 
-      //連続投票によってりんご消費量を抑える
+      // 連続投票によってりんご消費量を抑える
       if (playerdata.ChainVote >= 30) m /= 2
       else if (playerdata.ChainVote >= 10) m = (m / 1.5).toInt
       else if (playerdata.ChainVote >= 3) m = (m / 1.25).toInt
 
-      //トグルで数値変更
+      // トグルで数値変更
       if (playerdata.toggleGiveApple == 2)
         if (oldManaAmount.ratioToCap.exists(_ >= 0.75)) {
           n /= 2
@@ -137,18 +151,19 @@ object VotingFairyListener {
         n /= 4
         m = 0
       } else {
-        //ちょっとつまみ食いする
+        // ちょっとつまみ食いする
         if (m >= 10) m += new Random().nextInt(m / 10)
       }
 
-      //りんご所持数で値変更
+      // りんご所持数で値変更
       val gachaimoObject = Util.findMineStackObjectByName("gachaimo").get
       val l = playerdata.minestack.getStackedAmountOf(gachaimoObject)
       if (m > l) {
         if (l == 0) {
           n /= 2
           if (playerdata.toggleGiveApple == 1) n /= 2
-          if (playerdata.toggleGiveApple == 2 && oldManaAmount.ratioToCap.exists(_ < 0.75)) n /= 2
+          if (playerdata.toggleGiveApple == 2 && oldManaAmount.ratioToCap.exists(_ < 0.75))
+            n /= 2
           player.sendMessage(s"$RESET$YELLOW${BOLD}MineStackにがちゃりんごがないようです。。。")
         } else {
           val M = m
@@ -159,26 +174,27 @@ object VotingFairyListener {
         m = l.toInt
       }
 
-      //回復量に若干乱数をつける
+      // 回復量に若干乱数をつける
       n = (n - n / 100) + Random.nextInt(n / 50)
 
-      //マナ回復
+      // マナ回復
       manaApi.manaAmount(player).restoreAbsolute(ManaAmount(n)).unsafeRunSync()
 
-      //りんごを減らす
-      playerdata.minestack.subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo").get, m)
+      // りんごを減らす
+      playerdata
+        .minestack
+        .subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo").get, m)
 
-      //減ったりんごの数をplayerdataに加算
+      // 減ったりんごの数をplayerdataに加算
       playerdata.p_apple += m
 
-      val yes = List(
-        "(´～｀)ﾓｸﾞﾓｸﾞ…", "がちゃりんごって美味しいよね！",
-        "あぁ！幸せ！", "[str1]のりんごはおいしいなぁ",
-        "いつもりんごをありがとう！"
-      )
+      val yes =
+        List("(´～｀)ﾓｸﾞﾓｸﾞ…", "がちゃりんごって美味しいよね！", "あぁ！幸せ！", "[str1]のりんごはおいしいなぁ", "いつもりんごをありがとう！")
       val no = List(
-        "お腹空いたなぁー。", "がちゃりんごがっ！食べたいっ！",
-        "(´；ω；`)ｳｩｩ ﾋﾓｼﾞｲ...", "＠うんちゃま [str1]が意地悪するんだっ！",
+        "お腹空いたなぁー。",
+        "がちゃりんごがっ！食べたいっ！",
+        "(´；ω；`)ｳｩｩ ﾋﾓｼﾞｲ...",
+        "＠うんちゃま [str1]が意地悪するんだっ！",
         "うわーん！お腹空いたよー！"
       )
 

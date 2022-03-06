@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
@@ -29,31 +29,36 @@ import org.bukkit.inventory.ItemStack
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
-class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
-                               ioOnMainThread: OnMinecraftServerThread[IO],
-                               manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
+class PlayerBlockBreakListener(
+  implicit effectEnvironment: EffectEnvironment,
+  ioOnMainThread: OnMinecraftServerThread[IO],
+  manaApi: ManaApi[IO, SyncIO, Player]
+) extends Listener {
   private val plugin = SeichiAssist.instance
 
   import cats.implicits._
   import plugin.activeSkillAvailability
 
-  //アクティブスキルの実行
+  // アクティブスキルの実行
   @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
   def onPlayerActiveSkillEvent(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
 
-    val block = MaterialSets.refineBlock(
-      event.getBlock,
-      MaterialSets.materials
-    ).getOrElse(return)
+    val block = MaterialSets
+      .refineBlock(event.getBlock, MaterialSets.materials)
+      .getOrElse(
+        return
+      )
 
-    //重力値によるキャンセル判定(スキル判定より先に判定させること)
+    // 重力値によるキャンセル判定(スキル判定より先に判定させること)
     val gravity = BreakUtil.getGravity(player, block, isAssault = false)
 
-    if (!MaterialSets.gravityMaterials.contains(block.getType) &&
-      !MaterialSets.cancelledMaterials.contains(block.getType) && gravity > 15) {
+    if (
+      !MaterialSets.gravityMaterials.contains(block.getType) &&
+      !MaterialSets.cancelledMaterials.contains(block.getType) && gravity > 15
+    ) {
 
-      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_FALL, 0.0F, -1.0F)
+      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_FALL, 0.0f, -1.0f)
       player.sendMessage(s"${RED}整地ワールドでは必ず上から掘ってください。")
       event.setCancelled(true)
       return
@@ -61,68 +66,72 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
 
     if (!player.getWorld.isSeichiSkillAllowed) return
 
-    //破壊不可能ブロックの時処理を終了
+    // 破壊不可能ブロックの時処理を終了
     if (!BreakUtil.canBreak(player, block)) {
       event.setCancelled(true)
       return
     }
 
-    //実際に使用するツール
-    val tool: BreakTool = MaterialSets.refineItemStack(
-      player.getInventory.getItemInMainHand,
-      MaterialSets.breakToolMaterials
-    ).getOrElse(return)
+    // 実際に使用するツール
+    val tool: BreakTool = MaterialSets
+      .refineItemStack(player.getInventory.getItemInMainHand, MaterialSets.breakToolMaterials)
+      .getOrElse(
+        return
+      )
 
     // 耐久値がマイナスかつ耐久無限ツールでない時処理を終了
-    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable) return
+    if (tool.getDurability > tool.getType.getMaxDurability && !tool.getItemMeta.isUnbreakable)
+      return
 
     // もしサバイバルでなければ、またはフライ中なら終了
     if (player.getGameMode != GameMode.SURVIVAL || player.isFlying) return
 
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val skillState = playerData.skillState.get.unsafeRunSync()
-    val playerLevel = SeichiAssist.instance
-      .breakCountSystem.api
-      .seichiAmountDataRepository(player).read
-      .unsafeRunSync()
-      .levelCorrespondingToExp.level
 
     if (!player.getWorld.isSeichiSkillAllowed) return
 
-    //クールダウンタイム中は処理を終了
+    // クールダウンタイム中は処理を終了
     if (!activeSkillAvailability(player).get.unsafeRunSync()) {
-      //SEを再生
+      // SEを再生
       player.playSound(player.getLocation, Sound.BLOCK_DISPENSER_FAIL, 0.5f, 1)
       return
     }
 
     // 追加マナ獲得
-    manaApi.manaAmount(player).restoreAbsolute(ManaAmount(BreakUtil.calcManaDrop(player))).unsafeRunSync()
+    manaApi
+      .manaAmount(player)
+      .restoreAbsolute(ManaAmount(BreakUtil.calcManaDrop(player)))
+      .unsafeRunSync()
 
-    val selectedSkill = skillState.activeSkill.getOrElse(return)
+    val selectedSkill = skillState
+      .activeSkill
+      .getOrElse(
+        return
+      )
 
     if (!selectedSkill.range.isInstanceOf[MultiArea] || skillState.usageMode == Disabled) return
 
     event.setCancelled(true)
 
     {
-      //プレイヤーの足のy座標を取得
+      // プレイヤーの足のy座標を取得
       val playerLocY = player.getLocation.getBlockY - 1
-      val centerOfBlock = block.getLocation.add(0.5, 0.5, 0.5)
 
       val skillArea = BreakArea(selectedSkill, skillState.usageMode)
       val breakAreaList = skillArea.makeBreakArea(player).unsafeRunSync()
 
-      val isMultiTypeBreakingSkillEnabled = BreakUtil.multiplyBreakValidlyEnabled(player).unsafeRunSync()
+      val isMultiTypeBreakingSkillEnabled =
+        BreakUtil.performsMultipleIDBlockBreakWhenUsingSkills(player).unsafeRunSync()
 
       val totalBreakRangeVolume = {
         val breakLength = skillArea.breakLength
         breakLength.x * breakLength.y * breakLength.z * skillArea.breakNum
       }
 
-      //エフェクト用に壊されるブロック全てのリストデータ
+      // エフェクト用に壊されるブロック全てのリストデータ
       val multiBreakList = new ArrayBuffer[Set[BlockBreakableBySkill]]
-      //壊される溶岩の全てのリストデータ
+      // 壊される溶岩の全てのリストデータ
       val multiLavaList = new ArrayBuffer[Set[Block]]
       // 全ての耐久消費量
       var toolDamageToSet = tool.getDurability.toInt
@@ -130,7 +139,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
       // 消費が予約されたマナ
       val reservedMana = new ArrayBuffer[ManaAmount]
 
-      //繰り返し回数だけ繰り返す
+      // 繰り返し回数だけ繰り返す
       val b = new Breaks
       b.breakable {
         breakAreaList.foreach { breakArea =>
@@ -141,10 +150,13 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
               .searchForBlocksBreakableWithSkill(player, breakArea.gridPoints(), block)
               .unsafeRunSync()
               .filterSolids(targetBlock =>
-                isMultiTypeBreakingSkillEnabled || BlockSearching.multiTypeBreakingFilterPredicate(block)(targetBlock)
+                isMultiTypeBreakingSkillEnabled || BlockSearching
+                  .multiTypeBreakingFilterPredicate(block)(targetBlock)
               )
               .filterAll(targetBlock =>
-                player.isSneaking || targetBlock.getLocation.getBlockY > playerLocY || targetBlock == block
+                player.isSneaking || targetBlock
+                  .getLocation
+                  .getBlockY > playerLocY || targetBlock == block
               )
 
           // このチャンクで消費されるマナ
@@ -153,18 +165,24 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
           }
 
           // マナを消費する
-          manaApi.manaAmount(player).tryAcquire(manaToConsumeOnThisChunk).unsafeRunSync() match {
+          manaApi
+            .manaAmount(player)
+            .tryAcquire(manaToConsumeOnThisChunk)
+            .unsafeRunSync() match {
             case Some(value) => reservedMana.addOne(value)
-            case None => b.break()
+            case None        => b.break()
           }
 
-          //減る耐久値の計算(１マス溶岩を破壊するのにはブロック１０個分の耐久が必要)
+          // 減る耐久値の計算(１マス溶岩を破壊するのにはブロック１０個分の耐久が必要)
           toolDamageToSet += BreakUtil.calcDurability(
-            tool.getEnchantmentLevel(Enchantment.DURABILITY), breakBlocks.size + 10 * lavaBlocks.size
+            tool.getEnchantmentLevel(Enchantment.DURABILITY),
+            breakBlocks.size + 10 * lavaBlocks.size
           )
 
-          //実際に耐久値を減らせるか判定
-          if (tool.getType.getMaxDurability <= toolDamageToSet && !tool.getItemMeta.isUnbreakable)
+          // 実際に耐久値を減らせるか判定
+          if (
+            tool.getType.getMaxDurability <= toolDamageToSet && !tool.getItemMeta.isUnbreakable
+          )
             b.break()
 
           multiBreakList.addOne(breakBlocks.toSet)
@@ -181,40 +199,59 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
         import cats.implicits._
         import com.github.unchama.concurrent.syntax._
         import com.github.unchama.generic.ContextCoercion._
-        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, cachedThreadPool}
+        import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+          asyncShift,
+          cachedThreadPool
+        }
 
         val effectPrograms = for {
           ((blocks, lavas), chunkIndex) <- multiBreakList.zip(multiLavaList).zipWithIndex
-          blockChunk = BukkitResources.vanishingBlockSetResource[IO, BlockBreakableBySkill](blocks)
+          blockChunk = BukkitResources.vanishingBlockSetResource[IO, BlockBreakableBySkill](
+            blocks
+          )
         } yield {
-          SeichiAssist.instance.lockedBlockChunkScope.useTracked(blockChunk) { blocks =>
-            for {
-              _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
-              _ <- ioOnMainThread.runAction(SyncIO {
-                lavas.foreach(_.setType(Material.AIR))
-              })
-              _ <- playerData.skillEffectState.selection.runBreakEffect(
-                player, selectedSkill, tool, blocks,
-                breakAreaList(chunkIndex), block.getLocation.add(0.5, 0.5, 0.5)
-              )
-            } yield ()
-          }.start(asyncShift)
+          SeichiAssist
+            .instance
+            .lockedBlockChunkScope
+            .useTracked(blockChunk) { blocks =>
+              for {
+                _ <- IO.sleep((chunkIndex * 4).ticks)(IO.timer(cachedThreadPool))
+                _ <- ioOnMainThread.runAction(SyncIO {
+                  lavas.foreach(_.setType(Material.AIR))
+                })
+                _ <- playerData
+                  .skillEffectState
+                  .selection
+                  .runBreakEffect(
+                    player,
+                    selectedSkill,
+                    tool,
+                    blocks,
+                    breakAreaList(chunkIndex),
+                    block.getLocation.add(0.5, 0.5, 0.5)
+                  )
+              } yield ()
+            }
+            .start(asyncShift)
         }
 
-        //壊したブロック数に応じてクールダウンを発生させる
+        // 壊したブロック数に応じてクールダウンを発生させる
         val availabilityFlagManipulation = {
           val brokenBlockNum = multiBreakList.map(_.size).sum
           val coolDownTicks =
-            (selectedSkill.maxCoolDownTicks.getOrElse(0).toDouble * brokenBlockNum / totalBreakRangeVolume)
-              .ceil
-              .toInt
+            (selectedSkill
+              .maxCoolDownTicks
+              .getOrElse(0)
+              .toDouble * brokenBlockNum / totalBreakRangeVolume).ceil.toInt
 
           val reference = SeichiAssist.instance.activeSkillAvailability(player)
 
           if (coolDownTicks != 0) {
             for {
               _ <- reference.set(false).coerceTo[IO]
-              _ <- IO.timer(PluginExecutionContexts.sleepAndRoutineContext).sleep(coolDownTicks.ticks)
+              _ <- IO
+                .timer(PluginExecutionContexts.sleepAndRoutineContext)
+                .sleep(coolDownTicks.ticks)
               _ <- reference.set(true).coerceTo[IO]
               _ <- FocusedSoundEffect(Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 0.1f).run(player)
             } yield ()
@@ -244,24 +281,25 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
   def onPlayerBreakBlockFinally(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
     val block = event.getBlock
-    val amount =
-      SeichiExpAmount.ofNonNegative {
-        BreakUtil.blockCountWeight(event.getPlayer.getWorld) * BreakUtil.totalBreakCount(Seq(block.getType))
-      }
+    import PluginExecutionContexts.timer
+    val amount = SeichiExpAmount.ofNonNegative {
+      BreakUtil
+        .blockCountWeight[IO](event.getPlayer.getWorld)
+        .map(multiplier => BreakUtil.totalBreakCount(Seq(block.getType)) * multiplier)
+        .unsafeRunSync()
+    }
 
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
-      SeichiAssist.instance
-        .breakCountSystem.api
-        .incrementSeichiExp.of(player, amount)
-        .toIO
+      SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
   }
 
   /**
    * y5ハーフブロック破壊抑制
    *
-   * @param event BlockBreakEvent
+   * @param event
+   *   BlockBreakEvent
    */
   @EventHandler(priority = EventPriority.LOWEST)
   @SuppressWarnings(Array("deprecation"))
@@ -270,7 +308,7 @@ class PlayerBlockBreakListener(implicit effectEnvironment: EffectEnvironment,
     val b = event.getBlock
     val world = p.getWorld
     val data = SeichiAssist.playermap.apply(p.getUniqueId)
-    //そもそも自分の保護じゃなきゃ処理かけない
+    // そもそも自分の保護じゃなきゃ処理かけない
     if (!ExternalPlugins.getWorldGuard.canBuild(p, b.getLocation)) return
     if ((b.getType eq Material.DOUBLE_STEP) && b.getData == 0) {
       b.setType(Material.STEP)

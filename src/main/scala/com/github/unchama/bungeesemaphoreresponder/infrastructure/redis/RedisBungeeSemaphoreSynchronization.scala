@@ -5,13 +5,17 @@ import cats.effect.{ContextShift, Effect, IO}
 import com.github.unchama.bungeesemaphoreresponder.Configuration
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerName
 import com.github.unchama.bungeesemaphoreresponder.domain.actions.BungeeSemaphoreSynchronization
-import com.github.unchama.bungeesemaphoreresponder.infrastructure.redis.SignalFormat.{BungeeSemaphoreMessage, DataSaveFailed, ReleaseDataLock}
+import com.github.unchama.bungeesemaphoreresponder.infrastructure.redis.SignalFormat.{
+  BungeeSemaphoreMessage,
+  DataSaveFailed,
+  ReleaseDataLock
+}
 
-class RedisBungeeSemaphoreSynchronization[F[_] : Effect](implicit
-                                                         publishingContext: ContextShift[IO],
-                                                         configuration: Configuration,
-                                                         actorSystem: ActorSystem)
-  extends BungeeSemaphoreSynchronization[F[Unit], PlayerName] {
+class RedisBungeeSemaphoreSynchronization[F[_]: Effect](
+  implicit publishingContext: ContextShift[IO],
+  configuration: Configuration,
+  actorSystem: ActorSystem
+) extends BungeeSemaphoreSynchronization[F[Unit], PlayerName] {
 
   private val client = ConfiguredRedisClient()
 
@@ -32,8 +36,12 @@ class RedisBungeeSemaphoreSynchronization[F[_] : Effect](implicit
     }
   }
 
-  override def confirmSaveCompletionOf(player: PlayerName): Action = sendMessage(ReleaseDataLock(player))
+  override def confirmSaveCompletionOf(player: PlayerName): Action = sendMessage(
+    ReleaseDataLock(player)
+  )
 
-  override def notifySaveFailureOf(player: PlayerName): Action = sendMessage(DataSaveFailed(player))
+  override def notifySaveFailureOf(player: PlayerName): Action = sendMessage(
+    DataSaveFailed(player)
+  )
 
 }

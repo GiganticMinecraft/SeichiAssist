@@ -25,22 +25,23 @@ import org.bukkit.plugin.java.JavaPlugin
 
 import java.util.UUID
 
-class System[F[_]](override val listeners: Seq[Listener],
-                   override val commands: Map[String, TabExecutor]) extends Subsystem[F] {
+class System[F[_]](
+  override val listeners: Seq[Listener],
+  override val commands: Map[String, TabExecutor]
+) extends Subsystem[F] {
 
-  def api[G[_] : Clock : Functor]: SeasonalEventsAPI[G] = SeasonalEventsAPI.withF[G]
+  def api[G[_]: Clock: Functor]: SeasonalEventsAPI[G] = SeasonalEventsAPI.withF[G]
 
 }
 
 object System {
-  def wired[
-    F[_] : ConcurrentEffect : NonServerThreadContextShift,
-    G[_] : SyncEffect,
-    H[_]
-  ](instance: JavaPlugin)
-   (implicit manaWriteApi: ManaWriteApi[G, Player],
+  def wired[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[_]: SyncEffect, H[_]](
+    instance: JavaPlugin
+  )(
+    implicit manaWriteApi: ManaWriteApi[G, Player],
     effectEnvironment: EffectEnvironment,
-    ioOnMainThread: OnMinecraftServerThread[IO]): System[H] = {
+    ioOnMainThread: OnMinecraftServerThread[IO]
+  ): System[H] = {
 
     implicit val repository: LastQuitPersistenceRepository[F, UUID] =
       new JdbcLastQuitPersistenceRepository[F]
@@ -53,11 +54,9 @@ object System {
         new LimitedLoginBonusGifter,
         new SeizonsikiListener,
         new ValentineListener(),
-        new NewYearListener(),
+        new NewYearListener()
       ),
-      commands = Map(
-        "event" -> new EventCommand().executor
-      )
+      commands = Map("event" -> new EventCommand().executor)
     )
   }
 }

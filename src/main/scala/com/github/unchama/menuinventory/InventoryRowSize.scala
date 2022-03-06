@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryType
 case class InventoryRowSize(rows: Int) extends AnyVal
 
 object InventoryRowSize {
+
   /**
    * インベントリのサイズを表すデータ型.
    */

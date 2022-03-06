@@ -11,22 +11,17 @@ object UpdateManaCaps {
 
   import cats.implicits._
 
-  def using[
-    F[_] : Functor,
-    G[_] : Monad : ContextCoercion[*[_], F],
-    Player
-  ](repository: KeyedDataRepository[Player, Ref[G, LevelCappedManaAmount]])
-   (implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): fs2.Stream[F, Unit] =
-    breakCountReadAPI
-      .seichiLevelUpdates
-      .evalMap { case (player, Diff(_, newLevel)) =>
+  def using[F[_]: Functor, G[_]: Monad: ContextCoercion[*[_], F], Player](
+    repository: KeyedDataRepository[Player, Ref[G, LevelCappedManaAmount]]
+  )(implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]): fs2.Stream[F, Unit] =
+    breakCountReadAPI.seichiLevelUpdates.evalMap {
+      case (player, Diff(_, newLevel)) =>
         ContextCoercion {
-          repository.lift(player)
-            .traverse { ref =>
-              ref.updateMaybe(_.withHigherLevelOption(newLevel))
-            }
+          repository
+            .lift(player)
+            .traverse { ref => ref.updateMaybe(_.withHigherLevelOption(newLevel)) }
             .as(())
         }
-      }
+    }
 
 }

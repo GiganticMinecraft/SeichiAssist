@@ -16,22 +16,25 @@ object RegionOwnerTransferCommand {
   import com.github.unchama.contextualexecutor.builder.ParserResponse._
 
   val executor: TabExecutor = playerCommandBuilder
-    .argumentsParsers(List(
-      Parsers.identity,
-      recipientName => {
-        Bukkit.getPlayer(recipientName) match {
-          case recipient: Player => succeedWith(recipient)
-          case _ => failWith(s"${recipientName}というプレイヤーはサーバーに参加したことがありません。")
+    .argumentsParsers(
+      List(
+        Parsers.identity,
+        recipientName => {
+          Bukkit.getPlayer(recipientName) match {
+            case recipient: Player => succeedWith(recipient)
+            case _                 => failWith(s"${recipientName}というプレイヤーはサーバーに参加したことがありません。")
+          }
         }
-      }
-    ))
+      )
+    )
     .execution { context =>
       val regionName = context.args.parsed.head.asInstanceOf[String]
       val newOwner = context.args.parsed(1).asInstanceOf[Player]
 
       val sender = context.sender
 
-      val region = WorldGuardPlugin.inst().getRegionManager(sender.getWorld).getRegion(regionName)
+      val region =
+        WorldGuardPlugin.inst().getRegionManager(sender.getWorld).getRegion(regionName)
       if (region == null) {
         IO(MessageEffect(s"${regionName}という名前の保護は存在しません。"))
       }
@@ -41,7 +44,11 @@ object RegionOwnerTransferCommand {
     .build()
     .asNonBlockingTabExecutor()
 
-  private def attemptRegionTransfer(donner: Player, recipient: Player, region: ProtectedRegion): IO[TargetedEffect[Player]] = IO {
+  private def attemptRegionTransfer(
+    donner: Player,
+    recipient: Player,
+    region: ProtectedRegion
+  ): IO[TargetedEffect[Player]] = IO {
     val owners = region.getOwners
     val regionWorld = donner.getWorld
 

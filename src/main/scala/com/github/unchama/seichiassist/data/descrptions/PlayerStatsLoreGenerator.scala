@@ -3,9 +3,15 @@ package com.github.unchama.seichiassist.data.descrptions
 import cats.effect.IO
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{SeichiExpAmount, SeichiStarLevel}
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
+  SeichiExpAmount,
+  SeichiStarLevel
+}
 import com.github.unchama.seichiassist.subsystems.breakcountbar.domain.BreakCountBarVisibility
-import com.github.unchama.seichiassist.subsystems.ranking.domain.Ranking
+import com.github.unchama.seichiassist.subsystems.ranking.domain.{
+  Ranking,
+  RankingRecordWithPosition
+}
 import com.github.unchama.seichiassist.text.WarningsGenerator
 import com.github.unchama.seichiassist.util.TypeConverter
 import org.bukkit.Bukkit
@@ -15,10 +21,12 @@ import org.bukkit.entity.Player
 /**
  * Created by karayuu on 2019/05/05
  */
-class PlayerStatsLoreGenerator(playerData: PlayerData,
-                               seichiRanking: Ranking[SeichiAmountData],
-                               seichiAmountData: SeichiAmountData,
-                               expBarVisibility: BreakCountBarVisibility) {
+class PlayerStatsLoreGenerator(
+  playerData: PlayerData,
+  seichiRanking: Ranking[SeichiAmountData],
+  seichiAmountData: SeichiAmountData,
+  expBarVisibility: BreakCountBarVisibility
+) {
   private val targetPlayer: Player = Bukkit.getPlayer(playerData.uuid)
 
   /**
@@ -36,26 +44,20 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
       passiveSkillDescription(),
       List(totalBreakAmountDescription()),
       rankingDescription().toList,
-      rankingDiffDescription().toList,
+      rankingDiffDescription(),
       List(
         totalLoginTimeDescrpition(),
         totalLoginDaysDescrption(),
         totalChainLoginDaysDescription()
       ),
       totalChainVoteDaysDescription(),
-      List(
-        s"$DARK_GRAY※1分毎に更新",
-        s"${GREEN}統計データは",
-        s"${GREEN}各サバイバルサーバー間で",
-        s"${GREEN}共有されます"
-      ),
+      List(s"$DARK_GRAY※1分毎に更新", s"${GREEN}統計データは", s"${GREEN}各サバイバルサーバー間で", s"${GREEN}共有されます"),
       expBarDescription()
     ).flatten
   }
 
   /**
-   * 木の棒メニュー等で用いられる整地Lvの説明文
-   * スターレベルを保持していたら,スターレベルも同時に表示します.
+   * 木の棒メニュー等で用いられる整地Lvの説明文 スターレベルを保持していたら,スターレベルも同時に表示します.
    */
   private def seichiLevelDescription(): String = {
     val starLevel = seichiAmountData.starLevelCorrespondingToExp
@@ -94,39 +96,52 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
   /**
    * 総整地量の説明文
    */
-  private def totalBreakAmountDescription(): String = s"${AQUA}総整地量：${seichiAmountData.expAmount.formatted}"
+  private def totalBreakAmountDescription(): String =
+    s"${AQUA}総整地量：${seichiAmountData.expAmount.formatted}"
 
   /**
    * ランキングの順位の説明文
    */
   private def rankingDescription(): Option[String] =
-    seichiRanking
-      .positionOf(targetPlayer.getName)
-      .map { rank =>
-        s"${GOLD}ランキング：${rank}位$GRAY(${seichiRanking.recordCount}人中)"
-      }
+    seichiRanking.positionOf(targetPlayer.getName).map { rank =>
+      s"${GOLD}ランキング：${rank}位$GRAY(${seichiRanking.recordCount}人中)"
+    }
 
   /**
    * 一つ前のランキングのプレイヤーとの整地量の差を表す説明文を返します.
    */
-  private def rankingDiffDescription(): Option[String] =
-    seichiRanking
-      .positionAndRecordOf(targetPlayer.getName)
-      .flatMap { case (position, record) =>
-        if (position > 1) {
-          val positionOneAbove = position - 1
-          val recordOneAbove = seichiRanking.recordsWithPositions(positionOneAbove - 1)._2
-          val difference =
-            SeichiExpAmount.orderedMonus.subtractTruncate(
-              recordOneAbove.value.expAmount,
-              record.value.expAmount
-            )
-          Some(
-            s"$AQUA${positionOneAbove}位(${recordOneAbove.playerName})との差：${difference.formatted}"
-          )
-        } else
-          None
-      }
+  private def rankingDiffDescription(): List[String] =
+    seichiRanking.positionAndRecordOf(targetPlayer.getName).toList.flatMap {
+      case RankingRecordWithPosition(record, _) =>
+        import SeichiExpAmount._
+        import com.github.unchama.generic.algebra.typeclasses.OrderedMonus._
+
+        val above =
+          seichiRanking.worstRecordAbove(targetPlayer.getName).map { worstRecordAbovePlayer =>
+            val difference =
+              worstRecordAbovePlayer.record.value.expAmount |-| record.value.expAmount
+
+            // noinspection DuplicatedCode
+            val aboveRecordPosition = worstRecordAbovePlayer.positionInRanking
+            val aboveRecordPlayerName = worstRecordAbovePlayer.record.playerName
+
+            s"$AQUA${aboveRecordPosition}位($aboveRecordPlayerName)との差：${difference.formatted}"
+          }
+
+        val below =
+          seichiRanking.bestRecordBelow(targetPlayer.getName).map { bestRecordBelowPlayer =>
+            val difference =
+              record.value.expAmount |-| bestRecordBelowPlayer.record.value.expAmount
+
+            // noinspection DuplicatedCode
+            val belowRecordPosition = bestRecordBelowPlayer.positionInRanking
+            val belowRecordPlayerName = bestRecordBelowPlayer.record.playerName
+
+            s"$AQUA${belowRecordPosition}位($belowRecordPlayerName)との差：${difference.formatted}"
+          }
+
+        above.toList ++ below.toList
+    }
 
   /**
    * 総ログイン時間の説明文
@@ -137,12 +152,14 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
   /**
    * 通算ログイン日数の説明文
    */
-  private def totalLoginDaysDescrption(): String = s"${GRAY}通算ログイン日数：${playerData.loginStatus.totalLoginDay}日"
+  private def totalLoginDaysDescrption(): String =
+    s"${GRAY}通算ログイン日数：${playerData.loginStatus.totalLoginDay}日"
 
   /**
    * 連続ログイン日数の説明文
    */
-  private def totalChainLoginDaysDescription(): String = s"${GRAY}連続ログイン日数：${playerData.loginStatus.consecutiveLoginDays}日"
+  private def totalChainLoginDaysDescription(): String =
+    s"${GRAY}連続ログイン日数：${playerData.loginStatus.consecutiveLoginDays}日"
 
   /**
    * 連続投票日数の説明文.
@@ -159,15 +176,9 @@ class PlayerStatsLoreGenerator(playerData: PlayerData,
   private def expBarDescription(): List[String] = {
     expBarVisibility match {
       case BreakCountBarVisibility.Shown =>
-        List(
-          s"${GREEN}整地量バーを表示",
-          s"$DARK_RED${UNDERLINE}クリックで非表示"
-        )
+        List(s"${GREEN}整地量バーを表示", s"$DARK_RED${UNDERLINE}クリックで非表示")
       case BreakCountBarVisibility.Hidden =>
-        List(
-          s"${RED}整地量バーを非表示",
-          s"$DARK_GREEN${UNDERLINE}クリックで表示"
-        )
+        List(s"${RED}整地量バーを非表示", s"$DARK_GREEN${UNDERLINE}クリックで表示")
     }
   }
 }

@@ -8,8 +8,9 @@ import scala.reflect.ClassTag
 
 object EntityUtil {
 
-  def spawn[F[_], EntityType <: Entity : ClassTag](location: Location)
-                                                  (implicit F: Sync[F]): F[EntityType] = {
+  def spawn[F[_], EntityType <: Entity: ClassTag](
+    location: Location
+  )(implicit F: Sync[F]): F[EntityType] = {
     val classTag = implicitly[ClassTag[EntityType]]
     val entityClass = classTag.runtimeClass.asSubclass(classOf[Entity])
 

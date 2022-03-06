@@ -15,23 +15,24 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 object System {
-  def wired[
-    F[_] : ConcurrentEffect : ErrorLogger,
-    G[_] : SyncEffect : ContextCoercion[*[_], F] : Timer,
-  ](implicit breakCountAPI: BreakCountReadAPI[F, G, Player]): F[Subsystem[F]] = {
+  def wired[F[_]: ConcurrentEffect: ErrorLogger, G[_]: SyncEffect: ContextCoercion[
+    *[_],
+    F
+  ]: Timer](implicit breakCountAPI: BreakCountReadAPI[F, G, Player]): F[Subsystem[F]] = {
     val repository = ChatRateLimitRepositoryDefinition.withContext[F, G, Player]
     for {
       handle <- ContextCoercion(BukkitRepositoryControls.createHandles(repository))
       _ <- Concurrent[F].start[Nothing]( // NOTE: This explicit type argument is needed
-        StreamExtra.compileToRestartingStream("チャットのレートリミット")(
-          breakCountAPI.seichiLevelUpdates.evalTap { case (p, _) =>
-            ContextCoercion(handle.repository(p).set(None))
-          }
-        )
+        StreamExtra
+          .compileToRestartingStream("チャットのレートリミット")(breakCountAPI.seichiLevelUpdates.evalTap {
+            case (p, _) =>
+              ContextCoercion(handle.repository(p).set(None))
+          })
       )
     } yield {
       new Subsystem[F] {
-        implicit val api: ObtainChatPermission[G, Player] = ObtainChatPermission.from(handle.repository)
+        implicit val api: ObtainChatPermission[G, Player] =
+          ObtainChatPermission.from(handle.repository)
 
         override val listeners: Seq[Listener] =
           Seq(new RateLimitCheckListener)

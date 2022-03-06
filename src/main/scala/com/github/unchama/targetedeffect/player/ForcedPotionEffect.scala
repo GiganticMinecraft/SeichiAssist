@@ -10,11 +10,11 @@ object ForcedPotionEffect {
   trait Tag
 
   def apply(effect: PotionEffect): ForcedPotionEffect = {
-    val potionEffect = TargetedEffect.delay[IO, Player] { player => player.addPotionEffect(effect) }
+    val potionEffect = TargetedEffect.delay[IO, Player] { player =>
+      player.addPotionEffect(effect)
+    }
 
-    generic.tag.tag
-      .apply[Tag]
-      .apply[TargetedEffect[Player]](potionEffect)
+    generic.tag.tag.apply[Tag].apply[TargetedEffect[Player]](potionEffect)
   }
 
   implicit class PotionEffectOps(val potionEffect: PotionEffect) {

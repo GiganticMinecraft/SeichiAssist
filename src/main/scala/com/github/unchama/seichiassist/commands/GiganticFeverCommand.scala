@@ -16,17 +16,21 @@ import scala.concurrent.duration.FiniteDuration
 object GiganticFeverCommand {
   private val worldsToToggleDifficulty = ManagedWorld.seichiWorlds.map(_.alphabetName).toList
 
-  val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
+  val executor: TabExecutor = ContextualExecutorBuilder
+    .beginConfiguration()
     .execution { _ =>
       val config = SeichiAssist.seichiAssistConfig
 
       Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
-      Util.sendMessageToEveryoneIgnoringPreference(s"$AQUA(${config.getGiganticFeverDisplayTime}間)")
+      Util.sendMessageToEveryoneIgnoringPreference(
+        s"$AQUA(${config.getGiganticFeverDisplayTime}間)"
+      )
 
       Util.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL)
 
-      IO.sleep(FiniteDuration(config.getGiganticFeverMinutes * 60,
-        scala.concurrent.duration.MINUTES))(IO.timer(ExecutionContext.global))
+      IO.sleep(
+        FiniteDuration(config.getGiganticFeverMinutes * 60, scala.concurrent.duration.MINUTES)
+      )(IO.timer(ExecutionContext.global))
 
       Util.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD)
       Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")

@@ -7,6 +7,7 @@ import org.bukkit.command.{Command, CommandSender, TabExecutor}
  * コマンド実行時に[TabExecutor]へ渡される情報をラップした[RawCommandContext]を用いて処理を行うオブジェクトへのtrait.
  */
 trait ContextualExecutor {
+
   /**
    * [rawContext] に基づいて, 作用を計算する.
    *
@@ -24,6 +25,7 @@ trait ContextualExecutor {
 object ContextualExecutor {
 
   implicit class ContextualTabExecutor(val contextualExecutor: ContextualExecutor) {
+
     /**
      * この[ContextualExecutor]を[TabExecutor]オブジェクトへ変換する.
      *
@@ -31,7 +33,12 @@ object ContextualExecutor {
      * 同期的な実行を期待する場合には[ContextualExecutor.executeWith]側で実行するコンテキストを指定せよ.
      */
     def asNonBlockingTabExecutor(): TabExecutor = new TabExecutor {
-      override def onCommand(sender: CommandSender, command: Command, alias: String, args: Array[String]): Boolean = {
+      override def onCommand(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array[String]
+      ): Boolean = {
         val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList)
 
         contextualExecutor.executeWith(context).unsafeRunAsync {
@@ -47,11 +54,16 @@ object ContextualExecutor {
 
       import scala.jdk.CollectionConverters._
 
-      override def onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array[String]): java.util.List[String] = {
+      override def onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array[String]
+      ): java.util.List[String] = {
         val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList)
 
         contextualExecutor.tabCandidatesFor(context)
-        }.asJava
+      }.asJava
     }
   }
 

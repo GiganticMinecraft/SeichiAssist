@@ -5,4 +5,5 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.BuildAmountR
 
 import java.util.UUID
 
-trait BuildAmountRateLimitPersistence[F[_]] extends RefDict[F, UUID, BuildAmountRateLimiterSnapshot]
+trait BuildAmountRateLimitPersistence[F[_]]
+    extends RefDict[F, UUID, BuildAmountRateLimiterSnapshot]

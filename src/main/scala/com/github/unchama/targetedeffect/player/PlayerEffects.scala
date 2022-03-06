@@ -11,17 +11,21 @@ import org.bukkit.inventory.Inventory
 object PlayerEffects {
   val closeInventoryEffect: TargetedEffect[Player] = TargetedEffect.delay(_.closeInventory())
 
-  def openInventoryEffect(inventory: => Inventory)
-                         (implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  def openInventoryEffect(
+    inventory: => Inventory
+  )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     Kleisli { player =>
       // インベントリを開く操作はサーバースレッドでなければならない(Spigot 1.12.2)
-      onMainThread.runAction(SyncIO {
-        player.openInventory(inventory)
-      }).as(())
+      onMainThread
+        .runAction(SyncIO {
+          player.openInventory(inventory)
+        })
+        .as(())
     }
 
-  def connectToServerEffect(serverIdentifier: String)
-                           (implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  def connectToServerEffect(
+    serverIdentifier: String
+  )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
     Kleisli { player =>
       // BungeeCordのサーバ移動はサーバスレッドでなければならない(Spigot 1.12.2)
       onMainThread.runAction(SyncIO {
@@ -32,7 +36,11 @@ object PlayerEffects {
         import byteArrayDataOutput._
         writeUTF("Connect")
         writeUTF(serverIdentifier)
-        player.sendPluginMessage(SeichiAssist.instance, "BungeeCord", byteArrayDataOutput.toByteArray)
+        player.sendPluginMessage(
+          SeichiAssist.instance,
+          "BungeeCord",
+          byteArrayDataOutput.toByteArray
+        )
       })
     }
 

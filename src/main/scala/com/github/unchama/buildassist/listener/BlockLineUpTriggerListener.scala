@@ -18,10 +18,9 @@ import org.bukkit.{Material, Sound}
 import scala.util.control.Breaks
 
 class BlockLineUpTriggerListener[
-  F[_]
-  : IncrementBuildExpWhenBuiltWithSkill[*[_], Player]
-  : SyncEffect
-](implicit manaApi: ManaApi[IO, SyncIO, Player]) extends Listener {
+  F[_]: IncrementBuildExpWhenBuiltWithSkill[*[_], Player]: SyncEffect
+](implicit manaApi: ManaApi[IO, SyncIO, Player])
+    extends Listener {
 
   import scala.jdk.CollectionConverters._
 
@@ -36,44 +35,48 @@ class BlockLineUpTriggerListener[
 
     val playerMineStack = seichiAssistData.minestack
 
-    //スキルOFFなら終了
+    // スキルOFFなら終了
     if (buildAssistData.line_up_flg == 0) return
 
-    //スキル利用可能でないワールドの場合終了
+    // スキル利用可能でないワールドの場合終了
     if (!player.getWorld.isBlockLineUpSkillEnabled) return
 
-    //左クリックの処理
+    // 左クリックの処理
     if (!(action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) return
 
-    //プレイヤーインベントリを取得
+    // プレイヤーインベントリを取得
     val inventory = player.getInventory
-    //メインハンドとオフハンドを取得
+    // メインハンドとオフハンドを取得
     val mainHandItem = inventory.getItemInMainHand
     val offhandItem = inventory.getItemInOffHand
 
-    //メインハンドに設置対象ブロックがある場合
-    if (!(BuildAssist.materiallist2.contains(mainHandItem.getType) || BuildAssist.material_slab2.contains(mainHandItem.getType))) return
+    // メインハンドに設置対象ブロックがある場合
+    if (
+      !(BuildAssist.materiallist2.contains(mainHandItem.getType) || BuildAssist
+        .material_slab2
+        .contains(mainHandItem.getType))
+    ) return
 
-    //オフハンドに木の棒を持ってるときのみ発動させる
+    // オフハンドに木の棒を持ってるときのみ発動させる
     if (offhandItem.getType != Material.STICK) return
 
     val pl = player.getLocation
     val mainHandItemType = mainHandItem.getType
     val mainHandItemData = mainHandItem.getData.getData
 
-    //仰角は下向きがプラスで上向きがマイナス
+    // 仰角は下向きがプラスで上向きがマイナス
     val pitch = pl.getPitch
     val yaw = (pl.getYaw + 360) % 360
     var step_x = 0
     var step_y = 0
     var step_z = 0
 
-    //プレイヤーの足の座標を取得
+    // プレイヤーの足の座標を取得
     var px = pl.getBlockX
     var py = (pl.getY + 1.6).toInt
     var pz = pl.getBlockZ
 
-    //プレイヤーの向いてる方向を判定
+    // プレイヤーの向いてる方向を判定
     if (pitch > 45) {
       step_y = -1
       py = pl.getBlockY
@@ -81,16 +84,16 @@ class BlockLineUpTriggerListener[
       step_y = 1
     } else {
       if (buildAssistData.line_up_flg == 2) {
-        //下設置設定の場合は一段下げる
+        // 下設置設定の場合は一段下げる
         py -= 1
       }
-      if (yaw > 315 || yaw < 45) { //南
+      if (yaw > 315 || yaw < 45) { // 南
         step_z = 1
-      } else if (yaw < 135) { //西
+      } else if (yaw < 135) { // 西
         step_x = -1
-      } else if (yaw < 225) { //北
+      } else if (yaw < 225) { // 北
         step_z = -1
-      } else { //東
+      } else { // 東
         step_x = 1
       }
     }
@@ -106,11 +109,13 @@ class BlockLineUpTriggerListener[
 
     val maxBlockUsage = {
       val availableOnHand = mainHandItem.getAmount.toLong
-      val availableInMineStack = mineStackObjectToBeUsed.map {
-        playerMineStack.getStackedAmountOf
-      }.getOrElse {
-        0L
-      }
+      val availableInMineStack = mineStackObjectToBeUsed
+        .map {
+          playerMineStack.getStackedAmountOf
+        }
+        .getOrElse {
+          0L
+        }
 
       val available = availableOnHand + availableInMineStack
 
@@ -124,18 +129,19 @@ class BlockLineUpTriggerListener[
       }
 
       Seq(Some(available), manaCap, Some(64L)).flatten.min
-      }.toInt
+    }.toInt
 
     def slabToDoubleSlab(material: Material) = material match {
       case Material.STONE_SLAB2 => Material.DOUBLE_STONE_SLAB2
       case Material.PURPUR_SLAB => Material.PURPUR_DOUBLE_SLAB
-      case Material.WOOD_STEP => Material.WOOD_DOUBLE_STEP
-      case Material.STEP => Material.DOUBLE_STEP
-      case _ => mainHandItemType
+      case Material.WOOD_STEP   => Material.WOOD_DOUBLE_STEP
+      case Material.STEP        => Material.DOUBLE_STEP
+      case _                    => mainHandItemType
     }
 
     val playerHoldsSlabBlock = BuildAssist.material_slab2.contains(mainHandItemType)
-    val doesHoldLeaves = (mainHandItemType eq Material.LEAVES) || (mainHandItemType eq Material.LEAVES_2)
+    val doesHoldLeaves =
+      (mainHandItemType eq Material.LEAVES) || (mainHandItemType eq Material.LEAVES_2)
     val slabLineUpStepMode = buildAssistData.line_up_step_flg
     val shouldPlaceDoubleSlabs = playerHoldsSlabBlock && slabLineUpStepMode == 2
 
@@ -155,23 +161,27 @@ class BlockLineUpTriggerListener[
       else
         (mainHandItemType, 1, maxBlockUsage)
 
-    //設置した数
+    // 設置した数
     var placedBlockCount = 0
 
     val b = new Breaks
     b.breakable {
-      while (placedBlockCount < placementIteration) { //設置ループ
+      while (placedBlockCount < placementIteration) { // 設置ループ
         px += step_x
         py += step_y
         pz += step_z
         val block = playerWorld.getBlockAt(px, py, pz)
 
-        //他人の保護がかかっている場合は設置終わり
+        // 他人の保護がかかっている場合は設置終わり
         if (!ExternalPlugins.getWorldGuard.canBuild(player, block.getLocation)) b.break
 
         if (block.getType != Material.AIR) {
-          //空気以外にぶつかり、ブロック破壊をしないならば終わる
-          if (!BuildAssist.material_destruction.contains(block.getType) || buildAssistData.line_up_des_flg == 0) {
+          // 空気以外にぶつかり、ブロック破壊をしないならば終わる
+          if (
+            !BuildAssist
+              .material_destruction
+              .contains(block.getType) || buildAssistData.line_up_des_flg == 0
+          ) {
             b.break
           }
 
@@ -209,7 +219,7 @@ class BlockLineUpTriggerListener[
     if (mainHandItem.getAmount - consumptionFromMainHand > 0) {
       mainHandItem.setAmount(mainHandItem.getAmount - consumptionFromMainHand)
     } else {
-      //アイテム数が0になっても消えないので自前で消す
+      // アイテム数が0になっても消えないので自前で消す
       inventory.setItemInMainHand(new ItemStack(Material.AIR, -1))
     }
 

@@ -5,7 +5,8 @@ import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.command.TabExecutor
 
 object LastQuitCommand {
-  val executor: TabExecutor = ContextualExecutorBuilder.beginConfiguration()
+  val executor: TabExecutor = ContextualExecutorBuilder
+    .beginConfiguration()
     .argumentsParsers(List(Parsers.identity))
     .execution { context =>
       val playerName = context.args.parsed.head.asInstanceOf[String]

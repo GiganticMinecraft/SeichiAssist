@@ -1,18 +1,16 @@
 package com.github.unchama.testutil.concurrent.sequencer
 
-import cats.effect.{Async, Sync}
 import cats.effect.concurrent.Deferred
-import com.github.unchama.testutil.concurrent.Blocker
+import cats.effect.{Async, Sync}
 import cats.implicits._
+import com.github.unchama.testutil.concurrent.Blocker
 
-class LinkedSequencer[F[_] : Async] extends Sequencer[F] {
+class LinkedSequencer[F[_]: Async] extends Sequencer[F] {
 
   override val newBlockerList: F[LazyList[Blocker[F]]] = Async[F].delay {
     import LinkedSequencer._
 
-    LazyList.iterate(
-      LinkedBlocker(None, CompletableBlocker.unsafeBlocked)
-    )(previous =>
+    LazyList.iterate(LinkedBlocker(None, CompletableBlocker.unsafeBlocked))(previous =>
       LinkedBlocker(Some(previous), CompletableBlocker.unsafeBlocked)
     )
   }
@@ -26,7 +24,7 @@ object LinkedSequencer {
   /**
    * DeferredのBlockerとしてのラッパー
    */
-  class CompletableBlocker[F[_]] private(promise: Deferred[F, Unit]) extends Blocker[F] {
+  class CompletableBlocker[F[_]] private (promise: Deferred[F, Unit]) extends Blocker[F] {
 
     def complete: F[Unit] = promise.complete(())
 
@@ -35,16 +33,19 @@ object LinkedSequencer {
   }
 
   object CompletableBlocker {
-    def unsafeBlocked[F[_] : Async]: CompletableBlocker[F] = new CompletableBlocker[F](Deferred.unsafeUncancelable)
+    def unsafeBlocked[F[_]: Async]: CompletableBlocker[F] =
+      new CompletableBlocker[F](Deferred.unsafeUncancelable)
   }
 
-  case class LinkedBlocker[F[_] : Async](previous: Option[LinkedBlocker[F]],
-                                         internalBlocker: CompletableBlocker[F]) extends Blocker[F] {
+  case class LinkedBlocker[F[_]: Async](
+    previous: Option[LinkedBlocker[F]],
+    internalBlocker: CompletableBlocker[F]
+  ) extends Blocker[F] {
 
     /**
      * awaitが返す計算は、実行された時次の事後条件を満たす：
-     *  - [[previous]] が空でない場合、中にある [[previous]] の [[internalBlocker]] が完了している
-     *  - このオブジェクトの [[internalBlocker]] が完了している
+     *   - [[previous]] が空でない場合、中にある [[previous]] の [[internalBlocker]] が完了している
+     *   - このオブジェクトの [[internalBlocker]] が完了している
      */
     override def await(): F[Unit] = {
       val waitPrevious = previous.map(_.internalBlocker.await())
@@ -53,5 +54,5 @@ object LinkedSequencer {
     }
   }
 
-  def apply[F[_] : Async]: LinkedSequencer[F] = new LinkedSequencer[F]
+  def apply[F[_]: Async]: LinkedSequencer[F] = new LinkedSequencer[F]
 }

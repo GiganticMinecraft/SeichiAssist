@@ -25,29 +25,30 @@ object ArrowEffects {
 
   implicit val plugin: JavaPlugin = SeichiAssist.instance
 
-  def normalArrowEffect(implicit mainThread: OnMinecraftServerThread[IO]) : TargetedEffect[Player] =
+  def normalArrowEffect(
+    implicit mainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] =
     arrowEffect[Arrow](
-      ProjectileSpawnConfiguration(
-        1.0,
-        (0.0, 1.6, 0.0)
-      ),
+      ProjectileSpawnConfiguration(1.0, (0.0, 1.6, 0.0)),
       Some(Sound.ENTITY_ARROW_SHOOT)
     )
 
-  def singleArrowBlizzardEffect(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  def singleArrowBlizzardEffect(
+    implicit mainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] =
     arrowEffect[Snowball](
-      ProjectileSpawnConfiguration(
-        1.0,
-        (0.0, 1.6, 0.0)
-      ),
+      ProjectileSpawnConfiguration(1.0, (0.0, 1.6, 0.0)),
       Some(Sound.ENTITY_SNOWBALL_THROW)
     )
 
-  def singleArrowMagicEffect(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+  def singleArrowMagicEffect(
+    implicit mainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] = {
     import scala.util.chaining._
     val thrownPotionItem = new ItemStack(Material.SPLASH_POTION).tap { itemStack =>
       itemStack.setItemMeta {
-        Bukkit.getItemFactory
+        Bukkit
+          .getItemFactory
           .getItemMeta(Material.SPLASH_POTION)
           .asInstanceOf[PotionMeta]
           .tap(_.setBasePotionData(new PotionData(PotionType.INSTANT_HEAL)))
@@ -55,44 +56,39 @@ object ArrowEffects {
     }
 
     arrowEffect[ThrownPotion](
-      ProjectileSpawnConfiguration(
-        0.8,
-        (0.0, 1.6, 0.0)
-      ),
+      ProjectileSpawnConfiguration(0.8, (0.0, 1.6, 0.0)),
       Some(Sound.ENTITY_WITCH_THROW),
       _.setItem(thrownPotionItem)
     )
   }
 
-  def singleArrowMeteoEffect(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  def singleArrowMeteoEffect(
+    implicit mainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] =
     arrowEffect[Arrow](
-      ProjectileSpawnConfiguration(
-        1.0,
-        (0.0, 1.6, 0.0)
-      ),
+      ProjectileSpawnConfiguration(1.0, (0.0, 1.6, 0.0)),
       Some(Sound.ENTITY_ARROW_SHOOT),
       _.setGlowing(true)
     )
 
-  def singleArrowExplosionEffect(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] =
+  def singleArrowExplosionEffect(
+    implicit mainThread: OnMinecraftServerThread[IO]
+  ): TargetedEffect[Player] =
     arrowEffect[SmallFireball](
-      ProjectileSpawnConfiguration(
-        0.4,
-        (0.0, 1.6, 0.0)
-      ),
+      ProjectileSpawnConfiguration(0.4, (0.0, 1.6, 0.0)),
       Some(Sound.ENTITY_GHAST_SHOOT)
     )
 
-  def arrowEffect[
-    P <: Projectile : ClassTag
-  ](spawnConfiguration: ProjectileSpawnConfiguration,
+  def arrowEffect[P <: Projectile: ClassTag](
+    spawnConfiguration: ProjectileSpawnConfiguration,
     sound: Option[Sound] = None,
-    projectileModifier: P => Unit = (_: P) => ())
-   (implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+    projectileModifier: P => Unit = (_: P) => ()
+  )(implicit mainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
 
     val runtimeClass = implicitly[ClassTag[P]].runtimeClass.asInstanceOf[Class[P]]
 
-    val soundEffect = sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(TargetedEffect.emptyEffect)
+    val soundEffect =
+      sound.map(FocusedSoundEffect(_, 1.0f, 1.3f)).getOrElse(TargetedEffect.emptyEffect)
 
     val waitForCollision = IO.sleep(100.ticks)(IO.timer(ExecutionContext.global))
 
@@ -101,32 +97,39 @@ object ArrowEffects {
       soundEffect,
       Kleisli(player =>
         for {
-          playerLocation <- PluginExecutionContexts.onMainThread.runAction(SyncIO {
-            player.getLocation.clone()
-          })
-          spawnLocation = playerLocation.clone()
+          playerLocation <- PluginExecutionContexts
+            .onMainThread
+            .runAction(SyncIO {
+              player.getLocation.clone()
+            })
+          spawnLocation = playerLocation
+            .clone()
             .add(playerLocation.getDirection)
             .add(spawnConfiguration.offset)
-          modifyProjectile = (projectile: P) => IO {
-            projectile.tap { p =>
-              import p._
-              setShooter(player)
-              setGravity(spawnConfiguration.gravity)
-              setVelocity(playerLocation.getDirection.clone().multiply(spawnConfiguration.speed))
+          modifyProjectile = (projectile: P) =>
+            IO {
+              projectile.tap { p =>
+                import p._
+                setShooter(player)
+                setGravity(spawnConfiguration.gravity)
+                setVelocity(
+                  playerLocation.getDirection.clone().multiply(spawnConfiguration.speed)
+                )
+              }
+              projectile.tap(projectileModifier)
             }
-            projectile.tap(projectileModifier)
-          }
 
           /**
            * 100ティック衝突を待ってから開放する。
            *
-           * 飛翔体をスコープ内でのリソースとしているのは、
-           * サーバーが停止したときにも開放するためである。
+           * 飛翔体をスコープ内でのリソースとしているのは、 サーバーが停止したときにも開放するためである。
            */
-          _ <- SeichiAssist.instance.arrowSkillProjectileScope
-            .useTracked(BukkitResources.vanishingEntityResource[IO, P](spawnLocation, runtimeClass)) { projectile =>
-              modifyProjectile(projectile) >> waitForCollision
-            }
+          _ <- SeichiAssist
+            .instance
+            .arrowSkillProjectileScope
+            .useTracked(
+              BukkitResources.vanishingEntityResource[IO, P](spawnLocation, runtimeClass)
+            ) { projectile => modifyProjectile(projectile) >> waitForCollision }
         } yield ()
       )
     )

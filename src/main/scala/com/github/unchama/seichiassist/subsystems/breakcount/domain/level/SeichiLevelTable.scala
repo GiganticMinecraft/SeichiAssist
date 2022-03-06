@@ -49,8 +49,9 @@ object SeichiLevelTable {
    * 整地量をレベルに関連付ける経験値テーブル
    */
   val table: FiniteExpLevelTable[SeichiLevel, SeichiExpAmount] = {
-    linearIncreases.foldLeft(tableUpToLevel51) { case (table, (level, amount)) =>
-      table.extendToLevel(level).withLinearIncreaseOf(amount)
+    linearIncreases.foldLeft(tableUpToLevel51) {
+      case (table, (level, amount)) =>
+        table.extendToLevel(level).withLinearIncreaseOf(amount)
     }
   }
 }

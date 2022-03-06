@@ -11,11 +11,9 @@ import org.bukkit.entity.Player
 
 object System {
 
-  def backgroundProcess[
-    F[_] : Concurrent : OnMinecraftServerThread : ErrorLogger,
-    G[_],
-    A
-  ](breakCountReadAPI: BreakCountReadAPI[F, G, Player]) : F[A] = {
+  def backgroundProcess[F[_]: Concurrent: OnMinecraftServerThread: ErrorLogger, G[_], A](
+    breakCountReadAPI: BreakCountReadAPI[F, G, Player]
+  ): F[A] = {
     val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
 
     StreamExtra.compileToRestartingStream("[breakcount.notification]") {

@@ -1,7 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.newyear
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
-import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{DISTRIBUTED_SOBA_DATE, END_DATE, EVENT_YEAR}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear.{
+  END_DATE,
+  EVENT_YEAR,
+  NEW_YEAR_EVE
+}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.enchantments.Enchantment
@@ -22,8 +26,7 @@ object NewYearItemData {
       "",
       s"${DARK_GREEN}消費期限：$END_DATE",
       s"${AQUA}マナ回復（10%）$GRAY （期限内）"
-    ).map(str => s"$RESET$str")
-      .asJava
+    ).map(str => s"$RESET$str").asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.GOLDEN_APPLE).tap { meta =>
       import meta._
@@ -36,11 +39,12 @@ object NewYearItemData {
     val itemStack = new ItemStack(Material.GOLDEN_APPLE, 1)
     itemStack.setItemMeta(itemMeta)
 
-    new NBTItem(itemStack).tap { item =>
-      import item._
-      setByte(NBTTagConstants.typeIdTag, 1.toByte)
-      setObject(NBTTagConstants.expiryDateTag, END_DATE)
-    }
+    new NBTItem(itemStack)
+      .tap { item =>
+        import item._
+        setByte(NBTTagConstants.typeIdTag, 1.toByte)
+        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+      }
       .pipe(_.getItem)
   }
 
@@ -56,8 +60,7 @@ object NewYearItemData {
       s"新年をお祝いして$RED${UNDERLINE}お年玉袋${RESET}をプレゼント！",
       s"$RED${UNDERLINE}アルカディア、エデン、ヴァルハラサーバー メインワールドの",
       s"$RED${UNDERLINE}スポーン地点にいる村人で様々なアイテムに交換可能です。"
-    ).map(str => s"$RESET$str")
-      .asJava
+    ).map(str => s"$RESET$str").asJava
 
     val itemMeta = Bukkit.getItemFactory.getItemMeta(Material.PAPER).tap { meta =>
       import meta._
@@ -74,14 +77,13 @@ object NewYearItemData {
   }
 
   // https://minecraft-heads.com/custom-heads/food-drinks/413-bowl-of-noodles
-  private val soba = SkullOwnerTextureValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ==")
+  private val soba = SkullOwnerTextureValue(
+    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4MzRiNWIyNTQyNmRlNjM1MzhlYzgyY2E4ZmJlY2ZjYmIzZTY4MmQ4MDYzNjQzZDJlNjdhNzYyMWJkIn19fQ=="
+  )
 
   val sobaHead: ItemStack = new SkullItemStackBuilder(soba)
-    .title(s"年越し蕎麦(${DISTRIBUTED_SOBA_DATE.getYear}年)")
-    .lore(List(
-      "",
-      s"${YELLOW}大晦日記念アイテムだよ!"
-    ))
+    .title(s"年越し蕎麦(${NEW_YEAR_EVE.from.getYear}年)")
+    .lore(List("", s"${YELLOW}大晦日記念アイテムだよ!"))
     .build()
 
   object NBTTagConstants {

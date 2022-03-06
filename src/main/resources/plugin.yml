@@ -117,6 +117,11 @@ commands:
     usage: /<command>
     permission-message: *denied
     permission: seichiassist.hat
+  ec:
+    description: エンダーチェストを開く
+    usage: /<command>
+    permission: seichiassist.ec
+    permission-message: *denied
   minestack:
     description: Toggle whether minestack collects applicable item automatically
     usage: /minestack <on | off>
@@ -148,7 +153,6 @@ permissions:
       - seichiassist.fd
       - seichiassist.present.*
       - seichiassist.hat
-      - seichiassist.minestack
   seichiassist.event:
     default: op
   seichiassist.shareinv:

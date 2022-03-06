@@ -17,14 +17,15 @@ object ChristmasEventsAPI {
 
   import cats.implicits._
 
-  def withF[F[_] : Clock : Functor]: ChristmasEventsAPI[F] = new ChristmasEventsAPI[F] {
+  def withF[F[_]: Clock: Functor]: ChristmasEventsAPI[F] = new ChristmasEventsAPI[F] {
     override val isInEvent: F[Boolean] =
-      JavaTime.fromClock[F]
+      JavaTime
+        .fromClock[F]
         .getLocalDate(ZoneId.of("JST", ZoneId.SHORT_IDS))
         .map(Christmas.isInEvent)
   }
 
-  def apply[F[_] : ChristmasEventsAPI]: ChristmasEventsAPI[F] = implicitly
+  def apply[F[_]: ChristmasEventsAPI]: ChristmasEventsAPI[F] = implicitly
 }
 
 trait SeasonalEventsAPI[F[_]] extends AnyRef {
@@ -34,9 +35,10 @@ trait SeasonalEventsAPI[F[_]] extends AnyRef {
 }
 
 object SeasonalEventsAPI {
-  def withF[F[_] : Clock : Functor]: SeasonalEventsAPI[F] = new SeasonalEventsAPI[F] {
-    override implicit val christmasEventsAPI: ChristmasEventsAPI[F] = ChristmasEventsAPI.withF[F]
+  def withF[F[_]: Clock: Functor]: SeasonalEventsAPI[F] = new SeasonalEventsAPI[F] {
+    override implicit val christmasEventsAPI: ChristmasEventsAPI[F] =
+      ChristmasEventsAPI.withF[F]
   }
 
-  def apply[F[_] : SeasonalEventsAPI]: SeasonalEventsAPI[F] = implicitly
+  def apply[F[_]: SeasonalEventsAPI]: SeasonalEventsAPI[F] = implicitly
 }

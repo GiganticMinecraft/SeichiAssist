@@ -8,7 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 class StreamExtraSpec
-  extends AnyWordSpec
+    extends AnyWordSpec
     with ScalaCheckPropertyChecks
     with Matchers
     with ConcurrentEffectTest
@@ -16,7 +16,8 @@ class StreamExtraSpec
 
   "StreamExtra.takeEvery" should {
     "be equivalent to accessing every n elements" in {
-      implicit val positiveIntGenerator: Arbitrary[Int] = Arbitrary(Gen.chooseNum(1, Int.MaxValue))
+      implicit val positiveIntGenerator: Arbitrary[Int] =
+        Arbitrary(Gen.chooseNum(1, Int.MaxValue))
 
       val n = 3
 

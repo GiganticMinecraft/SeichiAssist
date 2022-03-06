@@ -7,11 +7,14 @@ import com.github.unchama.seichiassist.util.{BukkitSerialization, ItemListSerial
 import org.bukkit.Material
 import scalikejdbc._
 
-class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]) extends ItemMigrationTarget[F] {
+class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F])
+    extends ItemMigrationTarget[F] {
 
   import scala.jdk.CollectionConverters._
 
-  private def convertSharedInventory(persistedSharedInventory: String)(conversion: ItemStackConversion): String = {
+  private def convertSharedInventory(
+    persistedSharedInventory: String
+  )(conversion: ItemStackConversion): String = {
     ItemListSerialization.serializeToBase64 {
       ItemListSerialization
         .deserializeFromBase64(persistedSharedInventory)
@@ -27,7 +30,9 @@ class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]
     }
   }
 
-  private def convertPocketInventory(persistedPocketInventory: String)(conversion: ItemStackConversion): String = {
+  private def convertPocketInventory(
+    persistedPocketInventory: String
+  )(conversion: ItemStackConversion): String = {
     BukkitSerialization.toBase64 {
       val pocketInventory = BukkitSerialization.fromBase64forPocket(persistedPocketInventory)
 
@@ -39,25 +44,25 @@ class SeichiAssistPersistedItems[F[_]](implicit dBSession: DBSession, F: Sync[F]
 
   override def runMigration(conversion: ItemStackConversion): F[Unit] = F.delay {
     val triples = sql"select uuid, shareinv, inventory from seichiassist.playerdata"
-      .map { rs =>
-        (rs.string("uuid"), rs.stringOpt("shareinv"), rs.stringOpt("inventory"))
-      }
-      .list().apply()
+      .map { rs => (rs.string("uuid"), rs.stringOpt("shareinv"), rs.stringOpt("inventory")) }
+      .list()
+      .apply()
 
-    val batchParam: Seq[Seq[String]] = triples.map { case (uuid, shareinv, inventory) =>
-      val newSharedInventory = shareinv.filter(_.nonEmpty).map(convertSharedInventory(_)(conversion))
-      val newPocketInventory = inventory.filter(_.nonEmpty).map(convertPocketInventory(_)(conversion))
+    val batchParam: Seq[Seq[String]] = triples.map {
+      case (uuid, shareinv, inventory) =>
+        val newSharedInventory =
+          shareinv.filter(_.nonEmpty).map(convertSharedInventory(_)(conversion))
+        val newPocketInventory =
+          inventory.filter(_.nonEmpty).map(convertPocketInventory(_)(conversion))
 
-      Seq(newSharedInventory.getOrElse(""), newPocketInventory.getOrElse(""), uuid)
+        Seq(newSharedInventory.getOrElse(""), newPocketInventory.getOrElse(""), uuid)
     }
 
     sql"""
       update seichiassist.playerdata
         set shareinv = ?, inventory = ?
         where uuid = ?
-    """
-      .batch(batchParam: _*)
-      .apply[List]()
+    """.batch(batchParam: _*).apply[List]()
   }
 
 }

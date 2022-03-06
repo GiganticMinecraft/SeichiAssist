@@ -7,15 +7,20 @@ import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.subsystems.mebius.bukkit.codec.BukkitMebiusItemStackCodec
 import com.github.unchama.seichiassist.subsystems.mebius.domain.message.PropertyModificationMessages
 import com.github.unchama.seichiassist.subsystems.mebius.domain.resources.MebiusTalks
-import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{MebiusSpeech, MebiusSpeechStrength}
+import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
+  MebiusSpeech,
+  MebiusSpeechStrength
+}
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.{EventHandler, EventPriority, Listener}
 
-class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
-                                 effectEnvironment: EffectEnvironment,
-                                 messages: PropertyModificationMessages) extends Listener {
+class MebiusLevelUpTrialListener(
+  implicit serviceRepository: PlayerDataRepository[MebiusSpeechService[SyncIO]],
+  effectEnvironment: EffectEnvironment,
+  messages: PropertyModificationMessages
+) extends Listener {
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   def tryMebiusLevelUpOn(event: BlockBreakEvent): Unit = {
@@ -26,7 +31,9 @@ class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepositor
     val oldMebiusProperty =
       BukkitMebiusItemStackCodec
         .decodePropertyOfOwnedMebius(player)(player.getInventory.getHelmet)
-        .getOrElse(return)
+        .getOrElse(
+          return
+        )
 
     val newMebiusProperty = oldMebiusProperty.tryUpgradeByOneLevel[SyncIO].unsafeRunSync()
 
@@ -38,13 +45,16 @@ class MebiusLevelUpTrialListener(implicit serviceRepository: PlayerDataRepositor
       import cats.implicits._
       effectEnvironment.unsafeRunEffectAsync(
         "Mebiusのレベルアップ時の通知を行う",
-        serviceRepository(player).makeSpeechIgnoringBlockage(
-          newMebiusProperty,
-          MebiusSpeech(
-            MebiusTalks.at(newMebiusProperty.level).mebiusMessage,
-            MebiusSpeechStrength.Loud
+        serviceRepository(player)
+          .makeSpeechIgnoringBlockage(
+            newMebiusProperty,
+            MebiusSpeech(
+              MebiusTalks.at(newMebiusProperty.level).mebiusMessage,
+              MebiusSpeechStrength.Loud
+            )
           )
-        ).toIO >> MessageEffect(messages.onLevelUp(oldMebiusProperty, newMebiusProperty)).run(player)
+          .toIO >> MessageEffect(messages.onLevelUp(oldMebiusProperty, newMebiusProperty))
+          .run(player)
       )
     }
   }
