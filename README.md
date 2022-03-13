@@ -2,6 +2,8 @@
 
 [![GitHub Actions](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build_and_deploy.yml/badge.svg)](https://github.com/GiganticMinecraft/SeichiAssist/actions/workflows/build_and_deploy.yml)
 
+
+
 ## 開発環境
 - [Intellij IDEA](https://www.jetbrains.com/idea/) などの統合開発環境
 - [AdoptOpenJDK 1.8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
