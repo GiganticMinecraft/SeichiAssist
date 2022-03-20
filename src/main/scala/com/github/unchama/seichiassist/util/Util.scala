@@ -503,15 +503,6 @@ object Util {
     }
   }
 
-  /**
-   * 指定した名前のマインスタックオブジェクトを返す
-   */
-  // TODO これはここにあるべきではない
-  @Deprecated()
-  def findMineStackObjectByName(name: String): Option[MineStackObj] = {
-    MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
-  }
-
   def isEnemy(entityType: EntityType): Boolean = Set(
     BLAZE,
     CAVE_SPIDER,

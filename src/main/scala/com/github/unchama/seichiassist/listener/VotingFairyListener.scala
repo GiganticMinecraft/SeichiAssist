@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
@@ -156,7 +156,7 @@ object VotingFairyListener {
       }
 
       // りんご所持数で値変更
-      val gachaimoObject = Util.findMineStackObjectByName("gachaimo").get
+      val gachaimoObject = MineStackObjectList.findByName("gachaimo").get
       val l = playerdata.minestack.getStackedAmountOf(gachaimoObject)
       if (m > l) {
         if (l == 0) {
@@ -183,7 +183,7 @@ object VotingFairyListener {
       // りんごを減らす
       playerdata
         .minestack
-        .subtractStackedAmountOf(Util.findMineStackObjectByName("gachaimo").get, m)
+        .subtractStackedAmountOf(MineStackObjectList.findByName("gachaimo").get, m)
 
       // 減ったりんごの数をplayerdataに加算
       playerdata.p_apple += m
