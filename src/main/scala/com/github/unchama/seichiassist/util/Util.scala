@@ -7,10 +7,7 @@ import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftSer
 import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.{
-  DefaultEffectEnvironment,
-  SeichiAssist
-}
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import com.github.unchama.util.bukkit.ItemStackUtil
 import enumeratum._
 import org.bukkit.ChatColor._
