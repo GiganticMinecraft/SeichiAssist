@@ -7,10 +7,8 @@ import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftSer
 import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.{
   DefaultEffectEnvironment,
-  MineStackObjectList,
   SeichiAssist
 }
 import com.github.unchama.util.bukkit.ItemStackUtil
