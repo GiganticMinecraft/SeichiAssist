@@ -97,6 +97,18 @@ publicなメソッドについては、ドキュメンテーションを記載�
 masterブランチは本番環境に反映されます。
 本番環境を更新するタイミングでdevelopブランチをmasterブランチにマージします。
 
+## フォーマットおよびlintに関して
+フォーマットには[scalafmt](https://scalameta.org/scalafmt)、lintには[scalafix](https://scalacenter.github.io/scalafix/)を利用しています。
+
+コード品質を最低限保つため、PRが受け入れられるにはscalafmtとscalafixの両方のチェックが通る必要があります。そのため、
+ - IntelliJ IDEAの設定でフォーマットに `scalafix` を使う
+   - `Editor` > `Code Style` > `Scala` で
+     - `Formatter` を `Scalafmt` に変更
+     - `Reformat on file save` にチェックを付ける
+ - PRを送った後は `sbt` コンソールで `scalafixAll` と `scalafmtAll` を実行する
+
+ようにお願いします。
+
 ## AutoRelease
 - developブランチが更新されると、そのコードを基に実行用jarがビルドされ、デバッグ環境に配布されます。デバッグ環境はjarの配布を検知すると自動で再起動し、最新のjarを使用して稼働します。
   - デバッグ環境へは、Minecraft Java Editionで`play-debug.seichi.click`に接続し、`T`キーでチャットを開き、`/server deb112`と入力して`Enter`を押すとアクセスできます。
