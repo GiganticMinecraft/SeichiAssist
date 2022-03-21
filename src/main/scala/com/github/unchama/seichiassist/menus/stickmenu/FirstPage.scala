@@ -272,9 +272,7 @@ object FirstPage extends Menu {
 
         if (regionManager eq null) {
           (
-            List(
-              s"${GRAY}このワールドでは土地の保護は行なえません"
-            ),
+            List(s"${GRAY}このワールドでは土地の保護は行なえません"),
             LeftClickButtonEffect.apply(TargetedEffect.emptyEffect)
           )
         } else {
