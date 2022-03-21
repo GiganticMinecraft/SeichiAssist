@@ -1405,4 +1405,12 @@ object MineStackObjectList {
 
   // ランダムアクセスしないので
   val minestacklist: mutable.ArrayBuffer[MineStackObj] = mutable.ArrayBuffer()
+
+  /**
+   * 指定した名前のマインスタックオブジェクトを返す
+   * @param name internal name
+   * @return Some if the associated object was found, otherwise None
+   */
+  def findByName(name: String): Option[MineStackObj] =
+    MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
 }
