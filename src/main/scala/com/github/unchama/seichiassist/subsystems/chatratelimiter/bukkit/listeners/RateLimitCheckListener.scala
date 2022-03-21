@@ -1,8 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.chatratelimiter.bukkit.listeners
 
 import cats.effect.{SyncEffect, SyncIO}
-import com.github.unchama.seichiassist.subsystems.chatratelimiter.ObtainChatPermission
-import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.ChatPermissionRequestResult
+import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.{
+  ChatPermissionRequestResult,
+  ObtainChatPermission
+}
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent

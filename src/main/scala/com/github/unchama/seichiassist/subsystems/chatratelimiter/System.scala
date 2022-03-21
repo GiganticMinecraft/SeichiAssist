@@ -9,7 +9,10 @@ import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.bukkit.listeners.RateLimitCheckListener
-import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.ChatRateLimitRepositoryDefinition
+import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.{
+  ChatRateLimitRepositoryDefinition,
+  ObtainChatPermission
+}
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
