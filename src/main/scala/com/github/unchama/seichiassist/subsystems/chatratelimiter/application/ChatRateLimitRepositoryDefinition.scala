@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.chatratelimiter.domain
+package com.github.unchama.seichiassist.subsystems.chatratelimiter.application
 
 import cats.effect.concurrent.Ref
 import cats.effect.{Sync, Timer}
@@ -9,8 +9,9 @@ import com.github.unchama.datarepository.template.initialization.TwoPhasedReposi
 import com.github.unchama.generic.ratelimiting.{FixedWindowRateLimiter, RateLimiter}
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.chatratelimiter.domain.ChatCount
 
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration._
 
 object ChatRateLimitRepositoryDefinition {
   def withContext[F[_], G[_]: Sync: Timer, Player: HasUuid](
