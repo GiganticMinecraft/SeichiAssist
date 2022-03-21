@@ -2,11 +2,13 @@ package com.github.unchama.util.external;
 
 import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import scala.Option;
 
 import java.util.Optional;
 import java.util.Set;
@@ -22,6 +24,10 @@ public class WorldGuardWrapper {
      */
     private static final WorldGuardPlugin plugin = ExternalPlugins.getWorldGuard();
 
+    public static Option<RegionManager> getRegionManager(World world) {
+        // the expression is nullable: WorldConfiguration#useRegions is false => null
+        return Option.apply(plugin.getRegionManager(world));
+    }
     /**
      * 与えられた {@link World} の {@link Player} の最大保護可能数を取得します.
      *
@@ -30,6 +36,7 @@ public class WorldGuardWrapper {
      * @return {@link Player} の {@link World} における最大保護可能数
      */
     public static int getMaxRegionCount(@NotNull Player player, @NotNull World world) {
+        // TODO migrate this to OptionalInt
         final WorldConfiguration worldConfiguration = plugin.getGlobalStateManager().get(world);
         return worldConfiguration.getMaxRegionCount(player);
     }
@@ -41,6 +48,7 @@ public class WorldGuardWrapper {
      * @return オーナーになっている保護の数。どこのオーナーでもない場合は0
      */
     public static int getNumberOfRegions(@NotNull Player who, @NotNull World where) {
+        // TODO migrate this to OptionalInt
         return WorldGuardPlugin.inst().getRegionContainer().get(where).getRegionCountOfPlayer(WorldGuardPlugin.inst().wrapPlayer(who));
     }
 
