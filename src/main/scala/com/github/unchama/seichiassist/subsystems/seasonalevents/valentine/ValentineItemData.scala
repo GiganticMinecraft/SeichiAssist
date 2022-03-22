@@ -33,6 +33,8 @@ object ValentineItemData {
 
   // region DroppedCookie -> 爆発したmobからドロップするやつ
 
+  private val DroppedCookieTypeId = 3
+
   val droppedCookie: ItemStack = {
     val loreList = {
       List("", s"$RESET${GRAY}リア充を爆発させて奪い取った。") ++ baseLore
@@ -50,18 +52,20 @@ object ValentineItemData {
     new NBTItem(itemStack)
       .tap { item =>
         import item._
-        setByte(NBTTagConstants.typeIdTag, 1.toByte)
+        setByte(NBTTagConstants.typeIdTag, DroppedCookieTypeId.toByte)
         setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
       }
       .pipe(_.getItem)
   }
 
   def isDroppedCookie(item: ItemStack): Boolean =
-    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
+    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == DroppedCookieTypeId
 
   // endregion
 
   // region GiftedCookie -> 棒メニューでもらえるやつ
+
+  private val GiftedCookieTypeId = 4
 
   def cookieOf(playerName: String, playerUuid: UUID): ItemStack = {
     val loreList = {
@@ -83,7 +87,7 @@ object ValentineItemData {
     new NBTItem(itemStack)
       .tap { item =>
         import item._
-        setByte(NBTTagConstants.typeIdTag, 2.toByte)
+        setByte(NBTTagConstants.typeIdTag, GiftedCookieTypeId.toByte)
         setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
         setObject(NBTTagConstants.producerUuidTag, playerUuid)
         setString(NBTTagConstants.producerNameTag, playerName)
@@ -92,7 +96,7 @@ object ValentineItemData {
   }
 
   def isGiftedCookie(item: ItemStack): Boolean =
-    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
+    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == GiftedCookieTypeId
 
   def ownerOf(item: ItemStack): Option[UUID] =
     Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
