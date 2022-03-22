@@ -3,7 +3,8 @@ package com.github.unchama.seichiassist.listener
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.BreakUtil
 import org.bukkit.ChatColor._
-import org.bukkit.event.player.PlayerPickupItemEvent
+import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{GameMode, Sound}
 
@@ -12,8 +13,11 @@ class PlayerPickupItemListener extends Listener {
   private val config = SeichiAssist.seichiAssistConfig
 
   @EventHandler
-  def onPickupMineStackItem(event: PlayerPickupItemEvent): Unit = {
-    val player = event.getPlayer
+  def onPickupMineStackItem(event: EntityPickupItemEvent): Unit = {
+    val player = event.getEntity match {
+      case player: Player => player
+      case _ => return
+    }
 
     if (player.getGameMode != GameMode.SURVIVAL) return
 
