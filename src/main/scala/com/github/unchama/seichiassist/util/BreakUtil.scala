@@ -444,7 +444,7 @@ object BreakUtil {
 
     val config = SeichiAssist.seichiAssistConfig
 
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
+    val playerData = SeichiAssist.playermap.getOrElse(player.getUniqueId, return false)
 
     // minestackflagがfalseの時は処理を終了
     if (!playerData.settings.autoMineStack) return false
