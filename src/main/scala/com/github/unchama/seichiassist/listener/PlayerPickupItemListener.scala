@@ -36,18 +36,18 @@ class PlayerPickupItemListener extends Listener {
     val playerData = playerMap.getOrElse(player.getUniqueId, return)
     if (!playerData.settings.autoMineStack) return
 
-    val item = event.getItem
-    val itemstack = item.getItemStack
+    val pickedUpItem = event.getItem
+    val pickedUpItemStack = pickedUpItem.getItemStack
 
     if (SeichiAssist.DEBUG) {
-      player.sendMessage(s"${RED}pick:$itemstack")
-      player.sendMessage(s"${RED}pickDurability:${itemstack.getDurability}")
+      player.sendMessage(s"${RED}pick:$pickedUpItemStack")
+      player.sendMessage(s"${RED}pickDurability:${pickedUpItemStack.getDurability}")
     }
 
-    if (BreakUtil.tryAddItemIntoMineStack(player, itemstack)) {
+    if (BreakUtil.tryAddItemIntoMineStack(player, pickedUpItemStack)) {
       event.setCancelled(true)
       player.playSound(player.getLocation, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
-      item.remove()
+      pickedUpItem.remove()
     }
   }
 }
