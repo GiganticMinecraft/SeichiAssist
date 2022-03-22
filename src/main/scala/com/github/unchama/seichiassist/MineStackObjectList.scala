@@ -68,7 +68,7 @@ object MineStackObjectList {
     new MineStackObj(MOB_DROP, "totem_of_undying", "不死のトーテム", 1, Material.TOTEM, 0),
     new MineStackObj(MOB_DROP, "dragon_head", "エンダードラゴンの頭", 1, Material.SKULL_ITEM, 5),
     new MineStackObj(MOB_DROP, "wither_skeleton_skull", "ウィザースケルトンの頭", 1, Material.SKULL_ITEM, 1),
-    new MineStackObj(MOB_DROP, "stick","棒",1,Material.STICK,0)
+    new MineStackObj(MOB_DROP, "stick", "棒", 1, Material.STICK, 0)
   )
 
   // 採掘で入手可能な農業系ブロック
