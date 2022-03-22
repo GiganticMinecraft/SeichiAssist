@@ -17,13 +17,13 @@ on:
     branches:
       - develop
     paths:
-      - src/**/*.java
-      - src/**/*.scala
+      - src/**/
       - src/main/resources/plugin.yml
       - build.sbt
       - .scalafix.conf
       - .scalafmt.conf
       - project/*
+      - .github/worlflows/*.yml
 
 jobs:
   build_test_and_upload:
