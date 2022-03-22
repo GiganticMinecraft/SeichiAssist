@@ -43,10 +43,7 @@ object ValentineItemData {
     val now = LocalDateTime.now()
     val exp = Option(
       new NBTItem(item).getObject(NBTTagConstants.expiryDateTimeTag, classOf[LocalDateTime])
-    ) match {
-      case Some(exp) => exp
-      case _         => return false
-    }
+    ).getOrElse(return false)
     now.isBefore(exp) || now.isEqual(exp)
   }
 
