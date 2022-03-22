@@ -40,8 +40,8 @@ class PlayerPickupItemListener extends Listener {
     val itemstack = item.getItemStack
 
     if (SeichiAssist.DEBUG) {
-      player.sendMessage(RED.toString + "pick:" + itemstack.toString)
-      player.sendMessage(RED.toString + "pickDurability:" + itemstack.getDurability)
+      player.sendMessage(s"${RED}pick:$itemstack")
+      player.sendMessage(s"${RED}pickDurability:${itemstack.getDurability}")
     }
 
     if (BreakUtil.tryAddItemIntoMineStack(player, itemstack)) {
