@@ -26,6 +26,8 @@ object ValentineItemData {
 
   private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
 
+  def isCookie(item: ItemStack): Boolean = item != null && item.getType == Material.COOKIE
+
   def isUsableCookie(item: ItemStack): Boolean = {
     val today = LocalDate.now()
     val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
@@ -58,9 +60,7 @@ object ValentineItemData {
   }
 
   def isDroppedCookie(item: ItemStack): Boolean =
-    item != null && item.getType == Material.COOKIE && {
-      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
-    }
+    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 1
 
   // endregion
 
@@ -95,9 +95,7 @@ object ValentineItemData {
   }
 
   def isGiftedCookie(item: ItemStack): Boolean =
-    item != null && item.getType == Material.COOKIE && {
-      new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
-    }
+    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == 2
 
   def ownerOf(item: ItemStack): Option[UUID] =
     Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
