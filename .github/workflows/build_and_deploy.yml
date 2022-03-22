@@ -6,9 +6,7 @@ on:
       - develop
       - master
     paths:
-      - src/**/*.java
-      - src/**/*.scala
-      - src/main/resources/plugin.yml
+      - src/**
       - build.sbt
       - .scalafix.conf
       - .scalafmt.conf
