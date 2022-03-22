@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.BreakUtil
-import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
 import org.bukkit.event.player.PlayerPickupItemEvent
 import org.bukkit.event.{EventHandler, Listener}
@@ -18,9 +17,6 @@ class PlayerPickupItemListener extends Listener {
 
     if (player.getGameMode != GameMode.SURVIVAL) return
 
-    val playerData = playerMap(player.getUniqueId).ifNull(
-      return
-    )
     val playerLevel = SeichiAssist
       .instance
       .breakCountSystem
@@ -33,6 +29,7 @@ class PlayerPickupItemListener extends Listener {
 
     if (playerLevel < config.getMineStacklevel(1)) return
 
+    val playerData = playerMap.getOrElse(player.getUniqueId, return)
     if (!playerData.settings.autoMineStack) return
 
     val item = event.getItem
