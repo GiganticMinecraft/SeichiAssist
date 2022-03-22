@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{END_DATE_TIME, EVENT_DURATION, EVENT_YEAR}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{
+  END_DATE_TIME,
+  EVENT_DURATION,
+  EVENT_YEAR
+}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
@@ -37,9 +41,11 @@ object ValentineItemData {
    */
   def isUsableCookie(item: ItemStack): Boolean = {
     val now = LocalDateTime.now()
-    val exp = Option(new NBTItem(item).getObject(NBTTagConstants.expiryDateTimeTag, classOf[LocalDateTime])) match {
+    val exp = Option(
+      new NBTItem(item).getObject(NBTTagConstants.expiryDateTimeTag, classOf[LocalDateTime])
+    ) match {
       case Some(exp) => exp
-      case _ => return false
+      case _         => return false
     }
     now.isBefore(exp) || now.isEqual(exp)
   }
@@ -75,7 +81,8 @@ object ValentineItemData {
   }
 
   def isDroppedCookie(item: ItemStack): Boolean =
-    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == droppedCookieTypeId
+    isCookie(item) && new NBTItem(item)
+      .getByte(NBTTagConstants.typeIdTag) == droppedCookieTypeId
 
   // endregion
 
