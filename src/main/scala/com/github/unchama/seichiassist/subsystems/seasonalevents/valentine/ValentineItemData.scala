@@ -67,7 +67,7 @@ object ValentineItemData {
 
   private val GiftedCookieTypeId = 4
 
-  def cookieOf(playerName: String, playerUuid: UUID): ItemStack = {
+  def giftedCookieOf(playerName: String, playerUuid: UUID): ItemStack = {
     val loreList = {
       val header = List("", s"$RESET${GRAY}手作りのチョコチップクッキー。")
       val producer = List(s"$RESET${DARK_GREEN}製作者：$playerName")
