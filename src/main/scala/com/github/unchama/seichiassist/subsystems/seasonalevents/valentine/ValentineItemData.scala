@@ -23,16 +23,32 @@ object ValentineItemData {
 
   private val cookieName = s"$GOLD${BOLD}チョコチップクッキー"
 
+  /**
+   * チョコチップクッキーであるかどうかを返す
+   * @see バレンタインイベントのチョコチップクッキーであるかどうかを確認するには[[isDroppedCookie]]または[[isGiftedCookie]]
+   */
   def isCookie(item: ItemStack): Boolean = item != null && item.getType == Material.COOKIE
 
+  /**
+   * クッキーの有効期限が切れていないかどうかを返す。
+   * @return 有効期限が現在日時と等しい、または現在日時より前であるかどうか。有効期限が設定されていなければ`false`
+   * @see チョコチップクッキーであるかどうかは確認するには[[isCookie]]
+   * @see バレンタインイベントのチョコチップクッキーであるかどうかを確認するには[[isDroppedCookie]]または[[isGiftedCookie]]
+   */
   def isUsableCookie(item: ItemStack): Boolean = {
     val now = LocalDateTime.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTimeTag, classOf[LocalDateTime])
+    val exp = Option(new NBTItem(item).getObject(NBTTagConstants.expiryDateTimeTag, classOf[LocalDateTime])) match {
+      case Some(exp) => exp
+      case _ => return false
+    }
     now.isBefore(exp) || now.isEqual(exp)
   }
 
   // region DroppedCookie -> 爆発したmobからドロップするやつ
 
+  /**
+   * ドロップするチョコチップクッキーのアイテムID。1は有効期限が[[java.time.LocalDate]]のもの
+   */
   private val DroppedCookieTypeId = 3
 
   val droppedCookie: ItemStack = {
@@ -65,6 +81,9 @@ object ValentineItemData {
 
   // region GiftedCookie -> 棒メニューでもらえるやつ
 
+  /**
+   * 棒メニューからチョコチップクッキーのアイテムID。2は有効期限が[[java.time.LocalDate]]のもの
+   */
   private val GiftedCookieTypeId = 4
 
   def giftedCookieOf(playerName: String, playerUuid: UUID): ItemStack = {
@@ -98,6 +117,10 @@ object ValentineItemData {
   def isGiftedCookie(item: ItemStack): Boolean =
     isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == GiftedCookieTypeId
 
+  /**
+   * チョコチップクッキーのOwnerのUUIDを返す。
+   * @return UUIDが設定されていれば[[Some]]、なければ[[None]]
+   */
   def ownerOf(item: ItemStack): Option[UUID] =
     Option(new NBTItem(item).getObject(NBTTagConstants.producerUuidTag, classOf[UUID]))
 
