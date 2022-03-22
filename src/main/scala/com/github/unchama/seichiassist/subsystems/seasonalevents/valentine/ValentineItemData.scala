@@ -49,7 +49,7 @@ object ValentineItemData {
   /**
    * ドロップするチョコチップクッキーのアイテムID。1は有効期限が[[java.time.LocalDate]]のもの
    */
-  private val DroppedCookieTypeId = 3
+  private val droppedCookieTypeId = 3
 
   val droppedCookie: ItemStack = {
     val loreList = {
@@ -68,14 +68,14 @@ object ValentineItemData {
     new NBTItem(itemStack)
       .tap { item =>
         import item._
-        setByte(NBTTagConstants.typeIdTag, DroppedCookieTypeId.toByte)
+        setByte(NBTTagConstants.typeIdTag, droppedCookieTypeId.toByte)
         setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
       }
       .pipe(_.getItem)
   }
 
   def isDroppedCookie(item: ItemStack): Boolean =
-    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == DroppedCookieTypeId
+    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == droppedCookieTypeId
 
   // endregion
 
@@ -84,7 +84,7 @@ object ValentineItemData {
   /**
    * 棒メニューからチョコチップクッキーのアイテムID。2は有効期限が[[java.time.LocalDate]]のもの
    */
-  private val GiftedCookieTypeId = 4
+  private val giftedCookieTypeId = 4
 
   def giftedCookieOf(playerName: String, playerUuid: UUID): ItemStack = {
     val loreList = {
@@ -106,7 +106,7 @@ object ValentineItemData {
     new NBTItem(itemStack)
       .tap { item =>
         import item._
-        setByte(NBTTagConstants.typeIdTag, GiftedCookieTypeId.toByte)
+        setByte(NBTTagConstants.typeIdTag, giftedCookieTypeId.toByte)
         setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
         setObject(NBTTagConstants.producerUuidTag, playerUuid)
         setString(NBTTagConstants.producerNameTag, playerName)
@@ -115,7 +115,7 @@ object ValentineItemData {
   }
 
   def isGiftedCookie(item: ItemStack): Boolean =
-    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == GiftedCookieTypeId
+    isCookie(item) && new NBTItem(item).getByte(NBTTagConstants.typeIdTag) == giftedCookieTypeId
 
   /**
    * チョコチップクッキーのOwnerのUUIDを返す。
