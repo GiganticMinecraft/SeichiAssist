@@ -1,16 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.valentine
 
-import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{
-  END_DATE,
-  EVENT_YEAR
-}
+import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine.{END_DATE_TIME, EVENT_DURATION, EVENT_YEAR}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.{Bukkit, Material}
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 import scala.jdk.CollectionConverters._
 import scala.util.chaining._
@@ -20,7 +17,7 @@ object ValentineItemData {
     s"${GRAY}食べると一定時間ステータスが変化する。",
     s"${GRAY}消費期限を超えると効果が無くなる。",
     "",
-    s"${DARK_GREEN}消費期限：$END_DATE",
+    s"${DARK_GREEN}消費期限：$END_DATE_TIME",
     s"${AQUA}ステータス変化（10分）$GRAY （期限内）"
   ).map(str => s"$RESET$str")
 
@@ -29,9 +26,9 @@ object ValentineItemData {
   def isCookie(item: ItemStack): Boolean = item != null && item.getType == Material.COOKIE
 
   def isUsableCookie(item: ItemStack): Boolean = {
-    val today = LocalDate.now()
-    val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTag, classOf[LocalDate])
-    today.isBefore(exp)
+    val now = LocalDateTime.now()
+    val exp = new NBTItem(item).getObject(NBTTagConstants.expiryDateTimeTag, classOf[LocalDateTime])
+    now.isBefore(exp) || now.isEqual(exp)
   }
 
   // region DroppedCookie -> 爆発したmobからドロップするやつ
@@ -54,7 +51,7 @@ object ValentineItemData {
       .tap { item =>
         import item._
         setByte(NBTTagConstants.typeIdTag, 1.toByte)
-        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+        setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
       }
       .pipe(_.getItem)
   }
@@ -87,7 +84,7 @@ object ValentineItemData {
       .tap { item =>
         import item._
         setByte(NBTTagConstants.typeIdTag, 2.toByte)
-        setObject(NBTTagConstants.expiryDateTag, END_DATE)
+        setObject(NBTTagConstants.expiryDateTimeTag, EVENT_DURATION.to)
         setObject(NBTTagConstants.producerUuidTag, playerUuid)
         setString(NBTTagConstants.producerNameTag, playerName)
       }
@@ -131,7 +128,7 @@ object ValentineItemData {
 
   object NBTTagConstants {
     val typeIdTag = "valentineCookieTypeId"
-    val expiryDateTag = "valentineCookieExpiryDate"
+    val expiryDateTimeTag = "valentineCookieExpiryDateTime"
     val producerNameTag = "valentineCookieProducerName"
     val producerUuidTag = "valentineCookieProducerUuid"
   }
