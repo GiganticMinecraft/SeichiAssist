@@ -33,7 +33,10 @@ class PlayerPickupItemListener extends Listener {
 
     if (playerLevel < config.getMineStacklevel(1)) return
 
-    val playerData = playerMap.getOrElse(player.getUniqueId, return)
+    val playerData = playerMap.getOrElse(
+      player.getUniqueId,
+      return
+    )
     if (!playerData.settings.autoMineStack) return
 
     val pickedUpItem = event.getItem
