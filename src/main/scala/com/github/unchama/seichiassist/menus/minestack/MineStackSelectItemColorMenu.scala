@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.menus.minestack
 
 import cats.effect.IO
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.MineStackObjectList
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.minestack.MineStackObj
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
@@ -24,10 +25,14 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
   override def computeMenuLayout(
     player: Player
   )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
-    IO(
-      MenuSlotLayout(
-        1 -> MineStackButtons(player).getMineStackItemButtonOf(mineStackObj).unsafeRunSync()
-      )
-    )
+    val buttonMapping = (
+      0 -> MineStackButtons(player).getMineStackItemButtonOf(mineStackObj).unsafeRunSync()
+    ) :: MineStackObjectList.minestacklisttoggle(mineStackObj).zipWithIndex.map {
+      case (inListMineStackObj, index) =>
+        (index + 1) -> MineStackButtons(player)
+          .getMineStackItemButtonOf(inListMineStackObj)
+          .unsafeRunSync()
+    }
+    IO(MenuSlotLayout(buttonMapping: _*))
   }
 }

@@ -132,14 +132,13 @@ private[minestack] case class MineStackButtons(player: Player) {
   private def colorSelectMenuOpenEffect(
     mineStackObj: MineStackObj
   )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
-    if (MineStackObjectList.minestacklisttoggle.contains(mineStackObj)) {
-      implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu =
-        MineStackSelectItemColorMenu(mineStackObj)
-      implicit val environment: MineStackSelectItemColorMenu.Environment =
-        new MineStackSelectItemColorMenu.Environment
-      MineStackSelectItemColorMenu(mineStackObj).open
-    }
-    // ここでなにもしないを返したい
+//    if (MineStackObjectList.minestacklisttoggle.contains(mineStackObj)) {
+    implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu =
+      MineStackSelectItemColorMenu(mineStackObj)
+    implicit val environment: MineStackSelectItemColorMenu.Environment =
+      new MineStackSelectItemColorMenu.Environment
+    MineStackSelectItemColorMenu(mineStackObj).open
+//    }
   }
 
   private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
