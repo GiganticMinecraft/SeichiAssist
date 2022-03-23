@@ -3,13 +3,12 @@ package com.github.unchama.seichiassist.menus.minestack
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
-import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -132,13 +131,16 @@ private[minestack] case class MineStackButtons(player: Player) {
   private def colorSelectMenuOpenEffect(
     mineStackObj: MineStackObj
   )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
-//    if (MineStackObjectList.minestacklisttoggle.contains(mineStackObj)) {
-    implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu =
-      MineStackSelectItemColorMenu(mineStackObj)
-    implicit val environment: MineStackSelectItemColorMenu.Environment =
-      new MineStackSelectItemColorMenu.Environment
-    MineStackSelectItemColorMenu(mineStackObj).open
-//    }
+    if (MineStackObjectList.minestacklisttoggle.contains(mineStackObj)) {
+      implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu =
+        MineStackSelectItemColorMenu(mineStackObj)
+      implicit val environment: MineStackSelectItemColorMenu.Environment =
+        new MineStackSelectItemColorMenu.Environment
+      MineStackSelectItemColorMenu(mineStackObj).open
+    } else {
+      import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
+      emptyEffect
+    }
   }
 
   private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
