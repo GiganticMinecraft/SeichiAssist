@@ -301,21 +301,6 @@ object MineStackObjectList {
     new MineStackObj(BUILDING, "jukebox", "ジュークボックス", 1, Material.JUKEBOX, 0),
     new MineStackObj(BUILDING, "hard_clay", "テラコッタ", 1, Material.HARD_CLAY, 0),
     new MineStackObj(BUILDING, "stained_clay", "白色のテラコッタ", 1, Material.STAINED_CLAY, 0),
-    new MineStackObj(BUILDING, "stained_clay1", "橙色のテラコッタ", 1, Material.STAINED_CLAY, 1),
-    new MineStackObj(BUILDING, "stained_clay2", "赤紫色のテラコッタ", 1, Material.STAINED_CLAY, 2),
-    new MineStackObj(BUILDING, "stained_clay3", "空色のテラコッタ", 1, Material.STAINED_CLAY, 3),
-    new MineStackObj(BUILDING, "stained_clay4", "黄色のテラコッタ", 1, Material.STAINED_CLAY, 4),
-    new MineStackObj(BUILDING, "stained_clay5", "黄緑色のテラコッタ", 1, Material.STAINED_CLAY, 5),
-    new MineStackObj(BUILDING, "stained_clay6", "桃色のテラコッタ", 1, Material.STAINED_CLAY, 6),
-    new MineStackObj(BUILDING, "stained_clay7", "灰色のテラコッタ", 1, Material.STAINED_CLAY, 7),
-    new MineStackObj(BUILDING, "stained_clay8", "薄灰色のテラコッタ", 1, Material.STAINED_CLAY, 8),
-    new MineStackObj(BUILDING, "stained_clay9", "青緑色のテラコッタ", 1, Material.STAINED_CLAY, 9),
-    new MineStackObj(BUILDING, "stained_clay10", "紫色のテラコッタ", 1, Material.STAINED_CLAY, 10),
-    new MineStackObj(BUILDING, "stained_clay11", "青色のテラコッタ", 1, Material.STAINED_CLAY, 11),
-    new MineStackObj(BUILDING, "stained_clay12", "茶色のテラコッタ", 1, Material.STAINED_CLAY, 12),
-    new MineStackObj(BUILDING, "stained_clay13", "緑色のテラコッタ", 1, Material.STAINED_CLAY, 13),
-    new MineStackObj(BUILDING, "stained_clay14", "赤色のテラコッタ", 1, Material.STAINED_CLAY, 14),
-    new MineStackObj(BUILDING, "stained_clay15", "黒色のテラコッタ", 1, Material.STAINED_CLAY, 15),
     new MineStackObj(BUILDING, "concrete", "白色のコンクリート", 1, Material.CONCRETE, 0),
     new MineStackObj(BUILDING, "concrete1", "橙色のコンクリート", 1, Material.CONCRETE, 1),
     new MineStackObj(BUILDING, "concrete2", "赤紫色のコンクリート", 1, Material.CONCRETE, 2),
@@ -466,7 +451,25 @@ object MineStackObjectList {
         new MineStackObj(BUILDING, "bed_13", "緑色のベッド", 1, Material.BED, 13),
         new MineStackObj(BUILDING, "bed_14", "赤色のベッド", 1, Material.BED, 14),
         new MineStackObj(BUILDING, "bed_15", "黒色のベッド", 1, Material.BED, 15)
-      )
+      ),
+    new MineStackObj(BUILDING, "stained_clay", "白色のテラコッタ", 1, Material.STAINED_CLAY, 0) ->
+      List(
+        new MineStackObj(BUILDING, "stained_clay1", "橙色のテラコッタ", 1, Material.STAINED_CLAY, 1),
+        new MineStackObj(BUILDING, "stained_clay2", "赤紫色のテラコッタ", 1, Material.STAINED_CLAY, 2),
+        new MineStackObj(BUILDING, "stained_clay3", "空色のテラコッタ", 1, Material.STAINED_CLAY, 3),
+        new MineStackObj(BUILDING, "stained_clay4", "黄色のテラコッタ", 1, Material.STAINED_CLAY, 4),
+        new MineStackObj(BUILDING, "stained_clay5", "黄緑色のテラコッタ", 1, Material.STAINED_CLAY, 5),
+        new MineStackObj(BUILDING, "stained_clay6", "桃色のテラコッタ", 1, Material.STAINED_CLAY, 6),
+        new MineStackObj(BUILDING, "stained_clay7", "灰色のテラコッタ", 1, Material.STAINED_CLAY, 7),
+        new MineStackObj(BUILDING, "stained_clay8", "薄灰色のテラコッタ", 1, Material.STAINED_CLAY, 8),
+        new MineStackObj(BUILDING, "stained_clay9", "青緑色のテラコッタ", 1, Material.STAINED_CLAY, 9),
+        new MineStackObj(BUILDING, "stained_clay10", "紫色のテラコッタ", 1, Material.STAINED_CLAY, 10),
+        new MineStackObj(BUILDING, "stained_clay11", "青色のテラコッタ", 1, Material.STAINED_CLAY, 11),
+        new MineStackObj(BUILDING, "stained_clay12", "茶色のテラコッタ", 1, Material.STAINED_CLAY, 12),
+        new MineStackObj(BUILDING, "stained_clay13", "緑色のテラコッタ", 1, Material.STAINED_CLAY, 13),
+        new MineStackObj(BUILDING, "stained_clay14", "赤色のテラコッタ", 1, Material.STAINED_CLAY, 14),
+        new MineStackObj(BUILDING, "stained_clay15", "黒色のテラコッタ", 1, Material.STAINED_CLAY, 15),
+      ),
   )
 
   // レッドストーン系ブロック
