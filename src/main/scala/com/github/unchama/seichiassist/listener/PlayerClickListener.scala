@@ -279,6 +279,7 @@ class PlayerClickListener(
           }
 
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
+        player.spigot.sendMessage(message)
         Util.sendMessageToEveryone(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
         Util.sendMessageToEveryone(message)
         gachaGTWin += 1
