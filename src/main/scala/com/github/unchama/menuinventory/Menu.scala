@@ -25,7 +25,7 @@ trait Menu {
 
   /**
    * @return
-   *   `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+   * `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
   def computeMenuLayout(player: Player)(implicit environment: Environment): IO[MenuSlotLayout]
 
