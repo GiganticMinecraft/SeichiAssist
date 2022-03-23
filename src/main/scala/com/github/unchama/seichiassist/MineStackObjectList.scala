@@ -309,19 +309,6 @@ object MineStackObjectList {
     new MineStackObj(BUILDING, "glass", "ガラス", 1, Material.GLASS, 0),
     new MineStackObj(BUILDING, "glass_panel", "板ガラス", 1, Material.THIN_GLASS, 0),
     new MineStackObj(BUILDING, "dye_1", "赤色の染料", 1, Material.INK_SACK, 1),
-    new MineStackObj(BUILDING, "dye_2", "緑色の染料", 1, Material.INK_SACK, 2),
-    new MineStackObj(BUILDING, "dye_5", "紫色の染料", 1, Material.INK_SACK, 5),
-    new MineStackObj(BUILDING, "dye_6", "青緑色の染料", 1, Material.INK_SACK, 6),
-    new MineStackObj(BUILDING, "dye_7", "薄灰色の染料", 1, Material.INK_SACK, 7),
-    new MineStackObj(BUILDING, "dye_8", "灰色の染料", 1, Material.INK_SACK, 8),
-    new MineStackObj(BUILDING, "dye_9", "桃色の染料", 1, Material.INK_SACK, 9),
-    new MineStackObj(BUILDING, "dye_10", "黄緑色の染料", 1, Material.INK_SACK, 10),
-    new MineStackObj(BUILDING, "dye_11", "黄色の染料", 1, Material.INK_SACK, 11),
-    new MineStackObj(BUILDING, "dye_12", "空色の染料", 1, Material.INK_SACK, 12),
-    new MineStackObj(BUILDING, "dye_13", "赤紫色の染料", 1, Material.INK_SACK, 13),
-    new MineStackObj(BUILDING, "dye_14", "橙色の染料", 1, Material.INK_SACK, 14),
-    new MineStackObj(BUILDING, "dye_15", "骨粉", 1, Material.INK_SACK, 15),
-    new MineStackObj(BUILDING, "ink_sack0", "イカスミ", 1, Material.INK_SACK, 0),
     new MineStackObj(BUILDING, "bed", "白色のベッド", 1, Material.BED, 0),
     new MineStackObj(BUILDING, "workbench", "作業台", 1, Material.WORKBENCH, 0)
   )
@@ -491,6 +478,22 @@ object MineStackObjectList {
         new MineStackObj(BUILDING,"glass_panel_13","緑色の色付きガラス板",1,Material.STAINED_GLASS_PANE,13),
         new MineStackObj(BUILDING,"glass_panel_14","赤色の色付きガラス板",1,Material.STAINED_GLASS_PANE,14),
         new MineStackObj(BUILDING,"glass_panel_15","黒色の色付きガラス板",1,Material.STAINED_GLASS_PANE,15)
+      ),
+    new MineStackObj(BUILDING, "dye_1", "赤色の染料", 1, Material.INK_SACK, 1) ->
+      List(
+        new MineStackObj(BUILDING, "dye_2", "緑色の染料", 1, Material.INK_SACK, 2),
+        new MineStackObj(BUILDING, "dye_5", "紫色の染料", 1, Material.INK_SACK, 5),
+        new MineStackObj(BUILDING, "dye_6", "青緑色の染料", 1, Material.INK_SACK, 6),
+        new MineStackObj(BUILDING, "dye_7", "薄灰色の染料", 1, Material.INK_SACK, 7),
+        new MineStackObj(BUILDING, "dye_8", "灰色の染料", 1, Material.INK_SACK, 8),
+        new MineStackObj(BUILDING, "dye_9", "桃色の染料", 1, Material.INK_SACK, 9),
+        new MineStackObj(BUILDING, "dye_10", "黄緑色の染料", 1, Material.INK_SACK, 10),
+        new MineStackObj(BUILDING, "dye_11", "黄色の染料", 1, Material.INK_SACK, 11),
+        new MineStackObj(BUILDING, "dye_12", "空色の染料", 1, Material.INK_SACK, 12),
+        new MineStackObj(BUILDING, "dye_13", "赤紫色の染料", 1, Material.INK_SACK, 13),
+        new MineStackObj(BUILDING, "dye_14", "橙色の染料", 1, Material.INK_SACK, 14),
+        new MineStackObj(BUILDING, "dye_15", "骨粉", 1, Material.INK_SACK, 15),
+        new MineStackObj(BUILDING, "ink_sack0", "イカスミ", 1, Material.INK_SACK, 0)
       )
   )
 
