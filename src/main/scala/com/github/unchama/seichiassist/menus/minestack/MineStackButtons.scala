@@ -104,16 +104,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     Button(
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.SHIFT_CLICK) { _ =>
-        SequentialEffect(targetedeffect.UnfocusedEffect {
-          if (MineStackObjectList.minestacklisttoggle.contains(mineStackObj)) {
-            implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu =
-              MineStackSelectItemColorMenu(mineStackObj)
-            implicit val environment: MineStackSelectItemColorMenu.Environment =
-              new MineStackSelectItemColorMenu.Environment
-            MineStackSelectItemColorMenu(mineStackObj).open
-            println("open")
-          }
-        })
+        SequentialEffect(colorSelectMenuOpenEffect(mineStackObj))
       },
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
         SequentialEffect(
@@ -137,6 +128,19 @@ private[minestack] case class MineStackButtons(player: Player) {
       }
     )
   })
+
+  private def colorSelectMenuOpenEffect(
+    mineStackObj: MineStackObj
+  )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+    if (MineStackObjectList.minestacklisttoggle.contains(mineStackObj)) {
+      implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu =
+        MineStackSelectItemColorMenu(mineStackObj)
+      implicit val environment: MineStackSelectItemColorMenu.Environment =
+        new MineStackSelectItemColorMenu.Environment
+      MineStackSelectItemColorMenu(mineStackObj).open
+    }
+    // ここでなにもしないを返したい
+  }
 
   private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO]
