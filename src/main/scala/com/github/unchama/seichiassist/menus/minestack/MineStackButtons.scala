@@ -121,6 +121,9 @@ private[minestack] case class MineStackButtons(player: Player) {
             }
           }
         )
+      },
+      action.FilteredButtonEffect(ClickEventFilter.SHIFT_CLICK) { _ =>
+        SequentialEffect(targetedeffect.UnfocusedEffect {})
       }
     )
   })
