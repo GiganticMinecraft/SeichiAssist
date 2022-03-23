@@ -557,6 +557,11 @@ class SeichiAssist extends JavaPlugin() {
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistbuild
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistrs
     MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
+    MineStackObjectList.minestacklist ++= MineStackObjectList
+      .minestacklisttoggle
+      .values
+      .flatten
+      .toList
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
