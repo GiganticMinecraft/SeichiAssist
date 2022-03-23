@@ -488,7 +488,13 @@ object BreakUtil {
       itemstack.setDurability(0.toShort)
     }
 
-    MineStackObjectList.minestacklist.foreach { mineStackObj =>
+    val mineStackObjectList = MineStackObjectList.minestacklist ++ MineStackObjectList
+      .minestacklisttoggle
+      .values
+      .flatten
+      .toList
+
+    mineStackObjectList.foreach { mineStackObj =>
       def addToMineStackAfterLevelCheck(): Boolean = {
         val level =
           SeichiAssist
