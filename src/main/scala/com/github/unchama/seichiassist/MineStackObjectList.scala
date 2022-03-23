@@ -303,21 +303,6 @@ object MineStackObjectList {
     new MineStackObj(BUILDING, "stained_clay", "白色のテラコッタ", 1, Material.STAINED_CLAY, 0),
     new MineStackObj(BUILDING, "concrete", "白色のコンクリート", 1, Material.CONCRETE, 0),
     new MineStackObj(BUILDING, "concrete_powder", "白色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 0),
-    new MineStackObj(BUILDING, "concrete_powder1", "橙色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 1),
-    new MineStackObj(BUILDING, "concrete_powder2", "赤紫色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 2),
-    new MineStackObj(BUILDING, "concrete_powder3", "空色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 3),
-    new MineStackObj(BUILDING, "concrete_powder4", "黄色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 4),
-    new MineStackObj(BUILDING, "concrete_powder5", "黄緑色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 5),
-    new MineStackObj(BUILDING,"concrete_powder6","桃色のコンクリートパウダー",1,Material.CONCRETE_POWDER,6),
-    new MineStackObj(BUILDING,"concrete_powder7","灰色のコンクリートパウダー",1,Material.CONCRETE_POWDER,7),
-    new MineStackObj(BUILDING,"concrete_powder8","薄灰色のコンクリートパウダー",1,Material.CONCRETE_POWDER,8),
-    new MineStackObj(BUILDING,"concrete_powder9","青緑色のコンクリートパウダー",1,Material.CONCRETE_POWDER,9),
-    new MineStackObj(BUILDING,"concrete_powder10","紫色のコンクリートパウダー",1,Material.CONCRETE_POWDER,10),
-    new MineStackObj(BUILDING,"concrete_powder11","青色のコンクリートパウダー",1,Material.CONCRETE_POWDER,11),
-    new MineStackObj(BUILDING,"concrete_powder12","茶色のコンクリートパウダー",1,Material.CONCRETE_POWDER,12),
-    new MineStackObj(BUILDING,"concrete_powder13","緑色のコンクリートパウダー",1,Material.CONCRETE_POWDER,13),
-    new MineStackObj(BUILDING,"concrete_powder14","赤色のコンクリートパウダー",1,Material.CONCRETE_POWDER,14),
-    new MineStackObj(BUILDING,"concrete_powder15","黒色のコンクリートパウダー",1,Material.CONCRETE_POWDER,15),
     new MineStackObj(BUILDING,"white_glazed_terracotta","白色の彩釉テラコッタ",1,Material.WHITE_GLAZED_TERRACOTTA,0),
     new MineStackObj(BUILDING,"orange_glazed_terracotta","橙色の彩釉テラコッタ",1,Material.ORANGE_GLAZED_TERRACOTTA,0),
     new MineStackObj(BUILDING,"magenta_glazed_terracotta","赤紫色の彩釉テラコッタ",1,Material.MAGENTA_GLAZED_TERRACOTTA,0),
@@ -418,6 +403,7 @@ object MineStackObjectList {
     new MineStackObj(BUILDING, "workbench", "作業台", 1, Material.WORKBENCH, 0)
   )
 
+  //トグル用リスト
   val minestacklisttoggle: Map[MineStackObj,List[MineStackObj]] = Map(
     new MineStackObj(BUILDING, "bed", "白色のベッド", 1, Material.BED, 0) -> 
       List(
@@ -472,6 +458,24 @@ object MineStackObjectList {
         new MineStackObj(BUILDING, "concrete13", "緑色のコンクリート", 1, Material.CONCRETE, 13),
         new MineStackObj(BUILDING, "concrete14", "赤色のコンクリート", 1, Material.CONCRETE, 14),
         new MineStackObj(BUILDING, "concrete15", "黒色のコンクリート", 1, Material.CONCRETE, 15),
+      ),
+    new MineStackObj(BUILDING, "concrete_powder", "白色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 0) -> 
+      List(
+        new MineStackObj(BUILDING, "concrete_powder1", "橙色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 1),
+        new MineStackObj(BUILDING, "concrete_powder2", "赤紫色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 2),
+        new MineStackObj(BUILDING, "concrete_powder3", "空色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 3),
+        new MineStackObj(BUILDING, "concrete_powder4", "黄色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 4),
+        new MineStackObj(BUILDING, "concrete_powder5", "黄緑色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 5),
+        new MineStackObj(BUILDING,"concrete_powder6","桃色のコンクリートパウダー",1,Material.CONCRETE_POWDER,6),
+        new MineStackObj(BUILDING,"concrete_powder7","灰色のコンクリートパウダー",1,Material.CONCRETE_POWDER,7),
+        new MineStackObj(BUILDING,"concrete_powder8","薄灰色のコンクリートパウダー",1,Material.CONCRETE_POWDER,8),
+        new MineStackObj(BUILDING,"concrete_powder9","青緑色のコンクリートパウダー",1,Material.CONCRETE_POWDER,9),
+        new MineStackObj(BUILDING,"concrete_powder10","紫色のコンクリートパウダー",1,Material.CONCRETE_POWDER,10),
+        new MineStackObj(BUILDING,"concrete_powder11","青色のコンクリートパウダー",1,Material.CONCRETE_POWDER,11),
+        new MineStackObj(BUILDING,"concrete_powder12","茶色のコンクリートパウダー",1,Material.CONCRETE_POWDER,12),
+        new MineStackObj(BUILDING,"concrete_powder13","緑色のコンクリートパウダー",1,Material.CONCRETE_POWDER,13),
+        new MineStackObj(BUILDING,"concrete_powder14","赤色のコンクリートパウダー",1,Material.CONCRETE_POWDER,14),
+        new MineStackObj(BUILDING,"concrete_powder15","黒色のコンクリートパウダー",1,Material.CONCRETE_POWDER,15),
       )
   )
 
