@@ -69,36 +69,35 @@ private[minestack] case class MineStackButtons(player: Player) {
     import scala.util.chaining._
 
     val itemStack =
-      mineStackObj
-        .itemStack
-        .clone()
-        .tap {
-          itemStack =>
-            import itemStack._
-            setItemMeta {
-              getItemMeta.tap { itemMeta =>
-                import itemMeta._
-                setDisplayName {
-                  val name = mineStackObj
-                    .uiName
-                    .getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
+      mineStackObj.itemStack.clone().tap { itemStack =>
+        import itemStack._
+        setItemMeta {
+          getItemMeta.tap { itemMeta =>
+            import itemMeta._
+            setDisplayName {
+              val name = mineStackObj
+                .uiName
+                .getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
 
-                  s"$YELLOW$UNDERLINE$BOLD$name"
-                }
-
-                setLore {
-                  val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
-
-                  List(
-                    s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
-                    s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
-                    s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
-                    s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
-                  ).asJava
-                }
-              }
+              s"$YELLOW$UNDERLINE$BOLD$name"
             }
+
+            setLore {
+              val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
+
+              List(
+                s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
+                s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
+                s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
+                s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し",
+                if (MineStackObjectList.minestacklisttoggle.keys.toList.contains(mineStackObj))
+                  s"$RESET$DARK_GREEN${UNDERLINE}シフトクリックで別の色を選べます。"
+                else ""
+              ).filterNot(_ == "").asJava
+            }
+          }
         }
+      }
 
     Button(
       itemStack,
