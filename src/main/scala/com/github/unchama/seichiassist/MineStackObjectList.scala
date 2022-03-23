@@ -308,22 +308,6 @@ object MineStackObjectList {
     new MineStackObj(BUILDING, "carpet_0", "カーペット", 1, Material.CARPET, 0),
     new MineStackObj(BUILDING, "glass", "ガラス", 1, Material.GLASS, 0),
     new MineStackObj(BUILDING, "glass_panel", "板ガラス", 1, Material.THIN_GLASS, 0),
-    new MineStackObj(BUILDING,"glass_panel_0","白色の色付きガラス板",1,Material.STAINED_GLASS_PANE,0),
-    new MineStackObj(BUILDING,"glass_panel_1","橙色の色付きガラス板",1,Material.STAINED_GLASS_PANE,1),
-    new MineStackObj(BUILDING,"glass_panel_2","赤紫色の色付きガラス板",1,Material.STAINED_GLASS_PANE,2),
-    new MineStackObj(BUILDING,"glass_panel_3","空色の色付きガラス板",1,Material.STAINED_GLASS_PANE,3),
-    new MineStackObj(BUILDING,"glass_panel_4","黄色の色付きガラス板",1,Material.STAINED_GLASS_PANE,4),
-    new MineStackObj(BUILDING,"glass_panel_5","黄緑色の色付きガラス板",1,Material.STAINED_GLASS_PANE,5),
-    new MineStackObj(BUILDING,"glass_panel_6","桃色の色付きガラス板",1,Material.STAINED_GLASS_PANE,6),
-    new MineStackObj(BUILDING,"glass_panel_7","灰色の色付きガラス板",1,Material.STAINED_GLASS_PANE,7),
-    new MineStackObj(BUILDING,"glass_panel_8","薄灰色の色付きガラス板",1,Material.STAINED_GLASS_PANE,8),
-    new MineStackObj(BUILDING,"glass_panel_9","青緑色の色付きガラス板",1,Material.STAINED_GLASS_PANE,9),
-    new MineStackObj(BUILDING,"glass_panel_10","紫色の色付きガラス板",1,Material.STAINED_GLASS_PANE,10),
-    new MineStackObj(BUILDING,"glass_panel_11","青色の色付きガラス板",1,Material.STAINED_GLASS_PANE,11),
-    new MineStackObj(BUILDING,"glass_panel_12","茶色の色付きガラス板",1,Material.STAINED_GLASS_PANE,12),
-    new MineStackObj(BUILDING,"glass_panel_13","緑色の色付きガラス板",1,Material.STAINED_GLASS_PANE,13),
-    new MineStackObj(BUILDING,"glass_panel_14","赤色の色付きガラス板",1,Material.STAINED_GLASS_PANE,14),
-    new MineStackObj(BUILDING,"glass_panel_15","黒色の色付きガラス板",1,Material.STAINED_GLASS_PANE,15),
     new MineStackObj(BUILDING, "dye_1", "赤色の染料", 1, Material.INK_SACK, 1),
     new MineStackObj(BUILDING, "dye_2", "緑色の染料", 1, Material.INK_SACK, 2),
     new MineStackObj(BUILDING, "dye_5", "紫色の染料", 1, Material.INK_SACK, 5),
@@ -378,7 +362,7 @@ object MineStackObjectList {
         new MineStackObj(BUILDING, "stained_clay12", "茶色のテラコッタ", 1, Material.STAINED_CLAY, 12),
         new MineStackObj(BUILDING, "stained_clay13", "緑色のテラコッタ", 1, Material.STAINED_CLAY, 13),
         new MineStackObj(BUILDING, "stained_clay14", "赤色のテラコッタ", 1, Material.STAINED_CLAY, 14),
-        new MineStackObj(BUILDING, "stained_clay15", "黒色のテラコッタ", 1, Material.STAINED_CLAY, 15),
+        new MineStackObj(BUILDING, "stained_clay15", "黒色のテラコッタ", 1, Material.STAINED_CLAY, 15)
       ),
     new MineStackObj(BUILDING, "concrete", "白色のコンクリート", 1, Material.CONCRETE, 0) ->
       List(
@@ -396,7 +380,7 @@ object MineStackObjectList {
         new MineStackObj(BUILDING, "concrete12", "茶色のコンクリート", 1, Material.CONCRETE, 12),
         new MineStackObj(BUILDING, "concrete13", "緑色のコンクリート", 1, Material.CONCRETE, 13),
         new MineStackObj(BUILDING, "concrete14", "赤色のコンクリート", 1, Material.CONCRETE, 14),
-        new MineStackObj(BUILDING, "concrete15", "黒色のコンクリート", 1, Material.CONCRETE, 15),
+        new MineStackObj(BUILDING, "concrete15", "黒色のコンクリート", 1, Material.CONCRETE, 15)
       ),
     new MineStackObj(BUILDING, "concrete_powder", "白色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 0) -> 
       List(
@@ -414,7 +398,7 @@ object MineStackObjectList {
         new MineStackObj(BUILDING,"concrete_powder12","茶色のコンクリートパウダー",1,Material.CONCRETE_POWDER,12),
         new MineStackObj(BUILDING,"concrete_powder13","緑色のコンクリートパウダー",1,Material.CONCRETE_POWDER,13),
         new MineStackObj(BUILDING,"concrete_powder14","赤色のコンクリートパウダー",1,Material.CONCRETE_POWDER,14),
-        new MineStackObj(BUILDING,"concrete_powder15","黒色のコンクリートパウダー",1,Material.CONCRETE_POWDER,15),
+        new MineStackObj(BUILDING,"concrete_powder15","黒色のコンクリートパウダー",1,Material.CONCRETE_POWDER,15)
       ),
     new MineStackObj(BUILDING,"white_glazed_terracotta","白色の彩釉テラコッタ",1,Material.WHITE_GLAZED_TERRACOTTA,0) ->
       List(
@@ -432,7 +416,7 @@ object MineStackObjectList {
         new MineStackObj(BUILDING,"brown_glazed_terracotta","茶色の彩釉テラコッタ",1,Material.BROWN_GLAZED_TERRACOTTA,0),
         new MineStackObj(BUILDING,"green_glazed_terracotta","緑色の彩釉テラコッタ",1,Material.GREEN_GLAZED_TERRACOTTA,0),
         new MineStackObj(BUILDING,"red_glazed_terracotta","赤色の彩釉テラコッタ",1,Material.RED_GLAZED_TERRACOTTA,0),
-        new MineStackObj(BUILDING,"black_glazed_terracotta","黒色の彩釉テラコッタ",1,Material.BLACK_GLAZED_TERRACOTTA,0),
+        new MineStackObj(BUILDING,"black_glazed_terracotta","黒色の彩釉テラコッタ",1,Material.BLACK_GLAZED_TERRACOTTA,0)
       ),
     new MineStackObj(BUILDING, "wool_0", "羊毛", 1, Material.WOOL, 0) ->
       List(
@@ -450,7 +434,7 @@ object MineStackObjectList {
         new MineStackObj(BUILDING, "wool_12", "茶色の羊毛", 1, Material.WOOL, 12),
         new MineStackObj(BUILDING, "wool_13", "緑色の羊毛", 1, Material.WOOL, 13),
         new MineStackObj(BUILDING, "wool_14", "赤色の羊毛", 1, Material.WOOL, 14),
-        new MineStackObj(BUILDING, "wool_15", "黒色の羊毛", 1, Material.WOOL, 15),
+        new MineStackObj(BUILDING, "wool_15", "黒色の羊毛", 1, Material.WOOL, 15)
       ),
     new MineStackObj(BUILDING, "carpet_0", "カーペット", 1, Material.CARPET, 0) ->
       List(
@@ -468,7 +452,7 @@ object MineStackObjectList {
         new MineStackObj(BUILDING, "carpet_12", "茶色のカーペット", 1, Material.CARPET, 12),
         new MineStackObj(BUILDING, "carpet_13", "緑色のカーペット", 1, Material.CARPET, 13),
         new MineStackObj(BUILDING, "carpet_14", "赤色のカーペット", 1, Material.CARPET, 14),
-        new MineStackObj(BUILDING, "carpet_15", "黒色のカーペット", 1, Material.CARPET, 15),
+        new MineStackObj(BUILDING, "carpet_15", "黒色のカーペット", 1, Material.CARPET, 15)
       ),
     new MineStackObj(BUILDING, "glass", "ガラス", 1, Material.GLASS, 0) ->
       List(
@@ -487,9 +471,27 @@ object MineStackObjectList {
         new MineStackObj(BUILDING, "stained_glass_12", "茶色の色付きガラス", 1, Material.STAINED_GLASS, 12),
         new MineStackObj(BUILDING, "stained_glass_13", "緑色の色付きガラス", 1, Material.STAINED_GLASS, 13),
         new MineStackObj(BUILDING, "stained_glass_14", "赤色の色付きガラス", 1, Material.STAINED_GLASS, 14),
-        new MineStackObj(BUILDING, "stained_glass_15", "黒色の色付きガラス", 1, Material.STAINED_GLASS, 15),
+        new MineStackObj(BUILDING, "stained_glass_15", "黒色の色付きガラス", 1, Material.STAINED_GLASS, 15)
       ),
-    
+    new MineStackObj(BUILDING, "glass_panel", "板ガラス", 1, Material.THIN_GLASS, 0) -> 
+      List(
+        new MineStackObj(BUILDING,"glass_panel_0","白色の色付きガラス板",1,Material.STAINED_GLASS_PANE,0),
+        new MineStackObj(BUILDING,"glass_panel_1","橙色の色付きガラス板",1,Material.STAINED_GLASS_PANE,1),
+        new MineStackObj(BUILDING,"glass_panel_2","赤紫色の色付きガラス板",1,Material.STAINED_GLASS_PANE,2),
+        new MineStackObj(BUILDING,"glass_panel_3","空色の色付きガラス板",1,Material.STAINED_GLASS_PANE,3),
+        new MineStackObj(BUILDING,"glass_panel_4","黄色の色付きガラス板",1,Material.STAINED_GLASS_PANE,4),
+        new MineStackObj(BUILDING,"glass_panel_5","黄緑色の色付きガラス板",1,Material.STAINED_GLASS_PANE,5),
+        new MineStackObj(BUILDING,"glass_panel_6","桃色の色付きガラス板",1,Material.STAINED_GLASS_PANE,6),
+        new MineStackObj(BUILDING,"glass_panel_7","灰色の色付きガラス板",1,Material.STAINED_GLASS_PANE,7),
+        new MineStackObj(BUILDING,"glass_panel_8","薄灰色の色付きガラス板",1,Material.STAINED_GLASS_PANE,8),
+        new MineStackObj(BUILDING,"glass_panel_9","青緑色の色付きガラス板",1,Material.STAINED_GLASS_PANE,9),
+        new MineStackObj(BUILDING,"glass_panel_10","紫色の色付きガラス板",1,Material.STAINED_GLASS_PANE,10),
+        new MineStackObj(BUILDING,"glass_panel_11","青色の色付きガラス板",1,Material.STAINED_GLASS_PANE,11),
+        new MineStackObj(BUILDING,"glass_panel_12","茶色の色付きガラス板",1,Material.STAINED_GLASS_PANE,12),
+        new MineStackObj(BUILDING,"glass_panel_13","緑色の色付きガラス板",1,Material.STAINED_GLASS_PANE,13),
+        new MineStackObj(BUILDING,"glass_panel_14","赤色の色付きガラス板",1,Material.STAINED_GLASS_PANE,14),
+        new MineStackObj(BUILDING,"glass_panel_15","黒色の色付きガラス板",1,Material.STAINED_GLASS_PANE,15)
+      )
   )
 
   // レッドストーン系ブロック
