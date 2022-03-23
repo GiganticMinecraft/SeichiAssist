@@ -444,23 +444,29 @@ object MineStackObjectList {
     new MineStackObj(BUILDING, "dye_14", "橙色の染料", 1, Material.INK_SACK, 14),
     new MineStackObj(BUILDING, "dye_15", "骨粉", 1, Material.INK_SACK, 15),
     new MineStackObj(BUILDING, "ink_sack0", "イカスミ", 1, Material.INK_SACK, 0),
-    new MineStackObj(BUILDING, "workbench", "作業台", 1, Material.WORKBENCH, 0),
     new MineStackObj(BUILDING, "bed", "白色のベッド", 1, Material.BED, 0),
-    new MineStackObj(BUILDING, "bed_1", "橙色のベッド", 1, Material.BED, 1),
-    new MineStackObj(BUILDING, "bed_2", "赤紫色のベッド", 1, Material.BED, 2),
-    new MineStackObj(BUILDING, "bed_3", "空色のベッド", 1, Material.BED, 3),
-    new MineStackObj(BUILDING, "bed_4", "黄色のベッド", 1, Material.BED, 4),
-    new MineStackObj(BUILDING, "bed_5", "黄緑色のベッド", 1, Material.BED, 5),
-    new MineStackObj(BUILDING, "bed_6", "桃色のベッド", 1, Material.BED, 6),
-    new MineStackObj(BUILDING, "bed_7", "灰色のベッド", 1, Material.BED, 7),
-    new MineStackObj(BUILDING, "bed_8", "薄灰色のベッド", 1, Material.BED, 8),
-    new MineStackObj(BUILDING, "bed_9", "青緑色のベッド", 1, Material.BED, 9),
-    new MineStackObj(BUILDING, "bed_10", "紫色のベッド", 1, Material.BED, 10),
-    new MineStackObj(BUILDING, "bed_11", "青色のベッド", 1, Material.BED, 11),
-    new MineStackObj(BUILDING, "bed_12", "茶色のベッド", 1, Material.BED, 12),
-    new MineStackObj(BUILDING, "bed_13", "緑色のベッド", 1, Material.BED, 13),
-    new MineStackObj(BUILDING, "bed_14", "赤色のベッド", 1, Material.BED, 14),
-    new MineStackObj(BUILDING, "bed_15", "黒色のベッド", 1, Material.BED, 15)
+    new MineStackObj(BUILDING, "workbench", "作業台", 1, Material.WORKBENCH, 0)
+  )
+
+  val minestacklisttoggle: Map[MineStackObj,List[MineStackObj]] = Map(
+    new MineStackObj(BUILDING, "bed", "白色のベッド", 1, Material.BED, 0) -> 
+      List(
+        new MineStackObj(BUILDING, "bed_1", "橙色のベッド", 1, Material.BED, 1),
+        new MineStackObj(BUILDING, "bed_2", "赤紫色のベッド", 1, Material.BED, 2),
+        new MineStackObj(BUILDING, "bed_3", "空色のベッド", 1, Material.BED, 3),
+        new MineStackObj(BUILDING, "bed_4", "黄色のベッド", 1, Material.BED, 4),
+        new MineStackObj(BUILDING, "bed_5", "黄緑色のベッド", 1, Material.BED, 5),
+        new MineStackObj(BUILDING, "bed_6", "桃色のベッド", 1, Material.BED, 6),
+        new MineStackObj(BUILDING, "bed_7", "灰色のベッド", 1, Material.BED, 7),
+        new MineStackObj(BUILDING, "bed_8", "薄灰色のベッド", 1, Material.BED, 8),
+        new MineStackObj(BUILDING, "bed_9", "青緑色のベッド", 1, Material.BED, 9),
+        new MineStackObj(BUILDING, "bed_10", "紫色のベッド", 1, Material.BED, 10),
+        new MineStackObj(BUILDING, "bed_11", "青色のベッド", 1, Material.BED, 11),
+        new MineStackObj(BUILDING, "bed_12", "茶色のベッド", 1, Material.BED, 12),
+        new MineStackObj(BUILDING, "bed_13", "緑色のベッド", 1, Material.BED, 13),
+        new MineStackObj(BUILDING, "bed_14", "赤色のベッド", 1, Material.BED, 14),
+        new MineStackObj(BUILDING, "bed_15", "黒色のベッド", 1, Material.BED, 15)
+      )
   )
 
   // レッドストーン系ブロック
