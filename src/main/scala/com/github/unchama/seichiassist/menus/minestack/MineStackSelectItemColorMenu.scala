@@ -31,8 +31,7 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
   override def computeMenuLayout(
     player: Player
   )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
-    implicit val canOpen: CanOpen[IO, CategorizedMineStackMenu] =
-      environment.canOpenCategorizedMineStackMenu
+    import environment.canOpenCategorizedMineStackMenu
     val buttonMapping = (
       0 -> MineStackButtons(player).getMineStackItemButtonOf(mineStackObj).unsafeRunSync()
     ) :: MineStackObjectList.minestacklisttoggle(mineStackObj).zipWithIndex.map {
