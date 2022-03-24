@@ -63,7 +63,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   def getMineStackItemButtonOf(mineStackObj: MineStackObj)(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpen: CanOpen[IO, CategorizedMineStackMenu]
+    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
