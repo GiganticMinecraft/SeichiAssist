@@ -303,15 +303,6 @@ object MineStackObjectList {
     new MineStackObj(BUILDING, "enchanting_table", "エンチャントテーブル", 1, Material.ENCHANTMENT_TABLE, 0),
     new MineStackObj(BUILDING, "jukebox", "ジュークボックス", 1, Material.JUKEBOX, 0),
     new MineStackObj(BUILDING, "hard_clay", "テラコッタ", 1, Material.HARD_CLAY, 0),
-    new MineStackObj(BUILDING, "stained_clay", "白色のテラコッタ", 1, Material.STAINED_CLAY, 0),
-    new MineStackObj(BUILDING, "concrete", "白色のコンクリート", 1, Material.CONCRETE, 0),
-    new MineStackObj(BUILDING, "concrete_powder", "白色のコンクリートパウダー", 1, Material.CONCRETE_POWDER, 0),
-    new MineStackObj(BUILDING,"white_glazed_terracotta","白色の彩釉テラコッタ",1,Material.WHITE_GLAZED_TERRACOTTA,0),
-    new MineStackObj(BUILDING, "wool_0", "羊毛", 1, Material.WOOL, 0),
-    new MineStackObj(BUILDING, "carpet_0", "カーペット", 1, Material.CARPET, 0),
-    new MineStackObj(BUILDING, "glass", "ガラス", 1, Material.GLASS, 0),
-    new MineStackObj(BUILDING, "glass_panel", "板ガラス", 1, Material.THIN_GLASS, 0),
-    new MineStackObj(BUILDING, "dye_1", "赤色の染料", 1, Material.INK_SACK, 1),
     new MineStackObj(BUILDING, "workbench", "作業台", 1, Material.WORKBENCH, 0)
   ) ++ rightElems(
     GroupedMineStackObj(
