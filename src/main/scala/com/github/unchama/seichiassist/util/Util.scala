@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import com.github.unchama.util.bukkit.ItemStackUtil
-import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}

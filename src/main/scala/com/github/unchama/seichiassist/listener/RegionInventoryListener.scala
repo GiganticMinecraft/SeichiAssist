@@ -266,9 +266,9 @@ object RegionInventoryListener {
   }
 
   private def gridChangeFunction(
-                                  player: Player,
-                                  directionType: RelativeDirection,
-                                  event: InventoryClickEvent
+    player: Player,
+    directionType: RelativeDirection,
+    event: InventoryClickEvent
   ): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     if (event.isLeftClick) {
