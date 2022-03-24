@@ -100,7 +100,7 @@ object MineStackMainMenu extends Menu {
      */
     def computeHistoricalMineStackLayout(
       implicit ioOnMainThread: OnMinecraftServerThread[IO],
-      canOpen: CanOpen[IO, CategorizedMineStackMenu]
+      canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
     ): IO[MenuSlotLayout] = {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
