@@ -2,16 +2,21 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.minestack.{GroupedMineStackObj, MineStackObj}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 
 import scala.collection.mutable
 
-// @formatter:off
-
 object MineStackObjectList {
+
+  private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
+  private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
+
+  // @formatter:off
+  
   // 採掘可能ブロック
-  val minestacklistmine: List[MineStackObj] = List(
+  private val minestacklistmine: List[Either[MineStackObj, GroupedMineStackObj]] = leftElems(
     new MineStackObj(ORES, "coal_ore", "石炭鉱石", 1, Material.COAL_ORE, 0),
     new MineStackObj(ORES, "coal", "石炭", 1, Material.COAL, 0),
     new MineStackObj(ORES, "coal_block", "石炭ブロック", 1, Material.COAL_BLOCK, 0),
@@ -37,7 +42,7 @@ object MineStackObjectList {
   )
 
   // モンスター+動物ドロップ
-  val minestacklistdrop: List[MineStackObj] = List(
+  private val minestacklistdrop: List[Either[MineStackObj,GroupedMineStackObj]] = leftElems(
     new MineStackObj(MOB_DROP, "ender_pearl", "エンダーパール", 1, Material.ENDER_PEARL, 0),
     new MineStackObj(MOB_DROP, "ender_eye", "エンダーアイ", 1, Material.EYE_OF_ENDER, 0),
     new MineStackObj(MOB_DROP, "slime_ball", "スライムボール", 1, Material.SLIME_BALL, 0),
@@ -72,7 +77,7 @@ object MineStackObjectList {
   )
 
   // 採掘で入手可能な農業系ブロック
-  val minestacklistfarm: List[MineStackObj] = List(
+  private val minestacklistfarm: List[Either[MineStackObj, GroupedMineStackObj]] = leftElems(
     new MineStackObj(AGRICULTURAL, "seeds", "種", 1, Material.SEEDS, 0),
     new MineStackObj(AGRICULTURAL, "apple", "リンゴ", 1, Material.APPLE, 0),
     new MineStackObj(AGRICULTURAL, "long_grass1", "草", 1, Material.LONG_GRASS, 1),
@@ -157,12 +162,9 @@ object MineStackObjectList {
     new MineStackObj(AGRICULTURAL, "bowl", "ボウル", 1, Material.BOWL, 0),
     new MineStackObj(AGRICULTURAL, "milk_bucket", "牛乳", 1, Material.MILK_BUCKET, 0)
   )
-
-  private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
-  private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
   
   // 建築系ブロック
-  val minestacklistbuild: List[Either[MineStackObj,GroupedMineStackObj]] = leftElems(
+  private val minestacklistbuild: List[Either[MineStackObj, GroupedMineStackObj]] = leftElems(
     new MineStackObj(BUILDING, "log", "オークの原木", 1, Material.LOG, 0),
     new MineStackObj(BUILDING, "wood", "オークの木材", 1, Material.WOOD, 0),
     new MineStackObj(BUILDING, "wood_step0", "オークの木材ハーフブロック", 1, Material.WOOD_STEP, 0),
@@ -487,7 +489,7 @@ object MineStackObjectList {
   )
 
   // レッドストーン系ブロック
-  val minestacklistrs: List[MineStackObj] = List(
+  private val minestacklistrs: List[Either[MineStackObj, GroupedMineStackObj]] = leftElems(
     new MineStackObj(REDSTONE_AND_TRANSPORTATION,"redstone","レッドストーン",1,Material.REDSTONE,0),
     new MineStackObj(REDSTONE_AND_TRANSPORTATION,"stone_button","石のボタン",1,Material.STONE_BUTTON,0),
     new MineStackObj(REDSTONE_AND_TRANSPORTATION,"wood_button","木のボタン",1,Material.WOOD_BUTTON,0),
@@ -560,20 +562,81 @@ object MineStackObjectList {
   /**
    * デフォルトでガチャの内容に含まれている景品。
    */
-  val minestackBuiltinGachaPrizes: List[MineStackObj] = List(
+  private val minestackBuiltinGachaPrizes: List[Either[MineStackObj, GroupedMineStackObj]] = leftElems(
     new MineStackObj("gachaimo",None,1,StaticGachaPrizeFactory.getGachaRingo,true,-1,GACHA_PRIZES),
     new MineStackObj("exp_bottle",Some("エンチャントの瓶"),1,Material.EXP_BOTTLE,0,false,-1,GACHA_PRIZES)
   )
+
+  // @formatter:on
 
   /**
    * マインスタックに格納できるガチャ景品。
    */
   // これは後に変更されるのでミュータブルでないといけない
-  val minestackGachaPrizes: mutable.ArrayBuffer[MineStackObj] =
+  private val minestackGachaPrizes: mutable.ArrayBuffer[MineStackObj] =
     mutable.ArrayBuffer.from(minestackBuiltinGachaPrizes)
 
   // ランダムアクセスしないので
   val minestacklist: mutable.ArrayBuffer[MineStackObj] = mutable.ArrayBuffer()
+
+  def setGachaPrizesList(mineStackObj: List[MineStackObj]): Unit = {
+    gachaPrizesObjects = mineStackObj
+  }
+
+  def getAllMineStackObjects: List[MineStackObj] = {
+    List(
+      minestacklistbuild,
+      minestacklistdrop,
+      minestacklistfarm,
+      minestacklistmine,
+      minestacklistrs,
+      minestackBuiltinGachaPrizes
+    ).flatten.flatMap {
+      case Left(mineStackObj)                => List(mineStackObj)
+      case Right(group) => List(group.representative) ++ group.coloredVariants
+    } ++ gachaPrizesObjects
+  }
+
+  def findByItemStack(itemstack: ItemStack): Option[MineStackObj] = {
+    getAllMineStackObjects.find{ mineStackObj =>
+      // IDとサブIDが一致している
+      val material = itemstack.getType
+      if (
+        material == mineStackObj.material && itemstack
+          .getDurability
+          .toInt == mineStackObj.durability
+      ) {
+        // 名前と説明文が無いアイテム
+        if (
+          !mineStackObj.hasNameLore && !itemstack.getItemMeta.hasLore && !itemstack
+            .getItemMeta
+            .hasDisplayName
+        ) {
+          true
+        } else if (
+          mineStackObj.hasNameLore && itemstack.getItemMeta.hasDisplayName && itemstack
+            .getItemMeta
+            .hasLore
+        ) {
+          // ガチャ以外のアイテム(がちゃりんご)
+          if (mineStackObj.gachaType == -1) {
+            itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
+          } else {
+            // ガチャ品
+            val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
+
+            // 名前が記入されているはずのアイテムで名前がなければ
+            if (
+              g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemstack, player.getName)
+            )  false
+
+            g.itemStackEquals(itemstack)
+          }
+        }
+    }
+  }
+
+  private var gachaPrizesObjects: List[MineStackObj] = Nil
 
   /**
    * 指定した名前のマインスタックオブジェクトを返す

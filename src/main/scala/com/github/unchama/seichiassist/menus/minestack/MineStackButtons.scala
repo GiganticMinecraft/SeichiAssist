@@ -133,7 +133,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpen: CanOpen[IO, CategorizedMineStackMenu]
   ): TargetedEffect[Player] = {
-    if (MineStackObjectList.minestacklisttoggle.contains(mineStackObj)) {
+    if (MineStackObjectList.minestacklistbuild.contains(mineStackObj)) {
       implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu.Environment =
         new MineStackSelectItemColorMenu.Environment()
       MineStackSelectItemColorMenu(mineStackObj).open

@@ -28,22 +28,20 @@ object PlayerDataSaveTask {
     val databaseGateway = SeichiAssist.databaseGateway
 
     def updatePlayerMineStack(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString
-      MineStackObjectList.minestacklist.foreach { mineStackObj =>
-        val iThObjectName = mineStackObj.mineStackObjName
-        val iThObjectAmount = playerdata.minestack.getStackedAmountOf(mineStackObj)
+      val playerUuid = player.getUniqueId.toString
+      playerdata.minestack.getObjectCounts.foreach {
+        case (mineStackObj, amount) =>
+          val updateCommand = ("insert into seichiassist.mine_stack"
+            + "(player_uuid, object_name, amount) values "
+            + "('" + playerUuid + "', '" + mineStackObj.mineStackObjName + "', '" + amount + "') "
+            + "on duplicate key update amount = values(amount)")
 
-        val updateCommand = ("insert into seichiassist.mine_stack"
-          + "(player_uuid, object_name, amount) values "
-          + "('" + playerUuid + "', '" + iThObjectName + "', '" + iThObjectAmount + "') "
-          + "on duplicate key update amount = values(amount)")
-
-        stmt.executeUpdate(updateCommand)
+          stmt.executeUpdate(updateCommand)
       }
     }
 
     def updateGridTemplate(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString
+      val playerUuid = player.getUniqueId.toString
 
       // 既存データをすべてクリアする
       stmt.executeUpdate(
