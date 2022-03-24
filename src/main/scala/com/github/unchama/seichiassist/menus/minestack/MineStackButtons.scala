@@ -138,8 +138,7 @@ private[minestack] case class MineStackButtons(player: Player) {
         new MineStackSelectItemColorMenu.Environment()
       MineStackSelectItemColorMenu(mineStackObj).open
     } else {
-      import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
-      emptyEffect
+      TargetedEffect.emptyEffect
     }
   }
 
