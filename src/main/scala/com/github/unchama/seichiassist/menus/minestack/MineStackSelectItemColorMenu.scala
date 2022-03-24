@@ -41,9 +41,7 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
         case (inListMineStackObj, index) =>
           (index + 1) -> MineStackButtons(player).getMineStackItemButtonOf(inListMineStackObj)
       }
-      .map {
-        case (inListMineStackObj, button) => inListMineStackObj -> button.unsafeRunSync()
-      } ++ Seq(
+      .flatMap { case (inListMineStackObj, button) => inListMineStackObj -> button } ++ Seq(
       ChestSlotRef(5, 0) -> CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
         s"MineStack1ページ目へ",

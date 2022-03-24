@@ -158,6 +158,9 @@ object MineStackObjectList {
     new MineStackObj(AGRICULTURAL, "milk_bucket", "牛乳", 1, Material.MILK_BUCKET, 0)
   )
 
+  private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
+  private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
+  
   // 建築系ブロック
   val minestacklistbuild: List[MineStackObj] = List(
     new MineStackObj(BUILDING, "log", "オークの原木", 1, Material.LOG, 0),
