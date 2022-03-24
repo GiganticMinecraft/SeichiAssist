@@ -3,6 +3,8 @@ package com.github.unchama.seichiassist.menus.minestack
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.menuinventory.LayoutPreparationContext
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -60,9 +62,10 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(
-    mineStackObj: MineStackObj
-  )(implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton(IO {
+  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    canOpen: CanOpen[IO, CategorizedMineStackMenu]
+  ): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -127,14 +130,13 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def colorSelectMenuOpenEffect(
-    mineStackObj: MineStackObj
-  )(implicit onMainThread: OnMinecraftServerThread[IO]): TargetedEffect[Player] = {
+  private def colorSelectMenuOpenEffect(mineStackObj: MineStackObj)(
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    canOpen: CanOpen[IO, CategorizedMineStackMenu]
+  ): TargetedEffect[Player] = {
     if (MineStackObjectList.minestacklisttoggle.contains(mineStackObj)) {
-      implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu =
-        MineStackSelectItemColorMenu(mineStackObj)
-      implicit val environment: MineStackSelectItemColorMenu.Environment =
-        new MineStackSelectItemColorMenu.Environment
+      implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu.Environment =
+        new MineStackSelectItemColorMenu.Environment()
       MineStackSelectItemColorMenu(mineStackObj).open
     } else {
       import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect

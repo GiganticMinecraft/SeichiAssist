@@ -1,16 +1,21 @@
 package com.github.unchama.seichiassist.menus.minestack
 
 import cats.effect.IO
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.MineStackObjectList
+import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
+import com.github.unchama.menuinventory.router.CanOpen
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player
 
 object MineStackSelectItemColorMenu {
 
-  class Environment(implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu)
+  class Environment(
+    implicit val canOpenCategorizedMineStackMenu: CanOpen[IO, CategorizedMineStackMenu]
+  )
 
 }
 
@@ -25,6 +30,8 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
   override def computeMenuLayout(
     player: Player
   )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
+    implicit val canOpen: CanOpen[IO, CategorizedMineStackMenu] =
+      environment.canOpenCategorizedMineStackMenu
     val buttonMapping = (
       0 -> MineStackButtons(player).getMineStackItemButtonOf(mineStackObj).unsafeRunSync()
     ) :: MineStackObjectList.minestacklisttoggle(mineStackObj).zipWithIndex.map {
@@ -32,7 +39,17 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
         (index + 1) -> MineStackButtons(player)
           .getMineStackItemButtonOf(inListMineStackObj)
           .unsafeRunSync()
+    } ++ Seq(
+      45 -> CommonButtons.transferButton(
+        new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
+        s"MineStack1ページ目へ",
+        CategorizedMineStackMenu(mineStackObj.stackType, 1)
+      )
+    )
+
+    IO {
+      MenuSlotLayout(buttonMapping: _*)
     }
-    IO(MenuSlotLayout(buttonMapping: _*))
   }
+
 }
