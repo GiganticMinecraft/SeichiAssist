@@ -78,10 +78,7 @@ class PlayerInventoryListener(
       items.foreach {
         case null =>
         case item
-            if
-            // TODO: gachamenteフラグがtrueのときはすべてのアイテムが返却されるんだからearly-returnするべき
-            SeichiAssist.gachamente ||
-              !item.hasItemMeta ||
+            if !item.hasItemMeta ||
               !item.getItemMeta.hasLore ||
               item.getType == Material.SKULL_ITEM =>
           dropitem += item
@@ -125,9 +122,7 @@ class PlayerInventoryListener(
           }
       }
       // ガチャシステムメンテナンス中は全て返却する
-      if (SeichiAssist.gachamente) {
-        player.sendMessage(s"${RED}ガチャシステムメンテナンス中の為全てのアイテムを返却します")
-      } else if (big <= 0 && reg <= 0) {
+      if (big <= 0 && reg <= 0) {
         player.sendMessage(s"${YELLOW}景品を認識しませんでした。全てのアイテムを返却します")
       } else {
         player.sendMessage(s"${GREEN}大当たり景品を${big}個、当たり景品を${reg}個認識しました")
@@ -307,8 +302,7 @@ class PlayerInventoryListener(
       item.foreach {
         case null =>
         case m
-            if SeichiAssist.gachamente ||
-              !m.hasItemMeta ||
+            if !m.hasItemMeta ||
               !m.getItemMeta.hasLore ||
               m.getType == Material.SKULL_ITEM =>
           dropitem.addOne(m)
@@ -342,9 +336,7 @@ class PlayerInventoryListener(
           }
       }
       // ガチャシステムメンテナンス中は全て返却する
-      if (SeichiAssist.gachamente) {
-        player.sendMessage(RED.toString + "ガチャシステムメンテナンス中の為全てのアイテムを返却します")
-      } else if (giga <= 0) {
+      if (giga <= 0) {
         player.sendMessage(YELLOW.toString + "ギガンティック大当り景品を認識しませんでした。全てのアイテムを返却します")
       } else {
         player.sendMessage(GREEN.toString + "ギガンティック大当り景品を" + giga + "個認識しました")
