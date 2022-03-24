@@ -445,17 +445,17 @@ object Util {
     }
   }
 
-  def getPlayerDirection(player: Player): Direction = {
+  def getPlayerDirection(player: Player): AbsoluteDirection = {
     var rotation = ((player.getLocation.getYaw + 180) % 360).toDouble
 
     if (rotation < 0) rotation += 360.0
 
     // 0,360:south 90:west 180:north 270:east
-    if (0.0 <= rotation && rotation < 45.0) Direction.NORTH
-    else if (45.0 <= rotation && rotation < 135.0) Direction.EAST
-    else if (135.0 <= rotation && rotation < 225.0) Direction.SOUTH
-    else if (225.0 <= rotation && rotation < 315.0) Direction.WEST
-    else Direction.NORTH
+    if (0.0 <= rotation && rotation < 45.0) AbsoluteDirection.NORTH
+    else if (45.0 <= rotation && rotation < 135.0) AbsoluteDirection.EAST
+    else if (135.0 <= rotation && rotation < 225.0) AbsoluteDirection.SOUTH
+    else if (225.0 <= rotation && rotation < 315.0) AbsoluteDirection.WEST
+    else AbsoluteDirection.NORTH
   }
 
   def showTime(cal: Calendar): String = {
@@ -583,16 +583,16 @@ object Util {
   /**
    * PlayerDataでチャンク数をゲット・セットするためのenum
    */
-  sealed trait DirectionType extends EnumEntry
+  sealed trait RelativeDirection extends EnumEntry
 
   /**
    * PlayerDataなどで使用する方角関係のenum
    */
-  sealed trait Direction extends EnumEntry
+  sealed trait AbsoluteDirection extends EnumEntry
 
-  case object DirectionType extends Enum[DirectionType] {
+  case object RelativeDirection extends Enum[RelativeDirection] {
 
-    val values: IndexedSeq[DirectionType] = findValues
+    val values: IndexedSeq[RelativeDirection] = findValues
 
     /**
      * for Java interop
@@ -605,26 +605,26 @@ object Util {
 
     def left: LEFT.type = LEFT
 
-    case object AHEAD extends DirectionType
+    case object AHEAD extends RelativeDirection
 
-    case object BEHIND extends DirectionType
+    case object BEHIND extends RelativeDirection
 
-    case object RIGHT extends DirectionType
+    case object RIGHT extends RelativeDirection
 
-    case object LEFT extends DirectionType
+    case object LEFT extends RelativeDirection
   }
 
-  case object Direction extends Enum[Direction] {
+  case object AbsoluteDirection extends Enum[AbsoluteDirection] {
 
-    val values: IndexedSeq[Direction] = findValues
+    val values: IndexedSeq[AbsoluteDirection] = findValues
 
-    case object NORTH extends Direction
+    case object NORTH extends AbsoluteDirection
 
-    case object SOUTH extends Direction
+    case object SOUTH extends AbsoluteDirection
 
-    case object EAST extends Direction
+    case object EAST extends AbsoluteDirection
 
-    case object WEST extends Direction
+    case object WEST extends AbsoluteDirection
   }
 
   /**
