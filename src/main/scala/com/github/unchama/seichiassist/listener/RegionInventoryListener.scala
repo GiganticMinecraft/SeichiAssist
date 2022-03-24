@@ -2,8 +2,7 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GridTemplate, RegionMenuData}
-import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.Util.RelativeDirection
+import com.github.unchama.seichiassist.util.{AbsoluteDirection, RelativeDirection, Util}
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import com.github.unchama.util.external.ExternalPlugins
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -309,7 +308,7 @@ object RegionInventoryListener {
     val end_z = getNearlyUnitEnd(player)("z")
 
     val (start_loc, end_loc) = direction match {
-      case Util.AbsoluteDirection.NORTH =>
+      case AbsoluteDirection.NORTH =>
         (
           new Location(
             world,
@@ -325,7 +324,7 @@ object RegionInventoryListener {
           )
         )
 
-      case Util.AbsoluteDirection.EAST =>
+      case AbsoluteDirection.EAST =>
         (
           new Location(
             world,
@@ -341,7 +340,7 @@ object RegionInventoryListener {
           )
         )
 
-      case Util.AbsoluteDirection.SOUTH =>
+      case AbsoluteDirection.SOUTH =>
         (
           new Location(
             world,
@@ -357,7 +356,7 @@ object RegionInventoryListener {
           )
         )
 
-      case Util.AbsoluteDirection.WEST =>
+      case AbsoluteDirection.WEST =>
         (
           new Location(
             world,

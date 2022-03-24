@@ -581,53 +581,6 @@ object Util {
   }
 
   /**
-   * PlayerDataでチャンク数をゲット・セットするためのenum
-   */
-  sealed trait RelativeDirection extends EnumEntry
-
-  /**
-   * PlayerDataなどで使用する方角関係のenum
-   */
-  sealed trait AbsoluteDirection extends EnumEntry
-
-  case object RelativeDirection extends Enum[RelativeDirection] {
-
-    val values: IndexedSeq[RelativeDirection] = findValues
-
-    /**
-     * for Java interop
-     */
-    def ahead: AHEAD.type = AHEAD
-
-    def behind: BEHIND.type = BEHIND
-
-    def right: RIGHT.type = RIGHT
-
-    def left: LEFT.type = LEFT
-
-    case object AHEAD extends RelativeDirection
-
-    case object BEHIND extends RelativeDirection
-
-    case object RIGHT extends RelativeDirection
-
-    case object LEFT extends RelativeDirection
-  }
-
-  case object AbsoluteDirection extends Enum[AbsoluteDirection] {
-
-    val values: IndexedSeq[AbsoluteDirection] = findValues
-
-    case object NORTH extends AbsoluteDirection
-
-    case object SOUTH extends AbsoluteDirection
-
-    case object EAST extends AbsoluteDirection
-
-    case object WEST extends AbsoluteDirection
-  }
-
-  /**
    * 死亡したエンティティの死因が棘の鎧かどうか
    */
   def isEntityKilledByThornsEnchant(entity: LivingEntity): Boolean = {
