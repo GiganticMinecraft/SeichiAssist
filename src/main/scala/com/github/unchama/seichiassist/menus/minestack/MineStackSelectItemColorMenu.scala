@@ -34,12 +34,14 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
     import environment.canOpenCategorizedMineStackMenu
     val buttonMapping = (
       0 -> MineStackButtons(player).getMineStackItemButtonOf(mineStackObj).unsafeRunSync()
-    ) :: MineStackObjectList.minestacklisttoggle(mineStackObj).zipWithIndex.map {
-      case (inListMineStackObj, index) =>
-        (index + 1) -> MineStackButtons(player)
-          .getMineStackItemButtonOf(inListMineStackObj)
-          .unsafeRunSync()
-    } ++ Seq(
+    ) :: MineStackObjectList
+      .minestacklisttoggle(mineStackObj)
+      .zipWithIndex
+      .map {
+        case (inListMineStackObj, index) =>
+          (index + 1) -> MineStackButtons(player).getMineStackItemButtonOf(inListMineStackObj)
+      }
+      .map { case (_, button) => button.unsafeRunSync() } ++ Seq(
       ChestSlotRef(5, 0) -> CommonButtons.transferButton(
         new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
         s"MineStack1ページ目へ",
