@@ -2,12 +2,8 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.minestack.{GroupedMineStackObj, MineStackObj}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
-import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
-import org.bukkit.block.Banner
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BlockStateMeta
 
 object MineStackObjectList {
 
@@ -641,86 +637,6 @@ object MineStackObjectList {
       case Left(mineStackObj) =>
         List(mineStackObj)
     }
-  }
-
-  def findByItemStack(itemStack: ItemStack, player: Player): Option[MineStackObj] = {
-    getAllMineStackObjects.find { mineStackObj =>
-      // IDとサブIDが一致している
-      val material = itemStack.getType
-      if (
-        material == mineStackObj.material && itemStack
-          .getDurability
-          .toInt == mineStackObj.durability
-      ) {
-        // 名前と説明文が無いアイテム
-        if (
-          !mineStackObj.hasNameLore && !itemStack.getItemMeta.hasLore && !itemStack
-            .getItemMeta
-            .hasDisplayName
-        ) {
-          true
-        } else if (
-          mineStackObj.hasNameLore && itemStack.getItemMeta.hasDisplayName && itemStack
-            .getItemMeta
-            .hasLore
-        ) {
-          // ガチャ以外のアイテム(がちゃりんご)
-          if (mineStackObj.gachaType == -1) {
-            itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
-          } else {
-            // ガチャ品
-            val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
-
-            // 名前が記入されているはずのアイテムで名前がなければ
-            if (
-              g.probability >= 0.1 || Util.itemStackContainsOwnerName(itemStack, player.getName)
-            ) {
-              itemStackEquals(g.itemStack, itemStack)
-            } else {
-              false
-            }
-          }
-        } else {
-          false
-        }
-      } else {
-        false
-      }
-    }
-  }
-
-  private def itemStackEquals(itemStack: ItemStack, another: ItemStack): Boolean = {
-    val crt = itemStack.getItemMeta
-    val ant = another.getItemMeta
-    val lore = crt.getLore
-    val anotherLore = ant.getLore
-
-    if (
-      anotherLore.containsAll(lore) && (crt
-        .getDisplayName
-        .contains(another.getItemMeta.getDisplayName) || ant
-        .getDisplayName
-        .contains(itemStack.getItemMeta.getDisplayName))
-    ) {
-      // この時点で名前と内容が一致
-      // 盾、バナー用の模様判定
-      val otherType = another.getType
-      if (
-        (otherType == Material.SHIELD || otherType == Material.BANNER) && itemStack.getType == otherType
-      ) {
-        val bs0 = ant.asInstanceOf[BlockStateMeta]
-        val b0 = bs0.getBlockState.asInstanceOf[Banner]
-        val p0 = b0.getPatterns
-
-        val bs1 = crt.asInstanceOf[BlockStateMeta]
-        val b1 = bs1.getBlockState.asInstanceOf[Banner]
-        val p1 = b1.getPatterns
-
-        return p0.containsAll(p1)
-      }
-      return true
-    }
-    false
   }
 
   /**
