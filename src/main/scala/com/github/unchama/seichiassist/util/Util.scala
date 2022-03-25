@@ -155,7 +155,7 @@ object Util {
       .getOnlinePlayers
       .asScala
       .toList
-      .map { player =>
+      .traverse { player =>
         for {
           playerSettings <- SeichiAssist
             .playermap(player.getUniqueId)
@@ -164,7 +164,6 @@ object Util {
           _ <- IO { if (!playerSettings.shouldMuteMessages) ev.send(player, content) }
         } yield ()
       }
-      .sequence
       .unsafeRunSync()
   }
 
