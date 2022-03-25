@@ -125,7 +125,10 @@ object ActiveSkillMenu extends Menu {
           .lore(
             activeSkillSelectionLore.toList ++
               assaultSkillSelectionLore.toList ++
-              List(s"$RESET${YELLOW}使えるアクティブスキルポイント：$availablePoints")
+              List(
+                s"$RESET${YELLOW}使えるアクティブスキルポイント：$availablePoints",
+                s"$RESET${GRAY}整地レベルアップでポイントが貰えます。"
+              )
           )
           .build()
       Button(itemStack)
