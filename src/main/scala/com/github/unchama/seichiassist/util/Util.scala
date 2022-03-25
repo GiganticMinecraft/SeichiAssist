@@ -154,6 +154,7 @@ object Util {
     Bukkit
       .getOnlinePlayers
       .asScala
+      .toList
       .map { player =>
         for {
           playerSettings <- SeichiAssist
@@ -163,7 +164,6 @@ object Util {
           _ <- IO { if (!playerSettings.shouldMuteMessages) ev.send(player, content) }
         } yield ()
       }
-      .toList
       .sequence
       .unsafeRunSync()
   }
@@ -244,7 +244,7 @@ object Util {
       .getOnlinePlayers
       .asScala
       .toList
-      .map { player =>
+      .traverse { player =>
         for {
           settings <- SeichiAssist
             .playermap(player.getUniqueId)
@@ -256,7 +256,6 @@ object Util {
           }
         } yield ()
       }
-      .sequence
       .unsafeRunSync()
   }
 
