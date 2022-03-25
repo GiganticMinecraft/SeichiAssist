@@ -3,12 +3,13 @@ package com.github.unchama.seichiassist.menus.minestack
 import cats.data.Kleisli
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -60,9 +61,10 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(
-    mineStackObj: MineStackObj
-  )(implicit onMainThread: OnMinecraftServerThread[IO]): IO[Button] = RecomputedButton(IO {
+  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+  ): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
     val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
@@ -76,32 +78,44 @@ private[minestack] case class MineStackButtons(player: Player) {
           itemStack =>
             import itemStack._
             setItemMeta {
-              getItemMeta.tap { itemMeta =>
-                import itemMeta._
-                setDisplayName {
-                  val name = mineStackObj
-                    .uiName
-                    .getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
+              getItemMeta
+                .tap {
+                  itemMeta =>
+                    import itemMeta._
+                    setDisplayName {
+                      val name = mineStackObj
+                        .uiName
+                        .getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
 
-                  s"$YELLOW$UNDERLINE$BOLD$name"
+                      s"$YELLOW$UNDERLINE$BOLD$name"
+                    }
+
+                    setLore {
+                      val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
+
+                      List(
+                        s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
+                        s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
+                        s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
+                        s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し",
+                        if (
+                          MineStackObjectList
+                            .getAllRepresentativeMineStackObjects
+                            .contains(mineStackObj)
+                        )
+                          s"$RESET$DARK_GREEN${UNDERLINE}シフトクリックで別の色を選べます。"
+                        else ""
+                      ).filterNot(_ == "").asJava
+                    }
                 }
-
-                setLore {
-                  val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
-
-                  List(
-                    s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
-                    s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
-                    s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
-                    s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
-                  ).asJava
-                }
-              }
             }
         }
 
     Button(
       itemStack,
+      action.FilteredButtonEffect(ClickEventFilter.SHIFT_CLICK) { _ =>
+        SequentialEffect(colorSelectMenuOpenEffect(mineStackObj))
+      },
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
         SequentialEffect(
           withDrawItemEffect(mineStackObj, mineStackObj.itemStack.getMaxStackSize),
@@ -124,6 +138,19 @@ private[minestack] case class MineStackButtons(player: Player) {
       }
     )
   })
+
+  private def colorSelectMenuOpenEffect(mineStackObj: MineStackObj)(
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    canOpen: CanOpen[IO, CategorizedMineStackMenu]
+  ): TargetedEffect[Player] = {
+    if (MineStackObjectList.getAllRepresentativeMineStackObjects.contains(mineStackObj)) {
+      implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu.Environment =
+        new MineStackSelectItemColorMenu.Environment()
+      MineStackSelectItemColorMenu(mineStackObj).open
+    } else {
+      TargetedEffect.emptyEffect
+    }
+  }
 
   private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO]

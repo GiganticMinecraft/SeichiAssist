@@ -548,15 +548,7 @@ class SeichiAssist extends JavaPlugin() {
     val menuRouter = TopLevelRouter.apply
     import menuRouter.canOpenStickMenu
 
-    MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
-
-    MineStackObjectList.minestacklist.clear()
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistmine
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistdrop
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistfarm
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistbuild
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistrs
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
+    MineStackObjectList.setGachaPrizesList(SeichiAssist.generateGachaPrizes())
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
 

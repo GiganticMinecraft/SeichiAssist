@@ -68,7 +68,7 @@ class TilingSkillTriggerListener[
 
     val minestackObjectToUse =
       MineStackObjectList
-        .minestacklist
+        .getAllMineStackObjects
         .find { obj =>
           offHandItem.getType == obj.material && offHandItemSelector.toInt == obj.durability
         }
