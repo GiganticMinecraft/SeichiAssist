@@ -328,7 +328,7 @@ object BlockPlacementSkillMenu extends Menu {
         24 -> computeButtonToDecreaseRange(),
         25 -> computeButtonToMinimizeRange(),
         35 -> computeButtonToToggleConsumingMineStack()
-      ).map(_.sequence).sequence
+      ).traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation

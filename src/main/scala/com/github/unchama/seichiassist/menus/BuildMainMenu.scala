@@ -431,7 +431,7 @@ object BuildMainMenu extends Menu {
         27 -> computeButtonToLineUpBlocks(),
         28 -> computeButtonToOpenLineUpBlocksMenu(),
         35 -> computeButtonToOpenMenuToCraftItemsWhereMineStack
-      ).map(_.sequence).sequence
+      ).traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation

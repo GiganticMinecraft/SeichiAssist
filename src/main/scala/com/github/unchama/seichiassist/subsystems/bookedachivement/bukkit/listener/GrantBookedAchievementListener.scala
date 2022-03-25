@@ -31,12 +31,12 @@ class GrantBookedAchievementListener[F[_]: ConcurrentEffect: NonServerThreadCont
     val program = for {
       _ <- NonServerThreadContextShift[F].shift
       ids <- service.loadBookedAchievementsIds(player.getUniqueId)
-      _ <- LiftIO[F].liftIO(ids.map {
+      _ <- LiftIO[F].liftIO(ids.traverse {
         case (AchievementOperation.GIVE, id) =>
           playerData.tryForcefullyUnlockAchievement(id).run(effectRunner)
         case (AchievementOperation.DEPRIVE, id) =>
           playerData.forcefullyDepriveAchievement(id).run(effectRunner)
-      }.sequence)
+      })
     } yield ()
 
     effectEnvironment.unsafeRunEffectAsync("未受け取りの予約実績を読み込み、付与する", program)
