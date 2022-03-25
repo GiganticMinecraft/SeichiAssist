@@ -33,8 +33,6 @@ class GiganticBerserkTask {
       return
     }
 
-    if (playerdata.idleMinute >= 3) return
-
     // 確率でマナを回復させる
     val d = Math.random
     if (d < playerdata.giganticBerserk.manaRegenerationProbability) {
