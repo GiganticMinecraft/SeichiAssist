@@ -25,10 +25,9 @@ object ItemMigrationVersionNumber {
     string
       .split('.')
       .toList
-      .map(_.toIntOption)
-      .sequence
+      .traverse(_.toIntOption)
       .flatMap { components =>
-        components.map(component => refineV[NonNegative](component)).sequence.toOption
+        components.traverse(component => refineV[NonNegative](component)).toOption
       }
       .flatMap { componentList =>
         NonEmptyList.fromList(componentList).map(ItemMigrationVersionNumber(_))

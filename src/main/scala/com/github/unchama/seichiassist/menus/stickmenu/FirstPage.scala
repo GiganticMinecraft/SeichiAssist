@@ -127,7 +127,7 @@ object FirstPage extends Menu {
     import cats.implicits._
 
     val dynamicPartComputation: IO[List[(Int, Button)]] = {
-      val computeConstantlyShownPart: List[IO[(Int, Button)]] = List(
+      val computeConstantlyShownPart: IO[List[(Int, Button)]] = List(
         ChestSlotRef(0, 0) -> computeStatsButton,
         ChestSlotRef(0, 1) -> computeEffectSuppressionButton,
         ChestSlotRef(0, 3) -> computeRegionMenuButton,
@@ -137,14 +137,14 @@ object FirstPage extends Menu {
         ChestSlotRef(2, 4) -> computeEnderChestButton,
         ChestSlotRef(2, 6) -> computeMineStackButton,
         ChestSlotRef(3, 2) -> computeApologyItemsButton
-      ).map(_.sequence)
+      ).traverse(_.sequence)
 
-      val computeOptionallyShownPart: List[IO[(Int, Option[Button])]] =
-        List(ChestSlotRef(1, 1) -> computeStarLevelStatsButton).map(_.sequence)
+      val computeOptionallyShownPart: IO[List[(Int, Option[Button])]] =
+        List(ChestSlotRef(1, 1) -> computeStarLevelStatsButton).traverse(_.sequence)
 
       for {
-        constantlyShownPart <- computeConstantlyShownPart.sequence
-        optionallyShownPart <- computeOptionallyShownPart.sequence
+        constantlyShownPart <- computeConstantlyShownPart
+        optionallyShownPart <- computeOptionallyShownPart
       } yield {
         constantlyShownPart ++ optionallyShownPart.mapFilter(_.sequence)
       }

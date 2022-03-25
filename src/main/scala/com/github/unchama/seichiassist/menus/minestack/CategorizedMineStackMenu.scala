@@ -134,7 +134,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     // 自動スタック機能トグルボタンを含むセクションの計算
     val autoMineStackToggleButtonSectionComputation =
-      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton).map(_.sequence).sequence
+      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton).traverse(_.sequence)
 
     for {
       categorizedItemSection <- categorizedItemSectionComputation

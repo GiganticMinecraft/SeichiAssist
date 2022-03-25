@@ -11,9 +11,9 @@ trait ConcurrentEffectTest {
     program: F[R]
   )(concurrency: Int)(implicit shift: ContextShift[F]): F[List[R]] = {
     for {
-      startedFibers <- List.fill(concurrency)(program).map(_.start).sequence
+      startedFibers <- List.fill(concurrency)(program).traverse(_.start)
 
-      results <- startedFibers.map(_.join).sequence
+      results <- startedFibers.traverse(_.join)
     } yield results
   }
 

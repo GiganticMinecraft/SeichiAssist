@@ -118,8 +118,7 @@ object MineStackMainMenu extends Menu {
               slotIndex -> button
           }
           .toList
-          .map(_.sequence)
-          .sequence
+          .traverse(_.sequence)
       } yield MenuSlotLayout(buttonMapping: _*)
     }
   }

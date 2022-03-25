@@ -555,7 +555,7 @@ object ActiveSkillMenu extends Menu {
       ChestSlotRef(4, 5) -> computeSkillButtonFor(Eldfell),
       ChestSlotRef(4, 7) -> computeSkillButtonFor(VenderBlizzard),
       ChestSlotRef(4, 8) -> computeSkillButtonFor(AssaultArmor)
-    ).map(_.sequence).sequence
+    ).traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation
