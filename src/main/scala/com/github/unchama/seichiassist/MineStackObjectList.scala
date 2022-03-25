@@ -4,7 +4,10 @@ import com.github.unchama.seichiassist.minestack.{GroupedMineStackObj, MineStack
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
 import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import org.bukkit.Material
+import org.bukkit.block.Banner
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BlockStateMeta
 
 import scala.collection.mutable
 
@@ -569,15 +572,7 @@ object MineStackObjectList {
 
   // @formatter:on
 
-  /**
-   * マインスタックに格納できるガチャ景品。
-   */
-  // これは後に変更されるのでミュータブルでないといけない
-  private val minestackGachaPrizes: mutable.ArrayBuffer[MineStackObj] =
-    mutable.ArrayBuffer.from(minestackBuiltinGachaPrizes)
-
-  // ランダムアクセスしないので
-  val minestacklist: mutable.ArrayBuffer[MineStackObj] = mutable.ArrayBuffer()
+  private var gachaPrizesObjects: List[MineStackObj] = Nil
 
   def setGachaPrizesList(mineStackObj: List[MineStackObj]): Unit = {
     gachaPrizesObjects = mineStackObj
@@ -592,51 +587,90 @@ object MineStackObjectList {
       minestacklistrs,
       minestackBuiltinGachaPrizes
     ).flatten.flatMap {
-      case Left(mineStackObj)                => List(mineStackObj)
-      case Right(group) => List(group.representative) ++ group.coloredVariants
+      case Left(mineStackObj) => List(mineStackObj)
+      case Right(group)       => List(group.representative) ++ group.coloredVariants
     } ++ gachaPrizesObjects
   }
 
-  def findByItemStack(itemstack: ItemStack): Option[MineStackObj] = {
-    getAllMineStackObjects.find{ mineStackObj =>
+  def findByItemStack(itemStack: ItemStack, player: Player): Option[MineStackObj] = {
+    getAllMineStackObjects.find { mineStackObj =>
       // IDとサブIDが一致している
-      val material = itemstack.getType
+      val material = itemStack.getType
       if (
-        material == mineStackObj.material && itemstack
+        material == mineStackObj.material && itemStack
           .getDurability
           .toInt == mineStackObj.durability
       ) {
         // 名前と説明文が無いアイテム
         if (
-          !mineStackObj.hasNameLore && !itemstack.getItemMeta.hasLore && !itemstack
+          !mineStackObj.hasNameLore && !itemStack.getItemMeta.hasLore && !itemStack
             .getItemMeta
             .hasDisplayName
         ) {
           true
         } else if (
-          mineStackObj.hasNameLore && itemstack.getItemMeta.hasDisplayName && itemstack
+          mineStackObj.hasNameLore && itemStack.getItemMeta.hasDisplayName && itemStack
             .getItemMeta
             .hasLore
         ) {
           // ガチャ以外のアイテム(がちゃりんご)
           if (mineStackObj.gachaType == -1) {
-            itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
+            itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
           } else {
             // ガチャ品
             val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
 
             // 名前が記入されているはずのアイテムで名前がなければ
             if (
-              g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemstack, player.getName)
-            )  false
-
-            g.itemStackEquals(itemstack)
+              g.probability >= 0.1 || Util.itemStackContainsOwnerName(itemStack, player.getName)
+            ) {
+              itemStackEquals(g.itemStack, itemStack)
+            } else {
+              false
+            }
           }
+        } else {
+          false
         }
+      } else {
+        false
+      }
     }
   }
 
-  private var gachaPrizesObjects: List[MineStackObj] = Nil
+  private def itemStackEquals(itemStack: ItemStack, another: ItemStack): Boolean = {
+    val crt = itemStack.getItemMeta
+    val ant = another.getItemMeta
+    val lore = crt.getLore
+    val anotherLore = ant.getLore
+
+    if (
+      anotherLore.containsAll(lore) && (crt
+        .getDisplayName
+        .contains(another.getItemMeta.getDisplayName) || ant
+        .getDisplayName
+        .contains(itemStack.getItemMeta.getDisplayName))
+    ) {
+      // この時点で名前と内容が一致
+      // 盾、バナー用の模様判定
+      val otherType = another.getType
+      if (
+        (otherType == Material.SHIELD || otherType == Material.BANNER) && itemStack.getType == otherType
+      ) {
+        val bs0 = ant.asInstanceOf[BlockStateMeta]
+        val b0 = bs0.getBlockState.asInstanceOf[Banner]
+        val p0 = b0.getPatterns
+
+        val bs1 = crt.asInstanceOf[BlockStateMeta]
+        val b1 = bs1.getBlockState.asInstanceOf[Banner]
+        val p1 = b1.getPatterns
+
+        return p0.containsAll(p1)
+      }
+      return true
+    }
+    false
+  }
 
   /**
    * 指定した名前のマインスタックオブジェクトを返す
@@ -644,5 +678,5 @@ object MineStackObjectList {
    * @return Some if the associated object was found, otherwise None
    */
   def findByName(name: String): Option[MineStackObj] =
-    MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
+    getAllMineStackObjects.find(_.mineStackObjName == name)
 }

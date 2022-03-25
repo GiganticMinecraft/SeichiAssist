@@ -488,11 +488,7 @@ object BreakUtil {
       itemstack.setDurability(0.toShort)
     }
 
-    val mineStackObjectList = MineStackObjectList.minestacklist ++ MineStackObjectList
-      .minestacklisttoggle
-      .values
-      .flatten
-      .toList
+    val mineStackObjectList = MineStackObjectList.getAllMineStackObjects
 
     mineStackObjectList.foreach { mineStackObj =>
       def addToMineStackAfterLevelCheck(): Boolean = {
@@ -553,7 +549,6 @@ object BreakUtil {
         }
       }
     }
-
     false
   }
 

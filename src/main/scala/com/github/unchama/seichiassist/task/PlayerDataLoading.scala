@@ -70,15 +70,7 @@ object PlayerDataLoading {
        * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、 ロードされるたびに再計算されるべきではない
        */
       val nameObjectMappings: Map[String, MineStackObj] =
-        MineStackObjectList
-          .minestacklist
-          .map(obj => obj.mineStackObjName -> obj)
-          .toMap ++ MineStackObjectList
-          .minestacklisttoggle
-          .values
-          .flatten
-          .toList
-          .map(obj => obj.mineStackObjName -> obj)
+        MineStackObjectList.getAllMineStackObjects.map(obj => obj.mineStackObjName -> obj).toMap
 
       val objectAmounts = mutable.HashMap[MineStackObj, Long]()
 
