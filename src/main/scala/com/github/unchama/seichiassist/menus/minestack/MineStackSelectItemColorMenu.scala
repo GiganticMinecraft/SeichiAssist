@@ -49,7 +49,7 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
       )
     )
     for {
-      mapping <- buttonMapping.map(_.sequence).sequence
+      mapping <- buttonMapping.traverse(_.sequence)
     } yield MenuSlotLayout(mapping: _*)
 
   }
