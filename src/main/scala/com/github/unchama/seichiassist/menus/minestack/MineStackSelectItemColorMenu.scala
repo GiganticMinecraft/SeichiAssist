@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus.minestack
 
 import cats.effect.IO
+import cats.implicits.toTraverseOps
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
@@ -47,11 +48,10 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
         )
       )
     )
-    IO {
-      MenuSlotLayout(buttonMapping.map {
-        case (index, button) => index -> button.unsafeRunSync()
-      }: _*)
-    }
+    for {
+      mapping <- buttonMapping.map(_.sequence).sequence
+    } yield MenuSlotLayout(mapping: _*)
+
   }
 
 }
