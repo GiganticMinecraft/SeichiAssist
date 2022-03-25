@@ -451,6 +451,27 @@ object MineStackObjectList {
       )
     ),
     GroupedMineStackObj(
+      new MineStackObj(BUILDING, "glass", "ガラス", 1, Material.GLASS, 0),
+      List(
+        new MineStackObj(BUILDING, "stained_glass_0", "白色の色付きガラス", 1, Material.STAINED_GLASS, 0),
+        new MineStackObj(BUILDING, "stained_glass_1", "橙色の色付きガラス", 1, Material.STAINED_GLASS, 1),
+        new MineStackObj(BUILDING, "stained_glass_2", "赤紫色の色付きガラス", 1, Material.STAINED_GLASS, 2),
+        new MineStackObj(BUILDING, "stained_glass_3", "空色の色付きガラス", 1, Material.STAINED_GLASS, 3),
+        new MineStackObj(BUILDING, "stained_glass_4", "黄色の色付きガラス", 1, Material.STAINED_GLASS, 4),
+        new MineStackObj(BUILDING, "stained_glass_5", "黄緑色の色付きガラス", 1, Material.STAINED_GLASS, 5),
+        new MineStackObj(BUILDING, "stained_glass_6", "桃色の色付きガラス", 1, Material.STAINED_GLASS, 6),
+        new MineStackObj(BUILDING, "stained_glass_7", "灰色の色付きガラス", 1, Material.STAINED_GLASS, 7),
+        new MineStackObj(BUILDING, "stained_glass_8", "薄灰色の色付きガラス", 1, Material.STAINED_GLASS, 8),
+        new MineStackObj(BUILDING, "stained_glass_9", "青緑色の色付きガラス", 1, Material.STAINED_GLASS, 9),
+        new MineStackObj(BUILDING, "stained_glass_10", "紫色の色付きガラス", 1, Material.STAINED_GLASS, 10),
+        new MineStackObj(BUILDING, "stained_glass_11", "青色の色付きガラス", 1, Material.STAINED_GLASS, 11),
+        new MineStackObj(BUILDING, "stained_glass_12", "茶色の色付きガラス", 1, Material.STAINED_GLASS, 12),
+        new MineStackObj(BUILDING, "stained_glass_13", "緑色の色付きガラス", 1, Material.STAINED_GLASS, 13),
+        new MineStackObj(BUILDING, "stained_glass_14", "赤色の色付きガラス", 1, Material.STAINED_GLASS, 14),
+        new MineStackObj(BUILDING, "stained_glass_15", "黒色の色付きガラス", 1, Material.STAINED_GLASS, 15)
+      )
+    ),
+    GroupedMineStackObj(
       new MineStackObj(BUILDING, "glass_panel", "板ガラス", 1, Material.THIN_GLASS, 0),
         List(
           new MineStackObj(BUILDING,"glass_panel_0","白色の色付きガラス板",1,Material.STAINED_GLASS_PANE,0),
@@ -578,18 +599,50 @@ object MineStackObjectList {
     gachaPrizesObjects = mineStackObj
   }
 
+  private val allMineStackObjects = List(
+    minestacklistbuild,
+    minestacklistdrop,
+    minestacklistfarm,
+    minestacklistmine,
+    minestacklistrs,
+    minestackBuiltinGachaPrizes
+  )
+
   def getAllMineStackObjects: List[MineStackObj] = {
-    List(
-      minestacklistbuild,
-      minestacklistdrop,
-      minestacklistfarm,
-      minestacklistmine,
-      minestacklistrs,
-      minestackBuiltinGachaPrizes
-    ).flatten.flatMap {
+    allMineStackObjects.flatten.flatMap {
       case Left(mineStackObj) => List(mineStackObj)
       case Right(group)       => List(group.representative) ++ group.coloredVariants
     } ++ gachaPrizesObjects
+  }
+
+  def getAllRepresentativeMineStackObjects: List[MineStackObj] = {
+    allMineStackObjects.flatten.flatMap {
+      case Right(group) => List(group.representative)
+      case Left(_)      => Nil
+    }
+  }
+
+  def getColoredVariantsMineStackObjectsByRepresentative(
+    representative: MineStackObj
+  ): List[MineStackObj] = {
+    allMineStackObjects.flatten.flatMap {
+      case Right(group) =>
+        if (group.representative == representative) {
+          List(group.representative) ++ group.coloredVariants
+        } else {
+          Nil
+        }
+      case Left(_) => Nil
+    }
+  }
+
+  def getMineStackObjectExceptColoredVariants: List[MineStackObj] = {
+    allMineStackObjects.flatten.flatMap {
+      case Right(group) =>
+        List(group.representative)
+      case Left(mineStackObj) =>
+        List(mineStackObj)
+    }
   }
 
   def findByItemStack(itemStack: ItemStack, player: Player): Option[MineStackObj] = {

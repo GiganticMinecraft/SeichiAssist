@@ -92,7 +92,9 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     for {
       categoryItemList <- IO {
-        MineStackObjectList.getAllMineStackObjects.filter(_.category() == category)
+        MineStackObjectList
+          .getMineStackObjectExceptColoredVariants
+          .filter(_.category() == category)
       }
     } yield {
       val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
@@ -116,7 +118,9 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     // TODO MineStackObjectListが可変になったらここを変更する
     val categoryItemList =
-      MineStackObjectList.getAllMineStackObjects.filter(_.category() == category)
+      MineStackObjectList
+        .getMineStackObjectExceptColoredVariants
+        .filter(_.category() == category)
     val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
 
     val playerMineStackButtons = MineStackButtons(player)
@@ -129,7 +133,6 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
           mineStackObjectPerPage * pageIndex,
           mineStackObjectPerPage * pageIndex + mineStackObjectPerPage
         )
-        .toList
         .traverse(getMineStackItemButtonOf(_))
         .map(_.zipWithIndex.map(_.swap))
 

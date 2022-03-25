@@ -32,25 +32,25 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
     player: Player
   )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
     import environment.canOpenCategorizedMineStackMenu
-    val buttonMapping = (
-      0 -> MineStackButtons(player).getMineStackItemButtonOf(mineStackObj).unsafeRunSync()
-    ) :: MineStackObjectList
-      .minestacklisttoggle(mineStackObj)
+    val buttonMapping = MineStackObjectList
+      .getColoredVariantsMineStackObjectsByRepresentative(mineStackObj)
       .zipWithIndex
       .map {
         case (inListMineStackObj, index) =>
-          (index + 1) -> MineStackButtons(player).getMineStackItemButtonOf(inListMineStackObj)
-      }
-      .flatMap { case (inListMineStackObj, button) => inListMineStackObj -> button } ++ Seq(
-      ChestSlotRef(5, 0) -> CommonButtons.transferButton(
-        new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
-        s"MineStack1ページ目へ",
-        CategorizedMineStackMenu(mineStackObj.stackType, 1)
+          index -> MineStackButtons(player).getMineStackItemButtonOf(inListMineStackObj)
+      } ++ Seq(
+      ChestSlotRef(5, 0) -> IO(
+        CommonButtons.transferButton(
+          new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
+          s"MineStack1ページ目へ",
+          CategorizedMineStackMenu(mineStackObj.stackType, 1)
+        )
       )
     )
-
     IO {
-      MenuSlotLayout(buttonMapping: _*)
+      MenuSlotLayout(buttonMapping.map {
+        case (index, button) => index -> button.unsafeRunSync()
+      }: _*)
     }
   }
 
