@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.seichiskill.effect.{
   ActiveSkillEffect,
   UnlockableActiveSkillEffect
 }
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.ActionStatus
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
