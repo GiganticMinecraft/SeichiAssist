@@ -496,7 +496,8 @@ class PlayerInventoryListener(
         isSkull && itemstackcurrent
           .getItemMeta
           .asInstanceOf[SkullMeta]
-          .getOwner == "MHF_ArrowLeft"
+          .getOwningPlayer
+          .getName == "MHF_ArrowLeft"
       ) {
 
         effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
