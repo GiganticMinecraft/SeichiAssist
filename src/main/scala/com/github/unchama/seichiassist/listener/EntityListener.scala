@@ -17,6 +17,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
+import org.bukkit.ChatColor.RED
 
 class EntityListener(
   implicit effectEnvironment: EffectEnvironment,
@@ -59,7 +60,7 @@ class EntityListener(
     // 整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_FALL, 0.0f, -1.0f)
-      player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。")
+      player.sendMessage(s"${RED}整地ワールドでは必ず上から掘ってください。")
       return
     }
 
@@ -139,7 +140,7 @@ class EntityListener(
 
     // 重力値の判定
     if (gravity > 15) {
-      player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。")
+      player.sendMessage(s"${RED}スキルを使用するには上から掘ってください。")
       return
     }
 
