@@ -204,7 +204,6 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val managedFlySystem: subsystems.managedfly.System[SyncIO, IO] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool, onMainThread}
 
-    implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val configuration = subsystems
@@ -238,7 +237,6 @@ class SeichiAssist extends JavaPlugin() {
   lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     subsystems.breakcount.System.wired[IO, SyncIO]().unsafeRunSync()
   }
