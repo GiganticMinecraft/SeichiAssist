@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seichilevelupmessage.domain
 import com.github.unchama.generic.Diff
 import com.github.unchama.generic.algebra.typeclasses.HasSuccessor
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor.AQUA
 
 object MessageTable {
   private val messages = Map(
@@ -39,7 +39,7 @@ object MessageTable {
   )
 
   def messageOnReaching(seichiLevel: SeichiLevel): Option[String] =
-    messages.get(seichiLevel.level).map(ChatColor.AQUA + _)
+    messages.get(seichiLevel.level).map(level => s"$AQUA$level")
 
   def messagesOnDiff(levelDiff: Diff[SeichiLevel]): List[String] =
     HasSuccessor[SeichiLevel]
