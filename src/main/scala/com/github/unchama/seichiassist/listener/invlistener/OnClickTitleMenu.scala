@@ -143,7 +143,8 @@ object OnClickTitleMenu {
 
             val id = current.getItemMeta.getDisplayName.toInt
             val length = Nicknames
-              .getTitleFor(id, pd.settings.nickname.id2, pd.settings.nickname.id3)
+              .getCombinedNicknameFor(id, pd.settings.nickname.id2, pd.settings.nickname.id3)
+              .getOrElse("")
               .length
             if (length > MAX_LENGTH) {
               player.sendMessage(LENGTH_LIMIT_EXCEEDED)
@@ -189,7 +190,8 @@ object OnClickTitleMenu {
 
             val id = current.getItemMeta.getDisplayName.toInt
             val length = Nicknames
-              .getTitleFor(pd.settings.nickname.id1, id, pd.settings.nickname.id3)
+              .getCombinedNicknameFor(pd.settings.nickname.id1, id, pd.settings.nickname.id3)
+              .getOrElse("")
               .length
             if (length > MAX_LENGTH) {
               player.sendMessage(LENGTH_LIMIT_EXCEEDED)
