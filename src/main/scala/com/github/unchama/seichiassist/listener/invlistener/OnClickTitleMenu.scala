@@ -25,10 +25,10 @@ object OnClickTitleMenu {
     player.playSound(player.getLocation, sound, 1f, pitch)
 
   private def isApplicableAsPrevPageButton(is: ItemStack): Boolean =
-    is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft"
+    is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowLeft"
 
   private def isApplicableAsNextPageButton(is: ItemStack): Boolean =
-    is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight"
+    is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowRight"
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(
     implicit effectEnvironment: EffectEnvironment,
