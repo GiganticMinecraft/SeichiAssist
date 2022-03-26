@@ -60,7 +60,6 @@ object System {
       new JdbcBuildAmountDataPersistence[G]()
     implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G] =
       new JdbcBuildAmountRateLimitPersistence[G]()
-    implicit val logger: Logger[F] = PrefixedLogger[F]("BuildAssist-BuildAmount")(rootLogger)
     implicit val javaTimeG: JavaTime[G] = JavaTime.fromClock
 
     for {

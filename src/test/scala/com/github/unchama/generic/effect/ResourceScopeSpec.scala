@@ -15,7 +15,6 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
   "Default implementation of ResourceScope" should {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-    implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
     val firstResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
     val secondResourceScope: ResourceScope[IO, IO, NumberedObject] = ResourceScope.unsafeCreate
@@ -156,7 +155,6 @@ class ResourceScopeSpec extends AnyWordSpec with Matchers with MockFactory {
 
   "Singleton resource scope" should {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-    implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
     val firstResourceScope: SingleResourceScope[IO, SyncIO, NumberedObject] =
       ResourceScope.unsafeCreateSingletonScope

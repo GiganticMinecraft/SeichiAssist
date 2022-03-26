@@ -55,9 +55,7 @@ object SubHomeCommand {
     onMissingArguments = printDescriptionExecutor
   )
 
-  private def subHomeNotSetMessage(id: SubHomeId): List[String] = List(
-    s"${YELLOW}指定されたサブホームポイントが設定されていません。"
-  )
+  private def subHomeNotSetMessage: List[String] = List(s"${YELLOW}指定されたサブホームポイントが設定されていません。")
 
   def executor[F[
     _
@@ -147,12 +145,12 @@ object SubHomeCommand {
                   case RenameResult.Done =>
                     MessageEffect(doneMessage(newName))(player)
                   case RenameResult.NotFound =>
-                    MessageEffect(subHomeNotSetMessage(subHomeId))(player)
+                    MessageEffect(subHomeNotSetMessage)(player)
                 }
               case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
               case Right(_)          => IO.unit
             },
-          MessageEffect(subHomeNotSetMessage(subHomeId))(player)
+          MessageEffect(subHomeNotSetMessage)(player)
         )
       } yield TargetedEffect.emptyEffect
     }

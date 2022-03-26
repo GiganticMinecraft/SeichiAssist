@@ -46,7 +46,6 @@ object System {
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit effectEnvironment: EffectEnvironment
   ): F[System[F, G]] = {
     implicit val persistence: SeichiAmountDataPersistence[G] =
       new JdbcSeichiAmountDataPersistence[G]

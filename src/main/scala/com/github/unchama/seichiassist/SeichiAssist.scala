@@ -333,7 +333,6 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.discordnotification.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
     subsystems
@@ -345,7 +344,6 @@ class SeichiAssist extends JavaPlugin() {
   lazy val subhomeSystem: subhome.System[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     subhome.System.wired
   }
@@ -452,8 +450,6 @@ class SeichiAssist extends JavaPlugin() {
     }
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
-
-    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
 
     // チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")

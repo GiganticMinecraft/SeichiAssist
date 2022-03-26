@@ -18,8 +18,7 @@ import java.util.concurrent.TimeUnit
 
 object DragonNightTimeRoutine {
   def apply[F[_]: Concurrent: Notifiable: Timer, G[_]: ContextCoercion[*[_], F], Player](
-    implicit context: RepeatingTaskContext,
-    fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
+    implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
     manaApi: ManaApi[F, G, Player]
   ): F[Nothing] = {
 
