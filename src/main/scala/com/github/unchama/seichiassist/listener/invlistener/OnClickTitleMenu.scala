@@ -233,7 +233,8 @@ object OnClickTitleMenu {
 
             val id = current.getItemMeta.getDisplayName.toInt
             val length = Nicknames
-              .getTitleFor(pd.settings.nickname.id1, pd.settings.nickname.id2, id)
+              .getCombinedNicknameFor(pd.settings.nickname.id1, pd.settings.nickname.id2, id)
+              .getOrElse("")
               .length
             if (length > MAX_LENGTH) {
               player.sendMessage(LENGTH_LIMIT_EXCEEDED)
