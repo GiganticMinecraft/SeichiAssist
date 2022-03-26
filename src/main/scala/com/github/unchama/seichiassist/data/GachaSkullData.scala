@@ -1,14 +1,20 @@
 package com.github.unchama.seichiassist.data
 
+import cats.effect.SyncIO
+import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
-import org.bukkit.Material
+import org.bukkit.{Bukkit, Material}
 import org.bukkit.inventory.ItemStack
 
 object GachaSkullData {
 
   import scala.jdk.CollectionConverters._
   import scala.util.chaining._
+
+  private implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
+    JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
   /**
    * ノーマルガチャ券
@@ -24,7 +30,9 @@ object GachaSkullData {
           setLore {
             List(s"$RESET${GREEN}右クリックで使えます").asJava
           }
-          setOwner("unchama")
+          setOwningPlayer(
+            Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("unchama").unsafeRunSync().get)
+          )
         }
       }
     }
@@ -43,7 +51,9 @@ object GachaSkullData {
           setLore {
             List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${LIGHT_PURPLE}投票ありがとナス♡").asJava
           }
-          setOwner("unchama")
+          setOwningPlayer(
+            Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("unchama").unsafeRunSync().get)
+          )
         }
       }
     }
@@ -62,7 +72,9 @@ object GachaSkullData {
           setLore {
             List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${GRAY}ガチャ景品と交換しました。").asJava
           }
-          setOwner("unchama")
+          setOwningPlayer(
+            Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("unchama").unsafeRunSync().get)
+          )
         }
       }
     }
