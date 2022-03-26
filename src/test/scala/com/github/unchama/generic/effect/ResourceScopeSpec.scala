@@ -1,6 +1,6 @@
 package com.github.unchama.generic.effect
 
-import cats.effect.{ContextShift, IO, Resource, SyncIO, Timer}
+import cats.effect.{ContextShift, IO, Resource, SyncIO}
 import com.github.unchama.generic.effect.ResourceScope.SingleResourceScope
 import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory

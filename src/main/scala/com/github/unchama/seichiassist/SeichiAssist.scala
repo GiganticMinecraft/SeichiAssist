@@ -231,7 +231,7 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
-    subsystems.buildcount.System.wired[IO, SyncIO](loggerF).unsafeRunSync()
+    subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
@@ -240,7 +240,7 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
+    subsystems.breakcount.System.wired[IO, SyncIO]().unsafeRunSync()
   }
 
   private lazy val manaSystem: subsystems.mana.System[IO, SyncIO, Player] = {

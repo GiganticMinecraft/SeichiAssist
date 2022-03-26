@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect
 
 import cats.effect.concurrent.Deferred
-import cats.effect.{CancelToken, ContextShift, IO, Timer}
+import cats.effect.{CancelToken, ContextShift, IO}
 import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers

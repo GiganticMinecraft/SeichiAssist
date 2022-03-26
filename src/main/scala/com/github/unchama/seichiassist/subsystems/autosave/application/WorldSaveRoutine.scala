@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.autosave.application
 
 import cats.Applicative
 import cats.effect.{Sync, Timer}
-import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.RepeatingRoutine
 import org.bukkit.ChatColor.AQUA
 
 object WorldSaveRoutine {

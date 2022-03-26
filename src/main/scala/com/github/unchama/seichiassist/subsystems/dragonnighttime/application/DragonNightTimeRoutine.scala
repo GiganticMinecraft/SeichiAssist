@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime.application
 
 import cats.effect.{Concurrent, Timer}
-import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{

@@ -1,6 +1,6 @@
 package com.github.unchama.testutil.concurrent.tests
 
-import cats.effect.{Concurrent, ContextShift}
+import cats.effect.Concurrent
 
 trait ConcurrentEffectTest {
 

@@ -30,9 +30,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{
   JdbcBuildAmountDataPersistence,
   JdbcBuildAmountRateLimitPersistence
 }
-import com.github.unchama.util.logging.log4cats.PrefixedLogger
 import io.chrisdavenport.cats.effect.time.JavaTime
-import io.chrisdavenport.log4cats.Logger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
@@ -51,8 +49,8 @@ object System {
   def wired[F[_]: ConcurrentEffect: NonServerThreadContextShift, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
-    rootLogger: Logger[F]
-  )(implicit configuration: Configuration): G[System[F, G]] = {
+    implicit configuration: Configuration
+  ): G[System[F, G]] = {
     import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage._
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
