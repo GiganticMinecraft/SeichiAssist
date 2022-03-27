@@ -47,6 +47,10 @@ trait TopLevelRouter[F[_]] {
 
   implicit val canOpenAchievementMenu: F CanOpen AchievementMenu.type
 
+  implicit val ioCanOpenCategorizedMineStackMenu: F CanOpen CategorizedMineStackMenu
+
+  implicit val ioCanOpenMineStackMenu: F CanOpen MineStackMainMenu.type
+
 }
 
 object TopLevelRouter {
@@ -119,7 +123,8 @@ object TopLevelRouter {
       : IO CanOpen PremiumPointTransactionHistoryMenu = _.open
     implicit lazy val ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type =
       _.open
-    implicit lazy val ioCanOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu =
+    override implicit lazy val ioCanOpenCategorizedMineStackMenu
+      : IO CanOpen CategorizedMineStackMenu =
       _.open
     implicit lazy val ioCanOpenSecondPage: IO CanOpen SecondPage.type = _.open
     implicit lazy val ioCanOpenMineStackMenu: IO CanOpen MineStackMainMenu.type = _.open

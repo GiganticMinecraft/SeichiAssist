@@ -4,13 +4,9 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.menuinventory.LayoutPreparationContext
-import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.menus.minestack.{
-  CategorizedMineStackMenu,
-  MineStackMainMenu
-}
+import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.command.TabExecutor
@@ -18,8 +14,7 @@ import org.bukkit.command.TabExecutor
 object MsCommand {
 
   def executor(
-    implicit ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
-    categorizedMineStackMenuEnvironment: CategorizedMineStackMenu.Environment,
+    implicit categorizedMineStackMenuEnvironment: CategorizedMineStackMenu.Environment,
     layoutPreparationContext: LayoutPreparationContext
   ): TabExecutor = playerCommandBuilder
     .argumentsParsers(
