@@ -636,7 +636,7 @@ object MineStackObjectList {
         List(group.representative)
       case Left(mineStackObj) =>
         List(mineStackObj)
-    }
+    } ++ gachaPrizesObjects
   }
 
   /**
