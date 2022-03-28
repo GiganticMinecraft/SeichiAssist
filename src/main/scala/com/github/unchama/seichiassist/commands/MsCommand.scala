@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
-import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
@@ -19,7 +18,6 @@ object MsCommand {
   ): TabExecutor = playerCommandBuilder
     .argumentsParsers(
       List(
-        Parsers.identity,
         category => {
           category.toIntOption match {
             case Some(categoryValue) =>
@@ -29,19 +27,38 @@ object MsCommand {
               }
             case None => failWith("カテゴリは数字で入力してください。")
           }
+        },
+        page => {
+          page.toIntOption match {
+            case Some(pageNum) =>
+              if (pageNum <= 0) {
+                failWith("ページ数は正の値を指定してください。")
+              }
+              succeedWith(page)
+            case None =>
+              failWith("ページ数は数字で入力してください。")
+          }
         }
       )
     )
     .execution { context =>
       val args = context.args.parsed
-      if (args.length != 2) {
-        IO(MessageEffect("不正な引数です。"))
-      } else if (args(1).toString.toIntOption.isEmpty) {
-        IO(MessageEffect("ページの指定が不正です。"))
+      val categories: Map[Int, MineStackObjectCategory] = Map(
+        1 -> MineStackObjectCategory.ORES,
+        2 -> MineStackObjectCategory.MOB_DROP,
+        3 -> MineStackObjectCategory.AGRICULTURAL,
+        4 -> MineStackObjectCategory.BUILDING,
+        5 -> MineStackObjectCategory.REDSTONE_AND_TRANSPORTATION,
+        6 -> MineStackObjectCategory.GACHA_PRIZES
+      )
+      val category = categories.get(args.head.toString.toInt)
+      category match {
+        case Some(_category) =>
+          val _page = args(1).toString.toInt + 1
+          IO.pure(CategorizedMineStackMenu(_category, _page).open)
+        case None =>
+          IO(MessageEffect("不明なカテゴリです。"))
       }
-      val category =
-        MineStackObjectCategory.fromSerializedValue(args.head.asInstanceOf[Int]).get
-      IO.pure(CategorizedMineStackMenu(category, args(1).asInstanceOf[Int]).open)
     }
     .build()
     .asNonBlockingTabExecutor()
