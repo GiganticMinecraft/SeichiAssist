@@ -50,7 +50,6 @@ import com.github.unchama.seichiassist.infrastructure.logging.jul.NamedJULLogger
 import com.github.unchama.seichiassist.infrastructure.redisbungee.RedisBungeeNetworkConnectionCount
 import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCConfiguration
 import com.github.unchama.seichiassist.listener._
-import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
