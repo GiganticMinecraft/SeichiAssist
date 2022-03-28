@@ -125,6 +125,8 @@ commands:
   minestack:
     description: Toggle whether minestack collects applicable item automatically
     usage: /minestack <on | off>
+    aliases:
+      - ms
     permission-message: *denied
     permission: seichiassist.minestack
 permissions:
