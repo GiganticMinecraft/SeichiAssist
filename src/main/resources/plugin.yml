@@ -161,6 +161,8 @@ permissions:
     default: true
   seichiassist.mebius:
     default: true
+  seichiassist.minestack:
+    default: true
   seichiassist.present.grant:
     default: false
     description: "'/present grant' の使用許可を与える。"
