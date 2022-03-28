@@ -183,3 +183,5 @@ permissions:
       - seichiassist.present.revoke
       - seichiassist.present.define
       - seichiassist.present.delete
+  seichiassist.ms:
+    default: true
