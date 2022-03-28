@@ -15,7 +15,7 @@ class ObtainChatPermission[F[_], G[_]: Monad, Player](
     for {
       playerLevel <- breakCountReadAPI.seichiLevelRepository(player).read
       result <-
-        if (playerLevel == SeichiLevel(1)) {
+        if (playerLevel > SeichiLevel(1)) {
           Monad[G].pure(ChatPermissionRequestResult.Success)
         } else {
           rateLimiterRepository(player).requestPermission(ChatCount.One).map {
