@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
-import com.github.unchama.targetedeffect.UnfocusedEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.command.TabExecutor
 
@@ -33,11 +33,15 @@ object MineStackCommand {
           IO {
             val sender = context.sender
             val pd = SeichiAssist.playermap(sender.getUniqueId).settings
-            UnfocusedEffect {
-              pd.autoMineStack = autoMineStack
-            }
-            if (autoMineStack) MessageEffect("mineStack自動収集をonにしました。")
-            else MessageEffect("mineStack自動収集をoffにしました。")
+            SequentialEffect(
+              UnfocusedEffect {
+                pd.autoMineStack = autoMineStack
+              },
+              if (autoMineStack)
+                MessageEffect("mineStack自動収集をonにしました。")
+              else
+                MessageEffect("mineStack自動収集をoffにしました。")
+            )
           }
         }
         .build()
@@ -51,9 +55,9 @@ object MineStackCommand {
             category => {
               category.toIntOption match {
                 case Some(categoryValue) =>
-                  MineStackObjectCategory.fromSerializedValue(categoryValue) match {
-                    case Some(_) => succeedWith(categoryValue)
-                    case None    => failWith("指定されたカテゴリは存在しません。")
+                  MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
+                    case Some(category) => succeedWith(category)
+                    case None           => failWith("指定されたカテゴリは存在しません。")
                   }
                 case None => failWith("カテゴリは数字で入力してください。")
               }
@@ -74,24 +78,16 @@ object MineStackCommand {
         )
         .execution { context =>
           val args = context.args.parsed
-          val categories: Map[Int, MineStackObjectCategory] = Map(
-            1 -> MineStackObjectCategory.ORES,
-            2 -> MineStackObjectCategory.MOB_DROP,
-            3 -> MineStackObjectCategory.AGRICULTURAL,
-            4 -> MineStackObjectCategory.BUILDING,
-            5 -> MineStackObjectCategory.REDSTONE_AND_TRANSPORTATION,
-            6 -> MineStackObjectCategory.GACHA_PRIZES
-          )
-          val category = categories.get(args.head.toString.toInt)
-          category match {
-            case Some(_category) =>
-              val _page = args(1).toString.toInt - 1
-              IO.pure(
-                ioCanOpenCategorizedMenu.open(new CategorizedMineStackMenu(_category, _page))
+          val _page = args(1).toString.toInt - 1
+          val _category = args.head
+          IO.pure(
+            ioCanOpenCategorizedMenu.open(
+              new CategorizedMineStackMenu(
+                _category.asInstanceOf[MineStackObjectCategory],
+                _page
               )
-            case None =>
-              IO(MessageEffect("不明なカテゴリです。"))
-          }
+            )
+          )
         }
         .build()
 
