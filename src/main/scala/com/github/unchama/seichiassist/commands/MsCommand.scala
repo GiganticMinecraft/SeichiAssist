@@ -31,10 +31,11 @@ object MsCommand {
         page => {
           page.toIntOption match {
             case Some(pageNum) =>
-              if (pageNum <= 0) {
+              if (pageNum < 0) {
                 failWith("ページ数は正の値を指定してください。")
+              } else {
+                succeedWith(page)
               }
-              succeedWith(page)
             case None =>
               failWith("ページ数は数字で入力してください。")
           }
@@ -54,7 +55,7 @@ object MsCommand {
       val category = categories.get(args.head.toString.toInt)
       category match {
         case Some(_category) =>
-          val _page = args(1).toString.toInt + 1
+          val _page = args(1).toString.toInt - 1
           IO.pure(CategorizedMineStackMenu(_category, _page).open)
         case None =>
           IO(MessageEffect("不明なカテゴリです。"))
