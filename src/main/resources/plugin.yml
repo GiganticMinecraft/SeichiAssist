@@ -124,7 +124,7 @@ commands:
     permission-message: *denied
   minestack:
     description: Toggle whether minestack collects applicable item automatically
-    usage: /minestack <on | off>
+    usage: /minestack <on | off | open>
     aliases:
       - ms
     permission-message: *denied

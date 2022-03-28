@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.ContextualExecutor
+import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.seichiassist.SeichiAssist
@@ -37,6 +38,8 @@ object MineStackCommand {
             UnfocusedEffect {
               pd.autoMineStack = autoMineStack
             }
+            if (autoMineStack) MessageEffect("mineStack自動収集をonにしました。")
+            else MessageEffect("mineStack自動収集をoffにしました。")
           }
         }
         .build()
@@ -46,6 +49,32 @@ object MineStackCommand {
       layoutPreparationContext: LayoutPreparationContext
     ): ContextualExecutor =
       playerCommandBuilder
+        .argumentsParsers(
+          List(
+            category => {
+              category.toIntOption match {
+                case Some(categoryValue) =>
+                  MineStackObjectCategory.fromSerializedValue(categoryValue) match {
+                    case Some(_) => succeedWith(categoryValue)
+                    case None    => failWith("指定されたカテゴリは存在しません。")
+                  }
+                case None => failWith("カテゴリは数字で入力してください。")
+              }
+            },
+            page => {
+              page.toIntOption match {
+                case Some(pageNum) =>
+                  if (pageNum <= 0) {
+                    failWith("ページ数は正の値を指定してください。")
+                  } else {
+                    succeedWith(page)
+                  }
+                case None =>
+                  failWith("ページ数は数字で入力してください。")
+              }
+            }
+          )
+        )
         .execution { context =>
           val args = context.args.parsed
           val categories: Map[Int, MineStackObjectCategory] = Map(
