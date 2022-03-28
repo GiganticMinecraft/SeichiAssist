@@ -1,33 +1,27 @@
 package com.github.unchama.seichiassist.subsystems.chatratelimiter.domain
 
 import cats.Monad
-import cats.effect.concurrent.Ref
-import com.github.unchama.datarepository.bukkit.player.PlayerDataRepository
+import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.ratelimiting.RateLimiter
-import org.bukkit.entity.Player
+import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 
-trait ObtainChatPermission[F[_], Player] {
-  def tryPermitted(player: Player): F[ChatPermissionRequestResult]
-}
-
-object ObtainChatPermission {
+class ObtainChatPermission[F[_], G[_]: Monad, Player](
+  rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[G, ChatCount]]
+)(implicit breakCountReadAPI: BreakCountReadAPI[F, G, Player]) {
   import cats.implicits._
 
-  def from[G[_]: Monad](
-    repository: PlayerDataRepository[Ref[G, Option[RateLimiter[G, ChatCount]]]]
-  ): ObtainChatPermission[G, Player] =
-    player =>
-      for {
-        rateLimiterOpt <- repository.apply(player).get
-        folded <- rateLimiterOpt.fold(
-          Monad[G].pure[ChatPermissionRequestResult](ChatPermissionRequestResult.Success)
-        ) { rateLimiter =>
-          rateLimiter
-            .requestPermission(ChatCount.One)
-            .map(count =>
-              if (count == ChatCount.One) ChatPermissionRequestResult.Success
-              else ChatPermissionRequestResult.Failed
-            )
+  def forPlayer(player: Player): G[ChatPermissionRequestResult] =
+    for {
+      playerLevel <- breakCountReadAPI.seichiLevelRepository(player).read
+      result <-
+        if (playerLevel == SeichiLevel(1)) {
+          Monad[G].pure(ChatPermissionRequestResult.Success)
+        } else {
+          rateLimiterRepository(player).requestPermission(ChatCount.One).map {
+            case ChatCount.One  => ChatPermissionRequestResult.Success
+            case ChatCount.Zero => ChatPermissionRequestResult.Failed
+          }
         }
-      } yield folded
+    } yield result
 }

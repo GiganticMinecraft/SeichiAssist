@@ -1,11 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.chatratelimiter
 
-import cats.effect.{Concurrent, ConcurrentEffect, SyncEffect, Timer}
+import cats.effect.{ConcurrentEffect, SyncEffect, Timer}
 import cats.implicits._
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.stream.StreamExtra
-import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
 import com.github.unchama.seichiassist.subsystems.chatratelimiter.application.ChatRateLimitRepositoryDefinition
@@ -20,21 +18,15 @@ object System {
     *[_],
     F
   ]: Timer](implicit breakCountAPI: BreakCountReadAPI[F, G, Player]): F[Subsystem[F]] = {
-    val repository = ChatRateLimitRepositoryDefinition.withContext[F, G, Player]
+    val repository = ChatRateLimitRepositoryDefinition.inSyncContext[G, Player]
+
     for {
       handle <- ContextCoercion(BukkitRepositoryControls.createHandles(repository))
-      _ <- Concurrent[F].start[Nothing]( // NOTE: This explicit type argument is needed
-        StreamExtra
-          .compileToRestartingStream("チャットのレートリミット")(breakCountAPI.seichiLevelUpdates.evalTap {
-            case (p, _) =>
-              ContextCoercion(handle.repository(p).set(None))
-          })
-      )
     } yield {
-      new Subsystem[F] {
-        implicit val api: ObtainChatPermission[G, Player] =
-          ObtainChatPermission.from(handle.repository)
+      implicit val api: ObtainChatPermission[F, G, Player] =
+        new ObtainChatPermission(handle.repository)
 
+      new Subsystem[F] {
         override val listeners: Seq[Listener] =
           Seq(new RateLimitCheckListener)
 

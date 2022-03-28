@@ -10,13 +10,14 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class RateLimitCheckListener[F[_]: SyncEffect](implicit api: ObtainChatPermission[F, Player])
-    extends Listener {
+class RateLimitCheckListener[F[_], G[_]: SyncEffect](
+  implicit api: ObtainChatPermission[F, G, Player]
+) extends Listener {
   @EventHandler
   def onEvent(e: AsyncPlayerChatEvent): Unit = {
     val player = e.getPlayer
-    val requestResult = SyncEffect[F]
-      .runSync[SyncIO, ChatPermissionRequestResult](api.tryPermitted(player))
+    val requestResult = SyncEffect[G]
+      .runSync[SyncIO, ChatPermissionRequestResult](api.forPlayer(player))
       .unsafeRunSync()
 
     if (requestResult == ChatPermissionRequestResult.Failed) {
