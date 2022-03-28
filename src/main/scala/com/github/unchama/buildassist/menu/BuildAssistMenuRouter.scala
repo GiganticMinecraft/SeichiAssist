@@ -4,8 +4,7 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
-import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
+import com.github.unchama.seichiassist.menus.BuildMainMenu
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import org.bukkit.entity.Player
 
