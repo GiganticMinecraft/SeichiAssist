@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.breakcount
 
+import cats.Monad
 import cats.effect.{Concurrent, Timer}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.Diff
@@ -29,10 +30,21 @@ trait BreakCountWriteAPI[G[_], Player] {
 
 trait BreakCountReadAPI[F[_], G[_], Player] {
 
+  import cats.implicits._
+
+  protected implicit val _GMonad: Monad[G]
+
   /**
    * プレーヤーの整地量データの読み取り専用リポジトリ
    */
   val seichiAmountDataRepository: KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]]
+
+  /**
+   * プレーヤーの整地レベルの読み取り専用リポジトリ
+   */
+  final lazy val seichiLevelRepository
+    : KeyedDataRepository[Player, ReadOnlyRef[G, SeichiLevel]] =
+    seichiAmountDataRepository.map(_.map(_.levelCorrespondingToExp))
 
   /**
    * プレーヤーの永続化された整地量データの読み取り専用リポジトリ。
@@ -51,8 +63,6 @@ trait BreakCountReadAPI[F[_], G[_], Player] {
    */
   final lazy val seichiAmountUpdateDiffs: fs2.Stream[F, (Player, Diff[SeichiAmountData])] =
     StreamExtra.keyedValueDiffs(seichiAmountUpdates)
-
-  import cats.implicits._
 
   /**
    * プレーヤーの整地レベルの更新差分が流れる [[fs2.Stream]]
