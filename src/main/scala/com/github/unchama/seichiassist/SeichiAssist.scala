@@ -547,7 +547,7 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
 
     val menuRouter = TopLevelRouter.apply
-    import menuRouter.canOpenStickMenu
+    import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
 
     MineStackObjectList.setGachaPrizesList(SeichiAssist.generateGachaPrizes())
 
@@ -561,9 +561,7 @@ class SeichiAssist extends JavaPlugin() {
     // 機能を果たそうとするものである。
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] =
       BuildAssistMenuRouter.apply.canOpenBuildMainMenu
-    import menuRouter.{ioCanOpenCategorizedMineStackMenu, ioCanOpenMineStackMenu}
-    implicit val categorizedMineStackMenu: CategorizedMineStackMenu.Environment =
-      new CategorizedMineStackMenu.Environment
+
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),

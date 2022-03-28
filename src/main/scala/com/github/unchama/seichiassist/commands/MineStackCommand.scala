@@ -4,10 +4,9 @@ import cats.effect.IO
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
-import com.github.unchama.menuinventory.LayoutPreparationContext
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.minestack.CategorizedMineStackMenu
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.targetedeffect.UnfocusedEffect
@@ -16,8 +15,7 @@ import org.bukkit.command.TabExecutor
 
 object MineStackCommand {
   def executor(
-    implicit categorizedMineStackMenuEnvironment: CategorizedMineStackMenu.Environment,
-    layoutPreparationContext: LayoutPreparationContext
+    implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
   ): TabExecutor =
     BranchedExecutor(
       Map(
@@ -45,8 +43,7 @@ object MineStackCommand {
         .build()
 
     def openCategorizedMineStackMenu(
-      implicit categorizedMineStackMenuEnvironment: CategorizedMineStackMenu.Environment,
-      layoutPreparationContext: LayoutPreparationContext
+      implicit ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu
     ): ContextualExecutor =
       playerCommandBuilder
         .argumentsParsers(
@@ -89,7 +86,9 @@ object MineStackCommand {
           category match {
             case Some(_category) =>
               val _page = args(1).toString.toInt - 1
-              IO.pure(CategorizedMineStackMenu(_category, _page).open)
+              IO.pure(
+                ioCanOpenCategorizedMenu.open(new CategorizedMineStackMenu(_category, _page))
+              )
             case None =>
               IO(MessageEffect("不明なカテゴリです。"))
           }
