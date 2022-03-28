@@ -127,11 +127,6 @@ commands:
     usage: /minestack <on | off>
     permission-message: *denied
     permission: seichiassist.minestack
-  ms:
-    description: Open minestack categorizedMenu
-    usage: /ms <categorynum> <page>
-    permission-message: *denied
-    permission: seichiassist.ms
 permissions:
   seichiassist.*:
     default: false
@@ -183,5 +178,3 @@ permissions:
       - seichiassist.present.revoke
       - seichiassist.present.define
       - seichiassist.present.delete
-  seichiassist.ms:
-    default: true
