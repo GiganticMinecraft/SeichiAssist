@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.commands
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
+import com.github.unchama.contextualexecutor.builder.Parsers
 import com.github.unchama.contextualexecutor.executors.BranchedExecutor
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.seichiassist.SeichiAssist
@@ -52,39 +53,24 @@ object MineStackCommand {
       playerCommandBuilder
         .argumentsParsers(
           List(
-            category => {
-              category.toIntOption match {
-                case Some(categoryValue) =>
-                  MineStackObjectCategory.fromSerializedValue(categoryValue - 1) match {
-                    case Some(category) => succeedWith(category)
-                    case None           => failWith("指定されたカテゴリは存在しません。")
-                  }
-                case None => failWith("カテゴリは数字で入力してください。")
-              }
-            },
-            page => {
-              page.toIntOption match {
-                case Some(pageNum) =>
-                  if (pageNum <= 0) {
-                    failWith("ページ数は正の値を指定してください。")
-                  } else {
-                    succeedWith(page)
-                  }
-                case None =>
-                  failWith("ページ数は数字で入力してください。")
-              }
-            }
+            Parsers
+              .closedRangeInt(1, Int.MaxValue, MessageEffect("カテゴリは正の値を指定してください。"))
+              .andThen(_.flatMap { categoryValue =>
+                MineStackObjectCategory
+                  .fromSerializedValue(categoryValue.asInstanceOf[Int] - 1) match {
+                  case Some(category) => succeedWith(category)
+                  case None           => failWith("指定されたカテゴリは存在しません。")
+                }
+              }),
+            Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("ページ数は正の値を指定してください。"))
           )
         )
         .execution { context =>
-          val args = context.args.parsed
-          val _page = args(1).toString.toInt - 1
-          val _category = args.head
           IO.pure(
             ioCanOpenCategorizedMenu.open(
               new CategorizedMineStackMenu(
-                _category.asInstanceOf[MineStackObjectCategory],
-                _page
+                context.args.parsed.head.asInstanceOf[MineStackObjectCategory],
+                context.args.parsed(1).toString.toInt - 1
               )
             )
           )
