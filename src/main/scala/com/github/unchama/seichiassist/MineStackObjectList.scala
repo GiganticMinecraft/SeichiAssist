@@ -2,8 +2,9 @@ package com.github.unchama.seichiassist
 
 import com.github.unchama.seichiassist.minestack.{GroupedMineStackObj, MineStackObj}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 
 object MineStackObjectList {
 
@@ -636,6 +637,65 @@ object MineStackObjectList {
         List(group.representative)
       case Left(mineStackObj) =>
         List(mineStackObj)
+    }
+  }
+
+  /**
+   * @param itemStack 検索対象のItemStack
+   * @param playerName 検索を行うプレイヤーの名前
+   * @return itemStackに対応するMineStackObjectのOption
+   */
+  def findByItemStack(itemStack: ItemStack, playerName: String): Option[MineStackObj] = {
+    getAllMineStackObjects.find { mineStackObj =>
+      // IDとサブIDが一致している
+      val material = itemStack.getType
+      if (
+        material == mineStackObj.material && itemStack
+          .getDurability
+          .toInt == mineStackObj.durability
+      ) {
+        // 名前と説明文が無いアイテム
+        if (
+          !mineStackObj.hasNameLore && !itemStack.getItemMeta.hasLore && !itemStack
+            .getItemMeta
+            .hasDisplayName
+        ) {
+          true
+        } else if (
+          mineStackObj.hasNameLore && itemStack.getItemMeta.hasDisplayName && itemStack
+            .getItemMeta
+            .hasLore
+        ) {
+          // ガチャ以外のアイテム(がちゃりんご)
+          if (mineStackObj.gachaType == -1) {
+            if (!itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) {
+              false
+            } else {
+              true
+            }
+          } else {
+            // ガチャ品
+            val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
+
+            // 名前が記入されているはずのアイテムで名前がなければ
+            if (
+              g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemStack, playerName)
+            ) {
+              false
+            } else {
+              if (g.itemStackEquals(itemStack)) {
+                true
+              } else {
+                false
+              }
+            }
+          }
+        } else {
+          false
+        }
+      } else {
+        false
+      }
     }
   }
 
