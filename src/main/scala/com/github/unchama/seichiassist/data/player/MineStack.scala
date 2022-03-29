@@ -27,4 +27,8 @@ class MineStack(_objectCountMap: collection.Map[MineStackObj, Long] = collection
     objectCountMap.put(mineStackObj, to)
   }
 
+  def getObjectCounts: Map[MineStackObj, Long] = {
+    objectCountMap.toMap
+  }
+
 }

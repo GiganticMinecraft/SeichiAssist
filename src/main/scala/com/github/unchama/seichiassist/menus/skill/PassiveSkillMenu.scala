@@ -58,7 +58,7 @@ object PassiveSkillMenu extends Menu {
       ChestSlotRef(0, 0) -> computeToggleMultipleBlockTypeDestructionButton,
       ChestSlotRef(0, 1) -> computeToggleChestBreakButton,
       ChestSlotRef(1, 0) -> computeGiganticBerserkButton
-    ).map(_.sequence).sequence
+    ).traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation

@@ -145,12 +145,6 @@ class PlayerClickListener(
     // オフハンドから実行された時処理を終了
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
-    // ガチャシステムメンテナンス中は処理を終了
-    if (SeichiAssist.gachamente) {
-      player.sendMessage("現在ガチャシステムはメンテナンス中です。\nしばらく経ってからもう一度お試しください")
-      return
-    }
-
     // ガチャデータが設定されていない場合
     if (gachaDataList.isEmpty) {
       player.sendMessage("ガチャが設定されていません")
@@ -279,6 +273,7 @@ class PlayerClickListener(
           }
 
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
+        player.spigot.sendMessage(message)
         Util.sendMessageToEveryone(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
         Util.sendMessageToEveryone(message)
         gachaGTWin += 1

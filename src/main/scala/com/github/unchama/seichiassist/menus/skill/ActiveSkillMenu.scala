@@ -125,7 +125,10 @@ object ActiveSkillMenu extends Menu {
           .lore(
             activeSkillSelectionLore.toList ++
               assaultSkillSelectionLore.toList ++
-              List(s"$RESET${YELLOW}使えるアクティブスキルポイント：$availablePoints")
+              List(
+                s"$RESET${YELLOW}使えるアクティブスキルポイント：$availablePoints",
+                s"$RESET${GRAY}整地レベルアップでポイントが貰えます。"
+              )
           )
           .build()
       Button(itemStack)
@@ -552,7 +555,7 @@ object ActiveSkillMenu extends Menu {
       ChestSlotRef(4, 5) -> computeSkillButtonFor(Eldfell),
       ChestSlotRef(4, 7) -> computeSkillButtonFor(VenderBlizzard),
       ChestSlotRef(4, 8) -> computeSkillButtonFor(AssaultArmor)
-    ).map(_.sequence).sequence
+    ).traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation

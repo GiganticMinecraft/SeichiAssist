@@ -92,7 +92,9 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     for {
       categoryItemList <- IO {
-        MineStackObjectList.minestacklist.filter(_.category() == category)
+        MineStackObjectList
+          .getMineStackObjectExceptColoredVariants
+          .filter(_.category() == category)
       }
     } yield {
       val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
@@ -115,7 +117,10 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     val mineStackObjectPerPage = objectSectionRows.chestRows.slotCount
 
     // TODO MineStackObjectListが可変になったらここを変更する
-    val categoryItemList = MineStackObjectList.minestacklist.filter(_.category() == category)
+    val categoryItemList =
+      MineStackObjectList
+        .getMineStackObjectExceptColoredVariants
+        .filter(_.category() == category)
     val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
 
     val playerMineStackButtons = MineStackButtons(player)
@@ -128,13 +133,12 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
           mineStackObjectPerPage * pageIndex,
           mineStackObjectPerPage * pageIndex + mineStackObjectPerPage
         )
-        .toList
         .traverse(getMineStackItemButtonOf(_))
         .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算
     val autoMineStackToggleButtonSectionComputation =
-      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton).map(_.sequence).sequence
+      List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton).traverse(_.sequence)
 
     for {
       categorizedItemSection <- categorizedItemSectionComputation

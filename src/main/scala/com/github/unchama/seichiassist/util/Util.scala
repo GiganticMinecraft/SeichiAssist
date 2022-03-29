@@ -7,12 +7,7 @@ import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftSer
 import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.minestack.MineStackObj
-import com.github.unchama.seichiassist.{
-  DefaultEffectEnvironment,
-  MineStackObjectList,
-  SeichiAssist
-}
+import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import com.github.unchama.util.bukkit.ItemStackUtil
 import enumeratum._
 import org.bukkit.ChatColor._
@@ -159,7 +154,8 @@ object Util {
     Bukkit
       .getOnlinePlayers
       .asScala
-      .map { player =>
+      .toList
+      .traverse { player =>
         for {
           playerSettings <- SeichiAssist
             .playermap(player.getUniqueId)
@@ -168,8 +164,6 @@ object Util {
           _ <- IO { if (!playerSettings.shouldMuteMessages) ev.send(player, content) }
         } yield ()
       }
-      .toList
-      .sequence
       .unsafeRunSync()
   }
 
@@ -249,7 +243,7 @@ object Util {
       .getOnlinePlayers
       .asScala
       .toList
-      .map { player =>
+      .traverse { player =>
         for {
           settings <- SeichiAssist
             .playermap(player.getUniqueId)
@@ -261,7 +255,6 @@ object Util {
           }
         } yield ()
       }
-      .sequence
       .unsafeRunSync()
   }
 
@@ -501,15 +494,6 @@ object Util {
       else
         world.setDifficulty(difficulty)
     }
-  }
-
-  /**
-   * 指定した名前のマインスタックオブジェクトを返す
-   */
-  // TODO これはここにあるべきではない
-  @Deprecated()
-  def findMineStackObjectByName(name: String): Option[MineStackObj] = {
-    MineStackObjectList.minestacklist.find(_.mineStackObjName == name)
   }
 
   def isEnemy(entityType: EntityType): Boolean = Set(

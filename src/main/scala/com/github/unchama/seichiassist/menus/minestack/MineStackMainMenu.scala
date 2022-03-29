@@ -99,7 +99,8 @@ object MineStackMainMenu extends Menu {
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
     def computeHistoricalMineStackLayout(
-      implicit ioOnMainThread: OnMinecraftServerThread[IO]
+      implicit ioOnMainThread: OnMinecraftServerThread[IO],
+      canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
     ): IO[MenuSlotLayout] = {
       val playerData = SeichiAssist.playermap(getUniqueId)
 
@@ -118,8 +119,7 @@ object MineStackMainMenu extends Menu {
               slotIndex -> button
           }
           .toList
-          .map(_.sequence)
-          .sequence
+          .traverse(_.sequence)
       } yield MenuSlotLayout(buttonMapping: _*)
     }
   }

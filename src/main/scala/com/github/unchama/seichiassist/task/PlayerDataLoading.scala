@@ -70,7 +70,7 @@ object PlayerDataLoading {
        * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、 ロードされるたびに再計算されるべきではない
        */
       val nameObjectMappings: Map[String, MineStackObj] =
-        MineStackObjectList.minestacklist.map(obj => obj.mineStackObjName -> obj).toMap
+        MineStackObjectList.getAllMineStackObjects.map(obj => obj.mineStackObjName -> obj).toMap
 
       val objectAmounts = mutable.HashMap[MineStackObj, Long]()
 
@@ -276,7 +276,7 @@ object PlayerDataLoading {
           if (dateDiff >= 1L) {
             val newTotalLoginDay = playerData.loginStatus.totalLoginDay + 1
             val newConsecutiveLoginDays =
-              if (dateDiff <= 60L)
+              if (dateDiff <= 2L)
                 playerData.loginStatus.consecutiveLoginDays + 1
               else
                 1

@@ -82,7 +82,7 @@ object SecondPage extends Menu {
       ChestSlotRef(1, 4) -> computeBroadcastMessageToggleButton,
       ChestSlotRef(1, 5) -> computeDeathMessageToggleButton,
       ChestSlotRef(1, 6) -> computeWorldGuardMessageToggleButton
-    ).toList.map(_.sequence).sequence
+    ).toList.traverse(_.sequence)
 
     for {
       dynamicPart <- dynamicPartComputation

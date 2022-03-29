@@ -149,15 +149,6 @@ public class GachaCommand implements CommandExecutor {
                     return true;
                 }
             }
-        } else if (args[0].equalsIgnoreCase("mente")) {
-            //menteフラグ反転処理
-            SeichiAssist.gachamente_$eq(!SeichiAssist.gachamente());
-            if (SeichiAssist.gachamente()) {
-                sender.sendMessage(ChatColor.GREEN + "ガチャシステムを一時停止しました");
-            } else {
-                sender.sendMessage(ChatColor.GREEN + "ガチャシステムを再開しました");
-            }
-            return true;
         } else if (args[0].equalsIgnoreCase("reload")) {
             //gacha reload と入力したとき
             if (!databaseGateway.gachaDataManipulator.loadGachaData()) {

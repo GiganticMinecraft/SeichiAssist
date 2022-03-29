@@ -546,17 +546,9 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
 
     val menuRouter = TopLevelRouter.apply
-    import menuRouter.canOpenStickMenu
+    import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
 
-    MineStackObjectList.minestackGachaPrizes ++= SeichiAssist.generateGachaPrizes()
-
-    MineStackObjectList.minestacklist.clear()
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistmine
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistdrop
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistfarm
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistbuild
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestacklistrs
-    MineStackObjectList.minestacklist ++= MineStackObjectList.minestackGachaPrizes
+    MineStackObjectList.setGachaPrizesList(SeichiAssist.generateGachaPrizes())
 
     import SeichiAssist.Scopes.globalChatInterceptionScope
 
@@ -568,6 +560,7 @@ class SeichiAssist extends JavaPlugin() {
     // 機能を果たそうとするものである。
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] =
       BuildAssistMenuRouter.apply.canOpenBuildMainMenu
+
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),
@@ -585,7 +578,8 @@ class SeichiAssist extends JavaPlugin() {
       "minehead" -> new MineHeadCommand().executor,
       "x-transfer" -> RegionOwnerTransferCommand.executor,
       "stickmenu" -> StickMenuCommand.executor,
-      "hat" -> HatCommand.executor
+      "hat" -> HatCommand.executor,
+      "minestack" -> MineStackCommand.executor
     ).concat(wiredSubsystems.flatMap(_.commands)).foreach {
       case (commandName, executor) => getCommand(commandName).setExecutor(executor)
     }
@@ -784,8 +778,6 @@ object SeichiAssist {
   // デバッグフラグ(デバッグモード使用時はここで変更するのではなくconfig.ymlの設定値を変更すること！)
   // TODO deprecate this
   var DEBUG = false
-  // ガチャシステムのメンテナンスフラグ
-  var gachamente = false
   // TODO staticであるべきではない
   var databaseGateway: DatabaseGateway = _
   var seichiAssistConfig: Config = _

@@ -72,6 +72,19 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
   }
 
+  @inline private def ifCoolDownDoneThenGet(player: Player, playerdata: PlayerData)(
+    supplier: => Int
+  ): Int = {
+    // 連打による負荷防止の為クールダウン処理
+    if (!playerdata.votecooldownflag) {
+      player.sendMessage(RED.toString + "しばらく待ってからやり直してください")
+      return 0
+    }
+    new CoolDownTask(player, true, false).runTaskLater(plugin, 1200)
+
+    supplier
+  }
+
   // 最新のnumofsorryforbug値を返してmysqlのnumofsorrybug値を初期化する処理
   def givePlayerBug(player: Player): Int = {
     val uuid = player.getUniqueId.toString
@@ -79,7 +92,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val command = s"select numofsorryforbug from $tableReference where uuid = '$uuid'"
       val rawMaximum =
         try {
-          gateway.executeQuery(command).recordIteration { _.getInt("numofsorryforbug") }.head
+          gateway
+            .executeQuery(command)
+            .recordIteration {
+              _.getInt("numofsorryforbug")
+            }
+            .head
         } catch {
           case e: Exception =>
             println("sqlクエリの実行に失敗しました。以下にエラーを表示します")
@@ -103,19 +121,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     numberToGrant
-  }
-
-  @inline private def ifCoolDownDoneThenGet(player: Player, playerdata: PlayerData)(
-    supplier: => Int
-  ): Int = {
-    // 連打による負荷防止の為クールダウン処理
-    if (!playerdata.votecooldownflag) {
-      player.sendMessage(RED.toString + "しばらく待ってからやり直してください")
-      return 0
-    }
-    new CoolDownTask(player, true, false).runTaskLater(plugin, 1200)
-
-    supplier
   }
 
   /**
@@ -144,19 +149,12 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val calendar = Calendar.getInstance()
       val dateFormat = new SimpleDateFormat("yyyy/MM/dd")
 
-      val lastVote = {
-        val readLastVote =
-          sql"SELECT lastvote FROM playerdata WHERE name = $name"
-            .map(_.string("lastvote"))
-            .headOption()
-            .apply()
-            .get
-
-        if (readLastVote == null || readLastVote == "")
-          dateFormat.format(calendar.getTime)
-        else
-          readLastVote
-      }
+      val lastVote =
+        sql"SELECT lastvote FROM playerdata WHERE name = $name"
+          .map(_.string("lastvote"))
+          .single()
+          .apply()
+          .getOrElse(dateFormat.format(calendar.getTime))
 
       sql"UPDATE playerdata SET lastvote = ${dateFormat.format(calendar.getTime)} WHERE name = $name"
         .update()
@@ -168,7 +166,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val LastLong = LastDate.getTime
 
       val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-      val shouldIncrementChainVote = dateDiff <= 60L
+      val shouldIncrementChainVote = dateDiff <= 2L
 
       val newCount = if (shouldIncrementChainVote) {
         sql"""select chainvote from playerdata where name = $name"""
@@ -243,22 +241,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       serializedInventory <- EitherT(catchingDatabaseErrors(player.getName, loadInventoryData))
     } yield serializedInventory
   }.value
-
-  private def catchingDatabaseErrors[R](
-    targetName: String,
-    program: IO[Either[TargetedEffect[CommandSender], R]]
-  ): IO[Either[TargetedEffect[CommandSender], R]] = {
-    program.attempt.flatMap {
-      case Left(error) =>
-        IO {
-          Bukkit.getLogger.warning(s"database failure for $targetName.")
-          error.printStackTrace()
-
-          Left(MessageEffect(s"${RED}データベースアクセスに失敗しました。"))
-        }
-      case Right(result) => IO.pure(result)
-    }
-  }
 
   private def checkInventoryOperationCoolDown(
     player: Player
@@ -417,6 +399,22 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     }
 
     catchingDatabaseErrors(uuid.toString, EitherT.right(executeQuery).value)
+  }
+
+  private def catchingDatabaseErrors[R](
+    targetName: String,
+    program: IO[Either[TargetedEffect[CommandSender], R]]
+  ): IO[Either[TargetedEffect[CommandSender], R]] = {
+    program.attempt.flatMap {
+      case Left(error) =>
+        IO {
+          Bukkit.getLogger.warning(s"database failure for $targetName.")
+          error.printStackTrace()
+
+          Left(MessageEffect(s"${RED}データベースアクセスに失敗しました。"))
+        }
+      case Right(result) => IO.pure(result)
+    }
   }
 
   def inquireLastQuitOf(playerName: String): IO[TargetedEffect[CommandSender]] = {
