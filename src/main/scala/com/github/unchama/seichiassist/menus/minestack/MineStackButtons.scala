@@ -183,11 +183,11 @@ private[minestack] case class MineStackButtons(player: Player) {
   }
 
   private def isMineStackSelectItemColorMenu: Boolean = {
-    player.getOpenInventory.getTopInventory.getName == s"§1§lMineStack(アイテム色選択)"
+    player.getOpenInventory.getTopInventory.getName == s"$DARK_BLUE${BOLD}MineStack(アイテム色選択)"
   }
 
   private def isMineStackMainMenu: Boolean = {
-    player.getOpenInventory.getTopInventory.getName == "§5§lMineStackメインメニュー"
+    player.getOpenInventory.getTopInventory.getName == s"$DARK_PURPLE${BOLD}MineStackメインメニュー"
   }
 
   def computeAutoMineStackToggleButton(
