@@ -109,27 +109,28 @@ private[minestack] case class MineStackButtons(player: Player) {
     Button(
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        SequentialEffect(
-          withDrawItemEffect(mineStackObj, mineStackObj.itemStack.getMaxStackSize),
-          targetedeffect.UnfocusedEffect {
-            if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
-              playerData.hisotryData.addHistory(mineStackObj)
-            }
-          }
-        )
+        clickEffect(mineStackObj, mineStackObj.itemStack.getMaxStackSize)
       },
       action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
-        SequentialEffect(
-          withDrawItemEffect(mineStackObj, 1),
-          targetedeffect.UnfocusedEffect {
-            if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
-              playerData.hisotryData.addHistory(mineStackObj)
-            }
-          }
-        )
+        clickEffect(mineStackObj, 1)
       }
     )
   })
+
+  private def clickEffect(mineStackObj: MineStackObj, amount: Int)(
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+  ): Kleisli[IO, Player, Unit] = {
+    val playerData = SeichiAssist.playermap(getUniqueId)
+    SequentialEffect(
+      withDrawItemEffect(mineStackObj, amount),
+      targetedeffect.UnfocusedEffect {
+        if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
+          playerData.hisotryData.addHistory(mineStackObj)
+        }
+      }
+    )
+  }
 
   private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
