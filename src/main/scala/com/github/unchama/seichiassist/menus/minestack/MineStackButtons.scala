@@ -93,19 +93,22 @@ private[minestack] case class MineStackButtons(player: Player) {
                     setLore {
                       val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
 
-                      List(
+                      (List(
                         s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
-                        s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能",
-                        s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
-                        s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し",
-                        if (
-                          MineStackObjectList
-                            .getAllRepresentativeMineStackObjects
-                            .contains(mineStackObj)
-                        )
-                          s"$RESET$DARK_GREEN${UNDERLINE}シフトクリックで別の色を選べます。"
-                        else ""
-                      ).filterNot(_ == "").asJava
+                        s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能"
+                      ) ++ (if (
+                              MineStackObjectList
+                                .getAllRepresentativeMineStackObjects
+                                .contains(
+                                  mineStackObj
+                                ) && !isMineStackSelectItemColorMenu && !isMineStackMainMenu
+                            )
+                              List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")
+                            else
+                              List(
+                                s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
+                                s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
+                              ))).asJava
                     }
                 }
             }
@@ -140,7 +143,11 @@ private[minestack] case class MineStackButtons(player: Player) {
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpen: CanOpen[IO, CategorizedMineStackMenu]
   ): TargetedEffect[Player] = {
-    if (MineStackObjectList.getAllRepresentativeMineStackObjects.contains(mineStackObj)) {
+    if (
+      MineStackObjectList
+        .getAllRepresentativeMineStackObjects
+        .contains(mineStackObj) && !isMineStackSelectItemColorMenu && !isMineStackMainMenu
+    ) {
       implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu.Environment =
         new MineStackSelectItemColorMenu.Environment()
       MineStackSelectItemColorMenu(mineStackObj).open
@@ -173,6 +180,14 @@ private[minestack] case class MineStackButtons(player: Player) {
         )
       } yield ()
     }
+  }
+
+  private def isMineStackSelectItemColorMenu: Boolean = {
+    player.getOpenInventory.getTopInventory.getName == s"§1§lMineStack(アイテム色選択)"
+  }
+
+  private def isMineStackMainMenu: Boolean = {
+    player.getOpenInventory.getTopInventory.getName == "§5§lMineStackメインメニュー"
   }
 
   def computeAutoMineStackToggleButton(
