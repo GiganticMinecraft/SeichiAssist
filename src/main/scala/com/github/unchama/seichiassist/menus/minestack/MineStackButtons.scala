@@ -121,7 +121,7 @@ private[minestack] case class MineStackButtons(player: Player) {
           withDrawItemEffect(mineStackObj, mineStackObj.itemStack.getMaxStackSize),
           targetedeffect.UnfocusedEffect {
             if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
-              playerData.hisotryData.add(mineStackObj)
+              playerData.hisotryData.addHistory(mineStackObj)
             }
           }
         )
@@ -131,7 +131,7 @@ private[minestack] case class MineStackButtons(player: Player) {
           withDrawItemEffect(mineStackObj, 1),
           targetedeffect.UnfocusedEffect {
             if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
-              playerData.hisotryData.add(mineStackObj)
+              playerData.hisotryData.addHistory(mineStackObj)
             }
           }
         )
