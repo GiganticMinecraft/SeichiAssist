@@ -44,7 +44,7 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
         CommonButtons.transferButton(
           new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
           s"MineStack1ページ目へ",
-          CategorizedMineStackMenu(mineStackObj.stackType, 1)
+          CategorizedMineStackMenu(mineStackObj.stackType)
         )
       )
     )
