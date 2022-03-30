@@ -113,9 +113,6 @@ private[minestack] case class MineStackButtons(player: Player) {
 
     Button(
       itemStack,
-      action.FilteredButtonEffect(ClickEventFilter.SHIFT_CLICK) { _ =>
-        SequentialEffect(colorSelectMenuOpenEffect(mineStackObj))
-      },
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
         SequentialEffect(
           withDrawItemEffect(mineStackObj, mineStackObj.itemStack.getMaxStackSize),
@@ -139,7 +136,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def colorSelectMenuOpenEffect(mineStackObj: MineStackObj)(
+  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpen: CanOpen[IO, CategorizedMineStackMenu]
   ): TargetedEffect[Player] = {
@@ -148,40 +145,34 @@ private[minestack] case class MineStackButtons(player: Player) {
         new MineStackSelectItemColorMenu.Environment()
       MineStackSelectItemColorMenu(mineStackObj).open
     } else {
-      TargetedEffect.emptyEffect
+      for {
+        pair <- Kleisli((player: Player) =>
+          onMainThread.runAction {
+            for {
+              playerData <- SyncIO {
+                SeichiAssist.playermap(player.getUniqueId)
+              }
+              currentAmount <- SyncIO {
+                playerData.minestack.getStackedAmountOf(mineStackObj)
+              }
+
+              grantAmount = Math.min(amount, currentAmount).toInt
+
+              soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
+              itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
+
+              _ <- SyncIO {
+                playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
+              }
+            } yield (soundEffectPitch, itemStackToGrant)
+          }
+        )
+        _ <- SequentialEffect(
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, pair._1),
+          Util.grantItemStacksEffect(pair._2)
+        )
+      } yield ()
     }
-  }
-
-  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
-    implicit onMainThread: OnMinecraftServerThread[IO]
-  ): TargetedEffect[Player] = {
-    for {
-      pair <- Kleisli((player: Player) =>
-        onMainThread.runAction {
-          for {
-            playerData <- SyncIO {
-              SeichiAssist.playermap(player.getUniqueId)
-            }
-            currentAmount <- SyncIO {
-              playerData.minestack.getStackedAmountOf(mineStackObj)
-            }
-
-            grantAmount = Math.min(amount, currentAmount).toInt
-
-            soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
-            itemStackToGrant = mineStackObj.parameterizedWith(player).withAmount(grantAmount)
-
-            _ <- SyncIO {
-              playerData.minestack.subtractStackedAmountOf(mineStackObj, grantAmount.toLong)
-            }
-          } yield (soundEffectPitch, itemStackToGrant)
-        }
-      )
-      _ <- SequentialEffect(
-        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, pair._1),
-        Util.grantItemStacksEffect(pair._2)
-      )
-    } yield ()
   }
 
   def computeAutoMineStackToggleButton(
