@@ -4,7 +4,7 @@ class MineStackUsageHistory {
 
   private val maxListSize = 27
 
-  private var usageHistory: List[MineStackObj] = Nil
+  private var usageHistory: Vector[MineStackObj] = Vector.empty
 
   /**
    * 履歴に追加します。ただし、データの保存可能な最大値を超えていた場合、先頭から削除されます。
@@ -15,6 +15,6 @@ class MineStackUsageHistory {
     if (usageHistory.size > maxListSize) usageHistory.drop(1)
   }
 
-  def getHistory: List[MineStackObj] = usageHistory
+  def getHistory: Vector[MineStackObj] = usageHistory
 
 }

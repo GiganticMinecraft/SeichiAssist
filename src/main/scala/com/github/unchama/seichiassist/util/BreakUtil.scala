@@ -484,11 +484,9 @@ object BreakUtil {
       }
     }
 
-    MineStackObjectList.findByItemStack(itemstack, player.getName) match {
-      case Some(mineStackObject) =>
-        addToMineStackAfterLevelCheck(mineStackObject)
-      case None => false
-    }
+    MineStackObjectList
+      .findByItemStack(itemstack, player.getName)
+      .exists(addToMineStackAfterLevelCheck)
   }
 
   def calcManaDrop(player: Player): Double = {
