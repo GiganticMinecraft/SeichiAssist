@@ -668,11 +668,7 @@ object MineStackObjectList {
         ) {
           // ガチャ以外のアイテム(がちゃりんご)
           if (mineStackObj.gachaType == -1) {
-            if (!itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) {
-              false
-            } else {
-              true
-            }
+            itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
           } else {
             // ガチャ品
             val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
@@ -683,11 +679,7 @@ object MineStackObjectList {
             ) {
               false
             } else {
-              if (g.itemStackEquals(itemStack)) {
-                true
-              } else {
-                false
-              }
+              g.itemStackEquals(itemStack)
             }
           }
         } else {
