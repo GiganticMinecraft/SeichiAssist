@@ -610,11 +610,15 @@ object MineStackObjectList {
     } ++ gachaPrizesObjects
   }
 
-  def getAllRepresentativeMineStackObjects: List[MineStackObj] = {
+  private def getAllRepresentativeMineStackObjects: List[MineStackObj] = {
     allMineStackObjects.flatten.flatMap {
       case Right(group) => List(group.representative)
       case Left(_)      => Nil
     }
+  }
+
+  def isRepresentativeMainStackObject(mineStackObj: MineStackObj): Boolean = {
+    getAllRepresentativeMineStackObjects.contains(mineStackObj)
   }
 
   def getColoredVariantsMineStackObjectsByRepresentative(
