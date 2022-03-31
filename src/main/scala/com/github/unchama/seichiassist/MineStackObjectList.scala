@@ -665,27 +665,23 @@ object MineStackObjectList {
    */
   def findByItemStack(itemStack: ItemStack, playerName: String): Option[MineStackObj] = {
     getAllMineStackObjects.find { mineStackObj =>
-      // IDとサブIDが一致している
       val material = itemStack.getType
-      if (
-        material == mineStackObj.material && itemStack
-          .getDurability
-          .toInt == mineStackObj.durability
-      ) {
-        // 名前と説明文が無いアイテム
-        if (
-          !mineStackObj.hasNameLore && !itemStack.getItemMeta.hasLore && !itemStack
-            .getItemMeta
-            .hasDisplayName
-        ) {
+      val isSameItem = material == mineStackObj.material && itemStack
+        .getDurability
+        .toInt == mineStackObj.durability
+      if (isSameItem) {
+        val hasMineStackObjLore = mineStackObj.hasNameLore
+        val hasItemStackLore = itemStack.getItemMeta.hasLore
+        val hasItemStackDisplayName = itemStack.getItemMeta.hasDisplayName
+        val itemNotInfoExists =
+          !hasMineStackObjLore && !hasItemStackLore && !hasItemStackDisplayName
+        val itemInfoExists =
+          hasMineStackObjLore && hasItemStackLore && hasItemStackDisplayName
+        if (itemNotInfoExists) {
           true
-        } else if (
-          mineStackObj.hasNameLore && itemStack.getItemMeta.hasDisplayName && itemStack
-            .getItemMeta
-            .hasLore
-        ) {
-          // ガチャ以外のアイテム(がちゃりんご)
-          if (mineStackObj.gachaType == -1) {
+        } else if (itemInfoExists) {
+          val isGachaRingo = mineStackObj.gachaType == -1
+          if (isGachaRingo) {
             itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
           } else {
             // ガチャ品
