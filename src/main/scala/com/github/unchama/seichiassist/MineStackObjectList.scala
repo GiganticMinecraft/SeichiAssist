@@ -603,6 +603,9 @@ object MineStackObjectList {
     minestackBuiltinGachaPrizes
   )
 
+  /**
+   * すべてのMineStackObjectを返す
+   */
   def getAllMineStackObjects: List[MineStackObj] = {
     allMineStackObjects.flatten.flatMap {
       case Left(mineStackObj) => List(mineStackObj)
@@ -617,10 +620,18 @@ object MineStackObjectList {
     }
   }
 
+  /**
+   * @param mineStackObj 検索対象のmineStackObj
+   * @return RepresentativeMainStackObject(代表アイテム)であるかどうか
+   */
   def isRepresentativeMainStackObject(mineStackObj: MineStackObj): Boolean = {
     getAllRepresentativeMineStackObjects.contains(mineStackObj)
   }
 
+  /**
+   * @param representative RepresentativeMainStackObject
+   * @return RepresentativeMainStackObjectに紐づくカラーバリエーションアイテム
+   */
   def getColoredVariantsMineStackObjectsByRepresentative(
     representative: MineStackObj
   ): List[MineStackObj] = {
@@ -635,6 +646,9 @@ object MineStackObjectList {
     }
   }
 
+  /**
+   * @return カラーバリエーションアイテムを取り除いたMineStackObject
+   */
   def getMineStackObjectExceptColoredVariants: List[MineStackObj] = {
     allMineStackObjects.flatten.flatMap {
       case Right(group) =>
