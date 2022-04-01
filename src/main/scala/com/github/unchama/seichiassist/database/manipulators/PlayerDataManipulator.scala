@@ -136,12 +136,17 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   }
 
   // 指定されたプレイヤーにガチャ券を送信する
-  def addPlayerBug(playerName: String, num: Int): ActionStatus = {
-    val command = ("update " + tableReference
-      + " set numofsorryforbug = numofsorryforbug + " + num
-      + s" where name = '$playerName'")
+  def addPlayerBug(playerName: String, num: Int): IO[ResponseEffectOrResult[Player, Unit]] = {
+    val executeQuery = IO {
+      import scalikejdbc._
+      DB.localTx { implicit session =>
+        sql"""update seichiassist set numofsorryforbug = numofsorryforbug + $num where name = $playerName"""
+          .update()
+          .apply()
+      }
+    }.void
 
-    gateway.executeUpdate(command)
+    catchingDatabaseErrors(s"add admin-gacha for $playerName", EitherT.right(executeQuery).value)
   }
 
   def addChainVote(name: String): Unit =
@@ -420,9 +425,13 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
   def inquireLastQuitOf(playerName: String): IO[TargetedEffect[CommandSender]] = {
     val fetchLastQuitData: IO[ResponseEffectOrResult[CommandSender, String]] = EitherT
       .right(IO {
-        val command = s"select lastquit from $tableReference where name = '$playerName'"
-
-        gateway.executeQuery(command).recordIteration(_.getString("lastquit")).head
+        import scalikejdbc._
+        DB.readOnly { implicit session =>
+          sql"""select lastquit from playerdata where name = $playerName"""
+            .map(rs => rs.string("lastquit"))
+            .single()
+            .apply()
+        }.get
       })
       .value
 
