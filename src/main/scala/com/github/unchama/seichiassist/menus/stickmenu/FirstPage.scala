@@ -294,62 +294,41 @@ object FirstPage extends Menu {
       )
     }
 
-    val computeMineStackButton: IO[Button] =
-      environment
-        .breakCountAPI
-        .seichiAmountDataRepository(player)
-        .read
-        .toIO
-        .flatMap(seichiAmountData =>
-          IO {
-            val minimumLevelRequired = SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
-            val hasEnoughLevel =
-              seichiAmountData.levelCorrespondingToExp.level >= minimumLevelRequired
+    val computeMineStackButton: IO[Button] = {
+      val buttonLore: List[String] = {
+        val explanation = List(
+          s"$RESET${GREEN}説明しよう!MineStackとは…",
+          s"${RESET}主要アイテムを無限にスタック出来る!",
+          s"${RESET}スタックしたアイテムは",
+          s"${RESET}ここから取り出せるゾ!"
+        )
 
-            (minimumLevelRequired, hasEnoughLevel)
+        val actionGuidance = s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
+
+        val annotation = List(
+          s"$RESET$DARK_GRAY※スタックしたアイテムは",
+          s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
+          s"$RESET${DARK_GRAY}共有されます"
+        )
+
+        explanation ++ List(actionGuidance) ++ annotation
+      }
+
+      IO(
+        Button(
+          new IconItemStackBuilder(Material.CHEST)
+            .title(s"$YELLOW$UNDERLINE${BOLD}MineStack機能")
+            .lore(buttonLore)
+            .build(),
+          LeftClickButtonEffect {
+            SequentialEffect(
+              FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
+              environment.ioCanOpenMineStackMenu.open(MineStackMainMenu)
+            )
           }
         )
-        .map {
-          case (minimumLevelRequired, hasEnoughLevel) =>
-            val buttonLore: List[String] = {
-              val explanation = List(
-                s"$RESET${GREEN}説明しよう!MineStackとは…",
-                s"${RESET}主要アイテムを無限にスタック出来る!",
-                s"${RESET}スタックしたアイテムは",
-                s"${RESET}ここから取り出せるゾ!"
-              )
-
-              val actionGuidance = if (hasEnoughLevel) {
-                s"$RESET$DARK_GREEN${UNDERLINE}クリックで開く"
-              } else {
-                s"$RESET$DARK_RED${UNDERLINE}整地Lvが${minimumLevelRequired}以上必要です"
-              }
-
-              val annotation = List(
-                s"$RESET$DARK_GRAY※スタックしたアイテムは",
-                s"$RESET${DARK_GRAY}各サバイバルサーバー間で",
-                s"$RESET${DARK_GRAY}共有されます"
-              )
-
-              explanation ++ List(actionGuidance) ++ annotation
-            }
-
-            Button(
-              new IconItemStackBuilder(Material.CHEST)
-                .title(s"$YELLOW$UNDERLINE${BOLD}MineStack機能")
-                .lore(buttonLore)
-                .build(),
-              LeftClickButtonEffect {
-                if (hasEnoughLevel)
-                  SequentialEffect(
-                    FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-                    environment.ioCanOpenMineStackMenu.open(MineStackMainMenu)
-                  )
-                else
-                  FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
-              }
-            )
-        }
+      )
+    }
 
     val computePocketOpenButton: IO[Button] = {
       val api = environment.fourDimensionalPocketApi

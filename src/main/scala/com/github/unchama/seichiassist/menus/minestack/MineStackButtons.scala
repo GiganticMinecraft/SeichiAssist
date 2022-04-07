@@ -66,7 +66,6 @@ private[minestack] case class MineStackButtons(player: Player) {
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): IO[Button] = RecomputedButton(IO {
     val playerData = SeichiAssist.playermap(getUniqueId)
-    val requiredLevel = SeichiAssist.seichiAssistConfig.getMineStacklevel(mineStackObj.level)
 
     import scala.util.chaining._
 
@@ -86,10 +85,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
             setLore {
               val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObj)
-              val itemDetail = List(
-                s"$RESET$GREEN${stackedAmount.formatted("%,d")}個",
-                s"$RESET${DARK_GRAY}Lv${requiredLevel}以上でスタック可能"
-              )
+              val itemDetail = List(s"$RESET$GREEN${stackedAmount.formatted("%,d")}個")
               val operationDetail = {
                 if (isRepresentativeMineStackObjectAndCategorizedMineStackMenu(mineStackObj)) {
                   List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")

@@ -211,12 +211,7 @@ class PlayerClickListener(
           ""
         } else {
           // アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
-          if (
-            BreakUtil.tryAddItemIntoMineStack(
-              player,
-              present.itemStack
-            ) && playerLevel >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
-          ) {
+          if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack)) {
             // ...格納した！
             s"${AQUA}景品をマインスタックに収納しました。"
           } else {

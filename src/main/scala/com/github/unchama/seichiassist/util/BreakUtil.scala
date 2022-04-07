@@ -7,7 +7,6 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.minestack.MineStackObj
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
 import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
   AssaultArmor,
@@ -443,8 +442,6 @@ object BreakUtil {
       player.sendMessage(s"${RED}mineDurability:${itemstack.getDurability}")
     }
 
-    val config = SeichiAssist.seichiAssistConfig
-
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     // minestackflagがfalseの時は処理を終了
@@ -465,28 +462,12 @@ object BreakUtil {
       itemstack.setDurability(0.toShort)
     }
 
-    def addToMineStackAfterLevelCheck(mineStackObj: MineStackObj): Boolean = {
-      val level =
-        SeichiAssist
-          .instance
-          .breakCountSystem
-          .api
-          .seichiAmountDataRepository(player)
-          .read
-          .unsafeRunSync()
-          .levelCorrespondingToExp
-
-      if (level.level < config.getMineStacklevel(mineStackObj.level)) {
-        false
-      } else {
-        playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
-        true
-      }
-    }
-
     MineStackObjectList
       .findByItemStack(itemstack, player.getName)
-      .exists(addToMineStackAfterLevelCheck)
+      .foreach(mineStackObj =>
+        playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
+      )
+    true
   }
 
   def calcManaDrop(player: Player): Double = {

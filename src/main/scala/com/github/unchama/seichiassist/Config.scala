@@ -63,8 +63,6 @@ final class Config private (val config: FileConfiguration) {
 
   def getPassivePortalInventorylevel: Int = getIntFailFast("passiveportalinventorylevel")
 
-  def getMineStacklevel(i: Int): Int = getIntFailFast("minestacklevel" + i)
-
   def getDB: String = config.getString("db")
 
   def getTable: String = config.getString("table")

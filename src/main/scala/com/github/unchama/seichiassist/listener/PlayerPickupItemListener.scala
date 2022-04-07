@@ -21,17 +21,6 @@ class PlayerPickupItemListener extends Listener {
     val playerData = playerMap(player.getUniqueId).ifNull(
       return
     )
-    val playerLevel = SeichiAssist
-      .instance
-      .breakCountSystem
-      .api
-      .seichiAmountDataRepository(player)
-      .read
-      .unsafeRunSync()
-      .levelCorrespondingToExp
-      .level
-
-    if (playerLevel < config.getMineStacklevel(1)) return
 
     if (!playerData.settings.autoMineStack) return
 
