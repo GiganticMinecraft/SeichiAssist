@@ -182,7 +182,7 @@ class PlayerClickListener(
     var gachaWin = 0
     var gachaGTWin = 0
 
-    val playerLevel = SeichiAssist
+    SeichiAssist
       .instance
       .breakCountSystem
       .api

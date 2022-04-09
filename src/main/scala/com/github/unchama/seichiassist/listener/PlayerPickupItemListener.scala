@@ -10,7 +10,7 @@ import org.bukkit.{GameMode, Sound}
 
 class PlayerPickupItemListener extends Listener {
   private val playerMap = SeichiAssist.playermap
-  private val config = SeichiAssist.seichiAssistConfig
+  SeichiAssist.seichiAssistConfig
 
   @EventHandler
   def onPickupMineStackItem(event: PlayerPickupItemEvent): Unit = {

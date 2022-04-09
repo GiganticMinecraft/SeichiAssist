@@ -3,17 +3,23 @@ package com.github.unchama.seichiassist.minestack
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-case class MineStackObject private (
+case class MineStackObject(
   mineStackObjectName: String,
   uiName: Option[String],
   itemStack: ItemStack,
-  hasNameLore: Boolean,
+  hasNameLore: Boolean, // 多分記名があるかどうか
   category: MineStackObjectCategory
-)
+) {
+
+  def getMaterial: Material = itemStack.getType
+
+  def getDurability: Short = itemStack.getDurability
+
+}
 
 object MineStackObject {
 
-  def normalMineStackObject(
+  def materialMineStackObject(
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: String,
@@ -33,9 +39,10 @@ object MineStackObject {
     category: MineStackObjectCategory,
     mineStackObjectName: String,
     japaneseName: Option[String],
+    hasNameLore: Boolean,
     itemStack: ItemStack
   ): MineStackObject = {
-    MineStackObject(mineStackObjectName, japaneseName, itemStack, itemStack.getItemMeta.hasLore)
+    MineStackObject(mineStackObjectName, japaneseName, itemStack, hasNameLore, category)
   }
 
 }

@@ -7,7 +7,8 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
+import com.github.unchama.seichiassist.MineStackObjectList.getBuiltinGachaPrizes
+import com.github.unchama.seichiassist.minestack.{MineStackObject, MineStackObjectCategory}
 import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect
@@ -27,20 +28,27 @@ private object MineStackButtons {
     def withAmount(amount: Int): ItemStack = itemStack.clone().tap(_.setAmount(amount))
   }
 
-  implicit class MineStackObjectOps(private val mineStackObj: MineStackObj) extends AnyVal {
+  implicit class MineStackObjectOps(private val mineStackObj: MineStackObject) extends AnyVal {
     def parameterizedWith(player: Player): ItemStack = {
       // ガチャ品であり、かつがちゃりんごでも経験値瓶でもなければ
       if (
-        mineStackObj.stackType == MineStackObjectCategory.GACHA_PRIZES && mineStackObj.gachaType >= 0
+        mineStackObj.category == MineStackObjectCategory.GACHA_PRIZES && !getBuiltinGachaPrizes
+          .contains(mineStackObj)
       ) {
-        val gachaData = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
-        if (gachaData.probability < 0.1) {
-          return mineStackObj.itemStack.clone().tap { cloned =>
-            val meta = cloned.getItemMeta.tap { itemMeta =>
-              val itemLore = if (itemMeta.hasLore) itemMeta.getLore.asScala.toList else List()
-              itemMeta.setLore((itemLore :+ s"$RESET${DARK_GREEN}所有者：${player.getName}").asJava)
+        for {
+          gachaData <- SeichiAssist
+            .msgachadatalist
+            .find(_.itemStack.isSimilar(mineStackObj.itemStack))
+        } yield {
+          if (gachaData.probability < 0.1) {
+            return mineStackObj.itemStack.clone().tap { cloned =>
+              val meta = cloned.getItemMeta.tap { itemMeta =>
+                val itemLore = if (itemMeta.hasLore) itemMeta.getLore.asScala.toList else List()
+                itemMeta
+                  .setLore((itemLore :+ s"$RESET${DARK_GREEN}所有者：${player.getName}").asJava)
+              }
+              cloned.setItemMeta(meta)
             }
-            cloned.setItemMeta(meta)
           }
         }
       }
@@ -54,14 +62,13 @@ private object MineStackButtons {
 private[minestack] case class MineStackButtons(player: Player) {
 
   import MineStackButtons._
-  import MineStackObjectCategory._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
   import com.github.unchama.targetedeffect._
   import player._
 
   import scala.jdk.CollectionConverters._
 
-  def getMineStackItemButtonOf(mineStackObj: MineStackObj)(
+  def getMineStackItemButtonOf(mineStackObj: MineStackObject)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): IO[Button] = RecomputedButton(IO {
@@ -113,7 +120,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  private def clickEffect(mineStackObj: MineStackObj, amount: Int)(
+  private def clickEffect(mineStackObj: MineStackObject, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): Kleisli[IO, Player, Unit] = {
@@ -121,14 +128,14 @@ private[minestack] case class MineStackButtons(player: Player) {
     SequentialEffect(
       withDrawItemEffect(mineStackObj, amount),
       targetedeffect.UnfocusedEffect {
-        if (mineStackObj.category() != MineStackObjectCategory.GACHA_PRIZES) {
+        if (mineStackObj.category != MineStackObjectCategory.GACHA_PRIZES) {
           playerData.hisotryData.addHistory(mineStackObj)
         }
       }
     )
   }
 
-  private def withDrawItemEffect(mineStackObj: MineStackObj, amount: Int)(
+  private def withDrawItemEffect(mineStackObj: MineStackObject, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpen: CanOpen[IO, CategorizedMineStackMenu]
   ): TargetedEffect[Player] = {
@@ -168,7 +175,7 @@ private[minestack] case class MineStackButtons(player: Player) {
   }
 
   private def isRepresentativeMineStackObjectAndCategorizedMineStackMenu(
-    mineStackObj: MineStackObj
+    mineStackObj: MineStackObject
   ): Boolean = {
     val isMineStackMainMenu =
       player.getOpenInventory.getTopInventory.getName == s"$DARK_PURPLE${BOLD}MineStackメインメニュー"

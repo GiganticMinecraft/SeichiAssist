@@ -88,13 +88,12 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = DeferredEffect {
-    import MineStackObjectCategory._
 
     for {
       categoryItemList <- IO {
         MineStackObjectList
           .getMineStackObjectExceptColoredVariants
-          .filter(_.category() == category)
+          .filter(_.category == category)
       }
     } yield {
       val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
@@ -110,7 +109,6 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
-    import MineStackObjectCategory._
     import cats.implicits._
     import environment._
 
@@ -118,9 +116,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     // TODO MineStackObjectListが可変になったらここを変更する
     val categoryItemList =
-      MineStackObjectList
-        .getMineStackObjectExceptColoredVariants
-        .filter(_.category() == category)
+      MineStackObjectList.getMineStackObjectExceptColoredVariants.filter(_.category == category)
     val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
 
     val playerMineStackButtons = MineStackButtons(player)

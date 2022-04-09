@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackObject
 import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
@@ -21,7 +21,7 @@ object MineStackSelectItemColorMenu {
 
 }
 
-case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu {
+case class MineStackSelectItemColorMenu(mineStackObj: MineStackObject) extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
@@ -44,7 +44,7 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObj) extends Menu
         CommonButtons.transferButton(
           new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
           s"MineStack1ページ目へ",
-          CategorizedMineStackMenu(mineStackObj.stackType)
+          CategorizedMineStackMenu(mineStackObj.category)
         )
       )
     )
