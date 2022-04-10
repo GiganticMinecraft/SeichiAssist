@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObject.{
 }
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
 import com.github.unchama.seichiassist.minestack.{GroupedMineStackObj, MineStackObject}
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -666,7 +666,7 @@ object MineStackObjectList {
         List(group.representative)
       case Left(mineStackObj) =>
         List(mineStackObj)
-    }
+    } ++ gachaPrizesObjects
   }
 
   /**
@@ -676,45 +676,53 @@ object MineStackObjectList {
    */
   def findByItemStack(itemStack: ItemStack, playerName: String): Option[MineStackObject] = {
     getAllMineStackObjects.find { mineStackObj =>
-      mineStackObj.itemStack == itemStack
-//      val material = itemStack.getType
-//      val isSameItem = material == mineStackObj.getMaterial && itemStack
-//        .getDurability
-//        .toInt == mineStackObj.getDurability
-//      // TODO そもそもmineStackObjにItemStackがあるのだからDurabilityとMaterialを比較する必要はないのでは？？
-//      if (isSameItem) {
-//        val hasMineStackObjLore = mineStackObj.hasNameLore
-//        val hasItemStackLore = itemStack.getItemMeta.hasLore
-//        val hasItemStackDisplayName = itemStack.getItemMeta.hasDisplayName
-//        val itemNotInfoExists =
-//          !hasMineStackObjLore && !hasItemStackLore && !hasItemStackDisplayName
-//        val itemInfoExists =
-//          hasMineStackObjLore && hasItemStackLore && hasItemStackDisplayName
-//        if (itemNotInfoExists) {
-//          true
-//        } else if (itemInfoExists) {
-//          val isGachaRingo = mineStackObj.gachaType == -1
-//          if (isGachaRingo) {
-//            itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
-//          } else {
-//            // ガチャ品
-//            val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
-//
-//            // 名前が記入されているはずのアイテムで名前がなければ
-//            if (
-//              g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemStack, playerName)
-//            ) {
-//              false
-//            } else {
-//              g.itemStackEquals(itemStack)
-//            }
-//          }
-//        } else {
-//          false
-//        }
-//      } else {
-//        false
-//      }
+      val material = itemStack.getType
+      val isSameItem = material == mineStackObj.getMaterial && itemStack
+        .getDurability
+        .toInt == mineStackObj.getDurability
+      // TODO そもそもmineStackObjにItemStackがあるのだからDurabilityとMaterialを比較する必要はないのでは？？
+      if (isSameItem) {
+        val hasMineStackObjLore = mineStackObj.hasNameLore
+        val hasItemStackLore = itemStack.getItemMeta.hasLore
+        val hasItemStackDisplayName = itemStack.getItemMeta.hasDisplayName
+        val itemNotInfoExists =
+          !hasMineStackObjLore && !hasItemStackLore && !hasItemStackDisplayName
+        val itemInfoExists =
+          hasMineStackObjLore && hasItemStackLore && hasItemStackDisplayName
+        if (itemNotInfoExists) {
+          true
+        } else if (itemInfoExists) {
+          val isGachaRingo = mineStackObj.gachaType == -1
+          println(StaticGachaPrizeFactory.getGachaRingo)
+          if (isGachaRingo) {
+            itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
+          } else {
+            // ガチャ品
+            for {
+              gachaData <- SeichiAssist
+                .msgachadatalist
+                .find(_.itemStack.isSimilar(mineStackObj.itemStack))
+            } yield {
+              // 名前が記入されているはずのアイテムで名前がなければ
+              if (
+                gachaData.probability < 0.1 && !Util.itemStackContainsOwnerName(
+                  itemStack,
+                  playerName
+                )
+              ) {
+                false
+              } else {
+                gachaData.itemStackEquals(itemStack)
+              }
+            }
+          }
+          false
+        } else {
+          false
+        }
+      } else {
+        false
+      }
     }
   }
 

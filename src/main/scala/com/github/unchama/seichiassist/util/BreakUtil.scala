@@ -433,6 +433,7 @@ object BreakUtil {
     } yield ()
   }
 
+  // TODO BreakUtilにあるのおかしくない？？？？
   def tryAddItemIntoMineStack(player: Player, itemstack: ItemStack): Boolean = {
     // もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return false
@@ -464,9 +465,10 @@ object BreakUtil {
 
     MineStackObjectList
       .findByItemStack(itemstack, player.getName)
-      .foreach(mineStackObj =>
+      .foreach(mineStackObj => {
         playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
-      )
+        println(mineStackObj.toString)
+      })
     true
   }
 
