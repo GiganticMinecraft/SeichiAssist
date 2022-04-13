@@ -680,7 +680,6 @@ object MineStackObjectList {
       val isSameItem = material == mineStackObj.getMaterial && itemStack
         .getDurability
         .toInt == mineStackObj.getDurability
-      // TODO そもそもmineStackObjにItemStackがあるのだからDurabilityとMaterialを比較する必要はないのでは？？
       if (isSameItem) {
         val hasMineStackObjLore = mineStackObj.hasNameLore
         val hasItemStackLore = itemStack.getItemMeta.hasLore
@@ -692,13 +691,11 @@ object MineStackObjectList {
         if (itemNotInfoExists) {
           true
         } else if (itemInfoExists) {
-          val isGachaRingo = mineStackObj.gachaType == -1
-          println(StaticGachaPrizeFactory.getGachaRingo)
-          if (isGachaRingo) {
-            itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)
+          if (itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) {
+            true
           } else {
             // ガチャ品
-            for {
+            (for {
               gachaData <- SeichiAssist
                 .msgachadatalist
                 .find(_.itemStack.isSimilar(mineStackObj.itemStack))
@@ -714,9 +711,8 @@ object MineStackObjectList {
               } else {
                 gachaData.itemStackEquals(itemStack)
               }
-            }
+            }).getOrElse(false)
           }
-          false
         } else {
           false
         }

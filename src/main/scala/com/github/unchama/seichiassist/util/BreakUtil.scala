@@ -467,9 +467,9 @@ object BreakUtil {
       .findByItemStack(itemstack, player.getName)
       .foreach(mineStackObj => {
         playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
-        println(mineStackObj.toString)
+        return true
       })
-    true
+    false
   }
 
   def calcManaDrop(player: Player): Double = {
