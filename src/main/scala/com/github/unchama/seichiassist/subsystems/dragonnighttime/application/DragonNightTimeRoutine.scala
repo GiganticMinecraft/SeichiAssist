@@ -55,7 +55,9 @@ object DragonNightTimeRoutine {
       Notifiable[F].notify("ドラゲナイタイム開始！") >>
         Notifiable[F].notify("採掘速度上昇Lv10のバフが1時間付与され、マナ使用率が80%になりました") >>
         fastDiggingEffectApi.addEffectToAllPlayers(effectToAdd, 1.hour) >>
-        temporaryManaConsumingRateModifyTask.flatMap(_ => Notifiable[F].notify("ドラゲナイタイムが終了しました"))
+        temporaryManaConsumingRateModifyTask.flatMap(_ =>
+          Notifiable[F].notify("ドラゲナイタイムが終了しました")
+        )
     }
 
     RepeatingRoutine.permanentRoutine(getRepeatInterval, routineAction)
