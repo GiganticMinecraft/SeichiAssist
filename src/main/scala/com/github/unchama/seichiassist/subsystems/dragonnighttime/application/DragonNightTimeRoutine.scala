@@ -46,9 +46,9 @@ object DragonNightTimeRoutine {
     val routineAction: F[Unit] = {
       val temporaryManaConsumingRateModifyTask = Concurrent[F]
         .start {
-          ContextCoercion(manaApi.setGlobalManaMultiplier(ManaMultiplier(0.8))) >>
+          ContextCoercion(manaApi.setManaConsumingMultiplier(ManaMultiplier(0.8))) >>
             Timer[F].sleep(1.hour) >>
-            ContextCoercion(manaApi.setGlobalManaMultiplier(ManaMultiplier(1)))
+            ContextCoercion(manaApi.setManaConsumingMultiplier(ManaMultiplier(1)))
         }
         .as(())
 

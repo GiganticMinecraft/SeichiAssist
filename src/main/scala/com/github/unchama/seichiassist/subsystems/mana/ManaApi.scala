@@ -23,7 +23,7 @@ trait ManaWriteApi[G[_], Player] {
 
 trait ManaMultiplierApi[F[_]] {
 
-  def setGlobalManaMultiplier(manaMultiplier: ManaMultiplier): F[Unit]
+  def setManaConsumingMultiplier(manaMultiplier: ManaMultiplier): F[Unit]
 
 }
 

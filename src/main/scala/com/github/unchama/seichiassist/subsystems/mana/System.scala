@@ -70,7 +70,7 @@ object System {
             .repository
             .map(ManaManipulation.fromLevelCappedAmountRef[G](globalMultiplierRef))
 
-        override def setGlobalManaMultiplier(manaMultiplier: ManaMultiplier): G[Unit] =
+        override def setManaConsumingMultiplier(manaMultiplier: ManaMultiplier): G[Unit] =
           globalMultiplierRef.set(manaMultiplier)
 
       }
