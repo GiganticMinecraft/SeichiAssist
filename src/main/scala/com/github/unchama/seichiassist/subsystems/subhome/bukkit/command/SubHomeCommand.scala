@@ -28,7 +28,7 @@ object SubHomeCommand {
 
   import cats.implicits._
 
-  private val printDescriptionExecutor = new EchoExecutor(
+  private val printDescriptionExecutor = EchoExecutor(
     MessageEffect(
       List(
         s"$GREEN/subhome コマンドの使い方",
@@ -37,7 +37,9 @@ object SubHomeCommand {
         s"${GREEN}セットする場合",
         s"$GREEN/subhome set [セットしたいサブホームの番号]",
         s"${GREEN}名前変更する場合",
-        s"$GREEN/subhome name [名前変更したいサブホームの番号]"
+        s"$GREEN/subhome name [名前変更したいサブホームの番号]",
+        s"${GREEN}削除する場合",
+        s"$GREEN/subhome remove [削除したいサブホームの番号]"
       )
     )
   )
@@ -64,10 +66,32 @@ object SubHomeCommand {
   ]: SubHomeAPI: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
     implicit scope: ChatInterceptionScope
   ): TabExecutor = BranchedExecutor(
-    Map("warp" -> warpExecutor, "set" -> setExecutor, "name" -> nameExecutor),
+    Map(
+      "warp" -> warpExecutor,
+      "set" -> setExecutor,
+      "name" -> nameExecutor,
+      "remove" -> removedExecutor
+    ),
     whenArgInsufficient = Some(printDescriptionExecutor),
     whenBranchNotFound = Some(printDescriptionExecutor)
   ).asNonBlockingTabExecutor()
+
+  private def removedExecutor[F[
+    _
+  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: SubHomeWriteAPI] =
+    argsAndSenderConfiguredBuilder
+      .execution { context =>
+        val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
+        val player = context.sender
+
+        val eff = for {
+          _ <- NonServerThreadContextShift[F].shift
+          _ <- SubHomeWriteAPI[F].remove(player.getUniqueId, subHomeId)
+        } yield MessageEffect(s"サブホームポイント${subHomeId}を削除しました。")
+
+        eff.toIO
+      }
+      .build()
 
   private def warpExecutor[F[
     _
