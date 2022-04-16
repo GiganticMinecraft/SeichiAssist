@@ -30,7 +30,7 @@ object HomeMenu extends Menu {
   import eu.timepit.refined.auto._
 
   class Environment(
-    implicit val ioCanOpenConfirmationMenu: IO CanOpen ConfirmationMenu,
+    implicit val ioCanOpenConfirmationMenu: IO CanOpen SubHomeChangeConfirmationMenu,
     val ioCanReadSubHome: SubHomeReadAPI[IO]
   )
 
@@ -126,7 +126,9 @@ object HomeMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_FENCE_GATE_OPEN, 1f, 0.1f),
-            environment.ioCanOpenConfirmationMenu.open(ConfirmationMenu(Some(subHomeNumber)))
+            environment
+              .ioCanOpenConfirmationMenu
+              .open(SubHomeChangeConfirmationMenu(Some(subHomeNumber)))
           )
         }
       )
@@ -209,9 +211,11 @@ object HomeMenu extends Menu {
     }
   }
 
-  case class ConfirmationMenu(changeSubHomeNumber: Option[Int], subHomeName: String = "")
-      extends Menu {
-    override type Environment = ConfirmationMenu.Environment
+  case class SubHomeChangeConfirmationMenu(
+    changeSubHomeNumber: Option[Int],
+    subHomeName: String = ""
+  ) extends Menu {
+    override type Environment = SubHomeChangeConfirmationMenu.Environment
 
     /**
      * メニューのサイズとタイトルに関する情報
@@ -269,7 +273,7 @@ object HomeMenu extends Menu {
       )
   }
 
-  object ConfirmationMenu {
+  object SubHomeChangeConfirmationMenu {
 
     class Environment(implicit val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type)
 
