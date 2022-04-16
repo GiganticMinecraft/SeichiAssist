@@ -4,7 +4,11 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.menus.HomeMenu.SubHomeChangeConfirmationMenu
+import com.github.unchama.seichiassist.menus.HomeMenu.{
+  ConfirmationMenuEnvironment,
+  SubHomeChangeConfirmationMenu,
+  SubHomeRemoveConfirmationMenu
+}
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{
   AchievementCategoryMenu,
@@ -90,8 +94,8 @@ object TopLevelRouter {
       new AchievementMenu.Environment
     implicit lazy val homeMenuEnv: HomeMenu.Environment = new HomeMenu.Environment
     implicit lazy val homeConfirmationMenuEnv
-      : HomeMenu.SubHomeChangeConfirmationMenu.Environment =
-      new SubHomeChangeConfirmationMenu.Environment
+      : HomeMenu.ConfirmationMenuEnvironment.Environment =
+      new ConfirmationMenuEnvironment.Environment
     implicit lazy val achievementCategoryMenuEnv: AchievementCategoryMenu.Environment =
       new AchievementCategoryMenu.Environment
     implicit lazy val achievementGroupMenuEnv: AchievementGroupMenu.Environment =
@@ -132,6 +136,8 @@ object TopLevelRouter {
     implicit lazy val ioCanOpenActiveSkillMenu: IO CanOpen ActiveSkillMenu.type = _.open
     implicit lazy val ioCanOpenServerSwitchMenu: IO CanOpen ServerSwitchMenu.type = _.open
     implicit lazy val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type = _.open
+    implicit lazy val ioCanOpenHomeConfirmMenu
+      : IO CanOpen HomeMenu.SubHomeRemoveConfirmationMenu = _.open
     implicit lazy val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type = _.open
 
     implicit lazy val ioCanOpenSeichiRankingMenu: IO CanOpen RankingMenu[SeichiAmountData] =
