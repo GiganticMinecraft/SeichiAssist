@@ -31,7 +31,7 @@ trait SubHomePersistence[F[_]] {
   /**
    * サブホームを削除する。
    */
-  def remove(ownerUuid: UUID, id: SubHomeId): F[Unit]
+  def remove(ownerUuid: UUID, id: SubHomeId): F[Boolean]
 
   /**
    * 所有者のUUIDとサブホームのIDから単一のサブホームを取得する。
