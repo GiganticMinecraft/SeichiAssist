@@ -149,6 +149,7 @@ object HomeMenu extends Menu {
           )
           .build(),
         LeftClickButtonEffect {
+          FocusedSoundEffect(Sound.BLOCK_ENDERCHEST_CLOSE, 1f, 0.1f)
           SequentialEffect(
             environment
               .ioCanOpenSubHomeRemoveConfirmationMenu
