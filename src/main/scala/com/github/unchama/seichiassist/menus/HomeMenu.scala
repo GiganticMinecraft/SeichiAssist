@@ -130,6 +130,23 @@ object HomeMenu extends Menu {
           )
         }
       )
+
+    def removeSubHomeButton(subHomeNumber: Int)(implicit environment: Environment): Button =
+      Button(
+        new IconItemStackBuilder(Material.WOOL, 14)
+          .title(s"$RED$UNDERLINE${BOLD}サブホームポイント${subHomeNumber}を削除")
+          .lore(
+            List(
+              s"${GRAY}サブホームポイント${subHomeNumber}を削除します。",
+              s"$DARK_GRAY※確認メニューが開きます。",
+              s"$DARK_RED${UNDERLINE}クリックで設定"
+            )
+          )
+          .build(),
+        LeftClickButtonEffect {
+          SequentialEffect()
+        }
+      )
   }
 
   private case class ButtonComputations(player: Player) {
