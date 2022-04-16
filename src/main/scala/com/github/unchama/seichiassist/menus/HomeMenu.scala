@@ -9,6 +9,7 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{SubHome, SubHomeId}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
+import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect._
 import com.github.unchama.targetedeffect.player.PlayerEffects._
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
@@ -31,6 +32,7 @@ object HomeMenu extends Menu {
 
   class Environment(
     implicit val ioCanOpenConfirmationMenu: IO CanOpen SubHomeChangeConfirmationMenu,
+    val ioCanOpenSubHomeRemoveConfirmationMenu: IO CanOpen SubHomeRemoveConfirmationMenu,
     val ioCanReadSubHome: SubHomeReadAPI[IO]
   )
 
@@ -61,7 +63,8 @@ object HomeMenu extends Menu {
         case Right(value) =>
           Map(
             ChestSlotRef(0, value) -> ConstantButtons.warpToSubHomePointButton(subHomeNumber),
-            ChestSlotRef(2, value) -> ConstantButtons.setSubHomeButton(subHomeNumber)
+            ChestSlotRef(2, value) -> ConstantButtons.setSubHomeButton(subHomeNumber),
+            ChestSlotRef(3, value) -> ConstantButtons.removeSubHomeButton(subHomeNumber)
           )
         case Left(_) => throw new RuntimeException("This branch should not be reached.")
       }
@@ -146,7 +149,11 @@ object HomeMenu extends Menu {
           )
           .build(),
         LeftClickButtonEffect {
-          SequentialEffect()
+          SequentialEffect(
+            environment
+              .ioCanOpenSubHomeRemoveConfirmationMenu
+              .open(SubHomeRemoveConfirmationMenu(Some(subHomeNumber)))
+          )
         }
       )
   }
@@ -215,7 +222,7 @@ object HomeMenu extends Menu {
     changeSubHomeNumber: Option[Int],
     subHomeName: String = ""
   ) extends Menu {
-    override type Environment = SubHomeChangeConfirmationMenu.Environment
+    override type Environment = ConfirmationMenuEnvironment.Environment
 
     /**
      * メニューのサイズとタイトルに関する情報
@@ -273,9 +280,76 @@ object HomeMenu extends Menu {
       )
   }
 
-  object SubHomeChangeConfirmationMenu {
+  object ConfirmationMenuEnvironment {
 
     class Environment(implicit val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type)
+
+  }
+
+  case class SubHomeRemoveConfirmationMenu(
+    removeSubHomeNumber: Option[Int],
+    subHomeName: String = ""
+  ) extends Menu {
+
+    /**
+     * メニューを開く操作に必要な環境情報の型。 例えば、メニューが利用するAPIなどをここを通して渡すことができる。
+     */
+    override type Environment = ConfirmationMenuEnvironment.Environment
+
+    /**
+     * メニューのサイズとタイトルに関する情報
+     */
+    override val frame: MenuFrame = MenuFrame(3.chestRows, s"$RED${BOLD}ホームポイントを削除しますか")
+
+    /**
+     * @return
+     * `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
+     */
+    override def computeMenuLayout(
+      player: Player
+    )(implicit environment: Environment): IO[MenuSlotLayout] = {
+      val baseSlotMap =
+        Map(ChestSlotRef(1, 2) -> removeButton, ChestSlotRef(1, 6) -> cancelButton)
+      val slotMap = removeSubHomeNumber match {
+        case None => baseSlotMap
+        case _    => baseSlotMap ++ Map(ChestSlotRef(0, 4) -> informationButton)
+      }
+      IO.pure(MenuSlotLayout(slotMap))
+    }
+
+    val removeButton: Button =
+      Button(
+        new IconItemStackBuilder(Material.WOOL, durability = 5).title(s"${GREEN}削除する").build(),
+        LeftClickButtonEffect {
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            removeSubHomeNumber match {
+              case None             => emptyEffect
+              case Some(homeNumber) => CommandEffect(s"subhome remove $homeNumber")
+            },
+            closeInventoryEffect
+          )
+        }
+      )
+
+    def cancelButton(implicit environment: Environment): Button =
+      Button(
+        new IconItemStackBuilder(Material.WOOL, durability = 14).title(s"${RED}変更しない").build(),
+        LeftClickButtonEffect {
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+          environment.ioCanOpenHomeMenu.open(HomeMenu)
+        }
+      )
+
+    val informationButton: Button =
+      Button(
+        new IconItemStackBuilder(Material.PAPER)
+          .title(s"${GREEN}設定するサブホームポイントの情報")
+          .lore(
+            List(s"${GRAY}No.${removeSubHomeNumber.getOrElse(0)}", s"${GRAY}名称：$subHomeName")
+          )
+          .build()
+      )
 
   }
 
