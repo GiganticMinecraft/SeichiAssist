@@ -4,11 +4,7 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.menuinventory.LayoutPreparationContext
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.menus.HomeMenu.{
-  ConfirmationMenuEnvironment,
-  SubHomeChangeConfirmationMenu,
-  SubHomeRemoveConfirmationMenu
-}
+import com.github.unchama.seichiassist.menus.HomeMenu.ConfirmationMenuEnvironment
 import com.github.unchama.seichiassist.menus.achievement.group.AchievementGroupMenu
 import com.github.unchama.seichiassist.menus.achievement.{
   AchievementCategoryMenu,
