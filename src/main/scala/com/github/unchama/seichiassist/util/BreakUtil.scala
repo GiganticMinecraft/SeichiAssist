@@ -434,6 +434,7 @@ object BreakUtil {
   }
 
   // TODO BreakUtilにあるのおかしくない？？？？
+  // P.S. BreakUtilにあるのはおかしいと思うが、どこに属するのかがよくわからないのでとりあえず放置
   def tryAddItemIntoMineStack(player: Player, itemstack: ItemStack): Boolean = {
     // もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return false
