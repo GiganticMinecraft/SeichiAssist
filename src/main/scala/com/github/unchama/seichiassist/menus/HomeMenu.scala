@@ -37,7 +37,7 @@ object HomeMenu extends Menu {
   /**
    * メニューのサイズとタイトルに関する情報
    */
-  override val frame: MenuFrame = MenuFrame(3.chestRows, s"$DARK_PURPLE${BOLD}ホームメニュー")
+  override val frame: MenuFrame = MenuFrame(4.chestRows, s"$DARK_PURPLE${BOLD}ホームメニュー")
 
   /**
    * @return
