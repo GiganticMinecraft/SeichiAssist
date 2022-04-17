@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
+import cats.data.Kleisli
+import cats.effect.IO
 import cats.{Applicative, ~>}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
@@ -10,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
   BuildLevel
 }
 import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.ChatColor.GOLD
 import org.bukkit.Sound
 
@@ -28,10 +31,14 @@ case class LevelUpNotifier[F[_], Player]()(
 
     val Diff(oldLevel, newLevel) = diff
     if (newLevel eqv BuildAssistExpTable.maxLevel) {
-      Util.sendMessageToEveryoneIgnoringPreference(
-        s"$GOLD${player.asInstanceOf[org.bukkit.entity.Player].getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
+      SequentialEffect(
+        Kleisli.liftF(IO {
+          Util.sendMessageToEveryoneIgnoringPreference(
+            s"$GOLD${player.asInstanceOf[org.bukkit.entity.Player].getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
+          )
+        }),
+        BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
       )
-      BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
       SendMinecraftMessage[F, Player].string(player, s"${GOLD}最大Lvに到達したよ(`･ω･´)")
     } else if (oldLevel < newLevel)
       SendMinecraftMessage[F, Player].string(
