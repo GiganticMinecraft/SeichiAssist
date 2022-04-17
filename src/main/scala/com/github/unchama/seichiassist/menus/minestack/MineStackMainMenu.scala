@@ -104,7 +104,7 @@ object MineStackMainMenu extends Menu {
 
       for {
         usageHistory <- IO {
-          playerData.hisotryData.getHistory
+          playerData.hisotryData.usageHistory
         }
         buttonMapping <- usageHistory
           .zipWithIndex
