@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.listener
 
+import cats.data.Kleisli
 import cats.effect.{Fiber, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -15,6 +16,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
+import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.ExternalPlugins
@@ -298,10 +300,14 @@ class PlayerBlockBreakListener(
     val totalBreakAmount = seichiAmountData.expAmount.amount
     val oldBreakAmount = totalBreakAmount - amount.amount
     if (oldBreakAmount < 1000000000 && totalBreakAmount >= 1000000000) {
-      Util.sendMessageToEveryoneIgnoringPreference(
-        s"$GOLD$BOLD${player.getName}の総整地量が${(totalBreakAmount / 100000000).toInt}億に到達しました！"
+      SequentialEffect(
+        Kleisli.liftF(IO {
+          Util.sendMessageToEveryoneIgnoringPreference(
+            s"$GOLD$BOLD${player.getName}の総整地量が${(totalBreakAmount / 100000000).toInt}億に到達しました！"
+          )
+        }),
+        BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
       )
-      BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
     }
   }
 
