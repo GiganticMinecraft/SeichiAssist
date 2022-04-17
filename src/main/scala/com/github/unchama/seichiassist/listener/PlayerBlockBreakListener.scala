@@ -27,6 +27,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
 
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
@@ -293,6 +294,16 @@ class PlayerBlockBreakListener(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
+
+    // 手彫りで破壊したアイテムを直接MineStackに入れる
+    event
+      .getBlock
+      .getDrops(event.getPlayer.getInventory.getItemInMainHand)
+      .asScala
+      .foreach(droppedItemStack => {
+        if (BreakUtil.tryAddItemIntoMineStack(player, droppedItemStack))
+          event.setDropItems(false)
+      })
   }
 
   /**
