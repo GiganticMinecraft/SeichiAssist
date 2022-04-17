@@ -6,18 +6,19 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
+import com.github.unchama.seichiassist.effects.unfocused.BroadcastSoundEffect
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.util.BreakUtil
+import com.github.unchama.seichiassist.util.{BreakUtil, Util}
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.ExternalPlugins
-import org.bukkit.ChatColor.RED
+import org.bukkit.ChatColor.{BOLD, GOLD, RED}
 import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
@@ -288,11 +289,20 @@ class PlayerBlockBreakListener(
         .map(multiplier => BreakUtil.totalBreakCount(Seq(block.getType)) * multiplier)
         .unsafeRunSync()
     }
-
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
+
+    val seichiAmountData =
+      plugin.breakCountSystem.api.seichiAmountDataRepository(player).read.unsafeRunSync()
+    val totalBreakAmount = seichiAmountData.expAmount.amount
+    if (totalBreakAmount % 1000000000 == 0 && totalBreakAmount != 0) {
+      Util.sendMessageToEveryone(
+        s"$GOLD$BOLD${player.getName}の総整地量が${totalBreakAmount}に到達しました！"
+      )
+      BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+    }
   }
 
   /**
