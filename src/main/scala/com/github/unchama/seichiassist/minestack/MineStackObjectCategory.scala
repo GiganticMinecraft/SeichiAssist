@@ -33,7 +33,7 @@ case object MineStackObjectCategory extends Enum[MineStackObjectCategory] {
   case object GACHA_PRIZES extends MineStackObjectCategory(5, "ガチャ品")
 
   implicit class MineStackObjOps(private val mineStackObj: MineStackObject) extends AnyVal {
-    def category(): MineStackObjectCategory = mineStackObj.category
+    def category: MineStackObjectCategory = mineStackObj.category
   }
 
 }
