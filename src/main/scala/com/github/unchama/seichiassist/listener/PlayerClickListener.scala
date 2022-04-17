@@ -182,16 +182,6 @@ class PlayerClickListener(
     var gachaWin = 0
     var gachaGTWin = 0
 
-    SeichiAssist
-      .instance
-      .breakCountSystem
-      .api
-      .seichiAmountDataRepository(player)
-      .read
-      .unsafeRunSync()
-      .levelCorrespondingToExp
-      .level
-
     (1 to count).foreach { _ =>
       // プレゼント用ガチャデータ作成
       val present = GachaPrize.runGacha()
