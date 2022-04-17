@@ -103,7 +103,7 @@ class BlockLineUpTriggerListener[
     val mineStackObjectToBeUsed =
       if (buildAssistData.line_up_minestack_flg == 1)
         MineStackObjectList.getAllMineStackObjects.find { obj =>
-          mainHandItem.getType == obj.getMaterial && mainHandItemData.toInt == obj.getDurability
+          mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
         }
       else None
 

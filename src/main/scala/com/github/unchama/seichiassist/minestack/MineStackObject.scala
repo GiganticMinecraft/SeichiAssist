@@ -11,9 +11,9 @@ case class MineStackObject(
   category: MineStackObjectCategory
 ) {
 
-  def getMaterial: Material = itemStack.getType
+  def material: Material = itemStack.getType
 
-  def getDurability: Short = itemStack.getDurability
+  def durability: Short = itemStack.getDurability
 
 }
 

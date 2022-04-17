@@ -677,9 +677,9 @@ object MineStackObjectList {
   def findByItemStack(itemStack: ItemStack, playerName: String): Option[MineStackObject] = {
     getAllMineStackObjects.find { mineStackObj =>
       val material = itemStack.getType
-      val isSameItem = material == mineStackObj.getMaterial && itemStack
+      val isSameItem = material == mineStackObj.material && itemStack
         .getDurability
-        .toInt == mineStackObj.getDurability
+        .toInt == mineStackObj.durability
       if (isSameItem) {
         val hasMineStackObjLore = mineStackObj.hasNameLore
         val hasItemStackLore = itemStack.getItemMeta.hasLore

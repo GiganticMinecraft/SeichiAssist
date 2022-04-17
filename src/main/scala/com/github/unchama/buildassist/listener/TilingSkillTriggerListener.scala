@@ -70,7 +70,7 @@ class TilingSkillTriggerListener[
       MineStackObjectList
         .getAllMineStackObjects
         .find { obj =>
-          offHandItem.getType == obj.getMaterial && offHandItemSelector.toInt == obj.getDurability
+          offHandItem.getType == obj.material && offHandItemSelector.toInt == obj.durability
         }
         .filter(_ => buildAssistPlayerData.zs_minestack_flag)
 
