@@ -210,7 +210,6 @@ class PlayerClickListener(
           Util.addItem(player, givenItem)
           ""
         } else {
-          // アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
           if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack)) {
             // ...格納した！
             s"${AQUA}景品をマインスタックに収納しました。"
