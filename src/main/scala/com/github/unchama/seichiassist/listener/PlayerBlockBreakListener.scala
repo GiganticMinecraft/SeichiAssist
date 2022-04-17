@@ -295,7 +295,11 @@ class PlayerBlockBreakListener(
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
 
-    // 手彫りで破壊したアイテムを直接MineStackに入れる
+    /**
+     * 手彫りで破壊したアイテムを直接MineStackに入れる
+     * 一つのBlockBreakEventから複数の種類のアイテムが出てくることはない。
+     * チェスト等のインベントリスロットがあるアイテムに関しては、チェストのみが判定の対象となる。
+     */
     event
       .getBlock
       .getDrops(event.getPlayer.getInventory.getItemInMainHand)
