@@ -126,7 +126,7 @@ public class GachaCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券配布処理開始…");
 
                     //mysqlにも書き込んどく
-                    if (databaseGateway.playerDataManipulator.addPlayerBug(name, num) == Fail) {
+                    if (databaseGateway.playerDataManipulator.addPlayerBug(name, num).unsafeRunSync().isLeft()) {
                         sender.sendMessage(ChatColor.RED + "失敗");
                     } else {
                         sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num + "枚加算成功");

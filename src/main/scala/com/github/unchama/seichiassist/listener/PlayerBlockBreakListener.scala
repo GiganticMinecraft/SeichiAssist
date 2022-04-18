@@ -30,6 +30,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
 
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
@@ -309,6 +310,22 @@ class PlayerBlockBreakListener(
         BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
       )
     }
+
+    /**
+     * 手彫りで破壊したアイテムを直接MineStackに入れる
+     * 一つのBlockBreakEventから複数の種類のアイテムが出てくることはない。
+     * チェスト等のインベントリスロットのあるブロック`b`を破壊したときは、
+     * 破壊された`b`のみが`BlockBreakEvent`のドロップ対象となるため、
+     * 中身のドロップがキャンセルされることはない。
+     */
+    event
+      .getBlock
+      .getDrops(event.getPlayer.getInventory.getItemInMainHand)
+      .asScala
+      .foreach(droppedItemStack => {
+        if (BreakUtil.tryAddItemIntoMineStack(player, droppedItemStack))
+          event.setDropItems(false)
+      })
   }
 
   /**
