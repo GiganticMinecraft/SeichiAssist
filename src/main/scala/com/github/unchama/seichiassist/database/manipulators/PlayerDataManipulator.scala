@@ -146,7 +146,10 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       }
     }.void
 
-    catchingDatabaseErrors(s"add admin-gacha for $playerName", EitherT.right(executeQuery).value)
+    catchingDatabaseErrors(
+      s"add admin-gacha for $playerName",
+      EitherT.right(executeQuery).value
+    )
   }
 
   def addChainVote(name: String): Unit =
