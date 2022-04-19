@@ -272,17 +272,17 @@ object RegionInventoryListener {
   ): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     if (event.isLeftClick) {
-      if (playerData.canGridExtend(directionType, player.getWorld.getName)) {
+      if (playerData.canGridExtend(direction, player.getWorld.getName)) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerData.addUnitAmount(directionType, playerData.unitPerClick)
+        playerData.addUnitAmount(direction, playerData.unitPerClick)
         setWGSelection(player)
         canCreateRegion(player)
         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))
       }
     } else if (event.isRightClick) {
-      if (playerData.canGridReduce(directionType)) {
+      if (playerData.canGridReduce(direction)) {
         player.playSound(player.getLocation, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-        playerData.addUnitAmount(directionType, playerData.unitPerClick * -1)
+        playerData.addUnitAmount(direction, playerData.unitPerClick * -1)
         setWGSelection(player)
         canCreateRegion(player)
         player.openInventory(RegionMenuData.getGridWorldGuardMenu(player))

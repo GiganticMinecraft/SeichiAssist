@@ -395,7 +395,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     val chunkMap = unitMap
 
     // チャンクを拡大すると仮定する
-    val assumedAmoont = chunkMap(directionType) + this.unitPerClick
+    val assumedAmoont = chunkMap(direction) + this.unitPerClick
 
     // 一応すべての拡張値を出しておく
     val ahead = chunkMap(RelativeDirection.AHEAD)
@@ -404,7 +404,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     val left = chunkMap(RelativeDirection.LEFT)
 
     // 合計チャンク再計算値
-    val assumedUnitAmount = directionType match {
+    val assumedUnitAmount = direction match {
       case RelativeDirection.AHEAD  => (assumedAmoont + 1 + behind) * (right + 1 + left)
       case RelativeDirection.BEHIND => (ahead + 1 + assumedAmoont) * (right + 1 + left)
       case RelativeDirection.RIGHT  => (ahead + 1 + behind) * (assumedAmoont + 1 + left)
@@ -429,13 +429,13 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     val chunkMap = unitMap
 
     // 減らしたと仮定する
-    val sizeAfterShrink = chunkMap(directionType) - unitPerClick
+    val sizeAfterShrink = chunkMap(direction) - unitPerClick
 
     sizeAfterShrink >= 0
   }
 
   def setUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
-    this.claimUnit = directionType match {
+    this.claimUnit = direction match {
       case RelativeDirection.AHEAD  => this.claimUnit.copy(ahead = amount)
       case RelativeDirection.BEHIND => this.claimUnit.copy(behind = amount)
       case RelativeDirection.RIGHT  => this.claimUnit.copy(right = amount)
@@ -446,7 +446,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   import com.github.unchama.seichiassist.AntiTypesafe
 
   def addUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
-    directionType match {
+    direction match {
       case RelativeDirection.AHEAD =>
         this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
       case RelativeDirection.BEHIND =>
