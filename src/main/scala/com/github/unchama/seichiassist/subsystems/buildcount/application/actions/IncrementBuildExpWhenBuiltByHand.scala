@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
 import cats.Monad
+import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.ratelimiting.RateLimiter
@@ -35,7 +36,10 @@ object IncrementBuildExpWhenBuiltByHand {
   ], Player](
     rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]]
-  )(implicit multiplier: BuildExpMultiplier): IncrementBuildExpWhenBuiltByHand[F, Player] =
+  )(
+    implicit multiplier: BuildExpMultiplier,
+    sync: Sync[F]
+  ): IncrementBuildExpWhenBuiltByHand[F, Player] =
     (player: Player, by: BuildExpAmount) => {
       val F: Monad[F] = Monad[F]
 

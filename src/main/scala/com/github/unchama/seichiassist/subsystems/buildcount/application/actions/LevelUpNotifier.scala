@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
+import cats.effect.Sync
 import cats.{Applicative, ~>}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.SendMinecraftMessage
@@ -22,6 +23,7 @@ import org.bukkit.Sound
  */
 case class LevelUpNotifier[F[_], Player]()(
   implicit F: Applicative[F],
+  sync: Sync[F],
   send: SendMinecraftMessage[F, Player]
 ) {
 
@@ -31,7 +33,7 @@ case class LevelUpNotifier[F[_], Player]()(
     val Diff(oldLevel, newLevel) = diff
     if (newLevel eqv BuildAssistExpTable.maxLevel) {
       val bukkitPlayer = player.asInstanceOf[org.bukkit.entity.Player]
-      F.pure {
+      Sync[F].delay {
         Util.sendMessageToEveryoneIgnoringPreference(
           s"$GOLD${bukkitPlayer.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
         )
@@ -49,9 +51,8 @@ case class LevelUpNotifier[F[_], Player]()(
       Applicative[F].unit
   }
 
-  def mapK[G[_]: Applicative](fg: F ~> G): LevelUpNotifier[G, Player] = {
+  def mapK[G[_]: Applicative: Sync](fg: F ~> G): LevelUpNotifier[G, Player] = {
     implicit val e: SendMinecraftMessage[G, Player] = send.mapK(fg)
-
     new LevelUpNotifier[G, Player]()
   }
 
