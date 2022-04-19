@@ -390,7 +390,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   def canBreakHalfBlock: Boolean = this.allowBreakingHalfBlocks
 
-  def canGridExtend(directionType: RelativeDirection, world: String): Boolean = {
+  def canGridExtend(direction: RelativeDirection, world: String): Boolean = {
     val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world)
     val chunkMap = unitMap
 
@@ -425,7 +425,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     unitMap.toMap
   }
 
-  def canGridReduce(directionType: RelativeDirection): Boolean = {
+  def canGridReduce(direction: RelativeDirection): Boolean = {
     val chunkMap = unitMap
 
     // 減らしたと仮定する
@@ -434,7 +434,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     sizeAfterShrink >= 0
   }
 
-  def setUnitAmount(directionType: RelativeDirection, amount: Int): Unit = {
+  def setUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
     this.claimUnit = directionType match {
       case RelativeDirection.AHEAD  => this.claimUnit.copy(ahead = amount)
       case RelativeDirection.BEHIND => this.claimUnit.copy(behind = amount)
@@ -445,7 +445,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   import com.github.unchama.seichiassist.AntiTypesafe
 
-  def addUnitAmount(directionType: RelativeDirection, amount: Int): Unit = {
+  def addUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
     directionType match {
       case RelativeDirection.AHEAD =>
         this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)

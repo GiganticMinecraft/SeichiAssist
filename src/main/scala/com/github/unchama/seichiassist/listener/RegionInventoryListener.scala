@@ -267,7 +267,7 @@ object RegionInventoryListener {
 
   private def gridChangeFunction(
     player: Player,
-    directionType: RelativeDirection,
+    direction: RelativeDirection,
     event: InventoryClickEvent
   ): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
