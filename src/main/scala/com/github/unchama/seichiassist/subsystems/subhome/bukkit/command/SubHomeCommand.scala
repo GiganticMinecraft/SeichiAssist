@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.subhome.bukkit.command
 
 import cats.Monad
+import cats.data.Kleisli
 import cats.effect.implicits._
 import cats.effect.{ConcurrentEffect, Effect, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
@@ -20,7 +21,7 @@ import com.github.unchama.seichiassist.subsystems.subhome.{
   SubHomeWriteAPI
 }
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
@@ -84,9 +85,9 @@ object SubHomeCommand {
         val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
-        Kleisli.liftF(
-          SubHomeWriteAPI[F].remove(player.getUniqueId, subHomeId)
-        ) >> MessageEffectF(s"サブホームポイント${subHomeId}を削除しました。")
+        Kleisli
+          .liftF(SubHomeWriteAPI[F].remove(player.getUniqueId, subHomeId))
+          .flatMap(_ => MessageEffectF(s"サブホームポイント${subHomeId}を削除しました。"))
       }
       .build()
 
