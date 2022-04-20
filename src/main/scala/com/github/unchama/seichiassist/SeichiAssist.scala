@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import cats.Parallel.Aux
 import cats.effect
 import cats.effect.concurrent.Ref
-import cats.effect.{Clock, ConcurrentEffect, ContextShift, Fiber, IO, SyncEffect, SyncIO, Timer}
+import cats.effect.{Clock, ConcurrentEffect, Fiber, IO, SyncIO, Timer}
 import com.github.unchama.buildassist.BuildAssist
 import com.github.unchama.buildassist.menu.BuildAssistMenuRouter
 import com.github.unchama.bungeesemaphoreresponder.domain.PlayerDataFinalizer
@@ -25,14 +25,9 @@ import com.github.unchama.generic.effect.concurrent.SessionMutex
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.MenuHandler
 import com.github.unchama.menuinventory.router.CanOpen
-import com.github.unchama.minecraft.actions.{
-  GetConnectedPlayers,
-  OnMinecraftServerThread,
-  SendMinecraftMessage
-}
+import com.github.unchama.minecraft.actions.{GetConnectedPlayers, SendMinecraftMessage}
 import com.github.unchama.minecraft.bukkit.actions.{
   GetConnectedBukkitPlayers,
-  OnBukkitServerThread,
   SendBukkitMessage
 }
 import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
@@ -44,7 +39,6 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   asyncShift,
   onMainThread,
-  pluginInstance,
   timer
 }
 import com.github.unchama.seichiassist.data.player.PlayerData
@@ -235,8 +229,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
-    import PluginExecutionContexts.{asyncShift, onMainThread}
-    import cats.effect.ContextShift
+    import PluginExecutionContexts.asyncShift
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration

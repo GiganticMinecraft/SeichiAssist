@@ -1,7 +1,7 @@
 package com.github.unchama.minecraft.bukkit.actions
 
 import cats.effect.Sync
-import com.github.unchama.minecraft.actions.{BroadcastMinecraftSound, OnMinecraftServerThread}
+import com.github.unchama.minecraft.actions.BroadcastMinecraftSound
 import com.github.unchama.seichiassist.effects.unfocused.BroadcastSoundEffect
 import org.bukkit.Sound
 
