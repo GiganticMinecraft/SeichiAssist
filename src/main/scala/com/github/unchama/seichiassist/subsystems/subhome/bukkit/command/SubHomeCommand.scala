@@ -70,13 +70,13 @@ object SubHomeCommand {
       "warp" -> warpExecutor,
       "set" -> setExecutor,
       "name" -> nameExecutor,
-      "remove" -> removedExecutor
+      "remove" -> removeExecutor
     ),
     whenArgInsufficient = Some(printDescriptionExecutor),
     whenBranchNotFound = Some(printDescriptionExecutor)
   ).asNonBlockingTabExecutor()
 
-  private def removedExecutor[F[
+  private def removeExecutor[F[
     _
   ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: SubHomeWriteAPI] =
     argsAndSenderConfiguredBuilder
