@@ -8,7 +8,7 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.ratelimiting.RateLimiter
-import com.github.unchama.minecraft.actions.BroadCastMinecraftSound
+import com.github.unchama.minecraft.actions.BroadcastMinecraftSound
 import com.github.unchama.minecraft.bukkit.actions.BroadcastBukkitSound
 import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage.apply
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -84,7 +84,7 @@ object System {
     } yield {
       implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[G, Player] =
         new ClassifyBukkitPlayerWorld[G]
-      implicit val broadCastMinecraftSound: BroadCastMinecraftSound[G] =
+      implicit val broadCastMinecraftSound: BroadcastMinecraftSound[G] =
         BroadcastBukkitSound[G]
       implicit val incrementBuildExp: IncrementBuildExpWhenBuiltByHand[G, Player] =
         IncrementBuildExpWhenBuiltByHand.using(

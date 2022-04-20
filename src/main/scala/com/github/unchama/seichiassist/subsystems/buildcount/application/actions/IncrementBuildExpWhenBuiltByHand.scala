@@ -6,7 +6,7 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.generic.{Diff, RefExtra}
-import com.github.unchama.minecraft.actions.{BroadCastMinecraftSound, SendMinecraftMessage}
+import com.github.unchama.minecraft.actions.{BroadcastMinecraftSound, SendMinecraftMessage}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
@@ -33,7 +33,7 @@ object IncrementBuildExpWhenBuiltByHand {
   def using[F[_]: Monad: ClassifyPlayerWorld[*[_], Player]: SendMinecraftMessage[
     *[_],
     Player
-  ]: BroadCastMinecraftSound[*[_]], Player](
+  ]: BroadcastMinecraftSound[*[_]], Player](
     rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]]
   )(

@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.buildcount.application.action
 import cats.effect.Sync
 import cats.{Applicative, ~>}
 import com.github.unchama.generic.Diff
-import com.github.unchama.minecraft.actions.{BroadCastMinecraftSound, SendMinecraftMessage}
+import com.github.unchama.minecraft.actions.{BroadcastMinecraftSound, SendMinecraftMessage}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
   BuildAssistExpTable,
@@ -22,7 +22,7 @@ case class LevelUpNotifier[F[_], Player]()(
   implicit F: Applicative[F],
   sync: Sync[F],
   send: SendMinecraftMessage[F, Player],
-  sound: BroadCastMinecraftSound[F]
+  sound: BroadcastMinecraftSound[F]
 ) {
 
   def notifyTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
@@ -36,7 +36,7 @@ case class LevelUpNotifier[F[_], Player]()(
           s"$GOLD${bukkitPlayer.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
         )
       } >> SendMinecraftMessage[F, Player].string(player, s"${GOLD}最大Lvに到達したよ(`･ω･´)") >>
-        BroadCastMinecraftSound[F].playSound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+        BroadcastMinecraftSound[F].playSound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
     } else if (oldLevel < newLevel)
       SendMinecraftMessage[F, Player].string(
         player,
@@ -46,7 +46,7 @@ case class LevelUpNotifier[F[_], Player]()(
       Applicative[F].unit
   }
 
-  def mapK[G[_]: Applicative: Sync: BroadCastMinecraftSound](
+  def mapK[G[_]: Applicative: Sync: BroadcastMinecraftSound](
     fg: F ~> G
   ): LevelUpNotifier[G, Player] = {
     implicit val e: SendMinecraftMessage[G, Player] = send.mapK(fg)
