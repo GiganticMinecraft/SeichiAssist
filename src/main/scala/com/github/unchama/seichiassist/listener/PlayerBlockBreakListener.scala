@@ -334,11 +334,11 @@ class PlayerBlockBreakListener(
       world.dropItemNaturally(location, new ItemStack(Material.STEP))
     }
     if (b.getType ne Material.STEP) return
-    if (b.getY != 5) return
+    if (b.getY > 5) return
     if (b.getData != 0) return
     if (!world.isSeichi) return
     if (data.canBreakHalfBlock) return
     event.setCancelled(true)
-    p.sendMessage(s"${RED}Y5に敷かれたハーフブロックは破壊不可能です。")
+    p.sendMessage(s"${RED}Y5以下に敷かれたハーフブロックは破壊不可能です。")
   }
 }
