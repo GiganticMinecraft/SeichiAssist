@@ -29,6 +29,11 @@ trait SubHomePersistence[F[_]] {
   def upsert(ownerUuid: UUID, id: SubHomeId)(subHome: SubHome): F[Unit]
 
   /**
+   * サブホームを削除する。
+   */
+  def remove(ownerUuid: UUID, id: SubHomeId): F[Boolean]
+
+  /**
    * 所有者のUUIDとサブホームのIDから単一のサブホームを取得する。
    */
   final def get(ownerUuid: UUID, id: SubHomeId)(implicit F: Functor[F]): F[Option[SubHome]] =
