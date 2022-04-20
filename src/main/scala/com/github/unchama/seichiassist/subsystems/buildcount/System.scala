@@ -8,6 +8,9 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.ratelimiting.RateLimiter
+import com.github.unchama.minecraft.actions.BroadcastMinecraftSound
+import com.github.unchama.minecraft.bukkit.actions.BroadcastBukkitSound
+import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage.apply
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{
   ClassifyPlayerWorld,
@@ -53,7 +56,6 @@ object System {
   ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
     rootLogger: Logger[F]
   )(implicit configuration: Configuration): G[System[F, G]] = {
-    import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage._
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] =
@@ -82,6 +84,8 @@ object System {
     } yield {
       implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[G, Player] =
         new ClassifyBukkitPlayerWorld[G]
+      implicit val broadCastMinecraftSound: BroadcastMinecraftSound[G] =
+        BroadcastBukkitSound[G]
       implicit val incrementBuildExp: IncrementBuildExpWhenBuiltByHand[G, Player] =
         IncrementBuildExpWhenBuiltByHand.using(
           rateLimiterRepositoryControls.repository,

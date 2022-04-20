@@ -1,11 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
 import cats.Monad
+import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.generic.{Diff, RefExtra}
-import com.github.unchama.minecraft.actions.SendMinecraftMessage
+import com.github.unchama.minecraft.actions.{BroadcastMinecraftSound, SendMinecraftMessage}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
@@ -32,10 +33,13 @@ object IncrementBuildExpWhenBuiltByHand {
   def using[F[_]: Monad: ClassifyPlayerWorld[*[_], Player]: SendMinecraftMessage[
     *[_],
     Player
-  ], Player](
+  ]: BroadcastMinecraftSound[*[_]], Player](
     rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]]
-  )(implicit multiplier: BuildExpMultiplier): IncrementBuildExpWhenBuiltByHand[F, Player] =
+  )(
+    implicit multiplier: BuildExpMultiplier,
+    sync: Sync[F]
+  ): IncrementBuildExpWhenBuiltByHand[F, Player] =
     (player: Player, by: BuildExpAmount) => {
       val F: Monad[F] = Monad[F]
 
