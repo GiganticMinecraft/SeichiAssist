@@ -80,16 +80,13 @@ object SubHomeCommand {
     _
   ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: SubHomeWriteAPI] =
     argsAndSenderConfiguredBuilder
-      .execution { context =>
+      .executionCSEffect { context =>
         val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
         val player = context.sender
 
-        val eff = for {
-          _ <- NonServerThreadContextShift[F].shift
-          _ <- SubHomeWriteAPI[F].remove(player.getUniqueId, subHomeId)
-        } yield MessageEffect(s"サブホームポイント${subHomeId}を削除しました。")
-
-        eff.toIO
+        Kleisli.liftF(
+          SubHomeWriteAPI[F].remove(player.getUniqueId, subHomeId)
+        ) >> MessageEffectF(s"サブホームポイント${subHomeId}を削除しました。")
       }
       .build()
 
