@@ -3,16 +3,13 @@ package com.github.unchama.seichiassist.subsystems.buildcount.application.action
 import cats.effect.Sync
 import cats.{Applicative, ~>}
 import com.github.unchama.generic.Diff
-import com.github.unchama.minecraft.actions.SendMinecraftMessage
+import com.github.unchama.minecraft.actions.{BroadCastMinecraftSound, SendMinecraftMessage}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.effects.unfocused.BroadcastSoundEffect
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
   BuildAssistExpTable,
   BuildLevel
 }
 import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.targetedeffect.SequentialEffect
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor.GOLD
 import org.bukkit.Sound
 
@@ -24,7 +21,8 @@ import org.bukkit.Sound
 case class LevelUpNotifier[F[_], Player]()(
   implicit F: Applicative[F],
   sync: Sync[F],
-  send: SendMinecraftMessage[F, Player]
+  send: SendMinecraftMessage[F, Player],
+  sound: BroadCastMinecraftSound[F]
 ) {
 
   def notifyTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
@@ -37,11 +35,8 @@ case class LevelUpNotifier[F[_], Player]()(
         Util.sendMessageToEveryoneIgnoringPreference(
           s"$GOLD${bukkitPlayer.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
         )
-        SequentialEffect(
-          BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f),
-          MessageEffect(s"${GOLD}最大Lvに到達したよ(`･ω･´)")
-        ).apply(bukkitPlayer).unsafeRunAsyncAndForget()
-      }
+      } >> SendMinecraftMessage[F, Player].string(player, s"${GOLD}最大Lvに到達したよ(`･ω･´)") >>
+        BroadCastMinecraftSound[F].playSound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
     } else if (oldLevel < newLevel)
       SendMinecraftMessage[F, Player].string(
         player,
@@ -51,7 +46,9 @@ case class LevelUpNotifier[F[_], Player]()(
       Applicative[F].unit
   }
 
-  def mapK[G[_]: Applicative: Sync](fg: F ~> G): LevelUpNotifier[G, Player] = {
+  def mapK[G[_]: Applicative: Sync: BroadCastMinecraftSound](
+    fg: F ~> G
+  ): LevelUpNotifier[G, Player] = {
     implicit val e: SendMinecraftMessage[G, Player] = send.mapK(fg)
     new LevelUpNotifier[G, Player]()
   }
