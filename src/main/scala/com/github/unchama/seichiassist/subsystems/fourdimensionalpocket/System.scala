@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.fourdimensionalpocket
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
+import cats.effect.{ConcurrentEffect, Sync, SyncEffect, SyncIO}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
@@ -29,6 +29,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.{
   PocketSize
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.infrastructure.JdbcBukkitPocketInventoryPersistence
+import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.Sound
 import org.bukkit.command.TabExecutor
@@ -49,9 +50,10 @@ object System {
 
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger, G[
     _
-  ]: SyncEffect: ContextCoercion[*[_], F]](
-    breakCountReadAPI: BreakCountReadAPI[F, G, Player]
-  )(implicit effectEnvironment: EffectEnvironment): F[System[F, Player]] = {
+  ]: SyncEffect: ContextCoercion[*[_], F]](breakCountReadAPI: BreakCountReadAPI[F, G, Player])(
+    implicit effectEnvironment: EffectEnvironment,
+    syncIOUuidRepository: UuidRepository[SyncIO]
+  ): F[System[F, Player]] = {
     val persistence: PocketInventoryPersistence[G, Inventory] =
       new JdbcBukkitPocketInventoryPersistence[G]
 

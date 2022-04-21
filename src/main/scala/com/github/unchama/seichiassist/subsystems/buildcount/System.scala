@@ -33,7 +33,6 @@ import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{
   JdbcBuildAmountDataPersistence,
   JdbcBuildAmountRateLimitPersistence
 }
-import com.github.unchama.util.logging.log4cats.PrefixedLogger
 import io.chrisdavenport.cats.effect.time.JavaTime
 import io.chrisdavenport.log4cats.Logger
 import org.bukkit.entity.Player
@@ -62,7 +61,6 @@ object System {
       new JdbcBuildAmountDataPersistence[G]()
     implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G] =
       new JdbcBuildAmountRateLimitPersistence[G]()
-    implicit val logger: Logger[F] = PrefixedLogger[F]("BuildAssist-BuildAmount")(rootLogger)
     implicit val javaTimeG: JavaTime[G] = JavaTime.fromClock
 
     for {

@@ -46,6 +46,8 @@ class PlayerClickListener(
 
   import scala.jdk.CollectionConverters._
 
+  import ManagedWorld._
+
   private val plugin = SeichiAssist.instance
 
   import plugin.activeSkillAvailability
@@ -68,7 +70,7 @@ class PlayerClickListener(
     val skillState = playerData.skillState.get.unsafeRunSync()
 
     if (skillState.usageMode == Disabled) return
-    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
+    if (!player.getWorld.isSeichiSkillAllowed) return
 
     action match {
       case Action.LEFT_CLICK_BLOCK | Action.LEFT_CLICK_AIR =>
@@ -333,7 +335,7 @@ class PlayerClickListener(
       .level
 
     if (playerLevel < SeichiAssist.seichiAssistConfig.getDualBreaklevel) return
-    if (!Util.seichiSkillsAllowedIn(player.getWorld)) return
+    if (!player.getWorld.isSeichiSkillAllowed) return
     if (!activeSkillAvailability(player).get.unsafeRunSync()) return
 
     if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {

@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.dragonnighttime.application
 
 import cats.effect.{Concurrent, Timer}
-import com.github.unchama.concurrent.{RepeatingRoutine, RepeatingTaskContext}
+import com.github.unchama.concurrent.RepeatingRoutine
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.FastDiggingEffectWriteApi
 import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.domain.effect.{
@@ -18,8 +18,7 @@ import java.util.concurrent.TimeUnit
 
 object DragonNightTimeRoutine {
   def apply[F[_]: Concurrent: Notifiable: Timer, G[_]: ContextCoercion[*[_], F], Player](
-    implicit context: RepeatingTaskContext,
-    fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
+    implicit fastDiggingEffectApi: FastDiggingEffectWriteApi[F, Player],
     manaApi: ManaApi[F, G, Player]
   ): F[Nothing] = {
 

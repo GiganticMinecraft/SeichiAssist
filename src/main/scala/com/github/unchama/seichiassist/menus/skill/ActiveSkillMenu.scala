@@ -466,8 +466,7 @@ object ActiveSkillMenu extends Menu {
 
   private object ConstantButtons {
     def skillEffectMenuButton(
-      implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-      ioOnMainThread: OnMinecraftServerThread[IO]
+      implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type
     ): Button = {
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)

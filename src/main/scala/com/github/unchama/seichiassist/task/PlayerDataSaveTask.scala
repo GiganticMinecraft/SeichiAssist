@@ -64,7 +64,7 @@ object PlayerDataSaveTask {
     }
 
     def updateActiveSkillEffectUnlockState(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString
+      val playerUuid = player.getUniqueId.toString
       val effectsObtained = playerdata.skillEffectState.obtainedEffects
 
       stmt.executeUpdate {
@@ -82,7 +82,7 @@ object PlayerDataSaveTask {
     }
 
     def updateSeichiSkillUnlockState(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString
+      val playerUuid = player.getUniqueId.toString
       val skillsObtained = playerdata.skillState.get.unsafeRunSync().obtainedSkills
 
       stmt.executeUpdate {
@@ -99,7 +99,7 @@ object PlayerDataSaveTask {
     }
 
     def updatePlayerDataColumns(stmt: Statement): Unit = {
-      val playerUuid = playerdata.uuid.toString
+      val playerUuid = player.getUniqueId.toString
 
       // 実績のフラグ(BitSet)保存用変換処理
       val flagString = playerdata.TitleFlags.toBitMask.map(_.toHexString).mkString(",")

@@ -60,9 +60,9 @@ object RepeatingRoutine {
    *   ループにて保持される状態の型
    * @return
    */
-  def recMTask[F[_]: Timer: Sync, State](init: State)(
-    action: State => F[Option[State]]
-  )(getInterval: F[FiniteDuration])(implicit context: RepeatingTaskContext): F[Unit] = {
+  def recMTask[F[_]: Timer: Sync, State](
+    init: State
+  )(action: State => F[Option[State]])(getInterval: F[FiniteDuration]): F[Unit] = {
     Slf4jLogger
       .create
       .flatMap(implicit logger => whileDefinedMRecovering(init)(action)(getInterval))

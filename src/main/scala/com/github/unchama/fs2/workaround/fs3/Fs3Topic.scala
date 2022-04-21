@@ -146,13 +146,12 @@ object Fs3Topic {
   import cats.implicits._
 
   def apply[F[_], A](initial: A)(implicit F: Concurrent[F]): F[Fs3Topic[F, A]] =
-    in[F, F, A](initial)
+    in[F, F, A]
 
   /**
    * Constructs a Topic
    */
-  // noinspection ScalaUnusedSymbol
-  def in[G[_], F[_], A](initial: A)(implicit G: Sync[G], F: Concurrent[F]): G[Fs3Topic[F, A]] =
+  def in[G[_], F[_], A](implicit G: Sync[G], F: Concurrent[F]): G[Fs3Topic[F, A]] =
     (
       Ref.in[G, F, (LongMap[Fs3Channel[F, A]], Long)](LongMap.empty[Fs3Channel[F, A]] -> 1L),
       SignallingRef.in[G, F, Int](0),

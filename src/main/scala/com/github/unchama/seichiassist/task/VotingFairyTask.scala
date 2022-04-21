@@ -8,6 +8,7 @@ import com.github.unchama.seichiassist.util.Util
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.{Bukkit, Sound}
+import org.bukkit.ChatColor._
 
 object VotingFairyTask {
   // MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
@@ -23,9 +24,7 @@ object VotingFairyTask {
     ) {
       speak(p, "あっ、もうこんな時間だ！", b = false)
       speak(p, s"じゃーねー！${p.getName}", b = true)
-      p.sendMessage(
-        ChatColor.RESET + "" + ChatColor.YELLOW + "" + ChatColor.BOLD + "妖精はどこかへ行ってしまった"
-      )
+      p.sendMessage(s"$RESET$YELLOW${BOLD}妖精はどこかへ行ってしまった")
       playerdata.usingVotingFairy_$eq(false)
     }
   }
