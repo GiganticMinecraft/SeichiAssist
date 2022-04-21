@@ -30,9 +30,11 @@ object GachaSkullData {
           setLore {
             List(s"$RESET${GREEN}右クリックで使えます").asJava
           }
-          setOwningPlayer(
-            Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("unchama").unsafeRunSync().get)
-          )
+
+          /**
+           * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+           */
+          setOwner("unchama")
         }
       }
     }
@@ -51,9 +53,11 @@ object GachaSkullData {
           setLore {
             List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${LIGHT_PURPLE}投票ありがとナス♡").asJava
           }
-          setOwningPlayer(
-            Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("unchama").unsafeRunSync().get)
-          )
+
+          /**
+           * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+           */
+          setOwner("unchama")
         }
       }
     }
@@ -72,9 +76,11 @@ object GachaSkullData {
           setLore {
             List(s"$RESET${GREEN}右クリックで使えます", s"$RESET${GRAY}ガチャ景品と交換しました。").asJava
           }
-          setOwningPlayer(
-            Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("unchama").unsafeRunSync().get)
-          )
+
+          /**
+           * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+           */
+          setOwner("unchama")
         }
       }
     }

@@ -96,9 +96,11 @@ object MenuInventoryData {
       s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：11×11"
     )
     skullmeta.setLore(lore.asJava)
-    skullmeta.setOwningPlayer(
-      Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("MHF_ArrowUp").unsafeRunSync().get)
-    )
+
+    /**
+     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+     */
+    skullmeta.setOwner("MHF_ArrowUp")
     itemstack.setItemMeta(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 19, itemstack)
 
@@ -113,9 +115,11 @@ object MenuInventoryData {
       s"$RESET$RED※範囲設定の最大値は11×11※"
     )
     skullmeta.setLore(lore.asJava)
-    skullmeta.setOwningPlayer(
-      Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("MHF_ArrowUp").unsafeRunSync().get)
-    )
+
+    /**
+     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+     */
+    skullmeta.setOwner("MHF_ArrowUp")
     itemstack.setItemMeta(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 20, itemstack)
 
@@ -127,9 +131,11 @@ object MenuInventoryData {
     lore =
       List(s"$RESET${AQUA}現在の範囲設定：$ZSSkillA×$ZSSkillA", s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：5×5")
     skullmeta.setLore(lore.asJava)
-    skullmeta.setOwningPlayer(
-      Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("MHF_TNT").unsafeRunSync().get)
-    )
+
+    /**
+     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+     */
+    skullmeta.setOwner("MHF_TNT")
     itemstack.setItemMeta(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 22, itemstack)
 
@@ -144,9 +150,11 @@ object MenuInventoryData {
       s"$RESET$RED※範囲設定の最小値は3×3※"
     )
     skullmeta.setLore(lore.asJava)
-    skullmeta.setOwningPlayer(
-      Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("MHF_ArrowDown").unsafeRunSync().get)
-    )
+
+    /**
+     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+     */
+    skullmeta.setOwner("MHF_ArrowDown")
     itemstack.setItemMeta(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 24, itemstack)
 
@@ -158,9 +166,11 @@ object MenuInventoryData {
     lore =
       List(s"$RESET${AQUA}現在の範囲設定：$ZSSkillA×$ZSSkillA", s"$RESET$AQUA${UNDERLINE}変更後の範囲設定：3×3")
     skullmeta.setLore(lore.asJava)
-    skullmeta.setOwningPlayer(
-      Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("MHF_ArrowDown").unsafeRunSync().get)
-    )
+
+    /**
+     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+     */
+    skullmeta.setOwner("MHF_ArrowDown")
     itemstack.setItemMeta(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 25, itemstack)
 
@@ -201,9 +211,11 @@ object MenuInventoryData {
     itemstack.setDurability(3.toShort)
     skullmeta.setDisplayName(s"$YELLOW$UNDERLINE${BOLD}ホームへ")
     skullmeta.setLore(lore.asJava)
-    skullmeta.setOwningPlayer(
-      Bukkit.getOfflinePlayer(syncIOUuidRepository.getUuid("MHF_ArrowLeft").unsafeRunSync().get)
-    )
+
+    /**
+     * 参加したことのないプレーヤーはgetOfflinePlayerでデータが取れないのでこうするしか無い
+     */
+    skullmeta.setOwner("MHF_ArrowLeft")
     itemstack.setItemMeta(skullmeta)
     AsyncInventorySetter.setItemAsync(inventory, 27, itemstack)
 
