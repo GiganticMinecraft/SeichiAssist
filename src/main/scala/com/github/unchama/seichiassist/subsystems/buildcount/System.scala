@@ -7,7 +7,7 @@ import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage.apply
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{
   ClassifyPlayerWorld,
@@ -42,12 +42,13 @@ object System {
   import cats.effect.implicits._
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: NonServerThreadContextShift: ErrorLogger, G[
+  def wired[F[
+    _
+  ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: ErrorLogger, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
     rootLogger: Logger[F]
   )(implicit configuration: Configuration): F[System[F, G]] = {
-
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] =
       new JdbcBuildAmountDataPersistence[G]()
@@ -60,8 +61,10 @@ object System {
 
       buildAmountDataRepositoryControls <-
         ContextCoercion(
-          BukkitRepositoryControls
-            .createHandles(BuildAmountDataRepositoryDefinition.withPersistence(persistence))
+          BukkitRepositoryControls.createHandles(
+            BuildAmountDataRepositoryDefinition
+              .withContext[F, G, Player](buildCountTopic, persistence)
+          )
         )
     } yield {
       implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[G, Player] =

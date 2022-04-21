@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners
 
+import cats.effect.SyncEffect.ops.toAllSyncEffectOps
 import cats.effect.{SyncEffect, SyncIO}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.IncrementBuildExpWhenBuiltByHand
 import org.bukkit.entity.Player
@@ -11,8 +12,6 @@ import org.bukkit.event.{EventHandler, Listener}
  */
 class BuildExpIncrementer[F[_]: IncrementBuildExpWhenBuiltByHand[*[_], Player]: SyncEffect]
     extends Listener {
-
-  import cats.effect.implicits._
 
   @EventHandler(ignoreCancelled = true)
   def onEvent(event: BlockPlaceEvent): Unit = {

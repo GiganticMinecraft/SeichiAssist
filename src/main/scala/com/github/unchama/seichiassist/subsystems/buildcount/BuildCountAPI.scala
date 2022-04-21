@@ -31,12 +31,13 @@ trait BuildCountAPI[F[_], G[_], Player] {
   final lazy val buildAmountUpdateDiffs: fs2.Stream[F, (Player, Diff[BuildAmountData])] =
     StreamExtra.keyedValueDiffs(buildAmountUpdates)
 
-  final lazy val buildLevelUpdates: fs2.Stream[F, (Player, Diff[BuildLevel])] =
+  final lazy val buildLevelUpdates: fs2.Stream[F, (Player, Diff[BuildLevel])] = {
     buildAmountUpdateDiffs.mapFilter {
       case (player, Diff(left, right)) =>
         Diff
           .fromValues(left.levelCorrespondingToExp, right.levelCorrespondingToExp)
           .map((player, _))
     }
+  }
 
 }
