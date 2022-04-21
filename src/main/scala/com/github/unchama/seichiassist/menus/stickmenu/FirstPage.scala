@@ -500,8 +500,9 @@ object FirstPage extends Menu {
 
     val computeActiveSkillButton: IO[Button] = IO {
       val iconItemStack = {
+        import ManagedWorld._
         val lore =
-          if (ManagedWorld.fromBukkitWorld(player.getWorld).exists(_.isSeichiSkillAllowed))
+          if (player.getWorld.isSeichiSkillAllowed)
             List(s"$RESET${GRAY}整地に便利なスキルを使用できるゾ", s"$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く")
           else
             List(s"$RESET${RED}このワールドでは", s"$RESET${RED}整地スキルを使えません")
