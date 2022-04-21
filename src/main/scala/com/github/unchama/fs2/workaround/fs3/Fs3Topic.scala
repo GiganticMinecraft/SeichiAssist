@@ -151,7 +151,6 @@ object Fs3Topic {
   /**
    * Constructs a Topic
    */
-  // noinspection ScalaUnusedSymbol
   def in[G[_], F[_], A](implicit G: Sync[G], F: Concurrent[F]): G[Fs3Topic[F, A]] =
     (
       Ref.in[G, F, (LongMap[Fs3Channel[F, A]], Long)](LongMap.empty[Fs3Channel[F, A]] -> 1L),
