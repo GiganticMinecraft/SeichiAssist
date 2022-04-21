@@ -48,6 +48,8 @@ EULAに同意しデバッグを続行する場合、`./docker/spigot/serverfiles
 
 サーバーやDB等を停止する場合、 `docker-compose down` を実行してください。
 
+なお、SeichiAssistがJava 8以外でコンパイルされた場合は、実行時にエラーとなります。必ず揃えるようにしてください。
+
 ### デバッグ用環境への接続
 
 DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とします。

@@ -33,6 +33,8 @@ trait SubHomeWriteAPI[F[_]] {
 
   def rename(ownerUuid: UUID, id: SubHomeId)(name: String): F[OperationResult.RenameResult]
 
+  def remove(ownerUuid: UUID, id: SubHomeId): F[Boolean]
+
 }
 
 object SubHomeWriteAPI {

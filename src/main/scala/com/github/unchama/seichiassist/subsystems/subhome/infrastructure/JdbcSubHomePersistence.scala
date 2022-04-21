@@ -67,4 +67,16 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
           .apply()
       }.toMap
     }
+
+  override def remove(ownerUuid: UUID, id: SubHomeId): F[Boolean] = {
+    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+      DB.localTx { implicit session =>
+        // NOTE 2022/04/16: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
+        sql"""delete from seichiassist.sub_home 
+             |  where server_id = $serverId 
+             |  and player_uuid = ${ownerUuid.toString} 
+             |  and id = ${id.value - 1}""".stripMargin.execute().apply()
+      }
+    }
+  }
 }

@@ -56,7 +56,7 @@ object System {
         : Kleisli[G, Player, AnywhereEnderAccessPermitted] =
         Kleisli(canAccessAnywhereEnderChest).flatTap {
           case Left(AccessDenialReason.NotEnoughLevel(_, minimumLevel)) =>
-            MessageEffectF[G](s"どこでもエンダーチェストを開くには整地レベルがLv${minimumLevel}以上である必要があります。")
+            MessageEffectF[G](s"どこでもエンダーチェストを開くには整地レベルがLv${minimumLevel.level}以上である必要があります。")
           case Right(_) =>
             Kleisli((player: Player) =>
               PlayerEffects.openInventoryEffect(player.getEnderChest).run(player)

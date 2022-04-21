@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.breakcount
 
+import cats.Monad
 import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
@@ -77,6 +78,7 @@ object System {
 
       new System[F, G] {
         override val api: BreakCountAPI[F, G, Player] = new BreakCountAPI[F, G, Player] {
+          override protected implicit val _GMonad: Monad[G] = implicitly[SyncEffect[G]]
           override val seichiAmountDataRepository
             : KeyedDataRepository[Player, ReadOnlyRef[G, SeichiAmountData]] =
             breakCountRepository.map(ReadOnlyRef.fromRef)

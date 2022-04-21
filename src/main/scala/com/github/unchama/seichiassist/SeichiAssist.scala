@@ -36,7 +36,11 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.{DonationCommand, GachaCommand}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+  asyncShift,
+  onMainThread,
+  timer
+}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -227,6 +231,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
+    import PluginExecutionContexts.asyncShift
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
@@ -549,7 +554,7 @@ class SeichiAssist extends JavaPlugin() {
       anywhereEnderSystem.accessApi
 
     val menuRouter = TopLevelRouter.apply
-    import menuRouter.canOpenStickMenu
+    import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
 
     MineStackObjectList.setGachaPrizesList(SeichiAssist.generateGachaPrizes())
 
