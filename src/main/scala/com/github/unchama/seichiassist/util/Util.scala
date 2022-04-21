@@ -9,7 +9,6 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import com.github.unchama.util.bukkit.ItemStackUtil
-import enumeratum._
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
@@ -443,17 +442,17 @@ object Util {
     }
   }
 
-  def getPlayerDirection(player: Player): Direction = {
+  def getPlayerDirection(player: Player): AbsoluteDirection = {
     var rotation = ((player.getLocation.getYaw + 180) % 360).toDouble
 
     if (rotation < 0) rotation += 360.0
 
     // 0,360:south 90:west 180:north 270:east
-    if (0.0 <= rotation && rotation < 45.0) Direction.NORTH
-    else if (45.0 <= rotation && rotation < 135.0) Direction.EAST
-    else if (135.0 <= rotation && rotation < 225.0) Direction.SOUTH
-    else if (225.0 <= rotation && rotation < 315.0) Direction.WEST
-    else Direction.NORTH
+    if (0.0 <= rotation && rotation < 45.0) AbsoluteDirection.NORTH
+    else if (45.0 <= rotation && rotation < 135.0) AbsoluteDirection.EAST
+    else if (135.0 <= rotation && rotation < 225.0) AbsoluteDirection.SOUTH
+    else if (225.0 <= rotation && rotation < 315.0) AbsoluteDirection.WEST
+    else AbsoluteDirection.NORTH
   }
 
   def showTime(cal: Calendar): String = {
@@ -576,53 +575,6 @@ object Util {
    */
   def loreIndexOf(lore: List[String], find: String): Int = {
     IntStream.range(0, lore.size).filter { i => lore(i).contains(find) }.findFirst().orElse(-1)
-  }
-
-  /**
-   * PlayerDataでチャンク数をゲット・セットするためのenum
-   */
-  sealed trait DirectionType extends EnumEntry
-
-  /**
-   * PlayerDataなどで使用する方角関係のenum
-   */
-  sealed trait Direction extends EnumEntry
-
-  case object DirectionType extends Enum[DirectionType] {
-
-    val values: IndexedSeq[DirectionType] = findValues
-
-    /**
-     * for Java interop
-     */
-    def ahead: AHEAD.type = AHEAD
-
-    def behind: BEHIND.type = BEHIND
-
-    def right: RIGHT.type = RIGHT
-
-    def left: LEFT.type = LEFT
-
-    case object AHEAD extends DirectionType
-
-    case object BEHIND extends DirectionType
-
-    case object RIGHT extends DirectionType
-
-    case object LEFT extends DirectionType
-  }
-
-  case object Direction extends Enum[Direction] {
-
-    val values: IndexedSeq[Direction] = findValues
-
-    case object NORTH extends Direction
-
-    case object SOUTH extends Direction
-
-    case object EAST extends Direction
-
-    case object WEST extends Direction
   }
 
   /**

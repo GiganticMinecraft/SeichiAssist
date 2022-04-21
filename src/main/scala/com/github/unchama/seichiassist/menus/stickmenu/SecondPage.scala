@@ -160,20 +160,20 @@ object SecondPage extends Menu {
         iconItemStack = {
           val soundConfigurationState =
             if (currentSettings.shouldMuteSounds) {
-              s"$RESET${RED}全体通知音:消音する"
+              s"$RESET${RED}全体大当たり通知音:消音する"
             } else {
-              s"$RESET${GREEN}全体通知音:消音しない"
+              s"$RESET${GREEN}全体大当たり通知音:消音しない"
             }
 
           val messageConfigurationState =
             if (currentSettings.shouldMuteMessages) {
-              s"$RESET${RED}全体メッセージ:表示しない"
+              s"$RESET${RED}全体大当たりメッセージ:表示しない"
             } else {
-              s"$RESET${GREEN}全体メッセージ:表示する"
+              s"$RESET${GREEN}全体大当たりメッセージ:表示する"
             }
 
           new IconItemStackBuilder(Material.JUKEBOX)
-            .title(s"$YELLOW$UNDERLINE${BOLD}全体通知切替")
+            .title(s"$YELLOW$UNDERLINE${BOLD}全体大当たり通知切替")
             .lore(
               List(
                 soundConfigurationState,
@@ -195,8 +195,8 @@ object SecondPage extends Menu {
                 .getBroadcastMutingSettings
                 .map {
                   case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
-                  case ReceiveMessageOnly     => s"${RED}消音可能な全体通知音を消音します"
-                  case MuteMessageAndSound    => s"${RED}非表示可能な全体メッセージを非表示にします"
+                  case ReceiveMessageOnly     => s"${RED}消音可能な全体大当たり通知音を消音します"
+                  case MuteMessageAndSound    => s"${RED}非表示可能な全体大当たりメッセージを非表示にします"
                 }
                 .map(MessageEffect(_))
             }
