@@ -44,6 +44,10 @@ case class BuildAmountData(expAmount: BuildExpAmount) {
   def modifyExpAmount(f: BuildExpAmount => BuildExpAmount): BuildAmountData =
     copy(expAmount = f(expAmount))
 
+  def addExpAmount(another: BuildExpAmount): BuildAmountData = BuildAmountData(
+    expAmount.add(another)
+  )
+
 }
 
 object BuildAmountData {
