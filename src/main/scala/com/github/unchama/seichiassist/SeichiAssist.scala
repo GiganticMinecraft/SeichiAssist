@@ -66,6 +66,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
@@ -204,6 +206,7 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val managedFlySystem: subsystems.managedfly.System[SyncIO, IO] = {
     import PluginExecutionContexts.{asyncShift, cachedThreadPool, onMainThread}
 
+    implicit val effectEnvironment: DefaultEffectEnvironment.type = DefaultEffectEnvironment
     implicit val timer: Timer[IO] = IO.timer(cachedThreadPool)
 
     val configuration = subsystems
@@ -280,6 +283,8 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
+      JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
     subsystems
       .fourdimensionalpocket
@@ -331,6 +336,7 @@ class SeichiAssist extends JavaPlugin() {
     : subsystems.discordnotification.System[IO] = {
     import PluginExecutionContexts.asyncShift
 
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
 
     subsystems
@@ -342,6 +348,7 @@ class SeichiAssist extends JavaPlugin() {
   lazy val subhomeSystem: subhome.System[IO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
+    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
     subhome.System.wired
   }
@@ -449,6 +456,8 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
 
+    implicit val syncClock: Clock[SyncIO] = Clock.create[SyncIO]
+
     // チャンネルを追加
     Bukkit.getMessenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
@@ -554,6 +563,7 @@ class SeichiAssist extends JavaPlugin() {
     // 機能を果たそうとするものである。
     implicit val canOpenBuildMainMenu: CanOpen[IO, BuildMainMenu.type] =
       BuildAssistMenuRouter.apply.canOpenBuildMainMenu
+
     // コマンドの登録
     Map(
       "gacha" -> new GachaCommand(),

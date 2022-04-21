@@ -24,7 +24,7 @@ import java.util.UUID
 class OpenPocketCommand[F[_]: Effect: InteractInventory[*[_], Player, Inventory]](
   repository: KeyedDataRepository[Player, ReadOnlyRef[F, Inventory]],
   persistence: RefDict[F, UUID, Inventory]
-) {
+)(implicit syncIOUuidRepository: UuidRepository[SyncIO]) {
   private val descriptionPrintExecutor =
     EchoExecutor(MessageEffect {
       List(s"$RED/openpocket [プレイヤー名]", "対象プレイヤーの四次元ポケットを開きます。", "編集結果はオンラインのプレイヤーにのみ反映されます。")
@@ -53,11 +53,6 @@ class OpenPocketCommand[F[_]: Effect: InteractInventory[*[_], Player, Inventory]
                 .toIO
             } else {
               IO {
-                implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
-                  JdbcBackedUuidRepository
-                    .initializeStaticInstance[SyncIO]
-                    .unsafeRunSync()
-                    .apply[SyncIO]
                 syncIOUuidRepository.getUuid(playerName).unsafeRunSync().orNull
               }.flatMap {
                 case null =>
