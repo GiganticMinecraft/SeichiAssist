@@ -15,8 +15,7 @@ object MenuInventoryData {
 
   import scala.jdk.CollectionConverters._
 
-  private implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
-    JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
+  JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
   def getSetBlockSkillData(p: Player): Inventory = {
     // プレイヤーを取得

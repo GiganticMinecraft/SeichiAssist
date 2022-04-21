@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.util.ItemMetaFactory
 import org.bukkit.ChatColor._
-import org.bukkit.{Bukkit, Material}
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 object GachaSkullData {
@@ -13,8 +13,7 @@ object GachaSkullData {
   import scala.jdk.CollectionConverters._
   import scala.util.chaining._
 
-  private implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
-    JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
+  JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
   /**
    * ノーマルガチャ券
