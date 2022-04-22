@@ -29,7 +29,7 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
              |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name, pitch, yaw) values
              |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${subHome
               .name
-              .orNull}, $x, $y, $z, $worldName)
+              .orNull}, $x, $y, $z, $worldName, $pitch, $yaw)
              |    on duplicate key update
              |      name = ${subHome.name.orNull},
              |      location_x = $x,
