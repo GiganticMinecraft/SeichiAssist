@@ -4,6 +4,7 @@ import cats.Applicative
 import cats.effect.{Sync, SyncIO}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
   SeichiLevel,
   SeichiStarLevel
@@ -19,6 +20,11 @@ object BukkitNotifyLevelUp {
 
   def apply[F[_]: OnMinecraftServerThread: Sync]: NotifyLevelUp[F, Player] =
     new NotifyLevelUp[F, Player] {
+      override def ofSeichiAmountTo(player: Player)(diff: Diff[SeichiAmountData]): F[Unit] = {
+        val Diff(oldAmount, newAmount) = diff
+        Applicative[F].unit
+      }
+
       override def ofSeichiLevelTo(player: Player)(diff: Diff[SeichiLevel]): F[Unit] = {
         val Diff(oldLevel, newLevel) = diff
 
