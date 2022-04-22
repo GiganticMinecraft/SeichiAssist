@@ -1,12 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification
 
 import cats.effect.Concurrent
-import com.github.unchama.generic.Diff
 import com.github.unchama.generic.effect.stream.StreamExtra
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
-import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.bukkit.actions.BukkitNotifyLevelUp
 import io.chrisdavenport.log4cats.ErrorLogger

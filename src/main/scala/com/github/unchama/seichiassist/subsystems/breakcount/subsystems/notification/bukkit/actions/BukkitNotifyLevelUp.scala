@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.bukkit.actions
 
 import cats.Applicative
-import cats.data.Kleisli
 import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -13,10 +12,9 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
 }
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.util.{PlayerSendable, Util}
-import com.github.unchama.targetedeffect.SequentialEffect
 import org.bukkit.ChatColor.{BOLD, GOLD}
 import org.bukkit.entity.Player
-import org.bukkit.{Bukkit, Sound}
+import org.bukkit.Sound
 
 object BukkitNotifyLevelUp {
 

@@ -1,26 +1,23 @@
 package com.github.unchama.seichiassist.listener
 
-import cats.data.Kleisli
 import cats.effect.{Fiber, IO, SyncIO}
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.ManagedWorld._
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.effects.unfocused.BroadcastSoundEffect
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.MultiArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.{BlockSearching, BreakArea}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.seichiassist.{MaterialSets, SeichiAssist}
-import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.effect.BukkitResources
 import com.github.unchama.util.external.ExternalPlugins
-import org.bukkit.ChatColor.{BOLD, GOLD, RED}
+import org.bukkit.ChatColor.RED
 import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
