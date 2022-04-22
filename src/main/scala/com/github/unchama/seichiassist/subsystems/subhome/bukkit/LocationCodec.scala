@@ -14,9 +14,9 @@ object LocationCodec {
   def fromBukkitLocation(location: Location): SubHomeLocation = {
     SubHomeLocation(
       location.getWorld.getName,
-      location.getBlockX,
-      location.getBlockY,
-      location.getBlockZ,
+      location.getX,
+      location.getY,
+      location.getZ,
       location.getPitch,
       location.getYaw
     )
