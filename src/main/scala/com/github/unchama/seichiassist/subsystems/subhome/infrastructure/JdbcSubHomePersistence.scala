@@ -26,7 +26,7 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
 
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
         sql"""insert into seichiassist.sub_home
-             |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name) values
+             |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name, pitch, yaw) values
              |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${subHome
               .name
               .orNull}, $x, $y, $z, $worldName)
@@ -45,7 +45,7 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.readOnly { implicit session =>
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
-        sql"""SELECT id, name, location_x, location_y, location_z, world_name
+        sql"""SELECT id, name, location_x, location_y, location_z, world_name, pitch, yaw
              |  FROM seichiassist.sub_home
              |  where server_id = $serverId
              |  and player_uuid = ${ownerUuid.toString}"""
