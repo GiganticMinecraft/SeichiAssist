@@ -16,7 +16,9 @@ object LocationCodec {
       location.getWorld.getName,
       location.getBlockX,
       location.getBlockY,
-      location.getBlockZ
+      location.getBlockZ,
+      location.getPitch,
+      location.getYaw
     )
   }
 
