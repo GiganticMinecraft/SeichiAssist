@@ -1,18 +1,22 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.bukkit.actions
 
 import cats.Applicative
-import cats.effect.{Sync, SyncIO}
+import cats.data.Kleisli
+import cats.effect.{IO, Sync, SyncIO}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.SeichiAmountData
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
   SeichiLevel,
   SeichiStarLevel
 }
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
-import com.github.unchama.seichiassist.util.Util
-import org.bukkit.ChatColor.GOLD
+import com.github.unchama.seichiassist.util.{PlayerSendable, Util}
+import com.github.unchama.targetedeffect.SequentialEffect
+import org.bukkit.ChatColor.{BOLD, GOLD}
 import org.bukkit.entity.Player
+import org.bukkit.{Bukkit, Sound}
 
 object BukkitNotifyLevelUp {
 
@@ -21,8 +25,22 @@ object BukkitNotifyLevelUp {
   def apply[F[_]: OnMinecraftServerThread: Sync]: NotifyLevelUp[F, Player] =
     new NotifyLevelUp[F, Player] {
       override def ofSeichiAmountTo(player: Player)(diff: Diff[SeichiAmountData]): F[Unit] = {
-        val Diff(oldAmount, newAmount) = diff
+        val Diff(oldBreakAmount, newBreakAmount) = diff
         Applicative[F].unit
+        println(oldBreakAmount.expAmount.amount)
+        println(newBreakAmount.expAmount.amount)
+        if (
+          oldBreakAmount.expAmount.amount < 1000000000 && newBreakAmount
+            .expAmount
+            .amount >= 1000000000
+        ) {
+          OnMinecraftServerThread[F].runAction(SyncIO {
+            Util.sendMessageToEveryoneIgnoringPreference(
+              s"$GOLD$BOLD${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
+            )(PlayerSendable.forString[IO])
+            Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+          })
+        } else Applicative[F].unit
       }
 
       override def ofSeichiLevelTo(player: Player)(diff: Diff[SeichiLevel]): F[Unit] = {

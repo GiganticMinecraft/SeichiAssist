@@ -284,8 +284,6 @@ class PlayerBlockBreakListener(
   def onPlayerBreakBlockFinally(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
     val block = event.getBlock
-    val seichiAmountData =
-      plugin.breakCountSystem.api.seichiAmountDataRepository(player).read.unsafeRunSync()
     import PluginExecutionContexts.timer
     val amount = SeichiExpAmount.ofNonNegative {
       BreakUtil
@@ -297,18 +295,6 @@ class PlayerBlockBreakListener(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
-    val totalBreakAmount = seichiAmountData.expAmount.amount
-    val oldBreakAmount = totalBreakAmount - amount.amount
-    if (oldBreakAmount < 1000000000 && totalBreakAmount >= 1000000000) {
-      SequentialEffect(
-        Kleisli.liftF(IO {
-          Util.sendMessageToEveryoneIgnoringPreference(
-            s"$GOLD$BOLD${player.getName}の総整地量が${(totalBreakAmount / 100000000).toInt}億に到達しました！"
-          )
-        }),
-        BroadcastSoundEffect(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
-      )
-    }
   }
 
   /**
