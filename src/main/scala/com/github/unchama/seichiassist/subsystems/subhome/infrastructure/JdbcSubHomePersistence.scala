@@ -22,19 +22,21 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
   override def upsert(ownerUuid: UUID, id: SubHomeId)(subHome: SubHome): F[Unit] =
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
-        val SubHomeLocation(worldName, x, y, z) = subHome.location
+        val SubHomeLocation(worldName, x, y, z, pitch, yaw) = subHome.location
 
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
         sql"""insert into seichiassist.sub_home
-             |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name) values
+             |(player_uuid, server_id, id, name, location_x, location_y, location_z, world_name, pitch, yaw) values
              |  (${ownerUuid.toString}, $serverId, ${id.value - 1}, ${subHome
               .name
-              .orNull}, $x, $y, $z, $worldName)
+              .orNull}, $x, $y, $z, $worldName, $pitch, $yaw)
              |    on duplicate key update
              |      name = ${subHome.name.orNull},
              |      location_x = $x,
              |      location_y = $y,
              |      location_z = $z,
+             |      pitch = $pitch,
+             |      yaw = $yaw,
              |      world_name = $worldName""".stripMargin.update().apply()
       }
     }
@@ -43,7 +45,7 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
       DB.readOnly { implicit session =>
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
-        sql"""SELECT id, name, location_x, location_y, location_z, world_name
+        sql"""SELECT id, name, location_x, location_y, location_z, world_name, pitch, yaw
              |  FROM seichiassist.sub_home
              |  where server_id = $serverId
              |  and player_uuid = ${ownerUuid.toString}"""
@@ -55,9 +57,11 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
                 rs.stringOpt("name"),
                 SubHomeLocation(
                   rs.string("world_name"),
-                  rs.int("location_x"),
-                  rs.int("location_y"),
-                  rs.int("location_z")
+                  rs.double("location_x"),
+                  rs.double("location_y"),
+                  rs.double("location_z"),
+                  rs.float("pitch"),
+                  rs.float("yaw")
                 )
               )
             )
