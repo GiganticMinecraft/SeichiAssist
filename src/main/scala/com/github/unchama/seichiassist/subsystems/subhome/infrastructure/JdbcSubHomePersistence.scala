@@ -22,7 +22,7 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
   override def upsert(ownerUuid: UUID, id: SubHomeId)(subHome: SubHome): F[Unit] =
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
-        val SubHomeLocation(worldName, x, y, z) = subHome.location
+        val SubHomeLocation(worldName, x, y, z, pitch, yaw) = subHome.location
 
         // NOTE 2021/05/19: 何故かDB上のIDは1少ない。つまり、ID 1のサブホームはDB上ではid=0である。
         sql"""insert into seichiassist.sub_home
@@ -35,6 +35,8 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
              |      location_x = $x,
              |      location_y = $y,
              |      location_z = $z,
+             |      pitch = $pitch,
+             |      yaw = $yaw,
              |      world_name = $worldName""".stripMargin.update().apply()
       }
     }
@@ -55,9 +57,11 @@ class JdbcSubHomePersistence[F[_]: Sync: NonServerThreadContextShift]
                 rs.stringOpt("name"),
                 SubHomeLocation(
                   rs.string("world_name"),
-                  rs.int("location_x"),
-                  rs.int("location_y"),
-                  rs.int("location_z")
+                  rs.double("location_x"),
+                  rs.double("location_y"),
+                  rs.double("location_z"),
+                  rs.float("pitch"),
+                  rs.float("yaw")
                 )
               )
             )
