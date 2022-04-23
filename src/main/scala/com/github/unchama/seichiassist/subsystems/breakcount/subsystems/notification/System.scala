@@ -17,17 +17,6 @@ object System {
     val action: NotifyLevelUp[F, Player] = BukkitNotifyLevelUp[F]
 
     StreamExtra.compileToRestartingStream("[breakcount.notification]") {
-      for {
-        seichiAmount <- breakCountReadAPI.seichiAmountUpdateDiffs
-        seichiLevel <- breakCountReadAPI.seichiLevelUpdates
-        seichiStarLevel <- breakCountReadAPI.seichiStarLevelUpdates
-      } yield {
-        fs2.Stream.eval {
-          action.ofSeichiAmountTo(seichiAmount._1)(seichiAmount._2)
-          action.ofSeichiLevelTo(seichiLevel._1)(seichiLevel._2)
-          action.ofSeichiStarLevelTo(seichiStarLevel._1)(seichiStarLevel._2)
-        }
-      }
       breakCountReadAPI
         .seichiAmountUpdateDiffs
         .either(breakCountReadAPI.seichiLevelUpdates)
