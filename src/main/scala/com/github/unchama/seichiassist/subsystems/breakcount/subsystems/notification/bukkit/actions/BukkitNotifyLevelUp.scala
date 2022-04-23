@@ -28,10 +28,13 @@ object BukkitNotifyLevelUp {
     new NotifyLevelUp[F, Player] {
       override def ofSeichiAmountTo(player: Player)(diff: Diff[SeichiAmountData]): F[Unit] = {
         val Diff(oldBreakAmount, newBreakAmount) = diff
+        val tenBillion = 1000000000
+        val nextTenBillion =
+          tenBillion * (oldBreakAmount.expAmount.amount / tenBillion + 1).toLong
         if (
-          oldBreakAmount.expAmount.amount < 1000000000 && newBreakAmount
+          oldBreakAmount.expAmount.amount < nextTenBillion && newBreakAmount
             .expAmount
-            .amount >= 1000000000
+            .amount >= nextTenBillion
         ) {
           OnMinecraftServerThread[F].runAction(SyncIO {
             Util.sendMessageToEveryoneIgnoringPreference(
