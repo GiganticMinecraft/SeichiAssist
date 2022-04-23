@@ -206,24 +206,28 @@ class PlayerClickListener(
         else base
       }
 
-      // メッセージ設定
+      /**
+       *  メッセージ設定
+       *  ①まずMineStackに入るか試す
+       *  ②入らなかったらインベントリに直接入れる
+       *  ③インベントリが満タンだったらドロップする
+       */
       val additionalMessage =
-        if (!Util.isPlayerInventoryFull(player)) {
-          Util.addItem(player, givenItem)
-          ""
+        if (
+          BreakUtil.tryAddItemIntoMineStack(
+            player,
+            present.itemStack
+          ) && playerLevel >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
+        ) {
+          // ...格納した！
+          s"${AQUA}景品をマインスタックに収納しました。"
         } else {
-          // アイテムがスタックでき、かつ整地Lvがマインスタックの開放レベルに足りているとき...
-          if (
-            BreakUtil.tryAddItemIntoMineStack(
-              player,
-              present.itemStack
-            ) && playerLevel >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
-          ) {
-            // ...格納した！
-            s"${AQUA}景品をマインスタックに収納しました。"
+          // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
+          // ...ドロップする
+          if (!Util.isPlayerInventoryFull(player)) {
+            Util.addItem(player, givenItem)
+            ""
           } else {
-            // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
-            // ...ドロップする
             Util.dropItem(player, givenItem)
             s"${AQUA}景品がドロップしました。"
           }
