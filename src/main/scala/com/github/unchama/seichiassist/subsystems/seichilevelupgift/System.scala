@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   Gift,
   GiftInterpreter
 }
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
