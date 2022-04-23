@@ -22,13 +22,10 @@ object System {
         .either(breakCountReadAPI.seichiLevelUpdates)
         .either(breakCountReadAPI.seichiStarLevelUpdates)
         .evalMap {
-          case Left(seichiAmountAndLevel) =>
-            seichiAmountAndLevel match {
-              case Left((player, seichiAmountDiff)) =>
-                action.ofSeichiAmountTo(player)(seichiAmountDiff)
-              case Right((player, seichiLevelDiff)) =>
-                action.ofSeichiLevelTo(player)(seichiLevelDiff)
-            }
+          case Left(Left((player, seichiAmountDiff))) =>
+            action.ofSeichiAmountTo(player)(seichiAmountDiff)
+          case Left(Right((player, seichiLevelDiff))) =>
+            action.ofSeichiLevelTo(player)(seichiLevelDiff)
           case Right((player, seichiStarLevel)) =>
             action.ofSeichiStarLevelTo(player)(seichiStarLevel)
         }
