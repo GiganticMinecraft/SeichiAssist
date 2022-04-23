@@ -19,6 +19,7 @@ import org.bukkit.Sound
 object BukkitNotifyLevelUp {
 
   import cats.implicits._
+  import PlayerSendable.forString
 
   def apply[F[_]: OnMinecraftServerThread: Sync]: NotifyLevelUp[F, Player] =
     new NotifyLevelUp[F, Player] {
@@ -32,7 +33,7 @@ object BukkitNotifyLevelUp {
           OnMinecraftServerThread[F].runAction(SyncIO {
             Util.sendMessageToEveryoneIgnoringPreference(
               s"$GOLD$BOLD${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
-            )(PlayerSendable.forString[IO])
+            )
             Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
           })
         } else Applicative[F].unit
