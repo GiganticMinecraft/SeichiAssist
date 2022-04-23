@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.seichilevelupgift.usecases
 
-import cats.Applicative
 import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.generic.Diff
