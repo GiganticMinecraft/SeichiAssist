@@ -24,9 +24,6 @@ object BukkitNotifyLevelUp {
     new NotifyLevelUp[F, Player] {
       override def ofSeichiAmountTo(player: Player)(diff: Diff[SeichiAmountData]): F[Unit] = {
         val Diff(oldBreakAmount, newBreakAmount) = diff
-        Applicative[F].unit
-        println(oldBreakAmount.expAmount.amount)
-        println(newBreakAmount.expAmount.amount)
         if (
           oldBreakAmount.expAmount.amount < 1000000000 && newBreakAmount
             .expAmount
