@@ -36,7 +36,6 @@ object System {
     }
 
     StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {
-
       breakCountReadApi.seichiLevelUpdates.evalTap {
         case (player, diff) =>
           player.sendMessage("レベルアップ記念のアイテムを配布しました。")
