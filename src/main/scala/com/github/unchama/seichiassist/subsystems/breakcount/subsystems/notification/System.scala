@@ -18,13 +18,16 @@ object System {
 
     StreamExtra.compileToRestartingStream("[breakcount.notification]") {
       breakCountReadAPI
-        .seichiLevelUpdates
+        .seichiAmountUpdateDiffs
+        .either(breakCountReadAPI.seichiLevelUpdates)
         .either(breakCountReadAPI.seichiStarLevelUpdates)
         .evalMap {
-          case Left((player, levelDiff)) =>
-            action.ofSeichiLevelTo(player)(levelDiff)
-          case Right((player, levelDiff)) =>
-            action.ofSeichiStarLevelTo(player)(levelDiff)
+          case Left(Left((player, seichiAmountDiff))) =>
+            action.ofSeichiAmountTo(player)(seichiAmountDiff)
+          case Left(Right((player, seichiLevelDiff))) =>
+            action.ofSeichiLevelTo(player)(seichiLevelDiff)
+          case Right((player, seichiStarLevel)) =>
+            action.ofSeichiStarLevelTo(player)(seichiStarLevel)
         }
     }
   }
