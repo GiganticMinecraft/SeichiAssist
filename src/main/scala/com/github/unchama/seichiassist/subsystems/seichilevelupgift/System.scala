@@ -11,6 +11,7 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   Gift,
   GiftInterpreter
 }
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
@@ -36,8 +37,11 @@ object System {
     }
 
     StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {
+
       breakCountReadApi.seichiLevelUpdates.evalTap {
-        case (player, diff) => interpreter.onLevelDiff(diff).run(player)
+        case (player, diff) =>
+          player.sendMessage("レベルアップ記念のアイテムを配布しました。")
+          interpreter.onLevelDiff(diff).run(player)
       }
     }
   }

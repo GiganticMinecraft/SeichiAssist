@@ -25,10 +25,7 @@ class GiftItemInterpreter[F[_]: OnMinecraftServerThread: Sync]
       case Item.Elsa         => ItemData.getElsa(1)
     }
 
-    SequentialEffect(
-      MessageEffectF[F]("レベルアップ記念のアイテムを配布しました。"),
-      grantItemStacksEffect[F](itemStack)
-    )
+    SequentialEffect(grantItemStacksEffect[F](itemStack))
   }
 
 }
