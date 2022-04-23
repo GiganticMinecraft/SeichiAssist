@@ -37,9 +37,15 @@ object System {
     StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {
       breakCountReadApi.seichiLevelUpdates.evalTap {
         case (player, diff) =>
-          player.sendMessage("レベルアップ記念のアイテムを配布しました。")
-          player.sendMessage("レベルアップ記念としてガチャを回しました。")
-          interpreter.onLevelDiff(diff).run(player)
+          Sync[F].delay {
+            interpreter.getGiftListByLevelDiff(diff).foreach {
+              case _: Gift.Item =>
+                player.sendMessage("レベルアップ記念のアイテムを配布しました。")
+              case Gift.AutomaticGachaRun =>
+                player.sendMessage("レベルアップ記念としてガチャを回しました。")
+            }
+            interpreter.onLevelDiff(diff).run(player)
+          }
       }
     }
   }

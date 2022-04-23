@@ -26,4 +26,11 @@ trait GiftInterpreter[F[_], Player] {
       .traverse { level => onBundle(GiftBundleTable.bundleAt(level)) }
       .as(())
   }
+
+  final def getGiftListByLevelDiff(
+    levelDiff: Diff[SeichiLevel]
+  )(implicit F: Applicative[F]): List[Gift] = HasSuccessor[SeichiLevel]
+    .leftOpenRightClosedRange(levelDiff.left, levelDiff.right)
+    .toList
+    .flatMap { level => GiftBundleTable.bundleAt(level).map.map { case (gift, _) => gift } }
 }

@@ -24,7 +24,7 @@ class GiftItemInterpreter[F[_]: OnMinecraftServerThread: Sync]
       case Item.Elsa         => ItemData.getElsa(1)
     }
 
-    SequentialEffect(grantItemStacksEffect[F](itemStack))
+    grantItemStacksEffect[F](itemStack)
   }
 
 }
