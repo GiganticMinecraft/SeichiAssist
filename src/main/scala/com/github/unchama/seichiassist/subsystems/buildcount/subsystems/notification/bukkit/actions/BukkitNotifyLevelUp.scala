@@ -16,7 +16,9 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 
 object BukkitNotifyLevelUp {
+
   import cats.implicits._
+  import PlayerSendable.forString
 
   def apply[F[_]: OnMinecraftServerThread: Sync]: NotifyLevelUp[F, Player] = {
     new NotifyLevelUp[F, Player] {
@@ -26,7 +28,7 @@ object BukkitNotifyLevelUp {
           OnMinecraftServerThread[F].runAction(SyncIO {
             Util.sendMessageToEveryoneIgnoringPreference(
               s"$GOLD${player.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
-            )(PlayerSendable.forString[IO])
+            )(forString[IO])
             player.sendMessage(s"${GOLD}最大Lvに到達したよ(`･ω･´)")
             Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
           })
