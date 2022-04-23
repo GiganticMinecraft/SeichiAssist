@@ -16,6 +16,9 @@ import org.bukkit.ChatColor.{BOLD, GOLD}
 import org.bukkit.entity.Player
 import org.bukkit.Sound
 
+//FIXME ファイル名とやっていることが違うようになっているので修正するべき。
+//例えば、10億の倍数到達時の通知はLevelUp時の通知ではない
+//また、BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
 object BukkitNotifyLevelUp {
 
   import cats.implicits._
