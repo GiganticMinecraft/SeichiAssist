@@ -4,7 +4,6 @@ import cats.data
 import cats.data.Kleisli
 import cats.effect.SyncIO
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import InventoryUtil.dropItem
 import com.github.unchama.util.bukkit.ItemStackUtil
 import org.bukkit.Material
 import org.bukkit.entity.Player
