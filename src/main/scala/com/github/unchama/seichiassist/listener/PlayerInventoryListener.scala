@@ -13,7 +13,12 @@ import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.{InventoryUtil, StaticGachaPrizeFactory, Util}
+import com.github.unchama.seichiassist.util.{
+  InventoryUtil,
+  StaticGachaPrizeFactory,
+  TimeUtil,
+  Util
+}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
@@ -558,7 +563,7 @@ class PlayerInventoryListener(
       } else if (itemstackcurrent.getType == Material.COMPASS) {
         VotingFairyTask.speak(
           player,
-          "僕は" + Util.showHour(playerdata.votingFairyEndTime) + "には帰るよー。",
+          "僕は" + TimeUtil.showHour(playerdata.votingFairyEndTime) + "には帰るよー。",
           playerdata.toggleVFSound
         )
         player.closeInventory()
