@@ -7,11 +7,11 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage.apply
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.{
-  BukkitGiftItemInterpreter,
+import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.BukkitGiftItemInterpreter
+import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
+  Gift,
   GiftItemInterpreter
 }
-import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.usecases.GrantGiftOnSeichiLevelDiff
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
