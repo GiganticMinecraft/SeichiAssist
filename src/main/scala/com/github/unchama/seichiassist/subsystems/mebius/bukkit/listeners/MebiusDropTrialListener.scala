@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
 }
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.ChristmasEventsAPI
-import com.github.unchama.seichiassist.util.{InventoryUtil, Util}
+import com.github.unchama.seichiassist.util.InventoryUtil
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, SequentialEffect}
 import com.github.unchama.util.RandomEffect

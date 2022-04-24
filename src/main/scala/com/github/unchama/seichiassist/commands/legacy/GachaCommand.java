@@ -4,6 +4,7 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.InventoryUtil;
 import com.github.unchama.seichiassist.util.InventoryUtil$;
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import org.bukkit.Bukkit;
@@ -40,10 +41,10 @@ public class GachaCommand implements CommandExecutor {
             }
 
             //プレゼントを格納orドロップ
-            if (!InventoryUtil$.isPlayerInventoryFull(player)) {
-                InventoryUtil$.addItem(player, present.itemStack());
+            if (!InventoryUtil.isPlayerInventoryFull(player)) {
+                InventoryUtil.addItem(player, present.itemStack());
             } else {
-                InventoryUtil$.dropItem(player, present.itemStack());
+                InventoryUtil.dropItem(player, present.itemStack());
                 //str += ChatColor.AQUA + "ガチャアイテムがドロップしました。";
             }
         }

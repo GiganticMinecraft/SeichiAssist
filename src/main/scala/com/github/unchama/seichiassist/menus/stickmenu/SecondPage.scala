@@ -24,7 +24,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Chris
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData.christmasPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.valentinePlayerHead
-import com.github.unchama.seichiassist.util.{InventoryUtil, Util}
+import com.github.unchama.seichiassist.util.InventoryUtil
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect

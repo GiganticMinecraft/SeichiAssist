@@ -4,7 +4,7 @@ import cats.effect.{IO, LiftIO}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachapoint.domain.GrantGachaTicketToAPlayer
-import com.github.unchama.seichiassist.util.{InventoryUtil, Util}
+import com.github.unchama.seichiassist.util.InventoryUtil
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect

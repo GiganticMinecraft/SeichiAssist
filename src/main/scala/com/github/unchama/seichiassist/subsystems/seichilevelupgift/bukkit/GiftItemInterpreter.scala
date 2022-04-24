@@ -6,7 +6,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift.Item
-import com.github.unchama.seichiassist.util.InventoryUtil
+import com.github.unchama.seichiassist.util.InventoryUtil.grantItemStacksEffect
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffectF
 import org.bukkit.entity.Player
