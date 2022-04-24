@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.halloween
 
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{EnchantUtil, Util}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
@@ -81,7 +81,7 @@ object HalloweenItemData {
     val loreList = {
       val year = Calendar.getInstance().get(Calendar.YEAR)
       val enchDescription = enchantments.map {
-        case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}"
+        case (ench, lvl) => s"$RESET$GRAY${EnchantUtil.getEnchantName(ench.getName, lvl)}"
       }.toList
       val lore = List(
         "",

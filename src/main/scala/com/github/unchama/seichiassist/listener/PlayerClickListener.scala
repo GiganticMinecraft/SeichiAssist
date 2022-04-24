@@ -16,6 +16,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{
   BreakUtil,
+  EnchantUtil,
   InventoryUtil,
   SendMessageEffect,
   SendSoundEffect,
@@ -264,7 +265,7 @@ class PlayerClickListener(
 
         val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq.map {
           case (enchantment, level) =>
-            s"$GRAY${Util.getEnchantName(enchantment.getName, level)}"
+            s"$GRAY${EnchantUtil.getEnchantName(enchantment.getName, level)}"
         }
 
         import scala.util.chaining._
