@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.commands.legacy
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}

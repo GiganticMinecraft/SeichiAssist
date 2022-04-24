@@ -17,7 +17,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.domain.actions.UuidToLastSeenName
 import com.github.unchama.seichiassist.subsystems.present.domain.OperationResult.DeleteResult
 import com.github.unchama.seichiassist.subsystems.present.domain._
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{InventoryUtil, Util}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import eu.timepit.refined._
@@ -198,7 +198,7 @@ class PresentCommand(implicit val ioOnMainThread: OnMinecraftServerThread[IO]) {
                       MessageEffect(s"ID: ${presentId}のプレゼントは存在しません。IDをお確かめください。")
                     ) { item =>
                       SequentialEffect(
-                        Util.grantItemStacksEffect[IO](item),
+                        InventoryUtil.grantItemStacksEffect[IO](item),
                         MessageEffect(s"ID: ${presentId}のプレゼントを付与しました。")
                       )
                     }

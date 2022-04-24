@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.{BreakUtil, InventoryUtil, Util}
 import com.github.unchama.seichiassist._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
@@ -224,11 +224,11 @@ class PlayerClickListener(
         } else {
           // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
           // ...ドロップする
-          if (!Util.isPlayerInventoryFull(player)) {
-            Util.addItem(player, givenItem)
+          if (!InventoryUtil.isPlayerInventoryFull(player)) {
+            InventoryUtil.addItem(player, givenItem)
             ""
           } else {
-            Util.dropItem(player, givenItem)
+            InventoryUtil.dropItem(player, givenItem)
             s"${AQUA}景品がドロップしました。"
           }
         }
@@ -461,7 +461,7 @@ class PlayerClickListener(
     }
 
     // インベントリに空がない場合無視
-    if (Util.isPlayerInventoryFull(p)) {
+    if (InventoryUtil.isPlayerInventoryFull(p)) {
       p.sendMessage(RED.toString + "インベントリがいっぱいです")
       return
     }

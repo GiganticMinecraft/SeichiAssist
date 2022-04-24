@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.domain.speech.{
 }
 import com.github.unchama.seichiassist.subsystems.mebius.service.MebiusSpeechService
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.ChristmasEventsAPI
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{InventoryUtil, Util}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{DelayEffect, SequentialEffect}
 import com.github.unchama.util.RandomEffect
@@ -75,11 +75,11 @@ class MebiusDropTrialListener[G[_]: ChristmasEventsAPI: RandomEffect: SyncEffect
       ).run(player)
     )
 
-    if (!Util.isPlayerInventoryFull(player)) {
-      Util.addItem(player, mebius)
+    if (!InventoryUtil.isPlayerInventoryFull(player)) {
+      InventoryUtil.addItem(player, mebius)
     } else {
       player.sendMessage(s"$RESET$RED${BOLD}所持しきれないためMEBIUSをドロップしました。")
-      Util.dropItem(player, mebius)
+      InventoryUtil.dropItem(player, mebius)
     }
   }
 }

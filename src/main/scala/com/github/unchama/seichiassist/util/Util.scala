@@ -5,9 +5,8 @@ import cats.effect.{IO, SyncIO}
 import cats.{Monad, data}
 import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
 import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.util.bukkit.ItemStackUtil
 import org.bukkit.ChatColor._
 import org.bukkit._
@@ -38,42 +37,6 @@ object Util {
   def sendPlayerDataNullMessage(player: Player): Unit = {
     player.sendMessage(RED.toString + "初回ログイン時の読み込み中か、読み込みに失敗しています")
     player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
-  }
-
-  /**
-   * プレイヤーに複数のアイテムを一度に付与する。 インベントリに入り切らなかったアイテムはプレーヤーの立ち位置にドロップされる。
-   *
-   * @param itemStacks
-   *   付与するアイテム
-   */
-  def grantItemStacksEffect[F[_]: OnMinecraftServerThread](
-    itemStacks: ItemStack*
-  ): Kleisli[F, Player, Unit] =
-    data.Kleisli { player =>
-      val amalgamated = ItemStackUtil.amalgamate(itemStacks).filter(_.getType != Material.AIR)
-
-      OnMinecraftServerThread[F].runAction(SyncIO {
-        player
-          .getInventory
-          .addItem(amalgamated: _*)
-          .values()
-          .asScala
-          .filter(_.getType != Material.AIR)
-          .foreach(dropItem(player, _))
-      })
-    }
-
-  // プレイヤーのインベントリがフルかどうか確認
-  def isPlayerInventoryFull(player: Player): Boolean = player.getInventory.firstEmpty() == -1
-
-  // 指定されたアイテムを指定されたプレイヤーにドロップする
-  def dropItem(player: Player, itemstack: ItemStack): Unit = {
-    player.getWorld.dropItemNaturally(player.getLocation, itemstack)
-  }
-
-  // 指定されたアイテムを指定されたプレイヤーインベントリに追加する
-  def addItem(player: Player, itemstack: ItemStack): Unit = {
-    player.getInventory.addItem(itemstack)
   }
 
   def sendMessageToEveryoneIgnoringPreference[T](

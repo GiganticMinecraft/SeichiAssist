@@ -5,7 +5,7 @@ import cats.data.EitherT
 import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.util.{ItemListSerialization, Util}
+import com.github.unchama.seichiassist.util.{InventoryUtil, ItemListSerialization, Util}
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
@@ -67,7 +67,7 @@ object ShareInvCommand {
 
   def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): Unit = {
     itemStackOption match {
-      case Some(itemStack) => Util.dropItem(to, itemStack)
+      case Some(itemStack) => InventoryUtil.dropItem(to, itemStack)
       case None            =>
     }
   }
