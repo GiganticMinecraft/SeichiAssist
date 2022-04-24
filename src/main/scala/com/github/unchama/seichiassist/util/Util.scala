@@ -1,13 +1,7 @@
 package com.github.unchama.seichiassist.util
 
-import cats.data.Kleisli
-import cats.effect.{IO, SyncIO}
-import cats.{Monad, data}
-import com.github.unchama.minecraft.actions.{GetConnectedPlayers, OnMinecraftServerThread}
-import com.github.unchama.minecraft.bukkit.actions.GetConnectedBukkitPlayers
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import cats.effect.IO
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.util.bukkit.ItemStackUtil
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
@@ -37,44 +31,6 @@ object Util {
   def sendPlayerDataNullMessage(player: Player): Unit = {
     player.sendMessage(RED.toString + "初回ログイン時の読み込み中か、読み込みに失敗しています")
     player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
-  }
-
-  def sendMessageToEveryoneIgnoringPreference[T](
-    content: T
-  )(implicit send: PlayerSendable[T, IO]): Unit = {
-    implicit val g: GetConnectedBukkitPlayers[IO] = new GetConnectedBukkitPlayers[IO]
-
-    sendMessageToEveryoneIgnoringPreferenceM[T, IO](content).unsafeRunAsyncAndForget()
-  }
-
-  def sendMessageToEveryoneIgnoringPreferenceM[T, F[_]: Monad: GetConnectedPlayers[*[
-    _
-  ], Player]](content: T)(implicit ev: PlayerSendable[T, F]): F[Unit] = {
-    import cats.implicits._
-
-    for {
-      players <- GetConnectedPlayers[F, Player].now
-      _ <- players.traverse(ev.send(_, content))
-    } yield ()
-  }
-
-  def sendMessageToEveryone[T](content: T)(implicit ev: PlayerSendable[T, IO]): Unit = {
-    import cats.implicits._
-
-    Bukkit
-      .getOnlinePlayers
-      .asScala
-      .toList
-      .traverse { player =>
-        for {
-          playerSettings <- SeichiAssist
-            .playermap(player.getUniqueId)
-            .settings
-            .getBroadcastMutingSettings
-          _ <- IO { if (!playerSettings.shouldMuteMessages) ev.send(player, content) }
-        } yield ()
-      }
-      .unsafeRunSync()
   }
 
   def getEnchantName(vaname: String, enchlevel: Int): String = {

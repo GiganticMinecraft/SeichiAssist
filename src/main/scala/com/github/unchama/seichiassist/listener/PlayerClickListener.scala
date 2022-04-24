@@ -14,7 +14,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.{BreakUtil, InventoryUtil, Util}
+import com.github.unchama.seichiassist.util.{BreakUtil, InventoryUtil, SendMessageEffect, Util}
 import com.github.unchama.seichiassist._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
@@ -280,8 +280,10 @@ class PlayerClickListener(
 
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
         player.spigot.sendMessage(message)
-        Util.sendMessageToEveryone(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
-        Util.sendMessageToEveryone(message)
+        SendMessageEffect.sendMessageToEveryone(
+          s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！"
+        )
+        SendMessageEffect.sendMessageToEveryone(message)
         gachaGTWin += 1
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)

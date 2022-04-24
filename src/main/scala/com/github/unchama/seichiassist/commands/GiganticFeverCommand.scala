@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.commands
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{SendMessageEffect, Util}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import org.bukkit.ChatColor._
@@ -21,8 +21,10 @@ object GiganticFeverCommand {
     .execution { _ =>
       val config = SeichiAssist.seichiAssistConfig
 
-      Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！")
-      Util.sendMessageToEveryoneIgnoringPreference(
+      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
+        s"${AQUA}フィーバー！この時間MOBたちは踊りに出かけてるぞ！今が整地時だ！"
+      )
+      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
         s"$AQUA(${config.getGiganticFeverDisplayTime}間)"
       )
 
@@ -33,7 +35,7 @@ object GiganticFeverCommand {
       )(IO.timer(ExecutionContext.global))
 
       Util.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD)
-      Util.sendMessageToEveryoneIgnoringPreference(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
+      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
 
       IO(emptyEffect)
     }
