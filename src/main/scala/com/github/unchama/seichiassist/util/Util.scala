@@ -40,58 +40,6 @@ object Util {
     player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
   }
 
-  @deprecated("please use ManagedWorld#isSeichiSkillAllowed")
-  def seichiSkillsAllowedIn(world: World): Boolean = {
-    val seichiWorldPrefix =
-      if (SeichiAssist.DEBUG) SeichiAssist.DEBUGWORLDNAME else SeichiAssist.SEICHIWORLDNAME
-    val worldNameLowerCase = world.getName.toLowerCase()
-
-    worldNameLowerCase match {
-      case "world_sw_zero" => false // 整地ワールドzeroではスキル発動不可
-      case "world" | "world_2" | "world_nether" | "world_the_end" | "world_TT" |
-          "world_nether_TT" | "world_the_end_TT" =>
-        true
-      case _ => worldNameLowerCase.startsWith(seichiWorldPrefix)
-    }
-  }
-
-  /**
-   * プレイヤーが整地ワールドにいるかどうかの判定処理(整地ワールド=true、それ以外=false)
-   *
-   * @deprecated
-   *   use ManagedWorld
-   */
-  @Deprecated()
-  def isSeichiWorld(player: Player): Boolean = {
-    // デバッグモード時は全ワールドtrue(DEBUGWORLDNAME = worldの場合)
-    var worldname = SeichiAssist.SEICHIWORLDNAME
-    if (SeichiAssist.DEBUG) {
-      worldname = SeichiAssist.DEBUGWORLDNAME
-    }
-    // 整地ワールドではtrue
-    player.getWorld.getName.toLowerCase().startsWith(worldname)
-  }
-
-  /**
-   * プレイヤーに安全にアイテムを付与します。
-   *
-   * @param player
-   *   付与する対象プレイヤー
-   * @param itemStack
-   *   付与するアイテム
-   * @deprecated
-   *   use [[grantItemStacksEffect]]
-   */
-  @deprecated def addItemToPlayerSafely(player: Player, itemStack: ItemStack): Unit = {
-    // Javaから呼ばれているのでimplicitが使いづらい　grantItemStacksEffectに置き換えたい
-    import PluginExecutionContexts.onMainThread
-
-    DefaultEffectEnvironment.unsafeRunEffectAsync(
-      "アイテムスタックを付与する",
-      grantItemStacksEffect(itemStack).run(player)
-    )
-  }
-
   /**
    * プレイヤーに複数のアイテムを一度に付与する。 インベントリに入り切らなかったアイテムはプレーヤーの立ち位置にドロップされる。
    *
