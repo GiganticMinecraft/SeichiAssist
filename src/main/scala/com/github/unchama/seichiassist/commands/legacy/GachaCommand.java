@@ -115,7 +115,7 @@ public class GachaCommand implements CommandExecutor {
                 //引数が3の時の処理
 
                 //プレイヤー名を取得
-                String name = Util.getName(args[1]);
+                String name = args[1].toLowerCase();
                 //個数取得
                 int num = Integer.parseInt(args[2]);
 
