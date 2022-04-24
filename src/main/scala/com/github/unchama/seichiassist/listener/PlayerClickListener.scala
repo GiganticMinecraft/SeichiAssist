@@ -14,7 +14,13 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.{BreakUtil, InventoryUtil, SendMessageEffect, Util}
+import com.github.unchama.seichiassist.util.{
+  BreakUtil,
+  InventoryUtil,
+  SendMessageEffect,
+  SendSoundEffect,
+  Util
+}
 import com.github.unchama.seichiassist._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
@@ -235,7 +241,7 @@ class PlayerClickListener(
 
       // 確率に応じてメッセージを送信
       if (probabilityOfItem < 0.001) {
-        Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
+        SendSoundEffect.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
 
         {
           playerData

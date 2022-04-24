@@ -11,7 +11,12 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
   SeichiStarLevel
 }
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
-import com.github.unchama.seichiassist.util.{PlayerSendable, SendMessageEffect, Util}
+import com.github.unchama.seichiassist.util.{
+  PlayerSendable,
+  SendMessageEffect,
+  SendSoundEffect,
+  Util
+}
 import org.bukkit.ChatColor.{BOLD, GOLD}
 import org.bukkit.entity.Player
 import org.bukkit.Sound
@@ -40,7 +45,7 @@ object BukkitNotifyLevelUp {
             SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
               s"$GOLD$BOLD${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
             )(forString[IO])
-            Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
           })
         } else Applicative[F].unit
       }

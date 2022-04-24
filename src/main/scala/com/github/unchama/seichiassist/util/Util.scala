@@ -1,7 +1,5 @@
 package com.github.unchama.seichiassist.util
 
-import cats.effect.IO
-import com.github.unchama.seichiassist.SeichiAssist
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
@@ -95,34 +93,6 @@ object Util {
   }
 
   def getDescFormat(list: List[String]): String = s" ${list.mkString("", "\n", "\n")}"
-
-  def sendEverySound(kind: Sound, volume: Float, pitch: Float): Unit = {
-    Bukkit
-      .getOnlinePlayers
-      .forEach(player => player.playSound(player.getLocation, kind, volume, pitch))
-  }
-
-  def sendEverySoundWithoutIgnore(kind: Sound, volume: Float, pitch: Float): Unit = {
-    import cats.implicits._
-
-    Bukkit
-      .getOnlinePlayers
-      .asScala
-      .toList
-      .traverse { player =>
-        for {
-          settings <- SeichiAssist
-            .playermap(player.getUniqueId)
-            .settings
-            .getBroadcastMutingSettings
-          _ <- IO {
-            if (!settings.shouldMuteSounds)
-              player.playSound(player.getLocation, kind, volume, pitch)
-          }
-        } yield ()
-      }
-      .unsafeRunSync()
-  }
 
   // 指定された場所に花火を打ち上げる関数
   def launchFireWorks(loc: Location): Unit = {
