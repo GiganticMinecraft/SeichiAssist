@@ -25,11 +25,6 @@ object Util {
     FireworkEffect.Type.STAR
   )
 
-  def sendPlayerDataNullMessage(player: Player): Unit = {
-    player.sendMessage(RED.toString + "初回ログイン時の読み込み中か、読み込みに失敗しています")
-    player.sendMessage(RED.toString + "再接続しても改善されない場合はお問い合わせフォームまたは整地鯖公式Discordサーバーからお知らせ下さい")
-  }
-
   def getDescFormat(list: List[String]): String = s" ${list.mkString("", "\n", "\n")}"
 
   // 指定された場所に花火を打ち上げる関数
