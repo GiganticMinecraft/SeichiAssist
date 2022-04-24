@@ -9,7 +9,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack, PlayerInventory}
 
-import java.text.SimpleDateFormat
 import java.util.stream.IntStream
 import java.util.{Calendar, Random}
 
@@ -156,23 +155,6 @@ object Util {
     if (!(skullMeta.hasOwner && skullMeta.getOwningPlayer.getName == "unchama")) return false
 
     skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
-  }
-
-  def removeItemfromPlayerInventory(
-    inventory: PlayerInventory,
-    itemstack: ItemStack,
-    count: Int
-  ): Boolean = {
-    // 持っているアイテムを減らす処理
-    if (itemstack.getAmount == count) {
-      // アイテムをcount個使うので、プレイヤーの手を素手にする
-      inventory.setItemInMainHand(new ItemStack(Material.AIR))
-      true
-    } else if (itemstack.getAmount > count) {
-      // プレイヤーが持っているアイテムをcount個減らす
-      itemstack.setAmount(itemstack.getAmount - count)
-      true
-    } else false
   }
 
   def itemStackContainsOwnerName(itemstack: ItemStack, name: String): Boolean = {

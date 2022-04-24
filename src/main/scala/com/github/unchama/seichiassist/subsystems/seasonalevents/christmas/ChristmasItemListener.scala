@@ -10,9 +10,9 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Chris
 import com.github.unchama.seichiassist.util.InventoryUtil.{
   addItem,
   dropItem,
-  isPlayerInventoryFull
+  isPlayerInventoryFull,
+  removeItemfromPlayerInventory
 }
-import com.github.unchama.seichiassist.util.Util.removeItemfromPlayerInventory
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.entity.EntityType._

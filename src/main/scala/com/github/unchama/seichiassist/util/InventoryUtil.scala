@@ -7,7 +7,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.util.bukkit.ItemStackUtil
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.{ItemStack, PlayerInventory}
 
 object InventoryUtil {
 
@@ -47,5 +47,22 @@ object InventoryUtil {
   // 指定されたアイテムを指定されたプレイヤーインベントリに追加する
   def addItem(player: Player, itemstack: ItemStack): Unit = {
     player.getInventory.addItem(itemstack)
+  }
+
+  def removeItemfromPlayerInventory(
+    inventory: PlayerInventory,
+    itemstack: ItemStack,
+    count: Int
+  ): Boolean = {
+    // 持っているアイテムを減らす処理
+    if (itemstack.getAmount == count) {
+      // アイテムをcount個使うので、プレイヤーの手を素手にする
+      inventory.setItemInMainHand(new ItemStack(Material.AIR))
+      true
+    } else if (itemstack.getAmount > count) {
+      // プレイヤーが持っているアイテムをcount個減らす
+      itemstack.setAmount(itemstack.getAmount - count)
+      true
+    } else false
   }
 }

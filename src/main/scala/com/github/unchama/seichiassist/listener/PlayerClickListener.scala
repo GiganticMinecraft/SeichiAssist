@@ -180,7 +180,9 @@ class PlayerClickListener(
         amount
       } else 1
 
-    if (!Util.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)) {
+    if (
+      !InventoryUtil.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)
+    ) {
       player.sendMessage(RED.toString + "ガチャ券の数が不正です。")
       return
     }
