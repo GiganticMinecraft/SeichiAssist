@@ -18,6 +18,7 @@ import com.github.unchama.seichiassist.util.{
   BreakUtil,
   EnchantNameToJapanese,
   InventoryOperation,
+  ListFormatter,
   SendMessageEffect,
   SendSoundEffect,
   Util
@@ -283,8 +284,8 @@ class PlayerClickListener(
                 Array(
                   new TextComponent(
                     s" ${givenItem.getItemMeta.getDisplayName}\n" +
-                      Util.getDescFormat(localizedEnchantmentList.toList) +
-                      Util.getDescFormat(loreWithoutOwnerName)
+                      ListFormatter.getDescFormat(localizedEnchantmentList.toList) +
+                      ListFormatter.getDescFormat(loreWithoutOwnerName)
                   )
                 )
               )

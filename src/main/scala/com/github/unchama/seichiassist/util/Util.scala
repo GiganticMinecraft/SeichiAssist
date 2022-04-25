@@ -25,8 +25,6 @@ object Util {
     FireworkEffect.Type.STAR
   )
 
-  def getDescFormat(list: List[String]): String = s" ${list.mkString("", "\n", "\n")}"
-
   // 指定された場所に花火を打ち上げる関数
   def launchFireWorks(loc: Location): Unit = {
     // 花火を作る

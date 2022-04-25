@@ -13,12 +13,7 @@ import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.{
-  InventoryOperation,
-  StaticGachaPrizeFactory,
-  Time,
-  Util
-}
+import com.github.unchama.seichiassist.util.{InventoryOperation, StaticGachaPrizeFactory, Time}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._
