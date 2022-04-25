@@ -3,11 +3,10 @@ package com.github.unchama.seichiassist.util
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.{Block, Skull}
-import org.bukkit.entity.EntityType._
-import org.bukkit.entity.{EntityType, LivingEntity, Player}
+import org.bukkit.entity.{LivingEntity, Player}
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
-import org.bukkit.inventory.{ItemFlag, ItemStack}
 
 import java.util.Calendar
 import java.util.stream.IntStream
@@ -72,33 +71,6 @@ object Util {
         world.setDifficulty(difficulty)
     }
   }
-
-  def isEnemy(entityType: EntityType): Boolean = Set(
-    BLAZE,
-    CAVE_SPIDER,
-    CREEPER,
-    ELDER_GUARDIAN,
-    ENDERMAN,
-    ENDERMITE,
-    EVOKER,
-    GHAST,
-    GUARDIAN,
-    HUSK,
-    MAGMA_CUBE,
-    PIG_ZOMBIE,
-    SHULKER,
-    SILVERFISH,
-    SKELETON,
-    SLIME,
-    SPIDER,
-    STRAY,
-    VEX,
-    VINDICATOR,
-    WITCH,
-    WITHER_SKELETON,
-    ZOMBIE,
-    ZOMBIE_VILLAGER
-  ).contains(entityType)
 
   def isMineHeadItem(itemstack: ItemStack): Boolean = {
     itemstack.getType == Material.CARROT_STICK &&
