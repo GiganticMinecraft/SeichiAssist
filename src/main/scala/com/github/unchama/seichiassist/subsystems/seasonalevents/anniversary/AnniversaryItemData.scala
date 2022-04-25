@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary
 
 import com.github.unchama.itemstackbuilder.{SkullItemStackBuilder, SkullOwnerTextureValue}
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.ANNIVERSARY_COUNT
-import com.github.unchama.seichiassist.util.{EnchantUtil, Util}
+import com.github.unchama.seichiassist.util.{EnchantNameToJapanese, Util}
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor._
@@ -135,7 +135,7 @@ object AnniversaryItemData {
 
     val loreList = {
       val enchDescription = enchantments.map {
-        case (ench, lvl) => s"$GRAY${EnchantUtil.getEnchantName(ench.getName, lvl)}"
+        case (ench, lvl) => s"$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
       }.toList
       val lore = List("", "特殊なエンチャントが付与されています").map(lore => s"$YELLOW$lore")
 

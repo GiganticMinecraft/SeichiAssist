@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.util
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-object TimeUtil {
+object Time {
   def showTime(cal: Calendar): String = {
     val date = cal.getTime
     val format = new SimpleDateFormat("yyyy/MM/dd HH:mm")

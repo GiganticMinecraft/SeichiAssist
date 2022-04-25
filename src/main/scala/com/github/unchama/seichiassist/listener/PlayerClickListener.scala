@@ -16,8 +16,8 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.{
   BreakUtil,
-  EnchantUtil,
-  InventoryUtil,
+  EnchantNameToJapanese,
+  InventoryOperation,
   SendMessageEffect,
   SendSoundEffect,
   Util
@@ -182,7 +182,11 @@ class PlayerClickListener(
       } else 1
 
     if (
-      !InventoryUtil.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)
+      !InventoryOperation.removeItemfromPlayerInventory(
+        player.getInventory,
+        clickedItemStack,
+        count
+      )
     ) {
       player.sendMessage(RED.toString + "ガチャ券の数が不正です。")
       return
@@ -233,11 +237,11 @@ class PlayerClickListener(
         } else {
           // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
           // ...ドロップする
-          if (!InventoryUtil.isPlayerInventoryFull(player)) {
-            InventoryUtil.addItem(player, givenItem)
+          if (!InventoryOperation.isPlayerInventoryFull(player)) {
+            InventoryOperation.addItem(player, givenItem)
             ""
           } else {
-            InventoryUtil.dropItem(player, givenItem)
+            InventoryOperation.dropItem(player, givenItem)
             s"${AQUA}景品がドロップしました。"
           }
         }
@@ -265,7 +269,7 @@ class PlayerClickListener(
 
         val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq.map {
           case (enchantment, level) =>
-            s"$GRAY${EnchantUtil.getEnchantName(enchantment.getName, level)}"
+            s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getName, level)}"
         }
 
         import scala.util.chaining._
@@ -472,7 +476,7 @@ class PlayerClickListener(
     }
 
     // インベントリに空がない場合無視
-    if (InventoryUtil.isPlayerInventoryFull(p)) {
+    if (InventoryOperation.isPlayerInventoryFull(p)) {
       p.sendMessage(RED.toString + "インベントリがいっぱいです")
       return
     }

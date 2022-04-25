@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.Util
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
-import com.github.unchama.seichiassist.util.InventoryUtil.{
+import com.github.unchama.seichiassist.util.InventoryOperation.{
   addItem,
   dropItem,
   isPlayerInventoryFull,

@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.mana.ManaWriteApi
 import com.github.unchama.seichiassist.subsystems.seasonalevents.domain.LastQuitPersistenceRepository
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYear._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.InventoryUtil.{
+import com.github.unchama.seichiassist.util.InventoryOperation.{
   addItem,
   dropItem,
   grantItemStacksEffect,

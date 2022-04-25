@@ -9,7 +9,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.{ItemStack, PlayerInventory}
 
-object InventoryUtil {
+object InventoryOperation {
 
   import scala.jdk.CollectionConverters._
 

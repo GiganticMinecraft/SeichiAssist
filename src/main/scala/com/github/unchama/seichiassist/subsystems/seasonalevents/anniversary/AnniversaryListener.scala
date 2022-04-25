@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Ann
   isInEvent
 }
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
-import com.github.unchama.seichiassist.util.InventoryUtil.{
+import com.github.unchama.seichiassist.util.InventoryOperation.{
   grantItemStacksEffect,
   removeItemfromPlayerInventory
 }

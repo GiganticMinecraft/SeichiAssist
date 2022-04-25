@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.util
 
-object EnchantUtil {
+object EnchantNameToJapanese {
 
   private def getEnchantLevelRome(enchantlevel: Int): String = {
     enchantlevel match {

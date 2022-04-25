@@ -14,9 +14,9 @@ import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.seichiassist.util.{
-  InventoryUtil,
+  InventoryOperation,
   StaticGachaPrizeFactory,
-  TimeUtil,
+  Time,
   Util
 }
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -135,10 +135,10 @@ class PlayerInventoryListener(
        * step2 非対象商品をインベントリに戻す
        */
       for (m <- dropitem) {
-        if (!InventoryUtil.isPlayerInventoryFull(player)) {
-          InventoryUtil.addItem(player, m)
+        if (!InventoryOperation.isPlayerInventoryFull(player)) {
+          InventoryOperation.addItem(player, m)
         } else {
-          InventoryUtil.dropItem(player, m)
+          InventoryOperation.dropItem(player, m)
         }
       }
       /*
@@ -148,11 +148,13 @@ class PlayerInventoryListener(
       var count = 0
       while (givegacha > 0) {
         if (
-          player.getInventory.contains(skull) || !InventoryUtil.isPlayerInventoryFull(player)
+          player.getInventory.contains(skull) || !InventoryOperation.isPlayerInventoryFull(
+            player
+          )
         ) {
-          InventoryUtil.addItem(player, skull)
+          InventoryOperation.addItem(player, skull)
         } else {
-          InventoryUtil.dropItem(player, skull)
+          InventoryOperation.dropItem(player, skull)
         }
         givegacha -= 1
         count += 1
@@ -244,7 +246,7 @@ class PlayerInventoryListener(
     if (ticketsToGive.nonEmpty) {
       effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
         SequentialEffect(
-          InventoryUtil.grantItemStacksEffect(ticketsToGive: _*),
+          InventoryOperation.grantItemStacksEffect(ticketsToGive: _*),
           FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1f, 1f),
           MessageEffect(s"${GREEN}交換券の付与が終わりました")
         ),
@@ -270,7 +272,7 @@ class PlayerInventoryListener(
 
     // 返却処理
     effectEnvironment.unsafeRunAsyncTargetedEffect(player)(
-      InventoryUtil.grantItemStacksEffect(itemStacksToReturn: _*),
+      InventoryOperation.grantItemStacksEffect(itemStacksToReturn: _*),
       "鉱石交換でのアイテム返却を行う"
     )
   }
@@ -350,10 +352,10 @@ class PlayerInventoryListener(
        * step2 非対象商品をインベントリに戻す
        */
       for (m <- dropitem) {
-        if (!InventoryUtil.isPlayerInventoryFull(player)) {
-          InventoryUtil.addItem(player, m)
+        if (!InventoryOperation.isPlayerInventoryFull(player)) {
+          InventoryOperation.addItem(player, m)
         } else {
-          InventoryUtil.dropItem(player, m)
+          InventoryOperation.dropItem(player, m)
         }
       }
       /*
@@ -363,11 +365,13 @@ class PlayerInventoryListener(
       var count = 0
       while (giveringo > 0) {
         if (
-          player.getInventory.contains(ringo) || !InventoryUtil.isPlayerInventoryFull(player)
+          player.getInventory.contains(ringo) || !InventoryOperation.isPlayerInventoryFull(
+            player
+          )
         ) {
-          InventoryUtil.addItem(player, ringo)
+          InventoryOperation.addItem(player, ringo)
         } else {
-          InventoryUtil.dropItem(player, ringo)
+          InventoryOperation.dropItem(player, ringo)
         }
         giveringo -= 1
         count += 1
@@ -453,33 +457,33 @@ class PlayerInventoryListener(
           val skull = GachaSkullData.gachaForVoting
           for { _ <- 0 to 9 } {
             if (
-              player.getInventory.contains(skull) || !InventoryUtil.isPlayerInventoryFull(
+              player.getInventory.contains(skull) || !InventoryOperation.isPlayerInventoryFull(
                 player
               )
             ) {
-              InventoryUtil.addItem(player, skull)
+              InventoryOperation.addItem(player, skull)
             } else {
-              InventoryUtil.dropItem(player, skull)
+              InventoryOperation.dropItem(player, skull)
             }
           }
 
           // ピッケルプレゼント処理(レベル50になるまで)
           if (playerLevel < 50) {
             val pickaxe = ItemData.getSuperPickaxe(1)
-            if (InventoryUtil.isPlayerInventoryFull(player)) {
-              InventoryUtil.dropItem(player, pickaxe)
+            if (InventoryOperation.isPlayerInventoryFull(player)) {
+              InventoryOperation.dropItem(player, pickaxe)
             } else {
-              InventoryUtil.addItem(player, pickaxe)
+              InventoryOperation.addItem(player, pickaxe)
             }
           }
 
           // 投票ギフト処理(レベル50から)
           if (playerLevel >= 50) {
             val gift = ItemData.getVotingGift(1)
-            if (InventoryUtil.isPlayerInventoryFull(player)) {
-              InventoryUtil.dropItem(player, gift)
+            if (InventoryOperation.isPlayerInventoryFull(player)) {
+              InventoryOperation.dropItem(player, gift)
             } else {
-              InventoryUtil.addItem(player, gift)
+              InventoryOperation.addItem(player, gift)
             }
           }
           // エフェクトポイント加算処理
@@ -563,7 +567,7 @@ class PlayerInventoryListener(
       } else if (itemstackcurrent.getType == Material.COMPASS) {
         VotingFairyTask.speak(
           player,
-          "僕は" + TimeUtil.showHour(playerdata.votingFairyEndTime) + "には帰るよー。",
+          "僕は" + Time.showHour(playerdata.votingFairyEndTime) + "には帰るよー。",
           playerdata.toggleVFSound
         )
         player.closeInventory()

@@ -456,7 +456,7 @@ object FirstPage extends Menu {
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
-                util.InventoryUtil.grantItemStacksEffect(itemStacksToGive: _*),
+                util.InventoryOperation.grantItemStacksEffect(itemStacksToGive: _*),
                 UnfocusedEffect {
                   playerData.unclaimedApologyItems -= numberOfItemsToGive
                 },
