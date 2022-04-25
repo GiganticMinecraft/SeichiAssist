@@ -72,13 +72,6 @@ object Util {
     (0 until length).map { _ => Color.fromBGR(rand.nextInt(1 << 24)) }.toArray
   }
 
-  // ガチャアイテムを含んでいるか調べる
-  def containsGachaTicket(player: Player): Boolean = {
-    player.getInventory.getStorageContents.exists(isGachaTicket)
-
-    false
-  }
-
   def isGachaTicket(itemStack: ItemStack): Boolean = {
     val containsRightClickMessage: String => Boolean = _.contains(s"${GREEN}右クリックで使えます")
 
@@ -86,7 +79,7 @@ object Util {
 
     val skullMeta = itemStack.getItemMeta.asInstanceOf[SkullMeta]
 
-    if (!(skullMeta.hasOwner && skullMeta.getOwningPlayer.getName == "unchama")) return false
+    if (!(skullMeta.hasOwner && skullMeta.getOwner == "unchama")) return false
 
     skullMeta.hasLore && skullMeta.getLore.asScala.exists(containsRightClickMessage)
   }
