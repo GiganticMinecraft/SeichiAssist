@@ -91,6 +91,7 @@ object ItemInformation {
    * @return
    *   見つかった場合はその添字、見つからなかった場合は-1
    */
+  // TODO 引数がListとStringのみならloreIndexOfというメソッド名はおかしいような？(ListがItemStackのloreとは限らないため)
   def loreIndexOf(lore: List[String], find: String): Int = {
     IntStream.range(0, lore.size).filter { i => lore(i).contains(find) }.findFirst().orElse(-1)
   }
