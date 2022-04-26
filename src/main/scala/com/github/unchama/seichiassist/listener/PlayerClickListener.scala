@@ -5,6 +5,7 @@ import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
@@ -14,16 +15,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.{
-  BreakUtil,
-  EnchantNameToJapanese,
-  InventoryOperation,
-  ListFormatter,
-  SendMessageEffect,
-  SendSoundEffect,
-  Util
-}
-import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.util._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -47,14 +39,13 @@ class PlayerClickListener(
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 
+  import ManagedWorld._
   import com.github.unchama.generic.ContextCoercion._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
 
   import scala.jdk.CollectionConverters._
-
-  import ManagedWorld._
 
   private val plugin = SeichiAssist.instance
 
@@ -142,7 +133,7 @@ class PlayerClickListener(
     }
 
     // ガチャ用の頭でなければ終了
-    if (!Util.isGachaTicket(clickedItemStack)) return
+    if (!ItemInformation.isGachaTicket(clickedItemStack)) return
 
     event.setCancelled(true)
 
@@ -455,7 +446,7 @@ class PlayerClickListener(
     val p = e.getPlayer
     val useItem = p.getInventory.getItemInMainHand
     // 専用アイテムを持っていない場合無視
-    if (!Util.isMineHeadItem(useItem)) {
+    if (!ItemInformation.isMineHeadItem(useItem)) {
       return
     }
 
@@ -483,7 +474,7 @@ class PlayerClickListener(
     }
 
     // 頭を付与
-    Util.getSkullDataFromBlock(targetBlock) match {
+    ItemInformation.getSkullDataFromBlock(targetBlock) match {
       case Some(itemStack) => p.getInventory.addItem(itemStack)
       case None            =>
     }
