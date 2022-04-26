@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.Util.randomlyDr
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.Seizonsiki._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.seizonsiki.SeizonsikiItemData._
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
-import com.github.unchama.seichiassist.util.Util.isEntityKilledByThornsEnchant
+import com.github.unchama.seichiassist.util.EntityDeathCause.isEntityKilledByThornsEnchant
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor.{DARK_GREEN, LIGHT_PURPLE, UNDERLINE}
 import org.bukkit.Sound

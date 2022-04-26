@@ -3,14 +3,7 @@ package com.github.unchama.seichiassist.util
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 
-import java.util.Calendar
-
-object Util {
-
-  def isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean = {
-    val cur = Calendar.getInstance()
-    cur.after(start) && cur.before(end)
-  }
+object EntityDeathCause {
 
   /**
    * 死亡したエンティティの死因が棘の鎧かどうか

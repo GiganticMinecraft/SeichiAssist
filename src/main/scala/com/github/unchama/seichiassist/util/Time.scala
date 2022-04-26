@@ -27,4 +27,9 @@ object Time {
     else
       "night"
   }
+
+  def isVotingFairyPeriod(start: Calendar, end: Calendar): Boolean = {
+    val cur = Calendar.getInstance()
+    cur.after(start) && cur.before(end)
+  }
 }

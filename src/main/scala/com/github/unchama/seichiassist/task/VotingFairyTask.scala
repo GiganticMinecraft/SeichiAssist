@@ -4,11 +4,11 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.listener.VotingFairyListener
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.Time
 import net.md_5.bungee.api.ChatColor
+import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.{Bukkit, Sound}
-import org.bukkit.ChatColor._
 
 object VotingFairyTask {
   // MinuteTaskRunnableから、妖精召喚中のプレイヤーを対象に毎分実行される
@@ -20,7 +20,7 @@ object VotingFairyTask {
     VotingFairyListener.regeneMana(p)
     // 効果時間中か
     if (
-      !Util.isVotingFairyPeriod(playerdata.votingFairyStartTime, playerdata.votingFairyEndTime)
+      !Time.isVotingFairyPeriod(playerdata.votingFairyStartTime, playerdata.votingFairyEndTime)
     ) {
       speak(p, "あっ、もうこんな時間だ！", b = false)
       speak(p, s"じゃーねー！${p.getName}", b = true)
