@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
   BuildAssistExpTable,
   BuildLevel
 }
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.SendMessageEffect
 import org.bukkit.ChatColor.GOLD
 import org.bukkit.Sound
 
@@ -32,7 +32,7 @@ case class LevelUpNotifier[F[_], Player]()(
     if (newLevel eqv BuildAssistExpTable.maxLevel) {
       val bukkitPlayer = player.asInstanceOf[org.bukkit.entity.Player]
       Sync[F].delay {
-        Util.sendMessageToEveryoneIgnoringPreference(
+        SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
           s"$GOLD${bukkitPlayer.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
         )
       } >> SendMinecraftMessage[F, Player].string(player, s"${GOLD}最大Lvに到達したよ(`･ω･´)") >>

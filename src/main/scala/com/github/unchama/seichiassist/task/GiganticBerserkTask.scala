@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{SendMessageEffect, SendSoundEffect}
 import com.github.unchama.seichiassist.{LevelThresholds, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
@@ -92,8 +92,8 @@ class GiganticBerserkTask {
         val program = List(
           DiscordNotificationAPI[F].send(messageWithoutColor).toIO,
           IO {
-            Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
-            Util.sendMessageToEveryoneIgnoringPreference(messageWithColor)
+            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
+            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(messageWithColor)
           }
         ).sequence
 

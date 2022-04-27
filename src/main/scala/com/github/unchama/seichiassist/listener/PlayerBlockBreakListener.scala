@@ -289,7 +289,6 @@ class PlayerBlockBreakListener(
         .map(multiplier => BreakUtil.totalBreakCount(Seq(block.getType)) * multiplier)
         .unsafeRunSync()
     }
-
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
