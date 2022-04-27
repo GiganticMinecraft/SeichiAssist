@@ -15,15 +15,12 @@ import org.bukkit.entity.Player
 class BukkitGiftItemInterpreter[F[_]: OnMinecraftServerThread: Sync]
     extends GiftItemInterpreter {
   override def apply(item: Gift.Item): Kleisli[F, Player, Unit] = {
-    Kleisli { player =>
-      val itemStack = item match {
-        case Item.GachaTicket  => GachaSkullData.gachaSkull
-        case Item.SuperPickaxe => ItemData.getSuperPickaxe(1)
-        case Item.GachaApple   => ItemData.getGachaApple(1)
-        case Item.Elsa         => ItemData.getElsa(1)
-      }
-
-      grantItemStacksEffect[F](itemStack).run(player)
+    val itemStack = item match {
+      case Item.GachaTicket  => GachaSkullData.gachaSkull
+      case Item.SuperPickaxe => ItemData.getSuperPickaxe(1)
+      case Item.GachaApple   => ItemData.getGachaApple(1)
+      case Item.Elsa         => ItemData.getElsa(1)
     }
+    grantItemStacksEffect[F](itemStack)
   }
 }
