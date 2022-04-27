@@ -76,6 +76,7 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
+import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.BukkitGrantLevelUpGift.apply
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
