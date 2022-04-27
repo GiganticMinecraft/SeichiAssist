@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
 
 class BukkitGiftItemInterpreter[F[_]: OnMinecraftServerThread: Sync]
     extends GiftItemInterpreter {
-  override def apply(item: Gift.Item): Kleisli[F, Player, Unit] = {
+  override def apply(item: Item): Kleisli[F, Player, Unit] = {
     val itemStack = item match {
       case Item.GachaTicket  => GachaSkullData.gachaSkull
       case Item.SuperPickaxe => ItemData.getSuperPickaxe(1)

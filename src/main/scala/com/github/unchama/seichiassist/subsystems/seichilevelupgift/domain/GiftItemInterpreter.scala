@@ -11,6 +11,6 @@ import org.bukkit.entity.Player
 abstract class GiftItemInterpreter[F[_]: OnMinecraftServerThread: Sync]
     extends (Gift.Item => Kleisli[F, Player, Unit]) {
 
-  override def apply(item: Gift.Item): Kleisli[F, Player, Unit]
+  def apply(item: Gift.Item): Kleisli[F, Player, Unit]
 
 }
