@@ -36,11 +36,7 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.{DonationCommand, GachaCommand}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
-  asyncShift,
-  onMainThread,
-  timer
-}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -76,7 +72,6 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
-import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.BukkitGrantLevelUpGift.apply
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
