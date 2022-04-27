@@ -4,7 +4,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import java.time.{LocalDate, LocalDateTime, LocalTime}
 
-class DateTimeDurationSpec extends AnyWordSpec {
+class DateTimeDurationSpecUtils extends AnyWordSpec {
   private val rebootTime = LocalTime.of(4, 10)
   private val t = LocalDateTime.of(LocalDate.of(2022, 1, 1), rebootTime)
   private val tPlusOneYear = t.plusYears(1)

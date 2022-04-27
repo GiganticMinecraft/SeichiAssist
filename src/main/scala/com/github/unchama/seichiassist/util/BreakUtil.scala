@@ -539,7 +539,10 @@ object BreakUtil {
 
             // 名前が記入されているはずのアイテムで名前がなければ
             if (
-              g.probability < 0.1 && !Util.itemStackContainsOwnerName(itemstack, player.getName)
+              g.probability < 0.1 && !ItemInformation.itemStackContainsOwnerName(
+                itemstack,
+                player.getName
+              )
             ) return false
 
             if (g.itemStackEquals(itemstack)) {

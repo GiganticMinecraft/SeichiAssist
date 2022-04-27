@@ -10,9 +10,8 @@ import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.RelativeDirection
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
+import com.github.unchama.seichiassist.util.{RelativeDirection, TimeUtils}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit._
@@ -269,7 +268,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   private def isVotingFairy(): Unit = {
     // 効果は継続しているか
     if (
-      this.usingVotingFairy && !Util.isVotingFairyPeriod(
+      this.usingVotingFairy && !TimeUtils.isVotingFairyPeriod(
         this.votingFairyStartTime,
         this.votingFairyEndTime
       )

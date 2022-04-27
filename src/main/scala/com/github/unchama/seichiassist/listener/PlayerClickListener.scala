@@ -5,6 +5,7 @@ import com.github.unchama.generic.effect.concurrent.TryableFiber
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
@@ -14,8 +15,7 @@ import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
-import com.github.unchama.seichiassist._
+import com.github.unchama.seichiassist.util._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
@@ -39,14 +39,13 @@ class PlayerClickListener(
   ioOnMainThread: OnMinecraftServerThread[IO]
 ) extends Listener {
 
+  import ManagedWorld._
   import com.github.unchama.generic.ContextCoercion._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
   import com.github.unchama.targetedeffect._
   import com.github.unchama.util.syntax._
 
   import scala.jdk.CollectionConverters._
-
-  import ManagedWorld._
 
   private val plugin = SeichiAssist.instance
 
@@ -134,7 +133,7 @@ class PlayerClickListener(
     }
 
     // ガチャ用の頭でなければ終了
-    if (!Util.isGachaTicket(clickedItemStack)) return
+    if (!ItemInformation.isGachaTicket(clickedItemStack)) return
 
     event.setCancelled(true)
 
@@ -174,7 +173,13 @@ class PlayerClickListener(
         amount
       } else 1
 
-    if (!Util.removeItemfromPlayerInventory(player.getInventory, clickedItemStack, count)) {
+    if (
+      !InventoryOperations.removeItemfromPlayerInventory(
+        player.getInventory,
+        clickedItemStack,
+        count
+      )
+    ) {
       player.sendMessage(RED.toString + "ガチャ券の数が不正です。")
       return
     }
@@ -224,18 +229,18 @@ class PlayerClickListener(
         } else {
           // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
           // ...ドロップする
-          if (!Util.isPlayerInventoryFull(player)) {
-            Util.addItem(player, givenItem)
+          if (!InventoryOperations.isPlayerInventoryFull(player)) {
+            InventoryOperations.addItem(player, givenItem)
             ""
           } else {
-            Util.dropItem(player, givenItem)
+            InventoryOperations.dropItem(player, givenItem)
             s"${AQUA}景品がドロップしました。"
           }
         }
 
       // 確率に応じてメッセージを送信
       if (probabilityOfItem < 0.001) {
-        Util.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
+        SendSoundEffect.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
 
         {
           playerData
@@ -256,7 +261,7 @@ class PlayerClickListener(
 
         val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq.map {
           case (enchantment, level) =>
-            s"$GRAY${Util.getEnchantName(enchantment.getName, level)}"
+            s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getName, level)}"
         }
 
         import scala.util.chaining._
@@ -270,8 +275,8 @@ class PlayerClickListener(
                 Array(
                   new TextComponent(
                     s" ${givenItem.getItemMeta.getDisplayName}\n" +
-                      Util.getDescFormat(localizedEnchantmentList.toList) +
-                      Util.getDescFormat(loreWithoutOwnerName)
+                      ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
+                      ListFormatters.getDescFormat(loreWithoutOwnerName)
                   )
                 )
               )
@@ -280,8 +285,10 @@ class PlayerClickListener(
 
         player.sendMessage(s"${RED}おめでとう！！！！！Gigantic☆大当たり！$additionalMessage")
         player.spigot.sendMessage(message)
-        Util.sendMessageToEveryone(s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！")
-        Util.sendMessageToEveryone(message)
+        SendMessageEffect.sendMessageToEveryone(
+          s"$GOLD${player.getDisplayName}がガチャでGigantic☆大当たり！"
+        )
+        SendMessageEffect.sendMessageToEveryone(message)
         gachaGTWin += 1
       } else if (probabilityOfItem < 0.01) {
         player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
@@ -439,7 +446,7 @@ class PlayerClickListener(
     val p = e.getPlayer
     val useItem = p.getInventory.getItemInMainHand
     // 専用アイテムを持っていない場合無視
-    if (!Util.isMineHeadItem(useItem)) {
+    if (!ItemInformation.isMineHeadItem(useItem)) {
       return
     }
 
@@ -461,13 +468,13 @@ class PlayerClickListener(
     }
 
     // インベントリに空がない場合無視
-    if (Util.isPlayerInventoryFull(p)) {
+    if (InventoryOperations.isPlayerInventoryFull(p)) {
       p.sendMessage(RED.toString + "インベントリがいっぱいです")
       return
     }
 
     // 頭を付与
-    Util.getSkullDataFromBlock(targetBlock) match {
+    ItemInformation.getSkullDataFromBlock(targetBlock) match {
       case Some(itemStack) => p.getInventory.addItem(itemStack)
       case None            =>
     }

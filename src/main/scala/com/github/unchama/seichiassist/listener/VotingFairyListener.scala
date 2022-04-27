@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.listener
 
 import cats.effect.{IO, SyncIO}
-import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.TimeUtils
+import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -85,9 +85,9 @@ object VotingFairyListener {
       "こんな時間に呼ぶなんて…りんごははずんでもらうよ？"
     )
 
-    if (Util.getTimeZone(playerdata.votingFairyStartTime) == "morning") {
+    if (TimeUtils.getTimeZone(playerdata.votingFairyStartTime) == "morning") {
       VotingFairyTask.speak(p, getMessage(morning, p.getName), playerdata.toggleVFSound)
-    } else if (Util.getTimeZone(playerdata.votingFairyStartTime) == "day") {
+    } else if (TimeUtils.getTimeZone(playerdata.votingFairyStartTime) == "day") {
       VotingFairyTask.speak(p, getMessage(day, p.getName), playerdata.toggleVFSound)
     } else VotingFairyTask.speak(p, getMessage(night, p.getName), playerdata.toggleVFSound)
   }

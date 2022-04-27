@@ -11,18 +11,23 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
   SeichiStarLevel
 }
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
-import com.github.unchama.seichiassist.util.{PlayerSendable, Util}
+import com.github.unchama.seichiassist.util.{
+  LaunchFireWorksEffect,
+  PlayerSendable,
+  SendMessageEffect,
+  SendSoundEffect
+}
 import org.bukkit.ChatColor.{BOLD, GOLD}
-import org.bukkit.entity.Player
 import org.bukkit.Sound
+import org.bukkit.entity.Player
 
 //FIXME ファイル名とやっていることが違うようになっているので修正するべき。
 //例えば、10億の倍数到達時の通知はLevelUp時の通知ではない
 //また、BukkitNotifyLevelUpなのにdiffの展開やいつメッセージを出すかなどを扱うべきでない。
 object BukkitNotifyLevelUp {
 
-  import cats.implicits._
   import PlayerSendable.forString
+  import cats.implicits._
 
   def apply[F[_]: OnMinecraftServerThread: Sync]: NotifyLevelUp[F, Player] =
     new NotifyLevelUp[F, Player] {
@@ -37,10 +42,10 @@ object BukkitNotifyLevelUp {
             .amount >= nextTenBillion
         ) {
           OnMinecraftServerThread[F].runAction(SyncIO {
-            Util.sendMessageToEveryoneIgnoringPreference(
+            SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
               s"$GOLD$BOLD${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
             )(forString[IO])
-            Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
+            SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
           })
         } else Applicative[F].unit
       }
@@ -55,7 +60,7 @@ object BukkitNotifyLevelUp {
           OnMinecraftServerThread[F].runAction(SyncIO {
             player.sendTitle(titleMessage, subtitleMessage, 1, 20 * 5, 1)
             player.sendMessage(s"$subtitleMessage$titleMessage")
-            Util.launchFireWorks(player.getLocation)
+            LaunchFireWorksEffect.launchFireWorks(player.getLocation)
           })
         } else Applicative[F].unit
       }
@@ -74,7 +79,7 @@ object BukkitNotifyLevelUp {
         if (oldStars < newStars) Sync[F].delay {
           player.sendTitle(titleMessage, subTitleMessage, 1, 20 * 5, 1)
           player.sendMessage(s"$subTitleMessage$titleMessage")
-          Util.launchFireWorks(player.getLocation)
+          LaunchFireWorksEffect.launchFireWorks(player.getLocation)
         }
         else Applicative[F].unit
       }

@@ -2,7 +2,11 @@ package com.github.unchama.seichiassist.listener
 
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GridTemplate, RegionMenuData}
-import com.github.unchama.seichiassist.util.{AbsoluteDirection, RelativeDirection, Util}
+import com.github.unchama.seichiassist.util.{
+  AbsoluteDirection,
+  PlayerInformation,
+  RelativeDirection
+}
 import com.github.unchama.seichiassist.{Config, SeichiAssist}
 import com.github.unchama.util.external.ExternalPlugins
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -293,7 +297,7 @@ object RegionInventoryListener {
   private def setWGSelection(player: Player): Unit = {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     val unitMap = playerData.unitMap
-    val direction = Util.getPlayerDirection(player)
+    val direction = PlayerInformation.getPlayerDirection(player)
     val world = player.getWorld
 
     val aheadUnitAmount = unitMap(RelativeDirection.AHEAD)

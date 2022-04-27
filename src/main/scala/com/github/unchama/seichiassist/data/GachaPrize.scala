@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.data
 
 import com.github.unchama.seichiassist.SeichiAssist
-import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
+import com.github.unchama.seichiassist.util.{ItemInformation, StaticGachaPrizeFactory}
 import org.bukkit.ChatColor._
 import org.bukkit.inventory.ItemStack
 
@@ -29,7 +29,7 @@ class GachaPrize(_itemStack: ItemStack, var probability: Double) {
         .getItemMeta
         .getDisplayName
     ) {
-      val index = Util.loreIndexOf(mlore, "所有者")
+      val index = ItemInformation.loreIndexOf(mlore, "所有者")
 
       if (index >= 0) {
         // 保有者であれば交換
