@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
 }
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
 import com.github.unchama.seichiassist.util.{
-  LunchFireWorksEffect,
+  LaunchFireWorksEffect,
   PlayerSendable,
   SendMessageEffect,
   SendSoundEffect
@@ -60,7 +60,7 @@ object BukkitNotifyLevelUp {
           OnMinecraftServerThread[F].runAction(SyncIO {
             player.sendTitle(titleMessage, subtitleMessage, 1, 20 * 5, 1)
             player.sendMessage(s"$subtitleMessage$titleMessage")
-            LunchFireWorksEffect.launchFireWorks(player.getLocation)
+            LaunchFireWorksEffect.launchFireWorks(player.getLocation)
           })
         } else Applicative[F].unit
       }
@@ -79,7 +79,7 @@ object BukkitNotifyLevelUp {
         if (oldStars < newStars) Sync[F].delay {
           player.sendTitle(titleMessage, subTitleMessage, 1, 20 * 5, 1)
           player.sendMessage(s"$subTitleMessage$titleMessage")
-          LunchFireWorksEffect.launchFireWorks(player.getLocation)
+          LaunchFireWorksEffect.launchFireWorks(player.getLocation)
         }
         else Applicative[F].unit
       }

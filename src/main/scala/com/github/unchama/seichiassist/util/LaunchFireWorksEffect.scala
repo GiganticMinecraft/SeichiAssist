@@ -5,7 +5,7 @@ import org.bukkit.entity.Firework
 
 import java.util.Random
 
-object LunchFireWorksEffect {
+object LaunchFireWorksEffect {
   // カラーをランダムで決める
   private def getRandomColors(length: Int): Array[Color] = {
     // 配列を作る
@@ -38,10 +38,10 @@ object LunchFireWorksEffect {
     effect.`with`(types(rand.nextInt(types.size)))
 
     // 基本の色を単色～5色以内でランダムに決める
-    effect.withColor(LunchFireWorksEffect.getRandomColors(1 + rand.nextInt(5)): _*)
+    effect.withColor(LaunchFireWorksEffect.getRandomColors(1 + rand.nextInt(5)): _*)
 
     // 余韻の色を単色～3色以内でランダムに決める
-    effect.withFade(LunchFireWorksEffect.getRandomColors(1 + rand.nextInt(3)): _*)
+    effect.withFade(LaunchFireWorksEffect.getRandomColors(1 + rand.nextInt(3)): _*)
 
     // 爆発後に点滅するかをランダムに決める
     effect.flicker(rand.nextBoolean())

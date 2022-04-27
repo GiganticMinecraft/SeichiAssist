@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Ann
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.halloween.HalloweenItemData._
 import com.github.unchama.seichiassist.subsystems.seasonalevents.newyear.NewYearItemData._
-import com.github.unchama.seichiassist.util.InventoryOperation
+import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect._
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -17,7 +17,7 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
   import com.github.unchama.targetedeffect._
 
   val christsmasGrantEffect: TargetedEffect[Player] =
-    InventoryOperation.grantItemStacksEffect(
+    InventoryOperations.grantItemStacksEffect(
       christmasCake(christmasCakeDefaultPieces),
       christmasTurkey,
       christmasPotion,
@@ -27,13 +27,13 @@ class EventCommand(implicit ioOnMainThread: OnMinecraftServerThread[IO]) {
     )
 
   val newYearGrantEffect: TargetedEffect[Player] =
-    InventoryOperation.grantItemStacksEffect(newYearApple, newYearBag)
+    InventoryOperations.grantItemStacksEffect(newYearApple, newYearBag)
 
   val halloweenGrantEffect: TargetedEffect[Player] =
-    InventoryOperation.grantItemStacksEffect(halloweenPotion, halloweenHoe)
+    InventoryOperations.grantItemStacksEffect(halloweenPotion, halloweenHoe)
 
   val anniversaryGrantEffect: TargetedEffect[Player] =
-    InventoryOperation.grantItemStacksEffect(
+    InventoryOperations.grantItemStacksEffect(
       mineHead,
       strangeSapling,
       mendingBook,

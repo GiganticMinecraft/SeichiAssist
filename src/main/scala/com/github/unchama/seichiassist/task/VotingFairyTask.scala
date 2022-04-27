@@ -4,7 +4,7 @@ import cats.effect.{IO, SyncIO}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.listener.VotingFairyListener
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.util.Time
+import com.github.unchama.seichiassist.util.TimeUtils
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -20,7 +20,10 @@ object VotingFairyTask {
     VotingFairyListener.regeneMana(p)
     // 効果時間中か
     if (
-      !Time.isVotingFairyPeriod(playerdata.votingFairyStartTime, playerdata.votingFairyEndTime)
+      !TimeUtils.isVotingFairyPeriod(
+        playerdata.votingFairyStartTime,
+        playerdata.votingFairyEndTime
+      )
     ) {
       speak(p, "あっ、もうこんな時間だ！", b = false)
       speak(p, s"じゃーねー！${p.getName}", b = true)

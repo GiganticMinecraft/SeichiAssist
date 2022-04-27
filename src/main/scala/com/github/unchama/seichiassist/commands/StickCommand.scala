@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.commands
 
 import cats.effect.IO
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.util.InventoryOperation
+import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect
 import org.bukkit.command.TabExecutor
 import org.bukkit.inventory.ItemStack
@@ -14,11 +14,11 @@ object StickCommand {
       val sender = context.sender
       val stickItemStack = new ItemStack(Material.STICK, 1)
 
-      if (!InventoryOperation.isPlayerInventoryFull(sender)) {
-        InventoryOperation.addItem(sender, stickItemStack)
+      if (!InventoryOperations.isPlayerInventoryFull(sender)) {
+        InventoryOperations.addItem(sender, stickItemStack)
         sender.playSound(sender.getLocation, Sound.ENTITY_ITEM_PICKUP, 0.1f, 1.0f)
       } else {
-        InventoryOperation.dropItem(sender, stickItemStack)
+        InventoryOperations.dropItem(sender, stickItemStack)
       }
 
       IO(TargetedEffect.emptyEffect)

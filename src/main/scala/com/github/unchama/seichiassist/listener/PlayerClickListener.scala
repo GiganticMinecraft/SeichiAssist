@@ -174,7 +174,7 @@ class PlayerClickListener(
       } else 1
 
     if (
-      !InventoryOperation.removeItemfromPlayerInventory(
+      !InventoryOperations.removeItemfromPlayerInventory(
         player.getInventory,
         clickedItemStack,
         count
@@ -229,11 +229,11 @@ class PlayerClickListener(
         } else {
           // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
           // ...ドロップする
-          if (!InventoryOperation.isPlayerInventoryFull(player)) {
-            InventoryOperation.addItem(player, givenItem)
+          if (!InventoryOperations.isPlayerInventoryFull(player)) {
+            InventoryOperations.addItem(player, givenItem)
             ""
           } else {
-            InventoryOperation.dropItem(player, givenItem)
+            InventoryOperations.dropItem(player, givenItem)
             s"${AQUA}景品がドロップしました。"
           }
         }
@@ -275,8 +275,8 @@ class PlayerClickListener(
                 Array(
                   new TextComponent(
                     s" ${givenItem.getItemMeta.getDisplayName}\n" +
-                      ListFormatter.getDescFormat(localizedEnchantmentList.toList) +
-                      ListFormatter.getDescFormat(loreWithoutOwnerName)
+                      ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
+                      ListFormatters.getDescFormat(loreWithoutOwnerName)
                   )
                 )
               )
@@ -468,7 +468,7 @@ class PlayerClickListener(
     }
 
     // インベントリに空がない場合無視
-    if (InventoryOperation.isPlayerInventoryFull(p)) {
+    if (InventoryOperations.isPlayerInventoryFull(p)) {
       p.sendMessage(RED.toString + "インベントリがいっぱいです")
       return
     }

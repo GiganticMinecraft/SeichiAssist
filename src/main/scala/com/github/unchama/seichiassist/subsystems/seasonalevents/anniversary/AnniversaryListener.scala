@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Ann
 }
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
 import com.github.unchama.seichiassist.util.EnemyEntity.isEnemy
-import com.github.unchama.seichiassist.util.InventoryOperation.{
+import com.github.unchama.seichiassist.util.InventoryOperations.{
   grantItemStacksEffect,
   removeItemfromPlayerInventory
 }

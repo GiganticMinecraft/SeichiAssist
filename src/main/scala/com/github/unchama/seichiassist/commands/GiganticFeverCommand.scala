@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.commands
 import cats.effect.IO
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.util.{SendMessageEffect, WorldSetting}
+import com.github.unchama.seichiassist.util.{SendMessageEffect, WorldSettings}
 import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import org.bukkit.ChatColor._
@@ -28,13 +28,13 @@ object GiganticFeverCommand {
         s"$AQUA(${config.getGiganticFeverDisplayTime}間)"
       )
 
-      WorldSetting.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL)
+      WorldSettings.setDifficulty(worldsToToggleDifficulty, Difficulty.PEACEFUL)
 
       IO.sleep(
         FiniteDuration(config.getGiganticFeverMinutes * 60, scala.concurrent.duration.MINUTES)
       )(IO.timer(ExecutionContext.global))
 
-      WorldSetting.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD)
+      WorldSettings.setDifficulty(worldsToToggleDifficulty, Difficulty.HARD)
       SendMessageEffect.sendMessageToEveryoneIgnoringPreference(s"${AQUA}フィーバー終了！MOBたちは戻ってきたぞ！")
 
       IO(emptyEffect)

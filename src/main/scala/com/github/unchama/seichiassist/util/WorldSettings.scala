@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.util
 
 import org.bukkit.{Bukkit, Difficulty}
 
-object WorldSetting {
+object WorldSettings {
   def setDifficulty(worldNameList: List[String], difficulty: Difficulty): Unit = {
     worldNameList.foreach { name =>
       val world = Bukkit.getWorld(name)

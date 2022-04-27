@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.Lo
   TotalDay
 }
 import com.github.unchama.seichiassist.subsystems.seasonalevents.limitedlogin.LoginBonusItemList.bonusAt
-import com.github.unchama.seichiassist.util.InventoryOperation.grantItemStacksEffect
+import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.seichiassist.{DefaultEffectEnvironment, SeichiAssist}
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
