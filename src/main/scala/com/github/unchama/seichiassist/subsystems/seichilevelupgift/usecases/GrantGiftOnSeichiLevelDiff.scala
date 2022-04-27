@@ -13,11 +13,11 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   GrantLevelUpGift
 }
 
-class GrantGiftOnSeichiLevelDiff[F[_], Player] {
+object GrantGiftOnSeichiLevelDiff {
 
   import cats.implicits._
 
-  final def grantGiftTo(levelDiff: Diff[SeichiLevel], player: Player)(
+  final def grantGiftTo[F[_], Player](levelDiff: Diff[SeichiLevel], player: Player)(
     implicit F: Applicative[F],
     sync: Sync[F],
     send: SendMinecraftMessage[F, Player],

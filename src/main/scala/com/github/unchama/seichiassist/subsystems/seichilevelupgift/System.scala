@@ -19,7 +19,7 @@ object System {
     StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {
       breakCountReadApi.seichiLevelUpdates.evalTap {
         case (player, diff) =>
-          new GrantGiftOnSeichiLevelDiff().grantGiftTo(diff, player)
+          GrantGiftOnSeichiLevelDiff.grantGiftTo(diff, player)
       }
     }
   }
