@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.util.Util.grantItemStacksEffect
 import org.bukkit.entity.Player
 
 class BukkitGiftItemInterpreter[F[_]: OnMinecraftServerThread: Sync]
-    extends GiftItemInterpreter {
+    extends GiftItemInterpreter[F] {
   override def apply(item: Item): Kleisli[F, Player, Unit] = {
     val itemStack = item match {
       case Item.GachaTicket  => GachaSkullData.gachaSkull
