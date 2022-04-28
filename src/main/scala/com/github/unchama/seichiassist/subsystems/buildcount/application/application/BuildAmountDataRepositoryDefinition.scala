@@ -16,14 +16,14 @@ object BuildAmountDataRepositoryDefinition {
   import cats.implicits._
 
   def withContext[F[_]: Effect, G[_]: Sync, Player](
-    topic: Fs3Topic[F, Option[(Player, BuildAmountData)]],
+    topic: Fs3Topic[F, (Player, BuildAmountData)],
     persistence: BuildAmountDataPersistence[G]
   ): RepositoryDefinition[G, Player, Ref[G, BuildAmountData]] =
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[G, Player, BuildAmountData](persistence)(BuildAmountData.initial)
       .withAnotherTappingAction { (player, data) =>
         EffectExtra.runAsyncAndForget[F, G, Unit] {
-          topic.publish1(Some(player, data)).void
+          topic.publish1(player, data).void
         }
       }
       .toRefRepository

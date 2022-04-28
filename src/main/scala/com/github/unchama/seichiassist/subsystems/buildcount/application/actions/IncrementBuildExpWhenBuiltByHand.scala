@@ -35,7 +35,7 @@ object IncrementBuildExpWhenBuiltByHand {
     *[_]
   ], Player](
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]],
-    dataTopic: Fs3Topic[G, Option[(Player, BuildAmountData)]]
+    dataTopic: Fs3Topic[G, (Player, BuildAmountData)]
   )(
     implicit multiplier: BuildExpMultiplier,
     sync: Sync[F]
@@ -48,7 +48,7 @@ object IncrementBuildExpWhenBuiltByHand {
           newData <-
             dataRepository(player).updateAndGet(_.addExpAmount(by))
           _ <- EffectExtra.runAsyncAndForget[G, F, Unit] {
-            dataTopic.publish1(Some((player, newData))).void
+            dataTopic.publish1((player, newData)).void
           }
         } yield (),
         F.unit

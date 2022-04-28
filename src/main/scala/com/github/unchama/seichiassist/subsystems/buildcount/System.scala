@@ -27,7 +27,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{
   JdbcBuildAmountRateLimitPersistence
 }
 import io.chrisdavenport.cats.effect.time.JavaTime
-import io.chrisdavenport.log4cats.{ErrorLogger, Logger}
+import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
@@ -47,8 +47,8 @@ object System {
   ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: ErrorLogger, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
-    rootLogger: Logger[F]
-  )(implicit configuration: Configuration): F[System[F, G]] = {
+    implicit configuration: Configuration
+  ): F[System[F, G]] = {
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] =
       new JdbcBuildAmountDataPersistence[G]()
@@ -57,7 +57,7 @@ object System {
     implicit val javaTimeG: JavaTime[G] = JavaTime.fromClock
 
     val createSystem: F[System[F, G]] = for {
-      buildCountTopic <- Fs3Topic[F, Option[(Player, BuildAmountData)]](None)
+      buildCountTopic <- Fs3Topic[F, (Player, BuildAmountData)]
 
       buildAmountDataRepositoryControls <-
         ContextCoercion(
@@ -90,7 +90,7 @@ object System {
             : KeyedDataRepository[Player, ReadOnlyRef[G, BuildAmountData]] =
             buildAmountDataRepositoryControls.repository.map(ReadOnlyRef.fromRef)
           override val buildAmountUpdates: fs2.Stream[F, (Player, BuildAmountData)] =
-            buildCountTopic.subscribe(1).mapFilter(identity)
+            buildCountTopic.subscribe(1)
         }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(

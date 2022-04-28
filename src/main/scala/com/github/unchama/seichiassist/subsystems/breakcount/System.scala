@@ -51,7 +51,7 @@ object System {
       new JdbcSeichiAmountDataPersistence[G]
 
     val createSystem: F[System[F, G]] = for {
-      breakCountTopic <- Fs3Topic[F, Option[(Player, SeichiAmountData)]](None)
+      breakCountTopic <- Fs3Topic[F, Option[(Player, SeichiAmountData)]]
       /*
        * NOTE:
        *

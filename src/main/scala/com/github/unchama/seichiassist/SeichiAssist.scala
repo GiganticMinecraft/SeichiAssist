@@ -238,7 +238,7 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
-    subsystems.buildcount.System.wired[IO, SyncIO](loggerF).unsafeRunSync()
+    subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   // TODO コンテキスト境界明確化のため、privateであるべきである

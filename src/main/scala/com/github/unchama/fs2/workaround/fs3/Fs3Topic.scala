@@ -145,7 +145,7 @@ object Fs3Topic {
 
   import cats.implicits._
 
-  def apply[F[_], A](initial: A)(implicit F: Concurrent[F]): F[Fs3Topic[F, A]] =
+  def apply[F[_], A](implicit F: Concurrent[F]): F[Fs3Topic[F, A]] =
     in[F, F, A]
 
   /**
