@@ -15,7 +15,6 @@ class PlayerPickupItemListener extends Listener {
   @EventHandler
   def onPickupMineStackItem(event: EntityPickupItemEvent): Unit = {
     event.getEntity match {
-      case _: Player =>
       case player: Player =>
         if (player.getGameMode != GameMode.SURVIVAL) return
 
