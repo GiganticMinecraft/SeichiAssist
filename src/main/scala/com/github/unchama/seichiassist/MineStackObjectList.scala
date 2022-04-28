@@ -598,14 +598,17 @@ object MineStackObjectList {
     gachaPrizesObjects = mineStackObject
   }
 
-  private val allMineStackObjects = List(
+  def getGachaPrizesList: List[MineStackObject] =
+    gachaPrizesObjects
+
+  val allMineStackObjects: List[Either[MineStackObject, GroupedMineStackObj]] = List(
     minestacklistbuild,
     minestacklistdrop,
     minestacklistfarm,
     minestacklistmine,
     minestacklistrs,
     minestackBuiltinGachaPrizes
-  )
+  ).flatten
 
   def getBuiltinGachaPrizes: List[MineStackObject] = {
     minestackBuiltinGachaPrizes.flatMap {
@@ -618,25 +621,10 @@ object MineStackObjectList {
    * すべてのMineStackObjectを返す
    */
   def getAllMineStackObjects: List[MineStackObject] = {
-    allMineStackObjects.flatten.flatMap {
+    allMineStackObjects.flatMap {
       case Left(mineStackObj) => List(mineStackObj)
       case Right(group)       => List(group.representative) ++ group.coloredVariants
     } ++ gachaPrizesObjects
-  }
-
-  private def getAllRepresentativeMineStackObjects: List[MineStackObject] = {
-    allMineStackObjects.flatten.flatMap {
-      case Right(group) => List(group.representative)
-      case Left(_)      => Nil
-    }
-  }
-
-  /**
-   * @param mineStackObject 検索対象のmineStackObj
-   * @return RepresentativeMainStackObject(代表アイテム)であるかどうか
-   */
-  def isRepresentativeMainStackObject(mineStackObject: MineStackObject): Boolean = {
-    getAllRepresentativeMineStackObjects.contains(mineStackObject)
   }
 
   /**
@@ -646,7 +634,7 @@ object MineStackObjectList {
   def getColoredVariantsMineStackObjectsByRepresentative(
     representative: MineStackObject
   ): List[MineStackObject] = {
-    allMineStackObjects.flatten.flatMap {
+    allMineStackObjects.flatMap {
       case Right(group) =>
         if (group.representative == representative) {
           List(group.representative) ++ group.coloredVariants
@@ -655,18 +643,6 @@ object MineStackObjectList {
         }
       case Left(_) => Nil
     }
-  }
-
-  /**
-   * @return カラーバリエーションアイテムを取り除いたMineStackObject
-   */
-  def getMineStackObjectExceptColoredVariants: List[MineStackObject] = {
-    allMineStackObjects.flatten.flatMap {
-      case Right(group) =>
-        List(group.representative)
-      case Left(mineStackObj) =>
-        List(mineStackObj)
-    } ++ gachaPrizesObjects
   }
 
   /**

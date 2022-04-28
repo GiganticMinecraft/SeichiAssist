@@ -181,9 +181,11 @@ private[minestack] case class MineStackButtons(player: Player) {
       player.getOpenInventory.getTopInventory.getName == s"$DARK_PURPLE${BOLD}MineStackメインメニュー"
     val isMineStackSelectItemColorMenu =
       player.getOpenInventory.getTopInventory.getName == s"$DARK_BLUE${BOLD}MineStack(アイテム色選択)"
-    MineStackObjectList.isRepresentativeMainStackObject(
-      mineStackObj
-    ) && !isMineStackSelectItemColorMenu && !isMineStackMainMenu
+    MineStackObjectList
+      .allMineStackObjects
+      .exists(mineStackObject =>
+        mineStackObject.exists(_.representative == mineStackObj)
+      ) && !isMineStackSelectItemColorMenu && !isMineStackMainMenu
   }
 
   def computeAutoMineStackToggleButton(

@@ -6,6 +6,10 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.MineStackObjectList.{
+  allMineStackObjects,
+  getGachaPrizesList
+}
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
 import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
@@ -91,9 +95,12 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     for {
       categoryItemList <- IO {
-        MineStackObjectList
-          .getMineStackObjectExceptColoredVariants
-          .filter(_.category == category)
+        allMineStackObjects.flatMap {
+          case Right(group) =>
+            List(group.representative)
+          case Left(mineStackObj) =>
+            List(mineStackObj)
+        } ++ getGachaPrizesList
       }
     } yield {
       val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
@@ -116,7 +123,12 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     // TODO MineStackObjectListが可変になったらここを変更する
     val categoryItemList =
-      MineStackObjectList.getMineStackObjectExceptColoredVariants.filter(_.category == category)
+      (MineStackObjectList.allMineStackObjects.flatMap {
+        case Right(group) =>
+          List(group.representative)
+        case Left(mineStackObj) =>
+          List(mineStackObj)
+      } ++ getGachaPrizesList).filter(_.category == category)
     val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
 
     val playerMineStackButtons = MineStackButtons(player)

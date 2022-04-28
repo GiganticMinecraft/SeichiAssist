@@ -34,7 +34,16 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObject) extends M
   )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
     import environment.canOpenCategorizedMineStackMenu
     val buttonMapping = MineStackObjectList
-      .getColoredVariantsMineStackObjectsByRepresentative(mineStackObj)
+      .allMineStackObjects
+      .flatMap {
+        case Right(group) =>
+          if (group.representative == mineStackObj) {
+            List(group.representative) ++ group.coloredVariants
+          } else {
+            Nil
+          }
+        case Left(_) => Nil
+      }
       .zipWithIndex
       .map {
         case (inListMineStackObj, index) =>
