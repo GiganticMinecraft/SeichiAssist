@@ -9,6 +9,7 @@ import com.github.unchama.minecraft.actions.SendMinecraftMessage
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiLevel
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   Gift,
+  GiftBundle,
   GiftBundleTable,
   GrantLevelUpGift
 }
@@ -28,21 +29,18 @@ object GrantGiftOnSeichiLevelDiff {
       .toList
       .map { level => GiftBundleTable.bundleAt(level) }
 
-    giftBundles
-      .traverse { giftBundle =>
-        giftBundle
-          .traverseGifts {
-            case (gift, count) =>
-              GrantLevelUpGift[F, Player].grant(gift).replicateA(count).run(player) >> {
-                gift match {
-                  case _: Gift.Item =>
-                    SendMinecraftMessage[F, Player].string(player, "レベルアップ記念のアイテムを配布しました。")
-                  case Gift.AutomaticGachaRun =>
-                    SendMinecraftMessage[F, Player].string(player, "レベルアップ記念としてガチャを回しました。")
-                }
-              }
+    val giftBundle = giftBundles.fold(GiftBundle.empty)(_ combine _)
+    giftBundle
+      .traverseGifts {
+        case (gift, count) =>
+          GrantLevelUpGift[F, Player].grant(gift).replicateA(count).run(player) >> {
+            gift match {
+              case _: Gift.Item =>
+                SendMinecraftMessage[F, Player].string(player, "レベルアップ記念のアイテムを配布しました。")
+              case Gift.AutomaticGachaRun =>
+                SendMinecraftMessage[F, Player].string(player, "レベルアップ記念としてガチャを回しました。")
+            }
           }
-          .as(())
       }
       .as(())
   }
