@@ -19,13 +19,14 @@ case class GiftBundle(map: Map[Gift, Int]) {
 
   def gifts: Set[Gift] = map.keys.toSet
 
-  def traverseGifts[F[_]: Applicative](
-    traverseContents: (Gift, Int) => F[Unit]
-  ): F[List[Unit]] =
-    map.toList.traverse {
-      case (gift, count) =>
-        traverseContents(gift, count)
-    }
+  def traverseGifts[F[_]: Applicative](traverseContents: (Gift, Int) => F[Unit]): F[Unit] =
+    map
+      .toList
+      .traverse {
+        case (gift, count) =>
+          traverseContents(gift, count)
+      }
+      .void
 }
 
 object GiftBundle {

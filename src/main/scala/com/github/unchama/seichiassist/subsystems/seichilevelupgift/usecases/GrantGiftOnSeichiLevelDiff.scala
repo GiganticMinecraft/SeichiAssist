@@ -30,19 +30,16 @@ object GrantGiftOnSeichiLevelDiff {
       .map { level => GiftBundleTable.bundleAt(level) }
 
     val giftBundle = giftBundles.fold(GiftBundle.empty)(_ combine _)
-    giftBundle
-      .traverseGifts {
-        case (gift, count) =>
-          GrantLevelUpGift[F, Player].grant(gift).replicateA(count).run(player) >> {
-            gift match {
-              case _: Gift.Item =>
-                SendMinecraftMessage[F, Player].string(player, "レベルアップ記念のアイテムを配布しました。")
-              case Gift.AutomaticGachaRun =>
-                SendMinecraftMessage[F, Player].string(player, "レベルアップ記念としてガチャを回しました。")
-            }
-          }
+    giftBundle.traverseGifts { (gift, count) =>
+      GrantLevelUpGift[F, Player].grant(gift).replicateA(count).run(player) >> {
+        gift match {
+          case _: Gift.Item =>
+            SendMinecraftMessage[F, Player].string(player, "レベルアップ記念のアイテムを配布しました。")
+          case Gift.AutomaticGachaRun =>
+            SendMinecraftMessage[F, Player].string(player, "レベルアップ記念としてガチャを回しました。")
+        }
       }
-      .as(())
+    }
   }
 
 }
