@@ -15,14 +15,14 @@ class PlayerPickupItemListener extends Listener {
   @EventHandler
   def onPickupMineStackItem(event: EntityPickupItemEvent): Unit = {
     event.getEntity match {
-      case player: Player =>
+      case _: Player =>
       case player: Player =>
         if (player.getGameMode != GameMode.SURVIVAL) return
 
         val playerData = playerMap(player.getUniqueId).ifNull(
           return
         )
-        val playerLevel = SeichiAssist
+        SeichiAssist
           .instance
           .breakCountSystem
           .api

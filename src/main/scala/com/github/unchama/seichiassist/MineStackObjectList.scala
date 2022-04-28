@@ -6,7 +6,8 @@ import com.github.unchama.seichiassist.minestack.MineStackObject.{
 }
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
 import com.github.unchama.seichiassist.minestack.{GroupedMineStackObj, MineStackObject}
-import com.github.unchama.seichiassist.util.{StaticGachaPrizeFactory, Util}
+import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -678,7 +679,7 @@ object MineStackObjectList {
             } yield {
               // 名前が記入されているはずのアイテムで名前がなければ
               if (
-                gachaData.probability < 0.1 && !Util.itemStackContainsOwnerName(
+                gachaData.probability < 0.1 && !itemStackContainsOwnerName(
                   itemStack,
                   playerName
                 )
