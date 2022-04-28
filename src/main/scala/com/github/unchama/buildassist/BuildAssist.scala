@@ -21,7 +21,7 @@ import scala.collection.mutable
 
 class BuildAssist(plugin: Plugin)(
   implicit flyApi: ManagedFlyApi[SyncIO, Player],
-  buildCountAPI: subsystems.buildcount.BuildCountAPI[SyncIO, Player],
+  buildCountAPI: subsystems.buildcount.BuildCountAPI[IO, SyncIO, Player],
   manaApi: ManaApi[IO, SyncIO, Player]
 ) {
 

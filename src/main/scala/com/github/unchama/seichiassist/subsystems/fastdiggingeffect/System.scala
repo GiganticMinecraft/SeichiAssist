@@ -93,10 +93,10 @@ object System {
       new GrantBukkitFastDiggingEffect[F]
 
     val yieldSystem: F[System[F, F, Player]] = for {
-      effectListTopic <- Fs3Topic[F, Option[(Player, FastDiggingEffectList)]](None)
+      effectListTopic <- Fs3Topic[F, Option[(Player, FastDiggingEffectList)]]
       effectListDiffTopic <- Fs3Topic[F, Option[
         (Player, (EffectListDiff, FastDiggingEffectStatsSettings))
-      ]](None)
+      ]]
 
       effectListRepositoryHandles <- {
         ContextCoercion {

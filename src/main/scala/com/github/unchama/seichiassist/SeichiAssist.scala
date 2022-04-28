@@ -36,7 +36,10 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.{DonationCommand, GachaCommand}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+  asyncShift,
+  onMainThread
+}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -235,7 +238,7 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
-    subsystems.buildcount.System.wired[IO, SyncIO](loggerF).unsafeRunSync()
+    subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
@@ -398,7 +401,7 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val buildAssist: BuildAssist = {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
-    implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
+    implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
 
     new BuildAssist(this)

@@ -1,12 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.application.actions
 
 import cats.Monad
-import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import cats.effect.{Effect, Sync}
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.generic.ratelimiting.RateLimiter
-import com.github.unchama.generic.{Diff, RefExtra}
-import com.github.unchama.minecraft.actions.{BroadcastMinecraftSound, SendMinecraftMessage}
+import com.github.unchama.fs2.workaround.fs3.Fs3Topic
+import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.generic.effect.EffectExtra
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
@@ -30,36 +30,28 @@ object IncrementBuildExpWhenBuiltByHand {
     implicit ev: IncrementBuildExpWhenBuiltByHand[F, Player]
   ): IncrementBuildExpWhenBuiltByHand[F, Player] = ev
 
-  def using[F[_]: Monad: ClassifyPlayerWorld[*[_], Player]: SendMinecraftMessage[
-    *[_],
-    Player
-  ]: BroadcastMinecraftSound[*[_]], Player](
-    rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
-    dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]]
+  def using[F[_]: ClassifyPlayerWorld[*[_], Player], G[_]: Effect: ContextCoercion[
+    F,
+    *[_]
+  ], Player](
+    dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]],
+    dataTopic: Fs3Topic[G, (Player, BuildAmountData)]
   )(
     implicit multiplier: BuildExpMultiplier,
     sync: Sync[F]
   ): IncrementBuildExpWhenBuiltByHand[F, Player] =
     (player: Player, by: BuildExpAmount) => {
-      val F: Monad[F] = Monad[F]
+      val F: Monad[F] = implicitly
 
-      for {
-        amountToRequestIncrement <-
-          F.ifM(ClassifyPlayerWorld[F, Player].isInBuildWorld(player))(
-            F.ifF(ClassifyPlayerWorld[F, Player].isInSeichiWorld(player))(
-              by.mapAmount(_ * multiplier.whenInSeichiWorld),
-              by
-            ),
-            F.pure(BuildExpAmount(0))
-          )
-        amountToIncrement <-
-          rateLimiterRepository(player).requestPermission(amountToRequestIncrement)
-        dataPair <- RefExtra.getAndUpdateAndGet(dataRepository(player))(
-          _.modifyExpAmount(_.add(amountToIncrement))
-        )
-        _ <- Diff
-          .ofPairBy(dataPair)(_.levelCorrespondingToExp)
-          .traverse(LevelUpNotifier[F, Player].notifyTo(player))
-      } yield ()
+      F.ifM(ClassifyPlayerWorld[F, Player].isInBuildWorld(player))(
+        for {
+          newData <-
+            dataRepository(player).updateAndGet(_.addExpAmount(by))
+          _ <- EffectExtra.runAsyncAndForget[G, F, Unit] {
+            dataTopic.publish1((player, newData)).void
+          }
+        } yield (),
+        F.unit
+      )
     }
 }
