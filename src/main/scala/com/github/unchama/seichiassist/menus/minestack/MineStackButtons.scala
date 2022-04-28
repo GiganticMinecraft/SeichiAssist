@@ -39,7 +39,7 @@ private object MineStackButtons {
           gachaData <- SeichiAssist
             .msgachadatalist
             .find(_.itemStack.isSimilar(mineStackObj.itemStack))
-        } yield {
+        } {
           if (gachaData.probability < 0.1) {
             return mineStackObj.itemStack.clone().tap { cloned =>
               val meta = cloned.getItemMeta.tap { itemMeta =>
