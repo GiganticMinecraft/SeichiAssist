@@ -137,7 +137,7 @@ final class Config private (val config: FileConfiguration) {
 
   def getGiganticFeverDisplayTime: String = {
     val totalMinutes = getGiganticFeverMinutes
-    (totalMinutes / 60) + "時間" + (totalMinutes % 60) + "分"
+    s"${totalMinutes / 60}時間${totalMinutes % 60}分"
   }
 
   def getGiganticBerserkLimit: Int = getIntFailFast("GBLimit")

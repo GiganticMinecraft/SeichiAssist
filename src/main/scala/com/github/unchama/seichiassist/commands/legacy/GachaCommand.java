@@ -4,8 +4,8 @@ import com.github.unchama.seichiassist.SeichiAssist;
 import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
+import com.github.unchama.seichiassist.util.InventoryOperations;
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
-import com.github.unchama.seichiassist.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -40,10 +40,10 @@ public class GachaCommand implements CommandExecutor {
             }
 
             //プレゼントを格納orドロップ
-            if (!Util.isPlayerInventoryFull(player)) {
-                Util.addItem(player, present.itemStack());
+            if (!InventoryOperations.isPlayerInventoryFull(player)) {
+                InventoryOperations.addItem(player, present.itemStack());
             } else {
-                Util.dropItem(player, present.itemStack());
+                InventoryOperations.dropItem(player, present.itemStack());
                 //str += ChatColor.AQUA + "ガチャアイテムがドロップしました。";
             }
         }
@@ -115,7 +115,7 @@ public class GachaCommand implements CommandExecutor {
                 //引数が3の時の処理
 
                 //プレイヤー名を取得
-                String name = Util.getName(args[1]);
+                String name = args[1].toLowerCase();
                 //個数取得
                 int num = Integer.parseInt(args[2]);
 
@@ -126,7 +126,7 @@ public class GachaCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.YELLOW + name + "のガチャ券配布処理開始…");
 
                     //mysqlにも書き込んどく
-                    if (databaseGateway.playerDataManipulator.addPlayerBug(name, num) == Fail) {
+                    if (databaseGateway.playerDataManipulator.addPlayerBug(name, num).unsafeRunSync().isLeft()) {
                         sender.sendMessage(ChatColor.RED + "失敗");
                     } else {
                         sender.sendMessage(ChatColor.GREEN + "ガチャ券" + num + "枚加算成功");

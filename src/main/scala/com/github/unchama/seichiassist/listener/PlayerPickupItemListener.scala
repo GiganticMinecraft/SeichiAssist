@@ -4,7 +4,8 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.util.BreakUtil
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
 import org.bukkit.ChatColor._
-import org.bukkit.event.player.PlayerPickupItemEvent
+import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.{GameMode, Sound}
 
@@ -12,29 +13,40 @@ class PlayerPickupItemListener extends Listener {
   private val playerMap = SeichiAssist.playermap
 
   @EventHandler
-  def onPickupMineStackItem(event: PlayerPickupItemEvent): Unit = {
-    val player = event.getPlayer
+  def onPickupMineStackItem(event: EntityPickupItemEvent): Unit = {
+    event.getEntity match {
+      case player: Player =>
+      case player: Player =>
+        if (player.getGameMode != GameMode.SURVIVAL) return
 
-    if (player.getGameMode != GameMode.SURVIVAL) return
+        val playerData = playerMap(player.getUniqueId).ifNull(
+          return
+        )
+        val playerLevel = SeichiAssist
+          .instance
+          .breakCountSystem
+          .api
+          .seichiAmountDataRepository(player)
+          .read
+          .unsafeRunSync()
+          .levelCorrespondingToExp
+          .level
 
-    val playerData = playerMap(player.getUniqueId).ifNull(
-      return
-    )
+        if (!playerData.settings.autoMineStack) return
 
-    if (!playerData.settings.autoMineStack) return
+        val item = event.getItem
+        val itemstack = item.getItemStack
 
-    val item = event.getItem
-    val itemstack = item.getItemStack
+        if (SeichiAssist.DEBUG) {
+          player.sendMessage(RED.toString + "pick:" + itemstack.toString)
+          player.sendMessage(RED.toString + "pickDurability:" + itemstack.getDurability)
+        }
 
-    if (SeichiAssist.DEBUG) {
-      player.sendMessage(RED.toString + "pick:" + itemstack.toString)
-      player.sendMessage(RED.toString + "pickDurability:" + itemstack.getDurability)
-    }
-
-    if (BreakUtil.tryAddItemIntoMineStack(player, itemstack)) {
-      event.setCancelled(true)
-      player.playSound(player.getLocation, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
-      item.remove()
+        if (BreakUtil.tryAddItemIntoMineStack(player, itemstack)) {
+          event.setCancelled(true)
+          player.playSound(player.getLocation, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
+          item.remove()
+        }
     }
   }
 }

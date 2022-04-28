@@ -28,7 +28,7 @@ import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.SendMessageEffect
 import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -382,7 +382,7 @@ object ActiveSkillMenu extends Menu {
                                   .toIO
                               ),
                               Kleisli.liftF(IO {
-                                Util.sendMessageToEveryoneIgnoringPreference(
+                                SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
                                   s"$GOLD$BOLD$notificationMessage"
                                 )
                               }),
@@ -466,8 +466,7 @@ object ActiveSkillMenu extends Menu {
 
   private object ConstantButtons {
     def skillEffectMenuButton(
-      implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type,
-      ioOnMainThread: OnMinecraftServerThread[IO]
+      implicit ioCanOpenActiveSkillEffectMenu: IO CanOpen ActiveSkillEffectMenu.type
     ): Button = {
       Button(
         new IconItemStackBuilder(Material.BOOKSHELF)

@@ -9,7 +9,6 @@ import com.github.unchama.datarepository.bukkit.player.{
 }
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.managedfly.application._
@@ -36,7 +35,6 @@ object System {
   def wired[AsyncContext[_]: ConcurrentEffect: OnMinecraftServerThread: Timer, SyncContext[
     _
   ]: SyncEffect: ContextCoercion[*[_], AsyncContext]](configuration: SystemConfiguration)(
-    implicit effectEnvironment: EffectEnvironment
   ): SyncContext[System[SyncContext, AsyncContext]] = {
     implicit val _configuration: SystemConfiguration = configuration
 

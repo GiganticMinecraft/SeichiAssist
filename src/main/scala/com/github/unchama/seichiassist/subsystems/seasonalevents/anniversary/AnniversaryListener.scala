@@ -10,12 +10,12 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Ann
   isInEvent
 }
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.AnniversaryItemData._
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
-import com.github.unchama.seichiassist.util.Util.{
+import com.github.unchama.seichiassist.util.EnemyEntity.isEnemy
+import com.github.unchama.seichiassist.util.InventoryOperations.{
   grantItemStacksEffect,
-  isEnemy,
   removeItemfromPlayerInventory
 }
+import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}

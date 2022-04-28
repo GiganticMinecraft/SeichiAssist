@@ -1,6 +1,6 @@
 package com.github.unchama.generic.effect.concurrent
 
-import cats.effect.concurrent.{MVar, Ref}
+import cats.effect.concurrent.{MVar, MVar2, Ref}
 import cats.effect.{Bracket, Concurrent, ExitCase, Sync}
 import com.github.unchama.generic.ContextCoercion
 
@@ -8,7 +8,7 @@ final class Mutex[
   MutexContext[_],
   ReadContext[_]: ContextCoercion[*[_], MutexContext],
   A
-] private (mVar: MVar[MutexContext, A], previous: Ref[ReadContext, A])(
+] private (mVar: MVar2[MutexContext, A], previous: Ref[ReadContext, A])(
   implicit fBracket: Bracket[MutexContext, Throwable]
 ) {
 

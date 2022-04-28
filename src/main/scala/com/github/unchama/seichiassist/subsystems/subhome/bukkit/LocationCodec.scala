@@ -14,16 +14,20 @@ object LocationCodec {
   def fromBukkitLocation(location: Location): SubHomeLocation = {
     SubHomeLocation(
       location.getWorld.getName,
-      location.getBlockX,
-      location.getBlockY,
-      location.getBlockZ
+      location.getX,
+      location.getY,
+      location.getZ,
+      location.getPitch,
+      location.getYaw
     )
   }
 
   def toBukkitLocation(location: SubHomeLocation): Option[Location] = {
     val world = Bukkit.getWorld(location.worldName)
 
-    Option.when(world != null)(new Location(world, location.x, location.y, location.z))
+    Option.when(world != null)(
+      new Location(world, location.x, location.y, location.z, location.yaw, location.pitch)
+    )
   }
 
 }

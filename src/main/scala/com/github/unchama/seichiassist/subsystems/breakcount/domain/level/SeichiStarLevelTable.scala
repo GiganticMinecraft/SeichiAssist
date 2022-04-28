@@ -2,6 +2,8 @@ package com.github.unchama.seichiassist.subsystems.breakcount.domain.level
 
 import com.github.unchama.seichiassist.domain.explevel.ExpLevelConversion
 
+import java.math.RoundingMode
+
 /**
  * 経験値量と整地スターレベルの相互変換を与えるオブジェクト。
  *
@@ -16,7 +18,7 @@ object SeichiStarLevelTable extends ExpLevelConversion[SeichiStarLevel, SeichiEx
       expAmount
         .amount
         .bigDecimal
-        .divide(gradient.amount.bigDecimal, java.math.BigDecimal.ROUND_DOWN)
+        .divide(gradient.amount.bigDecimal, RoundingMode.DOWN)
         .toBigInteger
     }
 

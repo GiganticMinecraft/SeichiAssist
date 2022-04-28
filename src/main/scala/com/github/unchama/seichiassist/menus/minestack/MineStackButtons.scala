@@ -7,9 +7,9 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.ClickEventFilter
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
 import com.github.unchama.seichiassist.MineStackObjectList.getBuiltinGachaPrizes
 import com.github.unchama.seichiassist.minestack.{MineStackObject, MineStackObjectCategory}
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist}
 import com.github.unchama.targetedeffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -168,7 +168,7 @@ private[minestack] case class MineStackButtons(player: Player) {
         )
         _ <- SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, pair._1),
-          Util.grantItemStacksEffect(pair._2)
+          grantItemStacksEffect(pair._2)
         )
       } yield ()
     }

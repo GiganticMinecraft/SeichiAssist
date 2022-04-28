@@ -8,6 +8,9 @@ import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.generic.ratelimiting.RateLimiter
+import com.github.unchama.minecraft.actions.BroadcastMinecraftSound
+import com.github.unchama.minecraft.bukkit.actions.BroadcastBukkitSound
+import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage.apply
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{
   ClassifyPlayerWorld,
@@ -30,7 +33,6 @@ import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{
   JdbcBuildAmountDataPersistence,
   JdbcBuildAmountRateLimitPersistence
 }
-import com.github.unchama.util.logging.log4cats.PrefixedLogger
 import io.chrisdavenport.cats.effect.time.JavaTime
 import io.chrisdavenport.log4cats.Logger
 import org.bukkit.entity.Player
@@ -53,14 +55,12 @@ object System {
   ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
     rootLogger: Logger[F]
   )(implicit configuration: Configuration): G[System[F, G]] = {
-    import com.github.unchama.minecraft.bukkit.actions.SendBukkitMessage._
 
     implicit val expMultiplier: BuildExpMultiplier = configuration.multipliers
     implicit val persistence: JdbcBuildAmountDataPersistence[G] =
       new JdbcBuildAmountDataPersistence[G]()
     implicit val rateLimitPersistence: JdbcBuildAmountRateLimitPersistence[G] =
       new JdbcBuildAmountRateLimitPersistence[G]()
-    implicit val logger: Logger[F] = PrefixedLogger[F]("BuildAssist-BuildAmount")(rootLogger)
     implicit val javaTimeG: JavaTime[G] = JavaTime.fromClock
 
     for {
@@ -82,6 +82,8 @@ object System {
     } yield {
       implicit val classifyBukkitPlayerWorld: ClassifyPlayerWorld[G, Player] =
         new ClassifyBukkitPlayerWorld[G]
+      implicit val broadCastMinecraftSound: BroadcastMinecraftSound[G] =
+        BroadcastBukkitSound[G]
       implicit val incrementBuildExp: IncrementBuildExpWhenBuiltByHand[G, Player] =
         IncrementBuildExpWhenBuiltByHand.using(
           rateLimiterRepositoryControls.repository,
