@@ -2,13 +2,12 @@ package com.github.unchama.seichiassist.subsystems.gacha.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.ItemStackCodec
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPersistence,
   GachaPrize,
   GachaPrizeId
 }
-import com.github.unchama.seichiassist.util.BukkitSerialization
-import org.bukkit.Bukkit
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
@@ -24,7 +23,7 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
       DB.localTx { implicit session =>
         sql"select * from gachadata"
           .map { rs =>
-            val itemStack = BukkitSerialization.fromBase64(rs.string("itemstack")).getItem(0)
+            val itemStack = ItemStackCodec.fromString(rs.string("itemstack"))
             val probability = rs.double("probability")
             itemStack.setAmount(rs.int("amount"))
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
@@ -43,18 +42,15 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
   override def upsert(gachaPrize: GachaPrize): F[Unit] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
       DB.localTx { implicit session =>
-        val inventory = Bukkit.getServer.createInventory(null, 9)
-        inventory.setItem(0, gachaPrize.itemStack)
-
         sql"""insert into gachadata 
              |  (id,amount,probability,itemstack)
              |  values (${gachaPrize.id.id},${gachaPrize.itemStack.getAmount},
              |  ${gachaPrize.probability},${gachaPrize.itemStack},
-             |  ${BukkitSerialization.toBase64(inventory)})
+             |  ${ItemStackCodec.fromBukkitItemStack(gachaPrize.itemStack)})
              |  on duplicate key update 
              |  amount = ${gachaPrize.itemStack.getAmount},
              |  probability = ${gachaPrize.probability},
-             |  itemstack = ${BukkitSerialization.toBase64(inventory)}"""
+             |  itemstack = ${ItemStackCodec.fromBukkitItemStack(gachaPrize.itemStack)}"""
           .stripMargin
           .execute()
           .apply()
