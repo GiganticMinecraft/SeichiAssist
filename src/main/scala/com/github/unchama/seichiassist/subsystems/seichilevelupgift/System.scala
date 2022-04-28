@@ -1,43 +1,24 @@
 package com.github.unchama.seichiassist.subsystems.seichilevelupgift
 
-import cats.data.Kleisli
-import cats.effect.{Async, Sync}
+import cats.effect.Async
 import com.github.unchama.generic.effect.stream.StreamExtra
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.commands.legacy.GachaCommand
+import com.github.unchama.minecraft.actions.{OnMinecraftServerThread, SendMinecraftMessage}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountReadAPI
-import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.GiftItemInterpreter
-import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
-  Gift,
-  GiftInterpreter
-}
+import com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit.BukkitGrantLevelUpGift.apply
+import com.github.unchama.seichiassist.subsystems.seichilevelupgift.usecases.GrantGiftOnSeichiLevelDiff
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
 object System {
 
   def backGroundProcess[F[_]: OnMinecraftServerThread: ErrorLogger: Async, G[_]](
-    implicit breakCountReadApi: BreakCountReadAPI[F, G, Player]
+    implicit breakCountReadApi: BreakCountReadAPI[F, G, Player],
+    send: SendMinecraftMessage[F, Player]
   ): F[Nothing] = {
-
-    val interpreter: GiftInterpreter[F, Player] = {
-      val giftItemInterpreter = new GiftItemInterpreter[F]
-
-      {
-        case item: Gift.Item => giftItemInterpreter(item)
-        case Gift.AutomaticGachaRun =>
-          Kleisli { player =>
-            Sync[F].delay {
-              player.sendMessage("レベルアップ記念としてガチャを回しました。")
-              GachaCommand.Gachagive(player, 1, player.getName)
-            }
-          }
-      }
-    }
-
     StreamExtra.compileToRestartingStream("[SeichiLevelUpGift]") {
       breakCountReadApi.seichiLevelUpdates.evalTap {
-        case (player, diff) => interpreter.onLevelDiff(diff).run(player)
+        case (player, diff) =>
+          GrantGiftOnSeichiLevelDiff.grantGiftTo(diff, player)
       }
     }
   }

@@ -11,13 +11,13 @@ import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNot
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.{BreakUtil, EnemyEntity}
+import org.bukkit.ChatColor.RED
 import org.bukkit._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Player, Projectile}
 import org.bukkit.event.entity._
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.ChatColor.RED
 
 class EntityListener(
   implicit effectEnvironment: EffectEnvironment,
@@ -214,7 +214,7 @@ class EntityListener(
     /*GiganticBerserk用*/
     // 死んだMOBがGiganticBerserkの対象MOBでなければ終了
     val entity = event.getEntity
-    if (!Util.isEnemy(entity.getType)) return
+    if (!EnemyEntity.isEnemy(entity.getType)) return
     val player = entity.getKiller
     // MOBを倒したプレイヤーがいなければ終了
     if (player == null) return

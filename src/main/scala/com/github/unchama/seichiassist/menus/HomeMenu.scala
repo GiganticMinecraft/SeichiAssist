@@ -190,9 +190,8 @@ object HomeMenu extends Menu {
               s"${DARK_GRAY}command->[/subhome name $subHomeId]"
             )
 
-            val coordinates = List(
-              s"$GRAY$worldName x:${location.x} y:${location.y} z:${location.z}"
-            )
+            val coordinates = List(s"$GRAY$worldName x:${Math.floor(location.x)} y:${Math
+                .floor(location.y)} z:${Math.floor(location.z)}")
 
             nameStatus ++ commandInfo ++ coordinates
         }
