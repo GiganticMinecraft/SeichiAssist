@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit
 
 import cats.data.Kleisli
-import cats.effect.{Async, Sync}
+import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
 }
 import org.bukkit.entity.Player
 
-class BukkitGrantLevelUpGift[F[_]: Async: OnMinecraftServerThread]
+class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread]
     extends GrantLevelUpGift[F, Player] {
   override def grant(gift: Gift): Kleisli[F, Player, Unit] = {
     val giftItemInterpreter: GiftItemInterpreter[F] = new BukkitGiftItemInterpreter[F]
@@ -30,7 +30,7 @@ class BukkitGrantLevelUpGift[F[_]: Async: OnMinecraftServerThread]
 
 object BukkitGrantLevelUpGift {
 
-  implicit def apply[F[_]: Async: OnMinecraftServerThread]: GrantLevelUpGift[F, Player] =
+  implicit def apply[F[_]: Sync: OnMinecraftServerThread]: GrantLevelUpGift[F, Player] =
     new BukkitGrantLevelUpGift[F]
 
 }

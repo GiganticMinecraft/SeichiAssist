@@ -31,9 +31,7 @@ object GrantGiftOnSeichiLevelDiff {
     giftBundles
       .traverse { giftBundle =>
         giftBundle
-          .map
-          .toList
-          .traverse {
+          .traverseGifts {
             case (gift, count) =>
               GrantLevelUpGift[F, Player].grant(gift).replicateA(count).run(player) >> {
                 gift match {
