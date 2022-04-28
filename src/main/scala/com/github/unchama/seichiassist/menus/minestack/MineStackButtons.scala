@@ -128,9 +128,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     SequentialEffect(
       withDrawItemEffect(mineStackObj, amount),
       targetedeffect.UnfocusedEffect {
-        if (mineStackObj.category != MineStackObjectCategory.GACHA_PRIZES) {
-          playerData.hisotryData.addHistory(mineStackObj)
-        }
+        playerData.hisotryData.addHistory(mineStackObj)
       }
     )
   }
