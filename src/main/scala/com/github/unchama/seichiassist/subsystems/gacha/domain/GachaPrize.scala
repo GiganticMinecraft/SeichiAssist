@@ -7,4 +7,9 @@ import org.bukkit.inventory.ItemStack
  * @param probability ガチャで排出される確率
  * @param isAppendOwner 記名する場合はtrueにしてください
  */
-case class GachaPrize(itemStack: ItemStack, probability: Double, isAppendOwner: Boolean)
+case class GachaPrize(
+  itemStack: ItemStack,
+  probability: Double,
+  isAppendOwner: Boolean,
+  id: GachaPrizeId
+)
