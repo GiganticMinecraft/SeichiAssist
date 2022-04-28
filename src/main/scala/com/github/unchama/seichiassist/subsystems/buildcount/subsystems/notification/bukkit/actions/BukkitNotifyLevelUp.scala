@@ -33,11 +33,11 @@ object BukkitNotifyLevelUp {
             Util.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
           })
         } else if (oldLevel < newLevel)
-          OnMinecraftServerThread[F].runAction(SyncIO {
+          Sync[F].delay {
             player.sendMessage(
               s"${GOLD}ﾑﾑｯﾚﾍﾞﾙｱｯﾌﾟ∩( ・ω・)∩【建築Lv(${oldLevel.level})→建築Lv(${newLevel.level})】"
             )
-          })
+          }
         else
           Applicative[F].unit
       }
