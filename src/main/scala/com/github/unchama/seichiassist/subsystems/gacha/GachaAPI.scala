@@ -27,3 +27,5 @@ object GachaWriteAPI {
   def apply[F[_]](implicit ev: GachaWriteAPI[F]): GachaWriteAPI[F] = ev
 
 }
+
+trait GachaAPI[F[_]] extends GachaReadAPI[F] with GachaWriteAPI[F]
