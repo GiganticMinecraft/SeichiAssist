@@ -9,6 +9,7 @@ trait GachaPersistence[F[_]] {
 
   /**
    * ガチャアイテムを追加します。
+   * idが同じだった場合は置き換えられます
    */
   def upsert(gachaPrize: GachaPrize): F[Unit]
 
@@ -16,11 +17,5 @@ trait GachaPersistence[F[_]] {
    * ガチャアイテムを削除します。
    */
   def remove(id: GachaPrizeId): F[Boolean]
-
-  /**
-   * 指定IDのガチャアイテムを置き換えます。
-   */
-  final def replace(id: GachaPrizeId, newGachaPrize: GachaPrize): F[Unit] =
-    upsert(newGachaPrize.copy(id = id))
 
 }
