@@ -610,7 +610,7 @@ object MineStackObjectList {
   def getBuiltinGachaPrizes: List[MineStackObject] = {
     minestackBuiltinGachaPrizes.flatMap {
       case Left(mineStackObj) => List(mineStackObj)
-      case Right(_)           => Nil
+      case Right(group)       => List(group.representative) ++ group.coloredVariants
     }
   }
 
