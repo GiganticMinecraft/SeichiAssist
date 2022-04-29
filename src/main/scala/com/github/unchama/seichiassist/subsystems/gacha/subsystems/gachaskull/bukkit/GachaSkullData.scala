@@ -1,7 +1,7 @@
-package com.github.unchama.seichiassist.data
+package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit
 
 import com.github.unchama.seichiassist.util.ItemMetaFactory
-import org.bukkit.ChatColor._
+import org.bukkit.ChatColor.{BOLD, GRAY, GREEN, LIGHT_PURPLE, RESET, YELLOW}
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -79,4 +79,5 @@ object GachaSkullData {
       }
     }
   }
+
 }

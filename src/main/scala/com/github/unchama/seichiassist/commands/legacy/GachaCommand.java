@@ -60,8 +60,6 @@ public class GachaCommand implements CommandExecutor {
         } else if (args[0].equalsIgnoreCase("help")) {
 
             sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "[コマンドリファレンス]");
-            sender.sendMessage(ChatColor.RED + "/gacha mente");
-            sender.sendMessage("メンテモードのON,OFF切り替え。ONだとガチャが引けなくなる");
             sender.sendMessage(ChatColor.RED + "/gacha give <all/プレイヤー名> <個数>");
             sender.sendMessage("ガチャ券配布コマンドです。allを指定で全員に配布(マルチ鯖対応済)");
             sender.sendMessage(ChatColor.RED + "/gacha get <ID> (<名前>)");
