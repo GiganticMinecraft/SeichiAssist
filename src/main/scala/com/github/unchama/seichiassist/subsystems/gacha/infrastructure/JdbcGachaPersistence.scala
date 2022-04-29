@@ -38,6 +38,7 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
 
   /**
    * ガチャアイテムを追加します。
+   * idが同じだった場合は置き換えられます
    */
   override def upsert(gachaPrize: GachaPrize): F[Unit] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
