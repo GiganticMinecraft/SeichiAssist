@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.subhome.bukkit.command
 
 import cats.Monad
+import cats.data.Kleisli
 import cats.effect.implicits._
 import cats.effect.{ConcurrentEffect, Effect, IO}
 import com.github.unchama.chatinterceptor.CancellationReason.Overridden
@@ -20,7 +21,7 @@ import com.github.unchama.seichiassist.subsystems.subhome.{
   SubHomeWriteAPI
 }
 import com.github.unchama.targetedeffect.TargetedEffect
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
@@ -28,7 +29,7 @@ object SubHomeCommand {
 
   import cats.implicits._
 
-  private val printDescriptionExecutor = new EchoExecutor(
+  private val printDescriptionExecutor = EchoExecutor(
     MessageEffect(
       List(
         s"$GREEN/subhome コマンドの使い方",
@@ -37,7 +38,9 @@ object SubHomeCommand {
         s"${GREEN}セットする場合",
         s"$GREEN/subhome set [セットしたいサブホームの番号]",
         s"${GREEN}名前変更する場合",
-        s"$GREEN/subhome name [名前変更したいサブホームの番号]"
+        s"$GREEN/subhome name [名前変更したいサブホームの番号]",
+        s"${GREEN}削除する場合",
+        s"$GREEN/subhome remove [削除したいサブホームの番号]"
       )
     )
   )
@@ -55,19 +58,36 @@ object SubHomeCommand {
     onMissingArguments = printDescriptionExecutor
   )
 
-  private def subHomeNotSetMessage(id: SubHomeId): List[String] = List(
-    s"${YELLOW}指定されたサブホームポイントが設定されていません。"
-  )
+  private def subHomeNotSetMessage: List[String] = List(s"${YELLOW}指定されたサブホームポイントが設定されていません。")
 
   def executor[F[
     _
   ]: SubHomeAPI: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread](
     implicit scope: ChatInterceptionScope
   ): TabExecutor = BranchedExecutor(
-    Map("warp" -> warpExecutor, "set" -> setExecutor, "name" -> nameExecutor),
+    Map(
+      "warp" -> warpExecutor,
+      "set" -> setExecutor,
+      "name" -> nameExecutor,
+      "remove" -> removeExecutor
+    ),
     whenArgInsufficient = Some(printDescriptionExecutor),
     whenBranchNotFound = Some(printDescriptionExecutor)
   ).asNonBlockingTabExecutor()
+
+  private def removeExecutor[F[
+    _
+  ]: ConcurrentEffect: NonServerThreadContextShift: OnMinecraftServerThread: SubHomeWriteAPI] =
+    argsAndSenderConfiguredBuilder
+      .executionCSEffect { context =>
+        val subHomeId = SubHomeId(context.args.parsed.head.asInstanceOf[Int])
+        val player = context.sender
+
+        Kleisli
+          .liftF(SubHomeWriteAPI[F].remove(player.getUniqueId, subHomeId))
+          .flatMap(_ => MessageEffectF(s"サブホームポイント${subHomeId}を削除しました。"))
+      }
+      .build()
 
   private def warpExecutor[F[
     _
@@ -147,12 +167,12 @@ object SubHomeCommand {
                   case RenameResult.Done =>
                     MessageEffect(doneMessage(newName))(player)
                   case RenameResult.NotFound =>
-                    MessageEffect(subHomeNotSetMessage(subHomeId))(player)
+                    MessageEffect(subHomeNotSetMessage)(player)
                 }
               case Right(Overridden) => MessageEffect(cancelledInputMessage)(player)
               case Right(_)          => IO.unit
             },
-          MessageEffect(subHomeNotSetMessage(subHomeId))(player)
+          MessageEffect(subHomeNotSetMessage)(player)
         )
       } yield TargetedEffect.emptyEffect
     }

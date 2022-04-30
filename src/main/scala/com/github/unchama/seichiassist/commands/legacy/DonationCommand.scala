@@ -2,7 +2,6 @@ package com.github.unchama.seichiassist.commands.legacy
 
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.database.DatabaseGateway
-import com.github.unchama.seichiassist.util.Util
 import com.github.unchama.util.ActionStatus.Fail
 import org.bukkit.ChatColor._
 import org.bukkit.command.{Command, CommandExecutor, CommandSender}
@@ -35,8 +34,7 @@ class DonationCommand extends CommandExecutor {
       } else {
         // 引数が3の時の処理
 
-        // プレイヤー名を取得(小文字にする)
-        val name = Util.getName(args(1))
+        val name = args(1).toLowerCase
         // 配布ポイント数取得
         val num = args(2).toInt
 

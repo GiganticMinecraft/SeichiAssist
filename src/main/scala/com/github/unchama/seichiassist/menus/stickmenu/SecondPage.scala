@@ -24,7 +24,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Chris
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData.christmasPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.valentinePlayerHead
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -135,7 +135,7 @@ object SecondPage extends Menu {
             }
 
             SequentialEffect(
-              Util.grantItemStacksEffect(skullToGive),
+              InventoryOperations.grantItemStacksEffect(skullToGive),
               UnfocusedEffect { expManager.changeExp(-10000) },
               MessageEffect(s"${GOLD}経験値10000を消費して自分の頭を召喚しました"),
               FocusedSoundEffect(Sound.BLOCK_ANVIL_PLACE, 1.0f, 1.0f)
@@ -160,20 +160,20 @@ object SecondPage extends Menu {
         iconItemStack = {
           val soundConfigurationState =
             if (currentSettings.shouldMuteSounds) {
-              s"$RESET${RED}全体通知音:消音する"
+              s"$RESET${RED}全体大当たり通知音:消音する"
             } else {
-              s"$RESET${GREEN}全体通知音:消音しない"
+              s"$RESET${GREEN}全体大当たり通知音:消音しない"
             }
 
           val messageConfigurationState =
             if (currentSettings.shouldMuteMessages) {
-              s"$RESET${RED}全体メッセージ:表示しない"
+              s"$RESET${RED}全体大当たりメッセージ:表示しない"
             } else {
-              s"$RESET${GREEN}全体メッセージ:表示する"
+              s"$RESET${GREEN}全体大当たりメッセージ:表示する"
             }
 
           new IconItemStackBuilder(Material.JUKEBOX)
-            .title(s"$YELLOW$UNDERLINE${BOLD}全体通知切替")
+            .title(s"$YELLOW$UNDERLINE${BOLD}全体大当たり通知切替")
             .lore(
               List(
                 soundConfigurationState,
@@ -195,8 +195,8 @@ object SecondPage extends Menu {
                 .getBroadcastMutingSettings
                 .map {
                   case ReceiveMessageAndSound => s"${GREEN}非表示/消音設定を解除しました"
-                  case ReceiveMessageOnly     => s"${RED}消音可能な全体通知音を消音します"
-                  case MuteMessageAndSound    => s"${RED}非表示可能な全体メッセージを非表示にします"
+                  case ReceiveMessageOnly     => s"${RED}消音可能な全体大当たり通知音を消音します"
+                  case MuteMessageAndSound    => s"${RED}非表示可能な全体大当たりメッセージを非表示にします"
                 }
                 .map(MessageEffect(_))
             }

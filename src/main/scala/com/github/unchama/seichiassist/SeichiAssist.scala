@@ -36,7 +36,10 @@ import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
 import com.github.unchama.seichiassist.commands.legacy.{DonationCommand, GachaCommand}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.asyncShift
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
+  asyncShift,
+  onMainThread
+}
 import com.github.unchama.seichiassist.data.player.PlayerData
 import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
@@ -66,6 +69,8 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
+import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
+import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
 import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
@@ -225,22 +230,22 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val buildCountSystem: subsystems.buildcount.System[IO, SyncIO] = {
+    import PluginExecutionContexts.asyncShift
 
     implicit val configuration: subsystems.buildcount.application.Configuration =
       seichiAssistConfig.buildCountConfiguration
 
     implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
-    subsystems.buildcount.System.wired[IO, SyncIO](loggerF).unsafeRunSync()
+    subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
   // TODO コンテキスト境界明確化のため、privateであるべきである
   lazy val breakCountSystem: subsystems.breakcount.System[IO, SyncIO] = {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
-    implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
-    subsystems.breakcount.System.wired[IO, SyncIO].unsafeRunSync()
+    subsystems.breakcount.System.wired[IO, SyncIO]().unsafeRunSync()
   }
 
   private lazy val manaSystem: subsystems.mana.System[IO, SyncIO, Player] = {
@@ -282,6 +287,8 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val effectEnvironment: EffectEnvironment = DefaultEffectEnvironment
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
+      JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
 
     subsystems
       .fourdimensionalpocket
@@ -393,7 +400,7 @@ class SeichiAssist extends JavaPlugin() {
 
   private lazy val buildAssist: BuildAssist = {
     implicit val flyApi: ManagedFlyApi[SyncIO, Player] = managedFlySystem.api
-    implicit val buildCountAPI: BuildCountAPI[SyncIO, Player] = buildCountSystem.api
+    implicit val buildCountAPI: BuildCountAPI[IO, SyncIO, Player] = buildCountSystem.api
     implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
 
     new BuildAssist(this)

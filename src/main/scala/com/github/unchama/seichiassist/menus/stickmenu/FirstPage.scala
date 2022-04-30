@@ -41,8 +41,7 @@ import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.P
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask
-import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
+import com.github.unchama.seichiassist.{ManagedWorld, SeichiAssist, SkullOwners, util}
 import com.github.unchama.targetedeffect.TargetedEffect.emptyEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.{CommandEffect, FocusedSoundEffect}
@@ -457,7 +456,7 @@ object FirstPage extends Menu {
               val itemStacksToGive = Seq.fill(numberOfItemsToGive)(itemToGive)
 
               SequentialEffect(
-                Util.grantItemStacksEffect(itemStacksToGive: _*),
+                util.InventoryOperations.grantItemStacksEffect(itemStacksToGive: _*),
                 UnfocusedEffect {
                   playerData.unclaimedApologyItems -= numberOfItemsToGive
                 },
@@ -500,8 +499,9 @@ object FirstPage extends Menu {
 
     val computeActiveSkillButton: IO[Button] = IO {
       val iconItemStack = {
+        import ManagedWorld._
         val lore =
-          if (Util.seichiSkillsAllowedIn(player.getWorld))
+          if (player.getWorld.isSeichiSkillAllowed)
             List(s"$RESET${GRAY}整地に便利なスキルを使用できるゾ", s"$RESET$DARK_RED${UNDERLINE}クリックでスキル一覧を開く")
           else
             List(s"$RESET${RED}このワールドでは", s"$RESET${RED}整地スキルを使えません")

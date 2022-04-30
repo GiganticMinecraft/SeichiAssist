@@ -27,6 +27,7 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.ItemStack
 
 import scala.collection.mutable.ArrayBuffer
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.control.Breaks
 
 class PlayerBlockBreakListener(
@@ -288,11 +289,26 @@ class PlayerBlockBreakListener(
         .map(multiplier => BreakUtil.totalBreakCount(Seq(block.getType)) * multiplier)
         .unsafeRunSync()
     }
-
     effectEnvironment.unsafeRunEffectAsync(
       "通常破壊されたブロックを整地量に計上する",
       SeichiAssist.instance.breakCountSystem.api.incrementSeichiExp.of(player, amount).toIO
     )
+
+    /**
+     * 手彫りで破壊したアイテムを直接MineStackに入れる
+     * 一つのBlockBreakEventから複数の種類のアイテムが出てくることはない。
+     * チェスト等のインベントリスロットのあるブロック`b`を破壊したときは、
+     * 破壊された`b`のみが`BlockBreakEvent`のドロップ対象となるため、
+     * 中身のドロップがキャンセルされることはない。
+     */
+    event
+      .getBlock
+      .getDrops(event.getPlayer.getInventory.getItemInMainHand)
+      .asScala
+      .foreach(droppedItemStack => {
+        if (BreakUtil.tryAddItemIntoMineStack(player, droppedItemStack))
+          event.setDropItems(false)
+      })
   }
 
   /**
@@ -317,11 +333,11 @@ class PlayerBlockBreakListener(
       world.dropItemNaturally(location, new ItemStack(Material.STEP))
     }
     if (b.getType ne Material.STEP) return
-    if (b.getY != 5) return
+    if (b.getY > 5) return
     if (b.getData != 0) return
     if (!world.isSeichi) return
     if (data.canBreakHalfBlock) return
     event.setCancelled(true)
-    p.sendMessage(s"${RED}Y5に敷かれたハーフブロックは破壊不可能です。")
+    p.sendMessage(s"${RED}Y5以下に敷かれたハーフブロックは破壊不可能です。")
   }
 }

@@ -43,7 +43,7 @@ object System {
       new JdbcBreakCountBarVisibilityPersistence[G]
 
     for {
-      topic <- Fs3Topic[F, Option[(Player, BreakCountBarVisibility)]](None)
+      topic <- Fs3Topic[F, Option[(Player, BreakCountBarVisibility)]]
 
       visibilityRepositoryHandles <- {
         ContextCoercion {

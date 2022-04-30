@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.mebius.domain.property.{
   MebiusProperty,
   NormalMebius
 }
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.{SendMessageEffect, SendSoundEffect}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import net.coreprotect.model.Config
 import org.bukkit.ChatColor._
@@ -96,13 +96,13 @@ class PlayerJoinListener extends Listener {
     // 初見さんへの処理
     if (!player.hasPlayedBefore) {
       // 初見さんであることを全体告知
-      Util.sendMessageToEveryoneIgnoringPreference(
+      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
         s"$LIGHT_PURPLE$BOLD${player.getName}さんはこのサーバーに初めてログインしました！"
       )
-      Util.sendMessageToEveryoneIgnoringPreference(
+      SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
         s"${WHITE}webサイトはもう読みましたか？→$YELLOW${UNDERLINE}https://www.seichi.network/gigantic"
       )
-      Util.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
+      SendSoundEffect.sendEverySound(Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
 
       // ルール熟読をタイトルとチャットで迫る
       // サブタイトルと分ける理由はGUIサイズによって見切れる可能性があるため

@@ -10,9 +10,8 @@ import com.github.unchama.seichiassist.data.player.settings.PlayerSettings
 import com.github.unchama.seichiassist.minestack.MineStackUsageHistory
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiStarLevel
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.Util
-import com.github.unchama.seichiassist.util.Util.DirectionType
 import com.github.unchama.seichiassist.util.exp.{ExperienceManager, IExperienceManager}
+import com.github.unchama.seichiassist.util.{RelativeDirection, TimeUtils}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit._
@@ -269,7 +268,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   private def isVotingFairy(): Unit = {
     // 効果は継続しているか
     if (
-      this.usingVotingFairy && !Util.isVotingFairyPeriod(
+      this.usingVotingFairy && !TimeUtils.isVotingFairyPeriod(
         this.votingFairyStartTime,
         this.votingFairyEndTime
       )
@@ -390,70 +389,70 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   def canBreakHalfBlock: Boolean = this.allowBreakingHalfBlocks
 
-  def canGridExtend(directionType: DirectionType, world: String): Boolean = {
+  def canGridExtend(direction: RelativeDirection, world: String): Boolean = {
     val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world)
     val chunkMap = unitMap
 
     // チャンクを拡大すると仮定する
-    val assumedAmoont = chunkMap(directionType) + this.unitPerClick
+    val assumedAmoont = chunkMap(direction) + this.unitPerClick
 
     // 一応すべての拡張値を出しておく
-    val ahead = chunkMap(DirectionType.AHEAD)
-    val behind = chunkMap(DirectionType.BEHIND)
-    val right = chunkMap(DirectionType.RIGHT)
-    val left = chunkMap(DirectionType.LEFT)
+    val ahead = chunkMap(RelativeDirection.AHEAD)
+    val behind = chunkMap(RelativeDirection.BEHIND)
+    val right = chunkMap(RelativeDirection.RIGHT)
+    val left = chunkMap(RelativeDirection.LEFT)
 
     // 合計チャンク再計算値
-    val assumedUnitAmount = directionType match {
-      case DirectionType.AHEAD  => (assumedAmoont + 1 + behind) * (right + 1 + left)
-      case DirectionType.BEHIND => (ahead + 1 + assumedAmoont) * (right + 1 + left)
-      case DirectionType.RIGHT  => (ahead + 1 + behind) * (assumedAmoont + 1 + left)
-      case DirectionType.LEFT   => (ahead + 1 + behind) * (right + 1 + assumedAmoont)
+    val assumedUnitAmount = direction match {
+      case RelativeDirection.AHEAD  => (assumedAmoont + 1 + behind) * (right + 1 + left)
+      case RelativeDirection.BEHIND => (ahead + 1 + assumedAmoont) * (right + 1 + left)
+      case RelativeDirection.RIGHT  => (ahead + 1 + behind) * (assumedAmoont + 1 + left)
+      case RelativeDirection.LEFT   => (ahead + 1 + behind) * (right + 1 + assumedAmoont)
     }
 
     assumedUnitAmount <= limit
   }
 
-  def unitMap: Map[DirectionType, Int] = {
-    val unitMap = mutable.Map[DirectionType, Int]().empty
+  def unitMap: Map[RelativeDirection, Int] = {
+    val unitMap = mutable.Map[RelativeDirection, Int]().empty
 
-    unitMap.put(DirectionType.AHEAD, claimUnit.ahead)
-    unitMap.put(DirectionType.BEHIND, claimUnit.behind)
-    unitMap.put(DirectionType.RIGHT, claimUnit.right)
-    unitMap.put(DirectionType.LEFT, claimUnit.left)
+    unitMap.put(RelativeDirection.AHEAD, claimUnit.ahead)
+    unitMap.put(RelativeDirection.BEHIND, claimUnit.behind)
+    unitMap.put(RelativeDirection.RIGHT, claimUnit.right)
+    unitMap.put(RelativeDirection.LEFT, claimUnit.left)
 
     unitMap.toMap
   }
 
-  def canGridReduce(directionType: DirectionType): Boolean = {
+  def canGridReduce(direction: RelativeDirection): Boolean = {
     val chunkMap = unitMap
 
     // 減らしたと仮定する
-    val sizeAfterShrink = chunkMap(directionType) - unitPerClick
+    val sizeAfterShrink = chunkMap(direction) - unitPerClick
 
     sizeAfterShrink >= 0
   }
 
-  def setUnitAmount(directionType: DirectionType, amount: Int): Unit = {
-    this.claimUnit = directionType match {
-      case DirectionType.AHEAD  => this.claimUnit.copy(ahead = amount)
-      case DirectionType.BEHIND => this.claimUnit.copy(behind = amount)
-      case DirectionType.RIGHT  => this.claimUnit.copy(right = amount)
-      case DirectionType.LEFT   => this.claimUnit.copy(left = amount)
+  def setUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
+    this.claimUnit = direction match {
+      case RelativeDirection.AHEAD  => this.claimUnit.copy(ahead = amount)
+      case RelativeDirection.BEHIND => this.claimUnit.copy(behind = amount)
+      case RelativeDirection.RIGHT  => this.claimUnit.copy(right = amount)
+      case RelativeDirection.LEFT   => this.claimUnit.copy(left = amount)
     }
   }
 
   import com.github.unchama.seichiassist.AntiTypesafe
 
-  def addUnitAmount(directionType: DirectionType, amount: Int): Unit = {
-    directionType match {
-      case DirectionType.AHEAD =>
+  def addUnitAmount(direction: RelativeDirection, amount: Int): Unit = {
+    direction match {
+      case RelativeDirection.AHEAD =>
         this.claimUnit = this.claimUnit.copy(ahead = this.claimUnit.ahead + amount)
-      case DirectionType.BEHIND =>
+      case RelativeDirection.BEHIND =>
         this.claimUnit = this.claimUnit.copy(behind = this.claimUnit.behind + amount)
-      case DirectionType.RIGHT =>
+      case RelativeDirection.RIGHT =>
         this.claimUnit = this.claimUnit.copy(right = this.claimUnit.right + amount)
-      case DirectionType.LEFT =>
+      case RelativeDirection.LEFT =>
         this.claimUnit = this.claimUnit.copy(left = this.claimUnit.left + amount)
     }
   }

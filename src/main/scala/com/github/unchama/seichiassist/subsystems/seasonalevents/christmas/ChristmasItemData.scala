@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.seasonalevents.christmas
 
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Christmas.EVENT_YEAR
-import com.github.unchama.seichiassist.util.Util
+import com.github.unchama.seichiassist.util.EnchantNameToJapanese
 import de.tr7zw.itemnbtapi.NBTItem
 import org.bukkit.ChatColor._
 import org.bukkit.Color.fromRGB
@@ -205,7 +205,8 @@ object ChristmasItemData {
     val enchants = Set((Enchantment.DIG_SPEED, 3), (Enchantment.LOOT_BONUS_BLOCKS, 1))
     val loreList = {
       val enchDescription = enchants.map {
-        case (ench, lvl) => s"$RESET$GRAY${Util.getEnchantName(ench.getName, lvl)}"
+        case (ench, lvl) =>
+          s"$RESET$GRAY${EnchantNameToJapanese.getEnchantName(ench.getName, lvl)}"
       }.toList
       val lore = List(s"$RESET${AQUA}耐久無限")
 

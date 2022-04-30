@@ -72,13 +72,11 @@ object AsymmetricSignallingRef {
   ): H[AsymmetricSignallingRef[G, F, A]] = {
     val initialState = TimeStamped(new Token, new Token, initial)
 
-    Applicative[H].map2(
-      Ref.in[H, G, TimeStamped[A]](initialState),
-      Fs3Topic.in[H, F, TimeStamped[A]](initialState)
-    ) {
-      case (ref, topic) =>
-        new AsymmetricSignallingRefImpl[G, F, A](ref, topic)
-    }
+    Applicative[H]
+      .map2(Ref.in[H, G, TimeStamped[A]](initialState), Fs3Topic.in[H, F, TimeStamped[A]]) {
+        case (ref, topic) =>
+          new AsymmetricSignallingRefImpl[G, F, A](ref, topic)
+      }
   }
 
   private final class AsymmetricSignallingRefImpl[G[_], F[_], A](

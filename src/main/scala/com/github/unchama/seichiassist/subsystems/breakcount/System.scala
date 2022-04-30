@@ -7,7 +7,6 @@ import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
-import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.breakcount.application.BreakCountRepositoryDefinition
@@ -47,13 +46,12 @@ object System {
   def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]](
-    implicit effectEnvironment: EffectEnvironment
   ): F[System[F, G]] = {
     implicit val persistence: SeichiAmountDataPersistence[G] =
       new JdbcSeichiAmountDataPersistence[G]
 
     val createSystem: F[System[F, G]] = for {
-      breakCountTopic <- Fs3Topic[F, Option[(Player, SeichiAmountData)]](None)
+      breakCountTopic <- Fs3Topic[F, Option[(Player, SeichiAmountData)]]
       /*
        * NOTE:
        *

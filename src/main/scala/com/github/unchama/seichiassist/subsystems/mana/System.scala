@@ -43,7 +43,7 @@ object System {
     val manaPersistence: ManaAmountPersistence[G] = new JdbcManaAmountPersistence[G]
 
     for {
-      topic <- Fs3Topic[F, Option[(Player, LevelCappedManaAmount)]](None)
+      topic <- Fs3Topic[F, Option[(Player, LevelCappedManaAmount)]]
       globalMultiplierRef <- Ref.in[F, G, ManaMultiplier](ManaMultiplier(1))
       handles <- ContextCoercion {
         BukkitRepositoryControls.createHandles(

@@ -38,6 +38,8 @@ object System {
           persistence.get(ownerUuid, id)
         override def list(ownerUuid: UUID): F[Map[SubHomeId, SubHome]] =
           persistence.list(ownerUuid)
+        override def remove(ownerUuid: UUID, id: SubHomeId): F[Boolean] =
+          persistence.remove(ownerUuid, id)
       }
       override val commands: Map[String, TabExecutor] =
         Map("subhome" -> SubHomeCommand.executor)

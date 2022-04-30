@@ -25,10 +25,10 @@ object OnClickTitleMenu {
     player.playSound(player.getLocation, sound, 1f, pitch)
 
   private def isApplicableAsPrevPageButton(is: ItemStack): Boolean =
-    is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowLeft"
+    is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowLeft"
 
   private def isApplicableAsNextPageButton(is: ItemStack): Boolean =
-    is.getItemMeta.asInstanceOf[SkullMeta].getOwner == "MHF_ArrowRight"
+    is.getItemMeta.asInstanceOf[SkullMeta].getOwningPlayer.getName == "MHF_ArrowRight"
 
   def onPlayerClickTitleMenuEvent(event: InventoryClickEvent)(
     implicit effectEnvironment: EffectEnvironment,
@@ -143,7 +143,8 @@ object OnClickTitleMenu {
 
             val id = current.getItemMeta.getDisplayName.toInt
             val length = Nicknames
-              .getTitleFor(id, pd.settings.nickname.id2, pd.settings.nickname.id3)
+              .getCombinedNicknameFor(id, pd.settings.nickname.id2, pd.settings.nickname.id3)
+              .getOrElse("")
               .length
             if (length > MAX_LENGTH) {
               player.sendMessage(LENGTH_LIMIT_EXCEEDED)
@@ -189,7 +190,8 @@ object OnClickTitleMenu {
 
             val id = current.getItemMeta.getDisplayName.toInt
             val length = Nicknames
-              .getTitleFor(pd.settings.nickname.id1, id, pd.settings.nickname.id3)
+              .getCombinedNicknameFor(pd.settings.nickname.id1, id, pd.settings.nickname.id3)
+              .getOrElse("")
               .length
             if (length > MAX_LENGTH) {
               player.sendMessage(LENGTH_LIMIT_EXCEEDED)
@@ -233,7 +235,8 @@ object OnClickTitleMenu {
 
             val id = current.getItemMeta.getDisplayName.toInt
             val length = Nicknames
-              .getTitleFor(pd.settings.nickname.id1, pd.settings.nickname.id2, id)
+              .getCombinedNicknameFor(pd.settings.nickname.id1, pd.settings.nickname.id2, id)
+              .getOrElse("")
               .length
             if (length > MAX_LENGTH) {
               player.sendMessage(LENGTH_LIMIT_EXCEEDED)

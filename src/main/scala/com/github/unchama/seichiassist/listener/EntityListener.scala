@@ -11,7 +11,8 @@ import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNot
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.mana.domain.ManaAmount
 import com.github.unchama.seichiassist.task.GiganticBerserkTask
-import com.github.unchama.seichiassist.util.{BreakUtil, Util}
+import com.github.unchama.seichiassist.util.{BreakUtil, EnemyEntity}
+import org.bukkit.ChatColor.RED
 import org.bukkit._
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.{Player, Projectile}
@@ -59,7 +60,7 @@ class EntityListener(
     // 整地ワールドでは重力値によるキャンセル判定を行う(スキル判定より先に判定させること)
     if (BreakUtil.getGravity(player, block, isAssault = false) > 3) {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_FALL, 0.0f, -1.0f)
-      player.sendMessage(ChatColor.RED + "整地ワールドでは必ず上から掘ってください。")
+      player.sendMessage(s"${RED}整地ワールドでは必ず上から掘ってください。")
       return
     }
 
@@ -139,7 +140,7 @@ class EntityListener(
 
     // 重力値の判定
     if (gravity > 15) {
-      player.sendMessage(ChatColor.RED + "スキルを使用するには上から掘ってください。")
+      player.sendMessage(s"${RED}スキルを使用するには上から掘ってください。")
       return
     }
 
@@ -213,7 +214,7 @@ class EntityListener(
     /*GiganticBerserk用*/
     // 死んだMOBがGiganticBerserkの対象MOBでなければ終了
     val entity = event.getEntity
-    if (!Util.isEnemy(entity.getType)) return
+    if (!EnemyEntity.isEnemy(entity.getType)) return
     val player = entity.getKiller
     // MOBを倒したプレイヤーがいなければ終了
     if (player == null) return

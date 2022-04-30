@@ -1,7 +1,7 @@
 package com.github.unchama.generic.effect
 
 import cats.effect.concurrent.Deferred
-import cats.effect.{CancelToken, ContextShift, IO, Timer}
+import cats.effect.{CancelToken, ContextShift, IO}
 import com.github.unchama.testutil.concurrent.sequencer.LinkedSequencer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers
@@ -12,7 +12,6 @@ import scala.concurrent.ExecutionContext
 class ConcurrentExtraSpec extends AnyWordSpec with Matchers with MockFactory {
   "withSelfCancellationToken" should {
     implicit val shift: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-    implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
     "not interrupt execution of non-cancelling action" in {
       ConcurrentExtra.withSelfCancellation[IO, Int](_ => IO.pure(42)).unsafeRunSync() mustBe 42
