@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrize, GachaPrizeId}
@@ -23,10 +22,6 @@ object System {
         override def remove(id: GachaPrizeId): F[Boolean] = persistence.remove(id)
 
         override def list: F[Vector[GachaPrize]] = persistence.list
-
-        override def setGachaPrizesRepository(): Ref[F, GachaPrize] = ???
-
-        override def getGachaPrizesRepository: Ref[F, GachaPrize] = ???
       }
     }
   }
