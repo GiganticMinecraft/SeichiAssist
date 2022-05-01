@@ -9,6 +9,4 @@ object GachaPrizesRepositoryDefinition {
 
   case class RepositoryValue[F[_]](prizeRef: Ref[F, GachaPrize])
 
-  def withContext[G[_]]:
-
 }
