@@ -7,6 +7,7 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
+import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
@@ -34,6 +35,7 @@ object IncrementBuildExpWhenBuiltByHand {
     F,
     *[_]
   ], Player](
+    rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]],
     dataTopic: Fs3Topic[G, (Player, BuildAmountData)]
   )(
@@ -45,10 +47,11 @@ object IncrementBuildExpWhenBuiltByHand {
 
       F.ifM(ClassifyPlayerWorld[F, Player].isInBuildWorld(player))(
         for {
-          newData <-
-            dataRepository(player).updateAndGet(_.addExpAmount(by))
+          limitedNewData <- rateLimiterRepository(player).requestPermission(by)
+          incremented <-
+            dataRepository(player).updateAndGet(_.addExpAmount(limitedNewData))
           _ <- EffectExtra.runAsyncAndForget[G, F, Unit] {
-            dataTopic.publish1((player, newData)).void
+            dataTopic.publish1((player, incremented)).void
           }
         } yield (),
         F.unit
