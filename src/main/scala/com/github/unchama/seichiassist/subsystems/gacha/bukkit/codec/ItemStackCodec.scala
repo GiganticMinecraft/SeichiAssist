@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.gacha.bukkit
+package com.github.unchama.seichiassist.subsystems.gacha.bukkit.codec
 
 import com.github.unchama.seichiassist.util.BukkitSerialization
 import org.bukkit.Bukkit
