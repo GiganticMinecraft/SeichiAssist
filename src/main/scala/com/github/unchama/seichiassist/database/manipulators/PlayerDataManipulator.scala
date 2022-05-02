@@ -174,7 +174,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       val LastLong = LastDate.getTime
 
       val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-      val shouldIncrementChainVote = dateDiff <= 2L
+      val shouldIncrementChainVote = dateDiff <= 5L
 
       val newCount = if (shouldIncrementChainVote) {
         sql"""select chainvote from playerdata where name = $name"""
