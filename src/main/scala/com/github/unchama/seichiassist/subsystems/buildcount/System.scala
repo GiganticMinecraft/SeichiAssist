@@ -4,9 +4,11 @@ import cats.effect.{Clock, ConcurrentEffect, SyncEffect}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
+import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
+import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.buildcount.application.actions.{
@@ -14,13 +16,17 @@ import com.github.unchama.seichiassist.subsystems.buildcount.application.actions
   IncrementBuildExpWhenBuiltByHand,
   IncrementBuildExpWhenBuiltWithSkill
 }
-import com.github.unchama.seichiassist.subsystems.buildcount.application.application.BuildAmountDataRepositoryDefinition
+import com.github.unchama.seichiassist.subsystems.buildcount.application.application.{
+  BuildAmountDataRepositoryDefinition,
+  RateLimiterRepositoryDefinitions
+}
 import com.github.unchama.seichiassist.subsystems.buildcount.application.{
   BuildExpMultiplier,
   Configuration
 }
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.actions.ClassifyBukkitPlayerWorld
 import com.github.unchama.seichiassist.subsystems.buildcount.bukkit.listeners.BuildExpIncrementer
+import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
 import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{
   JdbcBuildAmountDataPersistence,
@@ -30,6 +36,8 @@ import io.chrisdavenport.cats.effect.time.JavaTime
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
+
+import java.util.UUID
 
 trait System[F[_], G[_]] extends Subsystem[F] {
 
@@ -58,6 +66,18 @@ object System {
 
     val createSystem: F[System[F, G]] = for {
       buildCountTopic <- Fs3Topic[F, (Player, BuildAmountData)]
+      rateLimiterRepositoryControls <-
+        ContextCoercion(
+          BukkitRepositoryControls.createHandles(
+            RepositoryDefinition
+              .Phased
+              .SinglePhased
+              .withoutTappingAction[G, Player, RateLimiter[G, BuildExpAmount]](
+                RateLimiterRepositoryDefinitions.initialization[G],
+                RateLimiterRepositoryDefinitions.finalization[G, UUID]
+              )
+          )
+        )
 
       buildAmountDataRepositoryControls <-
         ContextCoercion(
@@ -71,6 +91,7 @@ object System {
         new ClassifyBukkitPlayerWorld[G]
       implicit val incrementBuildExp: IncrementBuildExpWhenBuiltByHand[G, Player] =
         IncrementBuildExpWhenBuiltByHand.using(
+          rateLimiterRepositoryControls.repository,
           buildAmountDataRepositoryControls.repository,
           buildCountTopic
         )
