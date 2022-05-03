@@ -32,12 +32,12 @@ object System {
 
     new System[F] {
       override implicit val api: GachaAPI[F] = new GachaAPI[F] {
-        override def upsert(gachaPrize: GachaPrize): F[Unit] =
-          gachaPersistence.upsert(gachaPrize)
+        override def upsert(gachaPrize: GachaPrize[F]): F[Unit] =
+          gachaPersistence.upsert(gachaPrize[F])
 
         override def remove(id: GachaPrizeId): F[Boolean] = gachaPersistence.remove(id)
 
-        override def list: F[Vector[GachaPrize]] = gachaPersistence.list
+        override def list: F[Vector[GachaPrize[F]]] = gachaPersistence.list
       }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor

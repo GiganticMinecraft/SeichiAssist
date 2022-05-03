@@ -6,8 +6,10 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
+import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPersistence,
+  GachaPrizeId,
   GachaPrizesDataOperations
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
@@ -112,6 +114,17 @@ class GachaCommand[F[_]: NonServerThreadContextShift: Sync: ConcurrentEffect](
         }
       }
       .build()
+
+    val giveItem: ContextualExecutor =
+      playerCommandBuilder
+        .argumentsParsers(
+          List(Parsers.integer(MessageEffect("IDは整数値で指定してください。")), Parsers.identity)
+        )
+        .execution { context =>
+          gachaPrizesDataOperations.getGachaPrize(
+            GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
+          )
+        }
 
   }
 
