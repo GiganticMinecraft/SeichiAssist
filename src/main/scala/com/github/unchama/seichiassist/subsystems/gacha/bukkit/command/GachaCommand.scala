@@ -3,12 +3,13 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 import cats.effect.{IO, SyncIO}
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
-import com.github.unchama.contextualexecutor.executors.EchoExecutor
+import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
+import org.bukkit.command.TabExecutor
 
 import java.util.UUID
 
@@ -61,6 +62,9 @@ class GachaCommand[F[_]](
       )
     )
   )
+
+  val executor: TabExecutor =
+    BranchedExecutor(Map("give" -> ChildExecutors.giveGachaTickets)).asNonBlockingTabExecutor()
 
   object ChildExecutors {
 
