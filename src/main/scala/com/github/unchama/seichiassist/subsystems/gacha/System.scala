@@ -24,7 +24,9 @@ object System {
     implicit syncUuidRepository: UuidRepository[SyncIO]
   ): System[F] = {
     val gachaPersistence = new JdbcGachaPersistence[F]()
-    new GachaPrizesDataOperations[F].loadGachaPrizes(gachaPersistence)
+    implicit val gachaPrizesDataOperations: GachaPrizesDataOperations[F] =
+      new GachaPrizesDataOperations[F]
+    gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence)
     implicit val gachaTicketPersistence: JdbcGachaTicketPersistence[F] =
       new JdbcGachaTicketPersistence[F]
 

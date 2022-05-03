@@ -577,7 +577,6 @@ class SeichiAssist extends JavaPlugin() {
 
     // コマンドの登録
     Map(
-      // "gacha" -> new GachaCommand(),
       "vote" -> VoteCommand.executor,
       "donation" -> new DonationCommand,
       "map" -> MapCommand.executor,

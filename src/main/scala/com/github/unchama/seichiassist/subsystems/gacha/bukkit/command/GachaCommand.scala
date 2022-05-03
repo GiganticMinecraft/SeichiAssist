@@ -6,6 +6,10 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  GachaPersistence,
+  GachaPrizesDataOperations
+}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -16,6 +20,7 @@ import java.util.UUID
 
 class GachaCommand[F[_]: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketPersistence[F],
+  gachaPrizesDataOperations: GachaPrizesDataOperations[F],
   syncUuidRepository: UuidRepository[SyncIO]
 ) {
 
@@ -65,7 +70,11 @@ class GachaCommand[F[_]: NonServerThreadContextShift: Sync: ConcurrentEffect](
   )
 
   val executor: TabExecutor =
-    BranchedExecutor(Map("give" -> ChildExecutors.giveGachaTickets)).asNonBlockingTabExecutor()
+    BranchedExecutor(
+      Map("give" -> ChildExecutors.giveGachaTickets),
+      whenBranchNotFound = Some(printDescriptionExecutor),
+      whenArgInsufficient = Some(printDescriptionExecutor)
+    ).asNonBlockingTabExecutor()
 
   object ChildExecutors {
 
