@@ -1,19 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 
-import cats.effect.{IO, SyncIO}
+import cats.data.Kleisli
+import cats.effect.{ConcurrentEffect, Sync, SyncIO}
+import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
-import com.github.unchama.targetedeffect.commandsender.MessageEffect
-import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
 import java.util.UUID
 
-class GachaCommand[F[_]](
+class GachaCommand[F[_]: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketPersistence[F],
   syncUuidRepository: UuidRepository[SyncIO]
 ) {
@@ -79,7 +80,7 @@ class GachaCommand[F[_]](
                 case _ =>
                   val uuid = syncUuidRepository.getUuid(value).unsafeRunSync()
                   if (uuid.nonEmpty)
-                    Some(uuid.toString)
+                    uuid.flatMap(uuid => Some(uuid.toString))
                   else None
               },
             MessageEffect("指定されたプレイヤー名が見つかりませんでした。")
@@ -87,24 +88,18 @@ class GachaCommand[F[_]](
           Parsers.closedRangeInt(1, Int.MaxValue, MessageEffect("配布するガチャ券の枚数は正の値を指定してください。"))
         )
       )
-      .execution { context =>
-        IO {
-          val args = context.args.parsed
-          val amount = args(1).asInstanceOf[Int]
-          if (args.head.toString == "all") {
-            SequentialEffect(
-              UnfocusedEffect {
-                gachaTicketPersistence.add(amount)
-              },
-              MessageEffect(s"全プレイヤーへ${GREEN}ガチャ券${amount}枚加算成功")
-            )
-          } else {
-            // Parserによりallじゃなかった場合はUUIDであることが確定している
-            UnfocusedEffect {
-              gachaTicketPersistence.add(amount, UUID.fromString(args(1).toString))
-            }
-            MessageEffect(s"${GREEN}ガチャ券${amount}枚加算成功")
-          }
+      .executionCSEffect { context =>
+        val args = context.args.parsed
+        val amount = args(1).asInstanceOf[Int]
+        if (args.head.toString == "all") {
+          Kleisli
+            .liftF(gachaTicketPersistence.add(amount))
+            .flatMap(_ => MessageEffectF(s"${GREEN}全プレイヤーへガチャ券${amount}枚加算成功"))
+        } else {
+          // Parserによりallじゃなかった場合はUUIDであることが確定している
+          Kleisli
+            .liftF(gachaTicketPersistence.add(amount, UUID.fromString(args.head.toString)))
+            .flatMap(_ => MessageEffectF(s"${GREEN}ガチャ券${amount}枚加算成功"))
         }
       }
       .build()

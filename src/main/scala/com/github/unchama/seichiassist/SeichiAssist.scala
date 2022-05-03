@@ -376,6 +376,12 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
+  private lazy val gachaSystem: Subsystem[IO] = {
+    implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
+      JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
+    subsystems.gacha.System.wired
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -395,7 +401,8 @@ class SeichiAssist extends JavaPlugin() {
     discordNotificationSystem,
     subhomeSystem,
     presentSystem,
-    anywhereEnderSystem
+    anywhereEnderSystem,
+    gachaSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -570,7 +577,7 @@ class SeichiAssist extends JavaPlugin() {
 
     // コマンドの登録
     Map(
-      "gacha" -> new GachaCommand(),
+      // "gacha" -> new GachaCommand(),
       "vote" -> VoteCommand.executor,
       "donation" -> new DonationCommand,
       "map" -> MapCommand.executor,

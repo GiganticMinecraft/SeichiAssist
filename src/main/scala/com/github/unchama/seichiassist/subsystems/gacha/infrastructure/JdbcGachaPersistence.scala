@@ -64,7 +64,9 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
    */
   override def remove(id: GachaPrizeId): F[Boolean] = {
     NonServerThreadContextShift[F].shift >> Sync[F].delay {
-      DB.localTx { implicit session => sql"delete from gachadata id = $id".execute().apply() }
+      DB.localTx { implicit session =>
+        sql"delete from gachadata where id = $id".execute().apply()
+      }
     }
   }
 }
