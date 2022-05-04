@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.gacha.infrastructure
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.Wrapper.ItemStackStringWrapper
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.codec.ItemStackCodec
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPersistence,
   GachaPrize,
