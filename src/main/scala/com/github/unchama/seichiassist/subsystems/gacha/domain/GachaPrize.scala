@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain
 
-import org.bukkit.inventory.ItemStack
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.Wrapper.ItemStackStringWrapper
 
 /**
  * @param itemStack ガチャで排出されるアイテム。数もそのまま利用されます
@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
  * @param isAppendOwner 記名する場合はtrueにしてください
  */
 case class GachaPrize(
-  itemStack: ItemStack,
+  itemStack: ItemStackStringWrapper,
   probability: Double,
   isAppendOwner: Boolean,
   id: GachaPrizeId

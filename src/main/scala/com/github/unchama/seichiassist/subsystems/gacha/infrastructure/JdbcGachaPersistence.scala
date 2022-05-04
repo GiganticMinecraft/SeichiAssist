@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.infrastructure
 
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.Wrapper.ItemStackStringWrapper
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.codec.ItemStackCodec
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPersistence,
@@ -23,11 +24,14 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
       DB.localTx { implicit session =>
         sql"select * from gachadata"
           .map { rs =>
-            val itemStack = ItemStackCodec.fromString(rs.string("itemstack"))
             val probability = rs.double("probability")
-            itemStack.setAmount(rs.int("amount"))
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
-            GachaPrize(itemStack, probability, probability < 0.1, GachaPrizeId(rs.int("id")))
+            GachaPrize(
+              ItemStackStringWrapper(rs.string("itemstack"), rs.int("amount")),
+              probability,
+              probability < 0.1,
+              GachaPrizeId(rs.int("id"))
+            )
           }
           .toList()
           .apply()
@@ -45,16 +49,13 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
       DB.localTx { implicit session =>
         sql"""insert into gachadata 
              |  (id,amount,probability,itemstack)
-             |  values (${gachaPrize.id.id},${gachaPrize.itemStack.getAmount},
+             |  values (${gachaPrize.id.id},${gachaPrize.itemStack.amount},
              |  ${gachaPrize.probability},${gachaPrize.itemStack},
-             |  ${ItemStackCodec.fromBukkitItemStack(gachaPrize.itemStack)})
+             |  ${gachaPrize.itemStack.itemStack})
              |  on duplicate key update 
-             |  amount = ${gachaPrize.itemStack.getAmount},
+             |  amount = ${gachaPrize.itemStack.amount},
              |  probability = ${gachaPrize.probability},
-             |  itemstack = ${ItemStackCodec.fromBukkitItemStack(gachaPrize.itemStack)}"""
-          .stripMargin
-          .execute()
-          .apply()
+             |  itemstack = ${gachaPrize.itemStack}""".stripMargin.execute().apply()
       }
     }
   }
