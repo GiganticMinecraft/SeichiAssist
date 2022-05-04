@@ -114,9 +114,10 @@ object System {
             buildCountTopic.subscribe(1)
         }
 
-        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] = Seq(
-          buildAmountDataRepositoryControls.coerceFinalizationContextTo[F]
-        )
+        override val managedRepositoryControls: Seq[BukkitRepositoryControls[F, _]] =
+          List(rateLimiterRepositoryControls, buildAmountDataRepositoryControls).map(
+            _.coerceFinalizationContextTo[F]
+          )
 
         override val listeners: Seq[Listener] = List(new BuildExpIncrementer[G])
       }
