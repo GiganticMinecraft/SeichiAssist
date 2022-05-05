@@ -2,17 +2,23 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import com.github.unchama.concurrent.NonServerThreadContextShift
+import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 
-final class GachaPrizesDataOperations[F[_]: Sync] {
+final class GachaPrizesDataOperations[F[_]: Sync: NonServerThreadContextShift] {
 
   import cats.implicits._
 
   private val gachaPrizes: Ref[F, Vector[GachaPrize]] =
     Ref.unsafe[F, Vector[GachaPrize]](Vector.empty)
 
-  def loadGachaPrizes(gachaPersistence: GachaPersistence[F]): F[Unit] = for {
-    prizes <- gachaPersistence.list
-  } yield gachaPrizes.set(prizes)
+  def loadGachaPrizes(gachaPersistence: GachaPersistence[F]): F[Unit] = {
+    println("呼ばれた")
+    for {
+      prizes <- gachaPersistence.list
+      _ <- gachaPrizes.set(prizes)
+    } yield ()
+  }
 
   def addGachaPrize(gachaPrize: GachaPrize): F[Unit] = for {
     prizes <- gachaPrizes.get
@@ -20,7 +26,7 @@ final class GachaPrizesDataOperations[F[_]: Sync] {
     gachaPrizes.set(prizes ++ Vector(gachaPrize))
   }
 
-  def getGachaPrize(gachaPrizeId: GachaPrizeId): F[GachaPrize] = for {
+  def getGachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize]] = for {
     prizes <- gachaPrizes.get
   } yield prizes.find(_.id == gachaPrizeId)
 

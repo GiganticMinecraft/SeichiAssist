@@ -207,7 +207,7 @@ class PlayerClickListener(
       val givenItem = {
         val base = present.itemStack
 
-        if (probabilityOfItem < 0.1) ItemStackUtil.appendOwnerInformation(player)(base)
+        if (probabilityOfItem < 0.1) ItemStackUtil.appendOwnerInformation(player.getName)(base)
         else base
       }
 

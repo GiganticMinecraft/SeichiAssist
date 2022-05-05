@@ -46,14 +46,14 @@ object ItemStackUtil {
   /**
    * `owner` のloreが追加されたような新たな `ItemStack` を作成する
    */
-  def appendOwnerInformation(owner: Player)(itemStack: ItemStack): ItemStack = {
+  def appendOwnerInformation(ownerName: String)(itemStack: ItemStack): ItemStack = {
     import scala.jdk.CollectionConverters._
 
     modifyMeta { m =>
       import m._
       setLore {
         val originalLore = if (itemStack.getItemMeta.hasLore) getLore.asScala else Nil
-        val appended = originalLore ++ List(s"$RESET${DARK_GREEN}所有者：${owner.getName}")
+        val appended = originalLore ++ List(s"$RESET${DARK_GREEN}所有者：${ownerName}")
 
         appended.asJava
       }

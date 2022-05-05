@@ -1,12 +1,13 @@
-package com.github.unchama.seichiassist.subsystems.gacha.infrastructure
+package com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit
 
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.Wrapper.ItemStackStringWrapper
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.codec.ItemStackCodec
+import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPersistence,
-  GachaPrize,
-  GachaPrizeId
+  GachaPrizeId,
+  bukkit
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
@@ -19,14 +20,16 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
    * ガチャアイテムとして登録されているアイテムリストをGachaPrizeのVectorとして返します。
    */
   override def list: F[Vector[GachaPrize]] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
+    Sync[F].delay {
       DB.localTx { implicit session =>
         sql"select * from gachadata"
           .map { rs =>
             val probability = rs.double("probability")
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
-            GachaPrize(
-              ItemStackStringWrapper(rs.string("itemstack"), rs.int("amount")),
+            val itemStack = ItemStackCodec.fromString(rs.string("itemstack"))
+            itemStack.setAmount(rs.int("amount"))
+            bukkit.GachaPrize(
+              itemStack,
               probability,
               probability < 0.1,
               GachaPrizeId(rs.int("id"))
@@ -48,11 +51,11 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
       DB.localTx { implicit session =>
         sql"""insert into gachadata 
              |  (id,amount,probability,itemstack)
-             |  values (${gachaPrize.id.id},${gachaPrize.itemStack.amount},
+             |  values (${gachaPrize.id.id},${gachaPrize.itemStack.getAmount},
              |  ${gachaPrize.probability},${gachaPrize.itemStack},
-             |  ${gachaPrize.itemStack.itemStack})
+             |  ${ItemStackCodec.toString(gachaPrize.itemStack)})
              |  on duplicate key update 
-             |  amount = ${gachaPrize.itemStack.amount},
+             |  amount = ${gachaPrize.itemStack.getAmount},
              |  probability = ${gachaPrize.probability},
              |  itemstack = ${gachaPrize.itemStack}""".stripMargin.execute().apply()
       }

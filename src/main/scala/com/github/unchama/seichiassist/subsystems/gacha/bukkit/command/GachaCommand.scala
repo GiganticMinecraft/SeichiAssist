@@ -1,25 +1,32 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 
 import cats.data.Kleisli
-import cats.effect.{ConcurrentEffect, Sync, SyncIO}
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizeId,
   GachaPrizesDataOperations
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
+import com.github.unchama.seichiassist.util.InventoryOperations
+import com.github.unchama.targetedeffect.SequentialEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
 
 import java.util.UUID
 
-class GachaCommand[F[_]: NonServerThreadContextShift: Sync: ConcurrentEffect](
+class GachaCommand[F[
+  _
+]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketPersistence[F],
   gachaPrizesDataOperations: GachaPrizesDataOperations[F],
   syncUuidRepository: UuidRepository[SyncIO]
@@ -72,7 +79,7 @@ class GachaCommand[F[_]: NonServerThreadContextShift: Sync: ConcurrentEffect](
 
   val executor: TabExecutor =
     BranchedExecutor(
-      Map("give" -> ChildExecutors.giveGachaTickets),
+      Map("give" -> ChildExecutors.giveGachaTickets, "get" -> ChildExecutors.giveItem),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
@@ -116,14 +123,28 @@ class GachaCommand[F[_]: NonServerThreadContextShift: Sync: ConcurrentEffect](
 
     val giveItem: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(
-          List(Parsers.integer(MessageEffect("IDは整数値で指定してください。")), Parsers.identity)
-        )
+        .argumentsParsers(List(Parsers.integer(MessageEffect("IDは整数値で指定してください。"))))
         .execution { context =>
-          gachaPrizesDataOperations.getGachaPrize(
-            GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
-          )
+          import cats.implicits._
+
+          println(context.args.yetToBeParsed.mkString(";"))
+          val eff = for {
+            gachaPrize <- gachaPrizesDataOperations.getGachaPrize(
+              GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
+            )
+            fItemStack <-
+              gachaPrize
+                .get
+                .getGiveItemStack(
+                  if (context.args.yetToBeParsed.size == 1)
+                    Some(context.args.yetToBeParsed.head)
+                  else None
+                )
+          } yield SequentialEffect(InventoryOperations.grantItemStacksEffect[IO](fItemStack))
+
+          eff.toIO
         }
+        .build()
 
   }
 
