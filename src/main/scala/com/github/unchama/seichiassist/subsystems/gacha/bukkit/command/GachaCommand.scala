@@ -1,10 +1,12 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 
+import cats.Monad
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
+import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -31,6 +33,8 @@ class GachaCommand[F[
   gachaPrizesDataOperations: GachaPrizesDataOperations[F],
   syncUuidRepository: UuidRepository[SyncIO]
 ) {
+
+  import cats.implicits._
 
   private val printDescriptionExecutor = EchoExecutor(
     MessageEffect(
@@ -123,11 +127,26 @@ class GachaCommand[F[
 
     val giveItem: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(List(Parsers.integer(MessageEffect("IDは整数値で指定してください。"))))
+        .argumentsParsers(
+          List(
+            Parsers
+              .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
+              .andThen(_.flatMap { id =>
+                val intId = id.asInstanceOf[Int]
+                if (
+                  gachaPrizesDataOperations
+                    .gachaPrizeExists(GachaPrizeId(intId))
+                    .toIO
+                    .unsafeRunSync()
+                ) {
+                  succeedWith(intId)
+                } else {
+                  failWith("指定されたIDのアイテムは存在しません！")
+                }
+              })
+          )
+        )
         .execution { context =>
-          import cats.implicits._
-
-          println(context.args.yetToBeParsed.mkString(";"))
           val eff = for {
             gachaPrize <- gachaPrizesDataOperations.getGachaPrize(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])

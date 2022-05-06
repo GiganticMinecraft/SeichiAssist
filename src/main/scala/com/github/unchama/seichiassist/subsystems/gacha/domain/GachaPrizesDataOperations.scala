@@ -12,13 +12,14 @@ final class GachaPrizesDataOperations[F[_]: Sync: NonServerThreadContextShift] {
   private val gachaPrizes: Ref[F, Vector[GachaPrize]] =
     Ref.unsafe[F, Vector[GachaPrize]](Vector.empty)
 
-  def loadGachaPrizes(gachaPersistence: GachaPersistence[F]): F[Unit] = {
-    println("呼ばれた")
-    for {
-      prizes <- gachaPersistence.list
-      _ <- gachaPrizes.set(prizes)
-    } yield ()
-  }
+  def loadGachaPrizes(gachaPersistence: GachaPersistence[F]): F[Unit] = for {
+    prizes <- gachaPersistence.list
+    _ <- gachaPrizes.set(prizes)
+  } yield ()
+
+  def gachaPrizeExists(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
+    gachaPrizes <- gachaPrizes.get
+  } yield gachaPrizes.exists(_.id == gachaPrizeId)
 
   def addGachaPrize(gachaPrize: GachaPrize): F[Unit] = for {
     prizes <- gachaPrizes.get
