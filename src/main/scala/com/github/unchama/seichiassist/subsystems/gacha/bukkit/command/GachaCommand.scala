@@ -211,7 +211,13 @@ class GachaCommand[F[
                   .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
             }.toList
 
-            MessageEffect(List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation)
+            val totalProbability = gachaPrizes.map(_.probability).sum
+            MessageEffect(
+              List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation ++ List(
+                s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
+                s"${RED}合計確率は100%以内に収まるようにしてください。"
+              )
+            )
           }
 
           eff.toIO
