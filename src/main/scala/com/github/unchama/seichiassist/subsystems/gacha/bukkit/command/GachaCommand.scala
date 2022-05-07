@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 
+import cats.Monad
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
@@ -84,7 +85,13 @@ class GachaCommand[F[
   val executor: TabExecutor = {
     import ChildExecutors._
     BranchedExecutor(
-      Map("give" -> giveGachaTickets, "get" -> giveItem, "add" -> add, "list" -> list),
+      Map(
+        "give" -> giveGachaTickets,
+        "get" -> giveItem,
+        "add" -> add,
+        "remove" -> remove,
+        "list" -> list
+      ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
@@ -223,6 +230,41 @@ class GachaCommand[F[
           eff.toIO
         }
         .build()
+
+    val remove: ContextualExecutor = ContextualExecutorBuilder
+      .beginConfiguration()
+      .argumentsParsers(
+        List(
+          Parsers
+            .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を入力してください"))
+            .andThen(_.flatMap { id =>
+              val intId = id.asInstanceOf[Int]
+              if (
+                gachaPrizesDataOperations
+                  .gachaPrizeExists(GachaPrizeId(intId))
+                  .toIO
+                  .unsafeRunSync()
+              ) {
+                succeedWith(intId)
+              } else {
+                failWith("存在しないガチャIDです。")
+              }
+            })
+        )
+      )
+      .execution { context =>
+        val eff = for {
+          _ <- gachaPrizesDataOperations.removeByGachaPrizeId(
+            GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
+          )
+        } yield MessageEffect(
+          List("ガチャアイテムを削除しました", "ガチャアイテム削除を永続保存するためには/gacha saveを実行してください。")
+        )
+
+        eff.toIO
+
+      }
+      .build()
 
   }
 
