@@ -21,10 +21,10 @@ final class GachaPrizesDataOperations[F[_]: Sync: NonServerThreadContextShift] {
     gachaPrizes <- gachaPrizes.get
   } yield gachaPrizes.exists(_.id == gachaPrizeId)
 
-  def addGachaPrize(gachaPrize: GachaPrize): F[Unit] = for {
+  def addGachaPrize(gachaPrize: GachaPrizeId => GachaPrize): F[Unit] = for {
     prizes <- gachaPrizes.get
   } yield {
-    gachaPrizes.set(prizes ++ Vector(gachaPrize))
+    gachaPrizes.set(prizes ++ Vector(gachaPrize(GachaPrizeId(prizes.size))))
   }
 
   def getGachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize]] = for {

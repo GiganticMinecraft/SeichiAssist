@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 import cats.Monad
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
+import cats.effect.{ConcurrentEffect, Effect, IO, Sync, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
@@ -12,6 +12,7 @@ import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoEx
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizeId,
   GachaPrizesDataOperations
@@ -83,7 +84,11 @@ class GachaCommand[F[
 
   val executor: TabExecutor =
     BranchedExecutor(
-      Map("give" -> ChildExecutors.giveGachaTickets, "get" -> ChildExecutors.giveItem),
+      Map(
+        "give" -> ChildExecutors.giveGachaTickets,
+        "get" -> ChildExecutors.giveItem,
+        "add" -> ChildExecutors.add
+      ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
@@ -160,6 +165,37 @@ class GachaCommand[F[
                   else None
                 )
           } yield SequentialEffect(InventoryOperations.grantItemStacksEffect[IO](fItemStack))
+
+          eff.toIO
+        }
+        .build()
+
+    val add: ContextualExecutor =
+      playerCommandBuilder
+        .argumentsParsers(List(Parsers.double(MessageEffect("確率は小数点数で指定してください。")).andThen {
+          _.flatMap { num =>
+            val doubleNum = num.asInstanceOf[Double]
+            if (doubleNum <= 1.0 && doubleNum >= 0.0) {
+              succeedWith(doubleNum)
+            } else {
+              failWith("確率は正の数かつ1.0以下で指定してください。")
+            }
+          }
+        }))
+        .execution { context =>
+          val player = context.sender
+          val probability = context.args.parsed.head.asInstanceOf[Double]
+          val mainHandItem = player.getInventory.getItemInMainHand
+          // TODO: ガチャアイテムに対して記名するかどうかを確率に依存すべきではないが、
+          //  現在の仕様に合わせるためにこうしている
+          //  変更する場合はガチャデータロード時の処理も修正する必要がある。
+          val eff = for {
+            _ <- gachaPrizesDataOperations.addGachaPrize(
+              GachaPrize(mainHandItem, probability, probability < 0.1, _)
+            )
+          } yield MessageEffect(
+            List("ガチャアイテムを追加しました！", "ガチャアイテムを永続保存させるためには/gacha saveを実行してください。")
+          )
 
           eff.toIO
         }
