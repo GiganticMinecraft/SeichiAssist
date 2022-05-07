@@ -19,7 +19,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.SequentialEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
@@ -183,9 +183,6 @@ class GachaCommand[F[
           val player = context.sender
           val probability = context.args.parsed.head.asInstanceOf[Double]
           val mainHandItem = player.getInventory.getItemInMainHand
-          // TODO: ガチャアイテムに対して記名するかどうかを確率に依存すべきではないが、
-          //  現在の仕様に合わせるためにこうしている
-          //  変更する場合はガチャデータロード時の処理も修正する必要がある。
           val eff = for {
             _ <- gachaPrizesDataOperations.addGachaPrize(
               GachaPrize(mainHandItem, probability, probability < 0.1, _)
@@ -205,14 +202,16 @@ class GachaCommand[F[
           val eff = for {
             gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
           } yield {
-            MessageEffect(gachaPrizes.map { gachaPrize =>
+            val gachaPrizeInformation = gachaPrizes.map { gachaPrize =>
               val itemStack = gachaPrize.itemStack
               val probability = gachaPrize.probability
 
               s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack
                   .getItemMeta
                   .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
-            }.toList)
+            }.toList
+
+            MessageEffect(List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation)
           }
 
           eff.toIO
