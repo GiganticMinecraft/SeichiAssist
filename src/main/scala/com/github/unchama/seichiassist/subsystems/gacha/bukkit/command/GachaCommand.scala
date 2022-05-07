@@ -1,9 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 
-import cats.Monad
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, Effect, IO, Sync, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
@@ -82,16 +81,14 @@ class GachaCommand[F[
     )
   )
 
-  val executor: TabExecutor =
+  val executor: TabExecutor = {
+    import ChildExecutors._
     BranchedExecutor(
-      Map(
-        "give" -> ChildExecutors.giveGachaTickets,
-        "get" -> ChildExecutors.giveItem,
-        "add" -> ChildExecutors.add
-      ),
+      Map("give" -> giveGachaTickets, "get" -> giveItem, "add" -> add, "list" -> list),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
     ).asNonBlockingTabExecutor()
+  }
 
   object ChildExecutors {
 
@@ -196,6 +193,27 @@ class GachaCommand[F[
           } yield MessageEffect(
             List("ガチャアイテムを追加しました！", "ガチャアイテムを永続保存させるためには/gacha saveを実行してください。")
           )
+
+          eff.toIO
+        }
+        .build()
+
+    val list: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .execution { _ =>
+          val eff = for {
+            gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
+          } yield {
+            MessageEffect(gachaPrizes.map { gachaPrize =>
+              val itemStack = gachaPrize.itemStack
+              val probability = gachaPrize.probability
+
+              s"${gachaPrize.id}|${itemStack.getType.toString}/${itemStack
+                  .getItemMeta
+                  .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
+            }.toList)
+          }
 
           eff.toIO
         }

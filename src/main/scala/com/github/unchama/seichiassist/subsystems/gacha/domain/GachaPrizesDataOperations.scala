@@ -41,4 +41,6 @@ final class GachaPrizesDataOperations[F[_]: Sync: NonServerThreadContextShift] {
     } else false
   }
 
+  def getGachaPrizesList: F[Vector[GachaPrize]] = gachaPrizes.get
+
 }
