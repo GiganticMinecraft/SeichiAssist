@@ -209,7 +209,7 @@ class GachaCommand[F[
               val itemStack = gachaPrize.itemStack
               val probability = gachaPrize.probability
 
-              s"${gachaPrize.id}|${itemStack.getType.toString}/${itemStack
+              s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack
                   .getItemMeta
                   .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
             }.toList)
