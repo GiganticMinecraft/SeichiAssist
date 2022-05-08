@@ -94,7 +94,8 @@ class GachaCommand[F[
         "setamount" -> setamount,
         "setprob" -> setprob,
         "clear" -> clear,
-        "save" -> save
+        "save" -> save,
+        "reload" -> reload
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -335,6 +336,17 @@ class GachaCommand[F[
           eff.toIO
         }
         .build()
+
+    val reload: ContextualExecutor = ContextualExecutorBuilder
+      .beginConfiguration()
+      .execution { _ =>
+        val eff = for {
+          _ <- gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence)
+        } yield MessageEffect("ガチャデータをmysqlから読み込みました。")
+
+        eff.toIO
+      }
+      .build()
 
   }
 
