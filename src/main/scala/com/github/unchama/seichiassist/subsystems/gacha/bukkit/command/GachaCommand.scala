@@ -13,6 +13,7 @@ import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTempla
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
+  GachaPersistence,
   GachaPrizeId,
   GachaPrizesDataOperations
 }
@@ -31,6 +32,7 @@ class GachaCommand[F[
   _
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketPersistence[F],
+  gachaPersistence: GachaPersistence[F],
   gachaPrizesDataOperations: GachaPrizesDataOperations[F],
   syncUuidRepository: UuidRepository[SyncIO]
 ) {
@@ -64,8 +66,6 @@ class GachaCommand[F[
         "リスト該当番号のガチャ景品の個数変更。64まで",
         s"$RED/gacha setprob <番号> <確率>",
         "リスト該当番号のガチャ景品の確率変更",
-        s"$RED/gacha move <番号> <移動先番号>",
-        "リスト該当番号のガチャ景品の並び替えを行う",
         s"$RED/gacha clear",
         "ガチャリストを全消去する。取扱注意",
         s"$RED/gacha save",
@@ -93,7 +93,8 @@ class GachaCommand[F[
         "list" -> list,
         "setamount" -> setamount,
         "setprob" -> setprob,
-        "clear" -> clear
+        "clear" -> clear,
+        "save" -> save
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -319,6 +320,19 @@ class GachaCommand[F[
           )
           eff.toIO
 
+        }
+        .build()
+
+    val save: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .execution { _ =>
+          val eff = for {
+            gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
+            _ <- gachaPersistence.update(gachaPrizes)
+          } yield MessageEffect("ガチャデータをmysqlに保存しました。")
+
+          eff.toIO
         }
         .build()
 
