@@ -100,7 +100,9 @@ class GachaCommand[F[
         "reload" -> reload,
         "demo" -> demo,
         "addms" -> addms,
-        "addms2" -> addms2
+        "addms2" -> addms2,
+        "listms" -> listms,
+        "removems" -> removems
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -460,6 +462,31 @@ class GachaCommand[F[
             MessageEffect(
               List(s"${RED}アイテム番号|レベル|変数名|アイテム名|アイテム数|出現確率") ++ gachaDataListInformation
             )
+          }
+        }
+        .build()
+
+    val removems: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .execution { _ =>
+          IO {
+            if (SeichiAssist.msgachadatalist.isEmpty) {
+              MessageEffect("MineStack用ガチャリストが空です。")
+            } else {
+              val size = SeichiAssist.msgachadatalist.size
+              val mineStackGachaData = SeichiAssist.msgachadatalist(size - 1)
+              SeichiAssist.msgachadatalist.remove(size - 1)
+              MessageEffect(
+                List(
+                  s"$size|${mineStackGachaData.level}|${mineStackGachaData.objName}|${mineStackGachaData.itemStack.getType.toString}/${mineStackGachaData
+                      .itemStack
+                      .getItemMeta
+                      .getDisplayName}$RESET|${mineStackGachaData.itemStack.getAmount}|${mineStackGachaData.probability}を削除しました。",
+                  "/gacha savemsでmysqlに保存してください。"
+                )
+              )
+            }
           }
         }
         .build()
