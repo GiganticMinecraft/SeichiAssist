@@ -390,6 +390,10 @@ class GachaCommand[F[
       }
       .build()
 
+    // TODO: ここから下のコマンドの実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
+    //  そのため、MineStackシステムがsubsystemsに含まれるときが来たら書き換えることが望ましい。
+    //  というかそもそもこの実装はMineStack側で行われるべきであるかもしれない。
+
     val addms: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration()
       .argumentsParsers(List(Parsers.identity, gachaPrizeIdExistsParser))
@@ -400,9 +404,6 @@ class GachaCommand[F[
             GachaPrizeId(args(1).asInstanceOf[Int])
           )
         } yield {
-          // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
-          //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
-          //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
           val _gachaPrize = gachaPrize.get // ParserによりGachaPrizeの存在は確認されている
           val mineStackGachaData = new MineStackGachaData(
             args.head.toString,
@@ -423,9 +424,6 @@ class GachaCommand[F[
       }
       .build()
 
-    // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
-    //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
-    //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
     val addms2: ContextualExecutor =
       playerCommandBuilder
         .argumentsParsers(List(probParser, Parsers.identity))
@@ -447,9 +445,6 @@ class GachaCommand[F[
         }
         .build()
 
-    // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
-    //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
-    //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
     val listms: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration()
@@ -468,9 +463,6 @@ class GachaCommand[F[
         }
         .build()
 
-    // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
-    //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
-    //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
     val removems: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration()
@@ -496,9 +488,6 @@ class GachaCommand[F[
         }
         .build()
 
-    // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
-    //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
-    //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
     val savems: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration()
