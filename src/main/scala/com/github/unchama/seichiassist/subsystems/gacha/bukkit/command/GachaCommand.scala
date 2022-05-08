@@ -9,8 +9,10 @@ import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, s
 import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder, Parsers}
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPersistence,
@@ -95,7 +97,9 @@ class GachaCommand[F[
         "setprob" -> setprob,
         "clear" -> clear,
         "save" -> save,
-        "reload" -> reload
+        "reload" -> reload,
+        "demo" -> demo,
+        "addms" -> addms
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -348,6 +352,70 @@ class GachaCommand[F[
       }
       .build()
 
+    val demo: ContextualExecutor = ContextualExecutorBuilder
+      .beginConfiguration()
+      .argumentsParsers(
+        List(Parsers.closedRangeInt(1, 1000000, MessageEffect("試行回数は1～100万回までで指定してください。")))
+      )
+      .execution { context =>
+        val numberOfTimes = context.args.parsed.head.asInstanceOf[Int]
+        var gigantic = 0
+        var big = 0
+        var regular = 0
+        var potato = 0
+        (0 to numberOfTimes).foreach { _ =>
+          val rand = Math.random()
+          if (rand < 0.001) gigantic += 1
+          else if (rand < 0.01) big += 1
+          else if (rand < 0.1) regular += 1
+          else potato += 1
+        }
+
+        IO(
+          MessageEffect(
+            List(
+              s"$AQUA${BOLD}ガチャ${numberOfTimes}回試行結果",
+              s"ギガンティック:${gigantic}回(${gigantic.asInstanceOf[Double] / numberOfTimes * 100.0}%)",
+              s"大当たり:${big}回(${big.asInstanceOf[Double] / numberOfTimes * 100.0}%)",
+              s"あたり:${regular}回(${regular.asInstanceOf[Double] / numberOfTimes * 100.0}%)",
+              s"ハズレ:${potato}回(${potato.asInstanceOf[Double] / numberOfTimes * 100.0}%)"
+            )
+          )
+        )
+      }
+      .build()
+
+    val addms: ContextualExecutor = playerCommandBuilder
+      .argumentsParsers(List(Parsers.identity, gachaPrizeIdExistsParser))
+      .execution { context =>
+        val args = context.args.parsed
+        val eff = for {
+          gachaPrize <- gachaPrizesDataOperations.getGachaPrize(
+            GachaPrizeId(args(1).asInstanceOf[Int])
+          )
+        } yield {
+          // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
+          //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
+          //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
+          val _gachaPrize = gachaPrize.get // ParserによりGachaPrizeの存在は確認されている
+          val mineStackGachaData = new MineStackGachaData(
+            args.head.toString,
+            _gachaPrize.itemStack,
+            _gachaPrize.probability,
+            1
+          )
+          SeichiAssist.msgachadatalist.addOne(mineStackGachaData)
+          MessageEffect(
+            List(
+              s"ガチャID:${_gachaPrize.id}のデータを変数名:${args.head.toString}でMineStack用ガチャリストに追加しました。",
+              "/gacha savemsでmysqlに保存してください"
+            )
+          )
+        }
+
+        eff.toIO
+      }
+      .build()
   }
 
 }
