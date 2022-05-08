@@ -10,6 +10,7 @@ import com.github.unchama.contextualexecutor.builder.{ContextualExecutorBuilder,
 import com.github.unchama.contextualexecutor.executors.{BranchedExecutor, EchoExecutor}
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.SeichiAssist.databaseGateway
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.MineStackGachaData
@@ -102,7 +103,8 @@ class GachaCommand[F[
         "addms" -> addms,
         "addms2" -> addms2,
         "listms" -> listms,
-        "removems" -> removems
+        "removems" -> removems,
+        "savems" -> savems
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -466,6 +468,9 @@ class GachaCommand[F[
         }
         .build()
 
+    // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
+    //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
+    //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
     val removems: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration()
@@ -490,6 +495,22 @@ class GachaCommand[F[
           }
         }
         .build()
+
+    // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
+    //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
+    //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
+    val savems: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .execution { _ =>
+          IO {
+            if (!databaseGateway.mineStackGachaDataManipulator.saveMineStackGachaData)
+              MessageEffect("mysqlにMineStack用ガチャデータを保存できませんでした")
+            else MessageEffect("mysqlにMineStack用ガチャデータを保存しました")
+          }
+        }
+        .build()
+
   }
 
 }
