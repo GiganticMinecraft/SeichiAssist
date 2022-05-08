@@ -51,10 +51,10 @@ class GachaCommand[F[
         "指定したガチャリストのIDを入手 (所有者付きにもできます) IDを0に指定するとガチャリンゴを入手できます",
         s"$RED/gacha add <確率>",
         "現在のメインハンドをガチャリストに追加。確率は1.0までで指定",
-        s"$RED/gacha addms2 <確率> <名前> <レベル>",
+        s"$RED/gacha addms2 <確率> <名前>",
         "現在のメインハンドをMineStack用ガチャリストに追加。確率は1.0までで指定",
-        s"$RED/gacha addms <名前> <レベル> <ID>",
-        "指定したガチャリストのIDを指定した名前とレベル(実際のレベルではないことに注意)でMineStack用ガチャリストに追加",
+        s"$RED/gacha addms <名前>  <ID>",
+        "指定したガチャリストのIDを指定した名前でMineStack用ガチャリストに追加",
         s"$DARK_GRAY※ゲーム内でのみ実行できます",
         s"$RED/gacha list",
         "現在のガチャリストを表示",
@@ -99,7 +99,8 @@ class GachaCommand[F[
         "save" -> save,
         "reload" -> reload,
         "demo" -> demo,
-        "addms" -> addms
+        "addms" -> addms,
+        "addms2" -> addms2
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -385,7 +386,8 @@ class GachaCommand[F[
       }
       .build()
 
-    val addms: ContextualExecutor = playerCommandBuilder
+    val addms: ContextualExecutor = ContextualExecutorBuilder
+      .beginConfiguration()
       .argumentsParsers(List(Parsers.identity, gachaPrizeIdExistsParser))
       .execution { context =>
         val args = context.args.parsed
@@ -416,6 +418,30 @@ class GachaCommand[F[
         eff.toIO
       }
       .build()
+
+    // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
+    //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
+    //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
+    val addms2: ContextualExecutor =
+      playerCommandBuilder
+        .argumentsParsers(List(probParser, Parsers.identity))
+        .execution { context =>
+          val args = context.args.parsed
+          val mainHand = context.sender.getInventory.getItemInMainHand
+          val probability = args.head.asInstanceOf[Double]
+          val mineStackGachaData =
+            new MineStackGachaData(args(1).toString, mainHand, probability, 1)
+          SeichiAssist.msgachadatalist.addOne(mineStackGachaData)
+          IO(
+            MessageEffect(
+              List(
+                s"${mainHand.getType.toString}/${mainHand.getItemMeta.getDisplayName}$RESET${mainHand.getAmount}個を確率${probability}としてMineStack用ガチャリストに追加しました。",
+                "/gacha savemsでmysqlに保存してください。"
+              )
+            )
+          )
+        }
+        .build()
   }
 
 }
