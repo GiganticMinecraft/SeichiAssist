@@ -442,6 +442,27 @@ class GachaCommand[F[
           )
         }
         .build()
+
+    // TODO: この実装はMineStackシステムがレガシーのときに行われているため、旧実装をそのままなぞらえて実装している。
+    //  そのためMineStackシステムがsubsystemsに含まれる時が来たら書き換えることが望ましい
+    //  というかそもそもこの実装はMineStack側で行うべきかもしれない。
+    val listms: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .execution { _ =>
+          IO {
+            val gachaDataListInformation = SeichiAssist.msgachadatalist.zipWithIndex.map {
+              case (gachaData, index) =>
+                s"$index|${gachaData.level}|${gachaData.objName}|${gachaData.itemStack.getType.toString}/${gachaData.itemStack.getItemMeta.getDisplayName}$RESET|${gachaData
+                    .itemStack
+                    .getAmount}|${gachaData.probability}(${gachaData.probability * 100}%)"
+            }
+            MessageEffect(
+              List(s"${RED}アイテム番号|レベル|変数名|アイテム名|アイテム数|出現確率") ++ gachaDataListInformation
+            )
+          }
+        }
+        .build()
   }
 
 }
