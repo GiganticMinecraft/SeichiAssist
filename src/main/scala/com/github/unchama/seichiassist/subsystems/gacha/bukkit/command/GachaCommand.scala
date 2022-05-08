@@ -91,7 +91,8 @@ class GachaCommand[F[
         "add" -> add,
         "remove" -> remove,
         "list" -> list,
-        "setamount" -> setamount
+        "setamount" -> setamount,
+        "setprob" -> setprob
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -112,6 +113,18 @@ class GachaCommand[F[
           failWith("指定されたIDのアイテムは存在しません！")
         }
       })
+
+    val probParser: String => Either[TargetedEffect[CommandSender], Any] =
+      Parsers.double(MessageEffect("確率は小数点数で指定してください。")).andThen {
+        _.flatMap { num =>
+          val doubleNum = num.asInstanceOf[Double]
+          if (doubleNum <= 1.0 && doubleNum >= 0.0) {
+            succeedWith(doubleNum)
+          } else {
+            failWith("確率は正の数かつ1.0以下で指定してください。")
+          }
+        }
+      }
 
     val giveGachaTickets: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration()
@@ -172,16 +185,7 @@ class GachaCommand[F[
 
     val add: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(List(Parsers.double(MessageEffect("確率は小数点数で指定してください。")).andThen {
-          _.flatMap { num =>
-            val doubleNum = num.asInstanceOf[Double]
-            if (doubleNum <= 1.0 && doubleNum >= 0.0) {
-              succeedWith(doubleNum)
-            } else {
-              failWith("確率は正の数かつ1.0以下で指定してください。")
-            }
-          }
-        }))
+        .argumentsParsers(List(probParser))
         .execution { context =>
           val player = context.sender
           val probability = context.args.parsed.head.asInstanceOf[Double]
@@ -277,6 +281,27 @@ class GachaCommand[F[
           eff.toIO
         }
         .build()
+
+    val setprob: ContextualExecutor = ContextualExecutorBuilder
+      .beginConfiguration()
+      .argumentsParsers(List(gachaPrizeIdExistsParser, probParser))
+      .execution { context =>
+        val args = context.args.parsed
+        val targetId = GachaPrizeId(args.head.asInstanceOf[Int])
+        val newProb = args(1).asInstanceOf[Double]
+        val eff = for {
+          existingGachaPrize <- gachaPrizesDataOperations.getGachaPrize(targetId)
+          _ <- gachaPrizesDataOperations.removeByGachaPrizeId(targetId)
+          _ <- gachaPrizesDataOperations
+            .addGachaPrize(_ => existingGachaPrize.get.copy(probability = newProb))
+          itemStack = existingGachaPrize.get.itemStack
+        } yield MessageEffect(s"${targetId.id}|${itemStack.getType.toString}/${itemStack
+            .getItemMeta
+            .getDisplayName}${RESET}の確率を$newProb(${newProb * 100}%)に変更しました。")
+
+        eff.toIO
+      }
+      .build()
 
   }
 
