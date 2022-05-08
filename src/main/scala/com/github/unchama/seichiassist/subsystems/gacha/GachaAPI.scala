@@ -17,9 +17,7 @@ object GachaReadAPI {
 
 trait GachaWriteAPI[F[_]] {
 
-  def upsert(gachaPrize: GachaPrize): F[Unit]
-
-  def remove(id: GachaPrizeId): F[Boolean]
+  def update(gachaPrizesList: Vector[GachaPrize]): F[Unit]
 
 }
 

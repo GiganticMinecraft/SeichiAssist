@@ -21,7 +21,7 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
    */
   override def list: F[Vector[GachaPrize]] = {
     Sync[F].delay {
-      DB.localTx { implicit session =>
+      DB.readOnly { implicit session =>
         sql"select * from gachadata"
           .map { rs =>
             val probability = rs.double("probability")
@@ -43,33 +43,21 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
   }
 
   /**
-   * ガチャアイテムを追加します。
-   * idが同じだった場合は置き換えられます
+   * ガチャリストを更新します。
    */
-  override def upsert(gachaPrize: GachaPrize): F[Unit] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay[Unit] {
+  override def update(gachaPrizesList: Vector[GachaPrize]): F[Unit] = {
+    Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"""insert into gachadata 
-             |  (id,amount,probability,itemstack)
-             |  values (${gachaPrize.id.id},${gachaPrize.itemStack.getAmount},
-             |  ${gachaPrize.probability},${gachaPrize.itemStack},
-             |  ${ItemStackCodec.toString(gachaPrize.itemStack)})
-             |  on duplicate key update 
-             |  amount = ${gachaPrize.itemStack.getAmount},
-             |  probability = ${gachaPrize.probability},
-             |  itemstack = ${gachaPrize.itemStack}""".stripMargin.execute().apply()
+        sql"truncate table gachadata".execute().apply()
+        gachaPrizesList.foreach { gachaPrize =>
+          val itemStackString = ItemStackCodec.toString(gachaPrize.itemStack)
+          val amount = gachaPrize.itemStack.getAmount
+          sql"insert into gachadata values (${gachaPrize.id},$amount,${gachaPrize.probability},$itemStackString)"
+            .execute()
+            .apply()
+        }
       }
     }
   }
 
-  /**
-   * ガチャアイテムを削除します。
-   */
-  override def remove(id: GachaPrizeId): F[Boolean] = {
-    NonServerThreadContextShift[F].shift >> Sync[F].delay {
-      DB.localTx { implicit session =>
-        sql"delete from gachadata where id = $id".execute().apply()
-      }
-    }
-  }
 }

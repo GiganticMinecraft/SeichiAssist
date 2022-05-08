@@ -92,7 +92,8 @@ class GachaCommand[F[
         "remove" -> remove,
         "list" -> list,
         "setamount" -> setamount,
-        "setprob" -> setprob
+        "setprob" -> setprob,
+        "clear" -> clear
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -302,6 +303,24 @@ class GachaCommand[F[
         eff.toIO
       }
       .build()
+
+    val clear: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .execution { _ =>
+          val eff = for {
+            _ <- gachaPrizesDataOperations.clear()
+          } yield MessageEffect(
+            List(
+              "すべて削除しました。",
+              "/gacha saveを実行するとmysqlのデータも全削除されます。",
+              "削除を取り消すには/gacha reloadコマンドを実行します。"
+            )
+          )
+          eff.toIO
+
+        }
+        .build()
 
   }
 

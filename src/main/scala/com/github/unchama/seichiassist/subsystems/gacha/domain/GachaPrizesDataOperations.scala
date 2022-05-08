@@ -39,4 +39,8 @@ final class GachaPrizesDataOperations[F[_]: Sync: NonServerThreadContextShift] {
 
   def getGachaPrizesList: F[Vector[GachaPrize]] = gachaPrizes.get
 
+  def clear(): F[Unit] = for {
+    _ <- gachaPrizes.set(Vector.empty)
+  } yield ()
+
 }

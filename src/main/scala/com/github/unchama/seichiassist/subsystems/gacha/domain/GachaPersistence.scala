@@ -10,14 +10,8 @@ trait GachaPersistence[F[_]] {
   def list: F[Vector[GachaPrize]]
 
   /**
-   * ガチャアイテムを追加します。
-   * idが同じだった場合は置き換えられます
+   * ガチャリストを更新します。
    */
-  def upsert(gachaPrize: GachaPrize): F[Unit]
-
-  /**
-   * ガチャアイテムを削除します。
-   */
-  def remove(id: GachaPrizeId): F[Boolean]
+  def update(gachaPrizesList: Vector[GachaPrize]): F[Unit]
 
 }
