@@ -14,8 +14,6 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
     extends GachaPersistence[F] {
 
-  import cats.implicits._
-
   /**
    * ガチャアイテムとして登録されているアイテムリストをGachaPrizeのVectorとして返します。
    */
@@ -52,7 +50,7 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
         gachaPrizesList.foreach { gachaPrize =>
           val itemStackString = ItemStackCodec.toString(gachaPrize.itemStack)
           val amount = gachaPrize.itemStack.getAmount
-          sql"insert into gachadata values (${gachaPrize.id},$amount,${gachaPrize.probability},$itemStackString)"
+          sql"insert into gachadata values (${gachaPrize.id.id},$amount,${gachaPrize.probability},$itemStackString)"
             .execute()
             .apply()
         }
