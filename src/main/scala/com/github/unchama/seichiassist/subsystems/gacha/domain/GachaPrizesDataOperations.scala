@@ -31,15 +31,11 @@ final class GachaPrizesDataOperations[F[_]: Sync: NonServerThreadContextShift] {
     prizes <- gachaPrizes.get
   } yield prizes.find(_.id == gachaPrizeId)
 
-  def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
+  def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
     prizes <- gachaPrizes.get
-  } yield {
-    val targetPrize = prizes.filter(_.id == gachaPrizeId)
-    if (targetPrize.nonEmpty) {
-      gachaPrizes.set(prizes.diff(targetPrize))
-      true
-    } else false
-  }
+    targetPrize = prizes.filter(_.id == gachaPrizeId)
+    _ <- gachaPrizes.set(prizes.diff(targetPrize))
+  } yield ()
 
   def getGachaPrizesList: F[Vector[GachaPrize]] = gachaPrizes.get
 

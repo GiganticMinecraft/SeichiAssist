@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 
-import cats.Monad
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
@@ -20,12 +19,13 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import org.bukkit.ChatColor._
-import org.bukkit.command.TabExecutor
+import org.bukkit.command.{CommandSender, TabExecutor}
 
 import java.util.UUID
+import scala.util.chaining.scalaUtilChainingOps
 
 class GachaCommand[F[
   _
@@ -90,7 +90,8 @@ class GachaCommand[F[
         "get" -> giveItem,
         "add" -> add,
         "remove" -> remove,
-        "list" -> list
+        "list" -> list,
+        "setamount" -> setamount
       ),
       whenBranchNotFound = Some(printDescriptionExecutor),
       whenArgInsufficient = Some(printDescriptionExecutor)
@@ -98,6 +99,19 @@ class GachaCommand[F[
   }
 
   object ChildExecutors {
+
+    val gachaPrizeIdExistsParser: String => Either[TargetedEffect[CommandSender], Any] = Parsers
+      .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
+      .andThen(_.flatMap { id =>
+        val intId = id.asInstanceOf[Int]
+        if (
+          gachaPrizesDataOperations.gachaPrizeExists(GachaPrizeId(intId)).toIO.unsafeRunSync()
+        ) {
+          succeedWith(intId)
+        } else {
+          failWith("指定されたIDのアイテムは存在しません！")
+        }
+      })
 
     val giveGachaTickets: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration()
@@ -136,25 +150,7 @@ class GachaCommand[F[
 
     val giveItem: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(
-          List(
-            Parsers
-              .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
-              .andThen(_.flatMap { id =>
-                val intId = id.asInstanceOf[Int]
-                if (
-                  gachaPrizesDataOperations
-                    .gachaPrizeExists(GachaPrizeId(intId))
-                    .toIO
-                    .unsafeRunSync()
-                ) {
-                  succeedWith(intId)
-                } else {
-                  failWith("指定されたIDのアイテムは存在しません！")
-                }
-              })
-          )
-        )
+        .argumentsParsers(List(gachaPrizeIdExistsParser))
         .execution { context =>
           val eff = for {
             gachaPrize <- gachaPrizesDataOperations.getGachaPrize(
@@ -209,14 +205,17 @@ class GachaCommand[F[
           val eff = for {
             gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
           } yield {
-            val gachaPrizeInformation = gachaPrizes.map { gachaPrize =>
-              val itemStack = gachaPrize.itemStack
-              val probability = gachaPrize.probability
+            val gachaPrizeInformation = gachaPrizes
+              .sortBy(_.id.id)
+              .map { gachaPrize =>
+                val itemStack = gachaPrize.itemStack
+                val probability = gachaPrize.probability
 
-              s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack
-                  .getItemMeta
-                  .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
-            }.toList
+                s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack
+                    .getItemMeta
+                    .getDisplayName}$RESET|${itemStack.getAmount}|$probability(${probability * 100}%)"
+              }
+              .toList
 
             val totalProbability = gachaPrizes.map(_.probability).sum
             MessageEffect(
@@ -233,25 +232,7 @@ class GachaCommand[F[
 
     val remove: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration()
-      .argumentsParsers(
-        List(
-          Parsers
-            .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を入力してください"))
-            .andThen(_.flatMap { id =>
-              val intId = id.asInstanceOf[Int]
-              if (
-                gachaPrizesDataOperations
-                  .gachaPrizeExists(GachaPrizeId(intId))
-                  .toIO
-                  .unsafeRunSync()
-              ) {
-                succeedWith(intId)
-              } else {
-                failWith("存在しないガチャIDです。")
-              }
-            })
-        )
-      )
+      .argumentsParsers(List(gachaPrizeIdExistsParser))
       .execution { context =>
         val eff = for {
           _ <- gachaPrizesDataOperations.removeByGachaPrizeId(
@@ -265,6 +246,37 @@ class GachaCommand[F[
 
       }
       .build()
+
+    val setamount: ContextualExecutor =
+      ContextualExecutorBuilder
+        .beginConfiguration()
+        .argumentsParsers(
+          List(
+            gachaPrizeIdExistsParser,
+            Parsers.closedRangeInt(1, 64, MessageEffect("数は1～64で指定してください。"))
+          )
+        )
+        .execution { context =>
+          val targetId = GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
+          val amount = context.args.parsed(1).asInstanceOf[Int]
+          val eff = for {
+            existingGachaPrize <- gachaPrizesDataOperations.getGachaPrize(targetId)
+            _ <- gachaPrizesDataOperations.removeByGachaPrizeId(targetId)
+            itemStack = existingGachaPrize.get.itemStack
+            _ <- gachaPrizesDataOperations.addGachaPrize(_ =>
+              existingGachaPrize
+                .get
+                .copy(itemStack = itemStack.tap {
+                  _.setAmount(amount)
+                })
+            )
+          } yield MessageEffect(
+            s"${targetId.id}|${itemStack.getType.toString}/${itemStack.getItemMeta.getDisplayName}${RESET}のアイテム数を${amount}個に変更しました。"
+          )
+
+          eff.toIO
+        }
+        .build()
 
   }
 

@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizeId
 import com.github.unchama.util.bukkit.ItemStackUtil.appendOwnerInformation
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 /**
