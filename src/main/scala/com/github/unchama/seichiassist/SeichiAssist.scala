@@ -34,7 +34,7 @@ import com.github.unchama.seichiassist.MaterialSets.BlockBreakableBySkill
 import com.github.unchama.seichiassist.SeichiAssist.seichiAssistConfig
 import com.github.unchama.seichiassist.bungee.BungeeReceiver
 import com.github.unchama.seichiassist.commands._
-import com.github.unchama.seichiassist.commands.legacy.{DonationCommand, GachaCommand}
+import com.github.unchama.seichiassist.commands.legacy.DonationCommand
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   asyncShift,

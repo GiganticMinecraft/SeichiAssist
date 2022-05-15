@@ -9,44 +9,48 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 
 /**
- * ガチャを1回引く作用を返すtrait
+ * ガチャを引く作用を返すtrait
  */
 
-trait DoGachaDrawing[F[_], Player] {
+trait DoGachaDrawing[F[_]] {
 
-  def draw(player: Player): F[GachaPrize]
+  def draw: F[Vector[GachaPrize]] = draw(1)
+
+  def draw(amount: Int): F[Vector[GachaPrize]]
 
 }
 
 object DoGachaDrawing {
 
-  def apply[F[_], Player](implicit ev: DoGachaDrawing[F, Player]): DoGachaDrawing[F, Player] =
+  def apply[F[_]](implicit ev: DoGachaDrawing[F]): DoGachaDrawing[F] =
     ev
 
   import cats.implicits._
 
-  def draw[F[_]: Sync, Player](
+  def using[F[_]: Sync](
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
-  ): DoGachaDrawing[F, Player] = (player: Player) =>
+  ): DoGachaDrawing[F] = (amount: Int) =>
     for {
       gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
     } yield {
-      val random = Math.random()
+      (0 until amount).map { _ =>
+        val random = Math.random()
 
-      def getGachaPrize: GachaPrize = {
-        gachaPrizes.foldLeft(1.0) { (sum, gachaPrize) =>
-          val nowSum = sum - random
-          if (nowSum <= random) return gachaPrize
-          else nowSum
+        def getGachaPrize: GachaPrize = {
+          gachaPrizes.foldLeft(1.0) { (sum, gachaPrize) =>
+            val nowSum = sum - random
+            if (nowSum <= random) return gachaPrize
+            else nowSum
+          }
+          GachaPrize(
+            StaticGachaPrizeFactory.getGachaRingo,
+            1.0,
+            isAppendOwner = false,
+            GachaPrizeId(0)
+          )
         }
-        GachaPrize(
-          StaticGachaPrizeFactory.getGachaRingo,
-          1.0,
-          isAppendOwner = false,
-          GachaPrizeId(0)
-        )
-      }
 
-      getGachaPrize
+        getGachaPrize
+      }.toVector
     }
 }

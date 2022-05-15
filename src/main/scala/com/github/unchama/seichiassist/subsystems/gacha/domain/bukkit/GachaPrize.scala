@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit
 
-import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizeId
 import com.github.unchama.util.bukkit.ItemStackUtil.appendOwnerInformation
 import org.bukkit.inventory.ItemStack
@@ -17,15 +16,13 @@ case class GachaPrize(
   id: GachaPrizeId
 ) {
 
-  def getGiveItemStack[F[_]: Sync](name: Option[String]): F[ItemStack] = {
-    Sync[F].delay {
-      val clonedItemStack = itemStack.clone()
-      val givenItem =
-        if (isAppendOwner && name.nonEmpty)
-          appendOwnerInformation(name.get)(clonedItemStack)
-        else clonedItemStack
-      givenItem
-    }
+  def getGiveItemStack(name: Option[String]): ItemStack = {
+    val clonedItemStack = itemStack.clone()
+    val givenItem =
+      if (isAppendOwner && name.nonEmpty)
+        appendOwnerInformation(name.get)(clonedItemStack)
+      else clonedItemStack
+    givenItem
   }
 
 }

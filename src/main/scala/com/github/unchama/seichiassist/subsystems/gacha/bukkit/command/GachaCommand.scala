@@ -23,8 +23,8 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 
@@ -181,15 +181,11 @@ class GachaCommand[F[
             gachaPrize <- gachaPrizesDataOperations.getGachaPrize(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-            fItemStack <-
-              gachaPrize
-                .get
-                .getGiveItemStack(
-                  if (context.args.yetToBeParsed.size == 1)
-                    Some(context.args.yetToBeParsed.head)
-                  else None
-                )
-          } yield SequentialEffect(InventoryOperations.grantItemStacksEffect[IO](fItemStack))
+          } yield SequentialEffect(
+            InventoryOperations.grantItemStacksEffect[IO](
+              gachaPrize.get.getGiveItemStack(Some(context.sender.getName))
+            )
+          )
 
           eff.toIO
         }
