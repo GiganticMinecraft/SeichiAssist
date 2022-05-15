@@ -3,7 +3,6 @@ package com.github.unchama.targetedeffect.commandsender
 import cats.data.Kleisli
 import cats.effect.{IO, Sync}
 import com.github.unchama.targetedeffect.TargetedEffect
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.command.CommandSender
 
 object MessageEffect {
@@ -12,9 +11,6 @@ object MessageEffect {
 
   def apply(stringList: List[String]): TargetedEffect[CommandSender] =
     MessageEffectF[IO](stringList)
-
-  def apply(textComponent: TextComponent): TargetedEffect[CommandSender] =
-    MessageEffectF[IO](textComponent)
 }
 
 /**
@@ -31,8 +27,5 @@ object MessageEffectF {
 
   def apply[F[_]: Sync](stringList: List[String]): Kleisli[F, CommandSender, Unit] =
     TargetedEffect.delay(_.sendMessage(stringList.toArray))
-
-  def apply[F[_]: Sync](textComponent: TextComponent): Kleisli[F, CommandSender, Unit] =
-    TargetedEffect.delay(_.spigot().sendMessage(textComponent))
 
 }
