@@ -1,11 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
 import cats.effect.Sync
+import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizeId,
   GachaPrizesDataOperations
 }
-import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 
 /**

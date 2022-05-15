@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizeId
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 
 trait GachaReadAPI[F[_]] {

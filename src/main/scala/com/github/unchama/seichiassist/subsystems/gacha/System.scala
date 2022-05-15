@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, Sync, SyncEffect, SyncIO}
+import cats.effect.{ConcurrentEffect, Sync, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
