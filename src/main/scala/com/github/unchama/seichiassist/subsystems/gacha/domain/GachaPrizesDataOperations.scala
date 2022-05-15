@@ -2,10 +2,9 @@ package com.github.unchama.seichiassist.subsystems.gacha.domain
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
-import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 
-final class GachaPrizesDataOperations[F[_]: Sync: NonServerThreadContextShift] {
+final class GachaPrizesDataOperations[F[_]: Sync] {
 
   import cats.implicits._
 
