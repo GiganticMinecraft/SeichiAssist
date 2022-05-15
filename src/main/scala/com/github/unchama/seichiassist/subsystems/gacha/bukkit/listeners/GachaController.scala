@@ -4,7 +4,7 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DoGachaDrawing
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util._
@@ -95,7 +95,7 @@ class GachaController[F[_]: ConcurrentEffect](
     var gachaWin = 0
     var gachaGTWin = 0
 
-    val prizes = DoGachaDrawing.using.draw(count).toIO.unsafeRunSync()
+    val prizes = LotteryOfGachaItems.using.draw(count).toIO.unsafeRunSync()
 
     prizes.foreach { prize =>
       /**

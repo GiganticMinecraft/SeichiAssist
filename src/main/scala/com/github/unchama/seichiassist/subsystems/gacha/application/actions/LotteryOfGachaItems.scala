@@ -12,7 +12,7 @@ import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
  * ガチャを抽選を行う作用を返すtrait
  */
 
-trait DoGachaDrawing[F[_]] {
+trait LotteryOfGachaItems[F[_]] {
 
   def draw: F[Vector[GachaPrize]] = draw(1)
 
@@ -20,16 +20,16 @@ trait DoGachaDrawing[F[_]] {
 
 }
 
-object DoGachaDrawing {
+object LotteryOfGachaItems {
 
-  def apply[F[_]](implicit ev: DoGachaDrawing[F]): DoGachaDrawing[F] =
+  def apply[F[_]](implicit ev: LotteryOfGachaItems[F]): LotteryOfGachaItems[F] =
     ev
 
   import cats.implicits._
 
   def using[F[_]: Sync](
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
-  ): DoGachaDrawing[F] = (amount: Int) =>
+  ): LotteryOfGachaItems[F] = (amount: Int) =>
     for {
       gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
     } yield {

@@ -4,7 +4,7 @@ import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.commands.legacy.GachaCommand
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DoGachaDrawing
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   Gift,
   GiftItemInterpreter,
