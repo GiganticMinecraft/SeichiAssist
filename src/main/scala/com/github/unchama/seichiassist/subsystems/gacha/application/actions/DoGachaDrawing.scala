@@ -38,7 +38,7 @@ object DoGachaDrawing {
 
         def getGachaPrize: GachaPrize = {
           gachaPrizes.foldLeft(1.0) { (sum, gachaPrize) =>
-            val nowSum = sum - random
+            val nowSum = sum - gachaPrize.probability
             if (nowSum <= random) return gachaPrize
             else nowSum
           }
