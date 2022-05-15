@@ -14,9 +14,9 @@ import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 
 trait LotteryOfGachaItems[F[_]] {
 
-  def draw: F[Vector[GachaPrize]] = draw(1)
+  def lottery: F[Vector[GachaPrize]] = lottery(1)
 
-  def draw(amount: Int): F[Vector[GachaPrize]]
+  def lottery(amount: Int): F[Vector[GachaPrize]]
 
 }
 

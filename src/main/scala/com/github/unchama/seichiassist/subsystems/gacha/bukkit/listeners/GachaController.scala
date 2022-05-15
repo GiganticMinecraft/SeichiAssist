@@ -95,7 +95,7 @@ class GachaController[F[_]: ConcurrentEffect](
     var gachaWin = 0
     var gachaGTWin = 0
 
-    val prizes = LotteryOfGachaItems.using.draw(count).toIO.unsafeRunSync()
+    val prizes = LotteryOfGachaItems.using.lottery(count).toIO.unsafeRunSync()
 
     prizes.foreach { prize =>
       /**
