@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 
 /**
- * ガチャを抽選を行う作用を返すtrait
+ * ガチャアイテムの抽選を行う作用
  */
 
 trait LotteryOfGachaItems[F[_]] {
