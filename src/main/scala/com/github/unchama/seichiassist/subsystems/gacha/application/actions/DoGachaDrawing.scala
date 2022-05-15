@@ -36,74 +36,78 @@ object DoGachaDrawing {
 
   def using[F[_]: Sync: ConcurrentEffect, Player](player: Player, name: String)(
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
-  ): DoGachaDrawing[F, Player] = (amount: Int) => {
-    val gachaPrizes = LotteryOfGachaItems.using.lottery(amount).toIO.unsafeRunSync()
-    gachaPrizes.foreach { gachaPrize =>
-      val givenItem = gachaPrize.getGiveItemStack(Some(name))
-      // アイテム付与
-      InventoryOperations.grantItemStacksEffect(givenItem) >> {
-        // 確率に応じてメッセージを送信
-        if (gachaPrize.probability < 0.001) {
+  ): DoGachaDrawing[F, Player] = (amount: Int) =>
+    Sync[F].delay {
+      val gachaPrizes = LotteryOfGachaItems.using.lottery(amount).toIO.unsafeRunSync()
+      gachaPrizes.foreach { gachaPrize =>
+        val givenItem = gachaPrize.getGiveItemStack(Some(name))
+        // アイテム付与
+        InventoryOperations.grantItemStacksEffect(givenItem) >> {
+          // 確率に応じてメッセージを送信
+          if (gachaPrize.probability < 0.001) {
 
-          val loreWithoutOwnerName = givenItem.getItemMeta.getLore.asScala.toList.filterNot {
-            _ == s"§r§2所有者：$name"
-          }
+            val loreWithoutOwnerName = givenItem.getItemMeta.getLore.asScala.toList.filterNot {
+              _ == s"§r§2所有者：$name"
+            }
 
-          val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq.map {
-            case (enchantment, level) =>
-              s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getName, level)}"
-          }
+            val localizedEnchantmentList = givenItem.getItemMeta.getEnchants.asScala.toSeq.map {
+              case (enchantment, level) =>
+                s"$GRAY${EnchantNameToJapanese.getEnchantName(enchantment.getName, level)}"
+            }
 
-          import scala.util.chaining._
-          val message =
-            new TextComponent().tap { c =>
-              import c._
-              setText(s"$AQUA${givenItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！")
-              setHoverEvent {
-                new HoverEvent(
-                  HoverEvent.Action.SHOW_TEXT,
-                  Array(
-                    new TextComponent(
-                      s" ${givenItem.getItemMeta.getDisplayName}\n" +
-                        ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
-                        ListFormatters.getDescFormat(loreWithoutOwnerName)
+            import scala.util.chaining._
+            val message =
+              new TextComponent().tap { c =>
+                import c._
+                setText(
+                  s"$AQUA${givenItem.getItemMeta.getDisplayName}${GOLD}を引きました！おめでとうございます！"
+                )
+                setHoverEvent {
+                  new HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    Array(
+                      new TextComponent(
+                        s" ${givenItem.getItemMeta.getDisplayName}\n" +
+                          ListFormatters.getDescFormat(localizedEnchantmentList.toList) +
+                          ListFormatters.getDescFormat(loreWithoutOwnerName)
+                      )
                     )
                   )
+                }
+              }
+
+            SequentialEffect {
+              MessageEffect(s"${RED}おめでとう！！！！！Gigantic☆大当たり！")
+              MessageEffect(message)
+              UnfocusedEffect {
+                sendMessageToEveryone(s"$GOLD${name}がガチャでGigantic☆大当たり！")
+                SendSoundEffect.sendEverySoundWithoutIgnore(
+                  Sound.ENTITY_ENDERDRAGON_DEATH,
+                  0.5f,
+                  2f
                 )
               }
             }
-
-          SequentialEffect {
-            MessageEffect(s"${RED}おめでとう！！！！！Gigantic☆大当たり！"),
-            MessageEffect(message),
-            UnfocusedEffect {
-              sendMessageToEveryone(s"$GOLD${name}がガチャでGigantic☆大当たり！")
-              SendSoundEffect.sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
+          } else if (gachaPrize.probability < 0.01) {
+            SequentialEffect {
+              FocusedSoundEffect(Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
+              if (amount == 1) MessageEffect(s"${GOLD}おめでとう！！大当たり！")
+              else emptyEffect
             }
-          }
-          gachaGTWin += 1
-        } else if (gachaPrize.probability < 0.01) {
-          SequentialEffect {
-            FocusedSoundEffect(Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
-            if (amount == 1) MessageEffect(s"${GOLD}おめでとう！！大当たり！")
-            else emptyEffect
-          }
-          gachaBigWin += 1
-        } else if (gachaPrize.probability < 0.1) {
-          SequentialEffect {
-            if (amount == 1) MessageEffect(s"${YELLOW}おめでとう！当たり！")
-            else emptyEffect
-          }
-          gachaWin += 1
-        } else {
-          SequentialEffect {
-            if (amount == 1) MessageEffect(s"${WHITE}はずれ！また遊んでね！")
-            else emptyEffect
+          } else if (gachaPrize.probability < 0.1) {
+            SequentialEffect {
+              if (amount == 1) MessageEffect(s"${YELLOW}おめでとう！当たり！")
+              else emptyEffect
+            }
+          } else {
+            SequentialEffect {
+              if (amount == 1) MessageEffect(s"${WHITE}はずれ！また遊んでね！")
+              else emptyEffect
+            }
           }
         }
       }
-    }
 
-  }
+    }
 
 }
