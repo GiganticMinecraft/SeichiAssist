@@ -4,6 +4,10 @@ import com.github.unchama.seichiassist.util.BukkitSerialization
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 
+/**
+ * [[ItemStack]]と[[String]]の相互変換を実現するコーデック
+ */
+
 object ItemStackCodec {
 
   def fromString(itemStack: String): ItemStack =

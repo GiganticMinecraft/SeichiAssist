@@ -8,6 +8,10 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 
+/**
+ * ガチャを1回引く作用を返すtrait
+ */
+
 trait DoGachaDrawing[F[_], Player] {
 
   def draw(player: Player): F[GachaPrize]
