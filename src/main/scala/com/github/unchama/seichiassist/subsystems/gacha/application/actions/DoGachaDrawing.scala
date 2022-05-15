@@ -9,7 +9,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 
 /**
- * ガチャを引く作用を返すtrait
+ * ガチャを抽選を行う作用を返すtrait
  */
 
 trait DoGachaDrawing[F[_]] {
