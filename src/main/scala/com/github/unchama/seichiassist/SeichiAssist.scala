@@ -376,7 +376,7 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-  private lazy val gachaSystem: Subsystem[IO] = {
+  lazy val gachaSystem: subsystems.gacha.System[IO] = {
     implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
       JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
     subsystems.gacha.System.wired

@@ -3,8 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit
 import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.commands.legacy.GachaCommand
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   Gift,
   GiftItemInterpreter,
@@ -22,7 +21,7 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread]
       case Gift.AutomaticGachaRun =>
         Kleisli { player =>
           Sync[F].delay {
-            GachaCommand.Gachagive(player, 1, player.getName)
+            SeichiAssist.instance.gachaSystem.api.pull(player, 1).unsafeRunAsyncAndForget()
           }
         }
     }

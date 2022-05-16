@@ -2,7 +2,9 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 
-trait GachaReadAPI[F[_]] {
+trait GachaReadAPI[F[_], Player] {
+
+  def pull(player: Player, amount: Int): F[Unit]
 
   def list: F[Vector[GachaPrize]]
 
@@ -10,7 +12,7 @@ trait GachaReadAPI[F[_]] {
 
 object GachaReadAPI {
 
-  def apply[F[_]](implicit ev: GachaReadAPI[F]): GachaReadAPI[F] = ev
+  def apply[F[_], Player](implicit ev: GachaReadAPI[F, Player]): GachaReadAPI[F, Player] = ev
 
 }
 
@@ -26,4 +28,4 @@ object GachaWriteAPI {
 
 }
 
-trait GachaAPI[F[_]] extends GachaReadAPI[F] with GachaWriteAPI[F]
+trait GachaAPI[F[_], Player] extends GachaReadAPI[F, Player] with GachaWriteAPI[F]

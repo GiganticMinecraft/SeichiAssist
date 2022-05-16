@@ -5,6 +5,7 @@ import cats.effect.{ConcurrentEffect, Sync, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.GachaController
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
@@ -13,10 +14,11 @@ import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit.Jd
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 trait System[F[_]] extends Subsystem[F] {
-  val api: GachaReadAPI[F] with GachaWriteAPI[F]
+  val api: GachaReadAPI[F, Player] with GachaWriteAPI[F]
 }
 
 object System {
@@ -25,21 +27,23 @@ object System {
     implicit syncUuidRepository: UuidRepository[SyncIO]
   ): System[F] = {
     implicit val gachaPersistence: JdbcGachaPersistence[F] = new JdbcGachaPersistence[F]()
-    implicit val gachaPrizesDataOperations: GachaPrizesDataOperations[F] =
-      new GachaPrizesDataOperations[F]
     implicit val gachaTicketPersistence: JdbcGachaTicketPersistence[F] =
       new JdbcGachaTicketPersistence[F]
 
-    gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence).toIO.unsafeRunAsyncAndForget()
-
     new System[F] {
-      override implicit val api: GachaAPI[F] = new GachaAPI[F] {
+      implicit val gachaPrizesDataOperations: GachaPrizesDataOperations[F] =
+        new GachaPrizesDataOperations[F]
+      gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence).toIO.unsafeRunAsyncAndForget()
+
+      override implicit val api: GachaAPI[F, Player] = new GachaAPI[F, Player] {
 
         override def list: F[Vector[GachaPrize]] = gachaPersistence.list
 
         override def update(gachaPrizesList: Vector[GachaPrize]): F[Unit] =
           gachaPersistence.update(gachaPrizesList)
 
+        override def pull(player: Player, amount: Int): F[Unit] =
+          BukkitDrawGacha[F].draw(player, amount)
       }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor
