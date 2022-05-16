@@ -532,11 +532,6 @@ class SeichiAssist extends JavaPlugin() {
       SeichiAssist.seichiAssistConfig.getPW
     )
 
-    // mysqlからガチャデータ読み込み
-    if (!SeichiAssist.databaseGateway.gachaDataManipulator.loadGachaData()) {
-      throw new Exception("ガチャデータのロードに失敗しました。サーバーを停止します…")
-    }
-
     // mysqlからMineStack用ガチャデータ読み込み
     if (!SeichiAssist.databaseGateway.mineStackGachaDataManipulator.loadMineStackGachaData()) {
       throw new Exception("MineStack用ガチャデータのロードに失敗しました。サーバーを停止します…")

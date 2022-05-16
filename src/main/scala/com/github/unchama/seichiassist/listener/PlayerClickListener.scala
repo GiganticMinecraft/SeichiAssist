@@ -52,7 +52,6 @@ class PlayerClickListener(
   import plugin.activeSkillAvailability
 
   private val playerMap = SeichiAssist.playermap
-  private val gachaDataList = SeichiAssist.gachadatalist
 
   // アクティブスキル処理
   @EventHandler

@@ -47,6 +47,7 @@ class PlayerInventoryListener(
   private val gachaDataList = SeichiAssist.gachadatalist
   private val databaseGateway = SeichiAssist.databaseGateway
 
+  //  TODO 再実装する
   // ガチャ交換システム
   @EventHandler
   def onGachaTradeEvent(event: InventoryCloseEvent): Unit = {
@@ -276,6 +277,7 @@ class PlayerInventoryListener(
     )
   }
 
+  // TODO 再実装する
   // ギガンティック→椎名林檎交換システム
   @EventHandler
   def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {
