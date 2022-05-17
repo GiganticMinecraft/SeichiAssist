@@ -59,7 +59,7 @@ object StaticGachaPrizeFactory {
   /**
    * 死神の鎌の[[ItemStack]]を返す
    * TODO: これはここに書かれるべきではなさそう？
-   *  ガチャアイテムとして排出されていないので景品ではないため。
+   *  ガチャアイテムとして排出されていないため。
    */
   val mineHeadItem: ItemStack = new ItemStack(Material.CARROT_STICK, 1, 1.toShort).tap {
     itemStack =>
