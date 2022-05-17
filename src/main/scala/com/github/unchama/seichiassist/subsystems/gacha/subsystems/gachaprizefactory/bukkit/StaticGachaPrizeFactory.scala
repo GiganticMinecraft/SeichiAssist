@@ -1,8 +1,8 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory
+package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit
 
+import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.inventory.{ItemFlag, ItemStack}
-import org.bukkit.ChatColor._
 
 object StaticGachaPrizeFactory {
 
