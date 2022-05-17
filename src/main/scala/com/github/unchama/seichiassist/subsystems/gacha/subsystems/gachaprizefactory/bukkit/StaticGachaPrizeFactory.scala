@@ -57,22 +57,23 @@ object StaticGachaPrizeFactory {
    * TODO: これはここに書かれるべきではなさそう？
    *  ガチャアイテムとして排出されていないので景品ではないため。
    */
-  val mineHeadItem: ItemStack = new ItemStack(Material.CARROT_STICK, 1).tap { itemStack =>
-    import itemStack._
-    val meta = getItemMeta
-    meta.setDisplayName(s"${DARK_RED}死神の鎌")
-    meta.setLore(
-      List(
-        s"${RED}頭を狩り取る形をしている...",
-        "",
-        s"${GRAY}設置してある頭が",
-        s"${GRAY}左クリックで即時に回収できます",
-        s"${DARK_GRAY}インベントリに空きを作って使いましょう"
-      ).asJava
-    )
-    meta.setUnbreakable(true)
-    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
-    setItemMeta(meta)
+  val mineHeadItem: ItemStack = new ItemStack(Material.CARROT_STICK, 1, 1.toShort).tap {
+    itemStack =>
+      import itemStack._
+      val meta = getItemMeta
+      meta.setDisplayName(s"${DARK_RED}死神の鎌")
+      meta.setLore(
+        List(
+          s"${RED}頭を狩り取る形をしている...",
+          "",
+          s"${GRAY}設置してある頭が",
+          s"${GRAY}左クリックで即時に回収できます",
+          s"${DARK_GRAY}インベントリに空きを作って使いましょう"
+        ).asJava
+      )
+      meta.setUnbreakable(true)
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
+      setItemMeta(meta)
   }
 
 }
