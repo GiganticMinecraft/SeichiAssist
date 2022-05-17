@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizeId,
   GachaPrizesDataOperations
 }
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 
 /**
  * ガチャアイテムの抽選を行う作用
@@ -43,7 +43,7 @@ object LotteryOfGachaItems {
             else nowSum
           }
           GachaPrize(
-            StaticGachaPrizeFactory.getGachaRingo,
+            StaticGachaPrizeFactory.gachaRingo,
             1.0,
             isAppendOwner = false,
             GachaPrizeId(0)

@@ -19,6 +19,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.Seichi
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit._
@@ -530,7 +531,7 @@ object BreakUtil {
         ) {
           // ガチャ以外のアイテム(がちゃりんご)
           if (mineStackObj.gachaType == -1) {
-            if (!itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) return false
+            if (!itemstack.isSimilar(StaticGachaPrizeFactory.gachaRingo)) return false
 
             return addToMineStackAfterLevelCheck()
           } else {

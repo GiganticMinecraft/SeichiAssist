@@ -4,6 +4,7 @@ import cats.effect.IO
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory.getMaxRingo
 import com.github.unchama.seichiassist.subsystems.seasonalevents.anniversary.Anniversary.{
   ANNIVERSARY_COUNT,
   blogArticleUrl,
@@ -15,7 +16,6 @@ import com.github.unchama.seichiassist.util.InventoryOperations.{
   grantItemStacksEffect,
   removeItemfromPlayerInventory
 }
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory.getMaxRingo
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}

@@ -11,13 +11,10 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
-import com.github.unchama.seichiassist.util.{
-  InventoryOperations,
-  StaticGachaPrizeFactory,
-  TimeUtils
-}
+import com.github.unchama.seichiassist.util.{InventoryOperations, TimeUtils}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.ChatColor._

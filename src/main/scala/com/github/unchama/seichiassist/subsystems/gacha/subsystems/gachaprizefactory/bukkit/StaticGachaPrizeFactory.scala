@@ -4,6 +4,8 @@ import org.bukkit.ChatColor._
 import org.bukkit.Material
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 
+import java.util
+
 object StaticGachaPrizeFactory {
 
   /**
@@ -13,8 +15,10 @@ object StaticGachaPrizeFactory {
 
   /**
    * がちゃりんごのロール
+   * TODO: `ItemData.java`がScalaに置き換えられたら[[ List[String] ]]にしてしまって良さそう
    */
-  val gachaRingoLore = List(s"$RESET${GRAY}序盤に重宝します。", s"$RESET${AQUA}マナ回復（小）")
+  val gachaRingoLore: util.List[String] =
+    util.Arrays.asList(s"$RESET${GRAY}序盤に重宝します。", s"$RESET${AQUA}マナ回復（小）")
 
   import scala.jdk.CollectionConverters._
   import scala.util.chaining.scalaUtilChainingOps
@@ -26,7 +30,7 @@ object StaticGachaPrizeFactory {
     import itemStack._
     val meta = getItemMeta
     meta.setDisplayName(s"$GOLD${BOLD}がちゃりんご")
-    meta.setLore(gachaRingoLore.asJava)
+    meta.setLore(gachaRingoLore)
     setItemMeta(meta)
     clone()
   }
@@ -74,6 +78,7 @@ object StaticGachaPrizeFactory {
       meta.setUnbreakable(true)
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
       setItemMeta(meta)
+      clone()
   }
 
 }

@@ -5,7 +5,6 @@ import com.github.unchama.seichiassist.data.GachaPrize;
 import com.github.unchama.seichiassist.data.MineStackGachaData;
 import com.github.unchama.seichiassist.database.DatabaseGateway;
 import com.github.unchama.seichiassist.util.InventoryOperations;
-import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
