@@ -68,6 +68,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
   FastDiggingSettingsApi
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.subsystems.itemmigration.infrastructure.minecraft.JdbcBackedUuidRepository
@@ -376,10 +377,17 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
+  private lazy implicit val gachaPrizesDataOperations: GachaPrizesDataOperations[IO] =
+    new GachaPrizesDataOperations[IO]
+
   lazy val gachaSystem: subsystems.gacha.System[IO] = {
     implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
       JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
     subsystems.gacha.System.wired
+  }
+
+  private lazy val gtToSiinaSystem: Subsystem[IO] = {
+    subsystems.gacha.subsystems.tradesystems.gttosiina.System.wired
   }
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(

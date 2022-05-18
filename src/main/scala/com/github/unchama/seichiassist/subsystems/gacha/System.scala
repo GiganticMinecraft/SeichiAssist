@@ -24,15 +24,14 @@ trait System[F[_]] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect: Sync](
-    implicit syncUuidRepository: UuidRepository[SyncIO]
+    implicit syncUuidRepository: UuidRepository[SyncIO],
+    gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): System[F] = {
     implicit val gachaPersistence: JdbcGachaPersistence[F] = new JdbcGachaPersistence[F]()
     implicit val gachaTicketPersistence: JdbcGachaTicketPersistence[F] =
       new JdbcGachaTicketPersistence[F]
 
     new System[F] {
-      implicit val gachaPrizesDataOperations: GachaPrizesDataOperations[F] =
-        new GachaPrizesDataOperations[F]
       gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence).toIO.unsafeRunAsyncAndForget()
 
       override implicit val api: GachaAPI[F, Player] = new GachaAPI[F, Player] {

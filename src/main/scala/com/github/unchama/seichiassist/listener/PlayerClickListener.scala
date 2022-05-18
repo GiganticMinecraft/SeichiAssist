@@ -6,7 +6,6 @@ import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist._
-import com.github.unchama.seichiassist.data.GachaPrize
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
 import com.github.unchama.seichiassist.seichiskill.ActiveSkill
@@ -14,13 +13,10 @@ import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange.RemoteArea
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.Disabled
 import com.github.unchama.seichiassist.seichiskill.assault.AssaultRoutine
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
-import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util._
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
-import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import com.github.unchama.util.external.WorldGuardWrapper.isRegionOwner
-import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -29,8 +25,6 @@ import org.bukkit.event.{EventHandler, EventPriority, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.material.{MaterialData, Openable}
 import org.bukkit.{GameMode, Material, Sound}
-
-import scala.collection.mutable
 
 class PlayerClickListener(
   implicit effectEnvironment: EffectEnvironment,
@@ -43,9 +37,6 @@ class PlayerClickListener(
   import com.github.unchama.generic.ContextCoercion._
   import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{asyncShift, timer}
   import com.github.unchama.targetedeffect._
-  import com.github.unchama.util.syntax._
-
-  import scala.jdk.CollectionConverters._
 
   private val plugin = SeichiAssist.instance
 
