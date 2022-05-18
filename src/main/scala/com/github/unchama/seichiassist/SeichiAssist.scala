@@ -410,7 +410,8 @@ class SeichiAssist extends JavaPlugin() {
     subhomeSystem,
     presentSystem,
     anywhereEnderSystem,
-    gachaSystem
+    gachaSystem,
+    gtToSiinaSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
