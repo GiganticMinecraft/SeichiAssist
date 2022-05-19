@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
@@ -16,7 +16,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{GameMode, Material}
 
-class GachaController[F[_]: ConcurrentEffect: Sync: OnMinecraftServerThread](
+class GachaController[F[_]: ConcurrentEffect: OnMinecraftServerThread](
   implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
 ) extends Listener {
 

@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, Sync, SyncIO}
+import cats.effect.{ConcurrentEffect, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -23,7 +23,7 @@ trait System[F[_]] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect: Sync](
+  def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect](
     implicit syncUuidRepository: UuidRepository[SyncIO],
     gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): System[F] = {
