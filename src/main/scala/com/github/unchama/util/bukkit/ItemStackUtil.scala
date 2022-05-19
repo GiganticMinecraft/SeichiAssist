@@ -1,7 +1,6 @@
 package com.github.unchama.util.bukkit
 
 import org.bukkit.ChatColor.{DARK_GREEN, RESET}
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 
