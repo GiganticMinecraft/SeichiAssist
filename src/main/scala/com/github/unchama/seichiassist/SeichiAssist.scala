@@ -41,7 +41,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{
   onMainThread
 }
 import com.github.unchama.seichiassist.data.player.PlayerData
-import com.github.unchama.seichiassist.data.{GachaPrize, MineStackGachaData, RankData}
+import com.github.unchama.seichiassist.data.{MineStackGachaData, RankData}
 import com.github.unchama.seichiassist.database.DatabaseGateway
 import com.github.unchama.seichiassist.domain.actions.{
   GetNetworkConnectionCount,
@@ -785,8 +785,6 @@ class SeichiAssist extends JavaPlugin() {
 object SeichiAssist {
   val SEICHIWORLDNAME = "world_sw"
   val DEBUGWORLDNAME = "world"
-  // Gachadataに依存するデータリスト
-  val gachadatalist: mutable.ArrayBuffer[GachaPrize] = mutable.ArrayBuffer()
   // Playerdataに依存するデータリスト
   val playermap: mutable.HashMap[UUID, PlayerData] = mutable.HashMap()
   // プレイ時間ランキング表示用データリスト
