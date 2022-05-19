@@ -2,8 +2,8 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
-import com.github.unchama.seichiassist.data.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gachatrade.bukkit.actions.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.util.InventoryUtil.InventoryOps

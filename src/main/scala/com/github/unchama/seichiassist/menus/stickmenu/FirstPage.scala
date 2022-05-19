@@ -12,7 +12,7 @@ import com.github.unchama.menuinventory.slot.button.action.{
 }
 import com.github.unchama.menuinventory.slot.button.{Button, RecomputedButton, action}
 import com.github.unchama.seichiassist.data.descrptions.PlayerStatsLoreGenerator
-import com.github.unchama.seichiassist.data.{GachaSkullData, MenuInventoryData}
+import com.github.unchama.seichiassist.data.MenuInventoryData
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.minestack.MineStackMainMenu
@@ -38,6 +38,7 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.domain.PocketSize
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
 import com.github.unchama.seichiassist.subsystems.ranking.api.RankingProvider
 import com.github.unchama.seichiassist.task.CoolDownTask

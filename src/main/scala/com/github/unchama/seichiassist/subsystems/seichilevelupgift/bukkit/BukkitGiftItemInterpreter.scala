@@ -2,7 +2,8 @@ package com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit
 
 import cats.data.Kleisli
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
+import com.github.unchama.seichiassist.data.ItemData
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.Gift.Item
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.GiftItemInterpreter
 import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksEffect
