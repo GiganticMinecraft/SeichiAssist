@@ -32,7 +32,6 @@ object StaticGachaPrizeFactory {
     meta.setDisplayName(s"$GOLD${BOLD}がちゃりんご")
     meta.setLore(gachaRingoLore)
     setItemMeta(meta)
-    clone()
   }
 
   /**
@@ -53,7 +52,6 @@ object StaticGachaPrizeFactory {
         ).asJava
       )
       setItemMeta(meta)
-      clone()
     }
 
   /**
@@ -78,7 +76,6 @@ object StaticGachaPrizeFactory {
       meta.setUnbreakable(true)
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES)
       setItemMeta(meta)
-      clone()
   }
 
 }

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.ChatColor._
+import org.bukkit.Sound
 
 class GachaTradeListener[F[_]: Sync: ConcurrentEffect](
   implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
@@ -39,7 +40,7 @@ class GachaTradeListener[F[_]: Sync: ConcurrentEffect](
     /**
      * 非対象商品をインベントリに戻す
      */
-    tradedInformation._3.foreach { itemStack =>
+    tradedInformation._3.filterNot(_ == null).foreach { itemStack =>
       if (!InventoryOperations.isPlayerInventoryFull(player))
         InventoryOperations.addItem(player, itemStack)
       else InventoryOperations.dropItem(player, itemStack)
@@ -61,8 +62,12 @@ class GachaTradeListener[F[_]: Sync: ConcurrentEffect](
     if (tradedInformation._1 == 0 && tradedInformation._2 == 0) {
       player.sendMessage(s"${YELLOW}景品を認識しませんでした。すべてのアイテムを返却します")
     } else {
+      player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
       player.sendMessage(
         s"${GREEN}大当たり景品を${tradedInformation._1 / 12}個、あたり景品を${tradedInformation._2}個認識しました。"
+      )
+      player.sendMessage(
+        s"$GREEN${tradedInformation._1 + tradedInformation._2}枚の${GOLD}ガチャ券${WHITE}を受け取りました。"
       )
     }
   }

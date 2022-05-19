@@ -11,7 +11,6 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.listener.invlistener.OnClickTitleMenu
 import com.github.unchama.seichiassist.menus.achievement.AchievementMenu
 import com.github.unchama.seichiassist.menus.stickmenu.{FirstPage, StickMenu}
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -26,8 +25,6 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.inventory.{ItemFlag, ItemStack}
 import org.bukkit.{Bukkit, Material, Sound}
-
-import scala.collection.mutable.ArrayBuffer
 
 class PlayerInventoryListener(
   implicit effectEnvironment: EffectEnvironment,

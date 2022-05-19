@@ -32,6 +32,7 @@ class GtToSiinaringo[F[_]: Sync: ConcurrentEffect](
     // インベントリサイズが4列でない時終了
     if (inventory.row != 4) return
 
+    if (inventory.getTitle != s"$GOLD${BOLD}椎名林檎と交換したい景品を入れてネ") return
     // 交換後の情報
     val tradedInformation =
       BukkitTrade[F](name).trade(inventory.getContents.toList).toIO.unsafeRunSync()
@@ -39,7 +40,7 @@ class GtToSiinaringo[F[_]: Sync: ConcurrentEffect](
     /**
      * 非対象商品をインベントリに戻す
      */
-    tradedInformation._2.foreach { itemStack =>
+    tradedInformation._2.filterNot(_ == null).foreach { itemStack =>
       if (!InventoryOperations.isPlayerInventoryFull(player))
         InventoryOperations.addItem(player, itemStack)
       else InventoryOperations.dropItem(player, itemStack)

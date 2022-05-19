@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gachatrade.bukkit.actions
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gachatrade.application.actions.Trade
 import org.bukkit.inventory.ItemStack
@@ -36,7 +35,7 @@ object BukkitTrade {
       )
 
       // 交換不可能なアイテム達
-      val falseItems = contents.diff(Seq(trueBigItems, trueRegularItems))
+      val falseItems = contents.diff(trueBigItems :: trueRegularItems)
 
       (
         trueBigItems.map(_.getAmount).sum * 12,
