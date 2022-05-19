@@ -204,7 +204,7 @@ class GachaCommand[F[
               GachaPrize(mainHandItem, GachaProbability(probability), probability < 0.1, _)
             )
           } yield MessageEffect(
-            List("ガチャアイテムを追加しました！", "ガチャアイテムを永続保存させるためには/gacha saveを実行してください。")
+            List("ガチャアイテムを追加しました！", "ガチャアイテムを永続化するためには/gacha saveを実行してください。")
           )
 
           eff.toIO
@@ -252,7 +252,7 @@ class GachaCommand[F[
             GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
           )
         } yield MessageEffect(
-          List("ガチャアイテムを削除しました", "ガチャアイテム削除を永続保存するためには/gacha saveを実行してください。")
+          List("ガチャアイテムを削除しました", "ガチャアイテム削除を永続化するためには/gacha saveを実行してください。")
         )
 
         eff.toIO
