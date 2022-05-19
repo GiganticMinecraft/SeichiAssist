@@ -119,7 +119,7 @@ class GachaCommand[F[
       .andThen(_.flatMap { id =>
         val intId = id.asInstanceOf[Int]
         if (
-          gachaPrizesDataOperations.gachaPrizeExists(GachaPrizeId(intId)).toIO.unsafeRunSync()
+          gachaPrizesDataOperations.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()
         ) {
           succeedWith(intId)
         } else {

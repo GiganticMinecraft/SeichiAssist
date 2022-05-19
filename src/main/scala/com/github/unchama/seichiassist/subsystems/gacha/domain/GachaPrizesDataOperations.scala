@@ -22,7 +22,7 @@ final class GachaPrizesDataOperations[F[_]: Sync] {
   /**
    * 指定された`GachaPrize`が存在するかどうか
    */
-  def gachaPrizeExists(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
+  def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
     gachaPrizes <- gachaPrizes.get
   } yield gachaPrizes.exists(_.id == gachaPrizeId)
 
