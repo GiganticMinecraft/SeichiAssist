@@ -32,7 +32,7 @@ object LotteryOfGachaItems {
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): LotteryOfGachaItems[F] = (amount: Int) =>
     for {
-      gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
+      gachaPrizes <- gachaPrizesDataOperations.gachaPrizesList
     } yield {
       (0 until amount).map { _ =>
         val random = Math.random()

@@ -14,7 +14,7 @@ object BukkitTrade {
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): Trade[F, ItemStack] = (contents: List[ItemStack]) =>
     for {
-      gachaList <- gachaPrizesDataOperations.getGachaPrizesList
+      gachaList <- gachaPrizesDataOperations.gachaPrizesList
     } yield {
       // TODO GTアイテムかどうかを確率に依存すべきではない
       val giganticItemStacks =

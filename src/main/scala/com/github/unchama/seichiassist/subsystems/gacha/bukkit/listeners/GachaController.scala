@@ -48,7 +48,7 @@ class GachaController[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
     // ガチャデータが設定されていない場合
-    if (gachaPrizesDataOperations.getGachaPrizesList.toIO.unsafeRunSync().isEmpty) {
+    if (gachaPrizesDataOperations.gachaPrizesList.toIO.unsafeRunSync().isEmpty) {
       player.sendMessage("ガチャが設定されていません")
       return
     }

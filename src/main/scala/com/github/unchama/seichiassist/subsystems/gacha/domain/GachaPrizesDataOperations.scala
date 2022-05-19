@@ -55,7 +55,7 @@ final class GachaPrizesDataOperations[F[_]: Sync] {
   /**
    * すべてのガチャ景品データを返す
    */
-  def getGachaPrizesList: F[Vector[GachaPrize]] = gachaPrizes.get
+  def gachaPrizesList: F[Vector[GachaPrize]] = gachaPrizes.get
 
   /**
    * すべてのガチャ景品データを削除する

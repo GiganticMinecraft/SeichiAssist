@@ -216,7 +216,7 @@ class GachaCommand[F[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
+            gachaPrizes <- gachaPrizesDataOperations.gachaPrizesList
           } yield {
             val gachaPrizeInformation = gachaPrizes
               .sortBy(_.id.id)
@@ -336,7 +336,7 @@ class GachaCommand[F[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            gachaPrizes <- gachaPrizesDataOperations.getGachaPrizesList
+            gachaPrizes <- gachaPrizesDataOperations.gachaPrizesList
             _ <- gachaPersistence.update(gachaPrizes)
           } yield MessageEffect("ガチャデータをmysqlに保存しました。")
 

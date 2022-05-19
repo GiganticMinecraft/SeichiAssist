@@ -13,7 +13,7 @@ object BukkitTrade {
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): Trade[F, ItemStack] = (contents: List[ItemStack]) =>
     for {
-      gachaList <- gachaPrizesDataOperations.getGachaPrizesList
+      gachaList <- gachaPrizesDataOperations.gachaPrizesList
     } yield {
       // GTアイテムを除去し、今回の対象であるあたりまでを含めたリスト
       val targetsList =
