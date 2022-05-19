@@ -41,7 +41,7 @@ object BukkitDrawGacha {
         case (rarity, gachaPrize) =>
           val givenItem = gachaPrize.getGiveItemStack(Some(player.getName))
 
-          /**
+          /*
            *  メッセージ設定
            *  ①まずMineStackに入るか試す
            *  ②入らなかったらインベントリに直接入れる
