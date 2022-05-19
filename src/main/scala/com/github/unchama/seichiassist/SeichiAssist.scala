@@ -390,6 +390,10 @@ class SeichiAssist extends JavaPlugin() {
     subsystems.gacha.subsystems.tradesystems.gttosiina.System.wired
   }
 
+  private lazy val gachaTradeSystem: Subsystem[IO] = {
+    subsystems.gacha.subsystems.tradesystems.gachatrade.System.wired
+  }
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -411,7 +415,8 @@ class SeichiAssist extends JavaPlugin() {
     presentSystem,
     anywhereEnderSystem,
     gachaSystem,
-    gtToSiinaSystem
+    gtToSiinaSystem,
+    gachaTradeSystem
   )
 
   private lazy val buildAssist: BuildAssist = {
