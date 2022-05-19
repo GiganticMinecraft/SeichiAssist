@@ -30,6 +30,8 @@ class GachaTradeListener[F[_]: Sync: ConcurrentEffect](
     // インベントリサイズが4列でない時終了
     if (inventory.row != 4) return
 
+    if (inventory.getTitle != s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください") return
+
     // 交換後の情報
     val tradedInformation =
       BukkitTrade[F](name).trade(inventory.getContents.toList).toIO.unsafeRunSync()
