@@ -18,7 +18,8 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPersistence,
   GachaPrizeId,
-  GachaPrizesDataOperations
+  GachaPrizesDataOperations,
+  GachaProbability
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
@@ -200,7 +201,7 @@ class GachaCommand[F[
           val mainHandItem = player.getInventory.getItemInMainHand
           val eff = for {
             _ <- gachaPrizesDataOperations.addGachaPrize(
-              GachaPrize(mainHandItem, probability, probability < 0.1, _)
+              GachaPrize(mainHandItem, GachaProbability(probability), probability < 0.1, _)
             )
           } yield MessageEffect(
             List("ガチャアイテムを追加しました！", "ガチャアイテムを永続保存させるためには/gacha saveを実行してください。")
@@ -221,7 +222,7 @@ class GachaCommand[F[
               .sortBy(_.id.id)
               .map { gachaPrize =>
                 val itemStack = gachaPrize.itemStack
-                val probability = gachaPrize.probability
+                val probability = gachaPrize.probability.value
 
                 s"${gachaPrize.id.id}|${itemStack.getType.toString}/${itemStack
                     .getItemMeta
@@ -229,7 +230,7 @@ class GachaCommand[F[
               }
               .toList
 
-            val totalProbability = gachaPrizes.map(_.probability).sum
+            val totalProbability = gachaPrizes.map(_.probability.value).sum
             MessageEffect(
               List(s"${RED}アイテム番号|アイテム名|アイテム数|出現確率") ++ gachaPrizeInformation ++ List(
                 s"${RED}合計確率: $totalProbability(${totalProbability * 100}%)",
@@ -300,8 +301,9 @@ class GachaCommand[F[
         val eff = for {
           existingGachaPrize <- gachaPrizesDataOperations.getGachaPrize(targetId)
           _ <- gachaPrizesDataOperations.removeByGachaPrizeId(targetId)
-          _ <- gachaPrizesDataOperations
-            .addGachaPrize(_ => existingGachaPrize.get.copy(probability = newProb))
+          _ <- gachaPrizesDataOperations.addGachaPrize(_ =>
+            existingGachaPrize.get.copy(probability = GachaProbability(newProb))
+          )
           itemStack = existingGachaPrize.get.itemStack
         } yield MessageEffect(s"${targetId.id}|${itemStack.getType.toString}/${itemStack
             .getItemMeta
@@ -404,7 +406,7 @@ class GachaCommand[F[
           val mineStackGachaData = new MineStackGachaData(
             args.head.toString,
             _gachaPrize.itemStack,
-            _gachaPrize.probability,
+            _gachaPrize.probability.value,
             1
           )
           SeichiAssist.msgachadatalist.addOne(mineStackGachaData)

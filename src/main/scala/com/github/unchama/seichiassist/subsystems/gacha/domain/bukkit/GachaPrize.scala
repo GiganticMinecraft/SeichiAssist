@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit
 
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizeId
+import com.github.unchama.seichiassist.subsystems.gacha.domain.{GachaPrizeId, GachaProbability}
 import com.github.unchama.util.bukkit.ItemStackUtil.appendOwnerInformation
 import org.bukkit.inventory.ItemStack
 
@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
  */
 case class GachaPrize(
   itemStack: ItemStack,
-  probability: Double,
+  probability: GachaProbability,
   isAppendOwner: Boolean,
   id: GachaPrizeId
 ) {

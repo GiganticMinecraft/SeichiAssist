@@ -4,7 +4,8 @@ import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizeId,
-  GachaPrizesDataOperations
+  GachaPrizesDataOperations,
+  GachaProbability
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 
@@ -38,13 +39,13 @@ object LotteryOfGachaItems {
 
         def getGachaPrize: GachaPrize = {
           gachaPrizes.foldLeft(1.0) { (sum, gachaPrize) =>
-            val nowSum = sum - gachaPrize.probability
+            val nowSum = sum - gachaPrize.probability.value
             if (nowSum <= random) return gachaPrize
             else nowSum
           }
           GachaPrize(
             StaticGachaPrizeFactory.gachaRingo,
-            1.0,
+            GachaProbability(1.0),
             isAppendOwner = false,
             GachaPrizeId(0)
           )

@@ -7,6 +7,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPersistence,
   GachaPrizeId,
+  GachaProbability,
   bukkit
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
@@ -28,7 +29,7 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
             itemStack.setAmount(rs.int("amount"))
             bukkit.GachaPrize(
               itemStack,
-              probability,
+              GachaProbability(probability),
               probability < 0.1,
               GachaPrizeId(rs.int("id"))
             )
@@ -50,7 +51,7 @@ class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
         gachaPrizesList.foreach { gachaPrize =>
           val itemStackString = ItemStackCodec.toString(gachaPrize.itemStack)
           val amount = gachaPrize.itemStack.getAmount
-          sql"insert into gachadata values (${gachaPrize.id.id},$amount,${gachaPrize.probability},$itemStackString)"
+          sql"insert into gachadata values (${gachaPrize.id.id},$amount,${gachaPrize.probability.value},$itemStackString)"
             .execute()
             .apply()
         }

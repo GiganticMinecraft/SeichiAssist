@@ -16,10 +16,11 @@ object BukkitTrade {
       gachaList <- gachaPrizesDataOperations.getGachaPrizesList
     } yield {
       // GTアイテムを除去し、今回の対象であるあたりまでを含めたリスト
-      val targetsList = gachaList.filterNot(_.probability < 0.001).filter(_.probability < 0.1)
+      val targetsList =
+        gachaList.filterNot(_.probability.value < 0.001).filter(_.probability.value < 0.1)
 
       // 大当たりのアイテム
-      val bigList = targetsList.filter(_.probability < 0.01)
+      val bigList = targetsList.filter(_.probability.value < 0.01)
 
       // あたりのアイテム
       val regularList = targetsList.diff(bigList)

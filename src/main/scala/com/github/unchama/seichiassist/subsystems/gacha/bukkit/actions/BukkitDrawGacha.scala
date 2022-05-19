@@ -32,9 +32,9 @@ object BukkitDrawGacha {
       val gachaLotteryItems = LotteryOfGachaItems.using.lottery(amount).toIO.unsafeRunSync()
 
       val rarities: Vector[GachaRarity] = gachaLotteryItems.map { gachaPrize =>
-        if (gachaPrize.probability < 0.001) gigantic
-        else if (gachaPrize.probability < 0.01) big
-        else if (gachaPrize.probability < 0.1) regular
+        if (gachaPrize.probability.value < 0.001) gigantic
+        else if (gachaPrize.probability.value < 0.01) big
+        else if (gachaPrize.probability.value < 0.1) regular
         else potato
       }
       rarities.zip(gachaLotteryItems).map {
