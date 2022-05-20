@@ -7,7 +7,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.GachaController
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit.JdbcGachaPersistence
@@ -47,7 +47,7 @@ object System {
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor
       )
-      override val listeners: Seq[Listener] = Seq(new GachaController[F]())
+      override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
     }
   }
 

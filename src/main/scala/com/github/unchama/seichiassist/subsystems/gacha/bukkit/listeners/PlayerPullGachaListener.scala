@@ -16,7 +16,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{GameMode, Material}
 
-class GachaController[F[_]: ConcurrentEffect: OnMinecraftServerThread](
+class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
   implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
 ) extends Listener {
 
