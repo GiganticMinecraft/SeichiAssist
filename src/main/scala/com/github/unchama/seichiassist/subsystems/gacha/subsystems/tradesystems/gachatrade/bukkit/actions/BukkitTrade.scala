@@ -9,7 +9,7 @@ object BukkitTrade {
 
   import cats.implicits._
 
-  def apply[F[_]: Sync](name: String)(
+  def apply[F[_]: Sync](owner: String)(
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): Trade[F, ItemStack] = (contents: List[ItemStack]) =>
     for {
@@ -26,20 +26,22 @@ object BukkitTrade {
       val regularList = targetsList.diff(bigList)
 
       // 交換可能な大当たりのアイテム
-      val trueBigItems =
-        contents.filter(targetItem => bigList.exists(_.createNewItem(Some(name)) == targetItem))
+      val tradableBigItems =
+        contents.filter(targetItem =>
+          bigList.exists(_.createNewItem(Some(owner)) == targetItem)
+        )
 
       // 交換可能なあたりのアイテム
-      val trueRegularItems = contents.filter(targetItem =>
-        regularList.exists(_.createNewItem(Some(name)) == targetItem)
+      val tradableRegularItems = contents.filter(targetItem =>
+        regularList.exists(_.createNewItem(Some(owner)) == targetItem)
       )
 
       // 交換不可能なアイテム達
-      val falseItems = contents.diff(trueBigItems :: trueRegularItems)
+      val falseItems = contents.diff(tradableBigItems :: tradableRegularItems)
 
       (
-        trueBigItems.map(_.getAmount).sum * 12,
-        trueRegularItems.map(_.getAmount).sum * 3,
+        tradableBigItems.map(_.getAmount).sum * 12,
+        tradableRegularItems.map(_.getAmount).sum * 3,
         falseItems
       )
     }
