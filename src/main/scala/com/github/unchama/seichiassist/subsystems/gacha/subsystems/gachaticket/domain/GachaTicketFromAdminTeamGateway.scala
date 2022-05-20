@@ -5,12 +5,12 @@ import java.util.UUID
 trait GachaTicketFromAdminTeamGateway[F[_]] {
 
   /**
-   * 運営からのガチャ券の枚数を全員に増加させる作用
+   * 現在データベース中にある全プレイヤーの「運営からのガチャ券」の枚数を増加させる作用
    */
   def add(amount: Int): F[Boolean]
 
   /**
-   * 運営からのガチャ券の枚数を指定UUIDのプレイヤーに増加させる作用
+   * 指定されたUUIDのプレイヤーの「運営からのガチャ券」の枚数を増加させる作用
    */
   def add(amount: Int, uuid: UUID): F[Boolean]
 
