@@ -37,7 +37,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
     val tradedInformation =
       BukkitTrade[F](name).trade(inventory.getContents.toList).toIO.unsafeRunSync()
 
-    /**
+    /*
      * 非対象商品をインベントリに戻す
      */
     tradedInformation._3.filterNot(_ == null).foreach { itemStack =>
@@ -46,7 +46,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
       else InventoryOperations.dropItem(player, itemStack)
     }
 
-    /**
+    /*
      * ガチャ券を付与する
      */
     val skull = GachaSkullData.gachaForExchanging
@@ -56,7 +56,7 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
       else InventoryOperations.dropItem(player, skull)
     }
 
-    /**
+    /*
      * お知らせする
      */
     if (tradedInformation._1 == 0 && tradedInformation._2 == 0) {
