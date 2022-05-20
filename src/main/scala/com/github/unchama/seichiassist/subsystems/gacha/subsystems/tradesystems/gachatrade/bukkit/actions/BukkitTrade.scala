@@ -37,12 +37,12 @@ object BukkitTrade {
       )
 
       // 交換不可能なアイテム達
-      val falseItems = contents.diff(tradableBigItems :: tradableRegularItems)
+      val nonTradableItems = contents.diff(tradableBigItems :: tradableRegularItems)
 
       (
         tradableBigItems.map(_.getAmount).sum * 12,
         tradableRegularItems.map(_.getAmount).sum * 3,
-        falseItems
+        nonTradableItems
       )
     }
 

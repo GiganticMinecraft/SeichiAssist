@@ -21,18 +21,18 @@ object BukkitTrade {
         gachaList.filter(_.probability.value < 0.001).map(_.createNewItem(Some(name)))
 
       // 交換可能なItemStack達
-      val trueItems = contents.filter { targetItem =>
+      val tradableItems = contents.filter { targetItem =>
         giganticItemStacks.exists(_.isSimilar(targetItem))
       }
 
       // 交換可能なアイテムたちから算出する椎名林檎の数
       val siinaringoAmount =
-        trueItems.map(_.getAmount).sum * SeichiAssist.seichiAssistConfig.rateGiganticToRingo
+        tradableItems.map(_.getAmount).sum * SeichiAssist.seichiAssistConfig.rateGiganticToRingo
 
       // 交換不可能なItemStack達
-      val falseItems = contents.diff(trueItems)
+      val nonTradableItems = contents.diff(tradableItems)
 
-      (siinaringoAmount, falseItems)
+      (siinaringoAmount, nonTradableItems)
     }
 
 }
