@@ -39,7 +39,7 @@ final class GachaPrizesDataOperations[F[_]: Sync] {
   /**
    * `GachaPrizeId`から`GachaPrize`を取得する
    */
-  def getGachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize]] = for {
+  def gachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize]] = for {
     prizes <- gachaPrizes.get
   } yield prizes.find(_.id == gachaPrizeId)
 
