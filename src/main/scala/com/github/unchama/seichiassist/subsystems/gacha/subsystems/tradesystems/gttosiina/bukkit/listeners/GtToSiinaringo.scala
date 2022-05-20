@@ -14,7 +14,7 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 
-class GtToSiinaringo[F[_]: Sync: ConcurrentEffect](
+class GtToSiinaringo[F[_]: ConcurrentEffect](
   implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
 ) extends Listener {
 
