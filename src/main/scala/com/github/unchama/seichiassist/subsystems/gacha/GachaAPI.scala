@@ -18,7 +18,10 @@ object GachaReadAPI {
 
 trait GachaWriteAPI[F[_]] {
 
-  def update(gachaPrizesList: Vector[GachaPrize]): F[Unit]
+  /**
+   * ガチャの景品リストを、与えたGachaPrizesListに置き換えを行う
+   */
+  def replace(gachaPrizesList: Vector[GachaPrize]): F[Unit]
 
 }
 
