@@ -1,10 +1,10 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gachatrade.bukkit.listeners
+package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gachatrade.bukkit.listeners
 
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaskull.bukkit.GachaSkullData
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gachatrade.bukkit.actions.BukkitTrade
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.util.InventoryUtil.InventoryOps
 import org.bukkit.ChatColor._
@@ -40,17 +40,19 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
     /*
      * 非対象商品をインベントリに戻す
      */
-    tradedInformation._3.filterNot(_ == null).foreach { itemStack =>
+    tradedInformation.nonTradableItemStacks.filterNot(_ == null).foreach { itemStack =>
       if (!InventoryOperations.isPlayerInventoryFull(player))
         InventoryOperations.addItem(player, itemStack)
       else InventoryOperations.dropItem(player, itemStack)
     }
 
+    val tradeAmount = tradedInformation.tradedAmounts.map(_.amount).sum
+
     /*
      * ガチャ券を付与する
      */
     val skull = GachaSkullData.gachaForExchanging
-    (0 until tradedInformation._1 + tradedInformation._2).foreach { _ =>
+    (0 until tradeAmount).foreach { _ =>
       if (!InventoryOperations.isPlayerInventoryFull(player))
         InventoryOperations.addItem(player, skull)
       else InventoryOperations.dropItem(player, skull)
@@ -59,16 +61,14 @@ class GachaTradeListener[F[_]: ConcurrentEffect](
     /*
      * お知らせする
      */
-    if (tradedInformation._1 == 0 && tradedInformation._2 == 0) {
+    val tradableItemStacks = tradedInformation.tradedAmounts
+    if (tradeAmount == 0) {
       player.sendMessage(s"${YELLOW}景品を認識しませんでした。すべてのアイテムを返却します")
     } else {
       player.playSound(player.getLocation, Sound.BLOCK_ANVIL_PLACE, 1f, 1f)
-      player.sendMessage(
-        s"${GREEN}大当たり景品を${tradedInformation._1 / 12}個、あたり景品を${tradedInformation._2}個認識しました。"
-      )
-      player.sendMessage(
-        s"$GREEN${tradedInformation._1 + tradedInformation._2}枚の${GOLD}ガチャ券${WHITE}を受け取りました。"
-      )
+      player.sendMessage(s"${GREEN}大当たり景品を${tradableItemStacks
+          .count(_.amount == 12)}個、あたり景品を${tradableItemStacks.count(_.amount == 3)}個認識しました。")
+      player.sendMessage(s"$GREEN${tradeAmount}枚の${GOLD}ガチャ券${WHITE}を受け取りました。")
     }
   }
 

@@ -1,8 +1,12 @@
-package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gachatrade.bukkit.actions
+package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gachatrade.bukkit.actions
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gachatrade.application.actions.Trade
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions.Trade
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.domain.{
+  TradeResult,
+  TradedAmount
+}
 import org.bukkit.inventory.ItemStack
 
 object BukkitTrade {
@@ -39,9 +43,10 @@ object BukkitTrade {
       // 交換不可能なアイテム達
       val nonTradableItems = contents.diff(tradableBigItems :: tradableRegularItems)
 
-      (
-        tradableBigItems.map(_.getAmount).sum * 12,
-        tradableRegularItems.map(_.getAmount).sum * 3,
+      TradeResult[ItemStack](
+        tradableBigItems.map(itemStack =>
+          TradedAmount(itemStack.getAmount * 12)
+        ) ++ tradableRegularItems.map(itemStack => TradedAmount(itemStack.getAmount * 3)),
         nonTradableItems
       )
     }
