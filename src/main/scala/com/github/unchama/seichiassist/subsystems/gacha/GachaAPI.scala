@@ -6,6 +6,9 @@ trait GachaReadAPI[F[_], Player] {
 
   def pull(player: Player, amount: Int): F[Unit]
 
+  /**
+   * ガチャの景品リストを返す
+   */
   def list: F[Vector[GachaPrize]]
 
 }
