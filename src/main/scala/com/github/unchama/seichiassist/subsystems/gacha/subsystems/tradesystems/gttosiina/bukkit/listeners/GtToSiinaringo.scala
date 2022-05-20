@@ -1,18 +1,18 @@
 package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gttosiina.bukkit.listeners
 
+import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.gttosiina.bukkit.actions.BukkitTrade
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.util.InventoryUtil.InventoryOps
+import org.bukkit.ChatColor._
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
-import org.bukkit.ChatColor._
-import org.bukkit.Sound
 
 class GtToSiinaringo[F[_]: ConcurrentEffect](
   implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]

@@ -32,10 +32,10 @@ object BukkitDrawGacha {
       val gachaLotteryItems = LotteryOfGachaItems.using.lottery(amount).toIO.unsafeRunSync()
 
       val rarities: Vector[GachaRarity] = gachaLotteryItems.map { gachaPrize =>
-        if (gachaPrize.probability.value < 0.001) gigantic
-        else if (gachaPrize.probability.value < 0.01) big
-        else if (gachaPrize.probability.value < 0.1) regular
-        else potato
+        if (gachaPrize.probability.value < 0.001) Gigantic
+        else if (gachaPrize.probability.value < 0.01) Big
+        else if (gachaPrize.probability.value < 0.1) Regular
+        else Potato
       }
       rarities.zip(gachaLotteryItems).map {
         case (rarity, gachaPrize) =>
@@ -60,7 +60,7 @@ object BukkitDrawGacha {
               }
             }
 
-          if (rarity == gigantic) {
+          if (rarity == Gigantic) {
             val loreWithoutOwnerName =
               givenItem.getItemMeta.getLore.asScala.toList.filterNot {
                 _ == s"§r§2所有者：${player.getName}"
@@ -98,10 +98,10 @@ object BukkitDrawGacha {
             sendMessageToEveryone(message)(forTextComponent[IO])
             SendSoundEffect
               .sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
-          } else if (rarity == big) {
+          } else if (rarity == Big) {
             player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
             if (amount == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
-          } else if (rarity == regular) {
+          } else if (rarity == Regular) {
             if (amount == 1) player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
           } else {
             if (amount == 1) player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
