@@ -184,7 +184,7 @@ class GachaCommand[F[
             )
           } yield SequentialEffect(
             InventoryOperations.grantItemStacksEffect[IO](
-              gachaPrize.get.getGiveItemStack(Some(context.sender.getName))
+              gachaPrize.get.createNewItem(Some(context.sender.getName))
             )
           )
 

@@ -26,13 +26,12 @@ object BukkitTrade {
       val regularList = targetsList.diff(bigList)
 
       // 交換可能な大当たりのアイテム
-      val trueBigItems = contents.filter(targetItem =>
-        bigList.exists(_.getGiveItemStack(Some(name)) == targetItem)
-      )
+      val trueBigItems =
+        contents.filter(targetItem => bigList.exists(_.createNewItem(Some(name)) == targetItem))
 
       // 交換可能なあたりのアイテム
       val trueRegularItems = contents.filter(targetItem =>
-        regularList.exists(_.getGiveItemStack(Some(name)) == targetItem)
+        regularList.exists(_.createNewItem(Some(name)) == targetItem)
       )
 
       // 交換不可能なアイテム達

@@ -16,11 +16,11 @@ case class GachaPrize(
   id: GachaPrizeId
 ) {
 
-  def getGiveItemStack(name: Option[String]): ItemStack = {
+  def createNewItem(owner: Option[String]): ItemStack = {
     val clonedItemStack = itemStack.clone()
     val givenItem =
-      if (hasOwner && name.nonEmpty)
-        appendOwnerInformation(name.get)(clonedItemStack)
+      if (hasOwner && owner.nonEmpty)
+        appendOwnerInformation(owner.get)(clonedItemStack)
       else clonedItemStack
     givenItem
   }

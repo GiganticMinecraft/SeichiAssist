@@ -18,7 +18,7 @@ object BukkitTrade {
     } yield {
       // TODO GTアイテムかどうかを確率に依存すべきではない
       val giganticItemStacks =
-        gachaList.filter(_.probability.value < 0.001).map(_.getGiveItemStack(Some(name)))
+        gachaList.filter(_.probability.value < 0.001).map(_.createNewItem(Some(name)))
 
       // 交換可能なItemStack達
       val trueItems = contents.filter { targetItem =>

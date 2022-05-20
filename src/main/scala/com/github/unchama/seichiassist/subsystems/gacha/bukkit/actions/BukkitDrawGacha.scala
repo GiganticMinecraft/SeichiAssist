@@ -39,7 +39,7 @@ object BukkitDrawGacha {
       }
       rarities.zip(gachaLotteryItems).map {
         case (rarity, gachaPrize) =>
-          val givenItem = gachaPrize.getGiveItemStack(Some(player.getName))
+          val givenItem = gachaPrize.createNewItem(Some(player.getName))
 
           /*
            *  メッセージ設定
