@@ -182,10 +182,8 @@ class GachaCommand[F[
             gachaPrize <- gachaPrizesDataOperations.getGachaPrize(
               GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
             )
-          } yield SequentialEffect(
-            InventoryOperations.grantItemStacksEffect[IO](
-              gachaPrize.get.createNewItem(Some(context.sender.getName))
-            )
+          } yield InventoryOperations.grantItemStacksEffect[IO](
+            gachaPrize.get.createNewItem(Some(context.sender.getName))
           )
 
           eff.toIO
