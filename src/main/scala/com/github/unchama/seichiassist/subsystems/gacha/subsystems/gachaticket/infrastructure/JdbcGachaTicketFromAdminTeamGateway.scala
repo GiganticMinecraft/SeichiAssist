@@ -2,13 +2,13 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.
 
 import cats.effect.Sync
 import com.github.unchama.concurrent.NonServerThreadContextShift
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
-class JdbcGachaTicketPersistence[F[_]: Sync: NonServerThreadContextShift]
-    extends GachaTicketPersistence[F] {
+class JdbcGachaTicketFromAdminTeamGateway[F[_]: Sync: NonServerThreadContextShift]
+    extends GachaTicketFromAdminTeamGateway[F] {
 
   import cats.implicits._
 

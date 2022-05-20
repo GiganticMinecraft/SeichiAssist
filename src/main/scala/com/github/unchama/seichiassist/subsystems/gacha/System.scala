@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.GachaCo
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit.JdbcGachaPersistence
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketPersistence
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamGateway
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
@@ -28,8 +28,8 @@ object System {
     gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): System[F] = {
     implicit val gachaPersistence: JdbcGachaPersistence[F] = new JdbcGachaPersistence[F]()
-    implicit val gachaTicketPersistence: JdbcGachaTicketPersistence[F] =
-      new JdbcGachaTicketPersistence[F]
+    implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
+      new JdbcGachaTicketFromAdminTeamGateway[F]
 
     new System[F] {
       gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence).toIO.unsafeRunAsyncAndForget()

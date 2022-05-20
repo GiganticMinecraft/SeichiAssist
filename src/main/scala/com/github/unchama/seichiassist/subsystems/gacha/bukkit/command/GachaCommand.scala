@@ -21,7 +21,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizesDataOperations,
   GachaProbability
 }
-import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketPersistence
+import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -35,7 +35,7 @@ import scala.util.chaining.scalaUtilChainingOps
 class GachaCommand[F[
   _
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
-  implicit gachaTicketPersistence: GachaTicketPersistence[F],
+  implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
   gachaPersistence: GachaPersistence[F],
   gachaPrizesDataOperations: GachaPrizesDataOperations[F],
   syncUuidRepository: UuidRepository[SyncIO]

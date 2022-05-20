@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.
 
 import java.util.UUID
 
-trait GachaTicketPersistence[F[_]] {
+trait GachaTicketFromAdminTeamGateway[F[_]] {
 
   /**
    * 運営からのガチャ券の枚数を全員に増加させる作用
