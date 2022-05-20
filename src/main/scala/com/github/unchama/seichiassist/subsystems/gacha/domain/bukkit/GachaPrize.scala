@@ -7,19 +7,19 @@ import org.bukkit.inventory.ItemStack
 /**
  * @param itemStack ガチャで排出されるアイテム。数もそのまま利用されます
  * @param probability ガチャで排出される確率
- * @param isAppendOwner 記名する場合はtrueにしてください
+ * @param hasOwner 記名する場合はtrueにしてください
  */
 case class GachaPrize(
   itemStack: ItemStack,
   probability: GachaProbability,
-  isAppendOwner: Boolean,
+  hasOwner: Boolean,
   id: GachaPrizeId
 ) {
 
   def getGiveItemStack(name: Option[String]): ItemStack = {
     val clonedItemStack = itemStack.clone()
     val givenItem =
-      if (isAppendOwner && name.nonEmpty)
+      if (hasOwner && name.nonEmpty)
         appendOwnerInformation(name.get)(clonedItemStack)
       else clonedItemStack
     givenItem

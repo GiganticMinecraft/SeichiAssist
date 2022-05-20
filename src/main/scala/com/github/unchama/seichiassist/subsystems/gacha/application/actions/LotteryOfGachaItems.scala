@@ -46,7 +46,7 @@ object LotteryOfGachaItems {
           GachaPrize(
             StaticGachaPrizeFactory.gachaRingo,
             GachaProbability(1.0),
-            isAppendOwner = false,
+            hasOwner = false,
             GachaPrizeId(0)
           )
         }
