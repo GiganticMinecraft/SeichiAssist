@@ -95,8 +95,8 @@ class GachaCommand[F[
         "add" -> add,
         "remove" -> remove,
         "list" -> list,
-        "setamount" -> setamount,
-        "setprob" -> setprob,
+        "setamount" -> setAmount,
+        "setprob" -> setProbability,
         "clear" -> clear,
         "save" -> save,
         "reload" -> reload,
@@ -127,7 +127,7 @@ class GachaCommand[F[
         }
       })
 
-    val probParser: String => Either[TargetedEffect[CommandSender], Any] =
+    val probabilityParser: String => Either[TargetedEffect[CommandSender], Any] =
       Parsers.double(MessageEffect("確率は小数点数で指定してください。")).andThen {
         _.flatMap { num =>
           val doubleNum = num.asInstanceOf[Double]
@@ -194,7 +194,7 @@ class GachaCommand[F[
 
     val add: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(List(probParser))
+        .argumentsParsers(List(probabilityParser))
         .execution { context =>
           val player = context.sender
           val probability = context.args.parsed.head.asInstanceOf[Double]
@@ -260,7 +260,7 @@ class GachaCommand[F[
       }
       .build()
 
-    val setamount: ContextualExecutor =
+    val setAmount: ContextualExecutor =
       ContextualExecutorBuilder
         .beginConfiguration()
         .argumentsParsers(
@@ -291,9 +291,9 @@ class GachaCommand[F[
         }
         .build()
 
-    val setprob: ContextualExecutor = ContextualExecutorBuilder
+    val setProbability: ContextualExecutor = ContextualExecutorBuilder
       .beginConfiguration()
-      .argumentsParsers(List(gachaPrizeIdExistsParser, probParser))
+      .argumentsParsers(List(gachaPrizeIdExistsParser, probabilityParser))
       .execution { context =>
         val args = context.args.parsed
         val targetId = GachaPrizeId(args.head.asInstanceOf[Int])
@@ -424,7 +424,7 @@ class GachaCommand[F[
 
     val addms2: ContextualExecutor =
       playerCommandBuilder
-        .argumentsParsers(List(probParser, Parsers.identity))
+        .argumentsParsers(List(probabilityParser, Parsers.identity))
         .execution { context =>
           val args = context.args.parsed
           val mainHand = context.sender.getInventory.getItemInMainHand
