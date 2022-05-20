@@ -33,7 +33,11 @@ object BukkitTrade {
       val nonTradableItems = contents.diff(tradableItems)
 
       TradeResult[ItemStack](
-        tradableItems.map(itemStack => TradedAmount(itemStack.getAmount)),
+        tradableItems.map(itemStack =>
+          TradedAmount(
+            itemStack.getAmount * SeichiAssist.seichiAssistConfig.rateGiganticToRingo
+          )
+        ),
         nonTradableItems
       )
     }
