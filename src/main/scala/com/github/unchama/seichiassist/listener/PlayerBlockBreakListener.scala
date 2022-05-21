@@ -282,7 +282,6 @@ class PlayerBlockBreakListener(
   def onPlayerBreakBlockFinally(event: BlockBreakEvent): Unit = {
     val player = event.getPlayer
     val block = event.getBlock
-    import PluginExecutionContexts.timer
     val amount = SeichiExpAmount.ofNonNegative {
       BreakUtil
         .blockCountWeight[IO](event.getPlayer.getWorld)
