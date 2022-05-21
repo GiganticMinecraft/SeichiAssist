@@ -18,7 +18,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 trait System[F[_]] extends Subsystem[F] {
-  val api: GachaReadAPI[F, Player] with GachaWriteAPI[F]
+  val api: GachaReadAPI[F] with GachaWriteAPI[F] with GachaMotionAPI[F, Player]
 }
 
 object System {
