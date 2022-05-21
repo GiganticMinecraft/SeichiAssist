@@ -1,25 +1,19 @@
 package com.github.unchama.seichiassist.util
 
-import cats.Functor
+import cats.Monad
 import cats.effect.{IO, SyncIO}
-import cats.implicits._
 import com.github.unchama.generic.effect.unsafe.EffectEnvironment
 import com.github.unchama.seichiassist.MaterialSets.{BlockBreakableBySkill, BreakTool}
 import com.github.unchama.seichiassist._
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.seichiskill.ActiveSkillRange._
-import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{
-  AssaultArmor,
-  DualBreak,
-  TrialBreak
-}
+import com.github.unchama.seichiassist.seichiskill.SeichiSkill.{AssaultArmor, DualBreak, TrialBreak}
 import com.github.unchama.seichiassist.seichiskill.SeichiSkillUsageMode.{Active, Disabled}
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.CardinalDirection
 import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.SeichiExpAmount
 import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
-import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.ChatColor._
 import org.bukkit._
 import org.bukkit.block.Block
@@ -28,7 +22,6 @@ import org.bukkit.entity.{Entity, EntityType, Player}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Dye
 
-import java.time.ZoneId
 import java.util.Random
 import java.util.stream.IntStream
 
@@ -304,16 +297,14 @@ object BreakUtil {
    * @return
    *   ワールドに対応する整地量の倍率を計算する作用
    */
-  def blockCountWeight[F[_]: JavaTime: Functor](world: World): F[Double] =
-    JavaTime[F].getLocalDate(ZoneId.of("Asia/Tokyo" /* JST */ )).map { date =>
+  def blockCountWeight[F[_]: Monad](world: World): F[Double] =
+    Monad[F].pure {
       val managedWorld = ManagedWorld.fromBukkitWorld(world)
       val seichiWorldFactor = if (managedWorld.exists(_.isSeichi)) 1.0 else 0.0
-      val isMonthlyPrizeDay = date.getDayOfMonth == 21
-      val monthlyPrize = if (isMonthlyPrizeDay) 1.75 else 1.0
       val sw01Penalty =
-        if (managedWorld.contains(ManagedWorld.WORLD_SW) && !isMonthlyPrizeDay) 0.8 else 1.0
+        if (managedWorld.contains(ManagedWorld.WORLD_SW)) 0.8 else 1.0
 
-      seichiWorldFactor * sw01Penalty * monthlyPrize
+      seichiWorldFactor * sw01Penalty
     }
 
   /**
@@ -344,8 +335,6 @@ object BreakUtil {
     shouldPlayBreakSound: Boolean,
     toMaterial: Material = Material.AIR
   ): IO[Unit] = {
-
-    import PluginExecutionContexts.timer
     for {
       // 非同期実行ではワールドに触れないので必要な情報をすべて抜く
       targetBlocksInformation <- PluginExecutionContexts
