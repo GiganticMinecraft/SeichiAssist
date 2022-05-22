@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 
-trait GachaMotionAPI[F[_], Player] {
+trait GachaLotteryAPI[F[_], Player] {
 
   /**
    * playerがガチャをamount回引く作用
@@ -11,9 +11,9 @@ trait GachaMotionAPI[F[_], Player] {
 
 }
 
-object GachaMotionAPI {
+object GachaLotteryAPI {
 
-  def apply[F[_], Player](implicit ev: GachaMotionAPI[F, Player]): GachaMotionAPI[F, Player] =
+  def apply[F[_], Player](implicit ev: GachaLotteryAPI[F, Player]): GachaLotteryAPI[F, Player] =
     ev
 
 }
@@ -51,4 +51,4 @@ object GachaWriteAPI {
 trait GachaAPI[F[_], Player]
     extends GachaReadAPI[F]
     with GachaWriteAPI[F]
-    with GachaMotionAPI[F, Player]
+    with GachaLotteryAPI[F, Player]
