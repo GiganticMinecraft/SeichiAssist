@@ -7,6 +7,7 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.fs2.workaround.fs3.Fs3Topic
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.generic.effect.EffectExtra
+import com.github.unchama.generic.ratelimiting.RateLimiter
 import com.github.unchama.seichiassist.subsystems.buildcount.application.BuildExpMultiplier
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.BuildExpAmount
 import com.github.unchama.seichiassist.subsystems.buildcount.domain.playerdata.BuildAmountData
@@ -34,6 +35,7 @@ object IncrementBuildExpWhenBuiltByHand {
     F,
     *[_]
   ], Player](
+    rateLimiterRepository: KeyedDataRepository[Player, RateLimiter[F, BuildExpAmount]],
     dataRepository: KeyedDataRepository[Player, Ref[F, BuildAmountData]],
     dataTopic: Fs3Topic[G, (Player, BuildAmountData)]
   )(
@@ -43,15 +45,25 @@ object IncrementBuildExpWhenBuiltByHand {
     (player: Player, by: BuildExpAmount) => {
       val F: Monad[F] = implicitly
 
-      F.ifM(ClassifyPlayerWorld[F, Player].isInBuildWorld(player))(
-        for {
-          newData <-
-            dataRepository(player).updateAndGet(_.addExpAmount(by))
-          _ <- EffectExtra.runAsyncAndForget[G, F, Unit] {
-            dataTopic.publish1((player, newData)).void
-          }
-        } yield (),
-        F.unit
-      )
+      for {
+        amountToIncrement <-
+          // ワールドの判定はここで行われるべき。[[IncrementBuildExpWhenBuiltBySkill]]はこの値を参照する。
+          F.ifM(ClassifyPlayerWorld[F, Player].isInBuildWorld(player))(
+            F.ifF(ClassifyPlayerWorld[F, Player].isInSeichiWorld(player))(
+              by.mapAmount(_ * multiplier.whenInSeichiWorld),
+              by
+            ),
+            F.pure(BuildExpAmount(0))
+          )
+
+        // レートリミッターで制限しないと当然無制限になるので注意！！！
+        cappedIncreasedAmount <-
+          rateLimiterRepository(player).requestPermission(amountToIncrement)
+        incrementedData <-
+          dataRepository(player).updateAndGet(_.addExpAmount(cappedIncreasedAmount))
+        _ <- EffectExtra.runAsyncAndForget[G, F, Unit] {
+          dataTopic.publish1((player, incrementedData)).void
+        }
+      } yield ()
     }
 }
