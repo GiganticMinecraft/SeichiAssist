@@ -5,7 +5,7 @@ import cats.effect.{ConcurrentEffect, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
@@ -14,11 +14,10 @@ import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit.Jd
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamGateway
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import org.bukkit.command.TabExecutor
-import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
 trait System[F[_]] extends Subsystem[F] {
-  val api: GachaReadAPI[F] with GachaWriteAPI[F] with GachaLotteryAPI[F, Player]
+  val api: GachaReadAPI[F] with GachaWriteAPI[F] with GachaLotteryAPI[F]
 }
 
 object System {
@@ -34,15 +33,15 @@ object System {
     new System[F] {
       gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence).toIO.unsafeRunAsyncAndForget()
 
-      override implicit val api: GachaAPI[F, Player] = new GachaAPI[F, Player] {
+      override implicit val api: GachaAPI[F] = new GachaAPI[F] {
 
         override def list: F[Vector[GachaPrize]] = gachaPersistence.list
 
         override def replace(gachaPrizesList: Vector[GachaPrize]): F[Unit] =
           gachaPersistence.update(gachaPrizesList)
 
-        override def pull(player: Player, amount: Int): F[Unit] =
-          BukkitDrawGacha[F].draw(player, amount)
+        override def lottery(amount: Int): F[Vector[GachaPrize]] =
+          LotteryOfGachaItems.using.lottery(amount)
       }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor

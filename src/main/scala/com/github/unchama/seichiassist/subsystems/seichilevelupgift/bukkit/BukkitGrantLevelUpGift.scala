@@ -3,7 +3,7 @@ package com.github.unchama.seichiassist.subsystems.seichilevelupgift.bukkit
 import cats.data.Kleisli
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
 import com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain.{
   Gift,
   GiftItemInterpreter,
@@ -19,11 +19,7 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread]
       case item: Gift.Item =>
         giftItemInterpreter(item)
       case Gift.AutomaticGachaRun =>
-        Kleisli { player =>
-          Sync[F].delay {
-            SeichiAssist.instance.gachaSystem.api.pull(player, 1).unsafeRunAsyncAndForget()
-          }
-        }
+        Kleisli { player => BukkitDrawGacha[F].draw(player, 1) }
     }
   }
 }

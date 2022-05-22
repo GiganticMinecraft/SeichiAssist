@@ -1,15 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions
 
-import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import cats.effect.{IO, Sync}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
-import com.github.unchama.seichiassist.subsystems.gacha.application.actions.{
-  DrawGacha,
-  LotteryOfGachaItems
-}
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
+import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha
+import com.github.unchama.seichiassist.util.PlayerSendable.{forString, forTextComponent}
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
 import net.md_5.bungee.api.chat.{HoverEvent, TextComponent}
@@ -17,28 +12,16 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
+import scala.jdk.CollectionConverters._
+
 object BukkitDrawGacha {
 
-  import cats.effect.ConcurrentEffect.ops._
-
-  import scala.jdk.CollectionConverters._
-
-  import PlayerSendable._
-
-  def apply[F[_]: Sync: ConcurrentEffect: OnMinecraftServerThread](
-    implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
-  ): DrawGacha[F, Player] = (player: Player, amount: Int) => {
-    OnMinecraftServerThread[F].runAction(SyncIO[Unit] {
-      val gachaLotteryItems = LotteryOfGachaItems.using.lottery(amount).toIO.unsafeRunSync()
-
-      val rarities: Vector[GachaRarity] = gachaLotteryItems.map { gachaPrize =>
-        if (gachaPrize.probability.value < 0.001) Gigantic
-        else if (gachaPrize.probability.value < 0.01) Big
-        else if (gachaPrize.probability.value < 0.1) Regular
-        else Potato
-      }
-      rarities.zip(gachaLotteryItems).map {
-        case (rarity, gachaPrize) =>
+  def apply[F[_]: Sync]: DrawGacha[F, Player] = (player: Player, amount: Int) =>
+    Sync[F].delay {
+      for {
+        gachaPrizes <- SeichiAssist.instance.gachaSystem.api.lottery(amount)
+      } yield {
+        gachaPrizes.foreach { gachaPrize =>
           val givenItem = gachaPrize.createNewItem(Some(player.getName))
 
           /*
@@ -60,7 +43,7 @@ object BukkitDrawGacha {
               }
             }
 
-          if (rarity == Gigantic) {
+          if (gachaPrize.probability.value < 0.001) {
             val loreWithoutOwnerName =
               givenItem.getItemMeta.getLore.asScala.toList.filterNot {
                 _ == s"§r§2所有者：${player.getName}"
@@ -96,18 +79,21 @@ object BukkitDrawGacha {
             player.spigot().sendMessage(message)
             sendMessageToEveryone(s"$GOLD${player.getName}がガチャでGigantic☆大当たり！")(forString[IO])
             sendMessageToEveryone(message)(forTextComponent[IO])
-            SendSoundEffect
-              .sendEverySoundWithoutIgnore(Sound.ENTITY_ENDERDRAGON_DEATH, 0.5f, 2f)
-          } else if (rarity == Big) {
+            SendSoundEffect.sendEverySoundWithoutIgnore(
+              Sound.ENTITY_ENDERDRAGON_DEATH,
+              0.5f,
+              2f
+            )
+          } else if (gachaPrize.probability.value < 0.01) {
             player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
             if (amount == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
-          } else if (rarity == Regular) {
+          } else if (gachaPrize.probability.value < 0.1) {
             if (amount == 1) player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
           } else {
             if (amount == 1) player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
           }
+        }
       }
-    })
-  }
+    }
 
 }

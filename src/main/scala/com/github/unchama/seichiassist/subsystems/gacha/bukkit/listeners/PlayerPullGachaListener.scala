@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners
 
 import cats.effect.ConcurrentEffect
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.effect.Effect.ops.toAllEffectOps
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
@@ -85,9 +85,8 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
       return
     }
 
-    // ガチャを実行
+    // ガチャの実行
     BukkitDrawGacha[F].draw(player, count).toIO.unsafeRunAsyncAndForget()
-
   }
 
 }

@@ -2,18 +2,18 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 
-trait GachaLotteryAPI[F[_], Player] {
+trait GachaLotteryAPI[F[_]] {
 
   /**
-   * playerがガチャをamount回引く作用
+   * ガチャを抽選してその結果を返す作用
    */
-  def pull(player: Player, amount: Int): F[Unit]
+  def lottery(amount: Int): F[Vector[GachaPrize]]
 
 }
 
 object GachaLotteryAPI {
 
-  def apply[F[_], Player](implicit ev: GachaLotteryAPI[F, Player]): GachaLotteryAPI[F, Player] =
+  def apply[F[_]](implicit ev: GachaLotteryAPI[F]): GachaLotteryAPI[F] =
     ev
 
 }
@@ -48,7 +48,4 @@ object GachaWriteAPI {
 
 }
 
-trait GachaAPI[F[_], Player]
-    extends GachaReadAPI[F]
-    with GachaWriteAPI[F]
-    with GachaLotteryAPI[F, Player]
+trait GachaAPI[F[_]] extends GachaReadAPI[F] with GachaWriteAPI[F] with GachaLotteryAPI[F]
