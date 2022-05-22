@@ -44,7 +44,7 @@ object LotteryOfGachaItems {
    * @param sum 現在の合計値
    * @param random 乱数(1.0まで)
    * @param gachaPrizes ガチャの景品リスト
-   * @return
+   * @return 抽選されたガチャアイテム
    */
   @tailrec
   private def lottery(
