@@ -9,6 +9,8 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaprizefactory.bukkit.StaticGachaPrizeFactory
 
+import scala.annotation.tailrec
+
 /**
  * ガチャアイテムの抽選を行う作用
  */
@@ -34,24 +36,33 @@ object LotteryOfGachaItems {
     for {
       gachaPrizes <- gachaPrizesDataOperations.gachaPrizesList
     } yield {
-      (0 until amount).map { _ =>
-        val random = Math.random()
-
-        def getGachaPrize: GachaPrize = {
-          gachaPrizes.foldLeft(1.0) { (sum, gachaPrize) =>
-            val nowSum = sum - gachaPrize.probability.value
-            if (nowSum <= random) return gachaPrize
-            else nowSum
-          }
-          GachaPrize(
-            StaticGachaPrizeFactory.gachaRingo,
-            GachaProbability(1.0),
-            hasOwner = false,
-            GachaPrizeId(0)
-          )
-        }
-
-        getGachaPrize
-      }.toVector
+      (0 until amount).map { _ => lottery(1.0, Math.random(), gachaPrizes) }.toVector
     }
+
+  /**
+   * ガチャアイテムの抽選を行うための再帰関数
+   * @param sum 現在の合計値
+   * @param random 乱数(1.0まで)
+   * @param gachaPrizes ガチャの景品リスト
+   * @return
+   */
+  @tailrec
+  private def lottery(
+    sum: Double,
+    random: Double,
+    gachaPrizes: Vector[GachaPrize]
+  ): GachaPrize = {
+    val nowSum = sum - gachaPrizes.head.probability.value
+    val droppedGachaPrizes = gachaPrizes.drop(1)
+    if (nowSum <= random) gachaPrizes.head
+    else if (droppedGachaPrizes.nonEmpty) lottery(nowSum, random, droppedGachaPrizes)
+    else
+      GachaPrize(
+        StaticGachaPrizeFactory.gachaRingo,
+        GachaProbability(1.0),
+        hasOwner = false,
+        GachaPrizeId(0)
+      )
+  }
+
 }
