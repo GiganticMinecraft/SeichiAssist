@@ -130,7 +130,7 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   var toggleVFSound = true
   var giganticBerserk: GiganticBerserk = GiganticBerserk()
   // ハーフブロック破壊抑制用
-  private val allowBreakingHalfBlocks = false
+
   // プレイ時間差分計算用int
   private var totalPlayTick: Option[Int] = None
 

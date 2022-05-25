@@ -322,7 +322,6 @@ class PlayerBlockBreakListener(
     val p = event.getPlayer
     val b = event.getBlock
     val world = p.getWorld
-    val data = SeichiAssist.playermap.apply(p.getUniqueId)
     // そもそも自分の保護じゃなきゃ処理かけない
     if (!ExternalPlugins.getWorldGuard.canBuild(p, b.getLocation)) return
     if ((b.getType eq Material.DOUBLE_STEP) && b.getData == 0) {
