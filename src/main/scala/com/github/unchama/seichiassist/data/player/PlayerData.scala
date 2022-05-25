@@ -142,9 +142,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
   def gridChunkAmount: Int =
     (claimUnit.ahead + claimUnit.behind + 1) * (claimUnit.right + claimUnit.left + 1)
 
-  // オフラインかどうか
-  def isOffline: Boolean = SeichiAssist.instance.getServer.getPlayer(uuid) == null
-
   def GBexp: Int = giganticBerserk.exp
 
   def GBexp_=(value: Int): Unit = {
@@ -386,8 +383,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
     else if (level < 98) SeichiAssist.seichiAssistConfig.getDropExplevel(9)
     else SeichiAssist.seichiAssistConfig.getDropExplevel(10)
   }
-
-  def canBreakHalfBlock: Boolean = this.allowBreakingHalfBlocks
 
   def canGridExtend(direction: RelativeDirection, world: String): Boolean = {
     val limit = SeichiAssist.seichiAssistConfig.getGridLimitPerWorld(world)
