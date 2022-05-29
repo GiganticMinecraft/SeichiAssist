@@ -378,7 +378,9 @@ object ActiveSkillMenu extends Menu {
                               // アンダーバーがマークダウンの斜体と解釈されることを防ぐ
                               Kleisli.liftF(
                                 DiscordNotificationAPI[F]
-                                  .send(notificationMessage.replaceAllLiterally("_", "\\_"))
+                                  // NOTE: エスケープを二重にしないと"...\_..."のような文字列が渡されたとみなされ、400が返却される。
+                                  // これは標準にも従った動作である。
+                                  .send(notificationMessage.replaceAllLiterally("_", "\\\\_"))
                                   .toIO
                               ),
                               Kleisli.liftF(IO {
