@@ -87,5 +87,5 @@ object WebhookDiscordNotificationSender {
   }
 
   // This class is for circe's serialization.
-  private case class PlainMessage(message: String)
+  private case class PlainMessage(content: String)
 }
