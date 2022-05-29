@@ -17,7 +17,7 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhoo
   import cats.implicits._
 
   private val parsedURL = new URL(webhookURL)
-  override def send(message: String): F[Unit] =
+  override def sendPlainText(message: String): F[Unit] =
     for {
       _ <- ContextShift[F].shift
       responseCode <- Sync[F].delay {
