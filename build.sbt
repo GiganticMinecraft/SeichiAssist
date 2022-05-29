@@ -34,7 +34,7 @@ ThisBuild / logLevel := {
   }
 }
 
-// テストが落ちた時にスタックとレースを表示するため。
+// テストが落ちた時にスタックトレースを表示するため。
 // ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
 Compile / testOptions += Tests.Argument("-oS")
 
