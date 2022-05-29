@@ -33,7 +33,8 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhoo
           .replaceAllLiterally("~", "\\~")
           .replaceAllLiterally(":", "\\:")
 
-        val json = WebhookDiscordNotificationSender.PlainMessage(markdownSafeMessage).asJson.noSpaces
+        val json =
+          WebhookDiscordNotificationSender.PlainMessage(markdownSafeMessage).asJson.noSpaces
 
         parsedURL.openConnection().asInstanceOf[HttpURLConnection].pipe { con =>
           con.addRequestProperty("Content-Type", "application/json; charset=utf-8")
