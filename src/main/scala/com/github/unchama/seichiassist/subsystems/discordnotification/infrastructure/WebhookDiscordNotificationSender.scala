@@ -17,11 +17,25 @@ class WebhookDiscordNotificationSender[F[_]: Sync: ContextShift] private (webhoo
   import cats.implicits._
 
   private val parsedURL = new URL(webhookURL)
-  override def send(message: String): F[Unit] =
+  override def sendPlainText(message: String): F[Unit] =
     for {
       _ <- ContextShift[F].shift
       responseCode <- Sync[F].delay {
-        val json = s"""{"content":"$message"}"""
+        import io.circe.generic.auto._
+        import io.circe.syntax._
+        val markdownSafeMessage = message
+          .replaceAllLiterally("\\", "\\\\")
+          .replaceAllLiterally("_", "\\_")
+          .replaceAllLiterally("*", "\\*")
+          .replaceAllLiterally("`", "\\`")
+          .replaceAllLiterally("|", "\\|")
+          .replaceAllLiterally("@", "\\@")
+          .replaceAllLiterally("~", "\\~")
+          .replaceAllLiterally(":", "\\:")
+
+        val json =
+          WebhookDiscordNotificationSender.PlainMessage(markdownSafeMessage).asJson.noSpaces
+
         parsedURL.openConnection().asInstanceOf[HttpURLConnection].pipe { con =>
           con.addRequestProperty("Content-Type", "application/json; charset=utf-8")
           // User-AgentがDiscordBotでない場合403が返却されるため
@@ -72,4 +86,7 @@ object WebhookDiscordNotificationSender {
       case _: AssertionError        => None
     }
   }
+
+  // This class is for circe's serialization.
+  private case class PlainMessage(content: String)
 }

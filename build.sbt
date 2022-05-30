@@ -8,7 +8,7 @@ import java.io._
 ThisBuild / scalaVersion := "2.13.1"
 // ThisBuild / version はGitHub Actionsによって取得/自動更新される。
 // 次の行は ThisBuild / version := "(\d*)" の形式でなければならない。
-ThisBuild / version := "41"
+ThisBuild / version := "42"
 ThisBuild / organization := "click.seichi"
 ThisBuild / description := "ギガンティック☆整地鯖の独自要素を司るプラグイン"
 
@@ -34,7 +34,7 @@ ThisBuild / logLevel := {
   }
 }
 
-// テストが落ちた時にスタックとレースを表示するため。
+// テストが落ちた時にスタックトレースを表示するため。
 // ScalaTest のオプションは https://www.scalatest.org/user_guide/using_the_runner を参照のこと。
 Compile / testOptions += Tests.Argument("-oS")
 
@@ -107,7 +107,12 @@ val dependenciesToEmbed = Seq(
   "com.beachape" %% "enumeratum" % "1.5.13",
 
   // protobuf
-  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+
+  // JSON
+  "io.circe" %% "circe-core" % "0.14.1",
+  "io.circe" %% "circe-generic" % "0.14.1",
+  "io.circe" %% "circe-parser" % "0.14.1",
 )
 
 // endregion
