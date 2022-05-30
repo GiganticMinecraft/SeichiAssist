@@ -6,11 +6,11 @@ import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNot
 import io.chrisdavenport.log4cats.Logger
 
 /**
- * この実装は[[send]]が呼ばれるたびに警告をロガーに流す以外は何もしない。
+ * この実装は[[sendPlainText]]が呼ばれるたびに警告をロガーに流す以外は何もしない。
  */
 final class DefaultDiscordNotificationSender[F[_]: Logger: LiftIO]
     extends DiscordNotificationAPI[F] {
-  override def send(message: String): F[Unit] = {
+  override def sendPlainText(message: String): F[Unit] = {
     SeichiAssist
       .instance
       .loggerF

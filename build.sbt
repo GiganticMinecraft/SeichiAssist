@@ -107,7 +107,12 @@ val dependenciesToEmbed = Seq(
   "com.beachape" %% "enumeratum" % "1.5.13",
 
   // protobuf
-  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
+  "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+
+  // JSON
+  "io.circe" %% "circe-core" % "0.14.1",
+  "io.circe" %% "circe-generic" % "0.14.1",
+  "io.circe" %% "circe-parser" % "0.14.1",
 )
 
 // endregion

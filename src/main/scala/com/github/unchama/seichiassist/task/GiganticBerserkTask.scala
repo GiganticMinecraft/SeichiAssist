@@ -90,7 +90,7 @@ class GiganticBerserkTask {
           s"$GOLD$BOLD${playerdata.lowercaseName}がパッシブスキル:$YELLOW$BOLD${UNDERLINE}Gigantic$RED$BOLD${UNDERLINE}Berserk$GOLD${BOLD}を完成させました！"
 
         val program = List(
-          DiscordNotificationAPI[F].send(messageWithoutColor).toIO,
+          DiscordNotificationAPI[F].sendPlainText(messageWithoutColor).toIO,
           IO {
             SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1, 1.2f)
             SendMessageEffect.sendMessageToEveryoneIgnoringPreference(messageWithColor)
