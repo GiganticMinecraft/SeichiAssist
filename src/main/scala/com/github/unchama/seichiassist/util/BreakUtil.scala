@@ -103,7 +103,7 @@ object BreakUtil {
           checkTarget.getY == halfBlockLayerYCoordinate &&
           checkTarget.getData == 0.toByte
 
-      if (isBlockProtectedSlab && !playerData.canBreakHalfBlock) return false
+      if (isBlockProtectedSlab) return false
     }
 
     !lockedBlocks.contains(checkTarget)
