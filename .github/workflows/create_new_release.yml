@@ -85,12 +85,6 @@ jobs:
           tag_name: "v${{ needs.bump_version.outputs.new_version }}"
           release_name: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
           draft: false
-          # これらはすべて本番に入る直前のバージョンなので、すべてprereleaseとする
-          # 以下の事情に留意されたい：
-          #  - タグ付けされてから本番に入るまでのコードの変更は想定しない
-          #  - 開発ブランチ上ではバージョン更新が行われ、履歴に残る
-          #  - バージョン更新+タグ付けした後に本番に必ずしも適用されるとは限らない
-          prerelease: true
 
   create_pull-request_to_master:
     runs-on: ubuntu-20.04
