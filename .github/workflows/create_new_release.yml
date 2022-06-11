@@ -76,15 +76,26 @@ jobs:
     needs: bump_version
     steps:
       - uses: actions/checkout@master
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
+      - name: build artifacts
+        run: sbt assembly
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          files: target/build/SeichiAssist.jar
           tag_name: "v${{ needs.bump_version.outputs.new_version }}"
           release_name: "バージョン ${{ needs.bump_version.outputs.new_version }} リリース"
           draft: false
+          prerelease: false
 
   create_pull-request_to_master:
     runs-on: ubuntu-20.04
