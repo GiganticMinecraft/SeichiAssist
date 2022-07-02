@@ -19,6 +19,7 @@ import com.github.unchama.targetedeffect.player.ActionBarMessageEffect
 import com.github.unchama.util.bukkit.ItemStackUtil
 import com.github.unchama.util.external.ExternalPlugins
 import org.bukkit.ChatColor._
+import org.bukkit.World.Environment
 import org.bukkit._
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
@@ -666,7 +667,7 @@ object BreakUtil {
     /**
      * 最大ループ数
      */
-    val YMAX = 255
+    val YMAX = if (player.getWorld.getEnvironment == Environment.NETHER) 121 else 255
 
     for (checkPointer <- 1 until YMAX) {
 
