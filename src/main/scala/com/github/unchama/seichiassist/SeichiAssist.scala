@@ -681,6 +681,7 @@ class SeichiAssist extends JavaPlugin() {
 
       implicit val breakCountApi: BreakCountReadAPI[IO, SyncIO, Player] = breakCountSystem.api
       implicit val manaApi: ManaApi[IO, SyncIO, Player] = manaSystem.manaApi
+      implicit val gachaPointApi: GachaPointApi[IO, SyncIO, Player] = gachaPointSystem.api
       implicit val fastDiggingEffectApi: FastDiggingEffectApi[IO, Player] =
         fastDiggingEffectSystem.effectApi
       implicit val ioConcurrent: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
