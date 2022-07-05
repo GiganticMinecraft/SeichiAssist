@@ -21,11 +21,11 @@ object GrantGiftOnSeichiLevelDiff {
 
   final def grantGiftTo[F[_]: Applicative: Sync, G[_], Player](
     levelDiff: Diff[SeichiLevel],
-    player: Player,
-    gachaPointApi: GachaPointApi[F, G, Player]
+    player: Player
   )(
     implicit send: SendMinecraftMessage[F, Player],
-    grant: GrantLevelUpGift[F, Player, G]
+    grant: GrantLevelUpGift[F, Player, G],
+    gachaPointApi: GachaPointApi[F, G, Player]
   ): F[Unit] = {
     val giftBundles = HasSuccessor[SeichiLevel]
       .leftOpenRightClosedRange(levelDiff.left, levelDiff.right)
