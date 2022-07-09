@@ -804,16 +804,14 @@ object SeichiAssist {
   private def generateGachaPrizes(): List[MineStackObject] =
     msgachadatalist
       .toList
-      .zipWithIndex
-      .filter(_._1.itemStack.getType != Material.EXP_BOTTLE) // 経験値瓶だけはすでにリストにあるので除外
-      .map {
-        case (g, _) =>
-          itemStackMineStackObject(
-            MineStackObjectCategory.GACHA_PRIZES,
-            g.objName,
-            None,
-            hasNameLore = true,
-            g.itemStack
-          )
+      .filter(_.itemStack.getType != Material.EXP_BOTTLE) // 経験値瓶だけはすでにリストにあるので除外
+      .map { g =>
+        itemStackMineStackObject(
+          MineStackObjectCategory.GACHA_PRIZES,
+          g.objName,
+          None,
+          hasNameLore = true,
+          g.itemStack
+        )
       }
 }
