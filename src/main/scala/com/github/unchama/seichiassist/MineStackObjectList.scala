@@ -630,24 +630,6 @@ object MineStackObjectList {
   }
 
   /**
-   * @param representative RepresentativeMainStackObject
-   * @return RepresentativeMainStackObjectに紐づくカラーバリエーションアイテム
-   */
-  def getColoredVariantsMineStackObjectsByRepresentative(
-    representative: MineStackObject
-  ): List[MineStackObject] = {
-    allMineStackObjects.flatMap {
-      case Right(group) =>
-        if (group.representative == representative) {
-          List(group.representative) ++ group.coloredVariants
-        } else {
-          Nil
-        }
-      case Left(_) => Nil
-    }
-  }
-
-  /**
    * @param itemStack 検索対象のItemStack
    * @param playerName 検索を行うプレイヤーの名前
    * @return itemStackに対応するMineStackObjectのOption
