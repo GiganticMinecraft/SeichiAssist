@@ -7,7 +7,7 @@ class MineStackObject(
   val mineStackObjectName: String,
   val uiName: Option[String],
   private val _itemStack: ItemStack,
-  val hasNameLore: Boolean, // 多分記名があるかどうか
+  val hasNameLore: Boolean, // 記名があるかどうか
   val category: MineStackObjectCategory
 ) {
 
