@@ -15,11 +15,12 @@ object MineStackObjectList {
 
   private def leftElems[A](elems: A*): List[Either[A, Nothing]] = elems.toList.map(Left.apply)
   private def rightElems[B](elems: B*): List[Either[Nothing, B]] = elems.toList.map(Right.apply)
+  type MineStackObjectGroup = Either[MineStackObject, GroupedMineStackObjects]
 
   // @formatter:off
   
   // 採掘可能ブロック
-  private val minestacklistmine: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
+  private val minestacklistmine: List[MineStackObjectGroup] = leftElems(
     materialMineStackObject(ORES, "coal_ore", "石炭鉱石", Material.COAL_ORE, 0),
     materialMineStackObject(ORES, "coal", "石炭", Material.COAL, 0),
     materialMineStackObject(ORES, "coal_block", "石炭ブロック", Material.COAL_BLOCK, 0),
@@ -80,7 +81,7 @@ object MineStackObjectList {
   )
 
   // 採掘で入手可能な農業系ブロック
-  private val minestacklistfarm: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
+  private val minestacklistfarm: List[MineStackObjectGroup] = leftElems(
     materialMineStackObject(AGRICULTURAL, "seeds", "種", Material.SEEDS, 0),
     materialMineStackObject(AGRICULTURAL, "apple", "リンゴ", Material.APPLE, 0),
     materialMineStackObject(AGRICULTURAL, "long_grass1", "草", Material.LONG_GRASS, 1),
@@ -167,7 +168,7 @@ object MineStackObjectList {
   )
   
   // 建築系ブロック
-  private val minestacklistbuild: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
+  private val minestacklistbuild: List[MineStackObjectGroup] = leftElems(
     materialMineStackObject(BUILDING, "log", "オークの原木", Material.LOG, 0),
     materialMineStackObject(BUILDING, "wood", "オークの木材", Material.WOOD, 0),
     materialMineStackObject(BUILDING, "wood_step0", "オークの木材ハーフブロック", Material.WOOD_STEP, 0),
@@ -513,7 +514,7 @@ object MineStackObjectList {
   )
 
   // レッドストーン系ブロック
-  private val minestacklistrs: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
+  private val minestacklistrs: List[MineStackObjectGroup] = leftElems(
     materialMineStackObject(REDSTONE_AND_TRANSPORTATION,"redstone","レッドストーン", Material.REDSTONE,0),
     materialMineStackObject(REDSTONE_AND_TRANSPORTATION,"stone_button","石のボタン", Material.STONE_BUTTON,0),
     materialMineStackObject(REDSTONE_AND_TRANSPORTATION,"wood_button","木のボタン", Material.WOOD_BUTTON,0),
@@ -586,7 +587,7 @@ object MineStackObjectList {
   /**
    * デフォルトでガチャの内容に含まれている景品。
    */
-  private val minestackBuiltinGachaPrizes: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
+  private val minestackBuiltinGachaPrizes: List[MineStackObjectGroup] = leftElems(
     itemStackMineStackObject(GACHA_PRIZES,"gachaimo",None,hasNameLore = true,StaticGachaPrizeFactory.getGachaRingo),
     itemStackMineStackObject(GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
   )
@@ -602,7 +603,7 @@ object MineStackObjectList {
   def getGachaPrizesList: List[MineStackObject] =
     gachaPrizesObjects
 
-  val allMineStackGroups: List[Either[MineStackObject, GroupedMineStackObjects]] = List(
+  val allMineStackGroups: List[MineStackObjectGroup] = List(
     minestacklistbuild,
     minestacklistdrop,
     minestacklistfarm,
