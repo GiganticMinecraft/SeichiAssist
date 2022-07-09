@@ -620,6 +620,7 @@ object MineStackObjectList {
 
   /**
    * すべてのMineStackObjectを返す
+   * 可変であるガチャ景品リストに依存しているため、定数ではない
    */
   def getAllMineStackObjects: List[MineStackObject] = {
     allMineStackObjects.flatMap {
