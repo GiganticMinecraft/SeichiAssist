@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.minestack
 
-case class GroupedMineStackObj(
+case class GroupedMineStackObjects(
   representative: MineStackObject,
   coloredVariants: List[MineStackObject]
 ) {

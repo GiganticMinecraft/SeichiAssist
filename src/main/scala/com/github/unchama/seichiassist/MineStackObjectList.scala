@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.minestack.MineStackObject.{
   materialMineStackObject
 }
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
-import com.github.unchama.seichiassist.minestack.{GroupedMineStackObj, MineStackObject}
+import com.github.unchama.seichiassist.minestack.{GroupedMineStackObjects, MineStackObject}
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
 import org.bukkit.Material
@@ -19,7 +19,7 @@ object MineStackObjectList {
   // @formatter:off
   
   // 採掘可能ブロック
-  private val minestacklistmine: List[Either[MineStackObject, GroupedMineStackObj]] = leftElems(
+  private val minestacklistmine: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
     materialMineStackObject(ORES, "coal_ore", "石炭鉱石", Material.COAL_ORE, 0),
     materialMineStackObject(ORES, "coal", "石炭", Material.COAL, 0),
     materialMineStackObject(ORES, "coal_block", "石炭ブロック", Material.COAL_BLOCK, 0),
@@ -45,7 +45,7 @@ object MineStackObjectList {
   )
 
   // モンスター+動物ドロップ
-  private val minestacklistdrop: List[Either[MineStackObject,GroupedMineStackObj]] = leftElems(
+  private val minestacklistdrop: List[Either[MineStackObject,GroupedMineStackObjects]] = leftElems(
     materialMineStackObject(MOB_DROP, "ender_pearl", "エンダーパール", Material.ENDER_PEARL, 0),
     materialMineStackObject(MOB_DROP, "ender_eye", "エンダーアイ", Material.EYE_OF_ENDER, 0),
     materialMineStackObject(MOB_DROP, "slime_ball", "スライムボール", Material.SLIME_BALL, 0),
@@ -80,7 +80,7 @@ object MineStackObjectList {
   )
 
   // 採掘で入手可能な農業系ブロック
-  private val minestacklistfarm: List[Either[MineStackObject, GroupedMineStackObj]] = leftElems(
+  private val minestacklistfarm: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
     materialMineStackObject(AGRICULTURAL, "seeds", "種", Material.SEEDS, 0),
     materialMineStackObject(AGRICULTURAL, "apple", "リンゴ", Material.APPLE, 0),
     materialMineStackObject(AGRICULTURAL, "long_grass1", "草", Material.LONG_GRASS, 1),
@@ -167,7 +167,7 @@ object MineStackObjectList {
   )
   
   // 建築系ブロック
-  private val minestacklistbuild: List[Either[MineStackObject, GroupedMineStackObj]] = leftElems(
+  private val minestacklistbuild: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
     materialMineStackObject(BUILDING, "log", "オークの原木", Material.LOG, 0),
     materialMineStackObject(BUILDING, "wood", "オークの木材", Material.WOOD, 0),
     materialMineStackObject(BUILDING, "wood_step0", "オークの木材ハーフブロック", Material.WOOD_STEP, 0),
@@ -310,7 +310,7 @@ object MineStackObjectList {
     materialMineStackObject(BUILDING, "hard_clay", "テラコッタ", Material.HARD_CLAY, 0),
     materialMineStackObject(BUILDING, "workbench", "作業台", Material.WORKBENCH, 0)
   ) ++ rightElems(
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "bed", "白色のベッド", Material.BED, 0),
       List(
         materialMineStackObject(BUILDING, "bed_1", "橙色のベッド", Material.BED, 1),
@@ -330,7 +330,7 @@ object MineStackObjectList {
         materialMineStackObject(BUILDING, "bed_15", "黒色のベッド", Material.BED, 15)
       )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "stained_clay", "白色のテラコッタ", Material.STAINED_CLAY, 0),
       List(
         materialMineStackObject(BUILDING, "stained_clay1", "橙色のテラコッタ", Material.STAINED_CLAY, 1),
@@ -350,7 +350,7 @@ object MineStackObjectList {
         materialMineStackObject(BUILDING, "stained_clay15", "黒色のテラコッタ", Material.STAINED_CLAY, 15)
       )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "concrete", "白色のコンクリート", Material.CONCRETE, 0),
       List(
         materialMineStackObject(BUILDING, "concrete1", "橙色のコンクリート", Material.CONCRETE, 1),
@@ -370,7 +370,7 @@ object MineStackObjectList {
         materialMineStackObject(BUILDING, "concrete15", "黒色のコンクリート", Material.CONCRETE, 15)
       )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "concrete_powder", "白色のコンクリートパウダー", Material.CONCRETE_POWDER, 0),
       List(
         materialMineStackObject(BUILDING, "concrete_powder1", "橙色のコンクリートパウダー", Material.CONCRETE_POWDER, 1),
@@ -390,7 +390,7 @@ object MineStackObjectList {
         materialMineStackObject(BUILDING,"concrete_powder15","黒色のコンクリートパウダー", Material.CONCRETE_POWDER,15)
       )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING,"white_glazed_terracotta","白色の彩釉テラコッタ", Material.WHITE_GLAZED_TERRACOTTA,0),
       List(
         materialMineStackObject(BUILDING,"orange_glazed_terracotta","橙色の彩釉テラコッタ", Material.ORANGE_GLAZED_TERRACOTTA,0),
@@ -410,7 +410,7 @@ object MineStackObjectList {
         materialMineStackObject(BUILDING,"black_glazed_terracotta","黒色の彩釉テラコッタ", Material.BLACK_GLAZED_TERRACOTTA,0)
       )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "wool_0", "羊毛", Material.WOOL, 0),
       List(
         materialMineStackObject(BUILDING, "wool_1", "橙色の羊毛", Material.WOOL, 1),
@@ -430,7 +430,7 @@ object MineStackObjectList {
         materialMineStackObject(BUILDING, "wool_15", "黒色の羊毛", Material.WOOL, 15)
       )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "carpet_0", "カーペット", Material.CARPET, 0),
       List(
         materialMineStackObject(BUILDING, "carpet_1", "橙色のカーペット", Material.CARPET, 1),
@@ -450,7 +450,7 @@ object MineStackObjectList {
         materialMineStackObject(BUILDING, "carpet_15", "黒色のカーペット", Material.CARPET, 15)
       )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "glass", "ガラス", Material.GLASS, 0),
       List(
         materialMineStackObject(BUILDING, "stained_glass_0", "白色の色付きガラス", Material.STAINED_GLASS, 0),
@@ -471,7 +471,7 @@ object MineStackObjectList {
         materialMineStackObject(BUILDING, "stained_glass_15", "黒色の色付きガラス", Material.STAINED_GLASS, 15)
       )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "glass_panel", "板ガラス", Material.THIN_GLASS, 0),
         List(
           materialMineStackObject(BUILDING,"glass_panel_0","白色の色付きガラス板", Material.STAINED_GLASS_PANE,0),
@@ -492,7 +492,7 @@ object MineStackObjectList {
           materialMineStackObject(BUILDING,"glass_panel_15","黒色の色付きガラス板", Material.STAINED_GLASS_PANE,15)
         )
     ),
-    GroupedMineStackObj(
+    GroupedMineStackObjects(
       materialMineStackObject(BUILDING, "dye_1", "赤色の染料", Material.INK_SACK, 1),
         List(
           materialMineStackObject(BUILDING, "dye_2", "緑色の染料", Material.INK_SACK, 2),
@@ -513,7 +513,7 @@ object MineStackObjectList {
   )
 
   // レッドストーン系ブロック
-  private val minestacklistrs: List[Either[MineStackObject, GroupedMineStackObj]] = leftElems(
+  private val minestacklistrs: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
     materialMineStackObject(REDSTONE_AND_TRANSPORTATION,"redstone","レッドストーン", Material.REDSTONE,0),
     materialMineStackObject(REDSTONE_AND_TRANSPORTATION,"stone_button","石のボタン", Material.STONE_BUTTON,0),
     materialMineStackObject(REDSTONE_AND_TRANSPORTATION,"wood_button","木のボタン", Material.WOOD_BUTTON,0),
@@ -586,7 +586,7 @@ object MineStackObjectList {
   /**
    * デフォルトでガチャの内容に含まれている景品。
    */
-  private val minestackBuiltinGachaPrizes: List[Either[MineStackObject, GroupedMineStackObj]] = leftElems(
+  private val minestackBuiltinGachaPrizes: List[Either[MineStackObject, GroupedMineStackObjects]] = leftElems(
     itemStackMineStackObject(GACHA_PRIZES,"gachaimo",None,hasNameLore = true,StaticGachaPrizeFactory.getGachaRingo),
     itemStackMineStackObject(GACHA_PRIZES,"exp_bottle",Some("エンチャントの瓶"),hasNameLore = false,new ItemStack(Material.EXP_BOTTLE,1))
   )
@@ -602,7 +602,7 @@ object MineStackObjectList {
   def getGachaPrizesList: List[MineStackObject] =
     gachaPrizesObjects
 
-  val allMineStackObjects: List[Either[MineStackObject, GroupedMineStackObj]] = List(
+  val allMineStackObjects: List[Either[MineStackObject, GroupedMineStackObjects]] = List(
     minestacklistbuild,
     minestacklistdrop,
     minestacklistfarm,
