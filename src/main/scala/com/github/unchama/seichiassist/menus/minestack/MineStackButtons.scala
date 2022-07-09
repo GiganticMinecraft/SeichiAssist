@@ -180,7 +180,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     val isMineStackSelectItemColorMenu =
       player.getOpenInventory.getTopInventory.getName == s"$DARK_BLUE${BOLD}MineStack(アイテム色選択)"
     MineStackObjectList
-      .allMineStackObjects
+      .allMineStackGroups
       .exists(mineStackObject =>
         mineStackObject.exists(_.representative == mineStackObj)
       ) && !isMineStackSelectItemColorMenu && !isMineStackMainMenu

@@ -7,7 +7,7 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MineStackObjectList.{
-  allMineStackObjects,
+  allMineStackGroups,
   getGachaPrizesList
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -95,7 +95,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     for {
       categoryItemList <- IO {
-        allMineStackObjects.flatMap {
+        allMineStackGroups.flatMap {
           case Right(group) =>
             List(group.representative)
           case Left(mineStackObj) =>
@@ -123,7 +123,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     // TODO MineStackObjectListが可変になったらここを変更する
     val categoryItemList =
-      (MineStackObjectList.allMineStackObjects.flatMap {
+      (MineStackObjectList.allMineStackGroups.flatMap {
         case Right(group) =>
           List(group.representative)
         case Left(mineStackObj) =>

@@ -602,7 +602,7 @@ object MineStackObjectList {
   def getGachaPrizesList: List[MineStackObject] =
     gachaPrizesObjects
 
-  val allMineStackObjects: List[Either[MineStackObject, GroupedMineStackObjects]] = List(
+  val allMineStackGroups: List[Either[MineStackObject, GroupedMineStackObjects]] = List(
     minestacklistbuild,
     minestacklistdrop,
     minestacklistfarm,
@@ -623,7 +623,7 @@ object MineStackObjectList {
    * 可変であるガチャ景品リストに依存しているため、定数ではない
    */
   def getAllMineStackObjects: List[MineStackObject] = {
-    allMineStackObjects.flatMap {
+    allMineStackGroups.flatMap {
       case Left(mineStackObj) => List(mineStackObj)
       case Right(group)       => List(group.representative) ++ group.coloredVariants
     } ++ gachaPrizesObjects
