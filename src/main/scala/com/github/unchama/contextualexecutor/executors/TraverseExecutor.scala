@@ -6,7 +6,7 @@ import com.github.unchama.contextualexecutor.{ContextualExecutor, RawCommandCont
 case class TraverseExecutor(executors: List[ContextualExecutor]) extends ContextualExecutor {
   import cats.implicits._
 
-  override def executeWith(commandContext: RawCommandContext): IO[Unit] = {
-    executors.traverse(_.executeWith(commandContext)).void
+  override def executionWith(commandContext: RawCommandContext): IO[Unit] = {
+    executors.traverse(_.executionWith(commandContext)).void
   }
 }
