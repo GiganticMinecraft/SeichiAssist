@@ -2,10 +2,22 @@ package com.github.unchama.seichiassist.subsystems.seichilevelupgift.domain
 
 import cats.data.Kleisli
 import com.github.unchama.seichiassist.subsystems.gachapoint.GachaPointApi
-import org.bukkit.entity.Player
 
 /**
  * アイテムギフトの付与を実行するインタプリタ。
  */
-abstract class GiftItemInterpreter[F[_], G[_]]
-    extends ((Gift.Item, GachaPointApi[F, G, Player]) => Kleisli[F, Player, Unit]) {}
+trait GiftItemInterpreter[F[_], G[_], Player] {
+
+  def apply(item: Gift.Item)(
+    implicit gachaPointApi: GachaPointApi[F, G, Player]
+  ): Kleisli[F, Player, Unit]
+
+}
+
+object GiftItemInterpreter {
+
+  def apply[F[_], G[_], Player](
+    implicit ev: GiftItemInterpreter[F, G, Player]
+  ): GiftItemInterpreter[F, G, Player] = implicitly
+
+}

@@ -12,12 +12,11 @@ import com.github.unchama.seichiassist.util.InventoryOperations.grantItemStacksE
 import org.bukkit.entity.Player
 
 class BukkitGiftItemInterpreter[F[_]: OnMinecraftServerThread, G[_]: ContextCoercion[*[_], F]]
-    extends GiftItemInterpreter[F, G] {
+    extends GiftItemInterpreter[F, G, Player] {
 
-  def apply(
-    item: Item,
-    gachaPointApi: GachaPointApi[F, G, Player]
-  ): Kleisli[F, Player, Unit] = {
+  override def apply(
+    item: Item
+  )(implicit gachaPointApi: GachaPointApi[F, G, Player]): Kleisli[F, Player, Unit] = {
     item match {
       case Item.GachaTicket =>
         gachaPointApi
@@ -32,4 +31,5 @@ class BukkitGiftItemInterpreter[F[_]: OnMinecraftServerThread, G[_]: ContextCoer
         grantItemStacksEffect[F](itemStack)
     }
   }
+
 }

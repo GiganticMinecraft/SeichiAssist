@@ -20,10 +20,11 @@ class BukkitGrantLevelUpGift[F[_]: Sync: OnMinecraftServerThread, G[_]: ContextC
   override def grant(
     gift: Gift
   )(implicit gachaPointApi: GachaPointApi[F, G, Player]): Kleisli[F, Player, Unit] = {
-    val giftItemInterpreter: GiftItemInterpreter[F, G] = new BukkitGiftItemInterpreter[F, G]
+    val giftItemInterpreter: GiftItemInterpreter[F, G, Player] =
+      new BukkitGiftItemInterpreter[F, G]
     gift match {
       case item: Gift.Item =>
-        giftItemInterpreter(item, gachaPointApi)
+        giftItemInterpreter(item)
       case Gift.AutomaticGachaRun =>
         Kleisli { player =>
           Sync[F].delay {
