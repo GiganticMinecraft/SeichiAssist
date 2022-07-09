@@ -13,8 +13,7 @@ trait ContextualExecutor {
    *
    * 計算された作用はサーバーメインスレッド以外のコンテキストで実行されても良い.
    */
-  // TODO rename to "executionWith"
-  def executeWith(commandContext: RawCommandContext): IO[Unit]
+  def executionWith(commandContext: RawCommandContext): IO[Unit]
 
   /**
    * [context] に基づいてTab補完の候補をListで返却する.
@@ -29,8 +28,8 @@ object ContextualExecutor {
     /**
      * この[ContextualExecutor]を[TabExecutor]オブジェクトへ変換する.
      *
-     * この関数から得られる[TabExecutor]は[ContextualExecutor.executeWith]を非同期スレッドから発火するため,
-     * 同期的な実行を期待する場合には[ContextualExecutor.executeWith]側で実行するコンテキストを指定せよ.
+     * この関数から得られる[TabExecutor]は[ContextualExecutor.executionWith]を非同期スレッドから発火するため,
+     * 同期的な実行を期待する場合には[ContextualExecutor.executionWith]側で実行するコンテキストを指定せよ.
      */
     def asNonBlockingTabExecutor(): TabExecutor = new TabExecutor {
       override def onCommand(
@@ -41,7 +40,7 @@ object ContextualExecutor {
       ): Boolean = {
         val context = RawCommandContext(sender, ExecutedCommand(command, alias), args.toList)
 
-        contextualExecutor.executeWith(context).unsafeRunAsync {
+        contextualExecutor.executionWith(context).unsafeRunAsync {
           case Left(error) =>
             println(s"Caught exception while executing ${command.getName} command.")
             error.printStackTrace()
