@@ -66,7 +66,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
 
           val (argHead, argTail) = remainingArgs match {
             case ::(head, next) => (head, next)
-            case Nil            => return Left(onMissingArguments.executeWith(context))
+            case Nil            => return Left(onMissingArguments.executionWith(context))
           }
 
           parserHead(argHead) match {
@@ -177,7 +177,7 @@ case class ContextualExecutorBuilder[CS <: CommandSender](
    *   - 次に, 引数のパースを試みる
    *   - 最後に, 変換された引数を用いて[ParsedArgCommandContext]を作成し, それを用いて[contextualExecution]で指定される動作を行う
    *
-   * 処理を[ContextualExecutor.executeWith]内で行う.
+   * 処理を[ContextualExecutor.executionWith]内で行う.
    */
   def build(): ContextualExecutor = (rawContext: RawCommandContext) => {
     val optionalExecution = for {
