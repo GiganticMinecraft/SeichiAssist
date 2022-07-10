@@ -5,10 +5,10 @@ import cats.implicits.toTraverseOps
 import com.github.unchama.itemstackbuilder.SkullItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.minestack.MineStackObject
-import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
+import com.github.unchama.seichiassist.minestack.GroupedMineStackObjects
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player
@@ -21,7 +21,7 @@ object MineStackSelectItemColorMenu {
 
 }
 
-case class MineStackSelectItemColorMenu(mineStackObj: MineStackObject) extends Menu {
+case class MineStackSelectItemColorMenu(group: GroupedMineStackObjects) extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
@@ -33,27 +33,15 @@ case class MineStackSelectItemColorMenu(mineStackObj: MineStackObject) extends M
     player: Player
   )(implicit environment: MineStackSelectItemColorMenu.Environment): IO[MenuSlotLayout] = {
     import environment.canOpenCategorizedMineStackMenu
-    val buttonMapping = MineStackObjectList
-      .allMineStackGroups
-      .flatMap {
-        case Right(group) =>
-          if (group.representative == mineStackObj) {
-            List(group.representative) ++ group.coloredVariants
-          } else {
-            Nil
-          }
-        case Left(_) => Nil
-      }
-      .zipWithIndex
-      .map {
-        case (inListMineStackObj, index) =>
-          index -> MineStackButtons(player).getMineStackItemButtonOf(inListMineStackObj)
-      } ++ Seq(
+    val buttonMapping = (List(group.representative) ++ group.coloredVariants).zipWithIndex.map {
+      case (inListMineStackObj, index) =>
+        index -> MineStackButtons(player).getMineStackItemButtonOf(inListMineStackObj)
+    } ++ List(
       ChestSlotRef(5, 0) -> IO(
         CommonButtons.transferButton(
           new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
           s"MineStack1ページ目へ",
-          CategorizedMineStackMenu(mineStackObj.category)
+          CategorizedMineStackMenu(group.category)
         )
       )
     )
