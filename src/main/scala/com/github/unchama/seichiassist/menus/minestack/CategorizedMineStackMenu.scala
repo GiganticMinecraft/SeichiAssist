@@ -95,16 +95,11 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   ): TargetedEffect[Player] = DeferredEffect {
 
     for {
-      categoryItemList <- IO {
-        allMineStackGroups.flatMap {
-          case Right(group) =>
-            List(group.representative)
-          case Left(mineStackObj) =>
-            List(mineStackObj)
-        } ++ getGachaPrizesList
+      categoryGroupCount <- IO {
+        getAllObjectGroupsInCategory.length
       }
     } yield {
-      val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
+      val totalNumberOfPages = Math.ceil(categoryGroupCount / 45.0).toInt
 
       // オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、
       // 最後のページをopenする作用を返す
