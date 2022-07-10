@@ -128,9 +128,11 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     val mineStackObjectPerPage = objectSectionRows.chestRows.slotCount
 
+    val categoryGroups = getAllObjectGroupsInCategory
+
     // TODO MineStackObjectListが可変になったらここを変更する
     val categoryItemList =
-      (MineStackObjectList.allMineStackGroups.flatMap {
+      (categoryGroups.flatMap {
         case Right(group) =>
           List(group.representative)
         case Left(mineStackObj) =>
