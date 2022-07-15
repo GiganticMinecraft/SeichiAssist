@@ -13,7 +13,7 @@ import com.github.unchama.seichiassist.MineStackObjectList.{
 }
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.minestack.{
-  GroupedMineStackObjects,
+  MineStackObjectWithColorVariants,
   MineStackObject,
   MineStackObjectCategory
 }
@@ -81,8 +81,70 @@ private[minestack] case class MineStackButtons(player: Player) {
     mineStackObjectGroup match {
       case Left(mineStackObject: MineStackObject) =>
         mineStackObject
-      case Right(GroupedMineStackObjects(representative, _)) =>
+      case Right(MineStackObjectWithColorVariants(representative, _)) =>
         representative
+    }
+  }
+
+  def getMineStackObjectButtonOf(mineStackObject: MineStackObject)(
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+  ): IO[Button] = RecomputedButton(IO {
+    val playerData = SeichiAssist.playermap(getUniqueId)
+
+    import scala.util.chaining._
+
+    val itemStack = getMineStackObjectItemStack(mineStackObject, isColorSelectMenu = false)
+
+    Button(
+      itemStack,
+      action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
+        objectClickEffect(mineStackObject, itemStack.getMaxStackSize)
+      },
+      action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
+        objectClickEffect(mineStackObject, 1)
+      }
+    )
+  })
+
+  def getMineStackObjectItemStack(
+    mineStackObject: MineStackObject,
+    isColorSelectMenu: Boolean
+  ): ItemStack = {
+    val playerData = SeichiAssist.playermap(getUniqueId)
+
+    import scala.util.chaining._
+
+    mineStackObject.itemStack.tap { itemStack =>
+      import itemStack._
+      setItemMeta {
+        getItemMeta.tap { itemMeta =>
+          import itemMeta._
+          setDisplayName {
+            val name = mineStackObject
+              .uiName
+              .getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
+
+            s"$YELLOW$UNDERLINE$BOLD$name"
+          }
+
+          setLore {
+            val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObject)
+            val itemDetail = List(s"$RESET$GREEN${stackedAmount.formatted("%,d")}個")
+            val operationDetail = {
+              if (isColorSelectMenu) {
+                List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")
+              } else {
+                List(
+                  s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
+                  s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
+                )
+              }
+            }
+            (itemDetail ++ operationDetail).asJava
+          }
+        }
+      }
     }
   }
 
@@ -96,62 +158,46 @@ private[minestack] case class MineStackButtons(player: Player) {
 
     val mineStackObject = getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
 
-    mineStackObject
-      .itemStack
-      .clone()
-      .tap {
-        itemStack =>
-          import itemStack._
-          setItemMeta {
-            getItemMeta
-              .tap {
-                itemMeta =>
-                  import itemMeta._
-                  setDisplayName {
-                    val name = mineStackObject
-                      .uiName
-                      .getOrElse(if (hasDisplayName) getDisplayName else getType.toString)
-
-                    s"$YELLOW$UNDERLINE$BOLD$name"
-                  }
-
-                  setLore {
-                    val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObject)
-                    val itemDetail = List(s"$RESET$GREEN${stackedAmount.formatted("%,d")}個")
-                    val operationDetail = {
-                      if (mineStackObjectGroup.isRight) {
-                        List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")
-                      } else {
-                        List(
-                          s"$RESET$DARK_RED${UNDERLINE}左クリックで1スタック取り出し",
-                          s"$RESET$DARK_AQUA${UNDERLINE}右クリックで1個取り出し"
-                        )
-                      }
-                    }
-                    (itemDetail ++ operationDetail).asJava
-                  }
-              }
-          }
-      }
+    val itemStack = getMineStackObjectItemStack(mineStackObject, mineStackObjectGroup.isRight)
 
     Button(
-      mineStackObject.itemStack,
+      itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        clickEffect(mineStackObjectGroup, mineStackObject.itemStack.getMaxStackSize)
+        objectGroupClickEffect(mineStackObjectGroup, itemStack.getMaxStackSize)
       },
       action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
-        clickEffect(mineStackObjectGroup, 1)
+        objectGroupClickEffect(mineStackObjectGroup, 1)
       }
     )
   })
 
-  private def clickEffect(mineStackObjectGroup: MineStackObjectGroup, amount: Int)(
+  private def objectClickEffect(mineStackObject: MineStackObject, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): Kleisli[IO, Player, Unit] = {
     val playerData = SeichiAssist.playermap(getUniqueId)
     SequentialEffect(
-      withDrawItemEffect(mineStackObjectGroup, amount),
+      withDrawItemEffect(mineStackObject, amount),
+      targetedeffect.UnfocusedEffect {
+        playerData.hisotryData.addHistory(mineStackObject)
+      }
+    )
+  }
+
+  private def objectGroupClickEffect(mineStackObjectGroup: MineStackObjectGroup, amount: Int)(
+    implicit onMainThread: OnMinecraftServerThread[IO],
+    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+  ): Kleisli[IO, Player, Unit] = {
+    val playerData = SeichiAssist.playermap(getUniqueId)
+    implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu.Environment =
+      new MineStackSelectItemColorMenu.Environment()
+    SequentialEffect(
+      mineStackObjectGroup match {
+        case Left(mineStackObject: MineStackObject) =>
+          withDrawItemEffect(mineStackObject, amount)
+        case Right(mineStackObjectWithColorVariants: MineStackObjectWithColorVariants) =>
+          MineStackSelectItemColorMenu(mineStackObjectWithColorVariants).open
+      },
       targetedeffect.UnfocusedEffect {
         playerData
           .hisotryData
@@ -160,48 +206,37 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   }
 
-  private def withDrawItemEffect(mineStackObjectGroup: MineStackObjectGroup, amount: Int)(
+  private def withDrawItemEffect(mineStackObject: MineStackObject, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpen: CanOpen[IO, CategorizedMineStackMenu]
   ): TargetedEffect[Player] = {
-    mineStackObjectGroup match {
-      case Right(groupedMineStackObjects: GroupedMineStackObjects) =>
-        implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu.Environment =
-          new MineStackSelectItemColorMenu.Environment()
-        MineStackSelectItemColorMenu(groupedMineStackObjects).open
-      case Left(mineStackObject: MineStackObject) =>
-        for {
-          pair <- Kleisli((player: Player) =>
-            onMainThread.runAction {
-              for {
-                playerData <- SyncIO {
-                  SeichiAssist.playermap(player.getUniqueId)
-                }
-                currentAmount <- SyncIO {
-                  playerData.minestack.getStackedAmountOf(mineStackObject)
-                }
-
-                grantAmount = Math.min(amount, currentAmount).toInt
-
-                soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
-                itemStackToGrant = mineStackObject
-                  .parameterizedWith(player)
-                  .withAmount(grantAmount)
-
-                _ <- SyncIO {
-                  playerData
-                    .minestack
-                    .subtractStackedAmountOf(mineStackObject, grantAmount.toLong)
-                }
-              } yield (soundEffectPitch, itemStackToGrant)
+    for {
+      pair <- Kleisli((player: Player) =>
+        onMainThread.runAction {
+          for {
+            playerData <- SyncIO {
+              SeichiAssist.playermap(player.getUniqueId)
             }
-          )
-          _ <- SequentialEffect(
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, pair._1),
-            grantItemStacksEffect(pair._2)
-          )
-        } yield ()
-    }
+            currentAmount <- SyncIO {
+              playerData.minestack.getStackedAmountOf(mineStackObject)
+            }
+
+            grantAmount = Math.min(amount, currentAmount).toInt
+
+            soundEffectPitch = if (grantAmount == amount) 1.0f else 0.5f
+            itemStackToGrant = mineStackObject.parameterizedWith(player).withAmount(grantAmount)
+
+            _ <- SyncIO {
+              playerData.minestack.subtractStackedAmountOf(mineStackObject, grantAmount.toLong)
+            }
+          } yield (soundEffectPitch, itemStackToGrant)
+        }
+      )
+      _ <- SequentialEffect(
+        FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0f, pair._1),
+        grantItemStacksEffect(pair._2)
+      )
+    } yield ()
   }
 
   def computeAutoMineStackToggleButton(

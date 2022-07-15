@@ -11,7 +11,7 @@ import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.minestack.{
-  GroupedMineStackObjects,
+  MineStackObjectWithColorVariants,
   MineStackObject,
   MineStackObjectCategory
 }
@@ -115,12 +115,8 @@ object MineStackMainMenu extends Menu {
           .map {
             case (mineStackObject, index) =>
               val slotIndex = 18 + index // 3行目から入れだす
-              val mineStackObjectGroup: Either[MineStackObject, GroupedMineStackObjects] =
-                Left(mineStackObject)
-              val button = {
-                // TODO: 後で考える
-                MineStackButtons(player).getMineStackGroupButtonOf(mineStackObjectGroup)
-              }
+              val button =
+                MineStackButtons(player).getMineStackObjectButtonOf(mineStackObject)
 
               slotIndex -> button
           }

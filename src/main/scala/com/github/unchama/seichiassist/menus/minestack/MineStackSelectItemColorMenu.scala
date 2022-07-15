@@ -8,7 +8,10 @@ import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlot
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.CommonButtons
-import com.github.unchama.seichiassist.minestack.{GroupedMineStackObjects, MineStackObject}
+import com.github.unchama.seichiassist.minestack.{
+  MineStackObjectWithColorVariants,
+  MineStackObject
+}
 import eu.timepit.refined.auto._
 import org.bukkit.ChatColor.{BOLD, DARK_BLUE}
 import org.bukkit.entity.Player
@@ -21,7 +24,7 @@ object MineStackSelectItemColorMenu {
 
 }
 
-case class MineStackSelectItemColorMenu(group: GroupedMineStackObjects) extends Menu {
+case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants) extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
@@ -35,10 +38,9 @@ case class MineStackSelectItemColorMenu(group: GroupedMineStackObjects) extends 
     import environment.canOpenCategorizedMineStackMenu
     val buttonMapping = (List(group.representative) ++ group.coloredVariants).zipWithIndex.map {
       case (inListMineStackObj, index) =>
-        val mineStackObjectGroup: Either[MineStackObject, GroupedMineStackObjects] =
+        val mineStackObjectGroup: Either[MineStackObject, MineStackObjectWithColorVariants] =
           Left(inListMineStackObj)
-        // TODO: 後で考える
-        index -> MineStackButtons(player).getMineStackGroupButtonOf(mineStackObjectGroup)
+        index -> MineStackButtons(player).getMineStackObjectButtonOf(inListMineStackObj)
     } ++ List(
       ChestSlotRef(5, 0) -> IO(
         CommonButtons.transferButton(
