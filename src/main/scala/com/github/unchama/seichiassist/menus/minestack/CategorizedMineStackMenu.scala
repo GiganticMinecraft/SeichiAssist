@@ -8,7 +8,6 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MineStackObjectList.{
   MineStackObjectGroup,
-  allMineStackGroups,
   getGachaPrizesList
 }
 import com.github.unchama.seichiassist.menus.CommonButtons
@@ -145,12 +144,12 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
     val categorizedItemSectionComputation =
-      categoryItemList
+      categoryGroups
         .slice(
           mineStackObjectPerPage * pageIndex,
           mineStackObjectPerPage * pageIndex + mineStackObjectPerPage
         )
-        .traverse(getMineStackItemButtonOf(_))
+        .traverse(getMineStackGroupButtonOf(_))
         .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算

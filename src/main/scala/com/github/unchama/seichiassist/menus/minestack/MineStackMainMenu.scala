@@ -10,7 +10,11 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.effects.player.CommonSoundEffects
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
-import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
+import com.github.unchama.seichiassist.minestack.{
+  GroupedMineStackObjects,
+  MineStackObject,
+  MineStackObjectCategory
+}
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory.{
   AGRICULTURAL,
   BUILDING,
@@ -111,7 +115,12 @@ object MineStackMainMenu extends Menu {
           .map {
             case (mineStackObject, index) =>
               val slotIndex = 18 + index // 3行目から入れだす
-              val button = MineStackButtons(player).getMineStackItemButtonOf(mineStackObject)
+              val mineStackObjectGroup: Either[MineStackObject, GroupedMineStackObjects] =
+                Left(mineStackObject)
+              val button = {
+                // TODO: 後で考える
+                MineStackButtons(player).getMineStackGroupButtonOf(mineStackObjectGroup)
+              }
 
               slotIndex -> button
           }
