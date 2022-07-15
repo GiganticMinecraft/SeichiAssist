@@ -9,9 +9,9 @@ class MineStackUsageHistory {
   /**
    * 履歴に追加します。ただし、データの保存可能な最大値を超えていた場合、先頭から削除されます。
    */
-  def addHistory(mineStackObjectGroup: MineStackObject): Unit = {
-    _usageHistory = _usageHistory.filterNot(_ == mineStackObjectGroup)
-    _usageHistory :+= mineStackObjectGroup
+  def addHistory(mineStackObject: MineStackObject): Unit = {
+    _usageHistory = _usageHistory.filterNot(_ == mineStackObject)
+    _usageHistory :+= mineStackObject
     if (_usageHistory.size > maxListSize) _usageHistory.drop(1)
   }
 
