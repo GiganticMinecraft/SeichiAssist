@@ -90,9 +90,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): IO[Button] = RecomputedButton(IO {
-    val playerData = SeichiAssist.playermap(getUniqueId)
-
-    import scala.util.chaining._
+    SeichiAssist.playermap(getUniqueId)
 
     val itemStack = getMineStackObjectItemStack(mineStackObject, isColorSelectMenu = false)
 
@@ -152,9 +150,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): IO[Button] = RecomputedButton(IO {
-    val playerData = SeichiAssist.playermap(getUniqueId)
-
-    import scala.util.chaining._
+    SeichiAssist.playermap(getUniqueId)
 
     val mineStackObject = getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
 
