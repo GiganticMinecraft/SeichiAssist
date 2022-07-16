@@ -35,7 +35,6 @@ case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants)
     import environment.canOpenCategorizedMineStackMenu
     val buttonMapping = (List(group.representative) ++ group.coloredVariants).zipWithIndex.map {
       case (inListMineStackObj, index) =>
-        Left(inListMineStackObj)
         index -> MineStackButtons(player).getMineStackObjectButtonOf(inListMineStackObj)
     } ++ List(
       ChestSlotRef(5, 0) -> IO(

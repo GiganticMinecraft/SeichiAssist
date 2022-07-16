@@ -95,7 +95,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     for {
       categoryGroupCount <- IO {
-        getAllObjectGroupsInCategory.length
+        getAllObjectGroupsInCategory(category).length
       }
     } yield {
       val totalNumberOfPages = Math.ceil(categoryGroupCount / 45.0).toInt
@@ -116,7 +116,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     val mineStackObjectPerPage = objectSectionRows.chestRows.slotCount
 
-    val categoryGroups = getAllObjectGroupsInCategory
+    val categoryGroups = getAllObjectGroupsInCategory(category)
 
     // TODO MineStackObjectListが可変になったらここを変更する
     val categoryItemList =

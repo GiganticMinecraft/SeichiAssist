@@ -634,7 +634,9 @@ object MineStackObjectList {
     } ++ gachaPrizesObjects
   }
 
-  def getAllObjectGroupsInCategory: List[MineStackObjectGroup] = {
+  def getAllObjectGroupsInCategory(
+    category: MineStackObjectCategory
+  ): List[MineStackObjectGroup] = {
     def categoryOf(group: MineStackObjectGroup): MineStackObjectCategory = {
       group match {
         case Left(mineStackObject) => mineStackObject.category
