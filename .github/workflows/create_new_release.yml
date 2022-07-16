@@ -76,6 +76,9 @@ jobs:
     needs: bump_version
     steps:
       - uses: actions/checkout@master
+        with:
+          # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
+          submodules: 'recursive'
 
       - uses: actions/setup-java@v3
         with:
