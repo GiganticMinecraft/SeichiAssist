@@ -6,8 +6,9 @@ import com.github.unchama.seichiassist.minestack.MineStackObject.{
 }
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory._
 import com.github.unchama.seichiassist.minestack.{
-  MineStackObjectWithColorVariants,
-  MineStackObject
+  MineStackObject,
+  MineStackObjectCategory,
+  MineStackObjectWithColorVariants
 }
 import com.github.unchama.seichiassist.util.ItemInformation.itemStackContainsOwnerName
 import com.github.unchama.seichiassist.util.StaticGachaPrizeFactory
@@ -631,6 +632,16 @@ object MineStackObjectList {
       case Left(mineStackObj) => List(mineStackObj)
       case Right(group)       => List(group.representative) ++ group.coloredVariants
     } ++ gachaPrizesObjects
+  }
+
+  def getAllObjectGroupsInCategory: List[MineStackObjectGroup] = {
+    def categoryOf(group: MineStackObjectGroup): MineStackObjectCategory = {
+      group match {
+        case Left(mineStackObject) => mineStackObject.category
+        case Right(groupedObjects) => groupedObjects.category
+      }
+    }
+    MineStackObjectList.allMineStackGroups.filter { group => categoryOf(group) == category }
   }
 
   /**

@@ -7,12 +7,12 @@ import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.MineStackObjectList.{
-  MineStackObjectGroup,
+  getAllObjectGroupsInCategory,
   getGachaPrizesList
 }
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
-import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
 import com.github.unchama.targetedeffect.{DeferredEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -106,17 +106,6 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
         CategorizedMineStackMenu(category, totalNumberOfPages - 1).open
       else super.open
     }
-  }
-
-  // FIXME: MineStackObjectList にこれがあってもいいかも
-  private def getAllObjectGroupsInCategory: List[MineStackObjectGroup] = {
-    def categoryOf(group: MineStackObjectGroup): MineStackObjectCategory = {
-      group match {
-        case Left(mineStackObject) => mineStackObject.category
-        case Right(groupedObjects) => groupedObjects.category
-      }
-    }
-    MineStackObjectList.allMineStackGroups.filter { group => categoryOf(group) == category }
   }
 
   override def computeMenuLayout(
