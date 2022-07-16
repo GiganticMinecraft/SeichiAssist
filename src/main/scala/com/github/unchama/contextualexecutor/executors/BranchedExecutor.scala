@@ -12,10 +12,10 @@ case class BranchedExecutor(
   whenBranchNotFound: Option[ContextualExecutor] = Some(PrintUsageExecutor)
 ) extends ContextualExecutor {
 
-  override def executeWith(rawContext: RawCommandContext): IO[Unit] = {
+  override def executionWith(rawContext: RawCommandContext): IO[Unit] = {
     def executeOptionally(executor: Option[ContextualExecutor]): IO[Unit] =
       executor match {
-        case Some(executor) => executor.executeWith(rawContext)
+        case Some(executor) => executor.executionWith(rawContext)
         case None           => IO.pure(())
       }
 
@@ -28,7 +28,7 @@ case class BranchedExecutor(
 
     val argShiftedContext = rawContext.copy(args = argTail)
 
-    branch.executeWith(argShiftedContext)
+    branch.executionWith(argShiftedContext)
   }
 
   override def tabCandidatesFor(context: RawCommandContext): List[String] = {
