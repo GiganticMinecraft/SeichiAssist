@@ -6,10 +6,7 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
-import com.github.unchama.seichiassist.MineStackObjectList.{
-  getAllObjectGroupsInCategory,
-  getGachaPrizesList
-}
+import com.github.unchama.seichiassist.MineStackObjectList.getAllObjectGroupsInCategory
 import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
@@ -118,15 +115,8 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     val categoryGroups = getAllObjectGroupsInCategory(category)
 
-    // TODO MineStackObjectListが可変になったらここを変更する
-    val categoryItemList =
-      (categoryGroups.flatMap {
-        case Right(group) =>
-          List(group.representative)
-        case Left(mineStackObj) =>
-          List(mineStackObj)
-      } ++ getGachaPrizesList).filter(_.category == category)
-    val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
+    val totalNumberOfPages =
+      Math.ceil(getAllObjectGroupsInCategory(category).length / 45.0).toInt
 
     val playerMineStackButtons = MineStackButtons(player)
     import playerMineStackButtons._
