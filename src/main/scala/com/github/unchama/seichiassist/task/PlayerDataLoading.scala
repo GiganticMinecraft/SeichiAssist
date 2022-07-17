@@ -72,6 +72,7 @@ object PlayerDataLoading {
       val nameObjectMappings: Map[String, MineStackObject] =
         MineStackObjectList
           .getAllMineStackObjects
+          .unsafeRunSync()
           .map(obj => obj.mineStackObjectName -> obj)
           .toMap
 

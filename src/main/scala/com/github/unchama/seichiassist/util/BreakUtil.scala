@@ -466,6 +466,7 @@ object BreakUtil {
 
     MineStackObjectList
       .findByItemStack(itemstack, player.getName)
+      .unsafeRunSync()
       .foreach(mineStackObj => {
         playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
         return true

@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist
 
+import cats.effect.IO
+import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.minestack.MineStackObject.{
   itemStackMineStackObject,
   materialMineStackObject
@@ -598,16 +600,18 @@ object MineStackObjectList {
 
   // @formatter:on
 
-  private var gachaPrizesObjects: List[MineStackObject] = Nil
+  private val gachaPrizesObjects: Ref[IO, List[MineStackObject]] =
+    Ref.unsafe[IO, List[MineStackObject]](Nil)
 
   def setGachaPrizesList(mineStackObject: List[MineStackObject]): Unit = {
-    gachaPrizesObjects = mineStackObject
+    gachaPrizesObjects.set(mineStackObject)
   }
 
-  def getGachaPrizesList: List[MineStackObject] =
-    gachaPrizesObjects
+  def getGachaPrizesList: IO[List[MineStackObject]] =
+    gachaPrizesObjects.get
 
-  val allMineStackGroups: List[MineStackObjectGroup] = List(
+  // ガチャアイテムを除外したMineStackGroups
+  val exceptGachaItemMineStackGroups: List[MineStackObjectGroup] = List(
     minestacklistbuild,
     minestacklistdrop,
     minestacklistfarm,
@@ -615,6 +619,12 @@ object MineStackObjectList {
     minestacklistrs,
     minestackBuiltinGachaPrizes
   ).flatten
+
+  val allMineStackGroups: IO[List[MineStackObjectGroup]] = for {
+    gachaPrizes <- gachaPrizesObjects.get
+  } yield {
+    exceptGachaItemMineStackGroups ++ gachaPrizes.flatMap(leftElems(_))
+  }
 
   def getBuiltinGachaPrizes: List[MineStackObject] = {
     minestackBuiltinGachaPrizes.flatMap {
@@ -627,23 +637,27 @@ object MineStackObjectList {
    * すべてのMineStackObjectを返す
    * 可変であるガチャ景品リストに依存しているため、定数ではない
    */
-  def getAllMineStackObjects: List[MineStackObject] = {
-    allMineStackGroups.flatMap {
+  def getAllMineStackObjects: IO[List[MineStackObject]] = for {
+    gachaPrizes <- gachaPrizesObjects.get
+  } yield {
+    exceptGachaItemMineStackGroups.flatMap {
       case Left(mineStackObj) => List(mineStackObj)
       case Right(group)       => List(group.representative) ++ group.coloredVariants
-    } ++ gachaPrizesObjects
+    } ++ gachaPrizes
   }
 
   def getAllObjectGroupsInCategory(
     category: MineStackObjectCategory
-  ): List[MineStackObjectGroup] = {
+  ): IO[List[MineStackObjectGroup]] = {
     def categoryOf(group: MineStackObjectGroup): MineStackObjectCategory = {
       group match {
         case Left(mineStackObject) => mineStackObject.category
         case Right(groupedObjects) => groupedObjects.category
       }
     }
-    MineStackObjectList.allMineStackGroups.filter { group => categoryOf(group) == category }
+    MineStackObjectList
+      .allMineStackGroups
+      .map(_.filter { group => categoryOf(group) == category })
   }
 
   /**
@@ -651,50 +665,52 @@ object MineStackObjectList {
    * @param playerName 検索を行うプレイヤーの名前
    * @return itemStackに対応するMineStackObjectのOption
    */
-  def findByItemStack(itemStack: ItemStack, playerName: String): Option[MineStackObject] = {
-    getAllMineStackObjects.find { mineStackObj =>
-      val material = itemStack.getType
-      val isSameItem = material == mineStackObj.material && itemStack
-        .getDurability
-        .toInt == mineStackObj.durability
-      if (isSameItem) {
-        val hasMineStackObjLore = mineStackObj.hasNameLore
-        val hasItemStackLore = itemStack.getItemMeta.hasLore
-        val hasItemStackDisplayName = itemStack.getItemMeta.hasDisplayName
-        val itemNotInfoExists =
-          !hasMineStackObjLore && !hasItemStackLore && !hasItemStackDisplayName
-        val itemInfoExists =
-          hasMineStackObjLore && hasItemStackLore && hasItemStackDisplayName
-        if (itemNotInfoExists) {
-          true
-        } else if (itemInfoExists) {
-          if (itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) {
+  def findByItemStack(itemStack: ItemStack, playerName: String): IO[Option[MineStackObject]] = {
+    getAllMineStackObjects.map {
+      _.find { mineStackObj =>
+        val material = itemStack.getType
+        val isSameItem = material == mineStackObj.material && itemStack
+          .getDurability
+          .toInt == mineStackObj.durability
+        if (isSameItem) {
+          val hasMineStackObjLore = mineStackObj.hasNameLore
+          val hasItemStackLore = itemStack.getItemMeta.hasLore
+          val hasItemStackDisplayName = itemStack.getItemMeta.hasDisplayName
+          val itemNotInfoExists =
+            !hasMineStackObjLore && !hasItemStackLore && !hasItemStackDisplayName
+          val itemInfoExists =
+            hasMineStackObjLore && hasItemStackLore && hasItemStackDisplayName
+          if (itemNotInfoExists) {
             true
+          } else if (itemInfoExists) {
+            if (itemStack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) {
+              true
+            } else {
+              // ガチャ品
+              (for {
+                gachaData <- SeichiAssist
+                  .msgachadatalist
+                  .find(_.itemStack.isSimilar(mineStackObj.itemStack))
+              } yield {
+                // 名前が記入されているはずのアイテムで名前がなければ
+                if (
+                  gachaData.probability < 0.1 && !itemStackContainsOwnerName(
+                    itemStack,
+                    playerName
+                  )
+                ) {
+                  false
+                } else {
+                  gachaData.itemStackEquals(itemStack)
+                }
+              }).getOrElse(false)
+            }
           } else {
-            // ガチャ品
-            (for {
-              gachaData <- SeichiAssist
-                .msgachadatalist
-                .find(_.itemStack.isSimilar(mineStackObj.itemStack))
-            } yield {
-              // 名前が記入されているはずのアイテムで名前がなければ
-              if (
-                gachaData.probability < 0.1 && !itemStackContainsOwnerName(
-                  itemStack,
-                  playerName
-                )
-              ) {
-                false
-              } else {
-                gachaData.itemStackEquals(itemStack)
-              }
-            }).getOrElse(false)
+            false
           }
         } else {
           false
         }
-      } else {
-        false
       }
     }
   }
@@ -704,6 +720,6 @@ object MineStackObjectList {
    * @param name internal name
    * @return Some if the associated object was found, otherwise None
    */
-  def findByName(name: String): Option[MineStackObject] =
-    getAllMineStackObjects.find(_.mineStackObjectName == name)
+  def findByName(name: String): IO[Option[MineStackObject]] =
+    getAllMineStackObjects.map(_.find(_.mineStackObjectName == name))
 }

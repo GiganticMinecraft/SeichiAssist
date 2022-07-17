@@ -72,7 +72,7 @@ object MineStackMassCraftMenu {
       }
 
       def toMineStackObjectChunk(chunk: (MineStackItemId, Int)): (MineStackObject, Int) =
-        chunk.leftMap(id => MineStackObjectList.findByName(id).get)
+        chunk.leftMap(id => MineStackObjectList.findByName(id).unsafeRunSync().get)
 
       def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObject, Int)]): String =
         chunks.map { case (obj, amount) => s"${obj.uiName.get}${amount}個" }.mkString_("+")

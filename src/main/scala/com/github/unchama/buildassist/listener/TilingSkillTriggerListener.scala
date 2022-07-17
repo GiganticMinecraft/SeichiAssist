@@ -69,6 +69,7 @@ class TilingSkillTriggerListener[
     val minestackObjectToUse =
       MineStackObjectList
         .findByItemStack(offHandItem, player.getName)
+        .unsafeRunSync()
         .filter(_ => buildAssistPlayerData.zs_minestack_flag)
 
     val replaceableMaterials = Set(

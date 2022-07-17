@@ -91,9 +91,8 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   ): TargetedEffect[Player] = DeferredEffect {
 
     for {
-      categoryGroupCount <- IO {
-        getAllObjectGroupsInCategory(category).length
-      }
+      categoryGroupCount <-
+        getAllObjectGroupsInCategory(category).map(_.length)
     } yield {
       val totalNumberOfPages = Math.ceil(categoryGroupCount / 45.0).toInt
 
@@ -113,10 +112,10 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
 
     val mineStackObjectPerPage = objectSectionRows.chestRows.slotCount
 
-    val categoryGroups = getAllObjectGroupsInCategory(category)
+    val categoryGroups = getAllObjectGroupsInCategory(category).unsafeRunSync()
 
     val totalNumberOfPages =
-      Math.ceil(getAllObjectGroupsInCategory(category).length / 45.0).toInt
+      Math.ceil(categoryGroups.length / 45.0).toInt
 
     val playerMineStackButtons = MineStackButtons(player)
     import playerMineStackButtons._
