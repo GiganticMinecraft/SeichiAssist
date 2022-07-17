@@ -123,7 +123,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     for {
       categoryGroups <- getAllObjectGroupsInCategory(category)
       totalNumberOfPages = Math.ceil(categoryGroups.length / 45.0).toInt
-      categorizedItemSectionComputation <-
+      categorizedItemSection <-
         categoryGroups // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
           .slice(
             mineStackObjectPerPage * pageIndex,
@@ -135,7 +135,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     } yield {
       val combinedLayout =
         uiOperationSection(totalNumberOfPages)(category, pageIndex)
-          .++(categorizedItemSectionComputation)
+          .++(categorizedItemSection)
           .++(autoMineStackToggleButtonSection)
 
       MenuSlotLayout(combinedLayout: _*)
