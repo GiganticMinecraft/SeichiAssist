@@ -140,7 +140,7 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     val executeQuery = IO {
       import scalikejdbc._
       DB.localTx { implicit session =>
-        sql"""update seichiassist set numofsorryforbug = numofsorryforbug + $num where name = $playerName"""
+        sql"""update $tableReference set numofsorryforbug = numofsorryforbug + $num where name = $playerName"""
           .update()
           .apply()
       }
