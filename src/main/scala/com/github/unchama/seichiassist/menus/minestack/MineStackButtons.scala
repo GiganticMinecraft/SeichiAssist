@@ -93,7 +93,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     SeichiAssist.playermap(getUniqueId)
 
     val mineStackObjectGroup: MineStackObjectGroup = Left(mineStackObject)
-    val itemStack = getMineStackObjectItemStack(mineStackObjectGroup)
+    val itemStack = getMineStackObjectIconItemStack(mineStackObjectGroup)
 
     Button(
       itemStack,
@@ -106,7 +106,7 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  def getMineStackObjectItemStack(mineStackObjectGroup: MineStackObjectGroup): ItemStack = {
+  def getMineStackObjectIconItemStack(mineStackObjectGroup: MineStackObjectGroup): ItemStack = {
     val playerData = SeichiAssist.playermap(getUniqueId)
 
     import scala.util.chaining._
@@ -159,7 +159,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
     val mineStackObject = getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
 
-    val itemStack = getMineStackObjectItemStack(mineStackObjectGroup)
+    val itemStack = getMineStackObjectIconItemStack(mineStackObjectGroup)
 
     Button(
       itemStack,
