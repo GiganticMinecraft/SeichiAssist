@@ -6,9 +6,10 @@ import com.github.unchama.menuinventory._
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import com.github.unchama.seichiassist.MineStackObjectList.getAllObjectGroupsInCategory
+import com.github.unchama.seichiassist.SkullOwners
 import com.github.unchama.seichiassist.menus.CommonButtons
 import com.github.unchama.seichiassist.minestack.MineStackObjectCategory
-import com.github.unchama.seichiassist.{MineStackObjectList, SkullOwners}
 import com.github.unchama.targetedeffect.{DeferredEffect, TargetedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.entity.Player
@@ -18,6 +19,7 @@ object CategorizedMineStackMenu {
   class Environment(
     implicit val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
     val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+    val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
     val onMainThread: OnMinecraftServerThread[IO]
   )
 
@@ -88,16 +90,12 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
     ctx: LayoutPreparationContext,
     onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = DeferredEffect {
-    import MineStackObjectCategory._
 
     for {
-      categoryItemList <- IO {
-        MineStackObjectList
-          .getMineStackObjectExceptColoredVariants
-          .filter(_.category() == category)
-      }
+      categoryGroupCount <-
+        getAllObjectGroupsInCategory(category).map(_.length)
     } yield {
-      val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
+      val totalNumberOfPages = Math.ceil(categoryGroupCount / 45.0).toInt
 
       // オブジェクトリストが更新されるなどの理由でpageが最大値を超えてしまった場合、
       // 最後のページをopenする作用を返す
@@ -110,38 +108,29 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
   override def computeMenuLayout(
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
-    import MineStackObjectCategory._
     import cats.implicits._
     import environment._
 
     val mineStackObjectPerPage = objectSectionRows.chestRows.slotCount
 
-    // TODO MineStackObjectListが可変になったらここを変更する
-    val categoryItemList =
-      MineStackObjectList
-        .getMineStackObjectExceptColoredVariants
-        .filter(_.category() == category)
-    val totalNumberOfPages = Math.ceil(categoryItemList.size / 45.0).toInt
-
     val playerMineStackButtons = MineStackButtons(player)
     import playerMineStackButtons._
-
-    // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
-    val categorizedItemSectionComputation =
-      categoryItemList
-        .slice(
-          mineStackObjectPerPage * pageIndex,
-          mineStackObjectPerPage * pageIndex + mineStackObjectPerPage
-        )
-        .traverse(getMineStackItemButtonOf(_))
-        .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算
     val autoMineStackToggleButtonSectionComputation =
       List(ChestSlotRef(5, 4) -> computeAutoMineStackToggleButton).traverse(_.sequence)
 
     for {
-      categorizedItemSection <- categorizedItemSectionComputation
+      categoryGroups <- getAllObjectGroupsInCategory(category)
+      totalNumberOfPages = Math.ceil(categoryGroups.length / 45.0).toInt
+      categorizedItemSection <-
+        categoryGroups // カテゴリ内のMineStackアイテム取り出しボタンを含むセクションの計算
+          .slice(
+            mineStackObjectPerPage * pageIndex,
+            mineStackObjectPerPage * pageIndex + mineStackObjectPerPage
+          )
+          .traverse(getMineStackGroupButtonOf(_, pageIndex))
+          .map(_.zipWithIndex.map(_.swap))
       autoMineStackToggleButtonSection <- autoMineStackToggleButtonSectionComputation
     } yield {
       val combinedLayout =

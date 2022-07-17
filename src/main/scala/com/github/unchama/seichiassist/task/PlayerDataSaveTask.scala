@@ -33,7 +33,7 @@ object PlayerDataSaveTask {
         case (mineStackObj, amount) =>
           val updateCommand = ("insert into seichiassist.mine_stack"
             + "(player_uuid, object_name, amount) values "
-            + "('" + playerUuid + "', '" + mineStackObj.mineStackObjName + "', '" + amount + "') "
+            + "('" + playerUuid + "', '" + mineStackObj.mineStackObjectName + "', '" + amount + "') "
             + "on duplicate key update amount = values(amount)")
 
           stmt.executeUpdate(updateCommand)

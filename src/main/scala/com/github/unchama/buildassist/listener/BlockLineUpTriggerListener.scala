@@ -101,11 +101,9 @@ class BlockLineUpTriggerListener[
     val manaConsumptionPerPlacement = BuildAssist.config.getblocklineupmana_mag
 
     val mineStackObjectToBeUsed =
-      if (buildAssistData.line_up_minestack_flg == 1)
-        MineStackObjectList.getAllMineStackObjects.find { obj =>
-          mainHandItem.getType == obj.material && mainHandItemData.toInt == obj.durability
-        }
-      else None
+      if (buildAssistData.line_up_minestack_flg == 1) {
+        MineStackObjectList.findByItemStack(mainHandItem, player.getName).unsafeRunSync()
+      } else None
 
     val maxBlockUsage = {
       val availableOnHand = mainHandItem.getAmount.toLong

@@ -10,7 +10,7 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.slot.button.{Button, ReloadingButton}
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, ColorScheme, CommonButtons}
-import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackObject
 import com.github.unchama.seichiassist.{MineStackObjectList, SeichiAssist, SkullOwners}
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -67,14 +67,14 @@ object MineStackMassCraftMenu {
     ): IO[Button] = {
       import cats.implicits._
 
-      def queryAmountOf(mineStackObj: MineStackObj): IO[Long] = IO {
+      def queryAmountOf(mineStackObj: MineStackObject): IO[Long] = IO {
         SeichiAssist.playermap(player.getUniqueId).minestack.getStackedAmountOf(mineStackObj)
       }
 
-      def toMineStackObjectChunk(chunk: (MineStackItemId, Int)): (MineStackObj, Int) =
-        chunk.leftMap(id => MineStackObjectList.findByName(id).get)
+      def toMineStackObjectChunk(chunk: (MineStackItemId, Int)): (MineStackObject, Int) =
+        chunk.leftMap(id => MineStackObjectList.findByName(id).unsafeRunSync().get)
 
-      def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObj, Int)]): String =
+      def enumerateChunkDetails(chunks: NonEmptyList[(MineStackObject, Int)]): String =
         chunks.map { case (obj, amount) => s"${obj.uiName.get}${amount}個" }.mkString_("+")
 
       val requiredBuildLevel =
@@ -85,7 +85,7 @@ object MineStackMassCraftMenu {
 
       val iconComputation = {
         val title = {
-          def enumerateChunkNames(chunks: NonEmptyList[(MineStackObj, Int)]): String =
+          def enumerateChunkNames(chunks: NonEmptyList[(MineStackObject, Int)]): String =
             chunks.map(_._1.uiName.get).mkString_("と")
 
           s"$YELLOW$UNDERLINE$BOLD" +

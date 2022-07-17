@@ -11,7 +11,6 @@ import org.bukkit.{GameMode, Sound}
 
 class PlayerPickupItemListener extends Listener {
   private val playerMap = SeichiAssist.playermap
-  private val config = SeichiAssist.seichiAssistConfig
 
   @EventHandler
   def onPickupMineStackItem(event: EntityPickupItemEvent): Unit = {
@@ -22,17 +21,6 @@ class PlayerPickupItemListener extends Listener {
         val playerData = playerMap(player.getUniqueId).ifNull(
           return
         )
-        val playerLevel = SeichiAssist
-          .instance
-          .breakCountSystem
-          .api
-          .seichiAmountDataRepository(player)
-          .read
-          .unsafeRunSync()
-          .levelCorrespondingToExp
-          .level
-
-        if (playerLevel < config.getMineStacklevel(1)) return
 
         if (!playerData.settings.autoMineStack) return
 

@@ -427,6 +427,8 @@ object BreakUtil {
     } yield ()
   }
 
+  // TODO BreakUtilにあるのおかしくない？？？？
+  // P.S. BreakUtilにあるのはおかしいと思うが、どこに属するのかがよくわからないのでとりあえず放置
   def tryAddItemIntoMineStack(player: Player, itemstack: ItemStack): Boolean = {
     // もしサバイバルでなければ処理を終了
     if (player.getGameMode != GameMode.SURVIVAL) return false
@@ -436,38 +438,12 @@ object BreakUtil {
       player.sendMessage(s"${RED}mineDurability:${itemstack.getDurability}")
     }
 
-    val config = SeichiAssist.seichiAssistConfig
-
     val playerData = SeichiAssist.playermap(player.getUniqueId)
 
     // minestackflagがfalseの時は処理を終了
     if (!playerData.settings.autoMineStack) return false
 
-    /**
-     * 必要であれば引数を対応するアイテム向けの[[Material]]へ変換する
-     * @param material
-     *   変換対象
-     * @return
-     *   変換されたかもしれないMaterial
-     */
-    def intoItem(material: Material): Material = {
-      material match {
-        case Material.ACACIA_DOOR   => Material.ACACIA_DOOR_ITEM
-        case Material.BIRCH_DOOR    => Material.BIRCH_DOOR_ITEM
-        case Material.BED_BLOCK     => Material.BED
-        case Material.BREWING_STAND => Material.BREWING_STAND_ITEM
-        case Material.CAULDRON      => Material.CAULDRON_ITEM
-        case Material.DARK_OAK_DOOR => Material.DARK_OAK_DOOR_ITEM
-        case Material.FLOWER_POT    => Material.FLOWER_POT_ITEM
-        case Material.JUNGLE_DOOR   => Material.JUNGLE_DOOR_ITEM
-        case Material.SPRUCE_DOOR   => Material.SPRUCE_DOOR_ITEM
-        case Material.SKULL         => Material.SKULL_ITEM
-        case Material.WOODEN_DOOR   => Material.WOOD_DOOR
-        case others                 => others
-      }
-    }
     val amount = itemstack.getAmount
-    val material = intoItem(itemstack.getType)
 
     // 線路・キノコなどの、拾った時と壊した時とでサブIDが違う場合の処理
     // 拾った時のサブIDに合わせる
@@ -482,70 +458,13 @@ object BreakUtil {
       itemstack.setDurability(0.toShort)
     }
 
-    val mineStackObjectList = MineStackObjectList.getAllMineStackObjects
-
-    mineStackObjectList.foreach { mineStackObj =>
-      def addToMineStackAfterLevelCheck(): Boolean = {
-        val level =
-          SeichiAssist
-            .instance
-            .breakCountSystem
-            .api
-            .seichiAmountDataRepository(player)
-            .read
-            .unsafeRunSync()
-            .levelCorrespondingToExp
-
-        if (level.level < config.getMineStacklevel(mineStackObj.level)) {
-          false
-        } else {
-          playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
-          true
-        }
-      }
-
-      // IDとサブIDが一致している
-      if (
-        material == mineStackObj.material && itemstack
-          .getDurability
-          .toInt == mineStackObj.durability
-      ) {
-        // 名前と説明文が無いアイテム
-        if (
-          !mineStackObj.hasNameLore && !itemstack.getItemMeta.hasLore && !itemstack
-            .getItemMeta
-            .hasDisplayName
-        ) {
-          return addToMineStackAfterLevelCheck()
-        } else if (
-          mineStackObj.hasNameLore && itemstack.getItemMeta.hasDisplayName && itemstack
-            .getItemMeta
-            .hasLore
-        ) {
-          // ガチャ以外のアイテム(がちゃりんご)
-          if (mineStackObj.gachaType == -1) {
-            if (!itemstack.isSimilar(StaticGachaPrizeFactory.getGachaRingo)) return false
-
-            return addToMineStackAfterLevelCheck()
-          } else {
-            // ガチャ品
-            val g = SeichiAssist.msgachadatalist(mineStackObj.gachaType)
-
-            // 名前が記入されているはずのアイテムで名前がなければ
-            if (
-              g.probability < 0.1 && !ItemInformation.itemStackContainsOwnerName(
-                itemstack,
-                player.getName
-              )
-            ) return false
-
-            if (g.itemStackEquals(itemstack)) {
-              return addToMineStackAfterLevelCheck()
-            }
-          }
-        }
-      }
-    }
+    MineStackObjectList
+      .findByItemStack(itemstack, player.getName)
+      .unsafeRunSync()
+      .foreach(mineStackObj => {
+        playerData.minestack.addStackedAmountOf(mineStackObj, amount.toLong)
+        return true
+      })
     false
   }
 

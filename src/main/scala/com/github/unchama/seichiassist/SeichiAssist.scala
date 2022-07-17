@@ -55,7 +55,8 @@ import com.github.unchama.seichiassist.infrastructure.scalikejdbc.ScalikeJDBCCon
 import com.github.unchama.seichiassist.listener._
 import com.github.unchama.seichiassist.menus.{BuildMainMenu, TopLevelRouter}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.minestack.{MineStackObj, MineStackObjectCategory}
+import com.github.unchama.seichiassist.minestack.MineStackObject.itemStackMineStackObject
+import com.github.unchama.seichiassist.minestack.{MineStackObject, MineStackObjectCategory}
 import com.github.unchama.seichiassist.subsystems._
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.breakcount.{BreakCountAPI, BreakCountReadAPI}
@@ -801,21 +802,17 @@ object SeichiAssist {
     }
   }
 
-  private def generateGachaPrizes(): List[MineStackObj] =
+  private def generateGachaPrizes(): List[MineStackObject] =
     msgachadatalist
       .toList
-      .zipWithIndex
-      .filter(_._1.itemStack.getType != Material.EXP_BOTTLE) // 経験値瓶だけはすでにリストにあるので除外
-      .map {
-        case (g, i) =>
-          new MineStackObj(
-            g.objName,
-            None,
-            g.level,
-            g.itemStack,
-            true,
-            i,
-            MineStackObjectCategory.GACHA_PRIZES
-          )
+      .filter(_.itemStack.getType != Material.EXP_BOTTLE) // 経験値瓶だけはすでにリストにあるので除外
+      .map { g =>
+        itemStackMineStackObject(
+          MineStackObjectCategory.GACHA_PRIZES,
+          g.objName,
+          None,
+          hasNameLore = true,
+          g.itemStack
+        )
       }
 }

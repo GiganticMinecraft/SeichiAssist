@@ -189,16 +189,6 @@ class PlayerClickListener(
     var gachaWin = 0
     var gachaGTWin = 0
 
-    val playerLevel = SeichiAssist
-      .instance
-      .breakCountSystem
-      .api
-      .seichiAmountDataRepository(player)
-      .read
-      .unsafeRunSync()
-      .levelCorrespondingToExp
-      .level
-
     (1 to count).foreach { _ =>
       // プレゼント用ガチャデータ作成
       val present = GachaPrize.runGacha()
@@ -218,16 +208,10 @@ class PlayerClickListener(
        *  ③インベントリが満タンだったらドロップする
        */
       val additionalMessage =
-        if (
-          BreakUtil.tryAddItemIntoMineStack(
-            player,
-            present.itemStack
-          ) && playerLevel >= SeichiAssist.seichiAssistConfig.getMineStacklevel(1)
-        ) {
+        if (BreakUtil.tryAddItemIntoMineStack(player, present.itemStack)) {
           // ...格納した！
           s"${AQUA}景品をマインスタックに収納しました。"
         } else {
-          // スタックできないか、整地Lvがマインスタックの開放レベルに足りていないとき...
           // ...ドロップする
           if (!InventoryOperations.isPlayerInventoryFull(player)) {
             InventoryOperations.addItem(player, givenItem)
