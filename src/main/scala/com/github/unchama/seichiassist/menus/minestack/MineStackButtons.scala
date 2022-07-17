@@ -90,8 +90,6 @@ private[minestack] case class MineStackButtons(player: Player) {
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
   ): IO[Button] = RecomputedButton(IO {
-    SeichiAssist.playermap(getUniqueId)
-
     val mineStackObjectGroup: MineStackObjectGroup = Left(mineStackObject)
     val itemStack = getMineStackObjectIconItemStack(mineStackObjectGroup)
 
