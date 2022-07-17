@@ -151,23 +151,21 @@ private[minestack] case class MineStackButtons(player: Player) {
     }
   }
 
-  def getMineStackGroupButtonOf(mineStackObjectGroup: MineStackObjectGroup)(
+  def getMineStackGroupButtonOf(mineStackObjectGroup: MineStackObjectGroup, oldPage: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemColorMenu
   ): IO[Button] = RecomputedButton(IO {
     SeichiAssist.playermap(getUniqueId)
-
-    val mineStackObject = getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
 
     val itemStack = getMineStackObjectIconItemStack(mineStackObjectGroup)
 
     Button(
       itemStack,
       action.FilteredButtonEffect(ClickEventFilter.LEFT_CLICK) { _ =>
-        objectGroupClickEffect(mineStackObjectGroup, itemStack.getMaxStackSize)
+        objectGroupClickEffect(mineStackObjectGroup, itemStack.getMaxStackSize, oldPage)
       },
       action.FilteredButtonEffect(ClickEventFilter.RIGHT_CLICK) { _ =>
-        objectGroupClickEffect(mineStackObjectGroup, 1)
+        objectGroupClickEffect(mineStackObjectGroup, 1, oldPage)
       }
     )
   })
@@ -185,7 +183,11 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   }
 
-  private def objectGroupClickEffect(mineStackObjectGroup: MineStackObjectGroup, amount: Int)(
+  private def objectGroupClickEffect(
+    mineStackObjectGroup: MineStackObjectGroup,
+    amount: Int,
+    oldPage: Int
+  )(
     implicit onMainThread: OnMinecraftServerThread[IO],
     canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu
   ): Kleisli[IO, Player, Unit] = {
@@ -196,7 +198,7 @@ private[minestack] case class MineStackButtons(player: Player) {
           withDrawItemEffect(mineStackObject, amount)
         case Right(mineStackObjectWithColorVariants: MineStackObjectWithColorVariants) =>
           canOpenMineStackSelectItemColorMenu.open(
-            MineStackSelectItemColorMenu(mineStackObjectWithColorVariants)
+            MineStackSelectItemColorMenu(mineStackObjectWithColorVariants, oldPage)
           )
       },
       targetedeffect.UnfocusedEffect {

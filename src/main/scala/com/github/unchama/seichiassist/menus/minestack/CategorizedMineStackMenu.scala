@@ -128,7 +128,7 @@ case class CategorizedMineStackMenu(category: MineStackObjectCategory, pageIndex
           mineStackObjectPerPage * pageIndex,
           mineStackObjectPerPage * pageIndex + mineStackObjectPerPage
         )
-        .traverse(getMineStackGroupButtonOf(_))
+        .traverse(getMineStackGroupButtonOf(_, pageIndex))
         .map(_.zipWithIndex.map(_.swap))
 
     // 自動スタック機能トグルボタンを含むセクションの計算

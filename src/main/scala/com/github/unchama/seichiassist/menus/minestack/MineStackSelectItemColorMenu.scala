@@ -21,7 +21,8 @@ object MineStackSelectItemColorMenu {
 
 }
 
-case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants) extends Menu {
+case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants, oldPage: Int)
+    extends Menu {
 
   import com.github.unchama.menuinventory.syntax._
 
@@ -40,8 +41,8 @@ case class MineStackSelectItemColorMenu(group: MineStackObjectWithColorVariants)
       ChestSlotRef(5, 0) -> IO(
         CommonButtons.transferButton(
           new SkullItemStackBuilder(SkullOwners.MHF_ArrowUp),
-          s"MineStack1ページ目へ",
-          CategorizedMineStackMenu(group.category)
+          s"MineStack${oldPage + 1}ページ目へ",
+          CategorizedMineStackMenu(group.category, oldPage)
         )
       )
     )
