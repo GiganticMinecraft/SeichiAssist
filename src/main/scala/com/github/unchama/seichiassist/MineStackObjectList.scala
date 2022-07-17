@@ -637,14 +637,10 @@ object MineStackObjectList {
    * すべてのMineStackObjectを返す
    * 可変であるガチャ景品リストに依存しているため、定数ではない
    */
-  def getAllMineStackObjects: IO[List[MineStackObject]] = for {
-    gachaPrizes <- gachaPrizesObjects.get
-  } yield {
-    exceptGachaItemMineStackGroups.flatMap {
-      case Left(mineStackObj) => List(mineStackObj)
-      case Right(group)       => List(group.representative) ++ group.coloredVariants
-    } ++ gachaPrizes
-  }
+  def getAllMineStackObjects: IO[List[MineStackObject]] = allMineStackGroups.map(_.flatMap {
+    case Left(mineStackObject: MineStackObject) => List(mineStackObject)
+    case Right(group) => List(group.representative) ++ group.coloredVariants
+  })
 
   def getAllObjectGroupsInCategory(
     category: MineStackObjectCategory
