@@ -19,6 +19,7 @@ object CategorizedMineStackMenu {
   class Environment(
     implicit val ioCanOpenMineStackMainMenu: IO CanOpen MineStackMainMenu.type,
     val ioCanOpenCategorizedMenu: IO CanOpen CategorizedMineStackMenu,
+    val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu,
     val onMainThread: OnMinecraftServerThread[IO]
   )
 

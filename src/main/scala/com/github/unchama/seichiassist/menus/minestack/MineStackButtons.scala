@@ -153,7 +153,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   def getMineStackGroupButtonOf(mineStackObjectGroup: MineStackObjectGroup)(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+    canOpenCategorizedMineStackMenu: IO CanOpen MineStackSelectItemColorMenu
   ): IO[Button] = RecomputedButton(IO {
     SeichiAssist.playermap(getUniqueId)
 
@@ -187,17 +187,17 @@ private[minestack] case class MineStackButtons(player: Player) {
 
   private def objectGroupClickEffect(mineStackObjectGroup: MineStackObjectGroup, amount: Int)(
     implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpenCategorizedMineStackMenu: IO CanOpen CategorizedMineStackMenu
+    canOpenMineStackSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu
   ): Kleisli[IO, Player, Unit] = {
     val playerData = SeichiAssist.playermap(getUniqueId)
-    implicit val mineStackSelectItemColorMenu: MineStackSelectItemColorMenu.Environment =
-      new MineStackSelectItemColorMenu.Environment()
     SequentialEffect(
       mineStackObjectGroup match {
         case Left(mineStackObject: MineStackObject) =>
           withDrawItemEffect(mineStackObject, amount)
         case Right(mineStackObjectWithColorVariants: MineStackObjectWithColorVariants) =>
-          MineStackSelectItemColorMenu(mineStackObjectWithColorVariants).open
+          canOpenMineStackSelectItemColorMenu.open(
+            MineStackSelectItemColorMenu(mineStackObjectWithColorVariants)
+          )
       },
       targetedeffect.UnfocusedEffect {
         playerData
@@ -208,8 +208,7 @@ private[minestack] case class MineStackButtons(player: Player) {
   }
 
   private def withDrawItemEffect(mineStackObject: MineStackObject, amount: Int)(
-    implicit onMainThread: OnMinecraftServerThread[IO],
-    canOpen: CanOpen[IO, CategorizedMineStackMenu]
+    implicit onMainThread: OnMinecraftServerThread[IO]
   ): TargetedEffect[Player] = {
     for {
       pair <- Kleisli((player: Player) =>
