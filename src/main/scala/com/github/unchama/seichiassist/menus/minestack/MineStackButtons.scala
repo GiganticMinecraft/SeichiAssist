@@ -92,7 +92,8 @@ private[minestack] case class MineStackButtons(player: Player) {
   ): IO[Button] = RecomputedButton(IO {
     SeichiAssist.playermap(getUniqueId)
 
-    val itemStack = getMineStackObjectItemStack(mineStackObject, isColorSelectMenu = false)
+    val mineStackObjectGroup: MineStackObjectGroup = Left(mineStackObject)
+    val itemStack = getMineStackObjectItemStack(mineStackObjectGroup)
 
     Button(
       itemStack,
@@ -105,13 +106,17 @@ private[minestack] case class MineStackButtons(player: Player) {
     )
   })
 
-  def getMineStackObjectItemStack(
-    mineStackObject: MineStackObject,
-    isColorSelectMenu: Boolean
-  ): ItemStack = {
+  def getMineStackObjectItemStack(mineStackObjectGroup: MineStackObjectGroup): ItemStack = {
     val playerData = SeichiAssist.playermap(getUniqueId)
 
     import scala.util.chaining._
+
+    val mineStackObject = mineStackObjectGroup match {
+      case Left(mineStackObject: MineStackObject) =>
+        mineStackObject
+      case Right(MineStackObjectWithColorVariants(representative, _)) =>
+        representative
+    }
 
     mineStackObject.itemStack.tap { itemStack =>
       import itemStack._
@@ -130,7 +135,7 @@ private[minestack] case class MineStackButtons(player: Player) {
             val stackedAmount = playerData.minestack.getStackedAmountOf(mineStackObject)
             val itemDetail = List(s"$RESET$GREEN${stackedAmount.formatted("%,d")}個")
             val operationDetail = {
-              if (isColorSelectMenu) {
+              if (mineStackObjectGroup.isRight) {
                 List(s"$RESET${DARK_GREEN}クリックで色選択画面を開きます。")
               } else {
                 List(
@@ -154,7 +159,7 @@ private[minestack] case class MineStackButtons(player: Player) {
 
     val mineStackObject = getMineStackObjectFromMineStackObjectGroup(mineStackObjectGroup)
 
-    val itemStack = getMineStackObjectItemStack(mineStackObject, mineStackObjectGroup.isRight)
+    val itemStack = getMineStackObjectItemStack(mineStackObjectGroup)
 
     Button(
       itemStack,
