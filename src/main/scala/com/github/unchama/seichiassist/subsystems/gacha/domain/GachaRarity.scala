@@ -4,17 +4,17 @@ object GachaRarity {
 
   import enumeratum._
 
-  sealed abstract class GachaRarity(val maxProbability: Double) extends EnumEntry
+  sealed abstract class GachaRarity(val maxProbability: GachaProbability) extends EnumEntry
 
   case object GachaRarity extends Enum[GachaRarity] {
 
-    case object Gigantic extends GachaRarity(0.001)
+    case object Gigantic extends GachaRarity(GachaProbability(0.001))
 
-    case object Big extends GachaRarity(0.01)
+    case object Big extends GachaRarity(GachaProbability(0.01))
 
-    case object Regular extends GachaRarity(0.1)
+    case object Regular extends GachaRarity(GachaProbability(0.1))
 
-    case object Potato extends GachaRarity(1.0)
+    case object Potato extends GachaRarity(GachaProbability(1.0))
 
     override def values: IndexedSeq[GachaRarity] = findValues
 

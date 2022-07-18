@@ -4,6 +4,7 @@ import cats.effect.{IO, Sync}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.DrawGacha
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity
 import com.github.unchama.seichiassist.util.PlayerSendable.{forString, forTextComponent}
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryone
 import com.github.unchama.seichiassist.util._
@@ -43,7 +44,7 @@ object BukkitDrawGacha {
               }
             }
 
-          if (gachaPrize.probability.value < 0.001) {
+          if (gachaPrize.probability.value < GachaRarity.Gigantic.maxProbability) {
             val loreWithoutOwnerName =
               givenItem.getItemMeta.getLore.asScala.toList.filterNot {
                 _ == s"§r§2所有者：${player.getName}"
@@ -84,10 +85,10 @@ object BukkitDrawGacha {
               0.5f,
               2f
             )
-          } else if (gachaPrize.probability.value < 0.01) {
+          } else if (gachaPrize.probability.value < GachaRarity.Big.maxProbability) {
             player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
             if (amount == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
-          } else if (gachaPrize.probability.value < 0.1) {
+          } else if (gachaPrize.probability.value < GachaRarity.Regular.maxProbability) {
             if (amount == 1) player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
           } else {
             if (amount == 1) player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
