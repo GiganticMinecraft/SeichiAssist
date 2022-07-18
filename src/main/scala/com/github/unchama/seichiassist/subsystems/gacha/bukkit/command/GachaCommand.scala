@@ -335,7 +335,7 @@ class GachaCommand[F[
         .execution { _ =>
           val eff = for {
             gachaPrizes <- gachaPrizesDataOperations.gachaPrizesList
-            _ <- gachaPersistence.update(gachaPrizes)
+            _ <- gachaPersistence.set(gachaPrizes)
           } yield MessageEffect("ガチャデータをmysqlに保存しました。")
 
           eff.toIO

@@ -44,7 +44,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync: NonServerThreadContextShift]
   /**
    * ガチャリストを更新します。
    */
-  override def update(gachaPrizesList: Vector[GachaPrize]): F[Unit] = {
+  override def set(gachaPrizesList: Vector[GachaPrize]): F[Unit] = {
     Sync[F].delay {
       DB.localTx { implicit session =>
         sql"truncate table gachadata".execute().apply()

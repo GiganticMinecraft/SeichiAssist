@@ -39,7 +39,7 @@ object System {
         override def list: F[Vector[GachaPrize]] = gachaPersistence.list
 
         override def replace(gachaPrizesList: Vector[GachaPrize]): F[Unit] =
-          gachaPersistence.update(gachaPrizesList)
+          gachaPersistence.set(gachaPrizesList)
 
         override def lottery(amount: Int): F[Vector[GachaPrize]] =
           LotteryOfGachaItems.using.lottery(amount)
