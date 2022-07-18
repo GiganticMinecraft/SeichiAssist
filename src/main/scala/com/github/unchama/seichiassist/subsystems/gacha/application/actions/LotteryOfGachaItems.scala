@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
+import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
@@ -30,17 +31,21 @@ object LotteryOfGachaItems {
 
   import cats.implicits._
 
-  def using[F[_]: Sync](
+  def using[F[_]: Sync: Applicative](
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): LotteryOfGachaItems[F] = (amount: Int) =>
     for {
       gachaPrizes <- gachaPrizesDataOperations.gachaPrizesList
-    } yield {
-      (0 until amount).map { _ => lottery(1.0, Math.random(), gachaPrizes) }.toVector
-    }
+      randomList <-
+        (0 until amount)
+          .map(_ => Sync[F].delay(Math.random()))
+          .toList
+          .traverse(random => random)
+    } yield randomList.map(lottery(1.0, _, gachaPrizes)).toVector
 
   /**
    * ガチャアイテムの抽選を行うための再帰関数
+   *
    * @param sum 現在の合計値
    * @param random 乱数(1.0まで)
    * @param gachaPrizes ガチャの景品リスト
