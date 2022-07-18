@@ -44,7 +44,7 @@ object BukkitDrawGacha {
               }
             }
 
-          if (gachaPrize.probability.value < GachaRarity.Gigantic.maxProbability) {
+          if (gachaPrize.probability.value < GachaRarity.Gigantic.maxProbability.value) {
             val loreWithoutOwnerName =
               givenItem.getItemMeta.getLore.asScala.toList.filterNot {
                 _ == s"§r§2所有者：${player.getName}"
@@ -85,10 +85,10 @@ object BukkitDrawGacha {
               0.5f,
               2f
             )
-          } else if (gachaPrize.probability.value < GachaRarity.Big.maxProbability) {
+          } else if (gachaPrize.probability.value < GachaRarity.Big.maxProbability.value) {
             player.playSound(player.getLocation, Sound.ENTITY_WITHER_SPAWN, 0.8f, 1f)
             if (amount == 1) player.sendMessage(s"${GOLD}おめでとう！！大当たり！$additionalMessage")
-          } else if (gachaPrize.probability.value < GachaRarity.Regular.maxProbability) {
+          } else if (gachaPrize.probability.value < GachaRarity.Regular.maxProbability.value) {
             if (amount == 1) player.sendMessage(s"${YELLOW}おめでとう！当たり！$additionalMessage")
           } else {
             if (amount == 1) player.sendMessage(s"${WHITE}はずれ！また遊んでね！$additionalMessage")
