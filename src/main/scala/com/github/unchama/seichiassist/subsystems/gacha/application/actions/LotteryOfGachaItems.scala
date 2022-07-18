@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
-import cats.Applicative
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
@@ -31,7 +30,7 @@ object LotteryOfGachaItems {
 
   import cats.implicits._
 
-  def using[F[_]: Sync: Applicative](
+  def using[F[_]: Sync](
     implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): LotteryOfGachaItems[F] = (amount: Int) =>
     for {
