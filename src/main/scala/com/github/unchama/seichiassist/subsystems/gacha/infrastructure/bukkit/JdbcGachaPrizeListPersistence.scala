@@ -5,15 +5,15 @@ import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.codec.ItemStackCodec
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GachaPersistence,
+  GachaPrizeListPersistence,
   GachaPrizeId,
   GachaProbability,
   bukkit
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-class JdbcGachaPersistence[F[_]: Sync: NonServerThreadContextShift]
-    extends GachaPersistence[F] {
+class JdbcGachaPrizeListPersistence[F[_]: Sync: NonServerThreadContextShift]
+    extends GachaPrizeListPersistence[F] {
 
   /**
    * ガチャアイテムとして登録されているアイテムリストをGachaPrizeのVectorとして返します。

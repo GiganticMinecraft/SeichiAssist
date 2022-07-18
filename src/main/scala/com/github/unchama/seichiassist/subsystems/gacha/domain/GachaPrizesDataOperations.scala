@@ -14,7 +14,7 @@ final class GachaPrizesDataOperations[F[_]: Sync] {
   /**
    * 与えられた`gachaPersistence`からガチャ景品データを読み込む
    */
-  def loadGachaPrizes(gachaPersistence: GachaPersistence[F]): F[Unit] = for {
+  def loadGachaPrizes(gachaPersistence: GachaPrizeListPersistence[F]): F[Unit] = for {
     prizes <- gachaPersistence.list
     _ <- gachaPrizes.set(prizes)
   } yield ()

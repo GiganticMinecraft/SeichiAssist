@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.data.MineStackGachaData
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GachaPersistence,
+  GachaPrizeListPersistence,
   GachaPrizeId,
   GachaPrizesDataOperations,
   GachaProbability
@@ -36,7 +36,7 @@ class GachaCommand[F[
   _
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
-  gachaPersistence: GachaPersistence[F],
+  gachaPersistence: GachaPrizeListPersistence[F],
   gachaPrizesDataOperations: GachaPrizesDataOperations[F],
   syncUuidRepository: UuidRepository[SyncIO]
 ) {

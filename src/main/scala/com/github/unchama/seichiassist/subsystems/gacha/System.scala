@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaComm
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
 import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
-import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit.JdbcGachaPersistence
+import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamGateway
 import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import org.bukkit.command.TabExecutor
@@ -26,7 +26,8 @@ object System {
     implicit syncUuidRepository: UuidRepository[SyncIO],
     gachaPrizesDataOperations: GachaPrizesDataOperations[F]
   ): System[F] = {
-    implicit val gachaPersistence: JdbcGachaPersistence[F] = new JdbcGachaPersistence[F]()
+    implicit val gachaPersistence: JdbcGachaPrizeListPersistence[F] =
+      new JdbcGachaPrizeListPersistence[F]()
     implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
       new JdbcGachaTicketFromAdminTeamGateway[F]
 
