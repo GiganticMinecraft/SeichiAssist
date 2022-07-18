@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.data.GridTemplate
 import com.github.unchama.seichiassist.data.player._
 import com.github.unchama.seichiassist.data.player.settings.BroadcastMutingSettings
 import com.github.unchama.seichiassist.database.DatabaseConstants
-import com.github.unchama.seichiassist.minestack.MineStackObj
+import com.github.unchama.seichiassist.minestack.MineStackObject
 import com.github.unchama.seichiassist.seichiskill.effect.ActiveSkillEffect.NoEffect
 import com.github.unchama.seichiassist.seichiskill.effect.{
   ActiveSkillNormalEffect,
@@ -69,10 +69,14 @@ object PlayerDataLoading {
        * TODO:これはここにあるべきではない 格納可能なアイテムのリストはプラグインインスタンスの中に動的に持たれるべきで、
        * そのリストをラップするオブジェクトに同期された形でこのオブジェクトがもたれるべきであり、 ロードされるたびに再計算されるべきではない
        */
-      val nameObjectMappings: Map[String, MineStackObj] =
-        MineStackObjectList.getAllMineStackObjects.map(obj => obj.mineStackObjName -> obj).toMap
+      val nameObjectMappings: Map[String, MineStackObject] =
+        MineStackObjectList
+          .getAllMineStackObjects
+          .unsafeRunSync()
+          .map(obj => obj.mineStackObjectName -> obj)
+          .toMap
 
-      val objectAmounts = mutable.HashMap[MineStackObj, Long]()
+      val objectAmounts = mutable.HashMap[MineStackObject, Long]()
 
       stmt.executeQuery(mineStackDataQuery).recordIteration { lrs: ResultSet =>
         import lrs._

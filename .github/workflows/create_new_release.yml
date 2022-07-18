@@ -76,6 +76,9 @@ jobs:
     needs: bump_version
     steps:
       - uses: actions/checkout@master
+        with:
+          # これがないとchunk_searchで引っかかってリリースのjarアップロードに失敗する
+          submodules: 'recursive'
 
       - uses: actions/setup-java@v3
         with:
@@ -87,7 +90,7 @@ jobs:
 
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1.0.0
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

@@ -93,8 +93,6 @@ object MineStackMainMenu extends Menu {
     import cats.implicits._
     import player._
 
-    import scala.jdk.CollectionConverters._
-
     /**
      * メインメニュー内の「履歴」機能部分のレイアウトを計算する
      */
@@ -109,16 +107,15 @@ object MineStackMainMenu extends Menu {
           playerData.hisotryData.usageHistory
         }
         buttonMapping <- usageHistory
-          .asScala
           .zipWithIndex
           .map {
             case (mineStackObject, index) =>
               val slotIndex = 18 + index // 3行目から入れだす
-              val button = MineStackButtons(player).getMineStackItemButtonOf(mineStackObject)
+              val button =
+                MineStackButtons(player).getMineStackObjectButtonOf(mineStackObject)
 
               slotIndex -> button
           }
-          .toList
           .traverse(_.sequence)
       } yield MenuSlotLayout(buttonMapping: _*)
     }
