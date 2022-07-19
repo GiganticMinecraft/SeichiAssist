@@ -31,6 +31,7 @@ object MaterialSets {
     Material.GOLD_ORE,
     Material.SAND,
     Material.SANDSTONE,
+    Material.RED_SANDSTONE,
     Material.END_BRICKS,
     Material.ENDER_STONE,
     Material.ICE,
