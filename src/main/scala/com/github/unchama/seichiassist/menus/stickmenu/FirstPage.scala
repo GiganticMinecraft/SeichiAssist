@@ -621,6 +621,7 @@ object FirstPage extends Menu {
               s"$RESET${GREEN}escキーを押してください",
               s"$RESET${DARK_GRAY}たまにアイテムが消失するから",
               s"$RESET${DARK_GRAY}大事なものはいれないでネ",
+              s"$RESET${DARK_GRAY}※ホームランバットを一度に40st以上入れないでください",
               s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
             )
           )
@@ -632,7 +633,7 @@ object FirstPage extends Menu {
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
           openInventoryEffect(
             InventoryUtil.createInventory(
-              size = 4.chestRows,
+              size = 6.chestRows,
               title = Some(s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください")
             )
           )
