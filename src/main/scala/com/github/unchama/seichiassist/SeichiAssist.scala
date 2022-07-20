@@ -238,6 +238,9 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
+    implicit val globalNotification: DiscordNotificationAPI[IO] =
+      discordNotificationSystem.globalNotification
+
     subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
