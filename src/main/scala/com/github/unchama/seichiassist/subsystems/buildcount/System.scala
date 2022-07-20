@@ -32,6 +32,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.infrastructure.{
   JdbcBuildAmountDataPersistence,
   JdbcBuildAmountRateLimitPersistence
 }
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
@@ -52,7 +53,7 @@ object System {
 
   def wired[F[
     _
-  ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: ErrorLogger, G[
+  ]: OnMinecraftServerThread: ConcurrentEffect: NonServerThreadContextShift: ErrorLogger: DiscordNotificationAPI, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]: Clock](
     implicit configuration: Configuration

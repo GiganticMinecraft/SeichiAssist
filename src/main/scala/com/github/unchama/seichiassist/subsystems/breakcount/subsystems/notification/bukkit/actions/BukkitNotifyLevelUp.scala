@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.bukkit.actions
 
 import cats.Applicative
-import cats.effect.{IO, Sync, SyncIO}
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
@@ -11,6 +12,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.level.{
   SeichiStarLevel
 }
 import com.github.unchama.seichiassist.subsystems.breakcount.subsystems.notification.application.actions.NotifyLevelUp
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.util.{
   LaunchFireWorksEffect,
   PlayerSendable,
@@ -29,7 +31,8 @@ object BukkitNotifyLevelUp {
   import PlayerSendable.forString
   import cats.implicits._
 
-  def apply[F[_]: OnMinecraftServerThread: Sync]: NotifyLevelUp[F, Player] =
+  def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect: DiscordNotificationAPI]
+    : NotifyLevelUp[F, Player] =
     new NotifyLevelUp[F, Player] {
       override def ofSeichiAmountTo(player: Player)(diff: Diff[SeichiAmountData]): F[Unit] = {
         val Diff(oldBreakAmount, newBreakAmount) = diff
@@ -42,9 +45,15 @@ object BukkitNotifyLevelUp {
             .amount >= nextTenBillion
         ) {
           OnMinecraftServerThread[F].runAction(SyncIO {
+            val notificationMessage =
+              s"${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
             SendMessageEffect.sendMessageToEveryoneIgnoringPreference(
-              s"$GOLD$BOLD${player.getName}の総整地量が${(newBreakAmount.expAmount.amount / 100000000).toInt}億に到達しました！"
+              s"$GOLD$BOLD$notificationMessage"
             )(forString[IO])
+            DiscordNotificationAPI[F]
+              .sendPlainText(notificationMessage)
+              .toIO
+              .unsafeRunAsyncAndForget()
             SendSoundEffect.sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
           })
         } else Applicative[F].unit

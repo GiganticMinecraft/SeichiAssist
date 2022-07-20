@@ -238,6 +238,9 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
+    implicit val globalNotification: DiscordNotificationAPI[IO] =
+      discordNotificationSystem.globalNotification
+
     subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
@@ -246,6 +249,8 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val globalNotification: DiscordNotificationAPI[IO] =
+      discordNotificationSystem.globalNotification
     subsystems.breakcount.System.wired[IO, SyncIO]().unsafeRunSync()
   }
 

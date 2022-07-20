@@ -1,7 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.bukkit.actions
 
 import cats.Applicative
-import cats.effect.{IO, Sync, SyncIO}
+import cats.effect.Effect.ops.toAllEffectOps
+import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
 import com.github.unchama.generic.Diff
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
@@ -10,6 +11,7 @@ import com.github.unchama.seichiassist.subsystems.buildcount.domain.explevel.{
   BuildLevel
 }
 import com.github.unchama.seichiassist.subsystems.buildcount.subsystems.notification.application.actions.NotifyLevelUp
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import com.github.unchama.seichiassist.util.PlayerSendable
 import com.github.unchama.seichiassist.util.SendMessageEffect.sendMessageToEveryoneIgnoringPreference
 import com.github.unchama.seichiassist.util.SendSoundEffect.sendEverySound
@@ -19,10 +21,11 @@ import org.bukkit.entity.Player
 
 object BukkitNotifyLevelUp {
 
-  import cats.implicits._
   import PlayerSendable.forString
+  import cats.implicits._
 
-  def apply[F[_]: OnMinecraftServerThread: Sync]: NotifyLevelUp[F, Player] = {
+  def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect: DiscordNotificationAPI]
+    : NotifyLevelUp[F, Player] = {
     new NotifyLevelUp[F, Player] {
       override def ofBuildLevelTo(player: Player)(diff: Diff[BuildLevel]): F[Unit] = {
         val Diff(oldLevel, newLevel) = diff
@@ -31,6 +34,10 @@ object BukkitNotifyLevelUp {
             sendMessageToEveryoneIgnoringPreference(
               s"$GOLD${player.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)"
             )(forString[IO])
+            DiscordNotificationAPI[F]
+              .sendPlainText(s"${player.getName}の建築レベルが最大Lvに到達したよ(`･ω･´)")
+              .toIO
+              .unsafeRunAsyncAndForget()
             player.sendMessage(s"${GOLD}最大Lvに到達したよ(`･ω･´)")
             sendEverySound(Sound.ENTITY_ENDERDRAGON_DEATH, 1.0f, 1.2f)
           })

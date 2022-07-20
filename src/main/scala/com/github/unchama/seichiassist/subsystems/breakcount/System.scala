@@ -20,6 +20,7 @@ import com.github.unchama.seichiassist.subsystems.breakcount.domain.{
   SeichiAmountDataPersistence
 }
 import com.github.unchama.seichiassist.subsystems.breakcount.infrastructure.JdbcSeichiAmountDataPersistence
+import com.github.unchama.seichiassist.subsystems.discordnotification.DiscordNotificationAPI
 import io.chrisdavenport.log4cats.ErrorLogger
 import org.bukkit.entity.Player
 
@@ -43,7 +44,9 @@ object System {
   import cats.effect.implicits._
   import cats.implicits._
 
-  def wired[F[_]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger, G[
+  def wired[F[
+    _
+  ]: ConcurrentEffect: OnMinecraftServerThread: ErrorLogger: DiscordNotificationAPI, G[
     _
   ]: SyncEffect: ContextCoercion[*[_], F]](
   ): F[System[F, G]] = {
