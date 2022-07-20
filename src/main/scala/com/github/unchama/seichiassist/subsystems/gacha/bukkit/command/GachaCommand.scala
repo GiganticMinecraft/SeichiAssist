@@ -14,10 +14,11 @@ import com.github.unchama.seichiassist.SeichiAssist.databaseGateway
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.data.MineStackGachaData
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GachaPrizeListPersistence,
   GachaPrizeId,
+  GachaPrizeListPersistence,
   GachaPrizesDataOperations,
   GachaProbability
 }
@@ -38,7 +39,8 @@ class GachaCommand[F[
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
   gachaPersistence: GachaPrizeListPersistence[F],
   gachaPrizesDataOperations: GachaPrizesDataOperations[F],
-  syncUuidRepository: UuidRepository[SyncIO]
+  syncUuidRepository: UuidRepository[SyncIO],
+  gachaAPI: GachaAPI[F]
 ) {
 
   import cats.implicits._
@@ -214,7 +216,7 @@ class GachaCommand[F[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            gachaPrizes <- gachaPrizesDataOperations.gachaPrizesList
+            gachaPrizes <- gachaAPI.list
           } yield {
             val gachaPrizeInformation = gachaPrizes
               .sortBy(_.id.id)
@@ -334,7 +336,7 @@ class GachaCommand[F[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            gachaPrizes <- gachaPrizesDataOperations.gachaPrizesList
+            gachaPrizes <- gachaAPI.list
             _ <- gachaPersistence.set(gachaPrizes)
           } yield MessageEffect("ガチャデータをmysqlに保存しました。")
 
@@ -346,7 +348,7 @@ class GachaCommand[F[
       .beginConfiguration()
       .execution { _ =>
         val eff = for {
-          _ <- gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence)
+          _ <- gachaAPI.load
         } yield MessageEffect("ガチャデータをmysqlから読み込みました。")
 
         eff.toIO

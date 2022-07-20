@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
+import cats.effect.Sync
+import cats.effect.concurrent.Ref
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 
 trait GachaLotteryAPI[F[_]] {
@@ -20,10 +22,18 @@ object GachaLotteryAPI {
 
 trait GachaReadAPI[F[_]] {
 
+  protected implicit val _FSync: Sync[F]
+
+  /**
+   * ガチャの景品リスト用のリポジトリ
+   */
+  protected val gachaPrizesListRepository: Ref[F, Vector[GachaPrize]] =
+    Ref.unsafe[F, Vector[GachaPrize]](Vector.empty)
+
   /**
    * ガチャの景品リストを返す
    */
-  def list: F[Vector[GachaPrize]]
+  final def list: F[Vector[GachaPrize]] = gachaPrizesListRepository.get
 
 }
 
@@ -34,6 +44,11 @@ object GachaReadAPI {
 }
 
 trait GachaWriteAPI[F[_]] {
+
+  /**
+   * ガチャの景品リストを何らかの方法でロードする
+   */
+  def load: F[Unit]
 
   /**
    * ガチャの景品リストを、与えたGachaPrizesListに置き換えを行う

@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, SyncIO}
+import cats.effect.{ConcurrentEffect, Sync, SyncIO}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
@@ -17,7 +17,7 @@ import org.bukkit.command.TabExecutor
 import org.bukkit.event.Listener
 
 trait System[F[_]] extends Subsystem[F] {
-  val api: GachaReadAPI[F] with GachaWriteAPI[F] with GachaLotteryAPI[F]
+  val api: GachaAPI[F]
 }
 
 object System {
@@ -31,24 +31,27 @@ object System {
     implicit val gachaTicketPersistence: JdbcGachaTicketFromAdminTeamGateway[F] =
       new JdbcGachaTicketFromAdminTeamGateway[F]
 
-    new System[F] {
-      gachaPrizesDataOperations.loadGachaPrizes(gachaPersistence).toIO.unsafeRunAsyncAndForget()
-
+    val system: System[F] = new System[F] {
       override implicit val api: GachaAPI[F] = new GachaAPI[F] {
+        override protected implicit val _FSync: Sync[F] = implicitly[ConcurrentEffect[F]]
 
-        override def list: F[Vector[GachaPrize]] = gachaPersistence.list
+        override def load: F[Unit] =
+          gachaPrizesListRepository.set(gachaPersistence.list.toIO.unsafeRunSync())
 
         override def replace(gachaPrizesList: Vector[GachaPrize]): F[Unit] =
-          gachaPersistence.set(gachaPrizesList)
+          gachaPrizesListRepository.set(gachaPrizesList)
 
         override def lottery(amount: Int): F[Vector[GachaPrize]] =
-          LotteryOfGachaItems.using.lottery(amount)
+          LotteryOfGachaItems.using(Sync[F], api).lottery(amount)
       }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor
       )
       override val listeners: Seq[Listener] = Seq(new PlayerPullGachaListener[F]())
     }
+
+    system.api.load.toIO.unsafeRunAsyncAndForget()
+    system
   }
 
 }

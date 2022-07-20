@@ -4,8 +4,8 @@ import cats.effect.ConcurrentEffect
 import cats.effect.Effect.ops.toAllEffectOps
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.actions.BukkitDrawGacha
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util._
 import com.github.unchama.util.syntax.Nullability.NullabilityExtensionReceiver
@@ -17,7 +17,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.{GameMode, Material}
 
 class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
-  implicit gachaPrizesDataOperations: GachaPrizesDataOperations[F]
+  implicit gachaAPI: GachaAPI[F]
 ) extends Listener {
 
   @EventHandler
@@ -48,7 +48,7 @@ class PlayerPullGachaListener[F[_]: ConcurrentEffect: OnMinecraftServerThread](
     if (event.getHand == EquipmentSlot.OFF_HAND) return
 
     // ガチャデータが設定されていない場合
-    if (gachaPrizesDataOperations.gachaPrizesList.toIO.unsafeRunSync().isEmpty) {
+    if (gachaAPI.list.toIO.unsafeRunSync().isEmpty) {
       player.sendMessage("ガチャデータがありません")
       return
     }
