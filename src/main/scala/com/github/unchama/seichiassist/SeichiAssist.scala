@@ -388,7 +388,7 @@ class SeichiAssist extends JavaPlugin() {
   private lazy implicit val gachaPrizesDataOperations: GachaPrizesDataOperations[IO] =
     new GachaPrizesDataOperations[IO]
 
-  lazy val gachaSystem: subsystems.gacha.System[IO] = {
+  private lazy val gachaSystem: subsystems.gacha.System[IO] = {
     implicit val syncIOUuidRepository: UuidRepository[SyncIO] =
       JdbcBackedUuidRepository.initializeStaticInstance[SyncIO].unsafeRunSync().apply[SyncIO]
     subsystems.gacha.System.wired

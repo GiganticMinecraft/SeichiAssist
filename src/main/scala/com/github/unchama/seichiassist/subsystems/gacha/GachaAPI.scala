@@ -7,7 +7,7 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 trait GachaLotteryAPI[F[_]] {
 
   /**
-   * ガチャを抽選してその結果を返す作用
+   * ガチャ景品を抽選してその結果を返す作用
    */
   def lottery(amount: Int): F[Vector[GachaPrize]]
 

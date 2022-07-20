@@ -1,8 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.gacha.application.actions
 
+import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+
 trait DrawGacha[F[_], Player] {
 
-  def draw(player: Player, amount: Int): F[Unit]
+  def draw(player: Player, amount: Int)(implicit gachaAPI: GachaAPI[F]): F[Unit]
 
 }
 
