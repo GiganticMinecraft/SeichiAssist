@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity._
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions.Trade
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.domain.{
   TradeResult,
@@ -20,10 +21,12 @@ object BukkitTrade {
       } yield {
         // GTアイテムを除去し、今回の対象であるあたりまでを含めたリスト
         val targetsList =
-          gachaList.filterNot(_.probability.value < 0.001).filter(_.probability.value < 0.1)
+          gachaList
+            .filterNot(_.probability.value < Gigantic.maxProbability.value)
+            .filter(_.probability.value < Regular.maxProbability.value)
 
         // 大当たりのアイテム
-        val bigList = targetsList.filter(_.probability.value < 0.01)
+        val bigList = targetsList.filter(_.probability.value < Big.maxProbability.value)
 
         // あたりのアイテム
         val regularList = targetsList.diff(bigList)
