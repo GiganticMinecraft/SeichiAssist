@@ -25,11 +25,4 @@ final class GachaPrizesDataOperations[F[_]: Sync](implicit gachaAPI: GachaAPI[F]
     _ <- gachaAPI.replace(newList)
   } yield ()
 
-  /**
-   * `GachaPrizeId`から`GachaPrize`を取得する
-   */
-  def gachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize]] = for {
-    prizes <- gachaAPI.list
-  } yield prizes.find(_.id == gachaPrizeId)
-
 }
