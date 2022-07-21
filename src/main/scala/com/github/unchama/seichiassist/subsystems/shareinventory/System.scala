@@ -1,9 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory
 
-import cats.effect.Sync
+import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.shareinventory.bukkit.command.ShareInventoryCommand
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.subsystems.shareinventory.infrastracture.JdbcShareInventoryPersistence
+import org.bukkit.command.TabExecutor
 
 import java.util.UUID
 
@@ -13,7 +15,7 @@ trait System[F[_]] extends Subsystem[F] {
 
 object System {
 
-  def wired[F[_]: Sync]: System[F] = {
+  def wired[F[_]: ConcurrentEffect]: System[F] = {
     val persistence = new JdbcShareInventoryPersistence[F]
 
     new System[F] {
@@ -27,6 +29,10 @@ object System {
         override def load(targetUuid: UUID): F[InventoryContents] =
           persistence.loadSerializedShareInventory(targetUuid)
       }
+
+      override val commands: Map[String, TabExecutor] = Map(
+        "shareinv" -> new ShareInventoryCommand[F].executor
+      )
     }
   }
 
