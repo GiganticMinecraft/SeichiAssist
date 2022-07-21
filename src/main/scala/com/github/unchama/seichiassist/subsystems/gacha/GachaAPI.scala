@@ -55,6 +55,11 @@ trait GachaWriteAPI[F[_]] {
    */
   def replace(gachaPrizesList: Vector[GachaPrize]): F[Unit]
 
+  /**
+   * ガチャ景品リストを空にする
+   */
+  final def clear: F[Unit] = replace(Vector.empty)
+
 }
 
 object GachaWriteAPI {
