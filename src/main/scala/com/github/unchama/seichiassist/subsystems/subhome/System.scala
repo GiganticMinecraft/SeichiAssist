@@ -6,6 +6,7 @@ import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.SeichiAssist.Scopes.globalChatInterceptionScope
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.subhome.bukkit.command.SubHomeCommand
+import com.github.unchama.seichiassist.subsystems.subhome.bukkit.listeners.ChangeRespawnPointer
 import com.github.unchama.seichiassist.subsystems.subhome.domain.OperationResult.RenameResult
 import com.github.unchama.seichiassist.subsystems.subhome.domain.{
   SubHome,
@@ -14,6 +15,7 @@ import com.github.unchama.seichiassist.subsystems.subhome.domain.{
 }
 import com.github.unchama.seichiassist.subsystems.subhome.infrastructure.JdbcSubHomePersistence
 import org.bukkit.command.TabExecutor
+import org.bukkit.event.Listener
 
 import java.util.UUID
 
@@ -43,6 +45,8 @@ object System {
       }
       override val commands: Map[String, TabExecutor] =
         Map("subhome" -> SubHomeCommand.executor)
+
+      override val listeners: Seq[Listener] = Seq(new ChangeRespawnPointer[F])
     }
   }
 }
