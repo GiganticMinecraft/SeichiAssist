@@ -8,7 +8,7 @@ import org.bukkit.event.Listener
 
 object System {
 
-  def wired[F[_]: ConcurrentEffect: GachaPrizesDataOperations: GachaAPI]: Subsystem[F] = {
+  def wired[F[_]: ConcurrentEffect: GachaAPI]: Subsystem[F] = {
     new Subsystem[F] {
       override val listeners: Seq[Listener] = Seq(new GtToSiinaringo[F]())
     }

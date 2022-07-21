@@ -13,8 +13,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class GachaTradeListener[F[_]: ConcurrentEffect: GachaPrizesDataOperations: GachaAPI]
-    extends Listener {
+class GachaTradeListener[F[_]: ConcurrentEffect: GachaAPI] extends Listener {
 
   @EventHandler
   def onGachaTrade(event: InventoryCloseEvent): Unit = {

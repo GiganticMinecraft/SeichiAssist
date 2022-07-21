@@ -23,8 +23,7 @@ trait System[F[_]] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: OnMinecraftServerThread: NonServerThreadContextShift: ConcurrentEffect](
-    implicit syncUuidRepository: UuidRepository[SyncIO],
-    gachaPrizesDataOperations: GachaPrizesDataOperations[F]
+    implicit syncUuidRepository: UuidRepository[SyncIO]
   ): System[F] = {
     implicit val gachaPersistence: JdbcGachaPrizeListPersistence[F] =
       new JdbcGachaPrizeListPersistence[F]()

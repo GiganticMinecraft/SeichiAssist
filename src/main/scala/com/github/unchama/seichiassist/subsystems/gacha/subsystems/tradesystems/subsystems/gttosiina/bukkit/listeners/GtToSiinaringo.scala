@@ -14,8 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class GtToSiinaringo[F[_]: ConcurrentEffect: GachaPrizesDataOperations: GachaAPI]
-    extends Listener {
+class GtToSiinaringo[F[_]: ConcurrentEffect: GachaAPI] extends Listener {
 
   @EventHandler
   def onGachaRingoEvent(event: InventoryCloseEvent): Unit = {
