@@ -8,7 +8,7 @@ import com.github.unchama.seichiassist.subsystems.subhome.{SubHomeAPI, SubHomeRe
 import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.event.{EventHandler, Listener}
 
-class ChangeRespawnPointer[F[_]: ConcurrentEffect: SubHomeAPI] extends Listener {
+class RespawnLocationOverwriter[F[_]: ConcurrentEffect: SubHomeAPI] extends Listener {
 
   @EventHandler
   def onRespawn(event: PlayerRespawnEvent): Unit = {
