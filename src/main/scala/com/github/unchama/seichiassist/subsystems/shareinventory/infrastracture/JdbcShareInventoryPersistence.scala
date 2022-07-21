@@ -3,8 +3,7 @@ package com.github.unchama.seichiassist.subsystems.shareinventory.infrastracture
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.{
   InventoryContents,
-  ShareInventoryPersistence,
-  ShareInventoryResult
+  ShareInventoryPersistence
 }
 import com.github.unchama.seichiassist.util.ItemListSerialization
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
@@ -38,7 +37,7 @@ class JdbcShareInventoryPersistence[F[_]: Sync] extends ShareInventoryPersistenc
    */
   override def loadSerializedShareInventory(targetUuid: UUID): F[InventoryContents] =
     Sync[F].delay {
-      DB.localTx { implicit session =>
+      DB.readOnly { implicit session =>
         val serializedInventory =
           sql"SELECT shareinv FROM playerdata WHERE uuid = '${targetUuid.toString}'"
             .map(rs => rs.string("shareinv"))
@@ -50,4 +49,15 @@ class JdbcShareInventoryPersistence[F[_]: Sync] extends ShareInventoryPersistenc
         )
       }
     }
+
+  /**
+   * セーブされている[[InventoryContents]]を完全に削除します。
+   */
+  override def clearShareInventory(targetUuid: UUID): F[Unit] = Sync[F].delay {
+    DB.localTx { implicit session =>
+      sql"UPDATE playerdata SET shareinv = '' WHERE uuid = '${targetUuid.toString}'"
+        .execute()
+        .apply()
+    }
+  }
 }

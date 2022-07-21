@@ -18,4 +18,9 @@ trait ShareInventoryPersistence[F[_]] {
    */
   def loadSerializedShareInventory(targetUuid: UUID): F[InventoryContents]
 
+  /**
+   * セーブされている[[InventoryContents]]を完全に削除します。
+   */
+  def clearShareInventory(targetUuid: UUID): F[Unit]
+
 }
