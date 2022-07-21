@@ -45,6 +45,13 @@ trait GachaReadAPI[F[_]] {
     prizes <- list
   } yield prizes.find(_.id == gachaPrizeId)
 
+  /**
+   * 指定された[[GachaPrizeId]]の[[GachaPrize]]が存在するか確認する
+   */
+  final def existsGachaPrize(gachaPrizeId: GachaPrizeId): F[Boolean] = for {
+    prizes <- list
+  } yield prizes.exists(_.id == gachaPrizeId)
+
 }
 
 object GachaReadAPI {
