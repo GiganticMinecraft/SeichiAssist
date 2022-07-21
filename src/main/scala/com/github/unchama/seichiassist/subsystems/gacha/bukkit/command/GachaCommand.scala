@@ -2,7 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.bukkit.command
 
 import cats.data.Kleisli
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO, Sync, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.concurrent.NonServerThreadContextShift
 import com.github.unchama.contextualexecutor.ContextualExecutor
 import com.github.unchama.contextualexecutor.builder.ParserResponse.{failWith, succeedWith}
@@ -21,8 +21,8 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizeListPersistence,
   GachaProbability
 }
+import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
-import com.github.unchama.seichiassist.subsystems.itemmigration.domain.minecraft.UuidRepository
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.{MessageEffect, MessageEffectF}
@@ -37,7 +37,6 @@ class GachaCommand[F[
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
   gachaPersistence: GachaPrizeListPersistence[F],
-  syncUuidRepository: UuidRepository[SyncIO],
   gachaAPI: GachaAPI[F]
 ) {
 
@@ -146,9 +145,10 @@ class GachaCommand[F[
               value.toLowerCase match {
                 case "all" => Some("all")
                 case _ =>
-                  val uuid = syncUuidRepository.getUuid(value).unsafeRunSync()
-                  if (uuid.nonEmpty)
-                    uuid.flatMap(uuid => Some(uuid.toString))
+                  val uuid = new GlobalPlayerAccessor[F].entries.toIO.unsafeRunSync().filter {
+                    case (uuid, _) => uuid.toString == value.toLowerCase
+                  }
+                  if (uuid.nonEmpty) Some(uuid.head._1.toString)
                   else None
               },
             MessageEffect("指定されたプレイヤー名が見つかりませんでした。")
