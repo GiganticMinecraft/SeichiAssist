@@ -199,41 +199,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     true
   }
 
-  def saveSharedInventory(
-    player: Player,
-    serializedInventory: String
-  ): IO[ResponseEffectOrResult[Player, Unit]] = {
-    val assertSharedInventoryBeEmpty: EitherT[IO, TargetedEffect[CommandSender], Unit] =
-      for {
-        sharedInventorySerialized <- EitherT(loadShareInv(player))
-        _ <- EitherT.fromEither[IO] {
-          if (sharedInventorySerialized != null && sharedInventorySerialized != "")
-            Left(MessageEffect(s"${RED}既にアイテムが収納されています"))
-          else
-            Right(())
-        }
-      } yield ()
-
-    val writeInventoryData = IO {
-      // シリアル化されたインベントリデータを書き込む
-      val updateCommand =
-        s"UPDATE $tableReference SET shareinv = '$serializedInventory' WHERE uuid = '${player.getUniqueId}'"
-
-      if (gateway.executeUpdate(updateCommand) == ActionStatus.Fail) {
-        Bukkit.getLogger.warning(s"${player.getName} database failure.")
-        Left(MessageEffect(s"${RED}アイテムの収納に失敗しました"))
-      } else {
-        Right(())
-      }
-    }
-
-    for {
-      _ <- EitherT(checkInventoryOperationCoolDown(player))
-      _ <- assertSharedInventoryBeEmpty
-      _ <- EitherT(writeInventoryData)
-    } yield ()
-  }.value
-
   def loadShareInv(player: Player): IO[ResponseEffectOrResult[CommandSender, String]] = {
     val loadInventoryData: IO[Either[Nothing, String]] = EitherT
       .right(IO {
