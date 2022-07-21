@@ -318,7 +318,7 @@ class GachaCommand[F[
         .beginConfiguration()
         .execution { _ =>
           val eff = for {
-            _ <- gachaPrizesDataOperations.clear()
+            _ <- gachaAPI.clear
           } yield MessageEffect(
             List(
               "すべて削除しました。",
