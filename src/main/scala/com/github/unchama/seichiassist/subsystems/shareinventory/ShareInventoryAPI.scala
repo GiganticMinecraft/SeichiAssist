@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory
 
-import com.github.unchama.seichiassist.subsystems.shareinventory.domain.InventoryContents
+import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
 
 import java.util.UUID
 

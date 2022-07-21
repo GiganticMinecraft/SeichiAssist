@@ -1,10 +1,8 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory.infrastracture
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.shareinventory.domain.{
-  InventoryContents,
-  ShareInventoryPersistence
-}
+import com.github.unchama.seichiassist.subsystems.shareinventory.domain.ShareInventoryPersistence
+import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.util.ItemListSerialization
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 

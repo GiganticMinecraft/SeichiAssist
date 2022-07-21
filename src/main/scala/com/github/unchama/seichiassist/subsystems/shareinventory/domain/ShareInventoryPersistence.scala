@@ -1,5 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory.domain
 
+import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
+
 import java.util.UUID
 
 trait ShareInventoryPersistence[F[_]] {
