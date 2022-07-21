@@ -248,7 +248,7 @@ class GachaCommand[F[
       .argumentsParsers(List(gachaPrizeIdExistsParser))
       .execution { context =>
         val eff = for {
-          _ <- gachaPrizesDataOperations.removeByGachaPrizeId(
+          _ <- gachaAPI.removeByGachaPrizeId(
             GachaPrizeId(context.args.parsed.head.asInstanceOf[Int])
           )
         } yield MessageEffect(
@@ -274,7 +274,7 @@ class GachaCommand[F[
           val amount = context.args.parsed(1).asInstanceOf[Int]
           val eff = for {
             existingGachaPrize <- gachaPrizesDataOperations.gachaPrize(targetId)
-            _ <- gachaPrizesDataOperations.removeByGachaPrizeId(targetId)
+            _ <- gachaAPI.removeByGachaPrizeId(targetId)
             itemStack = existingGachaPrize.get.itemStack
             _ <- gachaPrizesDataOperations.addGachaPrize(_ =>
               existingGachaPrize
@@ -300,7 +300,7 @@ class GachaCommand[F[
         val newProb = args(1).asInstanceOf[Double]
         val eff = for {
           existingGachaPrize <- gachaPrizesDataOperations.gachaPrize(targetId)
-          _ <- gachaPrizesDataOperations.removeByGachaPrizeId(targetId)
+          _ <- gachaAPI.removeByGachaPrizeId(targetId)
           _ <- gachaPrizesDataOperations.addGachaPrize(_ =>
             existingGachaPrize.get.copy(probability = GachaProbability(newProb))
           )

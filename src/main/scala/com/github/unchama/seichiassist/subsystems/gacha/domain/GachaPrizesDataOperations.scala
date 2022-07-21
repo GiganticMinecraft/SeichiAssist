@@ -32,13 +32,4 @@ final class GachaPrizesDataOperations[F[_]: Sync](implicit gachaAPI: GachaAPI[F]
     prizes <- gachaAPI.list
   } yield prizes.find(_.id == gachaPrizeId)
 
-  /**
-   * `gachaPrizeId`を利用して`GachaPrize`を削除する
-   */
-  def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit] = for {
-    prizes <- gachaAPI.list
-    targetPrize = prizes.filter(_.id == gachaPrizeId)
-    _ <- gachaAPI.replace(prizes.diff(targetPrize))
-  } yield ()
-
 }
