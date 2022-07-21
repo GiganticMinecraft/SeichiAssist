@@ -26,7 +26,6 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync: NonServerThreadContextShift]
             val probability = rs.double("probability")
             // TODO ガチャアイテムに対して記名を行うかどうかを確率に依存すべきではない
             val itemStack = ItemStackCodec.fromString(rs.string("itemstack"))
-            itemStack.setAmount(rs.int("amount"))
             bukkit.GachaPrize(
               itemStack,
               GachaProbability(probability),
@@ -50,8 +49,7 @@ class JdbcGachaPrizeListPersistence[F[_]: Sync: NonServerThreadContextShift]
         sql"truncate table gachadata".execute().apply()
         gachaPrizesList.foreach { gachaPrize =>
           val itemStackString = ItemStackCodec.toString(gachaPrize.itemStack)
-          val amount = gachaPrize.itemStack.getAmount
-          sql"insert into gachadata values (${gachaPrize.id.id},$amount,${gachaPrize.probability.value},$itemStackString)"
+          sql"insert into gachadata values (${gachaPrize.id.id},${gachaPrize.probability.value},$itemStackString)"
             .execute()
             .apply()
         }
