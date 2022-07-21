@@ -200,7 +200,7 @@ class GachaCommand[F[
           val probability = context.args.parsed.head.asInstanceOf[Double]
           val mainHandItem = player.getInventory.getItemInMainHand
           val eff = for {
-            _ <- gachaPrizesDataOperations.addGachaPrize(
+            _ <- gachaAPI.addGachaPrize(
               GachaPrize(mainHandItem, GachaProbability(probability), probability < 0.1, _)
             )
           } yield MessageEffect(
@@ -276,7 +276,7 @@ class GachaCommand[F[
             existingGachaPrize <- gachaAPI.gachaPrize(targetId)
             _ <- gachaAPI.removeByGachaPrizeId(targetId)
             itemStack = existingGachaPrize.get.itemStack
-            _ <- gachaPrizesDataOperations.addGachaPrize(_ =>
+            _ <- gachaAPI.addGachaPrize(_ =>
               existingGachaPrize
                 .get
                 .copy(itemStack = itemStack.tap {
@@ -301,7 +301,7 @@ class GachaCommand[F[
         val eff = for {
           existingGachaPrize <- gachaAPI.gachaPrize(targetId)
           _ <- gachaAPI.removeByGachaPrizeId(targetId)
-          _ <- gachaPrizesDataOperations.addGachaPrize(_ =>
+          _ <- gachaAPI.addGachaPrize(_ =>
             existingGachaPrize.get.copy(probability = GachaProbability(newProb))
           )
           itemStack = existingGachaPrize.get.itemStack
