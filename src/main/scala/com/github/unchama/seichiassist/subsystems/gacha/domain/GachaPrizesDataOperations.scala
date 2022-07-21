@@ -41,11 +41,4 @@ final class GachaPrizesDataOperations[F[_]: Sync](implicit gachaAPI: GachaAPI[F]
     _ <- gachaAPI.replace(prizes.diff(targetPrize))
   } yield ()
 
-  /**
-   * すべてのガチャ景品データを削除する
-   */
-  def clear(): F[Unit] = for {
-    _ <- gachaAPI.replace(Vector.empty)
-  } yield ()
-
 }
