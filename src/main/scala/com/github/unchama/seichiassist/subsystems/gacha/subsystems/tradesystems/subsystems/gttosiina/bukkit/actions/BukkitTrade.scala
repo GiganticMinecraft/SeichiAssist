@@ -3,6 +3,7 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems
 import cats.effect.Sync
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaRarity.GachaRarity.Gigantic
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.application.actions.Trade
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.domain.{
   TradeResult,
@@ -21,7 +22,9 @@ object BukkitTrade {
       } yield {
         // TODO GTアイテムかどうかを確率に依存すべきではない
         val giganticItemStacks =
-          gachaList.filter(_.probability.value < 0.001).map(_.createNewItem(Some(name)))
+          gachaList
+            .filter(_.probability.value < Gigantic.maxProbability.value)
+            .map(_.createNewItem(Some(name)))
 
         // 交換可能なItemStack達
         val tradableItems = contents.filter { targetItem =>
