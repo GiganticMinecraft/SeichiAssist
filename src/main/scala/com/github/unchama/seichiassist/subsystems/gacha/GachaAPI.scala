@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.gacha
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizeId
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 
 trait GachaLotteryAPI[F[_]] {
@@ -59,6 +60,11 @@ trait GachaWriteAPI[F[_]] {
    * ガチャ景品リストを空にする
    */
   final def clear: F[Unit] = replace(Vector.empty)
+
+  /**
+   * ガチャ景品リストから指定された[[GachaPrizeId]]の[[GachaPrize]]を削除する
+   */
+  def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit]
 
 }
 
