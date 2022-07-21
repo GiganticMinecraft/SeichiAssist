@@ -621,7 +621,6 @@ object FirstPage extends Menu {
               s"$RESET${GREEN}escキーを押してください",
               s"$RESET${DARK_GRAY}たまにアイテムが消失するから",
               s"$RESET${DARK_GRAY}大事なものはいれないでネ",
-              s"$RESET${DARK_GRAY}※ホームランバットを一度に40st以上入れないでください",
               s"$RESET$DARK_RED${UNDERLINE}クリックで開く"
             )
           )
