@@ -23,6 +23,8 @@ object GachaLotteryAPI {
 
 trait GachaReadAPI[F[_]] {
 
+  import cats.implicits._
+
   protected implicit val _FSync: Sync[F]
 
   /**
@@ -35,6 +37,13 @@ trait GachaReadAPI[F[_]] {
    * ガチャの景品リストを返す
    */
   final def list: F[Vector[GachaPrize]] = gachaPrizesListRepository.get
+
+  /**
+   * [[GachaPrizeId]]に対応する[[GachaPrize]]を取得します
+   */
+  final def gachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize]] = for {
+    prizes <- list
+  } yield prizes.find(_.id == gachaPrizeId)
 
 }
 
