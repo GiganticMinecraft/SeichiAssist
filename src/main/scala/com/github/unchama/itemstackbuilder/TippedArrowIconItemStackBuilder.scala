@@ -1,10 +1,11 @@
 package com.github.unchama.itemstackbuilder
 
 import org.bukkit.Material
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.{PotionData, PotionType}
 
-class TippedArrowItemStackBuilder(val potionData: PotionData)
+class TippedArrowIconItemStackBuilder(val potionData: PotionData)
     extends AbstractItemStackBuilder[PotionMeta](Material.TIPPED_ARROW, 0) {
 
   def this(potionType: PotionType) = this(new PotionData(potionType))
@@ -14,5 +15,6 @@ class TippedArrowItemStackBuilder(val potionData: PotionData)
    */
   override protected def transformItemMetaOnBuild(meta: PotionMeta): Unit = {
     meta.setBasePotionData(potionData)
+    meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS)
   }
 }

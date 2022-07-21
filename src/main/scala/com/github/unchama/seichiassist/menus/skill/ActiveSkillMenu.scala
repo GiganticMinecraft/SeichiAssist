@@ -9,7 +9,7 @@ import com.github.unchama.itemstackbuilder.{
   AbstractItemStackBuilder,
   IconItemStackBuilder,
   SkullItemStackBuilder,
-  TippedArrowItemStackBuilder
+  TippedArrowIconItemStackBuilder
 }
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.action.{ButtonEffect, LeftClickButtonEffect}
@@ -187,17 +187,17 @@ object ActiveSkillMenu extends Menu {
               new IconItemStackBuilder(Material.HOPPER_MINECART)
 
             case SeichiSkill.EbifriDrive =>
-              new TippedArrowItemStackBuilder(PotionType.REGEN)
+              new TippedArrowIconItemStackBuilder(PotionType.REGEN)
             case SeichiSkill.HolyShot =>
-              new TippedArrowItemStackBuilder(PotionType.FIRE_RESISTANCE)
+              new TippedArrowIconItemStackBuilder(PotionType.FIRE_RESISTANCE)
             case SeichiSkill.TsarBomba =>
-              new TippedArrowItemStackBuilder(PotionType.INSTANT_HEAL)
+              new TippedArrowIconItemStackBuilder(PotionType.INSTANT_HEAL)
             case SeichiSkill.ArcBlast =>
-              new TippedArrowItemStackBuilder(PotionType.NIGHT_VISION)
+              new TippedArrowIconItemStackBuilder(PotionType.NIGHT_VISION)
             case SeichiSkill.PhantasmRay =>
-              new TippedArrowItemStackBuilder(PotionType.SPEED)
+              new TippedArrowIconItemStackBuilder(PotionType.SPEED)
             case SeichiSkill.Supernova =>
-              new TippedArrowItemStackBuilder(PotionType.INSTANT_DAMAGE)
+              new TippedArrowIconItemStackBuilder(PotionType.INSTANT_DAMAGE)
           }
         case skill: AssaultSkill =>
           skill match {
