@@ -589,7 +589,6 @@ class SeichiAssist extends JavaPlugin() {
       "lastquit" -> LastQuitCommand.executor,
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
-      "shareinv" -> ShareInvCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> new MineHeadCommand().executor,

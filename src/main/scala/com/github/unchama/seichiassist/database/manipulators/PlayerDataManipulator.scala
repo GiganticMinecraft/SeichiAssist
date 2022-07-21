@@ -199,50 +199,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     true
   }
 
-  def loadShareInv(player: Player): IO[ResponseEffectOrResult[CommandSender, String]] = {
-    val loadInventoryData: IO[Either[Nothing, String]] = EitherT
-      .right(IO {
-        val command =
-          s"SELECT shareinv FROM $tableReference WHERE uuid = '${player.getUniqueId}'"
-
-        gateway.executeQuery(command).recordIteration(_.getString("shareinv")).headOption.get
-      })
-      .value
-
-    for {
-      _ <- EitherT(checkInventoryOperationCoolDown(player))
-      serializedInventory <- EitherT(catchingDatabaseErrors(player.getName, loadInventoryData))
-    } yield serializedInventory
-  }.value
-
-  private def checkInventoryOperationCoolDown(
-    player: Player
-  ): IO[Either[TargetedEffect[CommandSender], Unit]] = {
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-    IO {
-      // 連打による負荷防止
-      if (!playerData.shareinvcooldownflag)
-        Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
-      else {
-        new CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(plugin, 200)
-        Right(())
-      }
-    }
-  }
-
-  def clearShareInv(
-    player: Player,
-    playerdata: PlayerData
-  ): IO[ResponseEffectOrResult[CommandSender, Unit]] = IO {
-    val command = s"UPDATE $tableReference SET shareinv = '' WHERE uuid = '${playerdata.uuid}'"
-
-    if (gateway.executeUpdate(command) == ActionStatus.Fail) {
-      Bukkit.getLogger.warning(s"${player.getName} sql failed. => clearShareInv")
-      Left(MessageEffect(s"${RED}アイテムのクリアに失敗しました"))
-    } else
-      Right(())
-  }
-
   // TODO IO-nize
   def selectLeaversUUIDs(days: Int): List[UUID] = {
     val command = s"select name, uuid from $tableReference " +

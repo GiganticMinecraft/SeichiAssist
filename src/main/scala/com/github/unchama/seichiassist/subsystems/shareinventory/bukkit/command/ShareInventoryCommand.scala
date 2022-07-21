@@ -1,16 +1,17 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory.bukkit.command
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.shareinventory.ShareInventoryAPI
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
+import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
-import org.bukkit.command.TabExecutor
+import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
@@ -37,6 +38,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     val uuid = player.getUniqueId
     val playerData = SeichiAssist.playermap(uuid)
     val eff = for {
+      _ <- checkInventoryOperationCoolDown(player)
       loadedInventory <- shareInventoryAPI.load(uuid)
       inventoryContents = loadedInventory.inventoryContents
       _ <- shareInventoryAPI.clear(uuid)
@@ -87,6 +89,19 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     itemStackOption match {
       case Some(itemStack) => InventoryOperations.dropItem(to, itemStack)
       case None            =>
+    }
+  }
+
+  private def checkInventoryOperationCoolDown(
+    player: Player
+  ): F[Either[TargetedEffect[CommandSender], Unit]] = Sync[F].delay {
+    val playerData = SeichiAssist.playermap(player.getUniqueId)
+    // 連打による負荷防止
+    if (!playerData.shareinvcooldownflag)
+      Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
+    else {
+      new CoolDownTask(player, CoolDownTask.SHAREINV).runTaskLater(SeichiAssist.instance, 200)
+      Right(())
     }
   }
 
