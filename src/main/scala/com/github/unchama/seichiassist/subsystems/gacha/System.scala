@@ -8,10 +8,7 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.application.actions.LotteryOfGachaItems
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.command.GachaCommand
 import com.github.unchama.seichiassist.subsystems.gacha.bukkit.listeners.PlayerPullGachaListener
-import com.github.unchama.seichiassist.subsystems.gacha.domain.{
-  GachaPrizeId,
-  GachaPrizesDataOperations
-}
+import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizeId
 import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.infrastructure.bukkit.JdbcGachaPrizeListPersistence
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.infrastructure.JdbcGachaTicketFromAdminTeamGateway

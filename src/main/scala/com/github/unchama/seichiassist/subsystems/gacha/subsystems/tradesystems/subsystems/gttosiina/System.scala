@@ -3,7 +3,6 @@ package com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems
 import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.gttosiina.bukkit.listeners.GtToSiinaringo
 import org.bukkit.event.Listener
 

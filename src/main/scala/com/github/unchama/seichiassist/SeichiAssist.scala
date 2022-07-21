@@ -70,7 +70,6 @@ import com.github.unchama.seichiassist.subsystems.fastdiggingeffect.{
 }
 import com.github.unchama.seichiassist.subsystems.fourdimensionalpocket.FourDimensionalPocketApi
 import com.github.unchama.seichiassist.subsystems.gacha.GachaAPI
-import com.github.unchama.seichiassist.subsystems.gacha.domain.GachaPrizesDataOperations
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.tradesystems.subsystems.{
   gachatrade,
   gttosiina

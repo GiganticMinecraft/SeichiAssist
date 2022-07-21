@@ -19,7 +19,6 @@ import com.github.unchama.seichiassist.subsystems.gacha.domain.bukkit.GachaPrize
 import com.github.unchama.seichiassist.subsystems.gacha.domain.{
   GachaPrizeId,
   GachaPrizeListPersistence,
-  GachaPrizesDataOperations,
   GachaProbability
 }
 import com.github.unchama.seichiassist.subsystems.gacha.subsystems.gachaticket.domain.GachaTicketFromAdminTeamGateway
@@ -38,7 +37,6 @@ class GachaCommand[F[
 ]: OnMinecraftServerThread: NonServerThreadContextShift: Sync: ConcurrentEffect](
   implicit gachaTicketPersistence: GachaTicketFromAdminTeamGateway[F],
   gachaPersistence: GachaPrizeListPersistence[F],
-  gachaPrizesDataOperations: GachaPrizesDataOperations[F],
   syncUuidRepository: UuidRepository[SyncIO],
   gachaAPI: GachaAPI[F]
 ) {
@@ -120,9 +118,7 @@ class GachaCommand[F[
       .closedRangeInt(1, Int.MaxValue, MessageEffect("IDは正の値を指定してください。"))
       .andThen(_.flatMap { id =>
         val intId = id.asInstanceOf[Int]
-        if (
-          gachaPrizesDataOperations.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()
-        ) {
+        if (gachaAPI.existsGachaPrize(GachaPrizeId(intId)).toIO.unsafeRunSync()) {
           succeedWith(intId)
         } else {
           failWith("指定されたIDのアイテムは存在しません！")
