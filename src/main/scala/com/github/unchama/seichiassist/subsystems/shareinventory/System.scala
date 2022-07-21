@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory
 
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.shareinventory.bukkit.command.ShareInventoryCommand
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
