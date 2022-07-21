@@ -13,15 +13,13 @@ class RespawnLocationOverwriter[F[_]: ConcurrentEffect: SubHomeAPI] extends List
   @EventHandler
   def onRespawn(event: PlayerRespawnEvent): Unit = {
     val player = event.getPlayer
-    SubHomeReadAPI[F].get(player.getUniqueId, SubHomeId(1)).toIO.unsafeRunSync() match {
-      case Some(SubHome(_, subHomeLocation)) =>
-        LocationCodec.toBukkitLocation(subHomeLocation) match {
-          case Some(bukkitLocation) =>
-            event.getPlayer.teleport(bukkitLocation)
-          case None =>
-        }
-      case None =>
-    }
+    for {
+      SubHome(_, subHomeLocation) <- SubHomeReadAPI[F]
+        .get(player.getUniqueId, SubHomeId(1))
+        .toIO
+        .unsafeRunSync()
+      bukkitLocation <- LocationCodec.toBukkitLocation(subHomeLocation)
+    } yield player.teleport(bukkitLocation)
   }
 
 }
