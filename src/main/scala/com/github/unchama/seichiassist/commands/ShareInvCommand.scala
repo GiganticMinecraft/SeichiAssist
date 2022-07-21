@@ -72,42 +72,4 @@ object ShareInvCommand {
     }
   }
 
-  private def depositToSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
-    val playerData = SeichiAssist.playermap(player.getUniqueId)
-    val databaseGateway = SeichiAssist.databaseGateway
-
-    val playerInventory = player.getInventory
-
-    def takeIfNotNull[App[_]: Applicative, E, A](a: A, fail: E): EitherT[App, E, A] =
-      EitherT.cond[App](a != null, a, fail)
-
-    {
-      for {
-        inventory <- EitherT.rightT[IO, TargetedEffect[Player]](
-          playerInventory.getContents.toList.asJava
-        )
-        serializedInventory <-
-          takeIfNotNull[IO, TargetedEffect[Player], String](
-            ItemListSerialization.serializeToBase64(inventory),
-            MessageEffect(s"$RESET$RED${BOLD}収納アイテムの変換に失敗しました。")
-          )
-        _ <- EitherT(
-          databaseGateway.playerDataManipulator.saveSharedInventory(player, serializedInventory)
-        )
-        successEffect <- EitherT.right[TargetedEffect[Player]] {
-          IO {
-            // 現所持アイテムを全て削除
-            playerInventory.clear()
-            playerData.contentsPresentInSharedInventory = true
-
-            // 木の棒を取得させる
-            player.performCommand("stick")
-
-            Bukkit.getLogger.info(s"${player.getName}がアイテム収納を実施(SQL送信成功)")
-            MessageEffect(s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。")
-          }
-        }
-      } yield successEffect
-    }.merge
-  }
 }

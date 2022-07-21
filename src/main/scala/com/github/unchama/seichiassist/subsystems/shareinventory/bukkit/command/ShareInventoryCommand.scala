@@ -64,6 +64,9 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     val playerData = SeichiAssist.playermap(uuid)
     val playerInventory = player.getInventory
     val inventoryContents = playerInventory.getContents.toList
+
+    if (inventoryContents.isEmpty) return IO(MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。"))
+
     val eff = for {
       _ <- shareInventoryAPI.save(uuid, InventoryContents(inventoryContents))
     } yield {
