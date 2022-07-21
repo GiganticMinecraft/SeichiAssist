@@ -54,6 +54,17 @@ object System {
           targetPrize = prizes.filter(_.id == gachaPrizeId)
           _ <- replace(prizes.diff(targetPrize))
         } yield ()
+
+        /**
+         * `GachaPrize`を追加する。
+         * `GachaPrizeId`を与えなかった場合は最大`GachaPrizeId`の次の値が指定されます
+         */
+        override def addGachaPrize(gachaPrize: GachaPrizeId => GachaPrize): F[Unit] = for {
+          prizes <- list
+          newList = prizes ++ Vector(gachaPrize(GachaPrizeId(prizes.map(_.id.id).max + 1)))
+          _ <- replace(newList)
+        } yield ()
+
       }
       override val commands: Map[String, TabExecutor] = Map(
         "gacha" -> new GachaCommand[F]().executor

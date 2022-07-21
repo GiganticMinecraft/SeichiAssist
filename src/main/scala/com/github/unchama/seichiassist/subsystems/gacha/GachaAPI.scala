@@ -39,7 +39,7 @@ trait GachaReadAPI[F[_]] {
   final def list: F[Vector[GachaPrize]] = gachaPrizesListRepository.get
 
   /**
-   * [[GachaPrizeId]]に対応する[[GachaPrize]]を取得します
+   * [[GachaPrizeId]]に対応する[[GachaPrize]]を取得する
    */
   final def gachaPrize(gachaPrizeId: GachaPrizeId): F[Option[GachaPrize]] = for {
     prizes <- list
@@ -74,6 +74,11 @@ trait GachaWriteAPI[F[_]] {
    * ガチャ景品リストから指定された[[GachaPrizeId]]の[[GachaPrize]]を削除する
    */
   def removeByGachaPrizeId(gachaPrizeId: GachaPrizeId): F[Unit]
+
+  /**
+   * ガチャ景品リストにGachaPrizeを追加する
+   */
+  def addGachaPrize(gachaPrize: GachaPrizeId => GachaPrize): F[Unit]
 
 }
 
