@@ -382,6 +382,9 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
+  private lazy val shareInventorySystem: subsystems.shareinventory.System[IO] =
+    subsystems.shareinventory.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -401,7 +404,8 @@ class SeichiAssist extends JavaPlugin() {
     discordNotificationSystem,
     subhomeSystem,
     presentSystem,
-    anywhereEnderSystem
+    anywhereEnderSystem,
+    shareInventorySystem
   )
 
   private lazy val buildAssist: BuildAssist = {
