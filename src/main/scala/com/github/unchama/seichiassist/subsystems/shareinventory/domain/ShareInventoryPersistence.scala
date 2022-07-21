@@ -1,16 +1,21 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory.domain
 
+import java.util.UUID
+
 trait ShareInventoryPersistence[F[_]] {
 
   /**
    * [[InventoryContents]]をセーブします。
    * @param inventoryContents セーブ対象の[[InventoryContents]]
    */
-  def saveSerializedShareInventory(inventoryContents: InventoryContents): F[Unit]
+  def saveSerializedShareInventory(
+    targetUuid: UUID,
+    inventoryContents: InventoryContents
+  ): F[Unit]
 
   /**
    * セーブされている[[InventoryContents]]をロードします。
    */
-  def loadSerializedShareInventory(): F[InventoryContents]
+  def loadSerializedShareInventory(targetUuid: UUID): F[InventoryContents]
 
 }
