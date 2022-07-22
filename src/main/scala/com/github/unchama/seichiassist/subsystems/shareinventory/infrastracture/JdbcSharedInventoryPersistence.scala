@@ -33,17 +33,21 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
   override def load(targetUuid: UUID): F[Option[InventoryContents]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
-        val serializedInventory =
+        val serializedInventoryOpt =
           sql"SELECT shareinv FROM playerdata WHERE uuid = '${targetUuid.toString}'"
             .map(rs => rs.string("shareinv"))
-            .toList()
+            .single()
             .apply()
-            .head
-        Some(
-          InventoryContents(
-            ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
-          )
-        )
+
+        serializedInventoryOpt match {
+          case Some(serializedInventory) =>
+            Some(
+              InventoryContents(
+                ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
+              )
+            )
+          case None => None
+        }
       }
     }
 
