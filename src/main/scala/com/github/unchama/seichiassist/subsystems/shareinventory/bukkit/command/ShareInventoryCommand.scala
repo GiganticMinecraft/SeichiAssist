@@ -25,7 +25,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     .execution { context =>
       val sender = context.sender
 
-      if (shareInventoryAPI.isSharing(sender).toIO.unsafeRunSync())
+      if (shareInventoryAPI.sharedFlag(sender).toIO.unsafeRunSync() == SharedFlag.Sharing)
         withdrawFromSharedInventory(sender)
       else depositToSharedInventory(sender)
 

@@ -26,6 +26,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Chris
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.valentinePlayerHead
 import com.github.unchama.seichiassist.subsystems.shareinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.shareinventory.domain.SharedFlag
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -301,15 +302,18 @@ object SecondPage extends Menu {
           val base =
             List(s"$RESET${GREEN}現在の装備・アイテムを移動します。", s"${RESET}サーバー間のアイテム移動にご利用ください。", "")
 
-          val statusDisplay = if (sharedInventoryAPI.isSharing(player).toIO.unsafeRunSync()) {
-            List(
-              s"$RESET${GREEN}収納中",
-              s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを取り出します。",
-              s"$RESET${RED}現在の装備・アイテムが空であることを確認してください。"
-            )
-          } else {
-            List(s"$RESET${GREEN}非収納中", s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを収納します。")
-          }
+          val statusDisplay =
+            if (
+              sharedInventoryAPI.sharedFlag(player).toIO.unsafeRunSync() == SharedFlag.Sharing
+            ) {
+              List(
+                s"$RESET${GREEN}収納中",
+                s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを取り出します。",
+                s"$RESET${RED}現在の装備・アイテムが空であることを確認してください。"
+              )
+            } else {
+              List(s"$RESET${GREEN}非収納中", s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを収納します。")
+            }
 
           base ++ statusDisplay
         }

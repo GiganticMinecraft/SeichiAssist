@@ -48,7 +48,8 @@ object System {
             override def load(targetUuid: UUID): G[Option[InventoryContents]] =
               ContextCoercion(persistence.load(targetUuid))
 
-            override val sharedFlag: KeyedDataRepository[Player, ReadOnlyRef[G, SharedFlag]] =
+            override val sharedFlagRepository
+              : KeyedDataRepository[Player, ReadOnlyRef[G, SharedFlag]] =
               sharedFlagRepositoryControls.repository.map(value => value.sharedFlag)
 
             override def setSharing(player: Player): G[Unit] =

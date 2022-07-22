@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory
 
+import cats.effect.Sync
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.SharedFlag
@@ -29,9 +30,9 @@ object SharedInventoryWriteAPI {
 
 trait SharedInventoryReadAPI[F[_], Player] {
 
-  protected val sharedFlag: KeyedDataRepository[Player, ReadOnlyRef[F, SharedFlag]]
+  protected val sharedFlagRepository: KeyedDataRepository[Player, ReadOnlyRef[F, SharedFlag]]
 
-  final def isSharing(player: Player): F[Boolean] = sharedFlag(player).read
+  final def sharedFlag(player: Player): F[SharedFlag] = sharedFlagRepository(player).read
 
   def load(targetUuid: UUID): F[Option[InventoryContents]]
 
