@@ -7,17 +7,23 @@ import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.I
 
 import java.util.UUID
 
-trait SharedInventoryWriteAPI[F[_]] {
+trait SharedInventoryWriteAPI[F[_], Player] {
 
   def save(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit]
 
   def clear(targetUuid: UUID): F[Unit]
 
+  def setSharing(player: Player): F[Unit]
+
+  def setNotSharing(player: Player): F[Unit]
+
 }
 
 object SharedInventoryWriteAPI {
 
-  def apply[F[_]](implicit ev: SharedInventoryWriteAPI[F]): SharedInventoryWriteAPI[F] = ev
+  def apply[F[_], Player](
+    implicit ev: SharedInventoryWriteAPI[F, Player]
+  ): SharedInventoryWriteAPI[F, Player] = ev
 
 }
 
@@ -39,4 +45,4 @@ object SharedInventoryReadAPI {
 
 trait SharedInventoryAPI[F[_], Player]
     extends SharedInventoryReadAPI[F, Player]
-    with SharedInventoryWriteAPI[F]
+    with SharedInventoryWriteAPI[F, Player]

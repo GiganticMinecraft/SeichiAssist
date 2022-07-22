@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory
 
-import cats.effect.{ConcurrentEffect, SyncEffect}
+import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
@@ -50,6 +50,22 @@ object System {
 
             override val sharedFlag: KeyedDataRepository[Player, ReadOnlyRef[G, SharedFlag]] =
               sharedFlagRepositoryControls.repository.map(value => value.sharedFlag)
+
+            override def setSharing(player: Player): G[Unit] =
+              Sync[G].delay {
+                sharedFlagRepositoryControls
+                  .repository(player)
+                  .sharedFlag
+                  .map(_ => SharedFlag.Sharing)
+              }
+
+            override def setNotSharing(player: Player): G[Unit] =
+              Sync[G].delay {
+                sharedFlagRepositoryControls
+                  .repository(player)
+                  .sharedFlag
+                  .map(_ => SharedFlag.NotSharing)
+              }
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[G, _]] =
