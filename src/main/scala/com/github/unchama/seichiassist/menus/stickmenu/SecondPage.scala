@@ -64,9 +64,9 @@ object SecondPage extends Menu {
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
-    val computations = ButtonComputations(player)(environment.sharedInventoryAPI)
-    import computations._
     import environment._
+    val computations = ButtonComputations(player)
+    import computations._
 
     val constantPart = Map(
       ChestSlotRef(0, 0) -> officialWikiNavigationButton,
