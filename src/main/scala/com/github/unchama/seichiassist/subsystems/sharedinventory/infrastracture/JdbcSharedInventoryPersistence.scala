@@ -53,15 +53,11 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
             .single()
             .apply()
 
-        serializedInventoryOpt match {
-          case Some(serializedInventory) =>
-            Some(
-              InventoryContents(
-                ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
-              )
-            )
-          case None => None
-        }
+        serializedInventoryOpt.map(serializedInventory =>
+          InventoryContents(
+            ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
+          )
+        )
       }
     }
 
