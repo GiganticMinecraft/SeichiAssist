@@ -1,6 +1,5 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory
 
-import cats.effect.Sync
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.SharedFlag

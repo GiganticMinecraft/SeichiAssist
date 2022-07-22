@@ -18,14 +18,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
 
 class ShareInventoryCommand[F[_]: ConcurrentEffect](
-  implicit shareInventoryAPI: SharedInventoryAPI[F, Player]
+  implicit sharedInventoryAPI: SharedInventoryAPI[F, Player]
 ) {
 
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val sender = context.sender
 
-      if (shareInventoryAPI.sharedFlag(sender).toIO.unsafeRunSync() == SharedFlag.Sharing)
+      if (sharedInventoryAPI.sharedFlag(sender).toIO.unsafeRunSync() == SharedFlag.Sharing)
         withdrawFromSharedInventory(sender)
       else depositToSharedInventory(sender)
 
@@ -39,8 +39,8 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     val uuid = player.getUniqueId
     val eff = for {
       _ <- checkInventoryOperationCoolDown(player)
-      loadedInventory <- shareInventoryAPI.load(uuid)
-      _ <- shareInventoryAPI.clear(uuid)
+      loadedInventory <- sharedInventoryAPI.load(uuid)
+      _ <- sharedInventoryAPI.clear(uuid)
     } yield {
       val playerInventory = player.getInventory
       val inventoryContents =
@@ -56,7 +56,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       // 取り出したアイテムをセットする
       playerInventory.setContents(inventoryContents.toArray)
 
-      shareInventoryAPI.setNotSharing(player)
+      sharedInventoryAPI.setNotSharing(player)
       Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB)書き換え成功")
       MessageEffect(s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。")
     }
@@ -73,10 +73,10 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       return IO.pure(MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。"))
 
     val eff = for {
-      _ <- shareInventoryAPI.save(uuid, InventoryContents(inventoryContents))
+      _ <- sharedInventoryAPI.save(uuid, InventoryContents(inventoryContents))
     } yield {
       playerInventory.clear()
-      shareInventoryAPI.setSharing(player)
+      sharedInventoryAPI.setSharing(player)
 
       // 木の棒付与
       player.performCommand("/stick")
