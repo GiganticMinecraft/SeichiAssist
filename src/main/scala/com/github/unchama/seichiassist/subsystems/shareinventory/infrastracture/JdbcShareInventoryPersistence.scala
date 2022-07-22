@@ -16,10 +16,7 @@ class JdbcShareInventoryPersistence[F[_]: Sync] extends ShareInventoryPersistenc
    *
    * @param inventoryContents セーブ対象の[[InventoryContents]]
    */
-  override def saveSerializedShareInventory(
-    targetUuid: UUID,
-    inventoryContents: InventoryContents
-  ): F[Unit] =
+  override def save(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         val serializedInventory =
@@ -33,7 +30,7 @@ class JdbcShareInventoryPersistence[F[_]: Sync] extends ShareInventoryPersistenc
   /**
    * セーブされている[[InventoryContents]]をロードします。
    */
-  override def loadSerializedShareInventory(targetUuid: UUID): F[Option[InventoryContents]] =
+  override def load(targetUuid: UUID): F[Option[InventoryContents]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
         val serializedInventory =
@@ -53,7 +50,7 @@ class JdbcShareInventoryPersistence[F[_]: Sync] extends ShareInventoryPersistenc
   /**
    * セーブされている[[InventoryContents]]を完全に削除します。
    */
-  override def clearShareInventory(targetUuid: UUID): F[Unit] = Sync[F].delay {
+  override def clear(targetUuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       sql"UPDATE playerdata SET shareinv = '' WHERE uuid = '${targetUuid.toString}'"
         .execute()

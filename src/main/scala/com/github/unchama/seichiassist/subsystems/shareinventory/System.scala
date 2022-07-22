@@ -21,13 +21,13 @@ object System {
     new System[F] {
       override implicit val api: SharedInventoryAPI[F] = new SharedInventoryAPI[F] {
         override def save(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit] =
-          persistence.saveSerializedShareInventory(targetUuid, inventoryContents)
+          persistence.save(targetUuid, inventoryContents)
 
         override def clear(targetUuid: UUID): F[Unit] =
-          persistence.clearShareInventory(targetUuid)
+          persistence.clear(targetUuid)
 
         override def load(targetUuid: UUID): F[Option[InventoryContents]] =
-          persistence.loadSerializedShareInventory(targetUuid)
+          persistence.load(targetUuid)
       }
 
       override val commands: Map[String, TabExecutor] = Map(
