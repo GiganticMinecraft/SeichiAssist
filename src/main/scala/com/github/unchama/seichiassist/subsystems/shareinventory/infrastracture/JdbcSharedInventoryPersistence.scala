@@ -21,7 +21,7 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
       DB.localTx { implicit session =>
         val serializedInventory =
           ItemListSerialization.serializeToBase64(inventoryContents.inventoryContents.asJava)
-        sql"UPDATE playerdata SET shareinv = '$serializedInventory' WHERE uuid = '${targetUuid.toString}'"
+        sql"UPDATE playerdata SET shareinv = $serializedInventory WHERE uuid = '${targetUuid.toString}'"
           .execute()
           .apply()
       }
