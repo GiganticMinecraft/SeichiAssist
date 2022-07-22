@@ -4,7 +4,7 @@ import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.I
 
 import java.util.UUID
 
-trait ShareInventoryPersistence[F[_]] {
+trait SharedInventoryPersistence[F[_]] {
 
   /**
    * [[InventoryContents]]をセーブします。

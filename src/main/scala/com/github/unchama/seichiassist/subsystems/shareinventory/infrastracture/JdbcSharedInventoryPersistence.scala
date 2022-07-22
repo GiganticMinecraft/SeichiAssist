@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory.infrastracture
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.shareinventory.domain.ShareInventoryPersistence
+import com.github.unchama.seichiassist.subsystems.shareinventory.domain.SharedInventoryPersistence
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.util.ItemListSerialization
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
@@ -9,7 +9,7 @@ import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 import java.util.UUID
 import scala.jdk.CollectionConverters._
 
-class JdbcShareInventoryPersistence[F[_]: Sync] extends ShareInventoryPersistence[F] {
+class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersistence[F] {
 
   /**
    * [[InventoryContents]]をセーブします。

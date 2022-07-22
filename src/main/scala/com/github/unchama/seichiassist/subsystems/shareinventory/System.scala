@@ -4,7 +4,7 @@ import cats.effect.ConcurrentEffect
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.shareinventory.bukkit.command.ShareInventoryCommand
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
-import com.github.unchama.seichiassist.subsystems.shareinventory.infrastracture.JdbcShareInventoryPersistence
+import com.github.unchama.seichiassist.subsystems.shareinventory.infrastracture.JdbcSharedInventoryPersistence
 import org.bukkit.command.TabExecutor
 
 import java.util.UUID
@@ -16,7 +16,7 @@ trait System[F[_]] extends Subsystem[F] {
 object System {
 
   def wired[F[_]: ConcurrentEffect]: System[F] = {
-    val persistence = new JdbcShareInventoryPersistence[F]
+    val persistence = new JdbcSharedInventoryPersistence[F]
 
     new System[F] {
       override implicit val api: SharedInventoryAPI[F] = new SharedInventoryAPI[F] {
