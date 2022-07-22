@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
 
 class ShareInventoryCommand[F[_]: ConcurrentEffect](
-  implicit shareInventoryAPI: SharedInventoryAPI[F]
+  implicit shareInventoryAPI: SharedInventoryAPI[F, Player]
 ) {
 
   val executor: TabExecutor = playerCommandBuilder

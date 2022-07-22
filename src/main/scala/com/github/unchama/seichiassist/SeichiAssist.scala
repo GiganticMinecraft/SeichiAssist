@@ -383,7 +383,7 @@ class SeichiAssist extends JavaPlugin() {
   }
 
   private lazy val shareInventorySystem: subsystems.shareinventory.System[IO] =
-    subsystems.shareinventory.System.wired[IO]
+    subsystems.shareinventory.System.wired[SyncIO, IO].unsafeRunSync()
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
