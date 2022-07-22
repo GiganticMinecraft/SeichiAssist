@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit
+package com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit
 
 import org.bukkit.inventory.ItemStack
 

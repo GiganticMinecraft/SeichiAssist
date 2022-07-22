@@ -76,7 +76,7 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
-import com.github.unchama.seichiassist.subsystems.shareinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
@@ -383,8 +383,8 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-  private lazy val sharedInventorySystem: subsystems.shareinventory.System[IO] =
-    subsystems.shareinventory.System.wired[SyncIO, IO].unsafeRunSync()
+  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
+    subsystems.sharedinventory.System.wired[SyncIO, IO].unsafeRunSync()
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,

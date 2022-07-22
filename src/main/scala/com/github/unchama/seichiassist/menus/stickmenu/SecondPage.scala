@@ -24,8 +24,8 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Chris
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData.christmasPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.valentinePlayerHead
-import com.github.unchama.seichiassist.subsystems.shareinventory.SharedInventoryAPI
-import com.github.unchama.seichiassist.subsystems.shareinventory.domain.SharedFlag
+import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedFlag
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}

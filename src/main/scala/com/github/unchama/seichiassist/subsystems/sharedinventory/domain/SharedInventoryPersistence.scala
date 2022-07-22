@@ -1,7 +1,7 @@
-package com.github.unchama.seichiassist.subsystems.shareinventory.domain
+package com.github.unchama.seichiassist.subsystems.sharedinventory.domain
 
 import com.github.unchama.generic.RefDict
-import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
+import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
 
 import java.util.UUID
 

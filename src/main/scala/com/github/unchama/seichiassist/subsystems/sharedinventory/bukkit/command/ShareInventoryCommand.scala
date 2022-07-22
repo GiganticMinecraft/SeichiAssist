@@ -1,12 +1,12 @@
-package com.github.unchama.seichiassist.subsystems.shareinventory.bukkit.command
+package com.github.unchama.seichiassist.subsystems.sharedinventory.bukkit.command
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.subsystems.shareinventory.SharedInventoryAPI
-import com.github.unchama.seichiassist.subsystems.shareinventory.domain.SharedFlag
-import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
+import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedFlag
+import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.targetedeffect.TargetedEffect

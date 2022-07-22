@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.shareinventory.domain
+package com.github.unchama.seichiassist.subsystems.sharedinventory.domain
 
 import enumeratum._
 
