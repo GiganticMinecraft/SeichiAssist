@@ -5,6 +5,7 @@ import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
 import com.github.unchama.seichiassist.subsystems.shareinventory.SharedInventoryAPI
+import com.github.unchama.seichiassist.subsystems.shareinventory.domain.SharedFlag
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.InventoryOperations
@@ -23,9 +24,9 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
   val executor: TabExecutor = playerCommandBuilder
     .execution { context =>
       val sender = context.sender
-      val senderData = SeichiAssist.playermap(sender.getUniqueId)
 
-      if (senderData.contentsPresentInSharedInventory) withdrawFromSharedInventory(sender)
+      if (shareInventoryAPI.isSharing(sender).toIO.unsafeRunSync())
+        withdrawFromSharedInventory(sender)
       else depositToSharedInventory(sender)
 
     }
@@ -36,7 +37,6 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
 
   private def withdrawFromSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
     val uuid = player.getUniqueId
-    val playerData = SeichiAssist.playermap(uuid)
     val eff = for {
       _ <- checkInventoryOperationCoolDown(player)
       loadedInventory <- shareInventoryAPI.load(uuid)
@@ -56,7 +56,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       // 取り出したアイテムをセットする
       playerInventory.setContents(inventoryContents.toArray)
 
-      playerData.contentsPresentInSharedInventory = false
+      shareInventoryAPI.setNotSharing(player)
       Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB)書き換え成功")
       MessageEffect(s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。")
     }
@@ -66,7 +66,6 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
 
   private def depositToSharedInventory(player: Player): IO[TargetedEffect[Player]] = {
     val uuid = player.getUniqueId
-    val playerData = SeichiAssist.playermap(uuid)
     val playerInventory = player.getInventory
     val inventoryContents = playerInventory.getContents.toList
 
@@ -77,7 +76,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       _ <- shareInventoryAPI.save(uuid, InventoryContents(inventoryContents))
     } yield {
       playerInventory.clear()
-      playerData.contentsPresentInSharedInventory = true
+      shareInventoryAPI.setSharing(player)
 
       // 木の棒付与
       player.performCommand("/stick")

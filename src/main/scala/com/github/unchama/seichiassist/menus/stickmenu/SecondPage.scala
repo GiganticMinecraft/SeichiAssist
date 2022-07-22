@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.effect.IO
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.effect.{ConcurrentEffect, IO}
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
@@ -24,6 +25,7 @@ import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.Chris
 import com.github.unchama.seichiassist.subsystems.seasonalevents.christmas.ChristmasItemData.christmasPlayerHead
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.Valentine
 import com.github.unchama.seichiassist.subsystems.seasonalevents.valentine.ValentineItemData.valentinePlayerHead
+import com.github.unchama.seichiassist.subsystems.shareinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.util.InventoryOperations
 import com.github.unchama.seichiassist.util.exp.ExperienceManager
 import com.github.unchama.seichiassist.{SeichiAssist, SkullOwners}
@@ -50,7 +52,10 @@ object SecondPage extends Menu {
   import eu.timepit.refined.auto._
   import menuinventory.syntax._
 
-  class Environment(implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type)
+  class Environment(
+    implicit val ioCanOpenFirstPage: IO CanOpen FirstPage.type,
+    val sharedInventoryAPI: SharedInventoryAPI[IO, Player]
+  )
 
   override val frame: MenuFrame =
     MenuFrame(4.chestRows, s"${LIGHT_PURPLE}木の棒メニュー")
@@ -59,9 +64,9 @@ object SecondPage extends Menu {
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
-    val computations = ButtonComputations(player)
-    import computations._
     import environment._
+    val computations = ButtonComputations[IO](player)
+    import computations._
 
     val constantPart = Map(
       ChestSlotRef(0, 0) -> officialWikiNavigationButton,
@@ -89,7 +94,9 @@ object SecondPage extends Menu {
     } yield menuinventory.MenuSlotLayout(constantPart ++ dynamicPart)
   }
 
-  private case class ButtonComputations(player: Player) {
+  private case class ButtonComputations[F[_]: ConcurrentEffect](player: Player)(
+    implicit sharedInventoryAPI: SharedInventoryAPI[F, Player]
+  ) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
     import player._
@@ -291,12 +298,10 @@ object SecondPage extends Menu {
     val computeShareInventoryButton: IO[Button] = RecomputedButton(IO {
       val iconItemStack = {
         val lore = {
-          val playerData = SeichiAssist.playermap(getUniqueId)
-
           val base =
             List(s"$RESET${GREEN}現在の装備・アイテムを移動します。", s"${RESET}サーバー間のアイテム移動にご利用ください。", "")
 
-          val statusDisplay = if (playerData.contentsPresentInSharedInventory) {
+          val statusDisplay = if (sharedInventoryAPI.isSharing(player).toIO.unsafeRunSync()) {
             List(
               s"$RESET${GREEN}収納中",
               s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを取り出します。",

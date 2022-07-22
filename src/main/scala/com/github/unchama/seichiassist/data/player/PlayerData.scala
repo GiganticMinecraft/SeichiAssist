@@ -71,8 +71,6 @@ class PlayerData(@Deprecated() val uuid: UUID, val name: String) {
 
   // endregion
 
-  // 共有インベントリにアイテムが入っているかどうか
-  var contentsPresentInSharedInventory = false
   // 詫び券をあげる数
   var unclaimedApologyItems = 0
   // ワールドガード保護自動設定用

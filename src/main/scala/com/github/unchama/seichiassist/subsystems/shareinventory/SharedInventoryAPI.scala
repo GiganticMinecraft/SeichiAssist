@@ -29,7 +29,9 @@ object SharedInventoryWriteAPI {
 
 trait SharedInventoryReadAPI[F[_], Player] {
 
-  val sharedFlag: KeyedDataRepository[Player, ReadOnlyRef[F, SharedFlag]]
+  protected val sharedFlag: KeyedDataRepository[Player, ReadOnlyRef[F, SharedFlag]]
+
+  final def isSharing(player: Player): F[Boolean] = sharedFlag(player).read
 
   def load(targetUuid: UUID): F[Option[InventoryContents]]
 
