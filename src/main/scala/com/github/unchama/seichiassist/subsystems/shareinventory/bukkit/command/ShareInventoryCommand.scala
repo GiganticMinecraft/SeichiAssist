@@ -40,10 +40,13 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     val eff = for {
       _ <- checkInventoryOperationCoolDown(player)
       loadedInventory <- shareInventoryAPI.load(uuid)
-      inventoryContents = loadedInventory.inventoryContents
       _ <- shareInventoryAPI.clear(uuid)
     } yield {
       val playerInventory = player.getInventory
+      val inventoryContents =
+        loadedInventory
+          .getOrElse(return IO.pure(MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。")))
+          .inventoryContents
       // 手持ちのアイテムをドロップする
       playerInventory
         .getContents

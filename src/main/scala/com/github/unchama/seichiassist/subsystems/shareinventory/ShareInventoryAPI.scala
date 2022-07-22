@@ -20,7 +20,7 @@ object ShareInventoryWriteAPI {
 
 trait ShareInventoryReadAPI[F[_]] {
 
-  def load(targetUuid: UUID): F[InventoryContents]
+  def load(targetUuid: UUID): F[Option[InventoryContents]]
 
 }
 

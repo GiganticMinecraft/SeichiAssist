@@ -26,7 +26,7 @@ object System {
         override def clear(targetUuid: UUID): F[Unit] =
           persistence.clearShareInventory(targetUuid)
 
-        override def load(targetUuid: UUID): F[InventoryContents] =
+        override def load(targetUuid: UUID): F[Option[InventoryContents]] =
           persistence.loadSerializedShareInventory(targetUuid)
       }
 

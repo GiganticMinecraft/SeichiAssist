@@ -18,7 +18,7 @@ trait ShareInventoryPersistence[F[_]] {
   /**
    * セーブされている[[InventoryContents]]をロードします。
    */
-  def loadSerializedShareInventory(targetUuid: UUID): F[InventoryContents]
+  def loadSerializedShareInventory(targetUuid: UUID): F[Option[InventoryContents]]
 
   /**
    * セーブされている[[InventoryContents]]を完全に削除します。

@@ -33,7 +33,7 @@ class JdbcShareInventoryPersistence[F[_]: Sync] extends ShareInventoryPersistenc
   /**
    * セーブされている[[InventoryContents]]をロードします。
    */
-  override def loadSerializedShareInventory(targetUuid: UUID): F[InventoryContents] =
+  override def loadSerializedShareInventory(targetUuid: UUID): F[Option[InventoryContents]] =
     Sync[F].delay {
       DB.readOnly { implicit session =>
         val serializedInventory =
@@ -42,8 +42,10 @@ class JdbcShareInventoryPersistence[F[_]: Sync] extends ShareInventoryPersistenc
             .toList()
             .apply()
             .head
-        InventoryContents(
-          ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
+        Some(
+          InventoryContents(
+            ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
+          )
         )
       }
     }
