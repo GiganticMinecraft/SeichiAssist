@@ -49,7 +49,8 @@ object System {
             override def load(targetUuid: UUID): G[Option[InventoryContents]] =
               ContextCoercion(persistence.load(targetUuid))
 
-            override val sharedFlagRepository: KeyedDataRepository[Player, Ref[G, SharedFlag]] =
+            override val sharedFlagRepository
+              : KeyedDataRepository[Player, Ref[G, InventoryContents]] =
               sharedFlagRepositoryControls
                 .repository
                 .map(value => value.sharedFlag.mapK(ContextCoercion.asFunctionK))

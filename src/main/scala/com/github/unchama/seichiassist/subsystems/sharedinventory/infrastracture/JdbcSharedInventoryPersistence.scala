@@ -54,23 +54,23 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
             .apply()
 
         serializedInventoryOpt.map(serializedInventory =>
-          InventoryContents(
+          InventoryContents.ofNonEmpty(
             ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
           )
         )
       }
     }
 
-  import cats.implicits._
-
-  override def read(uuid: UUID): F[Option[SharedFlag]] = for {
-    loadedContents <- load(uuid)
-  } yield {
-    loadedContents match {
-      case Some(_) => Some(SharedFlag.Sharing)
-      case None    => Some(SharedFlag.NotSharing)
-    }
-  }
-
-  override def write(key: UUID, value: SharedFlag): F[Unit] = Sync[F].pure(())
+//  import cats.implicits._
+//
+//  override def read(uuid: UUID): F[Option[SharedFlag]] = for {
+//    loadedContents <- load(uuid)
+//  } yield {
+//    loadedContents match {
+//      case Some(_) => Some(SharedFlag.Sharing)
+//      case None    => Some(SharedFlag.NotSharing)
+//    }
+//  }
+//
+//  override def write(key: UUID, value: SharedFlag): F[Unit] = Sync[F].pure(())
 }

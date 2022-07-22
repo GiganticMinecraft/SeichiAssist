@@ -29,9 +29,19 @@ object SharedInventoryWriteAPI {
 
 trait SharedInventoryReadAPI[F[_], Player] {
 
-  protected val sharedFlagRepository: KeyedDataRepository[Player, Ref[F, SharedFlag]]
+  protected val inventoryContentsRepository: KeyedDataRepository[
+    Player,
+    Ref[F, InventoryContents]
+  ]
 
-  final def sharedFlag(player: Player): F[SharedFlag] = sharedFlagRepository(player).get
+  import cats.implicits._
+
+  final def sharedFlag(player: Player): F[SharedFlag] = for {
+    inventoryContents <- inventoryContentsRepository(player).get
+  } yield {
+    if (inventoryContents == InventoryContents.initial) SharedFlag.Sharing
+    else SharedFlag.NotSharing
+  }
 
   def load(targetUuid: UUID): F[Option[InventoryContents]]
 

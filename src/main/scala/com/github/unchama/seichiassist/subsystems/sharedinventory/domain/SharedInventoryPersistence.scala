@@ -5,7 +5,7 @@ import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.
 
 import java.util.UUID
 
-trait SharedInventoryPersistence[F[_]] extends RefDict[F, UUID, SharedFlag] {
+trait SharedInventoryPersistence[F[_]] extends RefDict[F, UUID, InventoryContents] {
 
   /**
    * [[InventoryContents]]をセーブします。
