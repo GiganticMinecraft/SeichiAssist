@@ -88,12 +88,8 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     eff.toIO
   }
 
-  private def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): Unit = {
-    itemStackOption match {
-      case Some(itemStack) => InventoryOperations.dropItem(to, itemStack)
-      case None            =>
-    }
-  }
+  private def dropIfNotEmpty(itemStackOption: Option[ItemStack], to: Player): Unit =
+    itemStackOption.foreach(InventoryOperations.dropItem(to, _))
 
   private def checkInventoryOperationCoolDown(
     player: Player
