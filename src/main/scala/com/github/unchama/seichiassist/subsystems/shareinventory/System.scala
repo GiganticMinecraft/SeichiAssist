@@ -10,7 +10,7 @@ import org.bukkit.command.TabExecutor
 import java.util.UUID
 
 trait System[F[_]] extends Subsystem[F] {
-  val api: ShareInventoryAPI[F]
+  val api: SharedInventoryAPI[F]
 }
 
 object System {
@@ -19,7 +19,7 @@ object System {
     val persistence = new JdbcShareInventoryPersistence[F]
 
     new System[F] {
-      override implicit val api: ShareInventoryAPI[F] = new ShareInventoryAPI[F] {
+      override implicit val api: SharedInventoryAPI[F] = new SharedInventoryAPI[F] {
         override def save(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit] =
           persistence.saveSerializedShareInventory(targetUuid, inventoryContents)
 

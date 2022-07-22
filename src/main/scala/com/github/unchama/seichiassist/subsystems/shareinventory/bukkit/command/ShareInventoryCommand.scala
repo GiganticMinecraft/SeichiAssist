@@ -4,7 +4,7 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
-import com.github.unchama.seichiassist.subsystems.shareinventory.ShareInventoryAPI
+import com.github.unchama.seichiassist.subsystems.shareinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.InventoryOperations
@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.{Bukkit, Material}
 
 class ShareInventoryCommand[F[_]: ConcurrentEffect](
-  implicit shareInventoryAPI: ShareInventoryAPI[F]
+  implicit shareInventoryAPI: SharedInventoryAPI[F]
 ) {
 
   val executor: TabExecutor = playerCommandBuilder
