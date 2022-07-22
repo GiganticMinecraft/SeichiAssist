@@ -1,10 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory
 
-import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
+import cats.effect.concurrent.Ref
+import cats.effect.{ConcurrentEffect, SyncEffect}
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.BukkitRepositoryControls
 import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.shareinventory.application.repository.SharedInventoryRepositoryDefinition
@@ -25,7 +25,8 @@ object System {
 
   import cats.implicits._
 
-  def wired[F[_]: SyncEffect, G[_]: ConcurrentEffect]: F[System[G]] = {
+  def wired[F[_]: SyncEffect: ContextCoercion[*[_], G], G[_]: ConcurrentEffect]
+    : G[System[G]] = {
     val persistence = new JdbcSharedInventoryPersistence[F]
 
     for {
@@ -48,25 +49,27 @@ object System {
             override def load(targetUuid: UUID): G[Option[InventoryContents]] =
               ContextCoercion(persistence.load(targetUuid))
 
-            override val sharedFlagRepository
-              : KeyedDataRepository[Player, ReadOnlyRef[G, SharedFlag]] =
-              sharedFlagRepositoryControls.repository.map(value => value.sharedFlag)
+            override val sharedFlagRepository: KeyedDataRepository[Player, Ref[G, SharedFlag]] =
+              sharedFlagRepositoryControls
+                .repository
+                .map(value => value.sharedFlag.mapK(ContextCoercion.asFunctionK))
 
             override def setSharing(player: Player): G[Unit] =
-              Sync[G].delay {
+              ContextCoercion(
                 sharedFlagRepositoryControls
                   .repository(player)
                   .sharedFlag
-                  .map(_ => SharedFlag.Sharing)
-              }
+                  .set(SharedFlag.Sharing)
+              )
 
             override def setNotSharing(player: Player): G[Unit] =
-              Sync[G].delay {
+              ContextCoercion(
                 sharedFlagRepositoryControls
                   .repository(player)
                   .sharedFlag
-                  .map(_ => SharedFlag.NotSharing)
-              }
+                  .set(SharedFlag.NotSharing)
+              )
+
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[G, _]] =

@@ -76,6 +76,7 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
+import com.github.unchama.seichiassist.subsystems.shareinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
@@ -382,7 +383,7 @@ class SeichiAssist extends JavaPlugin() {
       .wired[SyncIO, IO](seichiAssistConfig.getAnywhereEnderConfiguration)
   }
 
-  private lazy val shareInventorySystem: subsystems.shareinventory.System[IO] =
+  private lazy val sharedInventorySystem: subsystems.shareinventory.System[IO] =
     subsystems.shareinventory.System.wired[SyncIO, IO].unsafeRunSync()
 
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
@@ -405,7 +406,7 @@ class SeichiAssist extends JavaPlugin() {
     subhomeSystem,
     presentSystem,
     anywhereEnderSystem,
-    shareInventorySystem
+    sharedInventorySystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -561,6 +562,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
     implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] =
       anywhereEnderSystem.accessApi
+    implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
+      sharedInventorySystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}

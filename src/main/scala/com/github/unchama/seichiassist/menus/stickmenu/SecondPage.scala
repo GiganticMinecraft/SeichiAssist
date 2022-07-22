@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.menus.stickmenu
 
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, IO}
+import cats.effect.IO
 import com.github.unchama.itemstackbuilder.{IconItemStackBuilder, SkullItemStackBuilder}
 import com.github.unchama.menuinventory
 import com.github.unchama.menuinventory._
@@ -65,9 +64,9 @@ object SecondPage extends Menu {
     player: Player
   )(implicit environment: Environment): IO[MenuSlotLayout] = {
     import ConstantButtons._
-    import environment._
-    val computations = ButtonComputations[IO](player)
+    val computations = ButtonComputations(player)(environment.sharedInventoryAPI)
     import computations._
+    import environment._
 
     val constantPart = Map(
       ChestSlotRef(0, 0) -> officialWikiNavigationButton,
@@ -95,8 +94,8 @@ object SecondPage extends Menu {
     } yield menuinventory.MenuSlotLayout(constantPart ++ dynamicPart)
   }
 
-  private case class ButtonComputations[F[_]: ConcurrentEffect](player: Player)(
-    implicit sharedInventoryAPI: SharedInventoryAPI[F, Player]
+  private case class ButtonComputations(player: Player)(
+    implicit sharedInventoryAPI: SharedInventoryAPI[IO, Player]
   ) {
 
     import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.layoutPreparationContext
@@ -303,9 +302,7 @@ object SecondPage extends Menu {
             List(s"$RESET${GREEN}現在の装備・アイテムを移動します。", s"${RESET}サーバー間のアイテム移動にご利用ください。", "")
 
           val statusDisplay =
-            if (
-              sharedInventoryAPI.sharedFlag(player).toIO.unsafeRunSync() == SharedFlag.Sharing
-            ) {
+            if (sharedInventoryAPI.sharedFlag(player).unsafeRunSync() == SharedFlag.Sharing) {
               List(
                 s"$RESET${GREEN}収納中",
                 s"$RESET$DARK_RED${UNDERLINE}クリックでアイテムを取り出します。",

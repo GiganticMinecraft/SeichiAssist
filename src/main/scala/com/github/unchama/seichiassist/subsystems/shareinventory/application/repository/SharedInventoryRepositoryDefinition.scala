@@ -1,9 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.shareinventory.application.repository
 
+import cats.Monad
 import cats.effect.Sync
+import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.definitions.RefDictBackedRepositoryDefinition
 import com.github.unchama.datarepository.template.RepositoryDefinition
-import com.github.unchama.generic.effect.concurrent.ReadOnlyRef
 import com.github.unchama.minecraft.algebra.HasUuid
 import com.github.unchama.seichiassist.subsystems.shareinventory.domain.{
   SharedFlag,
@@ -12,14 +13,17 @@ import com.github.unchama.seichiassist.subsystems.shareinventory.domain.{
 
 object SharedInventoryRepositoryDefinition {
 
-  case class RepositoryValue[F[_]](sharedFlag: ReadOnlyRef[F, SharedFlag])
+  case class RepositoryValue[F[_]](sharedFlag: Ref[F, SharedFlag])
 
   def withContext[G[_]: Sync, F[_], Player: HasUuid](
     persistence: SharedInventoryPersistence[G]
-  ): RepositoryDefinition[G, Player, RepositoryValue[F]] =
+  ): RepositoryDefinition[G, Player, RepositoryValue[G]] = {
     RefDictBackedRepositoryDefinition
       .usingUuidRefDict[G, Player, SharedFlag](persistence)(SharedFlag.NotSharing)
       .toRefRepository
-      .map(ref => RepositoryValue[F](ReadOnlyRef.fromRef(ref)))
+      .augmentToTwoPhased((_, ref) => Sync[G].pure(RepositoryValue[G](ref)))(value =>
+        Monad[G].pure(value.sharedFlag)
+      )
+  }
 
 }
