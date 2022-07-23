@@ -35,7 +35,7 @@ class JdbcChainVotePersistence[F[_]: Sync] extends ChainVotePersistence[F] {
         .single()
         .apply()
         .get
-      ChainVoteDayNumber.ofNonNegative(chainVoteDays)
+      ChainVoteDayNumber(chainVoteDays)
     }
   }
 }
