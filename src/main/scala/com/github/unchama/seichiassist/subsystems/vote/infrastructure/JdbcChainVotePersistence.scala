@@ -23,9 +23,19 @@ class JdbcChainVotePersistence[F[_]: Sync] extends ChainVotePersistence[F] {
            | CASE WHEN DATEDIFF(last_vote, NOW()) <= ${-chainVoteAllowableWidth - 1} 
            | THEN 0 
            | ELSE chainvote + 1 
-           | END""".stripMargin.execute().apply()
+           | END
+           | WHERE uuid = ${uuid.toString}""".stripMargin.execute().apply()
     }
   }
 
-  override def getChainVoteDays(uuid: UUID): F[ChainVoteDayNumber] = {}
+  override def getChainVoteDays(uuid: UUID): F[ChainVoteDayNumber] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      val chainVoteDays = sql"SELECT chainvote FROM playerdata WHERE uuid = ${uuid.toString}"
+        .map(_.int("chainvote"))
+        .single()
+        .apply()
+        .get
+      ChainVoteDayNumber.ofNonNegative(chainVoteDays)
+    }
+  }
 }
