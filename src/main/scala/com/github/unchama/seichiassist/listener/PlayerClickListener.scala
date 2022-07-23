@@ -53,7 +53,7 @@ class PlayerClickListener(
     val equipmentSlot = event.getHand
 
     if (equipmentSlot == null || equipmentSlot == EquipmentSlot.OFF_HAND) return
-    if (player.isSneaking || player.getGameMode != GameMode.SURVIVAL || player.isFlying) return
+    if (player.isSneaking || player.getGameMode != GameMode.SURVIVAL) return
 
     val playerData = playerMap(player.getUniqueId)
     val skillState = playerData.skillState.get.unsafeRunSync()

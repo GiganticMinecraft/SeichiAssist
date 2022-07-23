@@ -633,7 +633,7 @@ object FirstPage extends Menu {
           FocusedSoundEffect(Sound.BLOCK_CHEST_OPEN, 1.0f, 0.5f),
           openInventoryEffect(
             InventoryUtil.createInventory(
-              size = 4.chestRows,
+              size = 6.chestRows,
               title = Some(s"$LIGHT_PURPLE${BOLD}交換したい景品を入れてください")
             )
           )

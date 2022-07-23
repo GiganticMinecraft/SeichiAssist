@@ -81,6 +81,7 @@ import com.github.unchama.seichiassist.subsystems.mana.{ManaApi, ManaReadApi}
 import com.github.unchama.seichiassist.subsystems.managedfly.ManagedFlyApi
 import com.github.unchama.seichiassist.subsystems.present.infrastructure.GlobalPlayerAccessor
 import com.github.unchama.seichiassist.subsystems.seasonalevents.api.SeasonalEventsAPI
+import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
 import com.github.unchama.seichiassist.task.PlayerDataSaveTask
 import com.github.unchama.seichiassist.task.global._
@@ -243,6 +244,9 @@ class SeichiAssist extends JavaPlugin() {
 
     implicit val syncIoClock: Clock[SyncIO] = Clock.create
 
+    implicit val globalNotification: DiscordNotificationAPI[IO] =
+      discordNotificationSystem.globalNotification
+
     subsystems.buildcount.System.wired[IO, SyncIO].unsafeRunSync()
   }
 
@@ -251,6 +255,8 @@ class SeichiAssist extends JavaPlugin() {
     import PluginExecutionContexts.{asyncShift, onMainThread}
 
     implicit val concurrentEffect: ConcurrentEffect[IO] = IO.ioConcurrentEffect(asyncShift)
+    implicit val globalNotification: DiscordNotificationAPI[IO] =
+      discordNotificationSystem.globalNotification
     subsystems.breakcount.System.wired[IO, SyncIO]().unsafeRunSync()
   }
 
@@ -394,6 +400,9 @@ class SeichiAssist extends JavaPlugin() {
   private lazy val gachaTradeSystem: Subsystem[IO] =
     gachatrade.System.wired
 
+  private lazy val sharedInventorySystem: subsystems.sharedinventory.System[IO] =
+    subsystems.sharedinventory.System.wired[IO]
+
   private lazy val wiredSubsystems: List[Subsystem[IO]] = List(
     mebiusSystem,
     expBottleStackSystem,
@@ -416,7 +425,8 @@ class SeichiAssist extends JavaPlugin() {
     anywhereEnderSystem,
     gachaSystem,
     gtToSiinaSystem,
-    gachaTradeSystem
+    gachaTradeSystem,
+    sharedInventorySystem
   )
 
   private lazy val buildAssist: BuildAssist = {
@@ -567,6 +577,8 @@ class SeichiAssist extends JavaPlugin() {
     implicit val subHomeReadApi: SubHomeReadAPI[IO] = subhomeSystem.api
     implicit val everywhereEnderChestApi: AnywhereEnderChestAPI[IO] =
       anywhereEnderSystem.accessApi
+    implicit val sharedInventoryAPI: SharedInventoryAPI[IO, Player] =
+      sharedInventorySystem.api
 
     val menuRouter = TopLevelRouter.apply
     import menuRouter.{canOpenStickMenu, ioCanOpenCategorizedMineStackMenu}
@@ -594,7 +606,6 @@ class SeichiAssist extends JavaPlugin() {
       "lastquit" -> LastQuitCommand.executor,
       "stick" -> StickCommand.executor,
       "rmp" -> RmpCommand.executor,
-      "shareinv" -> ShareInvCommand.executor,
       "halfguard" -> HalfBlockProtectCommand.executor,
       "gtfever" -> GiganticFeverCommand.executor,
       "minehead" -> new MineHeadCommand().executor,
