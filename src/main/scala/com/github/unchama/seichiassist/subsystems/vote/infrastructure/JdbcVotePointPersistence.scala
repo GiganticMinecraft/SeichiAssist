@@ -1,17 +1,19 @@
 package com.github.unchama.seichiassist.subsystems.vote.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.vote.domain.{VotePoint, VotePointPersistence}
+import com.github.unchama.seichiassist.subsystems.vote.domain.{
+  PlayerName,
+  VotePoint,
+  VotePointPersistence
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID
 
 class JdbcVotePointPersistence[F[_]: Sync] extends VotePointPersistence[F] {
-  override def increment(uuid: UUID): F[Unit] = Sync[F].delay {
+  override def increment(playerName: PlayerName): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET p_vote = p_vote + 1 WHERE uuid = ${uuid.toString}"
-        .execute()
-        .apply()
+      sql"UPDATE playerdata SET p_vote = p_vote + 1 WHERE name = $playerName".execute().apply()
     }
   }
 

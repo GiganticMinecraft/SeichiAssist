@@ -3,7 +3,11 @@ package com.github.unchama.seichiassist.subsystems.vote
 import cats.effect.Sync
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
-import com.github.unchama.seichiassist.subsystems.vote.domain.{ChainVoteDayNumber, VotePoint}
+import com.github.unchama.seichiassist.subsystems.vote.domain.{
+  ChainVoteDayNumber,
+  PlayerName,
+  VotePoint
+}
 import com.github.unchama.seichiassist.subsystems.vote.infrastructure.{
   JdbcChainVotePersistence,
   JdbcVotePointPersistence
@@ -23,11 +27,11 @@ object System {
 
     new System[F] {
       override val api: VoteAPI[F] = new VoteAPI[F] {
-        override def incrementVotePoint(uuid: UUID): F[Unit] =
-          votePointPersistence.increment(uuid)
+        override def incrementVotePoint(playerName: PlayerName): F[Unit] =
+          votePointPersistence.increment(playerName)
 
-        override def updateChainVote(uuid: UUID): F[Unit] =
-          chainVotePersistence.updateChainVote(uuid)
+        override def updateChainVote(playerName: PlayerName): F[Unit] =
+          chainVotePersistence.updateChainVote(playerName)
 
         override def votePoint(uuid: UUID): F[VotePoint] =
           votePointPersistence.votePoint(uuid)

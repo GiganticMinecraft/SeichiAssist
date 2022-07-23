@@ -3,7 +3,8 @@ package com.github.unchama.seichiassist.subsystems.vote.infrastructure
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.vote.domain.{
   ChainVoteDayNumber,
-  ChainVotePersistence
+  ChainVotePersistence,
+  PlayerName
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
@@ -13,7 +14,7 @@ class JdbcChainVotePersistence[F[_]: Sync] extends ChainVotePersistence[F] {
   // NOTE: 連続投票許容幅を変更する場合はここを変更してください。
   private val chainVoteAllowableWidth = 4
 
-  override def updateChainVote(uuid: UUID): F[Unit] = Sync[F].delay {
+  override def updateChainVote(playerName: PlayerName): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
       /*
         NOTE: 最終投票日時より(連続投票許容幅 - 1)した日時よりも
@@ -24,7 +25,7 @@ class JdbcChainVotePersistence[F[_]: Sync] extends ChainVotePersistence[F] {
            | THEN 0 
            | ELSE chainvote + 1 
            | END
-           | WHERE uuid = ${uuid.toString}""".stripMargin.execute().apply()
+           | WHERE name = $playerName""".stripMargin.execute().apply()
     }
   }
 

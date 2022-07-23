@@ -4,7 +4,7 @@ import java.util.UUID
 
 trait VotePointPersistence[F[_]] {
 
-  def increment(uuid: UUID): F[Unit]
+  def increment(playerName: PlayerName): F[Unit]
 
   def votePoint(uuid: UUID): F[VotePoint]
 

@@ -4,7 +4,7 @@ import java.util.UUID
 
 trait ChainVotePersistence[F[_]] {
 
-  def updateChainVote(uuid: UUID): F[Unit]
+  def updateChainVote(playerName: PlayerName): F[Unit]
 
   def getChainVoteDays(uuid: UUID): F[ChainVoteDayNumber]
 

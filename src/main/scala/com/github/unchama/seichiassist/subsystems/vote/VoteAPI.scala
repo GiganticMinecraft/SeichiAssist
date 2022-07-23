@@ -1,6 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.vote
 
-import com.github.unchama.seichiassist.subsystems.vote.domain.{ChainVoteDayNumber, VotePoint}
+import com.github.unchama.seichiassist.subsystems.vote.domain.{
+  ChainVoteDayNumber,
+  PlayerName,
+  VotePoint
+}
 
 import java.util.UUID
 
@@ -9,12 +13,12 @@ trait VoteWriteAPI[F[_]] {
   /**
    * 投票ポイントをインクリメントする作用
    */
-  def incrementVotePoint(uuid: UUID): F[Unit]
+  def incrementVotePoint(playerName: PlayerName): F[Unit]
 
   /**
    * 連続投票を更新する作用
    */
-  def updateChainVote(uuid: UUID): F[Unit]
+  def updateChainVote(playerName: PlayerName): F[Unit]
 
 }
 
