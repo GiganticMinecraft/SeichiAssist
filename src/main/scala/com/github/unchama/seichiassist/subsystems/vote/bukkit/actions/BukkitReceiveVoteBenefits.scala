@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.actions
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{ConcurrentEffect, Sync, SyncEffect}
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.data.{GachaSkullData, ItemData}
@@ -15,9 +15,13 @@ object BukkitReceiveVoteBenefits {
 
   import cats.implicits._
 
-  def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect, G[_]: Sync: ContextCoercion[*[
-    _
-  ], F]]: ReceiveVoteBenefits[F, G, Player] =
+  /**
+   * 投票特典を配布する
+   */
+  def apply[F[_]: OnMinecraftServerThread: ConcurrentEffect, G[_]: SyncEffect: ContextCoercion[
+    *[_],
+    F
+  ]]: ReceiveVoteBenefits[F, G, Player] =
     new ReceiveVoteBenefits[F, G, Player] {
       override def receive(
         player: Player
@@ -25,10 +29,9 @@ object BukkitReceiveVoteBenefits {
         val uuid = player.getUniqueId
         for {
           notReceivedBenefits <- voteAPI.notReceivedVoteBenefits(uuid) // 受け取っていない投票特典数
+          _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
         } yield {
           if (notReceivedBenefits.value == 0) return Sync[F].pure()
-
-          voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits).toIO.unsafeRunAsyncAndForget()
 
           val playerLevel =
             ContextCoercion(breakCountAPI.seichiAmountDataRepository[G](player).read.map {
