@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.bukkit.command
 
+import cats.Monad
 import cats.effect.ConcurrentEffect
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import com.github.unchama.contextualexecutor.builder.ContextualExecutorBuilder
@@ -17,7 +18,11 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit voteAPI: VoteAPI[F]) {
     MessageEffect(List(s"$RED/vote record <プレイヤー名>", "投票特典配布用コマンドです"))
   )
 
-  private val recordExecutor =
+  import cats.implicits._
+
+  private val recordExecutor = {
+    implicit val F: Monad[F] = Monad[F]
+
     ContextualExecutorBuilder
       .beginConfiguration()
       .executionCSEffect { context =>
@@ -27,12 +32,16 @@ class VoteCommand[F[_]: ConcurrentEffect](implicit voteAPI: VoteAPI[F]) {
           MessageEffect(s"$YELLOW${lowerCasePlayerName}の特典配布処理開始…"),
           UnfocusedEffect {
             val playerName = PlayerName(lowerCasePlayerName)
-            voteAPI.incrementVotePoint(playerName).toIO.unsafeRunAsyncAndForget()
-            voteAPI.updateChainVote(playerName).toIO.unsafeRunAsyncAndForget()
+            val eff = for {
+              _ <- voteAPI.voteCounterIncrement(playerName)
+              _ <- voteAPI.updateChainVote(playerName)
+            } yield ()
+            eff.toIO
           }
         )
       }
       .build()
+  }
 
   val executor: TabExecutor = {
     BranchedExecutor(

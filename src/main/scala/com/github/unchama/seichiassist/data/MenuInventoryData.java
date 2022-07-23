@@ -8,7 +8,6 @@ import com.github.unchama.seichiassist.data.player.PlayerNickname;
 import com.github.unchama.seichiassist.task.VotingFairyTask;
 import com.github.unchama.seichiassist.util.AsyncInventorySetter;
 import com.github.unchama.seichiassist.util.ItemMetaFactory;
-import com.github.unchama.seichiassist.util.TypeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
