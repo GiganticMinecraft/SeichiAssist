@@ -6,19 +6,20 @@ import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
+import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
-import com.github.unchama.seichiassist.util.SendSoundEffect
+import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
-import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
-import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
+import org.bukkit.{Material, Sound}
 
 import java.util.UUID
 
@@ -44,7 +45,7 @@ object VoteMenu extends Menu {
 
   private object ConstantButtons {
 
-    def receiveVoteBenefits(uuid: UUID)(
+    def receiveVoteBenefitsButton(uuid: UUID)(
       implicit voteAPI: VoteAPI[IO],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player]
     ): Button = {
@@ -83,7 +84,7 @@ object VoteMenu extends Menu {
       }
     }.unsafeRunSync()
 
-    val showVoteURL: Button = Button(
+    val showVoteURLButton: Button = Button(
       new IconItemStackBuilder(Material.BOOK_AND_QUILL)
         .title(s"$YELLOW$UNDERLINE${BOLD}投票ページにアクセス")
         .lore(
@@ -110,6 +111,33 @@ object VoteMenu extends Menu {
         }
       }
     )
+
+    def fairySummonTimeToggleButton(uuid: UUID): Button = {
+      val playerData = SeichiAssist.playermap(uuid)
+      Button(
+        new IconItemStackBuilder(Material.WATCH)
+          .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
+          .lore(
+            List(
+              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(playerData.toggleVotingFairy)}",
+              "",
+              s"$RESET${GRAY}コスト",
+              s"$RESET$RED$BOLD${playerData.toggleVotingFairy * 2}投票pt",
+              "",
+              s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
+            )
+          )
+          .build(),
+        LeftClickButtonEffect {
+          SequentialEffect {
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+            UnfocusedEffect {
+              playerData.toggleVotingFairy = playerData.toggleVotingFairy % 4 + 1
+            }
+          }
+        }
+      )
+    }
 
   }
 }
