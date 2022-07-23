@@ -27,13 +27,13 @@ object System {
       override implicit val api: SharedInventoryAPI[F, Player] =
         new SharedInventoryAPI[F, Player] {
           override def save(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit] =
-            ContextCoercion(persistence.save(targetUuid, inventoryContents))
+            persistence.save(targetUuid, inventoryContents)
 
           override def clear(targetUuid: UUID): F[Unit] =
-            ContextCoercion(persistence.clear(targetUuid))
+            persistence.clear(targetUuid)
 
           override def load(targetUuid: UUID): F[Option[InventoryContents]] =
-            ContextCoercion(persistence.load(targetUuid))
+            persistence.load(targetUuid)
 
           override def sharedFlag(player: Player): F[SharedFlag] =
             load(player.getUniqueId)
