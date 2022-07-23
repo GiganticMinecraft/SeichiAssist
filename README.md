@@ -64,8 +64,8 @@ DockerマシンのIPアドレス(Linux等なら`localhost`)を`DOCKER_IP`とし�
 
 ## DBの準備
 初回起動後、DBが作成されますが、ガチャ景品およびMineStackに格納可能なガチャ景品のデータがありません。その為、以下SQLdumpをインポートしてください。
-- [gachadata.sql](https://redmine.seichi.click/attachments/download/895/gachadata.sql) -> import to "gachadata" table.
-- [msgachadata.sql](https://redmine.seichi.click/attachments/download/894/msgachadata.sql) -> import to "msgachadata" table.
+- [gachadata.sql](https://redmine.seichi.click/attachments/download/990/gachadata.sql) -> import to "gachadata" table.
+- [msgachadata.sql](https://redmine.seichi.click/attachments/download/991/msgachadata.sql) -> import to "msgachadata" table.
 
 ### どうしてもローカルにJavaとかsbtを入れたくない人のための救済策
 
