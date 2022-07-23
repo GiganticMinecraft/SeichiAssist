@@ -36,10 +36,8 @@ object System {
             ContextCoercion(persistence.load(targetUuid))
 
           override def sharedFlag(player: Player): F[SharedFlag] =
-            load(player.getUniqueId).map {
-              case Some(_) => SharedFlag.Sharing
-              case None    => SharedFlag.NotSharing
-            }
+            load(player.getUniqueId)
+              .map(_.fold[SharedFlag](SharedFlag.NotSharing)(_ => SharedFlag.Sharing))
 
         }
       override val commands: Map[String, TabExecutor] = {
