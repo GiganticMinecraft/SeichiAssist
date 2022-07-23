@@ -1,10 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.sharedinventory.infrastracture
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.{
-  SharedFlag,
-  SharedInventoryPersistence
-}
+import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedInventoryPersistence
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.util.ItemListSerialization
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
@@ -26,11 +23,28 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
   }
 
   /**
-   * [[InventoryContents]]をセーブします。
-   *
-   * @param inventoryContents セーブ対象の[[InventoryContents]]
+   * セーブされている[[InventoryContents]]を読みます。
    */
-  def save(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit] =
+  override def read(targetUuid: UUID): F[Option[InventoryContents]] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      val serializedInventoryOpt =
+        sql"SELECT shareinv FROM playerdata WHERE uuid = '${targetUuid.toString}'"
+          .map(rs => rs.string("shareinv"))
+          .single()
+          .apply()
+
+      serializedInventoryOpt.map(serializedInventory =>
+        InventoryContents.ofNonEmpty(
+          ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
+        )
+      )
+    }
+  }
+
+  /**
+   * [[InventoryContents]]を書き込みます。
+   */
+  override def write(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         val serializedInventory =
@@ -40,25 +54,4 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
           .apply()
       }
     }
-
-  /**
-   * セーブされている[[InventoryContents]]をロードします。
-   */
-  override def load(targetUuid: UUID): F[Option[InventoryContents]] =
-    Sync[F].delay {
-      DB.readOnly { implicit session =>
-        val serializedInventoryOpt =
-          sql"SELECT shareinv FROM playerdata WHERE uuid = '${targetUuid.toString}'"
-            .map(rs => rs.string("shareinv"))
-            .single()
-            .apply()
-
-        serializedInventoryOpt.map(serializedInventory =>
-          InventoryContents.ofNonEmpty(
-            ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
-          )
-        )
-      }
-    }
-
 }

@@ -41,13 +41,13 @@ object System {
         override implicit val api: SharedInventoryAPI[G, Player] =
           new SharedInventoryAPI[G, Player] {
             override def save(targetUuid: UUID, inventoryContents: InventoryContents): G[Unit] =
-              ContextCoercion(persistence.save(targetUuid, inventoryContents))
+              ContextCoercion(persistence.write(targetUuid, inventoryContents))
 
             override def clear(targetUuid: UUID): G[Unit] =
               ContextCoercion(persistence.clear(targetUuid))
 
             override def load(targetUuid: UUID): G[Option[InventoryContents]] =
-              ContextCoercion(persistence.load(targetUuid))
+              ContextCoercion(persistence.read(targetUuid))
 
             override val inventoryContentsRepository
               : KeyedDataRepository[Player, Ref[G, InventoryContents]] =
