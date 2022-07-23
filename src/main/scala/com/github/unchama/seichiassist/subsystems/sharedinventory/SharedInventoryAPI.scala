@@ -34,14 +34,7 @@ trait SharedInventoryReadAPI[F[_], Player] {
     Ref[F, InventoryContents]
   ]
 
-  import cats.implicits._
-
-  final def sharedFlag(player: Player): F[SharedFlag] = for {
-    inventoryContents <- inventoryContentsRepository(player).get
-  } yield {
-    if (inventoryContents == InventoryContents.initial) SharedFlag.Sharing
-    else SharedFlag.NotSharing
-  }
+  def sharedFlag(player: Player): F[SharedFlag]
 
   def load(targetUuid: UUID): F[Option[InventoryContents]]
 

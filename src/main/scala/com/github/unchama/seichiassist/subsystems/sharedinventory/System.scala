@@ -55,6 +55,13 @@ object System {
                 .repository
                 .map(value => value.sharedFlag.mapK(ContextCoercion.asFunctionK))
 
+            override def sharedFlag(player: Player): G[SharedFlag] = for {
+              inventoryContents <- inventoryContentsRepository(player).get
+            } yield {
+              if (inventoryContents == InventoryContents.initial) SharedFlag.Sharing
+              else SharedFlag.NotSharing
+            }
+
             override def setSharing(player: Player): G[Unit] =
               ContextCoercion(
                 sharedFlagRepositoryControls
