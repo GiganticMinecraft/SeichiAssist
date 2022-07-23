@@ -24,9 +24,9 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
   }
 
   /**
-   * セーブされている[[InventoryContents]]を読みます。
+   * セーブされている[[InventoryContents]]を読み込みます
    */
-  override def read(targetUuid: UUID): F[Option[InventoryContents]] = Sync[F].delay {
+  override def load(targetUuid: UUID): F[Option[InventoryContents]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val serializedInventoryOpt =
         sql"SELECT shareinv FROM playerdata WHERE uuid = ${targetUuid.toString}"
@@ -47,9 +47,9 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
   }
 
   /**
-   * [[InventoryContents]]を書き込みます。
+   * [[InventoryContents]]をセーブします。
    */
-  override def write(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit] =
+  override def save(targetUuid: UUID, inventoryContents: InventoryContents): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
         val serializedInventory =
