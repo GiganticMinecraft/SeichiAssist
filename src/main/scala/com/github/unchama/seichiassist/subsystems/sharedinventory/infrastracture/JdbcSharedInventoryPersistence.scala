@@ -40,7 +40,7 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
             .fromList(
               ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
             )
-            .getOrElse(None)
+            .get
         )
       )
     }
