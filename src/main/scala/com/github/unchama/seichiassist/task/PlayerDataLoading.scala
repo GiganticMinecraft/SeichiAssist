@@ -226,11 +226,6 @@ object PlayerDataLoading {
 
         playerData.totalexp = rs.getInt("totalexp")
 
-        playerData.contentsPresentInSharedInventory = {
-          val serializedInventory = rs.getString("shareinv")
-          serializedInventory != null && serializedInventory != ""
-        }
-
         // 実績、二つ名の情報
         playerData.p_vote_forT = rs.getInt("p_vote")
         playerData.giveachvNo = rs.getInt("giveachvNo")
