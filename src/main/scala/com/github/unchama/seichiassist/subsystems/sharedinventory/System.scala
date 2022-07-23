@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.sharedinventory
 
 import cats.effect.ConcurrentEffect
-import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.sharedinventory.bukkit.command.ShareInventoryCommand
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedFlag
