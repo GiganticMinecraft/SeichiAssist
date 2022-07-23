@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.sharedinventory.infrastracture
 
+import cats.data.NonEmptyList
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedInventoryPersistence
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
@@ -16,7 +17,7 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
    */
   override def clear(targetUuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET shareinv = NULL WHERE uuid = '${targetUuid.toString}'"
+      sql"UPDATE playerdata SET shareinv = NULL WHERE uuid = ${targetUuid.toString}"
         .execute()
         .apply()
     }
@@ -28,14 +29,18 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
   override def read(targetUuid: UUID): F[Option[InventoryContents]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val serializedInventoryOpt =
-        sql"SELECT shareinv FROM playerdata WHERE uuid = '${targetUuid.toString}'"
+        sql"SELECT shareinv FROM playerdata WHERE uuid = ${targetUuid.toString}"
           .map(rs => rs.string("shareinv"))
           .single()
           .apply()
 
       serializedInventoryOpt.map(serializedInventory =>
         InventoryContents.ofNonEmpty(
-          ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
+          NonEmptyList
+            .fromList(
+              ItemListSerialization.deserializeFromBase64(serializedInventory).asScala.toList
+            )
+            .getOrElse(None)
         )
       )
     }
@@ -49,7 +54,7 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
       DB.localTx { implicit session =>
         val serializedInventory =
           ItemListSerialization.serializeToBase64(inventoryContents.inventoryContents.asJava)
-        sql"UPDATE playerdata SET shareinv = $serializedInventory WHERE uuid = '${targetUuid.toString}'"
+        sql"UPDATE playerdata SET shareinv = $serializedInventory WHERE uuid = ${targetUuid.toString}"
           .execute()
           .apply()
       }
