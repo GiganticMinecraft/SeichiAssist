@@ -39,8 +39,8 @@ object System {
         override def chainVoteDayNumber(uuid: UUID): F[ChainVoteDayNumber] =
           votePersistence.chainVoteDays(uuid)
 
-        override def increaseEffectPointsByTen(playerName: PlayerName): F[Unit] =
-          votePersistence.increaseEffectPointsByTen(playerName)
+        override def increaseEffectPointsByTen(uuid: UUID): F[Unit] =
+          votePersistence.increaseEffectPointsByTen(uuid)
 
         override def effectPoints(uuid: UUID): F[EffectPoint] =
           votePersistence.effectPoints(uuid)
@@ -50,6 +50,13 @@ object System {
 
         override def receivedVoteBenefits(uuid: UUID): F[VoteBenefit] =
           votePersistence.receivedVoteBenefits(uuid)
+
+        import cats.implicits._
+
+        override def notReceivedVoteBenefits(uuid: UUID): F[VoteBenefit] = for {
+          voteCounter <- voteCounter(uuid)
+          receivedVote <- receivedVoteBenefits(uuid)
+        } yield voteCounter.value - receivedVote.value
       }
 
       override val commands: Map[String, TabExecutor] = Map(

@@ -71,9 +71,9 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
   /**
    * effectPointを10増加させる作用
    */
-  override def increaseEffectPointsByTen(playerName: PlayerName): F[Unit] = Sync[F].delay {
+  override def increaseEffectPointsByTen(uuid: UUID): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET effectpoint = 10 WHERE name = ${playerName.name}"
+      sql"UPDATE playerdata SET effectpoint = 10 WHERE uuid = ${uuid.toString}"
         .execute()
         .apply()
     }

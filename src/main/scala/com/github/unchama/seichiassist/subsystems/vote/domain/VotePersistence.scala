@@ -27,7 +27,7 @@ trait VotePersistence[F[_]] {
   /**
    * effectPointを10増加させる作用
    */
-  def increaseEffectPointsByTen(playerName: PlayerName): F[Unit]
+  def increaseEffectPointsByTen(uuid: UUID): F[Unit]
 
   /**
    * effectPointを返す作用

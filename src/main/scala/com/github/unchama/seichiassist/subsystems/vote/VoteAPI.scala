@@ -1,12 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote
 
-import com.github.unchama.seichiassist.subsystems.vote.domain.{
-  ChainVoteDayNumber,
-  EffectPoint,
-  PlayerName,
-  VoteBenefit,
-  VoteCounter
-}
+import com.github.unchama.seichiassist.subsystems.vote.domain._
 
 import java.util.UUID
 
@@ -25,7 +19,7 @@ trait VoteWriteAPI[F[_]] {
   /**
    * effectPointを10増加させる作用
    */
-  def increaseEffectPointsByTen(playerName: PlayerName): F[Unit]
+  def increaseEffectPointsByTen(uuid: UUID): F[Unit]
 
   /**
    * 投票特典を受け取った回数を増加させる作用
@@ -61,6 +55,11 @@ trait VoteReadAPI[F[_]] {
    * 投票特典を受け取った回数を返す作用
    */
   def receivedVoteBenefits(uuid: UUID): F[VoteBenefit]
+
+  /**
+   * 投票特典を受け取っていない回数を返す作用
+   */
+  def notReceivedVoteBenefits(uuid: UUID): F[VoteBenefit]
 
 }
 
