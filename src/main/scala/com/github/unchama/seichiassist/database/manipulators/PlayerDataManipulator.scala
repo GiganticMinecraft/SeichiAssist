@@ -123,18 +123,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
     numberToGrant
   }
 
-  /**
-   * 投票ポイントをインクリメントするメソッド。
-   *
-   * @param playerName
-   *   プレーヤー名
-   */
-  def incrementVotePoint(playerName: String): Unit = {
-    DB.localTx { implicit session =>
-      sql"update playerdata set p_vote = p_vote + 1 where name = $playerName".update().apply()
-    }
-  }
-
   // 指定されたプレイヤーにガチャ券を送信する
   def addPlayerBug(playerName: String, num: Int): IO[ResponseEffectOrResult[Player, Unit]] = {
     val executeQuery = IO {
@@ -151,41 +139,6 @@ class PlayerDataManipulator(private val gateway: DatabaseGateway) {
       EitherT.right(executeQuery).value
     )
   }
-
-  def addChainVote(name: String): Unit =
-    DB.localTx { implicit session =>
-      val calendar = Calendar.getInstance()
-      val dateFormat = new SimpleDateFormat("yyyy/MM/dd")
-
-      val lastVote =
-        sql"SELECT lastvote FROM playerdata WHERE name = $name"
-          .map(_.string("lastvote"))
-          .single()
-          .apply()
-          .getOrElse(dateFormat.format(calendar.getTime))
-
-      sql"UPDATE playerdata SET lastvote = ${dateFormat.format(calendar.getTime)} WHERE name = $name"
-        .update()
-        .apply()
-
-      val TodayDate = dateFormat.parse(dateFormat.format(calendar.getTime))
-      val LastDate = dateFormat.parse(lastVote)
-      val TodayLong = TodayDate.getTime
-      val LastLong = LastDate.getTime
-
-      val dateDiff = (TodayLong - LastLong) / (1000 * 60 * 60 * 24)
-      val shouldIncrementChainVote = dateDiff <= 4L
-
-      val newCount = if (shouldIncrementChainVote) {
-        sql"""select chainvote from playerdata where name = $name"""
-          .map(_.int("chainvote"))
-          .first()
-          .apply()
-          .get + 1
-      } else 1
-
-      sql"""update playerdata set chainvote = $newCount where name = $name"""
-    }
 
   // anniversary変更
   def setAnniversary(anniversary: Boolean, uuid: Option[UUID]): Boolean = {
