@@ -56,7 +56,6 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       // 取り出したアイテムをセットする
       playerInventory.setContents(inventoryContents.toArray)
 
-      sharedInventoryAPI.setNotSharing(player)
       Bukkit.getLogger.info(s"${player.getName}がアイテム取り出しを実施(DB)書き換え成功")
       MessageEffect(s"${GREEN}アイテムを取得しました。手持ちにあったアイテムはドロップしました。")
     }
@@ -76,7 +75,6 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       _ <- sharedInventoryAPI.save(uuid, InventoryContents(inventoryContents))
     } yield {
       playerInventory.clear()
-      sharedInventoryAPI.setSharing(player)
 
       // 木の棒付与
       player.performCommand("/stick")

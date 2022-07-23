@@ -13,10 +13,6 @@ trait SharedInventoryWriteAPI[F[_], Player] {
 
   def clear(targetUuid: UUID): F[Unit]
 
-  def setSharing(player: Player): F[Unit]
-
-  def setNotSharing(player: Player): F[Unit]
-
 }
 
 object SharedInventoryWriteAPI {
@@ -34,6 +30,10 @@ trait SharedInventoryReadAPI[F[_], Player] {
     Ref[F, InventoryContents]
   ]
 
+  /**
+   * 現在のインベントリ格納状況を確認します。
+   * NOTE: このFlagは実際の格納状況に依存します。
+   */
   def sharedFlag(player: Player): F[SharedFlag]
 
   def load(targetUuid: UUID): F[Option[InventoryContents]]

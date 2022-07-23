@@ -61,16 +61,4 @@ class JdbcSharedInventoryPersistence[F[_]: Sync] extends SharedInventoryPersiste
       }
     }
 
-//  import cats.implicits._
-//
-//  override def read(uuid: UUID): F[Option[SharedFlag]] = for {
-//    loadedContents <- load(uuid)
-//  } yield {
-//    loadedContents match {
-//      case Some(_) => Some(SharedFlag.Sharing)
-//      case None    => Some(SharedFlag.NotSharing)
-//    }
-//  }
-//
-//  override def write(key: UUID, value: SharedFlag): F[Unit] = Sync[F].pure(())
 }

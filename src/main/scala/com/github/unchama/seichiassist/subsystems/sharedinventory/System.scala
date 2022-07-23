@@ -62,22 +62,6 @@ object System {
               else SharedFlag.NotSharing
             }
 
-            override def setSharing(player: Player): G[Unit] =
-              ContextCoercion(
-                sharedFlagRepositoryControls
-                  .repository(player)
-                  .sharedFlag
-                  .set(SharedFlag.Sharing)
-              )
-
-            override def setNotSharing(player: Player): G[Unit] =
-              ContextCoercion(
-                sharedFlagRepositoryControls
-                  .repository(player)
-                  .sharedFlag
-                  .set(SharedFlag.NotSharing)
-              )
-
           }
 
         override val managedRepositoryControls: Seq[BukkitRepositoryControls[G, _]] =
