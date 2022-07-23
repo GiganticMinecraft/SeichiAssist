@@ -11,9 +11,13 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
-import com.github.unchama.targetedeffect.{DeferredEffect, SequentialEffect, TargetedEffect}
+import com.github.unchama.seichiassist.util.SendSoundEffect
+import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.player.FocusedSoundEffect
+import com.github.unchama.targetedeffect.player.PlayerEffects.closeInventoryEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import org.bukkit.ChatColor._
-import org.bukkit.Material
+import org.bukkit.{Material, Sound}
 import org.bukkit.entity.Player
 
 import java.util.UUID
@@ -61,17 +65,51 @@ object VoteMenu extends Menu {
                 s"$RESET${AQUA}所有pt: ${effectPoint.value}"
               )
             )
+            .enchanted()
             .build(),
           LeftClickButtonEffect {
             implicit val ioCE: ConcurrentEffect[IO] =
               IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
-            TargetedEffect.delay { player =>
-              BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunAsyncAndForget()
-            }
+            SequentialEffect(
+              TargetedEffect.delay { player =>
+                BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunAsyncAndForget()
+              },
+              MessageEffect(
+                s"${GOLD}投票特典$WHITE(${voteCounter.value - benefits.value}票分)を受け取りました"
+              )
+            )
           }
         )
       }
     }.unsafeRunSync()
+
+    val showVoteURL: Button = Button(
+      new IconItemStackBuilder(Material.BOOK_AND_QUILL)
+        .title(s"$YELLOW$UNDERLINE${BOLD}投票ページにアクセス")
+        .lore(
+          List(
+            s"$RESET${GREEN}投票すると様々な特典が！",
+            s"$RESET${GREEN}1日1回投票できます",
+            s"$RESET${DARK_GRAY}クリックするとチャット欄に",
+            s"$RESET${DARK_GRAY}URLが表示されますので",
+            s"$RESET${DARK_GRAY}Tキーを押してから",
+            s"$RESET${DARK_GRAY}そのURLをクリックしてください"
+          )
+        )
+        .build(),
+      LeftClickButtonEffect {
+        SequentialEffect {
+          MessageEffect(
+            List(
+              s"$RED${UNDERLINE}https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote",
+              s"$RED${UNDERLINE}https://monocraft.net/servers/Cf3BffNIRMERDNbAfWQm"
+            )
+          )
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+          closeInventoryEffect
+        }
+      }
+    )
 
   }
 }
