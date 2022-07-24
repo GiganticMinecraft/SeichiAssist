@@ -96,6 +96,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
   ): F[Either[TargetedEffect[CommandSender], Unit]] = Sync[F].delay {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     // 連打による負荷防止
+    // TODO このフラグをそのうちsubSystemにしたい
     if (!playerData.shareinvcooldownflag)
       Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
     else {
