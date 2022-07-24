@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyPlaySound,
-  FairySummonCost
+  FairySummonState
 }
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -120,16 +120,16 @@ object VoteMenu extends Menu {
     )
 
     def fairySummonTimeToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
-      val cost = fairyAPI.fairySummonCost(uuid).unsafeRunSync()
+      val summonState = fairyAPI.fairySummonState(uuid).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.WATCH)
           .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
           .lore(
             List(
-              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(cost.value)}",
+              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(summonState.value)}",
               "",
               s"$RESET${GRAY}コスト",
-              s"$RESET$RED$BOLD${cost.value * 2}投票pt",
+              s"$RESET$RED$BOLD${summonState.value * 2}投票pt",
               "",
               s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
             )
@@ -139,7 +139,7 @@ object VoteMenu extends Menu {
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect(
-              fairyAPI.updateFairySummonCost(uuid, FairySummonCost(cost.value % 4 + 1))
+              fairyAPI.updateFairySummonState(uuid, FairySummonState(summonState.value % 4 + 1))
             )
           )
         }
@@ -193,6 +193,14 @@ object VoteMenu extends Menu {
             }
           )
         }
+      )
+    }
+
+    def fairySummonButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+      Button(
+        new IconItemStackBuilder(Material.GHAST_TEAR)
+          .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")
+          .lore(List(s"$RESET$GRAY${}"))
       )
     }
 

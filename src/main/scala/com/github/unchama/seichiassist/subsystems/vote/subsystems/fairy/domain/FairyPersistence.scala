@@ -15,13 +15,13 @@ trait FairyPersistence[F[_]] {
   def appleOpenState(uuid: UUID): F[AppleOpenState]
 
   /**
-   * 妖精を召喚するコストを変更します。
+   * 妖精を召喚する状態を変更します。
    */
-  def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit]
+  def updateFairySummonState(uuid: UUID, fairySummonCost: FairySummonState): F[Unit]
 
   /**
-   * 妖精を召喚するコストを取得します
+   * 妖精を召喚する状態を取得します
    */
-  def fairySummonCost(uuid: UUID): F[FairySummonCost]
+  def fairySummonState(uuid: UUID): F[FairySummonState]
 
 }

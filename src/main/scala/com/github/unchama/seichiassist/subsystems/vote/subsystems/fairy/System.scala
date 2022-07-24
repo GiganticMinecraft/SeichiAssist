@@ -10,7 +10,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyLore,
   FairyPlaySound,
-  FairySummonCost
+  FairySummonState
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 
@@ -38,14 +38,14 @@ object System {
           state <- appleOpenState(uuid)
         } yield FairyLoreTable.loreTable(state.amount)
 
-        override def updateFairySummonCost(
+        override def updateFairySummonState(
           uuid: UUID,
-          fairySummonCost: FairySummonCost
+          fairySummonCost: FairySummonState
         ): F[Unit] =
-          persistence.updateFairySummonCost(uuid, fairySummonCost)
+          persistence.updateFairySummonState(uuid, fairySummonCost)
 
-        override def fairySummonCost(uuid: UUID): F[FairySummonCost] =
-          persistence.fairySummonCost(uuid)
+        override def fairySummonState(uuid: UUID): F[FairySummonState] =
+          persistence.fairySummonState(uuid)
 
         override protected val fairyPlaySoundRepository
           : KeyedDataRepository[UUID, Ref[F, FairyPlaySound]] =
