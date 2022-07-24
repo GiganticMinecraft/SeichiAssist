@@ -6,7 +6,8 @@ import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
-  FairyLore
+  FairyLore,
+  FairySummonCost
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 
@@ -35,6 +36,15 @@ object System {
         } yield {
           FairyLoreTable.loreTable(state.amount)
         }
+
+        override def updateFairySummonCost(
+          uuid: UUID,
+          fairySummonCost: FairySummonCost
+        ): F[Unit] =
+          persistence.updateFairySummonCost(uuid, fairySummonCost)
+
+        override def fairySummonCost(uuid: UUID): F[FairySummonCost] =
+          persistence.fairySummonCost(uuid)
       }
     }
   }

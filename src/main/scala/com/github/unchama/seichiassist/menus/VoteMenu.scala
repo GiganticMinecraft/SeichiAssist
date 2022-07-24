@@ -13,7 +13,10 @@ import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.AppleOpenState
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
+  AppleOpenState,
+  FairySummonCost
+}
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -115,17 +118,17 @@ object VoteMenu extends Menu {
       }
     )
 
-    def fairySummonTimeToggleButton(uuid: UUID): Button = {
-      val playerData = SeichiAssist.playermap(uuid)
+    def fairySummonTimeToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+      val cost = fairyAPI.fairySummonCost(uuid).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.WATCH)
           .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
           .lore(
             List(
-              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(playerData.toggleVotingFairy)}",
+              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(cost.value)}",
               "",
               s"$RESET${GRAY}コスト",
-              s"$RESET$RED$BOLD${playerData.toggleVotingFairy * 2}投票pt",
+              s"$RESET$RED$BOLD${cost.value * 2}投票pt",
               "",
               s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
             )
@@ -134,7 +137,9 @@ object VoteMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
-            UnfocusedEffect(playerData.toggleVotingFairy = playerData.toggleVotingFairy % 4 + 1)
+            UnfocusedEffect(
+              fairyAPI.updateFairySummonCost(uuid, FairySummonCost(cost.value % 4 + 1))
+            )
           )
         }
       )

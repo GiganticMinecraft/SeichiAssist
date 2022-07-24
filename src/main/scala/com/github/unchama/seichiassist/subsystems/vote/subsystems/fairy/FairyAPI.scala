@@ -2,7 +2,8 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
-  FairyLore
+  FairyLore,
+  FairySummonCost
 }
 
 import java.util.UUID
@@ -18,6 +19,7 @@ trait FairyWriteAPI[F[_]] {
   /**
    * 妖精を召喚するコストを変更します。
    */
+  def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit]
 
 }
 
@@ -33,6 +35,11 @@ trait FairyReadAPI[F[_]] {
    * 妖精にあげるりんごの開放状態を取得する
    */
   def appleOpenState(uuid: UUID): F[AppleOpenState]
+
+  /**
+   * 妖精を召喚するコストを取得します
+   */
+  def fairySummonCost(uuid: UUID): F[FairySummonCost]
 
   /**
    * `FairyLoreTable`からLoreを取得する

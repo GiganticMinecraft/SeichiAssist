@@ -3,7 +3,8 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrast
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
-  FairyPersistence
+  FairyPersistence,
+  FairySummonCost
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
@@ -37,4 +38,30 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       }
       AppleOpenState.values.find(_.amount == appleAmount).get
     }
+
+  /**
+   * 妖精を召喚するコストを変更します。
+   */
+  override def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        sql"UPDATE playerdata SET toggleVotingFairy = ${fairySummonCost.value} WHERE uuid = ${uuid.toString}"
+          .execute()
+          .apply()
+      }
+    }
+
+  /**
+   * `FairyLoreTable`からLoreを取得する
+   */
+  override def fairySummonCost(uuid: UUID): F[FairySummonCost] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      val cost = sql"SELECT toggleVotingFairy FROM playerdata WHERE uuid = ${uuid.toString}"
+        .map(_.int("toggleVotingFairy"))
+        .single()
+        .apply()
+        .get
+      FairySummonCost(cost)
+    }
+  }
 }
