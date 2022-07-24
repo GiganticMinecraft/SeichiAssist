@@ -15,6 +15,10 @@ trait FairyWriteAPI[F[_]] {
    */
   def updateAppleOpenState(uuid: UUID, appleOpenState: AppleOpenState): F[Unit]
 
+  /**
+   * 妖精を召喚するコストを変更します。
+   */
+
 }
 
 object FairyWriteAPI {
