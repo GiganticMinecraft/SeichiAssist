@@ -1,3 +1,11 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 
-case class FairyPlaySound(isPlaySound: Boolean)
+sealed trait FairyPlaySound
+
+object FairyPlaySound {
+
+  case object play extends FairyPlaySound
+
+  case object notPlay extends FairyPlaySound
+
+}

@@ -15,6 +15,7 @@ import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitRece
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
+  FairyPlaySound,
   FairySummonCost
 }
 import com.github.unchama.seichiassist.task.VotingFairyTask
@@ -170,20 +171,28 @@ object VoteMenu extends Menu {
       )
 
     def fairyPlaySoundToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
-      val playSoundOnLore = List(
-        s"$RESET${GREEN}現在音が鳴る設定になっています。",
-        s"$RESET${DARK_GRAY}※この機能はデフォルトでONです。",
-        s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
-      )
-      val playSoundOffLore = List(
-        s"$RESET${GREEN}現在音が鳴らない設定になっています。",
-        s"$RESET${DARK_GRAY}※この機能はデフォルトでONです。",
-        s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
-      )
+      val description =
+        List(s"$RESET${DARK_GRAY}※この機能はデフォルトでONです。", s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え")
+      val playSoundOnLore = List(s"$RESET${GREEN}現在音が鳴る設定になっています。") ++ description
+      val playSoundOffLore = List(s"$RESET${GREEN}現在音が鳴らない設定になっています。") ++ description
 
       Button(
-        new IconItemStackBuilder(Material.JUKEBOX).title(s"$GOLD$UNDERLINE${BOLD}マナ妖精の音トグル")
-          .lore(if (fairyAPI))
+        new IconItemStackBuilder(Material.JUKEBOX)
+          .title(s"$GOLD$UNDERLINE${BOLD}マナ妖精の音トグル")
+          .lore(
+            if (fairyAPI.fairyPlaySound(uuid).unsafeRunSync() == FairyPlaySound.play)
+              playSoundOnLore
+            else playSoundOffLore
+          )
+          .build(),
+        LeftClickButtonEffect {
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            UnfocusedEffect {
+              fairyAPI.fairyPlaySoundToggle(uuid).unsafeRunAsyncAndForget()
+            }
+          )
+        }
       )
     }
 

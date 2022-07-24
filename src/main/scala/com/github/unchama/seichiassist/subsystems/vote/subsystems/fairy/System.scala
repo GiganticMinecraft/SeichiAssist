@@ -1,12 +1,15 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.effect.ConcurrentEffect
+import cats.effect.concurrent.Ref
+import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyLore,
+  FairyPlaySound,
   FairySummonCost
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
@@ -33,9 +36,7 @@ object System {
 
         override def getFairyLore(uuid: UUID): F[FairyLore] = for {
           state <- appleOpenState(uuid)
-        } yield {
-          FairyLoreTable.loreTable(state.amount)
-        }
+        } yield FairyLoreTable.loreTable(state.amount)
 
         override def updateFairySummonCost(
           uuid: UUID,
@@ -45,6 +46,22 @@ object System {
 
         override def fairySummonCost(uuid: UUID): F[FairySummonCost] =
           persistence.fairySummonCost(uuid)
+
+        override protected val fairyPlaySoundRepository
+          : KeyedDataRepository[UUID, Ref[F, FairyPlaySound]] =
+          KeyedDataRepository.unlift[UUID, Ref[F, FairyPlaySound]](_ =>
+            Some(Ref.unsafe(FairyPlaySound.play))
+          )
+
+        override def fairyPlaySound(uuid: UUID): F[FairyPlaySound] = fairyPlaySoundRepository(
+          uuid
+        ).get
+
+        override def fairyPlaySoundToggle(uuid: UUID): F[Unit] = for {
+          nowSetting <- fairyPlaySound(uuid)
+        } yield fairyPlaySoundRepository(uuid).set(
+          if (nowSetting == FairyPlaySound.play) FairyPlaySound.notPlay else FairyPlaySound.play
+        )
       }
     }
   }
