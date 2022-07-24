@@ -622,9 +622,9 @@ object MineStackObjectList {
 
   val allMineStackGroups: IO[List[MineStackObjectGroup]] = for {
     gachaPrizes <- gachaPrizesObjects.get
+    leftGachaPrizes = gachaPrizes.flatMap(leftElems(_))
   } yield {
-    println(gachaPrizes.toString())
-    exceptGachaItemMineStackGroups ++ gachaPrizes.flatMap(a => leftElems(a))
+    exceptGachaItemMineStackGroups ++ leftGachaPrizes
   }
 
   def getBuiltinGachaPrizes: List[MineStackObject] = {
