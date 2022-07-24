@@ -4,13 +4,15 @@ import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, IO, Sync}
 import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.commands.contextual.builder.BuilderTemplates.playerCommandBuilder
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.SharedFlag
 import com.github.unchama.seichiassist.subsystems.sharedinventory.domain.bukkit.InventoryContents
 import com.github.unchama.seichiassist.task.CoolDownTask
 import com.github.unchama.seichiassist.util.InventoryOperations
-import com.github.unchama.targetedeffect.TargetedEffect
+import com.github.unchama.targetedeffect.{SequentialEffect, TargetedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
+import com.github.unchama.targetedeffect.player.CommandEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.{CommandSender, TabExecutor}
 import org.bukkit.entity.Player
@@ -68,7 +70,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     val playerInventory = player.getInventory
     val inventoryContents = playerInventory.getContents.toList
 
-    if (inventoryContents.isEmpty)
+    if (inventoryContents.forall(_ == null))
       return IO.pure(MessageEffect(s"$RESET$RED${BOLD}収納アイテムが存在しません。"))
 
     val eff = for {
@@ -76,11 +78,11 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
     } yield {
       playerInventory.clear()
 
-      // 木の棒付与
-      player.performCommand("/stick")
-
       Bukkit.getLogger.info(s"${player.getName}がアイテム収納を実施(SQL送信成功)")
-      MessageEffect(s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。")
+      SequentialEffect(
+        CommandEffect("stick"),
+        MessageEffect(s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。")
+      )
     }
 
     eff.toIO
@@ -94,6 +96,7 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
   ): F[Either[TargetedEffect[CommandSender], Unit]] = Sync[F].delay {
     val playerData = SeichiAssist.playermap(player.getUniqueId)
     // 連打による負荷防止
+    // TODO このフラグをそのうちsubSystemにしたい
     if (!playerData.shareinvcooldownflag)
       Left(MessageEffect(s"${RED}しばらく待ってからやり直してください"))
     else {
