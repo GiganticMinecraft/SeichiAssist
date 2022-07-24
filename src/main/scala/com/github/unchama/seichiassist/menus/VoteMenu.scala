@@ -99,16 +99,16 @@ object VoteMenu extends Menu {
         )
         .build(),
       LeftClickButtonEffect {
-        SequentialEffect {
+        SequentialEffect(
           MessageEffect(
             List(
               s"$RED${UNDERLINE}https://minecraft.jp/servers/54d3529e4ddda180780041a7/vote",
               s"$RED${UNDERLINE}https://monocraft.net/servers/Cf3BffNIRMERDNbAfWQm"
             )
-          )
-          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+          ),
+          FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
           closeInventoryEffect
-        }
+        )
       }
     )
 
@@ -129,12 +129,10 @@ object VoteMenu extends Menu {
           )
           .build(),
         LeftClickButtonEffect {
-          SequentialEffect {
-            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
-            UnfocusedEffect {
-              playerData.toggleVotingFairy = playerData.toggleVotingFairy % 4 + 1
-            }
-          }
+          SequentialEffect(
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
+            UnfocusedEffect(playerData.toggleVotingFairy = playerData.toggleVotingFairy % 4 + 1)
+          )
         }
       )
     }
