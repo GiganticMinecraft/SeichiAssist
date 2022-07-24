@@ -15,13 +15,33 @@ trait FairyPersistence[F[_]] {
   def appleOpenState(uuid: UUID): F[AppleOpenState]
 
   /**
-   * 妖精を召喚する状態を変更します。
+   * 妖精が有効な時間の状態
    */
-  def updateFairySummonState(uuid: UUID, fairySummonCost: FairySummonState): F[Unit]
+  def updateFairyValidTimeState(uuid: UUID, validTimeState: FairyValidTimeState): F[Unit]
 
   /**
-   * 妖精を召喚する状態を取得します
+   * 妖精が有効な時間の状態を取得します
    */
-  def fairySummonState(uuid: UUID): F[FairySummonState]
+  def fairySummonState(uuid: UUID): F[FairyValidTimeState]
+
+  /**
+   * 妖精が召喚されているかを更新します
+   */
+  def updateFairyUsingState(uuid: UUID, fairyUsingState: FairyUsingState): F[Unit]
+
+  /**
+   * 妖精が召喚されているかを取得します
+   */
+  def fairyUsingState(uuid: UUID): F[FairyUsingState]
+
+  /**
+   * 妖精が回復するマナの量を変更する
+   */
+  def updateFairyRecoveryMana(uuid: UUID, fairyRecoveryMana: FairyRecoveryMana): F[Unit]
+
+  /**
+   * 妖精が回復するマナの量を取得する
+   */
+  def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana]
 
 }

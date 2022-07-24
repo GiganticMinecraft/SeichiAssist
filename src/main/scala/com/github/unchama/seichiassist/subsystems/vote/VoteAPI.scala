@@ -17,6 +17,11 @@ trait VoteWriteAPI[F[_]] {
   def updateChainVote(playerName: PlayerName): F[Unit]
 
   /**
+   * effectPointを減少させる作用
+   */
+  def decreaseEffectPoint(uuid: UUID, effectPoint: EffectPoint): F[Unit]
+
+  /**
    * effectPointを10増加させる作用
    */
   def increaseEffectPointsByTen(uuid: UUID): F[Unit]

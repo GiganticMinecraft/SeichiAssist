@@ -16,7 +16,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyPlaySound,
-  FairySummonState
+  FairyValidTimeState
 }
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -120,16 +120,16 @@ object VoteMenu extends Menu {
     )
 
     def fairySummonTimeToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
-      val summonState = fairyAPI.fairySummonState(uuid).unsafeRunSync()
+      val validTimeState = fairyAPI.fairyValidTimeState(uuid).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.WATCH)
           .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
           .lore(
             List(
-              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(summonState.value)}",
+              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(validTimeState.value)}",
               "",
               s"$RESET${GRAY}コスト",
-              s"$RESET$RED$BOLD${summonState.value * 2}投票pt",
+              s"$RESET$RED$BOLD${validTimeState.value * 2}投票pt",
               "",
               s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
             )
@@ -139,7 +139,8 @@ object VoteMenu extends Menu {
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect(
-              fairyAPI.updateFairySummonState(uuid, FairySummonState(summonState.value % 4 + 1))
+              fairyAPI
+                .updateFairySummonState(uuid, FairyValidTimeState(validTimeState.value % 4 + 1))
             )
           )
         }
@@ -197,10 +198,21 @@ object VoteMenu extends Menu {
     }
 
     def fairySummonButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+      val fairySummonState = fairyAPI.fairyValidTimeState(uuid).unsafeRunSync().value
       Button(
         new IconItemStackBuilder(Material.GHAST_TEAR)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")
-          .lore(List(s"$RESET$GRAY${}"))
+          .lore(
+            List(
+              s"$RESET$GRAY${fairySummonState * 2}投票ptを消費して",
+              s"$RESET${GRAY}マナ妖精を呼びます",
+              s"$RESET${GRAY}時間: ${VotingFairyTask.dispToggleVFTime(fairySummonState)}",
+              s"$RESET${DARK_RED}Lv.10以上で開放"
+            )
+          )
+          .enchanted()
+          .build(),
+        LeftClickButtonEffect {}
       )
     }
 

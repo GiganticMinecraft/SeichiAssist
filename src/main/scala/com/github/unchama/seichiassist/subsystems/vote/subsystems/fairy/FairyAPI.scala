@@ -6,7 +6,9 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyLore,
   FairyPlaySound,
-  FairySummonState
+  FairyRecoveryMana,
+  FairyUsingState,
+  FairyValidTimeState
 }
 
 import java.util.UUID
@@ -20,19 +22,24 @@ trait FairyWriteAPI[F[_]] {
   def updateAppleOpenState(uuid: UUID, appleOpenState: AppleOpenState): F[Unit]
 
   /**
-   * 妖精を召喚する状態を変更します。
+   * 妖精有効な時間の状態を変更します。
    */
-  def updateFairySummonState(uuid: UUID, fairySummonCost: FairySummonState): F[Unit]
-
-  /**
-   * fairyPlaySoundRepositoryから音を鳴らすかどうかを取得する
-   */
-  def fairyPlaySound(uuid: UUID): F[FairyPlaySound]
+  def updateFairySummonState(uuid: UUID, fairyValidTimeState: FairyValidTimeState): F[Unit]
 
   /**
    * fairyPlaySoundRepositoryの音を鳴らすかどうかの設定を切り替える
    */
   def fairyPlaySoundToggle(uuid: UUID): F[Unit]
+
+  /**
+   * 妖精を使っているかどうかを切り替える
+   */
+  def updateFairyUsingState(uuid: UUID, fairyUsingState: FairyUsingState): F[Unit]
+
+  /**
+   * 妖精が回復するマナの量を変更する
+   */
+  def updateFairyRecoveryManaAmount(uuid: UUID, fairyRecoveryMana: FairyRecoveryMana): F[Unit]
 
 }
 
@@ -50,14 +57,29 @@ trait FairyReadAPI[F[_]] {
   def appleOpenState(uuid: UUID): F[AppleOpenState]
 
   /**
-   * 妖精を召喚する状態を取得します
+   * 妖精が有効な時間の状態を取得します
    */
-  def fairySummonState(uuid: UUID): F[FairySummonState]
+  def fairyValidTimeState(uuid: UUID): F[FairyValidTimeState]
 
   /**
    * `FairyLoreTable`からLoreを取得する
    */
   def getFairyLore(uuid: UUID): F[FairyLore]
+
+  /**
+   * fairyPlaySoundRepositoryから音を鳴らすかどうかを取得する
+   */
+  def fairyPlaySound(uuid: UUID): F[FairyPlaySound]
+
+  /**
+   * 妖精を使っているかを取得する
+   */
+  def fairyUsingState(uuid: UUID): F[FairyUsingState]
+
+  /**
+   * 妖精が回復するマナの量を取得する
+   */
+  def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana]
 
   /**
    * 妖精の音を鳴らすかどうか保持するようのリポジトリ

@@ -10,7 +10,9 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyLore,
   FairyPlaySound,
-  FairySummonState
+  FairyRecoveryMana,
+  FairyUsingState,
+  FairyValidTimeState
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 
@@ -40,11 +42,11 @@ object System {
 
         override def updateFairySummonState(
           uuid: UUID,
-          fairySummonCost: FairySummonState
+          validTimeState: FairyValidTimeState
         ): F[Unit] =
-          persistence.updateFairySummonState(uuid, fairySummonCost)
+          persistence.updateFairyValidTimeState(uuid, validTimeState)
 
-        override def fairySummonState(uuid: UUID): F[FairySummonState] =
+        override def fairyValidTimeState(uuid: UUID): F[FairyValidTimeState] =
           persistence.fairySummonState(uuid)
 
         override protected val fairyPlaySoundRepository
@@ -62,6 +64,23 @@ object System {
         } yield fairyPlaySoundRepository(uuid).set(
           if (nowSetting == FairyPlaySound.play) FairyPlaySound.notPlay else FairyPlaySound.play
         )
+
+        override def fairyUsingState(uuid: UUID): F[FairyUsingState] =
+          persistence.fairyUsingState(uuid)
+
+        override def updateFairyUsingState(
+          uuid: UUID,
+          fairyUsingState: FairyUsingState
+        ): F[Unit] =
+          persistence.updateFairyUsingState(uuid, fairyUsingState)
+
+        override def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana] =
+          persistence.fairyRecoveryMana(uuid)
+
+        override def updateFairyRecoveryManaAmount(
+          uuid: UUID,
+          fairyRecoveryMana: FairyRecoveryMana
+        ): F[Unit] = persistence.updateFairyRecoveryMana(uuid, fairyRecoveryMana)
       }
     }
   }
