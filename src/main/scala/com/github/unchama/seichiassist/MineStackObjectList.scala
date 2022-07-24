@@ -603,7 +603,7 @@ object MineStackObjectList {
   private val gachaPrizesObjects: Ref[IO, List[MineStackObject]] =
     Ref.unsafe[IO, List[MineStackObject]](Nil)
 
-  def setGachaPrizesList(mineStackObject: List[MineStackObject]): Unit = {
+  def setGachaPrizesList(mineStackObject: List[MineStackObject]): IO[Unit] = {
     gachaPrizesObjects.set(mineStackObject)
   }
 
@@ -623,7 +623,8 @@ object MineStackObjectList {
   val allMineStackGroups: IO[List[MineStackObjectGroup]] = for {
     gachaPrizes <- gachaPrizesObjects.get
   } yield {
-    exceptGachaItemMineStackGroups ++ gachaPrizes.flatMap(leftElems(_))
+    println(gachaPrizes.toString())
+    exceptGachaItemMineStackGroups ++ gachaPrizes.flatMap(a => leftElems(a))
   }
 
   def getBuiltinGachaPrizes: List[MineStackObject] = {
