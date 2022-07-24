@@ -1,6 +1,9 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.AppleOpenState
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
+  AppleOpenState,
+  FairyLore
+}
 
 import java.util.UUID
 
@@ -26,6 +29,11 @@ trait FairyReadAPI[F[_]] {
    * 妖精にあげるりんごの開放状態を取得する
    */
   def appleOpenState(uuid: UUID): F[AppleOpenState]
+
+  /**
+   * `FairyLoreTable`からLoreを取得する
+   */
+  def getFairyLore(uuid: UUID): F[FairyLore]
 
 }
 

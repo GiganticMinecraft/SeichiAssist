@@ -12,6 +12,8 @@ import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMain
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.AppleOpenState
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -27,6 +29,7 @@ object VoteMenu extends Menu {
 
   class Environment(
     implicit val voteAPI: VoteAPI[IO],
+    fairyAPI: FairyAPI[IO],
     breakCountAPI: BreakCountAPI[IO, SyncIO, Player]
   )
 
@@ -137,9 +140,29 @@ object VoteMenu extends Menu {
       )
     }
 
-    def fairyContractSettingToggle(uuid: UUID): Button = {
-      val playerData = SeichiAssist.playermap(uuid)
-      Button(new IconItemStackBuilder(Material.PAPER).title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束"))
+    def fairyContractSettingToggle(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+      Button(
+        new IconItemStackBuilder(Material.PAPER)
+          .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
+          .lore(fairyAPI.getFairyLore(uuid).unsafeRunSync().lore.toList)
+          .build(),
+        LeftClickButtonEffect {
+          SequentialEffect(
+            UnfocusedEffect {
+              fairyAPI.updateAppleOpenState(
+                uuid,
+                AppleOpenState
+                  .values
+                  .find(
+                    _.amount == fairyAPI.appleOpenState(uuid).unsafeRunSync().amount % 4 + 1
+                  )
+                  .get
+              )
+            },
+            FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
+          )
+        }
+      )
     }
 
   }
