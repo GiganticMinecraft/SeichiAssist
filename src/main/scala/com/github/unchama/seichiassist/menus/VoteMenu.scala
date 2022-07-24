@@ -145,7 +145,7 @@ object VoteMenu extends Menu {
       )
     }
 
-    def fairyContractSettingToggle(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+    def fairyContractSettingToggle(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button =
       Button(
         new IconItemStackBuilder(Material.PAPER)
           .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
@@ -167,6 +167,23 @@ object VoteMenu extends Menu {
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
           )
         }
+      )
+
+    def fairyPlaySoundToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+      val playSoundOnLore = List(
+        s"$RESET${GREEN}現在音が鳴る設定になっています。",
+        s"$RESET${DARK_GRAY}※この機能はデフォルトでONです。",
+        s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
+      )
+      val playSoundOffLore = List(
+        s"$RESET${GREEN}現在音が鳴らない設定になっています。",
+        s"$RESET${DARK_GRAY}※この機能はデフォルトでONです。",
+        s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
+      )
+
+      Button(
+        new IconItemStackBuilder(Material.JUKEBOX).title(s"$GOLD$UNDERLINE${BOLD}マナ妖精の音トグル")
+          .lore(if (fairyAPI))
       )
     }
 
