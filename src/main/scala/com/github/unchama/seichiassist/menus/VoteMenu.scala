@@ -139,5 +139,10 @@ object VoteMenu extends Menu {
       )
     }
 
+    def fairyContractSettingToggle(uuid: UUID): Button = {
+      val playerData = SeichiAssist.playermap(uuid)
+      Button(new IconItemStackBuilder(Material.PAPER).title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束"))
+    }
+
   }
 }
