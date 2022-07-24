@@ -79,10 +79,10 @@ class ShareInventoryCommand[F[_]: ConcurrentEffect](
       playerInventory.clear()
 
       Bukkit.getLogger.info(s"${player.getName}がアイテム収納を実施(SQL送信成功)")
-      SequentialEffect {
-        CommandEffect("stick")
+      SequentialEffect(
+        CommandEffect("stick"),
         MessageEffect(s"${GREEN}アイテムを収納しました。10秒以上あとに、手持ちを空にして取り出してください。")
-      }
+      )
     }
 
     eff.toIO
