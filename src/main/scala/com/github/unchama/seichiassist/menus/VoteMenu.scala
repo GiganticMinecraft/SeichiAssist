@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.effect.{ConcurrentEffect, ContextShift, IO, SyncIO}
+import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
@@ -39,10 +39,8 @@ import java.util.UUID
 object VoteMenu extends Menu {
 
   class Environment(
-    implicit val voteAPI: VoteAPI[SyncIO],
-    val fairyAPI: FairyAPI[SyncIO],
-    val concurrentEffect: ConcurrentEffect[SyncIO],
-    val contextShift: ContextShift[IO],
+    implicit val voteAPI: VoteAPI[IO],
+    val fairyAPI: FairyAPI[IO],
     val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     val manaApi: ManaApi[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type
@@ -86,7 +84,7 @@ object VoteMenu extends Menu {
       IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
     def receiveVoteBenefitsButton(uuid: UUID)(
-      implicit voteAPI: VoteAPI[SyncIO],
+      implicit voteAPI: VoteAPI[IO],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player]
     ): Button = {
       for {
@@ -150,7 +148,7 @@ object VoteMenu extends Menu {
       }
     )
 
-    def fairySummonTimeToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[SyncIO]): Button = {
+    def fairySummonTimeToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
       val validTimeState = fairyAPI.fairyValidTimeState(uuid).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.WATCH)
@@ -178,7 +176,7 @@ object VoteMenu extends Menu {
       )
     }
 
-    def fairyContractSettingToggle(uuid: UUID)(implicit fairyAPI: FairyAPI[SyncIO]): Button =
+    def fairyContractSettingToggle(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button =
       Button(
         new IconItemStackBuilder(Material.PAPER)
           .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
@@ -202,7 +200,7 @@ object VoteMenu extends Menu {
         }
       )
 
-    def fairyPlaySoundToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[SyncIO]): Button = {
+    def fairyPlaySoundToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
       val description =
         List(s"$RESET$DARK_GRAY※この機能はデフォルトでONです。", s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え")
       val playSoundOnLore = List(s"$RESET${GREEN}現在音が鳴る設定になっています。") ++ description
@@ -229,10 +227,8 @@ object VoteMenu extends Menu {
     }
 
     def fairySummonButton(player: Player)(
-      implicit fairyAPI: FairyAPI[SyncIO],
-      voteAPI: VoteAPI[SyncIO],
-      concurrentEffect: ConcurrentEffect[SyncIO],
-      contextShift: ContextShift[IO],
+      implicit fairyAPI: FairyAPI[IO],
+      voteAPI: VoteAPI[IO],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
       manaApi: ManaApi[IO, SyncIO, Player]
     ): Button = {

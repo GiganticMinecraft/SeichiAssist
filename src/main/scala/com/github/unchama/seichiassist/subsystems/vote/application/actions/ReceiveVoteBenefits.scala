@@ -7,7 +7,7 @@ trait ReceiveVoteBenefits[F[_], G[_], Player] {
 
   def receive(
     player: Player
-  )(implicit voteAPI: VoteAPI[G], breakCountAPI: BreakCountAPI[F, G, Player]): G[Unit]
+  )(implicit voteAPI: VoteAPI[F], breakCountAPI: BreakCountAPI[F, G, Player]): F[Unit]
 
 }
 

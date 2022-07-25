@@ -1,7 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.{ConcurrentEffect, ContextShift, IO, LiftIO, SyncIO}
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import cats.effect.{ContextShift, IO, LiftIO, SyncIO}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
@@ -21,14 +20,14 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
+import scala.concurrent.ExecutionContext
+
 object BukkitSummonFairy {
 
   def apply(player: Player)(
     implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
-    fairyAPI: FairyAPI[SyncIO],
-    concurrentEffect: ConcurrentEffect[SyncIO],
-    contextShift: ContextShift[IO],
-    voteAPI: VoteAPI[SyncIO],
+    fairyAPI: FairyAPI[IO],
+    voteAPI: VoteAPI[IO],
     manaApi: ManaApi[IO, SyncIO, Player]
   ): SummonFairy[IO] = new SummonFairy[IO] {
     override def summon: IO[Unit] = {
@@ -58,14 +57,14 @@ object BukkitSummonFairy {
 
       val uuid = player.getUniqueId
 
-      val validTimeState = fairyAPI.fairyValidTimeState(uuid).toIO.unsafeRunSync()
+      val validTimeState = fairyAPI.fairyValidTimeState(uuid).unsafeRunSync()
 
       if (playerLevel < 10) return notEnoughLevelEffect(player) // レベル不足
 
-      if (fairyAPI.fairyUsingState(uuid).toIO.unsafeRunSync() == Using)
+      if (fairyAPI.fairyUsingState(uuid).unsafeRunSync() == Using)
         return alreadySummoned(player) // 既に召喚している
 
-      if (voteAPI.effectPoints(uuid).toIO.unsafeRunSync().value < validTimeState.value * 2)
+      if (voteAPI.effectPoints(uuid).unsafeRunSync().value < validTimeState.value * 2)
         return notEnoughEffectPoint(player) // 投票ptがたりなかった
 
       val levelCappedManaAmount =
@@ -89,6 +88,8 @@ object BukkitSummonFairy {
           case Some(_) => ()
           case None =>
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+            implicit val contextShift: ContextShift[IO] =
+              IO.contextShift(ExecutionContext.global)
             FairySpeechRoutine.start(player).start
             ()
         }
@@ -96,7 +97,7 @@ object BukkitSummonFairy {
 
       LiftIO[IO].liftIO {
         SequentialEffect(
-          UnfocusedEffect(eff.toIO.unsafeRunAsyncAndForget()),
+          UnfocusedEffect(eff.unsafeRunAsyncAndForget()),
           MessageEffect(
             List(
               s"$RESET$YELLOW${BOLD}妖精を呼び出しました！",

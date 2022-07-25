@@ -25,13 +25,13 @@ object BukkitReceiveVoteBenefits {
     new ReceiveVoteBenefits[F, G, Player] {
       override def receive(
         player: Player
-      )(implicit voteAPI: VoteAPI[G], breakCountAPI: BreakCountAPI[F, G, Player]): G[Unit] = {
+      )(implicit voteAPI: VoteAPI[F], breakCountAPI: BreakCountAPI[F, G, Player]): F[Unit] = {
         val uuid = player.getUniqueId
         for {
           notReceivedBenefits <- voteAPI.notReceivedVoteBenefits(uuid) // 受け取っていない投票特典数
           _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
         } yield {
-          if (notReceivedBenefits.value == 0) return Sync[G].pure(())
+          if (notReceivedBenefits.value == 0) return Sync[F].pure(())
 
           val playerLevel =
             ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {

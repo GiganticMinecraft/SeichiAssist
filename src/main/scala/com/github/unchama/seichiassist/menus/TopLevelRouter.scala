@@ -40,6 +40,8 @@ import com.github.unchama.seichiassist.subsystems.ranking.api.AssortedRankingApi
 import com.github.unchama.seichiassist.subsystems.ranking.domain.values.{LoginTime, VoteCount}
 import com.github.unchama.seichiassist.subsystems.sharedinventory.SharedInventoryAPI
 import com.github.unchama.seichiassist.subsystems.subhome.SubHomeReadAPI
+import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import io.chrisdavenport.cats.effect.time.JavaTime
 import org.bukkit.entity.Player
 
@@ -70,7 +72,9 @@ object TopLevelRouter {
     globalNotification: DiscordNotificationAPI[IO],
     subHomeReadApi: SubHomeReadAPI[IO],
     enderChestAccessApi: AnywhereEnderChestAPI[IO],
-    sharedInventoryAPI: SharedInventoryAPI[IO, Player]
+    sharedInventoryAPI: SharedInventoryAPI[IO, Player],
+    voteAPI: VoteAPI[IO],
+    fairyAPI: FairyAPI[IO]
   ): TopLevelRouter[IO] = new TopLevelRouter[IO] {
     import assortedRankingApi._
 
@@ -117,7 +121,11 @@ object TopLevelRouter {
     implicit lazy val rankingRootMenuEnv: RankingRootMenu.Environment =
       new RankingRootMenu.Environment
 
+    implicit lazy val voteMenuEnv: VoteMenu.Environment = new VoteMenu.Environment
+
     implicit lazy val stickMenuEnv: FirstPage.Environment = new FirstPage.Environment
+
+    implicit lazy val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type = _.open
 
     implicit lazy val ioCanOpenSelectItemColorMenu: IO CanOpen MineStackSelectItemColorMenu =
       _.open
