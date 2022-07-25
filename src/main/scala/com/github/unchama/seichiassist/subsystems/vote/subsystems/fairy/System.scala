@@ -5,6 +5,16 @@ import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
+import com.github.unchama.seichiassist.subsystems.fairy.domain.{
+  AppleOpenState,
+  FairyLore,
+  FairyPlaySound,
+  FairyRecoveryMana,
+  FairyUsingState,
+  FairyValidTimeState,
+  FairyValidTimes
+}
+import com.github.unchama.seichiassist.subsystems.mana.subsystems.fairy.domain._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit.FairyLoreTable
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,

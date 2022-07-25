@@ -10,6 +10,16 @@ import com.github.unchama.seichiassist.SeichiAssist
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
+import com.github.unchama.seichiassist.subsystems.fairy.domain.{
+  AppleOpenState,
+  FairyPlaySound,
+  FairyValidTimeState
+}
+import com.github.unchama.seichiassist.subsystems.mana.subsystems.fairy.domain.{
+  AppleOpenState,
+  FairyPlaySound,
+  FairyValidTimeState
+}
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI

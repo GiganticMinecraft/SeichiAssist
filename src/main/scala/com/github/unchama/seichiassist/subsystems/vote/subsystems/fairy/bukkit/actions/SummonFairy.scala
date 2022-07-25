@@ -9,10 +9,10 @@ import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyUsingState.Using
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  FairyRecoveryMana,
-  FairyUsingState,
-  FairyValidTimeState
+  FairyRecoveryManaAmount,
+  FairyUsingState
 }
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
@@ -20,10 +20,6 @@ import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-
-import java.time.LocalDateTime
-import java.util.{Calendar, Date}
-import scala.util.Random
 
 object SummonFairy {
 
@@ -65,31 +61,26 @@ object SummonFairy {
 
       LiftIO[F].liftIO {
         if (playerLevel < 10) notEnoughLevelEffect(player) // レベル不足
-        else if (fairyAPI.fairyUsingState(uuid).toIO.unsafeRunSync() == FairyUsingState.Using)
+        else if (fairyAPI.fairyUsingState(uuid).toIO.unsafeRunSync() == Using)
           alreadySummoned(player) // 既に召喚している
         else if (
           voteAPI.effectPoints(uuid).toIO.unsafeRunSync().value < validTimeState.value * 2
         )
           effectPoint(player) // 投票ptがたりなかった
         else {
-          val validTime = validTimeState.validTime
-          val startTime = validTime.startTime
-
           val levelCappedManaAmount =
             ContextCoercion(manaApi.readManaAmount(player)).toIO.unsafeRunSync().cap.value
 
           // 回復するマナの量
-          val recoveryMana = FairyRecoveryMana(
-            (levelCappedManaAmount / 10 - levelCappedManaAmount / 30 + new Random()
-              .nextInt((levelCappedManaAmount / 20).toInt) / 2.9).toInt + 200
-          )
+          val recoveryMana = FairyRecoveryManaAmount.manaAmountAt(levelCappedManaAmount)
 
           import cats.implicits._
 
           val eff = for {
-            _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(validTimeState.value * 2))
             _ <- fairyAPI.updateFairyUsingState(uuid, FairyUsingState.Using)
+            _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(validTimeState.value * 2))
             _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
+            _ <- fairyAPI.updateFairyValidTimes(uuid, Some(validTimeState.validTime))
           } yield ()
 
           SequentialEffect(

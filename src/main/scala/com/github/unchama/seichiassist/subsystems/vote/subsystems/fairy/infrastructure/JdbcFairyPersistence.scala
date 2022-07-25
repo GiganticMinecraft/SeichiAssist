@@ -1,6 +1,20 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure
 
 import cats.effect.Sync
+import com.github.unchama.seichiassist.subsystems.fairy.domain.{
+  AppleOpenState,
+  FairyPersistence,
+  FairyRecoveryMana,
+  FairyUsingState,
+  FairyValidTimeState
+}
+import com.github.unchama.seichiassist.subsystems.mana.subsystems.fairy.domain.{
+  AppleOpenState,
+  FairyPersistence,
+  FairyRecoveryMana,
+  FairyUsingState,
+  FairyValidTimeState
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyPersistence,
