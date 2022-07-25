@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.Sync
+import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
+import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.FairySpeak
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
@@ -16,7 +17,7 @@ object BukkitFairySpeak {
 
   import cats.implicits._
 
-  def apply[F[_]: Sync]: FairySpeak[F, Player] = new FairySpeak[F, Player] {
+  def apply[F[_]: ConcurrentEffect]: FairySpeak[F, Player] = new FairySpeak[F, Player] {
     override def speak(player: Player, fairyMessage: FairyMessage)(
       implicit fairyAPI: FairyAPI[F]
     ): F[Unit] = for {
@@ -32,16 +33,22 @@ object BukkitFairySpeak {
 
     override def speakRandomly(player: Player)(implicit fairyAPI: FairyAPI[F]): F[Unit] = {
       val nameCalledByFairy = NameCalledByFairy(player.getName)
+      val uuid = player.getUniqueId
+
+      if (fairyAPI.fairyUsingState(uuid).toIO.unsafeRunSync() == FairyUsingState.NotUsing)
+        return Sync[F].unit
+
       for {
-        fairyValidTimesOpt <- fairyAPI.fairyValidTimes(player.getUniqueId)
+        fairyValidTimesOpt <- fairyAPI.fairyValidTimes(uuid)
         startTimeHour = fairyValidTimesOpt.getOrElse(return Sync[F].unit).startTime.getHour
-        fairyMessage <-
+        fairyMessages =
           if (4 <= startTimeHour && startTimeHour < 10)
-            getMessageRandomly(FairyMessageTable.morningMessages(nameCalledByFairy))
+            FairyMessageTable.morningMessages(nameCalledByFairy)
           else if (10 <= startTimeHour && startTimeHour < 18)
-            getMessageRandomly(FairyMessageTable.dayMessages(nameCalledByFairy))
+            FairyMessageTable.dayMessages(nameCalledByFairy)
           else
-            getMessageRandomly(FairyMessageTable.nightMessages(nameCalledByFairy))
+            FairyMessageTable.nightMessages(nameCalledByFairy)
+        fairyMessage <- getMessageRandomly(fairyMessages)
       } yield speak(player, fairyMessage)
     }
   }

@@ -1,14 +1,17 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, LiftIO, SyncEffect}
+import cats.effect.{ConcurrentEffect, LiftIO, SyncEffect, Timer}
+import com.github.unchama.concurrent.RepeatingTaskContext
 import com.github.unchama.generic.ContextCoercion
+import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.domain.EffectPoint
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions.SummonFairy
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.routines.FairySpeechRoutine
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyUsingState.Using
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairyRecoveryManaAmount,
@@ -25,9 +28,11 @@ object BukkitSummonFairy {
 
   import cats.implicits._
 
-  def apply[F[_]: ConcurrentEffect: LiftIO, G[_]: SyncEffect: ContextCoercion[*[_], F]](
-    player: Player
-  )(
+  def apply[F[
+    _
+  ]: ConcurrentEffect: LiftIO: Timer: RepeatingTaskContext: OnMinecraftServerThread, G[
+    _
+  ]: SyncEffect: ContextCoercion[*[_], F]](player: Player)(
     implicit breakCountAPI: BreakCountAPI[F, G, Player],
     fairyAPI: FairyAPI[F],
     voteAPI: VoteAPI[F],
@@ -77,8 +82,20 @@ object BukkitSummonFairy {
         _ <- fairyAPI.updateFairyUsingState(uuid, FairyUsingState.Using)
         _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(validTimeState.value * 2))
         _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
+        validTimes <- fairyAPI.fairyValidTimes(uuid)
         _ <- fairyAPI.updateFairyValidTimes(uuid, Some(validTimeState.validTime))
-      } yield ()
+      } yield {
+        /*
+          FairySpeechRoutineが一度も起動されていなければ起動する
+          そうじゃなかったからfor実行
+         */
+        validTimes match {
+          case Some(_) => ()
+          case None =>
+            FairySpeechRoutine.start[F, G](player).start
+            ()
+        }
+      }
 
       LiftIO[F].liftIO {
         SequentialEffect(
