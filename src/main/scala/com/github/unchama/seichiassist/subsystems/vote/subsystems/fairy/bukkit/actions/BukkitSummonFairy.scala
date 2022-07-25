@@ -21,7 +21,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
-object SummonFairy {
+object BukkitSummonFairy {
 
   import cats.implicits._
 
