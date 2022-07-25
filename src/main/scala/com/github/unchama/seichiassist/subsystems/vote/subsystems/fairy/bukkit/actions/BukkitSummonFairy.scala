@@ -59,43 +59,42 @@ object BukkitSummonFairy {
 
       val validTimeState = fairyAPI.fairyValidTimeState(uuid).toIO.unsafeRunSync()
 
+      if (playerLevel < 10) return LiftIO[F].liftIO(notEnoughLevelEffect(player)) // レベル不足
+
+      if (fairyAPI.fairyUsingState(uuid).toIO.unsafeRunSync() == Using)
+        return LiftIO[F].liftIO(alreadySummoned(player)) // 既に召喚している
+
+      if (voteAPI.effectPoints(uuid).toIO.unsafeRunSync().value < validTimeState.value * 2)
+        return LiftIO[F].liftIO(notEnoughEffectPoint(player)) // 投票ptがたりなかった
+
+      val levelCappedManaAmount =
+        ContextCoercion(manaApi.readManaAmount(player)).toIO.unsafeRunSync().cap.value
+
+      // 回復するマナの量
+      val recoveryMana = FairyRecoveryManaAmount.manaAmountAt(levelCappedManaAmount)
+
+      import cats.implicits._
+
+      val eff = for {
+        _ <- fairyAPI.updateFairyUsingState(uuid, FairyUsingState.Using)
+        _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(validTimeState.value * 2))
+        _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
+        _ <- fairyAPI.updateFairyValidTimes(uuid, Some(validTimeState.validTime))
+      } yield ()
+
       LiftIO[F].liftIO {
-        if (playerLevel < 10) notEnoughLevelEffect(player) // レベル不足
-        else if (fairyAPI.fairyUsingState(uuid).toIO.unsafeRunSync() == Using)
-          alreadySummoned(player) // 既に召喚している
-        else if (
-          voteAPI.effectPoints(uuid).toIO.unsafeRunSync().value < validTimeState.value * 2
-        )
-          notEnoughEffectPoint(player) // 投票ptがたりなかった
-        else {
-          val levelCappedManaAmount =
-            ContextCoercion(manaApi.readManaAmount(player)).toIO.unsafeRunSync().cap.value
-
-          // 回復するマナの量
-          val recoveryMana = FairyRecoveryManaAmount.manaAmountAt(levelCappedManaAmount)
-
-          import cats.implicits._
-
-          val eff = for {
-            _ <- fairyAPI.updateFairyUsingState(uuid, FairyUsingState.Using)
-            _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(validTimeState.value * 2))
-            _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
-            _ <- fairyAPI.updateFairyValidTimes(uuid, Some(validTimeState.validTime))
-          } yield ()
-
-          SequentialEffect(
-            UnfocusedEffect(eff.toIO.unsafeRunAsyncAndForget()),
-            MessageEffect(
-              List(
-                s"$RESET$YELLOW${BOLD}妖精を呼び出しました！",
-                s"$RESET$YELLOW${BOLD}この子は1分間に約${recoveryMana.recoveryMana}マナ",
-                s"$RESET$YELLOW${BOLD}回復させる力を持っているようです。"
-              )
+        SequentialEffect(
+          UnfocusedEffect(eff.toIO.unsafeRunAsyncAndForget()),
+          MessageEffect(
+            List(
+              s"$RESET$YELLOW${BOLD}妖精を呼び出しました！",
+              s"$RESET$YELLOW${BOLD}この子は1分間に約${recoveryMana.recoveryMana}マナ",
+              s"$RESET$YELLOW${BOLD}回復させる力を持っているようです。"
             )
-          ).apply(player)
-        }
-
+          )
+        ).apply(player)
       }
+
     }
   }
 
