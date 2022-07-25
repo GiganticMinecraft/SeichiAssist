@@ -4,29 +4,29 @@ object FairyMessageTable {
 
   val morningMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      s"おはよ！${name.value}",
-      s"ヤッホー${name.value}",
-      s"ふわぁ。。。${name.value}朝は早いね。",
-      "うーん、今日も一日頑張ろ！",
-      s"今日は整地日和だね！${name.value}"
+      FairyMessage(s"おはよ！${name.value}"),
+      FairyMessage(s"ヤッホー${name.value}"),
+      FairyMessage(s"ふわぁ。。。${name.value}朝は早いね。"),
+      FairyMessage("うーん、今日も一日頑張ろ！"),
+      FairyMessage(s"今日は整地日和だね！${name.value}")
     )
 
   val dayMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      s"やあ！${name.value}",
-      s"ヤッホー${name.value}！",
-      s"あっ、${name.value}じゃん。丁度お腹空いてたんだ！",
-      s"この匂い…${name.value}ってがちゃりんごいっぱい持ってる…?",
-      "今日のおやつはがちゃりんごいっぱいだ！"
+      FairyMessage(s"やあ！${name.value}"),
+      FairyMessage(s"ヤッホー${name.value}！"),
+      FairyMessage(s"あっ、${name.value}じゃん。丁度お腹空いてたんだ！"),
+      FairyMessage(s"この匂い…${name.value}ってがちゃりんごいっぱい持ってる…?"),
+      FairyMessage("今日のおやつはがちゃりんごいっぱいだ！")
     )
 
   val nightMessages: NameCalledByFairy => FairyMessages = (name: NameCalledByFairy) =>
     FairyMessages(
-      s"やあ！${name.value}",
-      s"ヤッホー${name.value}！",
-      s"ふわぁ。。。${name.value}は夜も元気だね。",
-      s"もう寝ようと思ってたのにー。${name.value}はしょうがないなぁ",
-      "こんな時間に呼ぶなんて…りんごははずんでもらうよ？"
+      FairyMessage(s"やあ！${name.value}"),
+      FairyMessage(s"ヤッホー${name.value}！"),
+      FairyMessage(s"ふわぁ。。。${name.value}は夜も元気だね。"),
+      FairyMessage(s"もう寝ようと思ってたのにー。${name.value}はしょうがないなぁ"),
+      FairyMessage("こんな時間に呼ぶなんて…りんごははずんでもらうよ？")
     )
 
 }
