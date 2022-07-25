@@ -30,12 +30,11 @@ object BukkitFairySpeak {
       else SequentialEffect(MessageEffect(fairyMessage.message)).apply(player)
     }
 
-    override def speakRandomly(player: Player, fairyValidTimes: FairyValidTimes)(
-      implicit fairyAPI: FairyAPI[F]
-    ): F[Unit] = {
-      val startTimeHour = fairyValidTimes.startTime.getHour
+    override def speakRandomly(player: Player)(implicit fairyAPI: FairyAPI[F]): F[Unit] = {
       val nameCalledByFairy = NameCalledByFairy(player.getName)
       for {
+        fairyValidTimesOpt <- fairyAPI.fairyValidTimes(player.getUniqueId)
+        startTimeHour = fairyValidTimesOpt.getOrElse(return Sync[F].unit).startTime.getHour
         fairyMessage <-
           if (4 <= startTimeHour && startTimeHour < 10)
             getMessageRandomly(FairyMessageTable.morningMessages(nameCalledByFairy))
@@ -43,7 +42,7 @@ object BukkitFairySpeak {
             getMessageRandomly(FairyMessageTable.dayMessages(nameCalledByFairy))
           else
             getMessageRandomly(FairyMessageTable.nightMessages(nameCalledByFairy))
-      } yield speak(fairyMessage)
+      } yield speak(player, fairyMessage)
     }
   }
 
