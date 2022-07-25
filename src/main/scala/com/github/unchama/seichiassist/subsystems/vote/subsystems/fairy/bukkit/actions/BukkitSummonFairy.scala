@@ -73,8 +73,6 @@ object BukkitSummonFairy {
       // 回復するマナの量
       val recoveryMana = FairyRecoveryManaAmount.manaAmountAt(levelCappedManaAmount)
 
-      import cats.implicits._
-
       val eff = for {
         _ <- fairyAPI.updateFairyUsingState(uuid, FairyUsingState.Using)
         _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(validTimeState.value * 2))
