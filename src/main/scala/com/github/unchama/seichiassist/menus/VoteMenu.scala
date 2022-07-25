@@ -2,29 +2,26 @@ package com.github.unchama.seichiassist.menus
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
+import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
 import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
-import com.github.unchama.menuinventory.{Menu, MenuFrame, MenuSlotLayout}
-import com.github.unchama.seichiassist.SeichiAssist
+import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{onMainThread, timer}
+import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
-import com.github.unchama.seichiassist.subsystems.fairy.domain.{
-  AppleOpenState,
-  FairyPlaySound,
-  FairyValidTimeState
-}
-import com.github.unchama.seichiassist.subsystems.mana.subsystems.fairy.domain.{
-  AppleOpenState,
-  FairyPlaySound,
-  FairyValidTimeState
-}
+import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.actions.BukkitReceiveVoteBenefits
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions.{
+  BukkitFairySpeak,
+  BukkitSummonFairy
+}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
+  FairyMessage,
   FairyPlaySound,
   FairyValidTimeState
 }
@@ -43,8 +40,10 @@ object VoteMenu extends Menu {
 
   class Environment(
     implicit val voteAPI: VoteAPI[IO],
-    fairyAPI: FairyAPI[IO],
-    breakCountAPI: BreakCountAPI[IO, SyncIO, Player]
+    val fairyAPI: FairyAPI[IO],
+    val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
+    val manaApi: ManaApi[IO, SyncIO, Player],
+    val ioCanOpenFirstPage: IO CanOpen FirstPage.type
   )
 
   /**
@@ -56,11 +55,33 @@ object VoteMenu extends Menu {
    * @return
    * `player`からメニューの[[MenuSlotLayout]]を計算する[[IO]]
    */
-  override def computeMenuLayout(player: Player)(
-    implicit environment: Environment
-  ): IO[MenuSlotLayout] = {}
+  override def computeMenuLayout(
+    player: Player
+  )(implicit environment: Environment): IO[MenuSlotLayout] = {
+    import ConstantButtons._
+    import environment._
+    import eu.timepit.refined.auto._
+
+    val uuid = player.getUniqueId
+
+    val buttons =
+      Map(
+        ChestSlotRef(0, 0) -> receiveVoteBenefitsButton(uuid),
+        ChestSlotRef(0, 2) -> fairySummonTimeToggleButton(uuid),
+        ChestSlotRef(0, 4) -> fairySummonButton(player),
+        ChestSlotRef(1, 0) -> showVoteURLButton,
+        ChestSlotRef(1, 2) -> fairyContractSettingToggle(uuid),
+        ChestSlotRef(2, 2) -> fairyPlaySoundToggleButton(uuid),
+        ChestSlotRef(3, 0) -> CommonButtons.openStickMenu
+      )
+
+    IO(MenuSlotLayout(buttons))
+  }
 
   private object ConstantButtons {
+
+    implicit val ioCE: ConcurrentEffect[IO] =
+      IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
     def receiveVoteBenefitsButton(uuid: UUID)(
       implicit voteAPI: VoteAPI[IO],
@@ -86,8 +107,6 @@ object VoteMenu extends Menu {
             .enchanted()
             .build(),
           LeftClickButtonEffect {
-            implicit val ioCE: ConcurrentEffect[IO] =
-              IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
             SequentialEffect(
               TargetedEffect.delay { player =>
                 BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunAsyncAndForget()
@@ -183,7 +202,7 @@ object VoteMenu extends Menu {
 
     def fairyPlaySoundToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
       val description =
-        List(s"$RESET${DARK_GRAY}※この機能はデフォルトでONです。", s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え")
+        List(s"$RESET$DARK_GRAY※この機能はデフォルトでONです。", s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え")
       val playSoundOnLore = List(s"$RESET${GREEN}現在音が鳴る設定になっています。") ++ description
       val playSoundOffLore = List(s"$RESET${GREEN}現在音が鳴らない設定になっています。") ++ description
 
@@ -207,8 +226,14 @@ object VoteMenu extends Menu {
       )
     }
 
-    def fairySummonButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
-      val fairySummonState = fairyAPI.fairyValidTimeState(uuid).unsafeRunSync().value
+    def fairySummonButton(player: Player)(
+      implicit fairyAPI: FairyAPI[IO],
+      voteAPI: VoteAPI[IO],
+      breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
+      manaApi: ManaApi[IO, SyncIO, Player]
+    ): Button = {
+      val fairySummonState =
+        fairyAPI.fairyValidTimeState(player.getUniqueId).unsafeRunSync().value
       Button(
         new IconItemStackBuilder(Material.GHAST_TEAR)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")
@@ -222,7 +247,41 @@ object VoteMenu extends Menu {
           )
           .enchanted()
           .build(),
-        LeftClickButtonEffect {}
+        LeftClickButtonEffect {
+          SequentialEffect(
+            UnfocusedEffect {
+              import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+              BukkitSummonFairy[IO, SyncIO](player).summon.unsafeRunAsyncAndForget()
+            },
+            closeInventoryEffect
+          )
+        }
+      )
+    }
+
+    def checkTimeButton(player: Player)(implicit fairyAPI: FairyAPI[IO]): Button = {
+      Button(
+        new IconItemStackBuilder(Material.COMPASS)
+          .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精に時間を聞く")
+          .lore(List(s"$RESET${GRAY}妖精さんはいそがしい。", s"${GRAY}帰っちゃう時間を教えてくれる"))
+          .enchanted()
+          .build(),
+        LeftClickButtonEffect {
+          SequentialEffect(
+            UnfocusedEffect {
+              val endTime =
+                fairyAPI.fairyValidTimes(player.getUniqueId).unsafeRunSync().get.endTime
+
+              BukkitFairySpeak[IO]
+                .speak(
+                  player,
+                  FairyMessage(s"僕は${endTime.getHour}:${endTime.getMinute}には帰るよー。")
+                )
+                .unsafeRunAsyncAndForget()
+            },
+            closeInventoryEffect
+          )
+        }
       )
     }
 
