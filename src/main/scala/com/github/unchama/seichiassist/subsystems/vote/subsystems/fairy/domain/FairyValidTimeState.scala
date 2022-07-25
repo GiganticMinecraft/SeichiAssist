@@ -8,17 +8,17 @@ case class FairyValidTimeState(value: Int) {
   /**
    * @return 妖精が有効な時間
    */
-  def validTime: FairyValidTime = {
+  def validTime: FairyValidTimes = {
     val now = LocalDateTime.now()
     val validTime = value match {
       case 1 =>
-        FairyValidTime(_, now.plusMonths(30))
+        FairyValidTimes(_, now.plusMonths(30))
       case 2 =>
-        FairyValidTime(_, now.plusHours(1))
+        FairyValidTimes(_, now.plusHours(1))
       case 3 =>
-        FairyValidTime(_, now.plusHours(1).plusMinutes(30))
+        FairyValidTimes(_, now.plusHours(1).plusMinutes(30))
       case 4 =>
-        FairyValidTime(_, now.plusHours(2))
+        FairyValidTimes(_, now.plusHours(2))
     }
     validTime(now)
   }

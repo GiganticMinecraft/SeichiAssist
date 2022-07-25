@@ -72,17 +72,8 @@ object SummonFairy {
         )
           effectPoint(player) // 投票ptがたりなかった
         else {
-          val startTime = LocalDateTime.now() // 召喚した時間
-          val endTime = validTimeState match {
-            case FairyValidTimeState(1) =>
-              startTime.plusMonths(30)
-            case FairyValidTimeState(2) =>
-              startTime.plusHours(1)
-            case FairyValidTimeState(3) =>
-              startTime.plusHours(1).plusMinutes(30)
-            case FairyValidTimeState(4) =>
-              startTime.plusHours(2)
-          }
+          val validTime = validTimeState.validTime
+          val startTime = validTime.startTime
 
           val levelCappedManaAmount =
             ContextCoercion(manaApi.readManaAmount(player)).toIO.unsafeRunSync().cap.value
