@@ -8,7 +8,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairyPlaySound,
   FairyRecoveryMana,
   FairyUsingState,
-  FairyValidTimeState
+  FairyValidTimeState,
+  FairyValidTimes
 }
 
 import java.util.UUID
@@ -40,6 +41,11 @@ trait FairyWriteAPI[F[_]] {
    * 妖精が回復するマナの量を変更する
    */
   def updateFairyRecoveryManaAmount(uuid: UUID, fairyRecoveryMana: FairyRecoveryMana): F[Unit]
+
+  /**
+   * 妖精が有効な時間を変更する
+   */
+  def updateFairyValidTimes(uuid: UUID, fairyValidTimes: Option[FairyValidTimes]): F[Unit]
 
 }
 
@@ -89,6 +95,19 @@ trait FairyReadAPI[F[_]] {
     UUID,
     Ref[F, FairyPlaySound]
   ]
+
+  /**
+   * 妖精の有効な時間を保存するリポジトリ
+   * ※永続化は必要ない
+   */
+  protected[this] val fairyValidTimeRepository: KeyedDataRepository[UUID, Ref[F, Option[
+    FairyValidTimes
+  ]]]
+
+  /**
+   * 妖精が有効な時間を返す
+   */
+  def fairyValidTimes(uuid: UUID): F[Option[FairyValidTimes]]
 
 }
 

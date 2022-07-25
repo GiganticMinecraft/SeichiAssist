@@ -12,7 +12,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairyPlaySound,
   FairyRecoveryMana,
   FairyUsingState,
-  FairyValidTimeState
+  FairyValidTimeState,
+  FairyValidTimes
 }
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 
@@ -64,6 +65,18 @@ object System {
         } yield fairyPlaySoundRepository(uuid).set(
           if (nowSetting == FairyPlaySound.play) FairyPlaySound.notPlay else FairyPlaySound.play
         )
+
+        override protected[this] val fairyValidTimeRepository
+          : KeyedDataRepository[UUID, Ref[F, Option[FairyValidTimes]]] =
+          KeyedDataRepository.unlift[UUID, Ref[F, Option[FairyValidTimes]]](_ => None)
+
+        override def fairyValidTimes(uuid: UUID): F[Option[FairyValidTimes]] =
+          fairyValidTimeRepository(uuid).get
+
+        override def updateFairyValidTimes(
+          uuid: UUID,
+          fairyValidTimes: Option[FairyValidTimes]
+        ): F[Unit] = fairyValidTimeRepository(uuid).set(fairyValidTimes)
 
         override def fairyUsingState(uuid: UUID): F[FairyUsingState] =
           persistence.fairyUsingState(uuid)
