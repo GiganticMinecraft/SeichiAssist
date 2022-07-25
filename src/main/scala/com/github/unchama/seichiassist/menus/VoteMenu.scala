@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.menus
 
-import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.effect.{ConcurrentEffect, ContextShift, IO, SyncIO}
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
@@ -8,7 +8,7 @@ import com.github.unchama.menuinventory.slot.button.action.LeftClickButtonEffect
 import com.github.unchama.menuinventory.syntax.IntInventorySizeOps
 import com.github.unchama.menuinventory.{ChestSlotRef, Menu, MenuFrame, MenuSlotLayout}
 import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts
-import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.{onMainThread, timer}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.menus.stickmenu.FirstPage
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
@@ -39,8 +39,10 @@ import java.util.UUID
 object VoteMenu extends Menu {
 
   class Environment(
-    implicit val voteAPI: VoteAPI[IO],
-    val fairyAPI: FairyAPI[IO],
+    implicit val voteAPI: VoteAPI[SyncIO],
+    val fairyAPI: FairyAPI[SyncIO],
+    val concurrentEffect: ConcurrentEffect[SyncIO],
+    val contextShift: ContextShift[IO],
     val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     val manaApi: ManaApi[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type
@@ -84,7 +86,7 @@ object VoteMenu extends Menu {
       IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
     def receiveVoteBenefitsButton(uuid: UUID)(
-      implicit voteAPI: VoteAPI[IO],
+      implicit voteAPI: VoteAPI[SyncIO],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player]
     ): Button = {
       for {
@@ -109,7 +111,7 @@ object VoteMenu extends Menu {
           LeftClickButtonEffect {
             SequentialEffect(
               TargetedEffect.delay { player =>
-                BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunAsyncAndForget()
+                BukkitReceiveVoteBenefits[IO, SyncIO].receive(player).unsafeRunSync()
               },
               MessageEffect(
                 s"${GOLD}投票特典$WHITE(${voteCounter.value - benefits.value}票分)を受け取りました"
@@ -148,7 +150,7 @@ object VoteMenu extends Menu {
       }
     )
 
-    def fairySummonTimeToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+    def fairySummonTimeToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[SyncIO]): Button = {
       val validTimeState = fairyAPI.fairyValidTimeState(uuid).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.WATCH)
@@ -176,7 +178,7 @@ object VoteMenu extends Menu {
       )
     }
 
-    def fairyContractSettingToggle(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button =
+    def fairyContractSettingToggle(uuid: UUID)(implicit fairyAPI: FairyAPI[SyncIO]): Button =
       Button(
         new IconItemStackBuilder(Material.PAPER)
           .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
@@ -200,7 +202,7 @@ object VoteMenu extends Menu {
         }
       )
 
-    def fairyPlaySoundToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+    def fairyPlaySoundToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[SyncIO]): Button = {
       val description =
         List(s"$RESET$DARK_GRAY※この機能はデフォルトでONです。", s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え")
       val playSoundOnLore = List(s"$RESET${GREEN}現在音が鳴る設定になっています。") ++ description
@@ -219,7 +221,7 @@ object VoteMenu extends Menu {
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect {
-              fairyAPI.fairyPlaySoundToggle(uuid).unsafeRunAsyncAndForget()
+              fairyAPI.fairyPlaySoundToggle(uuid).unsafeRunSync()
             }
           )
         }
@@ -227,8 +229,10 @@ object VoteMenu extends Menu {
     }
 
     def fairySummonButton(player: Player)(
-      implicit fairyAPI: FairyAPI[IO],
-      voteAPI: VoteAPI[IO],
+      implicit fairyAPI: FairyAPI[SyncIO],
+      voteAPI: VoteAPI[SyncIO],
+      concurrentEffect: ConcurrentEffect[SyncIO],
+      contextShift: ContextShift[IO],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
       manaApi: ManaApi[IO, SyncIO, Player]
     ): Button = {
@@ -250,8 +254,7 @@ object VoteMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             UnfocusedEffect {
-              import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
-              BukkitSummonFairy[IO, SyncIO](player).summon.unsafeRunAsyncAndForget()
+              BukkitSummonFairy(player).summon.unsafeRunAsyncAndForget()
             },
             closeInventoryEffect
           )

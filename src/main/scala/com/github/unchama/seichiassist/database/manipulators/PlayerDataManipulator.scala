@@ -17,11 +17,9 @@ import org.bukkit.ChatColor._
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
-import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.sql.SQLException
-import java.text.SimpleDateFormat
-import java.util.{Calendar, UUID}
+import java.util.UUID
 import scala.collection.mutable
 
 class PlayerDataManipulator(private val gateway: DatabaseGateway) {

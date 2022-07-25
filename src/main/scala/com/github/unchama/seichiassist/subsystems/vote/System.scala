@@ -59,7 +59,7 @@ object System {
         override def notReceivedVoteBenefits(uuid: UUID): F[VoteBenefit] = for {
           voteCounter <- voteCounter(uuid)
           receivedVote <- receivedVoteBenefits(uuid)
-        } yield voteCounter.value - receivedVote.value
+        } yield VoteBenefit(voteCounter.value - receivedVote.value)
       }
 
       override val commands: Map[String, TabExecutor] = Map(

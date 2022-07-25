@@ -25,21 +25,21 @@ object BukkitReceiveVoteBenefits {
     new ReceiveVoteBenefits[F, G, Player] {
       override def receive(
         player: Player
-      )(implicit voteAPI: VoteAPI[F], breakCountAPI: BreakCountAPI[F, G, Player]): F[Unit] = {
+      )(implicit voteAPI: VoteAPI[G], breakCountAPI: BreakCountAPI[F, G, Player]): G[Unit] = {
         val uuid = player.getUniqueId
         for {
           notReceivedBenefits <- voteAPI.notReceivedVoteBenefits(uuid) // 受け取っていない投票特典数
           _ <- voteAPI.increaseVoteBenefits(uuid, notReceivedBenefits) // 受け取ってない分を受け取ったことにする
         } yield {
-          if (notReceivedBenefits.value == 0) return Sync[F].pure()
+          if (notReceivedBenefits.value == 0) return Sync[G].pure(())
 
           val playerLevel =
-            ContextCoercion(breakCountAPI.seichiAmountDataRepository[G](player).read.map {
+            ContextCoercion(breakCountAPI.seichiAmountDataRepository(player).read.map {
               _.levelCorrespondingToExp.level
             }).toIO.unsafeRunSync()
 
           val items = (0 until notReceivedBenefits.value).map { _ =>
-            voteAPI.increaseEffectPointsByTen(uuid).toIO.unsafeRunAsyncAndForget()
+            ContextCoercion(voteAPI.increaseEffectPointsByTen(uuid)).toIO.unsafeRunSync()
             Seq.fill(10)(GachaSkullData.gachaForVoting) ++
               Seq(
                 if (playerLevel < 50) ItemData.getSuperPickaxe(1) else ItemData.getVotingGift(1)

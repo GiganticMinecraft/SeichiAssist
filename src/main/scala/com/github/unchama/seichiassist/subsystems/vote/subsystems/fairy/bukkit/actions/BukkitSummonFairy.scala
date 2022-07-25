@@ -1,10 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
-import cats.effect.{ConcurrentEffect, LiftIO, SyncEffect, Timer}
-import com.github.unchama.concurrent.RepeatingTaskContext
-import com.github.unchama.generic.ContextCoercion
-import com.github.unchama.minecraft.actions.OnMinecraftServerThread
+import cats.effect.{ConcurrentEffect, ContextShift, IO, LiftIO, SyncIO}
+import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.onMainThread
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
@@ -26,23 +23,22 @@ import org.bukkit.entity.Player
 
 object BukkitSummonFairy {
 
-  import cats.implicits._
-
-  def apply[F[
-    _
-  ]: ConcurrentEffect: LiftIO: Timer: RepeatingTaskContext: OnMinecraftServerThread, G[
-    _
-  ]: SyncEffect: ContextCoercion[*[_], F]](player: Player)(
-    implicit breakCountAPI: BreakCountAPI[F, G, Player],
-    fairyAPI: FairyAPI[F],
-    voteAPI: VoteAPI[F],
-    manaApi: ManaApi[F, G, Player]
-  ): SummonFairy[F] = new SummonFairy[F] {
-    override def summon: F[Unit] = {
+  def apply(player: Player)(
+    implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
+    fairyAPI: FairyAPI[SyncIO],
+    concurrentEffect: ConcurrentEffect[SyncIO],
+    contextShift: ContextShift[IO],
+    voteAPI: VoteAPI[SyncIO],
+    manaApi: ManaApi[IO, SyncIO, Player]
+  ): SummonFairy[IO] = new SummonFairy[IO] {
+    override def summon: IO[Unit] = {
       val playerLevel =
-        ContextCoercion(breakCountAPI.seichiAmountDataRepository[G](player).read.map {
-          _.levelCorrespondingToExp.level
-        }).toIO.unsafeRunSync()
+        breakCountAPI
+          .seichiAmountDataRepository(player)
+          .read
+          .unsafeRunSync()
+          .levelCorrespondingToExp
+          .level
 
       val notEnoughLevelEffect =
         SequentialEffect(
@@ -64,16 +60,16 @@ object BukkitSummonFairy {
 
       val validTimeState = fairyAPI.fairyValidTimeState(uuid).toIO.unsafeRunSync()
 
-      if (playerLevel < 10) return LiftIO[F].liftIO(notEnoughLevelEffect(player)) // レベル不足
+      if (playerLevel < 10) return notEnoughLevelEffect(player) // レベル不足
 
       if (fairyAPI.fairyUsingState(uuid).toIO.unsafeRunSync() == Using)
-        return LiftIO[F].liftIO(alreadySummoned(player)) // 既に召喚している
+        return alreadySummoned(player) // 既に召喚している
 
       if (voteAPI.effectPoints(uuid).toIO.unsafeRunSync().value < validTimeState.value * 2)
-        return LiftIO[F].liftIO(notEnoughEffectPoint(player)) // 投票ptがたりなかった
+        return notEnoughEffectPoint(player) // 投票ptがたりなかった
 
       val levelCappedManaAmount =
-        ContextCoercion(manaApi.readManaAmount(player)).toIO.unsafeRunSync().cap.value
+        manaApi.readManaAmount(player).unsafeRunSync().cap.value
 
       // 回復するマナの量
       val recoveryMana = FairyRecoveryManaAmount.manaAmountAt(levelCappedManaAmount)
@@ -92,12 +88,13 @@ object BukkitSummonFairy {
         validTimes match {
           case Some(_) => ()
           case None =>
-            FairySpeechRoutine.start[F, G](player).start
+            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+            FairySpeechRoutine.start(player).start
             ()
         }
       }
 
-      LiftIO[F].liftIO {
+      LiftIO[IO].liftIO {
         SequentialEffect(
           UnfocusedEffect(eff.toIO.unsafeRunAsyncAndForget()),
           MessageEffect(
