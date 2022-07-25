@@ -21,6 +21,7 @@ import org.bukkit.ChatColor._
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
+import java.time.LocalDateTime
 import java.util.{Calendar, Date}
 import scala.util.Random
 
@@ -71,21 +72,17 @@ object SummonFairy {
         )
           effectPoint(player) // 投票ptがたりなかった
         else {
-          val calender = Calendar.getInstance()
-          calender.setTime(new Date())
-          val startTime = calender.getTime.clone // 召喚した時間
-          validTimeState match {
+          val startTime = LocalDateTime.now() // 召喚した時間
+          val endTime = validTimeState match {
             case FairyValidTimeState(1) =>
-              calender.add(Calendar.MINUTE, 30)
+              startTime.plusMonths(30)
             case FairyValidTimeState(2) =>
-              calender.add(Calendar.HOUR_OF_DAY, 1)
+              startTime.plusHours(1)
             case FairyValidTimeState(3) =>
-              calender.add(Calendar.MINUTE, 30)
-              calender.add(Calendar.HOUR_OF_DAY, 1)
+              startTime.plusHours(1).plusMinutes(30)
             case FairyValidTimeState(4) =>
-              calender.add(Calendar.HOUR_OF_DAY, 2)
+              startTime.plusHours(2)
           }
-          val endTime = calender.getTime.clone() // 終了時間
 
           val levelCappedManaAmount =
             ContextCoercion(manaApi.readManaAmount(player)).toIO.unsafeRunSync().cap.value
