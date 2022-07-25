@@ -22,7 +22,8 @@ import com.github.unchama.seichiassist.menus.{
   CommonButtons,
   HomeMenu,
   RegionMenu,
-  ServerSwitchMenu
+  ServerSwitchMenu,
+  VoteMenu
 }
 import com.github.unchama.seichiassist.subsystems.anywhereender.AnywhereEnderChestAPI
 import com.github.unchama.seichiassist.subsystems.anywhereender.domain.AccessDenialReason
@@ -87,6 +88,7 @@ object FirstPage extends Menu {
     val ioCanOpenHomeMenu: IO CanOpen HomeMenu.type,
     val ioCanOpenPassiveSkillMenu: IO CanOpen PassiveSkillMenu.type,
     val ioCanOpenRankingRootMenu: IO CanOpen RankingRootMenu.type,
+    val ioCanOpenVoteMenu: IO CanOpen VoteMenu.type,
     val enderChestAccessApi: AnywhereEnderChestAPI[IO]
   )
 
@@ -734,7 +736,7 @@ object FirstPage extends Menu {
       )
     }
 
-    val votePointMenuButton: Button = {
+    def votePointMenuButton(implicit ioCanOpenVoteMenu: IO CanOpen VoteMenu.type): Button = {
       val iconItemStack =
         new IconItemStackBuilder(Material.DIAMOND)
           .enchanted()
@@ -746,8 +748,7 @@ object FirstPage extends Menu {
         iconItemStack,
         LeftClickButtonEffect(
           CommonSoundEffects.menuTransitionFenceSound,
-          // TODO メニューに置き換える
-          ComputedEffect(p => openInventoryEffect(MenuInventoryData.getVotingMenuData(p)))
+          ioCanOpenVoteMenu.open(VoteMenu)
         )
       )
     }
