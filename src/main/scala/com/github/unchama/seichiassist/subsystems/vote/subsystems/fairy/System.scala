@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
-import cats.effect.ConcurrentEffect
+import cats.effect.{ConcurrentEffect, Sync}
 import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
@@ -52,13 +52,13 @@ object System {
 
         override protected val fairyPlaySoundRepository
           : KeyedDataRepository[UUID, Ref[F, FairyPlaySound]] =
-          KeyedDataRepository.unlift[UUID, Ref[F, FairyPlaySound]](_ =>
-            Some(Ref.unsafe(FairyPlaySound.play))
-          )
+          KeyedDataRepository.unlift[UUID, Ref[F, FairyPlaySound]]
 
-        override def fairyPlaySound(uuid: UUID): F[FairyPlaySound] = fairyPlaySoundRepository(
-          uuid
-        ).get
+        override def fairyPlaySound(uuid: UUID): F[FairyPlaySound] =
+          if (fairyPlaySoundRepository.isDefinedAt(uuid))
+            fairyPlaySoundRepository(uuid).get
+          else
+            Sync[F].pure(FairyPlaySound.play)
 
         override def fairyPlaySoundToggle(uuid: UUID): F[Unit] = for {
           nowSetting <- fairyPlaySound(uuid)
