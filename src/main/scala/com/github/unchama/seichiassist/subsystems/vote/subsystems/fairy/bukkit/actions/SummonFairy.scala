@@ -49,7 +49,7 @@ object SummonFairy {
           MessageEffect(s"${GOLD}既に妖精を召喚しています"),
           FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
         )
-      val effectPoint =
+      val notEnoughEffectPoint =
         SequentialEffect(
           MessageEffect(s"${GOLD}投票ptが足りません"),
           FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)
@@ -66,7 +66,7 @@ object SummonFairy {
         else if (
           voteAPI.effectPoints(uuid).toIO.unsafeRunSync().value < validTimeState.value * 2
         )
-          effectPoint(player) // 投票ptがたりなかった
+          notEnoughEffectPoint(player) // 投票ptがたりなかった
         else {
           val levelCappedManaAmount =
             ContextCoercion(manaApi.readManaAmount(player)).toIO.unsafeRunSync().cap.value
