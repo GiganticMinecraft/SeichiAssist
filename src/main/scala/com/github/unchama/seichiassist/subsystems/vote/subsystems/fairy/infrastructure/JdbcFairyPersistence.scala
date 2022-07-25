@@ -105,7 +105,7 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     fairyRecoveryMana: FairyRecoveryMana
   ): F[Unit] = Sync[F].delay {
     DB.localTx { implicit session =>
-      sql"UPDATE playerdata SET VotingFairyRecoveryValue = ${fairyRecoveryMana.recoveryMana} WHERE uuid = $uuid"
+      sql"UPDATE playerdata SET VotingFairyRecoveryValue = ${fairyRecoveryMana.recoveryMana} WHERE uuid = ${uuid.toString}"
         .execute()
         .apply()
     }

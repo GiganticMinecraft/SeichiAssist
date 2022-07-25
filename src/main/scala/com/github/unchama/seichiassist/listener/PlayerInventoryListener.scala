@@ -386,7 +386,7 @@ class PlayerInventoryListener(
   }
 
   // 投票ptメニュー
-  @EventHandler
+//  @EventHandler
   def onVotingMenuEvent(event: InventoryClickEvent): Unit = {
     // 外枠のクリック処理なら終了
     if (event.getClickedInventory == null) {

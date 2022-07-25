@@ -6,15 +6,7 @@ import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit.FairyLoreTable
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  AppleOpenState,
-  FairyLore,
-  FairyPlaySound,
-  FairyRecoveryMana,
-  FairyUsingState,
-  FairyValidTimeState,
-  FairyValidTimes
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
 
 import java.util.UUID
@@ -39,7 +31,7 @@ object System {
 
         override def getFairyLore(uuid: UUID): F[FairyLore] = for {
           state <- appleOpenState(uuid)
-        } yield FairyLoreTable.loreTable(state.amount)
+        } yield FairyLoreTable.loreTable(state.amount - 1)
 
         override def updateFairySummonState(
           uuid: UUID,
@@ -52,13 +44,14 @@ object System {
 
         override protected val fairyPlaySoundRepository
           : KeyedDataRepository[UUID, Ref[F, FairyPlaySound]] =
-          KeyedDataRepository.unlift[UUID, Ref[F, FairyPlaySound]]
+          KeyedDataRepository.unlift[UUID, Ref[F, FairyPlaySound]] { _ =>
+            Some(Ref.unsafe(FairyPlaySound.play))
+          }
 
         override def fairyPlaySound(uuid: UUID): F[FairyPlaySound] =
           if (fairyPlaySoundRepository.isDefinedAt(uuid))
             fairyPlaySoundRepository(uuid).get
-          else
-            Sync[F].pure(FairyPlaySound.play)
+          else Sync[F].pure(FairyPlaySound.play)
 
         override def fairyPlaySoundToggle(uuid: UUID): F[Unit] = for {
           nowSetting <- fairyPlaySound(uuid)

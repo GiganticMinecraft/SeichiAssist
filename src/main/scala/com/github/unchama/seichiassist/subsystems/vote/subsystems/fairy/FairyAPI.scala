@@ -2,15 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  AppleOpenState,
-  FairyLore,
-  FairyPlaySound,
-  FairyRecoveryMana,
-  FairyUsingState,
-  FairyValidTimeState,
-  FairyValidTimes
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
 
 import java.util.UUID
 

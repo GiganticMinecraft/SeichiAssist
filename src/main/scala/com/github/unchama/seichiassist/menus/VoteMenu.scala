@@ -250,7 +250,7 @@ object VoteMenu extends Menu {
         LeftClickButtonEffect {
           SequentialEffect(
             UnfocusedEffect {
-              BukkitSummonFairy(player).summon.unsafeRunAsyncAndForget()
+              BukkitSummonFairy(player).summon.unsafeRunSync()
             },
             closeInventoryEffect
           )
