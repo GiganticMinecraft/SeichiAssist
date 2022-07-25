@@ -61,15 +61,21 @@ object System {
 
         override protected[this] val fairyValidTimeRepository
           : KeyedDataRepository[UUID, Ref[F, Option[FairyValidTimes]]] =
-          KeyedDataRepository.unlift[UUID, Ref[F, Option[FairyValidTimes]]](_ => None)
+          KeyedDataRepository.unlift[UUID, Ref[F, Option[FairyValidTimes]]](_ =>
+            Some(Ref.unsafe(None))
+          )
 
         override def fairyValidTimes(uuid: UUID): F[Option[FairyValidTimes]] =
-          fairyValidTimeRepository(uuid).get
+          if (fairyValidTimeRepository.isDefinedAt(uuid))
+            fairyValidTimeRepository(uuid).get
+          else
+            Sync[F].pure(None)
 
         override def updateFairyValidTimes(
           uuid: UUID,
           fairyValidTimes: Option[FairyValidTimes]
-        ): F[Unit] = fairyValidTimeRepository(uuid).set(fairyValidTimes)
+        ): F[Unit] =
+          fairyValidTimeRepository(uuid).set(fairyValidTimes)
 
         override def fairyUsingState(uuid: UUID): F[FairyUsingState] =
           persistence.fairyUsingState(uuid)
