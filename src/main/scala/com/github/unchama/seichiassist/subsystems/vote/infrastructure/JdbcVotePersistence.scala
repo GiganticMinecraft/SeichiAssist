@@ -96,7 +96,7 @@ class JdbcVotePersistence[F[_]: Sync] extends VotePersistence[F] {
    */
   override def effectPoints(uuid: UUID): F[EffectPoint] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      val effectPoints = sql"SELECT effectpoint FROM playerdata WHERE name = ${uuid.toString}"
+      val effectPoints = sql"SELECT effectpoint FROM playerdata WHERE uuid = ${uuid.toString}"
         .map(_.int("effectpoint"))
         .single()
         .apply()
