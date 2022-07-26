@@ -131,9 +131,9 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def updateFairyEndTime(uuid: UUID, fairyValidTimes: FairyValidTimes): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET newVotingFairyTime = ${Date.from(
-            ZonedDateTime.of(fairyValidTimes.endTimeOpt.get, ZoneId.systemDefault()).toInstant
-          )} WHERE uuid = ${uuid.toString}".execute().apply()
+        sql"UPDATE playerdata SET newVotingFairyTime = ${fairyValidTimes.endTimeOpt.get} WHERE uuid = ${uuid.toString}"
+          .execute()
+          .apply()
       }
     }
 
@@ -143,12 +143,10 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   override def fairyEndTime(uuid: UUID): F[Option[FairyValidTimes]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val dateOpt = sql"SELECT newVotingFairyTime FROM playerdata WHERE uuid = ${uuid.toString}"
-        .map(_.date("newVotingFairyTime"))
+        .map(_.localDateTime("newVotingFairyTime"))
         .single()
         .apply()
-      dateOpt.map { date =>
-        FairyValidTimes(Some(LocalDateTime.ofInstant(date.toInstant, ZoneId.systemDefault())))
-      }
+      dateOpt.map { date => FairyValidTimes(Some(date)) }
     }
   }
 
