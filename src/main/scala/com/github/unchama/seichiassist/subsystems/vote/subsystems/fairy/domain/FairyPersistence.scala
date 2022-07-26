@@ -47,11 +47,11 @@ trait FairyPersistence[F[_]] {
   /**
    * 妖精の効果が終了する時刻を変更する
    */
-  def updateFairyEndTime(uuid: UUID, fairyValidTimes: FairyValidTimes): F[Unit]
+  def updateFairyEndTime(uuid: UUID, fairyEndTime: FairyEndTime): F[Unit]
 
   /**
    * 妖精の効果が終了する時刻を取得する
    */
-  def fairyEndTime(uuid: UUID): F[Option[FairyValidTimes]]
+  def fairyEndTime(uuid: UUID): F[Option[FairyEndTime]]
 
 }

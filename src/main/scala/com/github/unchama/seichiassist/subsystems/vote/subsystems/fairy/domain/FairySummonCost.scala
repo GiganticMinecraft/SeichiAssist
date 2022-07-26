@@ -9,17 +9,17 @@ case class FairySummonCost(value: Int) {
    * @return 妖精が有効な時間
    * NOTE: 妖精が有効な時間はコストによって定められる。
    */
-  def validTime: FairyValidTimes = {
+  def validTime: FairyEndTime = {
     val now = LocalDateTime.now()
     val validTime = value match {
       case 1 =>
-        FairyValidTimes(Some(now.plusMonths(30)))
+        FairyEndTime(Some(now.plusMonths(30)))
       case 2 =>
-        FairyValidTimes(Some(now.plusHours(1)))
+        FairyEndTime(Some(now.plusHours(1)))
       case 3 =>
-        FairyValidTimes(Some(now.plusHours(1).plusMinutes(30)))
+        FairyEndTime(Some(now.plusHours(1).plusMinutes(30)))
       case 4 =>
-        FairyValidTimes(Some(now.plusHours(2)))
+        FairyEndTime(Some(now.plusHours(2)))
     }
     validTime
   }

@@ -65,14 +65,11 @@ object System {
           else FairyPlaySound.on
         )
 
-        override def fairyValidTimes(player: Player): F[Option[FairyValidTimes]] =
+        override def fairyEndTime(player: Player): F[Option[FairyEndTime]] =
           persistence.fairyEndTime(player.getUniqueId)
 
-        override def updateFairyValidTimes(
-          player: Player,
-          fairyValidTimes: FairyValidTimes
-        ): F[Unit] =
-          persistence.updateFairyEndTime(player.getUniqueId, fairyValidTimes)
+        override def updateFairyEndTime(player: Player, fairyEndTime: FairyEndTime): F[Unit] =
+          persistence.updateFairyEndTime(player.getUniqueId, fairyEndTime)
 
         override def fairyUsingState(uuid: UUID): F[FairyUsingState] =
           persistence.fairyUsingState(uuid)

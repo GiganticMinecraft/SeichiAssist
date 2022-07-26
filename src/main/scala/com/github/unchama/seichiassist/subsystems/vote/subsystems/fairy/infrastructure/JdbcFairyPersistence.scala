@@ -120,10 +120,10 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精の効果が終了する時刻を変更する
    */
-  override def updateFairyEndTime(uuid: UUID, fairyValidTimes: FairyValidTimes): F[Unit] =
+  override def updateFairyEndTime(uuid: UUID, fairyEndTime: FairyEndTime): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET newVotingFairyTime = ${fairyValidTimes.endTimeOpt.get} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE playerdata SET newVotingFairyTime = ${fairyEndTime.endTimeOpt.get} WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
@@ -132,13 +132,13 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
   /**
    * 妖精の効果が終了する時刻を取得する
    */
-  override def fairyEndTime(uuid: UUID): F[Option[FairyValidTimes]] = Sync[F].delay {
+  override def fairyEndTime(uuid: UUID): F[Option[FairyEndTime]] = Sync[F].delay {
     DB.readOnly { implicit session =>
       val dateOpt = sql"SELECT newVotingFairyTime FROM playerdata WHERE uuid = ${uuid.toString}"
         .map(_.localDateTime("newVotingFairyTime"))
         .single()
         .apply()
-      dateOpt.map { date => FairyValidTimes(Some(date)) }
+      dateOpt.map { date => FairyEndTime(Some(date)) }
     }
   }
 

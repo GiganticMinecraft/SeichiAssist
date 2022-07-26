@@ -35,9 +35,9 @@ trait FairyWriteAPI[F[_], Player] {
   def updateFairyRecoveryManaAmount(uuid: UUID, fairyRecoveryMana: FairyRecoveryMana): F[Unit]
 
   /**
-   * 妖精が有効な時間を変更する
+   * 妖精の効果が終了する時間を変更する
    */
-  def updateFairyValidTimes(player: Player, fairyValidTimes: FairyValidTimes): F[Unit]
+  def updateFairyEndTime(player: Player, fairyEndTime: FairyEndTime): F[Unit]
 
 }
 
@@ -91,7 +91,7 @@ trait FairyReadAPI[F[_], Player] {
   /**
    * 妖精が有効な時間を返す
    */
-  def fairyValidTimes(player: Player): F[Option[FairyValidTimes]]
+  def fairyEndTime(player: Player): F[Option[FairyEndTime]]
 
 }
 
