@@ -11,6 +11,7 @@ import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.ChatColor._
 
 import java.time.LocalTime
 import scala.util.Random
@@ -25,12 +26,13 @@ object BukkitFairySpeak {
     ): F[Unit] = for {
       playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
     } yield {
+      val message = s"$AQUA$BOLD<マナ妖精>$RESET${fairyMessage.message}"
       if (playSound == FairyPlaySound.on)
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f),
-          MessageEffect(fairyMessage.message)
+          MessageEffect(message)
         ).run(player).unsafeRunSync()
-      else MessageEffect(fairyMessage.message).run(player).unsafeRunSync()
+      else MessageEffect(message).run(player).unsafeRunSync()
     }
 
     override def speakRandomly(
