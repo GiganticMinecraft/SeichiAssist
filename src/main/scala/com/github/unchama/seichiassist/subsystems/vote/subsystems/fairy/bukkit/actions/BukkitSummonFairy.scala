@@ -1,6 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
-import cats.effect.{ContextShift, IO, LiftIO, SyncIO}
+import cats.effect.{ConcurrentEffect, ContextShift, IO, LiftIO, SyncIO}
 import com.github.unchama.seichiassist.subsystems.breakcount.BreakCountAPI
 import com.github.unchama.seichiassist.subsystems.mana.ManaApi
 import com.github.unchama.seichiassist.subsystems.vote.VoteAPI
@@ -28,7 +28,8 @@ object BukkitSummonFairy {
     implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     fairyAPI: FairyAPI[IO, Player],
     voteAPI: VoteAPI[IO],
-    manaApi: ManaApi[IO, SyncIO, Player]
+    manaApi: ManaApi[IO, SyncIO, Player],
+    concurrentEffect: ConcurrentEffect[IO]
   ): SummonFairy[IO] = new SummonFairy[IO] {
     override def summon: IO[Unit] = {
       val playerLevel =
@@ -78,7 +79,7 @@ object BukkitSummonFairy {
         _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
         _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
         isFairyValidTimeDefined = fairyAPI.fairyValidTimeRepository.isDefinedAt(player)
-        _ <- fairyAPI.updateFairyValidTimes(player, Some(fairySummonCost.validTime))
+        _ <- fairyAPI.updateFairyValidTimes(player, fairySummonCost.validTime)
       } yield {
         /*
           FairySpeechRoutineが一度も起動されていなければ起動する
@@ -93,7 +94,10 @@ object BukkitSummonFairy {
 
       LiftIO[IO].liftIO {
         SequentialEffect(
-          UnfocusedEffect(eff.unsafeRunAsyncAndForget()),
+          UnfocusedEffect {
+            BukkitFairySpeak[IO].speakRandomly(player).unsafeRunSync()
+            eff.unsafeRunAsyncAndForget()
+          },
           MessageEffect(
             List(
               s"$RESET$YELLOW${BOLD}妖精を呼び出しました！",

@@ -37,7 +37,7 @@ trait FairyWriteAPI[F[_], Player] {
   /**
    * 妖精が有効な時間を変更する
    */
-  def updateFairyValidTimes(player: Player, fairyValidTimes: Option[FairyValidTimes]): F[Unit]
+  def updateFairyValidTimes(player: Player, fairyValidTimes: FairyValidTimes): F[Unit]
 
 }
 
@@ -90,9 +90,8 @@ trait FairyReadAPI[F[_], Player] {
 
   /**
    * 妖精の有効な時間を保存するリポジトリ
-   * ※永続化は必要ない
    */
-  val fairyValidTimeRepository: KeyedDataRepository[Player, Ref[F, Option[FairyValidTimes]]]
+  val fairyValidTimeRepository: KeyedDataRepository[Player, Ref[F, FairyValidTimes]]
 
   /**
    * 妖精が有効な時間を返す

@@ -11,6 +11,10 @@ trait FairySpeak[F[_], Player] {
 
   def speakRandomly(player: Player)(implicit fairyAPI: FairyAPI[F, Player]): F[Unit]
 
+  def speakStartMessage(player: Player, startTimeHour: Int)(
+    implicit fairyAPI: FairyAPI[F, Player]
+  ): F[Unit]
+
 }
 
 object FairySpeak {

@@ -35,6 +35,39 @@ object BukkitFairySpeak {
     override def speakRandomly(
       player: Player
     )(implicit fairyAPI: FairyAPI[F, Player]): F[Unit] = {
+      Sync[F].unit
+//      val nameCalledByFairy = NameCalledByFairy(player.getName)
+//      val uuid = player.getUniqueId
+//
+//      println("random1")
+//
+//      implicit val F: Monad[F] = implicitly
+//
+//      F.ifM(fairyAPI.fairyUsingState(uuid).map(_ == FairyUsingState.NotUsing))(
+//        return Sync[F].unit,
+//        Sync[F].unit
+//      )
+//
+//      println("random2")
+//
+//      println("isDefinedAt:" + fairyAPI.fairyValidTimeRepository.isDefinedAt(player))
+//
+//      for {
+//        fairyValidTimesOpt <- fairyAPI.fairyValidTimeRepository(player).get
+//        fairyMessages =
+//          if (4 <= startTimeHour && startTimeHour < 10)
+//            FairyMessageTable.morningMessages(nameCalledByFairy)
+//          else if (10 <= startTimeHour && startTimeHour < 18)
+//            FairyMessageTable.dayMessages(nameCalledByFairy)
+//          else
+//            FairyMessageTable.nightMessages(nameCalledByFairy)
+//        fairyMessage <- getMessageRandomly(fairyMessages)
+//      } yield speak(player, fairyMessage).toIO.unsafeRunSync()
+    }
+
+    override def speakStartMessage(player: Player, startTimeHour: Int)(
+      implicit fairyAPI: FairyAPI[F, Player]
+    ): F[Unit] = {
       val nameCalledByFairy = NameCalledByFairy(player.getName)
       val uuid = player.getUniqueId
 
@@ -51,18 +84,15 @@ object BukkitFairySpeak {
 
       println("isDefinedAt:" + fairyAPI.fairyValidTimeRepository.isDefinedAt(player))
 
-      for {
-        fairyValidTimesOpt <- fairyAPI.fairyValidTimeRepository(player).get
-        startTimeHour = fairyValidTimesOpt.get.startTime.getHour
-        fairyMessages =
-          if (4 <= startTimeHour && startTimeHour < 10)
-            FairyMessageTable.morningMessages(nameCalledByFairy)
-          else if (10 <= startTimeHour && startTimeHour < 18)
-            FairyMessageTable.dayMessages(nameCalledByFairy)
-          else
-            FairyMessageTable.nightMessages(nameCalledByFairy)
-        fairyMessage <- getMessageRandomly(fairyMessages)
-      } yield speak(player, fairyMessage).toIO.unsafeRunSync()
+      val fairyMessages =
+        if (4 <= startTimeHour && startTimeHour < 10)
+          FairyMessageTable.morningMessages(nameCalledByFairy)
+        else if (10 <= startTimeHour && startTimeHour < 18)
+          FairyMessageTable.dayMessages(nameCalledByFairy)
+        else
+          FairyMessageTable.nightMessages(nameCalledByFairy)
+
+      getMessageRandomly(fairyMessages).map(speak(player, _).toIO.unsafeRunSync())
     }
   }
 

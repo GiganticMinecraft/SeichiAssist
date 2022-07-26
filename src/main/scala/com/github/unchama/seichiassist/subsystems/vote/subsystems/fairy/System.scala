@@ -48,10 +48,8 @@ object System {
       new System[F, Player] {
         override val api: FairyAPI[F, Player] = new FairyAPI[F, Player] {
 
-          val repository: PlayerDataRepository[Ref[F, Option[FairyValidTimes]]] =
-            fairyValidTimeRepositoryControls
-              .repository
-              .map(_.mapK[F](ContextCoercion.asFunctionK))
+          val repository: PlayerDataRepository[Ref[F, FairyValidTimes]] =
+            fairyValidTimeRepositoryControls.repository.map(_.mapK(ContextCoercion.asFunctionK))
 
           override def appleOpenState(uuid: UUID): F[AppleOpenState] =
             persistence.appleOpenState(uuid)
@@ -96,16 +94,15 @@ object System {
           )
 
           override val fairyValidTimeRepository
-            : KeyedDataRepository[Player, Ref[F, Option[FairyValidTimes]]] =
-            KeyedDataRepository.unlift { player => repository.lift(player) }
+            : KeyedDataRepository[Player, Ref[F, FairyValidTimes]] = repository
 
           override def fairyValidTimes(player: Player): F[Option[FairyValidTimes]] = ???
 
           override def updateFairyValidTimes(
             player: Player,
-            fairyValidTimes: Option[FairyValidTimes]
+            fairyValidTimes: FairyValidTimes
           ): F[Unit] =
-            repository.lift(player).traverse { value => value.set(fairyValidTimes) }.as(())
+            repository(player).set(fairyValidTimes)
 
           override def fairyUsingState(uuid: UUID): F[FairyUsingState] =
             persistence.fairyUsingState(uuid)

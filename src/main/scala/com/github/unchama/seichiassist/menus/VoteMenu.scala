@@ -275,7 +275,7 @@ object VoteMenu extends Menu {
           SequentialEffect(
             UnfocusedEffect {
               val endTime =
-                fairyAPI.fairyValidTimes(player).unsafeRunSync().get.endTime
+                fairyAPI.fairyValidTimes(player).unsafeRunSync().get.endTimeOpt.get
 
               BukkitFairySpeak[IO]
                 .speak(

@@ -13,15 +13,15 @@ case class FairySummonCost(value: Int) {
     val now = LocalDateTime.now()
     val validTime = value match {
       case 1 =>
-        FairyValidTimes(_, now.plusMonths(30))
+        FairyValidTimes(Some(now.plusMonths(30)))
       case 2 =>
-        FairyValidTimes(_, now.plusHours(1))
+        FairyValidTimes(Some(now.plusHours(1)))
       case 3 =>
-        FairyValidTimes(_, now.plusHours(1).plusMinutes(30))
+        FairyValidTimes(Some(now.plusHours(1).plusMinutes(30)))
       case 4 =>
-        FairyValidTimes(_, now.plusHours(2))
+        FairyValidTimes(Some(now.plusHours(2)))
     }
-    validTime(now)
+    validTime
   }
 
 }
