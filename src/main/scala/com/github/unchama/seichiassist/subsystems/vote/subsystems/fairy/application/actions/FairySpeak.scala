@@ -1,7 +1,7 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.actions
 
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.FairyMessage
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.FairyMessage
 
 trait FairySpeak[F[_], Player] {
 

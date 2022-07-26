@@ -1,5 +1,13 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  AppleOpenState,
+  FairyEndTime,
+  FairyRecoveryMana,
+  FairySummonCost,
+  FairyUsingState
+}
+
 import java.util.UUID
 
 trait FairyPersistence[F[_]] {

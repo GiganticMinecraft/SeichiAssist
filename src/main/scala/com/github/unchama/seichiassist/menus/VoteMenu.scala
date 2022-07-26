@@ -19,10 +19,8 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.a
   BukkitFairySpeak,
   BukkitSummonFairy
 }
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  AppleOpenState,
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
   FairyMessage,
-  FairyPlaySound,
   FairySummonCost
 }
 import com.github.unchama.seichiassist.task.VotingFairyTask

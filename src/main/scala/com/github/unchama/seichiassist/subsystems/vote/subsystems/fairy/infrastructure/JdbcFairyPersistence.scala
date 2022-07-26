@@ -2,6 +2,13 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrast
 
 import cats.effect.Sync
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  AppleOpenState,
+  FairyEndTime,
+  FairyRecoveryMana,
+  FairySummonCost,
+  FairyUsingState
+}
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
 import java.util.UUID

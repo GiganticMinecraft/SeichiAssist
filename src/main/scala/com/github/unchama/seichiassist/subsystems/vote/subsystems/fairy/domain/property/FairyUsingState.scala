@@ -1,4 +1,4 @@
-package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
+package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property
 
 sealed trait FairyUsingState
 

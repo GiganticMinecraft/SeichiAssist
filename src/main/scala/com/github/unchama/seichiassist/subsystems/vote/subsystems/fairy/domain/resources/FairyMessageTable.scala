@@ -1,4 +1,10 @@
-package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
+package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.resources
+
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
+  FairyMessage,
+  FairyMessages,
+  NameCalledByFairy
+}
 
 object FairyMessageTable {
 
