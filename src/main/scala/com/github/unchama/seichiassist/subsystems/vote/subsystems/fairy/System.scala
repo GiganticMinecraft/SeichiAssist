@@ -7,14 +7,16 @@ import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
   PlayerDataRepository
 }
-import com.github.unchama.datarepository.template.RepositoryDefinition
 import com.github.unchama.generic.ContextCoercion
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.application.repository.FairyValidTimeRepositoryDefinition
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.bukkit.FairyLoreTable
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.JdbcFairyPersistence
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure.{
+  JdbcFairyPersistence,
+  JdbcFairyValidTimesPersistence
+}
 import org.bukkit.entity.Player
 
 import java.util.UUID
@@ -31,18 +33,15 @@ object System {
     *[_],
     F
   ]]: F[System[F, Player]] = {
+    import com.github.unchama.minecraft.bukkit.algebra.BukkitPlayerHasUuid.instance
     val persistence = new JdbcFairyPersistence[F]
-    implicit val fairyValidTimesState: FairyValidTimesState[G] = new FairyValidTimesState[G]
+    implicit val fairyValidTimesState: FairyValidTimesState[F] = new FairyValidTimesState[F]
+    val fairyValidTimesPersistence = new JdbcFairyValidTimesPersistence[G]
 
     for {
       fairyValidTimeRepositoryControls <- ContextCoercion(
         BukkitRepositoryControls.createHandles(
-          RepositoryDefinition
-            .Phased
-            .TwoPhased(
-              FairyValidTimeRepositoryDefinition.initialization[G, Player],
-              FairyValidTimeRepositoryDefinition.finalization[G, Player]
-            )
+          FairyValidTimeRepositoryDefinition.withContext[G, Player](fairyValidTimesPersistence)
         )
       )
     } yield {
@@ -96,18 +95,17 @@ object System {
             else FairyPlaySound.on
           )
 
-          override protected[this] val fairyValidTimeRepository
+          override val fairyValidTimeRepository
             : KeyedDataRepository[Player, Ref[F, Option[FairyValidTimes]]] =
-            repository
+            KeyedDataRepository.unlift { player => repository.lift(player) }
 
-          override def fairyValidTimes(player: Player): F[Option[FairyValidTimes]] =
-            fairyValidTimeRepository(player).get
+          override def fairyValidTimes(player: Player): F[Option[FairyValidTimes]] = ???
 
           override def updateFairyValidTimes(
             player: Player,
             fairyValidTimes: Option[FairyValidTimes]
           ): F[Unit] =
-            fairyValidTimeRepository(player).set(fairyValidTimes)
+            repository.lift(player).traverse { value => value.set(fairyValidTimes) }.as(())
 
           override def fairyUsingState(uuid: UUID): F[FairyUsingState] =
             persistence.fairyUsingState(uuid)

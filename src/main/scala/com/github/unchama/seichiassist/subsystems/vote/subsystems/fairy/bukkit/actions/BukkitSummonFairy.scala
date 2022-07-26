@@ -77,21 +77,17 @@ object BukkitSummonFairy {
         _ <- fairyAPI.updateFairyUsingState(uuid, FairyUsingState.Using)
         _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
         _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
-        validTimes <- fairyAPI.fairyValidTimes(player)
+        isFairyValidTimeDefined = fairyAPI.fairyValidTimeRepository.isDefinedAt(player)
         _ <- fairyAPI.updateFairyValidTimes(player, Some(fairySummonCost.validTime))
       } yield {
         /*
           FairySpeechRoutineが一度も起動されていなければ起動する
-          そうじゃなかったからfor実行
          */
-        validTimes match {
-          case Some(_) => ()
-          case None =>
-            import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
-            implicit val contextShift: ContextShift[IO] =
-              IO.contextShift(ExecutionContext.global)
-            FairySpeechRoutine.start(player).start.unsafeRunSync()
-            ()
+        if (!isFairyValidTimeDefined) {
+          import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
+          implicit val contextShift: ContextShift[IO] =
+            IO.contextShift(ExecutionContext.global)
+          FairySpeechRoutine.start(player).start.unsafeRunSync()
         }
       }
 

@@ -49,8 +49,10 @@ object BukkitFairySpeak {
 
       println("random2")
 
+      println("isDefinedAt:" + fairyAPI.fairyValidTimeRepository.isDefinedAt(player))
+
       for {
-        fairyValidTimesOpt <- fairyAPI.fairyValidTimes(player)
+        fairyValidTimesOpt <- fairyAPI.fairyValidTimeRepository(player).get
         startTimeHour = fairyValidTimesOpt.get.startTime.getHour
         fairyMessages =
           if (4 <= startTimeHour && startTimeHour < 10)
