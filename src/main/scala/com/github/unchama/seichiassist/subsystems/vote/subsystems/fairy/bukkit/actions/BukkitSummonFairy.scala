@@ -26,7 +26,7 @@ object BukkitSummonFairy {
 
   def apply(player: Player)(
     implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
-    fairyAPI: FairyAPI[IO],
+    fairyAPI: FairyAPI[IO, Player],
     voteAPI: VoteAPI[IO],
     manaApi: ManaApi[IO, SyncIO, Player]
   ): SummonFairy[IO] = new SummonFairy[IO] {
@@ -57,14 +57,14 @@ object BukkitSummonFairy {
 
       val uuid = player.getUniqueId
 
-      val validTimeState = fairyAPI.fairyValidTimeState(uuid).unsafeRunSync()
+      val fairySummonCost = fairyAPI.fairySummonCost(uuid).unsafeRunSync()
 
       if (playerLevel < 10) return notEnoughLevelEffect(player) // レベル不足
 
       if (fairyAPI.fairyUsingState(uuid).unsafeRunSync() == Using)
         return alreadySummoned(player) // 既に召喚している
 
-      if (voteAPI.effectPoints(uuid).unsafeRunSync().value < validTimeState.value * 2)
+      if (voteAPI.effectPoints(uuid).unsafeRunSync().value < fairySummonCost.value * 2)
         return notEnoughEffectPoint(player) // 投票ptがたりなかった
 
       val levelCappedManaAmount =
@@ -75,10 +75,10 @@ object BukkitSummonFairy {
 
       val eff = for {
         _ <- fairyAPI.updateFairyUsingState(uuid, FairyUsingState.Using)
-        _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(validTimeState.value * 2))
+        _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
         _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
-        validTimes <- fairyAPI.fairyValidTimes(uuid)
-        _ <- fairyAPI.updateFairyValidTimes(uuid, Some(validTimeState.validTime))
+        validTimes <- fairyAPI.fairyValidTimes(player)
+        _ <- fairyAPI.updateFairyValidTimes(player, Some(fairySummonCost.validTime))
       } yield {
         /*
           FairySpeechRoutineが一度も起動されていなければ起動する
@@ -90,7 +90,7 @@ object BukkitSummonFairy {
             import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
             implicit val contextShift: ContextShift[IO] =
               IO.contextShift(ExecutionContext.global)
-            FairySpeechRoutine.start(player).start
+            FairySpeechRoutine.start(player).start.unsafeRunSync()
             ()
         }
       }

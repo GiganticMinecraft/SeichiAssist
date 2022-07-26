@@ -23,7 +23,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyMessage,
   FairyPlaySound,
-  FairyValidTimeState
+  FairySummonCost
 }
 import com.github.unchama.seichiassist.task.VotingFairyTask
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
@@ -40,7 +40,7 @@ object VoteMenu extends Menu {
 
   class Environment(
     implicit val voteAPI: VoteAPI[IO],
-    val fairyAPI: FairyAPI[IO],
+    val fairyAPI: FairyAPI[IO, Player],
     val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     val manaApi: ManaApi[IO, SyncIO, Player],
     val ioCanOpenFirstPage: IO CanOpen FirstPage.type
@@ -148,17 +148,19 @@ object VoteMenu extends Menu {
       }
     )
 
-    def fairySummonTimeToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
-      val validTimeState = fairyAPI.fairyValidTimeState(uuid).unsafeRunSync()
+    def fairySummonTimeToggleButton(
+      uuid: UUID
+    )(implicit fairyAPI: FairyAPI[IO, Player]): Button = {
+      val fairySummonCost = fairyAPI.fairySummonCost(uuid).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.WATCH)
           .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
           .lore(
             List(
-              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(validTimeState.value)}",
+              s"$RESET$GREEN$BOLD${VotingFairyTask.dispToggleVFTime(fairySummonCost.value)}",
               "",
               s"$RESET${GRAY}コスト",
-              s"$RESET$RED$BOLD${validTimeState.value * 2}投票pt",
+              s"$RESET$RED$BOLD${fairySummonCost.value * 2}投票pt",
               "",
               s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え"
             )
@@ -169,14 +171,16 @@ object VoteMenu extends Menu {
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect(
               fairyAPI
-                .updateFairySummonState(uuid, FairyValidTimeState(validTimeState.value % 4 + 1))
+                .updateFairySummonCost(uuid, FairySummonCost(fairySummonCost.value % 4 + 1))
             )
           )
         }
       )
     }
 
-    def fairyContractSettingToggle(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button =
+    def fairyContractSettingToggle(
+      uuid: UUID
+    )(implicit fairyAPI: FairyAPI[IO, Player]): Button =
       Button(
         new IconItemStackBuilder(Material.PAPER)
           .title(s"$GOLD$UNDERLINE${BOLD}妖精とのお約束")
@@ -200,7 +204,9 @@ object VoteMenu extends Menu {
         }
       )
 
-    def fairyPlaySoundToggleButton(uuid: UUID)(implicit fairyAPI: FairyAPI[IO]): Button = {
+    def fairyPlaySoundToggleButton(
+      uuid: UUID
+    )(implicit fairyAPI: FairyAPI[IO, Player]): Button = {
       val description =
         List(s"$RESET$DARK_GRAY※この機能はデフォルトでONです。", s"$RESET$DARK_RED${UNDERLINE}クリックで切り替え")
       val playSoundOnLore = List(s"$RESET${GREEN}現在音が鳴る設定になっています。") ++ description
@@ -210,7 +216,7 @@ object VoteMenu extends Menu {
         new IconItemStackBuilder(Material.JUKEBOX)
           .title(s"$GOLD$UNDERLINE${BOLD}マナ妖精の音トグル")
           .lore(
-            if (fairyAPI.fairyPlaySound(uuid).unsafeRunSync() == FairyPlaySound.play)
+            if (fairyAPI.fairyPlaySound(uuid).unsafeRunSync() == FairyPlaySound.on)
               playSoundOnLore
             else playSoundOffLore
           )
@@ -227,13 +233,13 @@ object VoteMenu extends Menu {
     }
 
     def fairySummonButton(player: Player)(
-      implicit fairyAPI: FairyAPI[IO],
+      implicit fairyAPI: FairyAPI[IO, Player],
       voteAPI: VoteAPI[IO],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
       manaApi: ManaApi[IO, SyncIO, Player]
     ): Button = {
       val fairySummonState =
-        fairyAPI.fairyValidTimeState(player.getUniqueId).unsafeRunSync().value
+        fairyAPI.fairySummonCost(player.getUniqueId).unsafeRunSync().value
       Button(
         new IconItemStackBuilder(Material.GHAST_TEAR)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")
@@ -258,7 +264,7 @@ object VoteMenu extends Menu {
       )
     }
 
-    def checkTimeButton(player: Player)(implicit fairyAPI: FairyAPI[IO]): Button = {
+    def checkTimeButton(player: Player)(implicit fairyAPI: FairyAPI[IO, Player]): Button = {
       Button(
         new IconItemStackBuilder(Material.COMPASS)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精に時間を聞く")
@@ -269,7 +275,7 @@ object VoteMenu extends Menu {
           SequentialEffect(
             UnfocusedEffect {
               val endTime =
-                fairyAPI.fairyValidTimes(player.getUniqueId).unsafeRunSync().get.endTime
+                fairyAPI.fairyValidTimes(player).unsafeRunSync().get.endTime
 
               BukkitFairySpeak[IO]
                 .speak(

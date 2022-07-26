@@ -2,11 +2,12 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain
 
 import java.time.LocalDateTime
 
-case class FairyValidTimeState(value: Int) {
-  require(1 <= value && value <= 4, "FairySummonValidTimeStateは1~4の間で指定してください。")
+case class FairySummonCost(value: Int) {
+  require(1 <= value && value <= 4, "FairySummonCostは1~4の間で指定してください。")
 
   /**
    * @return 妖精が有効な時間
+   * NOTE: 妖精が有効な時間はコストによって定められる。
    */
   def validTime: FairyValidTimes = {
     val now = LocalDateTime.now()

@@ -14,7 +14,7 @@ object FairySpeechRoutine {
 
   def start(
     player: Player
-  )(implicit fairyAPI: FairyAPI[IO], context: RepeatingTaskContext): IO[Nothing] = {
+  )(implicit fairyAPI: FairyAPI[IO, Player], context: RepeatingTaskContext): IO[Nothing] = {
 
     val repeatInterval: IO[FiniteDuration] = IO {
       import scala.concurrent.duration._

@@ -1,5 +1,6 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.bukkit.actions
 
+import cats.Monad
 import cats.effect.ConcurrentEffect.ops.toAllConcurrentEffectOps
 import cats.effect.{ConcurrentEffect, Sync}
 import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.FairyAPI
@@ -19,11 +20,11 @@ object BukkitFairySpeak {
 
   def apply[F[_]: ConcurrentEffect]: FairySpeak[F, Player] = new FairySpeak[F, Player] {
     override def speak(player: Player, fairyMessage: FairyMessage)(
-      implicit fairyAPI: FairyAPI[F]
+      implicit fairyAPI: FairyAPI[F, Player]
     ): F[Unit] = for {
       playSound <- fairyAPI.fairyPlaySound(player.getUniqueId)
     } yield {
-      if (playSound == FairyPlaySound.play)
+      if (playSound == FairyPlaySound.on)
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f),
           MessageEffect(fairyMessage.message)
@@ -31,16 +32,26 @@ object BukkitFairySpeak {
       else SequentialEffect(MessageEffect(fairyMessage.message)).apply(player)
     }
 
-    override def speakRandomly(player: Player)(implicit fairyAPI: FairyAPI[F]): F[Unit] = {
+    override def speakRandomly(
+      player: Player
+    )(implicit fairyAPI: FairyAPI[F, Player]): F[Unit] = {
       val nameCalledByFairy = NameCalledByFairy(player.getName)
       val uuid = player.getUniqueId
 
-      if (fairyAPI.fairyUsingState(uuid).toIO.unsafeRunSync() == FairyUsingState.NotUsing)
-        return Sync[F].unit
+      println("random1")
+
+      implicit val F: Monad[F] = implicitly
+
+      F.ifM(fairyAPI.fairyUsingState(uuid).map(_ == FairyUsingState.NotUsing))(
+        return Sync[F].unit,
+        Sync[F].unit
+      )
+
+      println("random2")
 
       for {
-        fairyValidTimesOpt <- fairyAPI.fairyValidTimes(uuid)
-        startTimeHour = fairyValidTimesOpt.getOrElse(return Sync[F].unit).startTime.getHour
+        fairyValidTimesOpt <- fairyAPI.fairyValidTimes(player)
+        startTimeHour = fairyValidTimesOpt.get.startTime.getHour
         fairyMessages =
           if (4 <= startTimeHour && startTimeHour < 10)
             FairyMessageTable.morningMessages(nameCalledByFairy)
@@ -49,7 +60,7 @@ object BukkitFairySpeak {
           else
             FairyMessageTable.nightMessages(nameCalledByFairy)
         fairyMessage <- getMessageRandomly(fairyMessages)
-      } yield speak(player, fairyMessage)
+      } yield speak(player, fairyMessage).toIO.unsafeRunSync()
     }
   }
 

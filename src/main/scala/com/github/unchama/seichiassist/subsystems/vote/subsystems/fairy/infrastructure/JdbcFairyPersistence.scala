@@ -6,7 +6,7 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   FairyPersistence,
   FairyRecoveryMana,
   FairyUsingState,
-  FairyValidTimeState
+  FairySummonCost
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
@@ -42,32 +42,29 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
     }
 
   /**
-   * 妖精が有効な時間の状態を更新します
+   * 妖精が有効な時間の状態を更新する
    */
-  override def updateFairyValidTimeState(
-    uuid: UUID,
-    fairyValidTimeState: FairyValidTimeState
-  ): F[Unit] =
+  override def updateFairySummonCost(uuid: UUID, fairySummonCost: FairySummonCost): F[Unit] =
     Sync[F].delay {
       DB.localTx { implicit session =>
-        sql"UPDATE playerdata SET toggleVotingFairy = ${fairyValidTimeState.value} WHERE uuid = ${uuid.toString}"
+        sql"UPDATE playerdata SET toggleVotingFairy = ${fairySummonCost.value} WHERE uuid = ${uuid.toString}"
           .execute()
           .apply()
       }
     }
 
   /**
-   * 妖精が有効な時間の状態を取得します
+   * 妖精を召喚するためのコストを取得する
    */
-  override def fairySummonState(uuid: UUID): F[FairyValidTimeState] = Sync[F].delay {
+  override def fairySummonCost(uuid: UUID): F[FairySummonCost] = Sync[F].delay {
     DB.readOnly { implicit session =>
-      val validTimeState =
+      val fairySummonCost =
         sql"SELECT toggleVotingFairy FROM playerdata WHERE uuid = ${uuid.toString}"
           .map(_.int("toggleVotingFairy"))
           .single()
           .apply()
           .get
-      FairyValidTimeState(validTimeState)
+      FairySummonCost(fairySummonCost)
     }
   }
 

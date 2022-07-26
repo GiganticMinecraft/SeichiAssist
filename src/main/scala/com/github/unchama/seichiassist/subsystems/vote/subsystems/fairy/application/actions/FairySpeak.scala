@@ -5,9 +5,11 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.F
 
 trait FairySpeak[F[_], Player] {
 
-  def speak(player: Player, fairyMessage: FairyMessage)(implicit fairyAPI: FairyAPI[F]): F[Unit]
+  def speak(player: Player, fairyMessage: FairyMessage)(
+    implicit fairyAPI: FairyAPI[F, Player]
+  ): F[Unit]
 
-  def speakRandomly(player: Player)(implicit fairyAPI: FairyAPI[F]): F[Unit]
+  def speakRandomly(player: Player)(implicit fairyAPI: FairyAPI[F, Player]): F[Unit]
 
 }
 
