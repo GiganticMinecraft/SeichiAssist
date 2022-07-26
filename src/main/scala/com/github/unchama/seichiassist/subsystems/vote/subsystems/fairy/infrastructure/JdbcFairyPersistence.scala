@@ -5,12 +5,14 @@ import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
   AppleOpenState,
   FairyPersistence,
   FairyRecoveryMana,
+  FairySummonCost,
   FairyUsingState,
-  FairySummonCost
+  FairyValidTimes
 }
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-import java.util.UUID
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
+import java.util.{Date, UUID}
 
 class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 
@@ -122,4 +124,32 @@ class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
       FairyRecoveryMana(recoveryMana)
     }
   }
+
+  /**
+   * 妖精の効果が終了する時刻を変更する
+   */
+  override def updateFairyEndTime(uuid: UUID, fairyValidTimes: FairyValidTimes): F[Unit] =
+    Sync[F].delay {
+      DB.localTx { implicit session =>
+        sql"UPDATE playerdata SET newVotingFairyTime = ${Date.from(
+            ZonedDateTime.of(fairyValidTimes.endTimeOpt.get, ZoneId.systemDefault()).toInstant
+          )} WHERE uuid = ${uuid.toString}".execute().apply()
+      }
+    }
+
+  /**
+   * 妖精の効果が終了する時刻を取得する
+   */
+  override def fairyEndTime(uuid: UUID): F[Option[FairyValidTimes]] = Sync[F].delay {
+    DB.readOnly { implicit session =>
+      val dateOpt = sql"SELECT newVotingFairyTime FROM playerdata WHERE uuid = ${uuid.toString}"
+        .map(_.date("newVotingFairyTime"))
+        .single()
+        .apply()
+      dateOpt.map { date =>
+        FairyValidTimes(Some(LocalDateTime.ofInstant(date.toInstant, ZoneId.systemDefault())))
+      }
+    }
+  }
+
 }

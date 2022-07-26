@@ -78,13 +78,13 @@ object BukkitSummonFairy {
         _ <- fairyAPI.updateFairyUsingState(uuid, FairyUsingState.Using)
         _ <- voteAPI.decreaseEffectPoint(uuid, EffectPoint(fairySummonCost.value * 2))
         _ <- fairyAPI.updateFairyRecoveryManaAmount(uuid, recoveryMana)
-        isFairyValidTimeDefined = fairyAPI.fairyValidTimeRepository.isDefinedAt(player)
+        isFairyValidTimeDefined <- fairyAPI.fairyValidTimes(player)
         _ <- fairyAPI.updateFairyValidTimes(player, fairySummonCost.validTime)
       } yield {
         /*
           FairySpeechRoutineが一度も起動されていなければ起動する
          */
-        if (!isFairyValidTimeDefined) {
+        if (isFairyValidTimeDefined.isEmpty) {
           import com.github.unchama.seichiassist.concurrent.PluginExecutionContexts.sleepAndRoutineContext
           implicit val contextShift: ContextShift[IO] =
             IO.contextShift(ExecutionContext.global)
@@ -95,7 +95,7 @@ object BukkitSummonFairy {
       LiftIO[IO].liftIO {
         SequentialEffect(
           UnfocusedEffect {
-            BukkitFairySpeak[IO].speakRandomly(player).unsafeRunSync()
+            BukkitFairySpeak[IO].speakStartMessage(player).unsafeRunSync()
             eff.unsafeRunAsyncAndForget()
           },
           MessageEffect(

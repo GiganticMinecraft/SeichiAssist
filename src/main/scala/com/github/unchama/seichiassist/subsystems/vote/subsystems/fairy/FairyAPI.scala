@@ -89,11 +89,6 @@ trait FairyReadAPI[F[_], Player] {
   ]
 
   /**
-   * 妖精の有効な時間を保存するリポジトリ
-   */
-  val fairyValidTimeRepository: KeyedDataRepository[Player, Ref[F, FairyValidTimes]]
-
-  /**
    * 妖精が有効な時間を返す
    */
   def fairyValidTimes(player: Player): F[Option[FairyValidTimes]]

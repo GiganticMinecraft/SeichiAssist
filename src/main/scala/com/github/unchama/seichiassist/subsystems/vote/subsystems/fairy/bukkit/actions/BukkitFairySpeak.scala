@@ -12,6 +12,7 @@ import com.github.unchama.targetedeffect.player.FocusedSoundEffect
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 
+import java.time.LocalTime
 import scala.util.Random
 
 object BukkitFairySpeak {
@@ -36,42 +37,13 @@ object BukkitFairySpeak {
       player: Player
     )(implicit fairyAPI: FairyAPI[F, Player]): F[Unit] = {
       Sync[F].unit
-//      val nameCalledByFairy = NameCalledByFairy(player.getName)
-//      val uuid = player.getUniqueId
-//
-//      println("random1")
-//
-//      implicit val F: Monad[F] = implicitly
-//
-//      F.ifM(fairyAPI.fairyUsingState(uuid).map(_ == FairyUsingState.NotUsing))(
-//        return Sync[F].unit,
-//        Sync[F].unit
-//      )
-//
-//      println("random2")
-//
-//      println("isDefinedAt:" + fairyAPI.fairyValidTimeRepository.isDefinedAt(player))
-//
-//      for {
-//        fairyValidTimesOpt <- fairyAPI.fairyValidTimeRepository(player).get
-//        fairyMessages =
-//          if (4 <= startTimeHour && startTimeHour < 10)
-//            FairyMessageTable.morningMessages(nameCalledByFairy)
-//          else if (10 <= startTimeHour && startTimeHour < 18)
-//            FairyMessageTable.dayMessages(nameCalledByFairy)
-//          else
-//            FairyMessageTable.nightMessages(nameCalledByFairy)
-//        fairyMessage <- getMessageRandomly(fairyMessages)
-//      } yield speak(player, fairyMessage).toIO.unsafeRunSync()
     }
 
-    override def speakStartMessage(player: Player, startTimeHour: Int)(
-      implicit fairyAPI: FairyAPI[F, Player]
-    ): F[Unit] = {
+    override def speakStartMessage(
+      player: Player
+    )(implicit fairyAPI: FairyAPI[F, Player]): F[Unit] = {
       val nameCalledByFairy = NameCalledByFairy(player.getName)
       val uuid = player.getUniqueId
-
-      println("random1")
 
       implicit val F: Monad[F] = implicitly
 
@@ -79,15 +51,12 @@ object BukkitFairySpeak {
         return Sync[F].unit,
         Sync[F].unit
       )
-
-      println("random2")
-
-      println("isDefinedAt:" + fairyAPI.fairyValidTimeRepository.isDefinedAt(player))
+      val startHour = LocalTime.now().getHour
 
       val fairyMessages =
-        if (4 <= startTimeHour && startTimeHour < 10)
+        if (4 <= startHour && startHour < 10)
           FairyMessageTable.morningMessages(nameCalledByFairy)
-        else if (10 <= startTimeHour && startTimeHour < 18)
+        else if (10 <= startHour && startHour < 18)
           FairyMessageTable.dayMessages(nameCalledByFairy)
         else
           FairyMessageTable.nightMessages(nameCalledByFairy)
