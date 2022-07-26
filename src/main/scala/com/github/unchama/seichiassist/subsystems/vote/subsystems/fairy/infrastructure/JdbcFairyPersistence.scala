@@ -1,18 +1,10 @@
 package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.infrastructure
 
 import cats.effect.Sync
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.{
-  AppleOpenState,
-  FairyPersistence,
-  FairyRecoveryMana,
-  FairySummonCost,
-  FairyUsingState,
-  FairyValidTimes
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
 import scalikejdbc.{DB, scalikejdbcSQLInterpolationImplicitDef}
 
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
-import java.util.{Date, UUID}
+import java.util.UUID
 
 class JdbcFairyPersistence[F[_]: Sync] extends FairyPersistence[F] {
 

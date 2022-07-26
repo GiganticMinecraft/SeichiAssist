@@ -90,13 +90,14 @@ object BukkitSummonFairy {
             IO.contextShift(ExecutionContext.global)
           FairySpeechRoutine.start(player).start.unsafeRunSync()
         }
+        ()
       }
 
       LiftIO[IO].liftIO {
         SequentialEffect(
           UnfocusedEffect {
+            eff.unsafeRunSync()
             BukkitFairySpeak[IO].speakStartMessage(player).unsafeRunSync()
-            eff.unsafeRunAsyncAndForget()
           },
           MessageEffect(
             List(

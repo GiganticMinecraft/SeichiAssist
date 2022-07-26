@@ -29,8 +29,8 @@ object BukkitFairySpeak {
         SequentialEffect(
           FocusedSoundEffect(Sound.BLOCK_NOTE_PLING, 2.0f, 1.0f),
           MessageEffect(fairyMessage.message)
-        ).apply(player)
-      else SequentialEffect(MessageEffect(fairyMessage.message)).apply(player)
+        ).run(player).unsafeRunSync()
+      else MessageEffect(fairyMessage.message).run(player).unsafeRunSync()
     }
 
     override def speakRandomly(
@@ -61,7 +61,7 @@ object BukkitFairySpeak {
         else
           FairyMessageTable.nightMessages(nameCalledByFairy)
 
-      getMessageRandomly(fairyMessages).map(speak(player, _).toIO.unsafeRunSync())
+      getMessageRandomly(fairyMessages).map(speak(player, _).toIO.unsafeRunAsyncAndForget())
     }
   }
 
