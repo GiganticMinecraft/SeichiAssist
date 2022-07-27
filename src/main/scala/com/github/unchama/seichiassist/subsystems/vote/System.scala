@@ -4,20 +4,15 @@ import cats.effect.ConcurrentEffect
 import com.github.unchama.minecraft.actions.OnMinecraftServerThread
 import com.github.unchama.seichiassist.meta.subsystem.Subsystem
 import com.github.unchama.seichiassist.subsystems.vote.bukkit.command.VoteCommand
-import com.github.unchama.seichiassist.subsystems.vote.domain.{
-  ChainVoteDayNumber,
-  EffectPoint,
-  PlayerName,
-  VoteBenefit,
-  VoteCounter
-}
+import com.github.unchama.seichiassist.subsystems.vote.domain._
 import com.github.unchama.seichiassist.subsystems.vote.infrastructure.JdbcVotePersistence
 import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 
 import java.util.UUID
 
 trait System[F[_]] extends Subsystem[F] {
-  val api: VoteAPI[F]
+  val api: VoteAPI[F, Player]
 }
 
 object System {
@@ -26,7 +21,7 @@ object System {
     val votePersistence = new JdbcVotePersistence[F]
 
     new System[F] {
-      override implicit val api: VoteAPI[F] = new VoteAPI[F] {
+      override implicit val api: VoteAPI[F, Player] = new VoteAPI[F, Player] {
         override def voteCounterIncrement(playerName: PlayerName): F[Unit] =
           votePersistence.voteCounterIncrement(playerName)
 
@@ -45,8 +40,8 @@ object System {
         override def increaseEffectPointsByTen(uuid: UUID): F[Unit] =
           votePersistence.increaseEffectPointsByTen(uuid)
 
-        override def effectPoints(uuid: UUID): F[EffectPoint] =
-          votePersistence.effectPoints(uuid)
+        override def effectPoints(player: Player): F[EffectPoint] =
+          votePersistence.effectPoints(player.getUniqueId)
 
         override def increaseVoteBenefits(uuid: UUID, benefit: VoteBenefit): F[Unit] =
           votePersistence.increaseVoteBenefits(uuid, benefit)

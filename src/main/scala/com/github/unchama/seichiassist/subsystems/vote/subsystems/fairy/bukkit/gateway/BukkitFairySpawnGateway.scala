@@ -25,19 +25,19 @@ import org.bukkit.entity.Player
 
 import scala.concurrent.ExecutionContext
 
-class BukkitFairySpawnGateway extends FairySpawnGateway[SyncIO, Player] {
+class BukkitFairySpawnGateway(player: Player)(
+  implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
+  fairyAPI: FairyAPI[IO, Player],
+  voteAPI: VoteAPI[IO],
+  manaApi: ManaApi[IO, SyncIO, Player],
+  serviceRepository: PlayerDataRepository[FairySpeechService[SyncIO]],
+  concurrentEffect: ConcurrentEffect[IO]
+) extends FairySpawnGateway[SyncIO] {
 
   /**
    * 妖精をスポーンさせる作用
    */
-  override def spawn(player: Player)(
-    implicit breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
-    fairyAPI: FairyAPI[IO, Player],
-    voteAPI: VoteAPI[IO],
-    manaApi: ManaApi[IO, SyncIO, Player],
-    serviceRepository: PlayerDataRepository[FairySpeechService[SyncIO]],
-    concurrentEffect: ConcurrentEffect[IO]
-  ): SyncIO[Unit] = {
+  override def spawn: SyncIO[Unit] = {
     val playerLevel =
       breakCountAPI
         .seichiAmountDataRepository(player)
@@ -48,7 +48,7 @@ class BukkitFairySpawnGateway extends FairySpawnGateway[SyncIO, Player] {
 
     val uuid = player.getUniqueId
 
-    val fairySummonCost = fairyAPI.fairySummonCost(uuid).unsafeRunSync()
+    val fairySummonCost = fairyAPI.fairySummonCost(player).unsafeRunSync()
 
     val failedEffect = spawnFailedEffect(player, _)
 
@@ -105,7 +105,7 @@ class BukkitFairySpawnGateway extends FairySpawnGateway[SyncIO, Player] {
       .runAsync(_ => IO.unit)
   }
 
-  private def spawnFailedEffect(player: Player, message: String): SyncIO[Unit] = {
+  private def spawnFailedEffect(message: String): SyncIO[Unit] = {
     SequentialEffect(
       MessageEffect(message),
       FocusedSoundEffect(Sound.BLOCK_GLASS_PLACE, 1f, 0.1f)

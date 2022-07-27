@@ -39,7 +39,7 @@ object VoteWriteAPI {
 
 }
 
-trait VoteReadAPI[F[_]] {
+trait VoteReadAPI[F[_], Player] {
 
   /**
    * 投票回数を返す作用
@@ -54,7 +54,7 @@ trait VoteReadAPI[F[_]] {
   /**
    * effectPointを返す作用
    */
-  def effectPoints(uuid: UUID): F[EffectPoint]
+  def effectPoints(player: Player): F[EffectPoint]
 
   /**
    * 投票特典を受け取った回数を返す作用
@@ -70,8 +70,10 @@ trait VoteReadAPI[F[_]] {
 
 object VoteReadAPI {
 
-  def apply[F[_]](implicit voteReadAPI: VoteReadAPI[F]): VoteReadAPI[F] = implicitly
+  def apply[F[_], Player](
+    implicit voteReadAPI: VoteReadAPI[F, Player]
+  ): VoteReadAPI[F, Player] = implicitly
 
 }
 
-trait VoteAPI[F[_]] extends VoteReadAPI[F] with VoteWriteAPI[F]
+trait VoteAPI[F[_], Player] extends VoteReadAPI[F, Player] with VoteWriteAPI[F]

@@ -2,6 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.effect.concurrent.Ref
 import cats.effect.{ConcurrentEffect, Sync, SyncEffect, SyncIO}
+import cats.instances.uuid
 import com.github.unchama.datarepository.KeyedDataRepository
 import com.github.unchama.datarepository.bukkit.player.{
   BukkitRepositoryControls,
@@ -72,8 +73,8 @@ object System {
           ): F[Unit] =
             persistence.updateFairySummonCost(uuid, fairySummonCost)
 
-          override def fairySummonCost(uuid: UUID): F[FairySummonCost] =
-            persistence.fairySummonCost(uuid)
+          override def fairySummonCost(player: Player): F[FairySummonCost] =
+            persistence.fairySummonCost(player.getUniqueId)
 
           override protected val fairyPlaySoundRepository
             : KeyedDataRepository[UUID, Ref[F, FairyPlaySound]] =
@@ -99,14 +100,14 @@ object System {
           override def updateFairyEndTime(player: Player, fairyEndTime: FairyEndTime): F[Unit] =
             persistence.updateFairyEndTime(player.getUniqueId, fairyEndTime)
 
-          override def fairyUsingState(uuid: UUID): F[FairyUsingState] =
-            persistence.fairyUsingState(uuid)
+          override def fairyUsingState(player: Player): F[FairyUsingState] =
+            persistence.fairyUsingState(player.getUniqueId)
 
           override def updateFairyUsingState(
-            uuid: UUID,
+            player: Player,
             fairyUsingState: FairyUsingState
           ): F[Unit] =
-            persistence.updateFairyUsingState(uuid, fairyUsingState)
+            persistence.updateFairyUsingState(player.getUniqueId, fairyUsingState)
 
           override def fairyRecoveryMana(uuid: UUID): F[FairyRecoveryMana] =
             persistence.fairyRecoveryMana(uuid)

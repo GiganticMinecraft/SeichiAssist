@@ -1,6 +1,7 @@
 package com.github.unchama.seichiassist.menus
 
 import cats.effect.{ConcurrentEffect, IO, SyncIO}
+import cats.instances.uuid
 import com.github.unchama.itemstackbuilder.IconItemStackBuilder
 import com.github.unchama.menuinventory.router.CanOpen
 import com.github.unchama.menuinventory.slot.button.Button
@@ -39,7 +40,7 @@ import java.util.UUID
 object VoteMenu extends Menu {
 
   class Environment(
-    implicit val voteAPI: VoteAPI[IO],
+    implicit val voteAPI: VoteAPI[IO, Player],
     val fairyAPI: FairyAPI[IO, Player],
     val breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
     val manaApi: ManaApi[IO, SyncIO, Player],
@@ -66,8 +67,8 @@ object VoteMenu extends Menu {
 
     val buttons =
       Map(
-        ChestSlotRef(0, 0) -> receiveVoteBenefitsButton(uuid),
-        ChestSlotRef(0, 2) -> fairySummonTimeToggleButton(uuid),
+        ChestSlotRef(0, 0) -> receiveVoteBenefitsButton(player),
+        ChestSlotRef(0, 2) -> fairySummonTimeToggleButton(player),
         ChestSlotRef(0, 4) -> fairySummonButton(player),
         ChestSlotRef(1, 0) -> showVoteURLButton,
         ChestSlotRef(1, 2) -> fairyContractSettingToggle(uuid),
@@ -83,14 +84,15 @@ object VoteMenu extends Menu {
     implicit val ioCE: ConcurrentEffect[IO] =
       IO.ioConcurrentEffect(PluginExecutionContexts.asyncShift)
 
-    def receiveVoteBenefitsButton(uuid: UUID)(
-      implicit voteAPI: VoteAPI[IO],
+    def receiveVoteBenefitsButton(player: Player)(
+      implicit voteAPI: VoteAPI[IO, Player],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player]
     ): Button = {
+      val uuid = player.getUniqueId
       for {
         benefits <- voteAPI.receivedVoteBenefits(uuid)
         voteCounter <- voteAPI.voteCounter(uuid)
-        effectPoint <- voteAPI.effectPoints(uuid)
+        effectPoint <- voteAPI.effectPoints(player)
       } yield {
         Button(
           new IconItemStackBuilder(Material.DIAMOND)
@@ -149,9 +151,9 @@ object VoteMenu extends Menu {
     )
 
     def fairySummonTimeToggleButton(
-      uuid: UUID
+      player: Player
     )(implicit fairyAPI: FairyAPI[IO, Player]): Button = {
-      val fairySummonCost = fairyAPI.fairySummonCost(uuid).unsafeRunSync()
+      val fairySummonCost = fairyAPI.fairySummonCost(player).unsafeRunSync()
       Button(
         new IconItemStackBuilder(Material.WATCH)
           .title(s"$AQUA$UNDERLINE${BOLD}マナ妖精 時間設定")
@@ -170,8 +172,10 @@ object VoteMenu extends Menu {
           SequentialEffect(
             FocusedSoundEffect(Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f),
             UnfocusedEffect(
-              fairyAPI
-                .updateFairySummonCost(uuid, FairySummonCost(fairySummonCost.value % 4 + 1))
+              fairyAPI.updateFairySummonCost(
+                player.getUniqueId,
+                FairySummonCost(fairySummonCost.value % 4 + 1)
+              )
             )
           )
         }
@@ -234,12 +238,12 @@ object VoteMenu extends Menu {
 
     def fairySummonButton(player: Player)(
       implicit fairyAPI: FairyAPI[IO, Player],
-      voteAPI: VoteAPI[IO],
+      voteAPI: VoteAPI[IO, Player],
       breakCountAPI: BreakCountAPI[IO, SyncIO, Player],
       manaApi: ManaApi[IO, SyncIO, Player]
     ): Button = {
       val fairySummonState =
-        fairyAPI.fairySummonCost(player.getUniqueId).unsafeRunSync().value
+        fairyAPI.fairySummonCost(player).unsafeRunSync().value
       Button(
         new IconItemStackBuilder(Material.GHAST_TEAR)
           .title(s"$LIGHT_PURPLE$UNDERLINE${BOLD}マナ妖精 召喚")

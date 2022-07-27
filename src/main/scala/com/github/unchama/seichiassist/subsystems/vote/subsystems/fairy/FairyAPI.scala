@@ -2,16 +2,7 @@ package com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy
 
 import cats.effect.concurrent.Ref
 import com.github.unchama.datarepository.KeyedDataRepository
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain._
-import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property.{
-  AppleOpenState,
-  FairyEndTime,
-  FairyLore,
-  FairyPlaySound,
-  FairyRecoveryMana,
-  FairySummonCost,
-  FairyUsingState
-}
+import com.github.unchama.seichiassist.subsystems.vote.subsystems.fairy.domain.property._
 
 import java.util.UUID
 
@@ -36,7 +27,7 @@ trait FairyWriteAPI[F[_], Player] {
   /**
    * 妖精を使っているかどうかを切り替える
    */
-  def updateFairyUsingState(uuid: UUID, fairyUsingState: FairyUsingState): F[Unit]
+  def updateFairyUsingState(player: Player, fairyUsingState: FairyUsingState): F[Unit]
 
   /**
    * 妖精が回復するマナの量を変更する
@@ -66,7 +57,7 @@ trait FairyReadAPI[F[_], Player] {
   /**
    * 妖精を召喚するためのコストを取得する
    */
-  def fairySummonCost(uuid: UUID): F[FairySummonCost]
+  def fairySummonCost(player: Player): F[FairySummonCost]
 
   /**
    * `FairyLoreTable`からLoreを取得する
@@ -81,7 +72,7 @@ trait FairyReadAPI[F[_], Player] {
   /**
    * 妖精を使っているかを取得する
    */
-  def fairyUsingState(uuid: UUID): F[FairyUsingState]
+  def fairyUsingState(player: Player): F[FairyUsingState]
 
   /**
    * 妖精が回復するマナの量を取得する

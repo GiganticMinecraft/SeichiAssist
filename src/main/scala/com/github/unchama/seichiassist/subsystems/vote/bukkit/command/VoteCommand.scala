@@ -11,8 +11,9 @@ import com.github.unchama.targetedeffect.{SequentialEffect, UnfocusedEffect}
 import com.github.unchama.targetedeffect.commandsender.MessageEffect
 import org.bukkit.ChatColor._
 import org.bukkit.command.TabExecutor
+import org.bukkit.entity.Player
 
-class VoteCommand[F[_]: ConcurrentEffect](implicit voteAPI: VoteAPI[F]) {
+class VoteCommand[F[_]: ConcurrentEffect](implicit voteAPI: VoteAPI[F, Player]) {
 
   private val usageEchoExecutor: EchoExecutor = EchoExecutor(
     MessageEffect(List(s"$RED/vote record <プレイヤー名>", "投票特典配布用コマンドです"))
